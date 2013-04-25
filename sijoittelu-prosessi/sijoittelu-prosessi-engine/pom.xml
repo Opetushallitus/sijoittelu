@@ -5,14 +5,14 @@
 
     <groupId>fi.vm.sade.sijoittelu</groupId>
     <artifactId>sijoittelu-prosessi-engine</artifactId>
-    <version>4.0-SNAPSHOT</version>
+    <version>5.0-SNAPSHOT</version>
     <packaging>war</packaging>
     <name>Sijoittelu :: Prosessi :: Prosessimoottori</name>
 
     <parent>
         <groupId>fi.vm.sade.sijoittelu</groupId>
         <artifactId>sijoittelu-prosessi</artifactId>
-        <version>4.0-SNAPSHOT</version>
+        <version>5.0-SNAPSHOT</version>
     </parent>
 
     <properties>
