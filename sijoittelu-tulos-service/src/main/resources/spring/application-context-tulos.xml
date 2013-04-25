@@ -7,6 +7,9 @@
             http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
        ">
 
+    <context:annotation-config/>
+    <context:component-scan base-package="fi.vm.sade.sijoittelu"/>
+
     <context:property-placeholder
             location="classpath:sijoittelu-tulos-service.properties, file:///${user.home:''}/oph-configuration/common.properties, file:///${user.home:''}/oph-configuration/sijoittelu-tulos-service.properties"
             ignore-resource-not-found="true"/>
