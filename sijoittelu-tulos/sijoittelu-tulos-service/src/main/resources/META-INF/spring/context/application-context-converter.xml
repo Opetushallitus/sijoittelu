@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+    ">
+
+    <!-- Conversion service -->
+    <bean id="conversionService"
+        class="fi.vm.sade.generic.service.conversion.SadeConversionServiceFactoryBean">
+        <property name="converters">
+            <list>
+                <bean
+                    class="fi.vm.sade.sijoittelu.converter.HakemusToHakijaTyyppiConverter" />
+                <bean
+                    class="fi.vm.sade.sijoittelu.converter.HakukohdeToHakukohdeTyyppiConverter" />
+                <bean
+                    class="fi.vm.sade.sijoittelu.converter.HakuToHakuTyyppiConverter" />
+                <bean
+                    class="fi.vm.sade.sijoittelu.converter.SijoitteluajoToSijoitteluajoTyyppiConverter" />
+                <bean
+                    class="fi.vm.sade.sijoittelu.converter.ValintatapajonoToValintatapajonoTyyppiConverter" />
+            </list>
+        </property>
+    </bean>
+</beans>

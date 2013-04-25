@@ -1,0 +1,94 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<wsdl:definitions name="tulosService"
+    targetNamespace="http://service.tulos.sade.vm.fi/" xmlns:ns1="http://service.tulos.sade.vm.fi/types"
+    xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tns="http://service.tulos.sade.vm.fi/"
+    xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+
+    <wsdl:types>
+        <xsd:schema targetNamespace="http://service.tulos.sade.vm.fi/">
+            <xsd:import namespace="http://service.tulos.sade.vm.fi/types"
+                schemaLocation="tulosService.xsd" />
+        </xsd:schema>
+    </wsdl:types>
+
+    <!-- TODO faultin määritys -->
+    <wsdl:message name="haeHautRequest">
+        <wsdl:part name="parameters" element="ns1:haeHaut"></wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="haeHautResponse">
+        <wsdl:part name="parameters" element="ns1:haeHautResponse"></wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="haeSijoitteluajotRequest">
+        <wsdl:part name="haeSijoitteluajotRequest" element="ns1:haeSijoitteluajot"></wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="haeSijoitteluajotResponse">
+        <wsdl:part name="haeSijoitteluajotResponse" element="ns1:haeSijoitteluajotResponse"></wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="haeHakukohteetRequest">
+        <wsdl:part name="haeHakukohteetRequest" element="ns1:haeHakukohteet"></wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="haeHakukohteetResponse">
+        <wsdl:part name="haeHakukohteetResponse" element="ns1:haeHakukohteetResponse"></wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="genericFault">
+        <wsdl:part name="fault" element="ns1:genericFaultInfo"></wsdl:part>
+    </wsdl:message>
+    <wsdl:portType name="TulosService">
+        <wsdl:documentation>
+            Palvelurajapinta
+            sijoittelu-/valintaprosessin tuloksien hakemiseen
+        </wsdl:documentation>
+        <wsdl:operation name="haeHaut">
+            <wsdl:input message="tns:haeHautRequest"></wsdl:input>
+            <wsdl:output message="tns:haeHautResponse"></wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="haeSijoitteluajot">
+            <wsdl:input message="tns:haeSijoitteluajotRequest"></wsdl:input>
+            <wsdl:output message="tns:haeSijoitteluajotResponse"></wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="haeHakukohteet">
+            <wsdl:input message="tns:haeHakukohteetRequest"></wsdl:input>
+            <wsdl:output message="tns:haeHakukohteetResponse"></wsdl:output>
+            <wsdl:fault name="fault" message="tns:genericFault"></wsdl:fault>
+        </wsdl:operation>
+    </wsdl:portType>
+
+    <wsdl:binding name="TulosServiceSoapBinding" type="tns:TulosService">
+        <soap:binding style="document"
+            transport="http://schemas.xmlsoap.org/soap/http" />
+        <wsdl:operation name="haeHaut">
+            <soap:operation soapAction="" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="haeSijoitteluajot">
+            <soap:operation soapAction="" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="haeHakukohteet">
+            <soap:operation soapAction="" />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+    </wsdl:binding>
+
+    <wsdl:service name="TulosService">
+        <wsdl:port name="TulosServicePort" binding="tns:TulosServiceSoapBinding">
+            <soap:address location="http://localhost:8181/cxf/tulosService" />
+        </wsdl:port>
+    </wsdl:service>
+
+</wsdl:definitions>

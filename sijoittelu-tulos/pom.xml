@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>fi.vm.sade.sijoittelu</groupId>
+    <artifactId>sijoittelu-tulos</artifactId>
+    <packaging>pom</packaging>
+    <name>Sijoittelu :: Tulospalvelu</name>
+
+    <parent>
+        <groupId>fi.vm.sade.sijoittelu</groupId>
+        <artifactId>sijoittelu</artifactId>
+        <version>4.0-SNAPSHOT</version>
+    </parent>
+
+    <modules>
+        <module>sijoittelu-tulos-api</module>
+        <module>sijoittelu-tulos-esb</module>
+        <module>sijoittelu-tulos-service</module>
+    </modules>
+</project>

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE liferay-portlet-app PUBLIC "-//Liferay//DTD Portlet Application 6.1.0//EN" "http://www.liferay.com/dtd/liferay-portlet-app_6_1_0.dtd">
+<liferay-portlet-app>
+    <portlet>
+        <portlet-name>sijoittelu</portlet-name>
+        <instanceable>false</instanceable>
+        <ajaxable>false</ajaxable>
+    </portlet>
+    <role-mapper>
+		<role-name>APP_SIJOITTELU_CRUD</role-name>
+        <role-link>APP_SIJOITTELU_CRUD</role-link>
+    </role-mapper>
+	<role-mapper>
+		<role-name>APP_SIJOITTELU_READ_UPDATE</role-name>
+		<role-link>APP_SIJOITTELU_READ_UPDATE</role-link>
+    </role-mapper>
+	<role-mapper>
+		<role-name>APP_SIJOITTELU_READ</role-name>
+		<role-link>APP_SIJOITTELU_READ</role-link>
+    </role-mapper>
+</liferay-portlet-app>

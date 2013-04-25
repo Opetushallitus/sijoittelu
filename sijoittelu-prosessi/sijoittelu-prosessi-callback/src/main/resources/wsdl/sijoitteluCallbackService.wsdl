@@ -1,0 +1,44 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<wsdl:definitions name="sijoitteluCallbackService"
+                  targetNamespace="http://sijoittelu.service.sade.vm.fi/"
+                  xmlns:ns1="http://sijoittelu.service.sade.vm.fi/types"
+                  xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+                  xmlns:tns="http://sijoittelu.service.sade.vm.fi/"
+                  xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+                  xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+
+    <wsdl:types>
+        <xsd:schema targetNamespace="http://sijoittelu.service.sade.vm.fi">
+            <xsd:import namespace="http://sijoittelu.service.sade.vm.fi/types" schemaLocation="sijoitteluCallbackService.xsd" />
+        </xsd:schema>
+    </wsdl:types>
+
+    <wsdl:message name="callbackMessage">
+        <wsdl:part name="parameters" element="ns1:callbackMessage" />
+    </wsdl:message>
+    
+    <wsdl:portType name="SijoitteluCallbackService">
+        <wsdl:documentation>Callback-rajapinta prosessiin, jolla sijoitteluajon valmistumisesta voidaan ilmoittaa.</wsdl:documentation>
+        <wsdl:operation name="sendCallback">
+            <wsdl:documentation>Operaatio, jota käytetään callbackin tekemisen.</wsdl:documentation>
+            <wsdl:input message="tns:callbackMessage" name="callbackMessage" />
+        </wsdl:operation>
+    </wsdl:portType>
+
+    <wsdl:binding name="SijoitteluCallbackServiceSoapBinding" type="tns:SijoitteluCallbackService">
+        <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document" />
+        <wsdl:operation name="sendCallback">
+            <soap:operation soapAction="" style="document" />
+            <wsdl:input name="callbackMessage">
+                <soap:body use="literal" />
+            </wsdl:input>
+        </wsdl:operation>
+    </wsdl:binding>
+
+    <wsdl:service name="SijoitteluCallbackService">
+        <wsdl:port name="SijoitteluCallbackServicePort" binding="tns:SijoitteluCallbackServiceSoapBinding">
+            <soap:address location="http://localhost:8080/foobar" />
+        </wsdl:port>
+    </wsdl:service>
+
+</wsdl:definitions>

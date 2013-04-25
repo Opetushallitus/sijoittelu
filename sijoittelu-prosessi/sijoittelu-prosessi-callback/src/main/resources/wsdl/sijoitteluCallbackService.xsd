@@ -1,0 +1,15 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<xs:schema elementFormDefault="unqualified"
+           targetNamespace="http://sijoittelu.service.sade.vm.fi/types" version="1.0"
+           xmlns:tns="http://sijoittelu.service.sade.vm.fi/types"
+           xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+
+    <xs:element name="callbackMessage" type="tns:CallbackMessageType" />
+
+    <xs:complexType name="CallbackMessageType">
+        <xs:sequence>
+            <xs:element name="status" />
+        </xs:sequence>
+        <xs:attribute name="sijoitteluId" use="required" type="xs:string" />
+    </xs:complexType>
+</xs:schema>
