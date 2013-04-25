@@ -26,7 +26,6 @@
         <dependency>
             <groupId>fi.vm.sade.tarjonta</groupId>
             <artifactId>tarjonta-api</artifactId>
-            <version>${project.version}</version>
         </dependency>
 
         <dependency>
