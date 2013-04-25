@@ -1,1 +1,0 @@
-mvn camel:run
