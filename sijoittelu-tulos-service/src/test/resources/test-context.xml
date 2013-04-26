@@ -8,9 +8,9 @@
     <context:component-scan base-package="fi.vm.sade.sijoittelu" />
 
     <import
-        resource="classpath:META-INF/spring/context/application-context-aspect.xml" />
+        resource="classpath:spring/context/application-context-aspect.xml" />
     <import
-        resource="classpath:META-INF/spring/context/application-context-converter.xml" />
+        resource="classpath:spring/context/application-context-converter.xml" />
     <!-- Database -->
     <bean id="mongo" class="com.mongodb.Mongo" scope="singleton">
         <constructor-arg type="java.lang.String" value="127.0.0.1" />
