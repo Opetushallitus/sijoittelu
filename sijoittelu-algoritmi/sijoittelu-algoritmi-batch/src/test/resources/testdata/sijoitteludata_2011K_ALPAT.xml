@@ -1,5 +1,6 @@
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<ns2:sijoitteleTyyppi xmlns:ns2="http://sijoittelu.service.sade.vm.fi/types">
+<?xml version="1.0" encoding="UTF-8"?>
+<tns:sijoittele xmlns:tns="http://sijoittelu.service.sade.vm.fi/types">
+
     <tarjonta>
         <haku>
             <sijoittelu>true</sijoittelu>
@@ -10739,4 +10740,4 @@
             </valintatapajono>
         </hakukohde>
     </tarjonta>
-</ns2:sijoitteleTyyppi>
+</tns:sijoittele>

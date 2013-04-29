@@ -21,7 +21,6 @@ import fi.vm.sade.tarjonta.service.types.HakuTyyppi;
  * @author Kari Kammonen
  * 
  */
-@Ignore // Asetettu ignoreen kunnes testidata saadaan korjattua
 public class Sijoitteludata_2011S_ALPATTest {
 
 	@Test
