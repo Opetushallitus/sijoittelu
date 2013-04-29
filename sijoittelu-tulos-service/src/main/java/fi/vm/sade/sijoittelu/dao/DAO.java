@@ -22,4 +22,5 @@ public interface DAO {
 
     List<Sijoittelu> getHakus(HaeHautKriteeritTyyppi haeHautKriteerit);
 
+    Sijoittelu getSijoitteluByHakuOid(String hakuOid);
 }

@@ -1,31 +1,19 @@
 package fi.vm.sade.sijoittelu.util;
 
+import com.google.code.morphia.Datastore;
+import com.google.code.morphia.query.Query;
+import fi.vm.sade.sijoittelu.domain.*;
+
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-
-import com.google.code.morphia.Datastore;
-import com.google.code.morphia.query.Query;
-
-import fi.vm.sade.sijoittelu.domain.HakemuksenTila;
-import fi.vm.sade.sijoittelu.domain.Hakemus;
-import fi.vm.sade.sijoittelu.domain.Haku;
-import fi.vm.sade.sijoittelu.domain.Sijoittelu;
-import fi.vm.sade.sijoittelu.domain.Hakukohde;
-import fi.vm.sade.sijoittelu.domain.HakukohdeItem;
-import fi.vm.sade.sijoittelu.domain.HakukohdeTila;
-import fi.vm.sade.sijoittelu.domain.SijoitteluAjo;
-import fi.vm.sade.sijoittelu.domain.Valintatapajono;
-import fi.vm.sade.sijoittelu.domain.ValintatapajonoTila;
 
 public class TestDataGenerator {
 
     public static final String HAKU_OID = "1.2.246.562.11.00000000001";
     public static final long SIJOITTELU_ID_1 = 222L;
     public static final long SIJOITTELU_ID_2 = 223L;
-    
+
     public static final long SIJOITTELU_AJO_ID_1 = 666L;
     public static final long SIJOITTELU_AJO_ID_2 = 667L;
 
@@ -41,8 +29,11 @@ public class TestDataGenerator {
     public static final String HAKEMUS_OID_3 = "1.2.246.562.11.00000000009";
     public static final String HAKEMUS_OID_4 = "1.2.246.562.11.00000000010";
 
-    @Autowired
     private Datastore morphiaDS;
+
+    public TestDataGenerator(Datastore morphiaDS) {
+        this.morphiaDS = morphiaDS;
+    }
 
     public void generateTestData() {
         Sijoittelu sijoittelu = new Sijoittelu();
@@ -114,17 +105,17 @@ public class TestDataGenerator {
             }
 
             switch (i) {
-            case 0:
-                hakukohde.setOid(HAKUKOHDE_OID_1);
-                break;
-            case 1:
-                hakukohde.setOid(HAKUKOHDE_OID_2);
-                break;
-            case 2:
-                hakukohde.setOid(HAKUKOHDE_OID_3);
-                break;
-            default:
-                break;
+                case 0:
+                    hakukohde.setOid(HAKUKOHDE_OID_1);
+                    break;
+                case 1:
+                    hakukohde.setOid(HAKUKOHDE_OID_2);
+                    break;
+                case 2:
+                    hakukohde.setOid(HAKUKOHDE_OID_3);
+                    break;
+                default:
+                    break;
             }
 
             hakukohde.getValintatapajonot().addAll(createValintatapajonos());
@@ -147,16 +138,16 @@ public class TestDataGenerator {
             valintatapajono.setTila(ValintatapajonoTila.SIJOITELTU);
             valintatapajono.setAloituspaikat(3);
             switch (i) {
-            case 0:
-                valintatapajono.setOid(VALINTATAPAJONO_OID_1);
-                break;
+                case 0:
+                    valintatapajono.setOid(VALINTATAPAJONO_OID_1);
+                    break;
 
-            case 1:
-                valintatapajono.setOid(VALINTATAPAJONO_OID_2);
-                break;
+                case 1:
+                    valintatapajono.setOid(VALINTATAPAJONO_OID_2);
+                    break;
 
-            default:
-                break;
+                default:
+                    break;
             }
             valintatapajono.getHakemukset().addAll(createHakemus());
             valintatapajonos.add(valintatapajono);
@@ -170,32 +161,32 @@ public class TestDataGenerator {
         for (int i = 0; i < 4; ++i) {
             Hakemus hakemus = new Hakemus();
             switch (i) {
-            case 0:
-                hakemus.setHakijaOid(HAKEMUS_OID_1);
-                hakemus.setJonosija(i + 1);
-                hakemus.setPrioriteetti(i + 1);
-                hakemus.setTila(HakemuksenTila.HYVAKSYTTY);
-                break;
-            case 1:
-                hakemus.setHakijaOid(HAKEMUS_OID_2);
-                hakemus.setJonosija(i + 1);
-                hakemus.setPrioriteetti(i + 1);
-                hakemus.setTila(HakemuksenTila.ILMOITETTU);
-                break;
-            case 2:
-                hakemus.setHakijaOid(HAKEMUS_OID_3);
-                hakemus.setJonosija(i + 1);
-                hakemus.setPrioriteetti(i + 1);
-                hakemus.setTila(HakemuksenTila.VARALLA);
-                break;
-            case 3:
-                hakemus.setHakijaOid(HAKEMUS_OID_4);
-                hakemus.setJonosija(i + 1);
-                hakemus.setPrioriteetti(i + 1);
-                hakemus.setTila(HakemuksenTila.PERUUNTUNUT);
-                break;
-            default:
-                break;
+                case 0:
+                    hakemus.setHakijaOid(HAKEMUS_OID_1);
+                    hakemus.setJonosija(i + 1);
+                    hakemus.setPrioriteetti(i + 1);
+                    hakemus.setTila(HakemuksenTila.HYVAKSYTTY);
+                    break;
+                case 1:
+                    hakemus.setHakijaOid(HAKEMUS_OID_2);
+                    hakemus.setJonosija(i + 1);
+                    hakemus.setPrioriteetti(i + 1);
+                    hakemus.setTila(HakemuksenTila.ILMOITETTU);
+                    break;
+                case 2:
+                    hakemus.setHakijaOid(HAKEMUS_OID_3);
+                    hakemus.setJonosija(i + 1);
+                    hakemus.setPrioriteetti(i + 1);
+                    hakemus.setTila(HakemuksenTila.VARALLA);
+                    break;
+                case 3:
+                    hakemus.setHakijaOid(HAKEMUS_OID_4);
+                    hakemus.setJonosija(i + 1);
+                    hakemus.setPrioriteetti(i + 1);
+                    hakemus.setTila(HakemuksenTila.PERUUNTUNUT);
+                    break;
+                default:
+                    break;
             }
 
             hakemusList.add(hakemus);

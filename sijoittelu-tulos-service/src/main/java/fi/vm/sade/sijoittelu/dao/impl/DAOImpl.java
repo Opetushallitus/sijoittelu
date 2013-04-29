@@ -54,6 +54,13 @@ public class DAOImpl implements DAO {
     }
 
     @Override
+    public Sijoittelu getSijoitteluByHakuOid(String hakuOid) {
+        Query<Sijoittelu> query = morphiaDS.createQuery(Sijoittelu.class);
+        query.field("haku.oid").equal(hakuOid);
+        return query.get();
+    }
+
+    @Override
     public List<SijoitteluAjo> getSijoitteluajos(HaeSijoitteluajotKriteeritTyyppi haeSijoitteluajotKriteerit) {
         Query<SijoitteluAjo> query = morphiaDS.createQuery(SijoitteluAjo.class);
         query.retrievedFields(true, "sijoitteluajoId", "startMils", "endMils");

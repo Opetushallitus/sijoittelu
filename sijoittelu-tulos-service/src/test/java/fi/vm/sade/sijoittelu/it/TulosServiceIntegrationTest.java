@@ -1,43 +1,49 @@
 package fi.vm.sade.sijoittelu.it;
 
-import static org.junit.Assert.assertEquals;
-
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-
+import com.google.code.morphia.Datastore;
+import fi.vm.sade.sijoittelu.service.exception.SijoitteluajoNotFoundException;
+import fi.vm.sade.sijoittelu.util.DropMongoDbTestExecutionListener;
+import fi.vm.sade.sijoittelu.util.TestDataGenerator;
+import fi.vm.sade.tulos.service.TulosService;
+import fi.vm.sade.tulos.service.types.HaeHakukohteetKriteeritTyyppi;
+import fi.vm.sade.tulos.service.types.HaeHautKriteeritTyyppi;
+import fi.vm.sade.tulos.service.types.HaeSijoitteluajotKriteeritTyyppi;
+import fi.vm.sade.tulos.service.types.tulos.*;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
+import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
 
-import fi.vm.sade.sijoittelu.util.AbstractSijoitteluMongoDbTest;
-import fi.vm.sade.sijoittelu.util.TestDataGenerator;
-import fi.vm.sade.tulos.service.GenericFault;
-import fi.vm.sade.tulos.service.TulosService;
-import fi.vm.sade.tulos.service.types.HaeHakukohteetKriteeritTyyppi;
-import fi.vm.sade.tulos.service.types.HaeHautKriteeritTyyppi;
-import fi.vm.sade.tulos.service.types.HaeSijoitteluajotKriteeritTyyppi;
-import fi.vm.sade.tulos.service.types.tulos.HakuTyyppi;
-import fi.vm.sade.tulos.service.types.tulos.HakukohdeTilaTyyppi;
-import fi.vm.sade.tulos.service.types.tulos.HakukohdeTyyppi;
-import fi.vm.sade.tulos.service.types.tulos.SijoitteluajoTyyppi;
-import fi.vm.sade.tulos.service.types.tulos.ValintatapajonoTyyppi;
+import java.io.IOException;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = "classpath:test-context.xml")
-public class TulosServiceIntegrationTest extends AbstractSijoitteluMongoDbTest {
+@TestExecutionListeners(listeners = {DependencyInjectionTestExecutionListener.class,
+        DirtiesContextTestExecutionListener.class, DropMongoDbTestExecutionListener.class})
+public class TulosServiceIntegrationTest {
 
-    @Autowired
     private TestDataGenerator testDataGenerator;
 
     @Autowired
     private TulosService tulosService;
 
+    @Autowired
+    private Datastore morphiaDS;
+
     @Before
-    public void before() {
+    public void before() throws IOException {
+        testDataGenerator = new TestDataGenerator(morphiaDS);
         testDataGenerator.generateTestData();
     }
 
@@ -131,7 +137,7 @@ public class TulosServiceIntegrationTest extends AbstractSijoitteluMongoDbTest {
         assertEquals(2, hakukohdes.size());
     }
 
-    @Test(expected = GenericFault.class)
+    @Test(expected = SijoitteluajoNotFoundException.class)
     public void testHaeHakukohteetWithNonExistingSijoitteluId() {
         tulosService.haeHakukohteet(-1L, null);
     }
