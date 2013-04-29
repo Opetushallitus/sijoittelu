@@ -1,20 +1,18 @@
 package fi.vm.sade.sijoittelu.domain;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
-import org.bson.types.ObjectId;
-
 import com.google.code.morphia.annotations.Embedded;
 import com.google.code.morphia.annotations.Entity;
 import com.google.code.morphia.annotations.Id;
 import com.google.code.morphia.annotations.Reference;
+import org.bson.types.ObjectId;
+import org.codehaus.jackson.map.annotate.JsonView;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 /**
- * 
  * @author Kari Kammonen
- * 
  */
 @Entity("Sijoittelu")
 public class Sijoittelu {
@@ -22,19 +20,23 @@ public class Sijoittelu {
     @SuppressWarnings("unused")
     @Id
     private ObjectId id;
-    
+
+    @JsonView(JsonViews.Basic.class)
     private Long sijoitteluId;
-    
+
+    @JsonView(JsonViews.Basic.class)
     private Date created;
-    
+
     /**
      * Maarittaa sijoitellaanko taman sijoittelun sijoitteluajot
      */
+    @JsonView(JsonViews.Basic.class)
     private boolean sijoittele = true;
 
     @Embedded
+    @JsonView(JsonViews.Basic.class)
     private Haku haku;
-    
+
     @Reference(value = "SijoitteluAjo", lazy = true)
     private List<SijoitteluAjo> sijoitteluajot = new ArrayList<SijoitteluAjo>();
 
@@ -65,6 +67,7 @@ public class Sijoittelu {
     public void setCreated(Date created) {
         this.created = created;
     }
+
     public boolean isSijoittele() {
         return sijoittele;
     }

@@ -7,20 +7,18 @@
     <context:annotation-config />
     <context:component-scan base-package="fi.vm.sade.sijoittelu" />
 
-    <import
-        resource="classpath:spring/context/application-context-aspect.xml" />
+    <!--<import-->
+        <!--resource="classpath:spring/context/application-context-aspect.xml" />-->
     <import
         resource="classpath:spring/context/application-context-converter.xml" />
     <!-- Database -->
-    <bean id="mongo" class="com.mongodb.Mongo" scope="singleton">
-        <constructor-arg type="java.lang.String" value="127.0.0.1" />
-        <constructor-arg type="int" value="37017" />
-    </bean>
+
+    <bean id="mongodFactory" class="de.flapdoodle.embed.mongo.tests.MongodForTestsFactory" destroy-method="shutdown" />
+
+    <bean id="mongo" class="com.mongodb.Mongo" factory-bean="mongodFactory" factory-method="newMongo" />
     <bean id="morphia" class="com.google.code.morphia.Morphia" />
     <bean id="datastore" factory-bean="morphia" factory-method="createDatastore">
         <constructor-arg type="com.mongodb.Mongo" ref="mongo" />
         <constructor-arg type="java.lang.String" value="sijoittelu" />
     </bean>
-
-    <bean id="testDataGenerator" class="fi.vm.sade.sijoittelu.util.TestDataGenerator" />
 </beans>
