@@ -5,7 +5,7 @@
             http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
             http://cxf.apache.org/jaxws http://cxf.apache.org/schemas/jaxws.xsd">
 
-    <jaxws:endpoint address="/tulosService" implementor="#tulosService" />
+    <jaxws:endpoint address="/sijoitteluTulosService" implementor="#tulosService" />
 
     <bean id="tulosService" class="fi.vm.sade.sijoittelu.service.impl.TulosServiceImpl" />
 </beans>
