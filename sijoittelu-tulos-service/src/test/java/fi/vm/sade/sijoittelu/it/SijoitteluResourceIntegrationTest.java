@@ -3,11 +3,13 @@ package fi.vm.sade.sijoittelu.it;
 import com.google.code.morphia.Datastore;
 import fi.vm.sade.sijoittelu.domain.JsonViews;
 import fi.vm.sade.sijoittelu.domain.Sijoittelu;
+import fi.vm.sade.sijoittelu.domain.SijoitteluAjo;
 import fi.vm.sade.sijoittelu.resource.ObjectMapperProvider;
 import fi.vm.sade.sijoittelu.resource.SijoitteluResource;
 import fi.vm.sade.sijoittelu.util.DropMongoDbTestExecutionListener;
 import fi.vm.sade.sijoittelu.util.TestDataGenerator;
 import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.type.TypeReference;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -19,6 +21,7 @@ import org.springframework.test.context.support.DependencyInjectionTestExecution
 import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
 
 import java.io.IOException;
+import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 
@@ -51,7 +54,7 @@ public class SijoitteluResourceIntegrationTest {
 
     @Test
     public void testGetSijoitteluByHakuOid() throws IOException {
-        Sijoittelu sijoittelu = sijoitteluResource.getSijoitteluByHakuoid(TestDataGenerator.HAKU_OID);
+        Sijoittelu sijoittelu = sijoitteluResource.getSijoitteluByHakuOid(TestDataGenerator.HAKU_OID);
 
         String json = mapper.writerWithView(JsonViews.Basic.class).writeValueAsString(sijoittelu);
         Sijoittelu fromJson = mapper.readValue(json, Sijoittelu.class);
@@ -59,6 +62,28 @@ public class SijoitteluResourceIntegrationTest {
         assertEquals(sijoittelu.getCreated(), fromJson.getCreated());
         assertEquals(sijoittelu.getSijoitteluId(), fromJson.getSijoitteluId());
         assertEquals(sijoittelu.getHaku().getOid(), fromJson.getHaku().getOid());
+    }
+
+    @Test
+    public void testGetSijoitteluajoByHakuOid() throws IOException {
+        List<SijoitteluAjo> sijoitteluajos =
+                sijoitteluResource.getSijoitteluajoByHakuOid(TestDataGenerator.HAKU_OID, false);
+
+        String json = mapper.writerWithView(JsonViews.Basic.class).writeValueAsString(sijoitteluajos);
+        List<SijoitteluAjo> fromJson = mapper.readValue(json, new TypeReference<List<SijoitteluAjo>>() {
+        });
+    }
+
+    @Test
+    public void testGetLatestSijoitteluajoByHakuOid() throws IOException {
+        List<SijoitteluAjo> sijoitteluajos =
+                sijoitteluResource.getSijoitteluajoByHakuOid(TestDataGenerator.HAKU_OID, true);
+
+        assertEquals(1, sijoitteluajos.size());
+        assertEquals(TestDataGenerator.SIJOITTELU_AJO_ID_2, sijoitteluajos.get(0).getSijoitteluajoId());
+        String json = mapper.writerWithView(JsonViews.Basic.class).writeValueAsString(sijoitteluajos);
+        List<SijoitteluAjo> fromJson = mapper.readValue(json, new TypeReference<List<SijoitteluAjo>>() {
+        });
     }
 
 }

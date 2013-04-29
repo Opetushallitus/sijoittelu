@@ -7,12 +7,9 @@ import fi.vm.sade.sijoittelu.domain.Sijoittelu;
 import fi.vm.sade.sijoittelu.domain.SijoitteluAjo;
 import fi.vm.sade.sijoittelu.util.DropMongoDbTestExecutionListener;
 import fi.vm.sade.sijoittelu.util.TestDataGenerator;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
@@ -21,6 +18,7 @@ import org.springframework.test.context.support.DependencyInjectionTestExecution
 import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
 
 import java.io.IOException;
+import java.util.Calendar;
 import java.util.List;
 
 import static org.junit.Assert.*;
@@ -79,5 +77,40 @@ public class DaoTest {
         assertNotNull(sijoittelu);
 
         assertNull(dao.getSijoitteluByHakuOid("notexists"));
+    }
+
+    @Test
+    public void testGetSijoitteluajoByHakuOid() {
+        List<SijoitteluAjo> sijoitteluajos = dao.getSijoitteluajoByHakuOid(TestDataGenerator.HAKU_OID);
+        assertEquals(2, sijoitteluajos.size());
+    }
+
+    @Test(expected = SijoitteluEntityNotFoundException.class)
+    public void testGetSijoitteluajoByHakuOidNotExists() {
+        dao.getSijoitteluajoByHakuOid("notexists");
+    }
+
+    @Test
+    public void testGetLatestSijoitteluajoByHakuOid() {
+        SijoitteluAjo latest = dao.getLatestSijoitteluajoByHakuOid(TestDataGenerator.HAKU_OID);
+        assertEquals(TestDataGenerator.SIJOITTELU_AJO_ID_2, latest.getSijoitteluajoId());
+    }
+
+    @Test
+    public void testGetSijoitteluajoByHakuOidAndTimestamp() {
+        Calendar startTime = Calendar.getInstance();
+        startTime.set(2012, 9, 18, 10, 23);
+
+        SijoitteluAjo sijoitteluajo = dao.getSijoitteluajoByHakuOidAndTimestamp(TestDataGenerator.HAKU_OID,
+                startTime.getTimeInMillis());
+        assertEquals(TestDataGenerator.SIJOITTELU_AJO_ID_1, sijoitteluajo.getSijoitteluajoId());
+
+        startTime.set(2012, 9, 28, 10, 24);
+        sijoitteluajo = dao.getSijoitteluajoByHakuOidAndTimestamp(TestDataGenerator.HAKU_OID,
+                startTime.getTimeInMillis());
+        assertEquals(TestDataGenerator.SIJOITTELU_AJO_ID_2, sijoitteluajo.getSijoitteluajoId());
+
+        startTime.set(2003, 9, 18, 10, 24);
+        assertNull(dao.getSijoitteluajoByHakuOidAndTimestamp(TestDataGenerator.HAKU_OID, startTime.getTimeInMillis()));
     }
 }

@@ -1,24 +1,23 @@
 package fi.vm.sade.sijoittelu.dao.impl;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Repository;
-
 import com.google.code.morphia.Datastore;
 import com.google.code.morphia.query.Query;
-
 import fi.vm.sade.sijoittelu.dao.DAO;
 import fi.vm.sade.sijoittelu.dao.exception.MultipleSijoitteluEntitiesFoundException;
 import fi.vm.sade.sijoittelu.dao.exception.SijoitteluEntityNotFoundException;
-import fi.vm.sade.sijoittelu.domain.Sijoittelu;
 import fi.vm.sade.sijoittelu.domain.Hakukohde;
 import fi.vm.sade.sijoittelu.domain.HakukohdeItem;
+import fi.vm.sade.sijoittelu.domain.Sijoittelu;
 import fi.vm.sade.sijoittelu.domain.SijoitteluAjo;
 import fi.vm.sade.tulos.service.types.HaeHakukohteetKriteeritTyyppi;
 import fi.vm.sade.tulos.service.types.HaeHautKriteeritTyyppi;
 import fi.vm.sade.tulos.service.types.HaeSijoitteluajotKriteeritTyyppi;
+import org.bson.types.ObjectId;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * User: tommiha Date: 10/15/12 Time: 2:44 PM
@@ -57,6 +56,50 @@ public class DAOImpl implements DAO {
     public Sijoittelu getSijoitteluByHakuOid(String hakuOid) {
         Query<Sijoittelu> query = morphiaDS.createQuery(Sijoittelu.class);
         query.field("haku.oid").equal(hakuOid);
+        return query.get();
+    }
+
+    private Query<SijoitteluAjo> createSijoitteluajoByHakuOidQuery(String hakuOid) {
+        Query<Sijoittelu> query = morphiaDS.createQuery(Sijoittelu.class);
+        query.field("haku.oid").equal(hakuOid);
+        query.retrievedFields(true, "sijoitteluajot");
+
+        Sijoittelu sijoittelu = query.get();
+
+        if(sijoittelu == null) {
+            throw new SijoitteluEntityNotFoundException("No sijoittelu found with haku OID " + hakuOid);
+        }
+
+        List<ObjectId> saIds = new ArrayList<ObjectId>();
+        for(SijoitteluAjo ajo:  sijoittelu.getSijoitteluajot()) {
+            saIds.add(ajo.getId());
+        }
+
+        Query<SijoitteluAjo> saquery = morphiaDS.createQuery(SijoitteluAjo.class);
+        saquery.field("id").in(saIds);
+        return saquery;
+    }
+
+
+    @Override
+    public List<SijoitteluAjo> getSijoitteluajoByHakuOid(String hakuOid) {
+        return createSijoitteluajoByHakuOidQuery(hakuOid).asList();
+    }
+
+    @Override
+    public SijoitteluAjo getLatestSijoitteluajoByHakuOid(String hakuOid) {
+        Query<SijoitteluAjo> query = createSijoitteluajoByHakuOidQuery(hakuOid);
+        query.order("-endMils");
+        query.limit(1);
+        return query.get();
+    }
+
+    @Override
+    public SijoitteluAjo getSijoitteluajoByHakuOidAndTimestamp(String hakuOid, Long timestamp) {
+        Query<SijoitteluAjo> query = createSijoitteluajoByHakuOidQuery(hakuOid);
+        query.field("startMils").lessThanOrEq(timestamp);
+        query.order("-endMils");
+        query.limit(1);
         return query.get();
     }
 

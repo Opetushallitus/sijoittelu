@@ -11,11 +11,11 @@ import java.util.List;
 public class TestDataGenerator {
 
     public static final String HAKU_OID = "1.2.246.562.11.00000000001";
-    public static final long SIJOITTELU_ID_1 = 222L;
-    public static final long SIJOITTELU_ID_2 = 223L;
+    public static final Long SIJOITTELU_ID_1 = 222L;
+    public static final Long SIJOITTELU_ID_2 = 223L;
 
-    public static final long SIJOITTELU_AJO_ID_1 = 666L;
-    public static final long SIJOITTELU_AJO_ID_2 = 667L;
+    public static final Long SIJOITTELU_AJO_ID_1 = 666L;
+    public static final Long SIJOITTELU_AJO_ID_2 = 667L;
 
     public static final String HAKUKOHDE_OID_1 = "1.2.246.562.11.00000000002";
     public static final String HAKUKOHDE_OID_2 = "1.2.246.562.11.00000000003";
@@ -71,7 +71,7 @@ public class TestDataGenerator {
         Calendar startTime = Calendar.getInstance();
         startTime.set(2012, 9, 17, 10, 23);
         Calendar endTime = Calendar.getInstance();
-        endTime.set(2012, 9, 17, 10, 24);
+        endTime.set(2012, 9, 20, 10, 24);
 
         SijoitteluAjo ajo1 = new SijoitteluAjo();
         ajo1.setStartMils(startTime.getTimeInMillis());
@@ -80,8 +80,8 @@ public class TestDataGenerator {
         ajo1.getHakukohteet().addAll(createHakukohdes(1));
         ajos.add(ajo1);
 
-        startTime.set(2012, 9, 18, 10, 23);
-        endTime.set(2012, 9, 18, 10, 24);
+        startTime.set(2012, 9, 21, 10, 23);
+        endTime.set(2012, 9, 25, 10, 24);
         SijoitteluAjo ajo2 = new SijoitteluAjo();
         ajo2.setStartMils(startTime.getTimeInMillis());
         ajo2.setEndMils(endTime.getTimeInMillis());

@@ -9,7 +9,6 @@ import fi.vm.sade.tulos.service.types.HaeHakukohteetKriteeritTyyppi;
 import fi.vm.sade.tulos.service.types.HaeHautKriteeritTyyppi;
 import fi.vm.sade.tulos.service.types.HaeSijoitteluajotKriteeritTyyppi;
 import fi.vm.sade.tulos.service.types.tulos.*;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -83,14 +82,14 @@ public class TulosServiceIntegrationTest {
             }
         });
 
-        assertEquals(TestDataGenerator.SIJOITTELU_AJO_ID_1, ajos.get(0).getSijoitteluId());
-        assertEquals(TestDataGenerator.SIJOITTELU_AJO_ID_2, ajos.get(1).getSijoitteluId());
+        assertEquals(TestDataGenerator.SIJOITTELU_AJO_ID_1.longValue(), ajos.get(0).getSijoitteluId());
+        assertEquals(TestDataGenerator.SIJOITTELU_AJO_ID_2.longValue(), ajos.get(1).getSijoitteluId());
 
         HaeSijoitteluajotKriteeritTyyppi kriteerit = new HaeSijoitteluajotKriteeritTyyppi();
         kriteerit.getSijoitteluIdLista().add(TestDataGenerator.SIJOITTELU_AJO_ID_1);
         ajos = tulosService.haeSijoitteluajot(kriteerit);
         assertEquals(ajos.size(), 1);
-        assertEquals(TestDataGenerator.SIJOITTELU_AJO_ID_1, ajos.get(0).getSijoitteluId());
+        assertEquals(TestDataGenerator.SIJOITTELU_AJO_ID_1.longValue(), ajos.get(0).getSijoitteluId());
 
         kriteerit.getSijoitteluIdLista().clear();
 

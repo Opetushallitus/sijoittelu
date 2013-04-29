@@ -1,10 +1,10 @@
 package fi.vm.sade.sijoittelu.domain;
 
-import org.bson.types.ObjectId;
-
 import com.google.code.morphia.annotations.Embedded;
 import com.google.code.morphia.annotations.Id;
 import com.google.code.morphia.annotations.Reference;
+import org.bson.types.ObjectId;
+import org.codehaus.jackson.map.annotate.JsonView;
 
 @Embedded
 public class HakukohdeItem {
@@ -13,6 +13,7 @@ public class HakukohdeItem {
     @Id
     private ObjectId id;
 
+    @JsonView(JsonViews.Basic.class)
     private String oid;
 
     @Reference(value = "Hakukohde", lazy = true)
