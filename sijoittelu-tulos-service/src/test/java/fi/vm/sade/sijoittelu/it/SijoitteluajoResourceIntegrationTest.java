@@ -1,0 +1,56 @@
+package fi.vm.sade.sijoittelu.it;
+
+import com.google.code.morphia.Datastore;
+import fi.vm.sade.sijoittelu.domain.JsonViews;
+import fi.vm.sade.sijoittelu.domain.SijoitteluAjo;
+import fi.vm.sade.sijoittelu.resource.ObjectMapperProvider;
+import fi.vm.sade.sijoittelu.resource.SijoitteluajoResource;
+import fi.vm.sade.sijoittelu.util.DropMongoDbTestExecutionListener;
+import fi.vm.sade.sijoittelu.util.TestDataGenerator;
+import org.codehaus.jackson.map.ObjectMapper;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestExecutionListeners;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
+import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
+
+import java.io.IOException;
+
+/**
+ * User: wuoti
+ * Date: 30.4.2013
+ * Time: 9.59
+ */
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations = "classpath:test-context.xml")
+@TestExecutionListeners(listeners = {DependencyInjectionTestExecutionListener.class,
+        DirtiesContextTestExecutionListener.class, DropMongoDbTestExecutionListener.class})
+public class SijoitteluajoResourceIntegrationTest {
+
+    @Autowired
+    private SijoitteluajoResource sijoitteluajoResource;
+
+    private TestDataGenerator testDataGenerator;
+
+    private ObjectMapper mapper = new ObjectMapperProvider().getContext(SijoitteluajoResource.class);
+
+    @Autowired
+    private Datastore morphiaDS;
+
+    @Before
+    public void before() throws IOException {
+        testDataGenerator = new TestDataGenerator(morphiaDS);
+        testDataGenerator.generateTestData();
+    }
+
+    @Test
+    public void testGetSijoitteluajoById() throws IOException {
+        SijoitteluAjo haettu = sijoitteluajoResource.getSijoitteluajo(TestDataGenerator.SIJOITTELU_AJO_ID_1);
+        String json = mapper.writerWithView(JsonViews.Basic.class).writeValueAsString(haettu);
+        mapper.readValue(json, SijoitteluAjo.class);
+    }
+}

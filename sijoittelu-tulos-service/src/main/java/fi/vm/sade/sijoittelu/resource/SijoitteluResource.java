@@ -2,8 +2,10 @@ package fi.vm.sade.sijoittelu.resource;
 
 import fi.vm.sade.sijoittelu.dao.DAO;
 import fi.vm.sade.sijoittelu.dao.exception.SijoitteluEntityNotFoundException;
+import fi.vm.sade.sijoittelu.domain.JsonViews;
 import fi.vm.sade.sijoittelu.domain.Sijoittelu;
 import fi.vm.sade.sijoittelu.domain.SijoitteluAjo;
+import org.codehaus.jackson.map.annotate.JsonView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -26,6 +28,7 @@ public class SijoitteluResource {
     private DAO dao;
 
     @GET
+    @JsonView(JsonViews.Basic.class)
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/{hakuOid}")
     public Sijoittelu getSijoitteluByHakuOid(@PathParam("hakuOid") String hakuOid) {
@@ -38,6 +41,7 @@ public class SijoitteluResource {
     }
 
     @GET
+    @JsonView(JsonViews.Basic.class)
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/{hakuOid}/sijoitteluajo")
     public List<SijoitteluAjo> getSijoitteluajoByHakuOid(@PathParam("hakuOid") String hakuOid,
@@ -60,6 +64,7 @@ public class SijoitteluResource {
      * @return
      */
     @GET
+    @JsonView(JsonViews.Basic.class)
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/{hakuOid}/sijoitteluajo/{time}")
     public SijoitteluAjo getSijoitteluajoByTimestamp(@PathParam("hakuOid") String hakuOid,

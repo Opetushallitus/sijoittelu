@@ -1,0 +1,43 @@
+package fi.vm.sade.sijoittelu.resource;
+
+import fi.vm.sade.sijoittelu.dao.DAO;
+import fi.vm.sade.sijoittelu.dao.exception.SijoitteluEntityNotFoundException;
+import fi.vm.sade.sijoittelu.domain.JsonViews;
+import fi.vm.sade.sijoittelu.domain.SijoitteluAjo;
+import org.codehaus.jackson.map.annotate.JsonView;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import javax.ws.rs.*;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+
+/**
+ * User: wuoti
+ * Date: 29.4.2013
+ * Time: 15.34
+ */
+@Path("/sijoitteluajo")
+@Component
+public class SijoitteluajoResource {
+
+    @Autowired
+    private DAO dao;
+
+    @GET
+    @JsonView(JsonViews.Basic.class)
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("/{sijoitteluajoId}")
+    public SijoitteluAjo getSijoitteluajo(@PathParam("sijoitteluajoId") Long sijoitteluajoId) {
+        try {
+            return dao.getSijoitteluajo(sijoitteluajoId);
+        } catch (SijoitteluEntityNotFoundException e) {
+            throw new WebApplicationException(e, Response.Status.NOT_FOUND);
+        }
+    }
+
+//    @GET
+//    @JsonView(JsonViews.Basic.class)
+//    @Produces(MediaType.APPLICATION_JSON)
+//    @Path("/{sijoitteluajoId}/{hakukohdeOid")
+}
