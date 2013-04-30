@@ -66,12 +66,12 @@ public class DAOImpl implements DAO {
 
         Sijoittelu sijoittelu = query.get();
 
-        if(sijoittelu == null) {
+        if (sijoittelu == null) {
             throw new SijoitteluEntityNotFoundException("No sijoittelu found with haku OID " + hakuOid);
         }
 
         List<ObjectId> saIds = new ArrayList<ObjectId>();
-        for(SijoitteluAjo ajo:  sijoittelu.getSijoitteluajot()) {
+        for (SijoitteluAjo ajo : sijoittelu.getSijoitteluajot()) {
             saIds.add(ajo.getId());
         }
 
@@ -100,6 +100,22 @@ public class DAOImpl implements DAO {
         query.field("startMils").lessThanOrEq(timestamp);
         query.order("-endMils");
         query.limit(1);
+        return query.get();
+    }
+
+    @Override
+    public Hakukohde getHakukohdeBySijoitteluajo(Long sijoitteluajoId, String hakukohdeOid) {
+        SijoitteluAjo sijoitteluajo = getSijoitteluajo(sijoitteluajoId);
+
+        Query<Hakukohde> query = morphiaDS.createQuery(Hakukohde.class);
+
+        List<Object> keys = new ArrayList<Object>();
+        for (HakukohdeItem hki : sijoitteluajo.getHakukohteet()) {
+            keys.add(morphiaDS.getKey(hki.getHakukohde()).getId());
+        }
+
+        query.field("id").hasAnyOf(keys);
+        query.field("oid").equal(hakukohdeOid);
         return query.get();
     }
 

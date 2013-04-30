@@ -1,7 +1,7 @@
 package fi.vm.sade.sijoittelu.domain;
 
 import com.google.code.morphia.annotations.Embedded;
-import com.google.code.morphia.annotations.Transient;
+import org.codehaus.jackson.map.annotate.JsonView;
 
 /**
  * 
@@ -11,17 +11,22 @@ import com.google.code.morphia.annotations.Transient;
 @Embedded
 public class Hakemus {
 
+    @JsonView(JsonViews.Basic.class)
     private String hakijaOid;
 
     /**
      * defaulttina tosi epakorkea
      */
+    @JsonView(JsonViews.Basic.class)
     private Integer prioriteetti;
 
+    @JsonView(JsonViews.Basic.class)
     private Integer jonosija;
-    
+
+    @JsonView(JsonViews.Basic.class)
     private Integer tasasijaJonosija;
 
+    @JsonView(JsonViews.Basic.class)
     private HakemuksenTila tila; 
 
 
@@ -65,4 +70,14 @@ public class Hakemus {
         this.tasasijaJonosija = tasasijaJonosija;
     }
 
+    @Override
+    public String toString() {
+        return "Hakemus{" +
+                "hakijaOid='" + hakijaOid + '\'' +
+                ", prioriteetti=" + prioriteetti +
+                ", jonosija=" + jonosija +
+                ", tasasijaJonosija=" + tasasijaJonosija +
+                ", tila=" + tila +
+                '}';
+    }
 }

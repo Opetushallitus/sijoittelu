@@ -29,4 +29,6 @@ public interface DAO {
     SijoitteluAjo getLatestSijoitteluajoByHakuOid(String hakuOid);
 
     SijoitteluAjo getSijoitteluajoByHakuOidAndTimestamp(String hakuOid, Long timestamp);
+
+    Hakukohde getHakukohdeBySijoitteluajo(Long sijoitteluajoId, String hakukohdeOid);
 }

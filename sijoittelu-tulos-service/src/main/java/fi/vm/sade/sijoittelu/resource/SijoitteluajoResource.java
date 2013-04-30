@@ -2,6 +2,7 @@ package fi.vm.sade.sijoittelu.resource;
 
 import fi.vm.sade.sijoittelu.dao.DAO;
 import fi.vm.sade.sijoittelu.dao.exception.SijoitteluEntityNotFoundException;
+import fi.vm.sade.sijoittelu.domain.Hakukohde;
 import fi.vm.sade.sijoittelu.domain.JsonViews;
 import fi.vm.sade.sijoittelu.domain.SijoitteluAjo;
 import org.codehaus.jackson.map.annotate.JsonView;
@@ -36,8 +37,21 @@ public class SijoitteluajoResource {
         }
     }
 
-//    @GET
-//    @JsonView(JsonViews.Basic.class)
-//    @Produces(MediaType.APPLICATION_JSON)
-//    @Path("/{sijoitteluajoId}/{hakukohdeOid")
+    @GET
+    @JsonView(JsonViews.Basic.class)
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("/{sijoitteluajoId}/{hakukohdeOid")
+    public Hakukohde getHakukohdeBySijoitteluajo(@PathParam("sijoitteluajoId") Long sijoitteluajoId,
+                                                 @PathParam("hakukohdeOid") String hakukohdeOid) {
+        try {
+            Hakukohde hakukohde = dao.getHakukohdeBySijoitteluajo(sijoitteluajoId, hakukohdeOid);
+            if (hakukohde == null) {
+                throw new SijoitteluEntityNotFoundException("No hakukohde found for sijoitteluajo " + sijoitteluajoId
+                        + " with and hakukohde OID " + hakukohdeOid);
+            }
+            return hakukohde;
+        } catch (SijoitteluEntityNotFoundException e) {
+            throw new WebApplicationException(e, Response.Status.NOT_FOUND);
+        }
+    }
 }

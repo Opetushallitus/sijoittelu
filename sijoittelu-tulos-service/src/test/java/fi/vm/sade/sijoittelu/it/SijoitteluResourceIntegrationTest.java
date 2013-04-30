@@ -85,5 +85,4 @@ public class SijoitteluResourceIntegrationTest {
         List<SijoitteluAjo> fromJson = mapper.readValue(json, new TypeReference<List<SijoitteluAjo>>() {
         });
     }
-
 }

@@ -1,9 +1,10 @@
 package fi.vm.sade.sijoittelu.domain;
 
+import com.google.code.morphia.annotations.Embedded;
+import org.codehaus.jackson.map.annotate.JsonView;
+
 import java.util.ArrayList;
 import java.util.List;
-
-import com.google.code.morphia.annotations.Embedded;
 
 /**
  * 
@@ -12,15 +13,20 @@ import com.google.code.morphia.annotations.Embedded;
  */
 @Embedded
 public class Hakijaryhma {
-    
+
+    @JsonView(JsonViews.Basic.class)
     private Integer prioriteetti;
-    
+
+    @JsonView(JsonViews.Basic.class)
     private int paikat;
-    
+
+    @JsonView(JsonViews.Basic.class)
     private String oid;
-    
+
+    @JsonView(JsonViews.Basic.class)
     private String nimi;
-     
+
+    @JsonView(JsonViews.Basic.class)
     private List<String> hakijaOid = new ArrayList<String>();
 
     public List<String> getHakijaOid() {
@@ -59,5 +65,14 @@ public class Hakijaryhma {
         this.prioriteetti = prioriteetti;
     }
 
-    
+    @Override
+    public String toString() {
+        return "Hakijaryhma{" +
+                "prioriteetti=" + prioriteetti +
+                ", paikat=" + paikat +
+                ", oid='" + oid + '\'' +
+                ", nimi='" + nimi + '\'' +
+                ", hakijaOid=" + hakijaOid +
+                '}';
+    }
 }

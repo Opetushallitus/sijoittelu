@@ -1,12 +1,12 @@
 package fi.vm.sade.sijoittelu.domain;
 
-import java.util.ArrayList;
-
-import org.bson.types.ObjectId;
-
 import com.google.code.morphia.annotations.Embedded;
 import com.google.code.morphia.annotations.Entity;
 import com.google.code.morphia.annotations.Id;
+import org.bson.types.ObjectId;
+import org.codehaus.jackson.map.annotate.JsonView;
+
+import java.util.ArrayList;
 
 /**
  * 
@@ -20,14 +20,18 @@ public class Hakukohde {
     @Id
     private ObjectId id;
 
+    @JsonView(JsonViews.Basic.class)
     private String oid;
 
+    @JsonView(JsonViews.Basic.class)
     private HakukohdeTila tila;
 
     @Embedded
+    @JsonView(JsonViews.Basic.class)
     private ArrayList<Valintatapajono> valintatapajonot = new ArrayList<Valintatapajono>();
     
     @Embedded
+    @JsonView(JsonViews.Basic.class)
     private ArrayList<Hakijaryhma> hakijaryhmat = new ArrayList<Hakijaryhma>();
 
     public String getOid() {
@@ -52,5 +56,16 @@ public class Hakukohde {
 
     public ArrayList<Hakijaryhma> getHakijaryhmat() {
         return hakijaryhmat;
+    }
+
+    @Override
+    public String toString() {
+        return "Hakukohde{" +
+                "id=" + id +
+                ", oid='" + oid + '\'' +
+                ", tila=" + tila +
+                ", valintatapajonot=" + valintatapajonot +
+                ", hakijaryhmat=" + hakijaryhmat +
+                '}';
     }
 }

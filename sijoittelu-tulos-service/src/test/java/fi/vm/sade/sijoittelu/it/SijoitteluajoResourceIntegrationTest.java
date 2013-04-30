@@ -1,6 +1,7 @@
 package fi.vm.sade.sijoittelu.it;
 
 import com.google.code.morphia.Datastore;
+import fi.vm.sade.sijoittelu.domain.Hakukohde;
 import fi.vm.sade.sijoittelu.domain.JsonViews;
 import fi.vm.sade.sijoittelu.domain.SijoitteluAjo;
 import fi.vm.sade.sijoittelu.resource.ObjectMapperProvider;
@@ -52,5 +53,13 @@ public class SijoitteluajoResourceIntegrationTest {
         SijoitteluAjo haettu = sijoitteluajoResource.getSijoitteluajo(TestDataGenerator.SIJOITTELU_AJO_ID_1);
         String json = mapper.writerWithView(JsonViews.Basic.class).writeValueAsString(haettu);
         mapper.readValue(json, SijoitteluAjo.class);
+    }
+
+    @Test
+    public void testGetHakukohdeBySijoitteluajo() throws IOException {
+        Hakukohde haettu = sijoitteluajoResource
+                .getHakukohdeBySijoitteluajo(TestDataGenerator.SIJOITTELU_AJO_ID_1, TestDataGenerator.HAKUKOHDE_OID_1);
+        String json = mapper.writerWithView(JsonViews.Basic.class).writeValueAsString(haettu);
+        mapper.readValue(json, Hakukohde.class);
     }
 }
