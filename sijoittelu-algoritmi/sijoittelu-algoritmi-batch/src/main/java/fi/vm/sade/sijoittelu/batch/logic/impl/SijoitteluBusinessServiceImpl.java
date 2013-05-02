@@ -3,10 +3,10 @@ package fi.vm.sade.sijoittelu.batch.logic.impl;
 import java.util.Date;
 import java.util.List;
 
+import fi.vm.sade.service.valintatiedot.schema.HakukohdeTyyppi;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import fi.vm.sade.service.sijoittelu.schema.HakukohdeTyyppi;
 import fi.vm.sade.service.sijoittelu.types.SijoitteleTyyppi;
 import fi.vm.sade.sijoittelu.batch.dao.Dao;
 import fi.vm.sade.sijoittelu.batch.logic.SijoitteluBusinessService;
