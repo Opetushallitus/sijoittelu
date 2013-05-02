@@ -40,7 +40,7 @@ public class SijoitteluajoResource {
     @GET
     @JsonView(JsonViews.Basic.class)
     @Produces(MediaType.APPLICATION_JSON)
-    @Path("/{sijoitteluajoId}/{hakukohdeOid")
+    @Path("/{sijoitteluajoId}/{hakukohdeOid}")
     public Hakukohde getHakukohdeBySijoitteluajo(@PathParam("sijoitteluajoId") Long sijoitteluajoId,
                                                  @PathParam("hakukohdeOid") String hakukohdeOid) {
         try {
