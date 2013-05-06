@@ -4,6 +4,7 @@ package fi.vm.sade.sijoittelu.batch.logic.impl;
 import fi.vm.sade.service.sijoittelu.SijoitteluService;
 import fi.vm.sade.service.sijoittelu.schema.TarjontaTyyppi;
 import fi.vm.sade.service.sijoittelu.types.SijoitteleTyyppi;
+import fi.vm.sade.sijoittelu.dao.Dao;
 import fi.vm.sade.sijoittelu.domain.*;
 import fi.vm.sade.tarjonta.service.types.HakuTyyppi;
 import fi.vm.sade.tulos.service.types.tulos.SijoitteluajoTyyppi;
@@ -16,7 +17,6 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import fi.vm.sade.sijoittelu.batch.dao.Dao;
 import fi.vm.sade.sijoittelu.batch.logic.impl.itutil.FlapdoodleMongoDbTest;
 
 /**
