@@ -1,16 +1,14 @@
-package fi.vm.sade.sijoittelu.batch.dao.impl;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Repository;
+package fi.vm.sade.sijoittelu.dao.impl;
 
 import com.google.code.morphia.Datastore;
 import com.google.code.morphia.query.Query;
-
-import fi.vm.sade.sijoittelu.batch.dao.Dao;
+import fi.vm.sade.sijoittelu.dao.Dao;
 import fi.vm.sade.sijoittelu.domain.Hakukohde;
 import fi.vm.sade.sijoittelu.domain.HakukohdeItem;
 import fi.vm.sade.sijoittelu.domain.Sijoittelu;
 import fi.vm.sade.sijoittelu.domain.SijoitteluAjo;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
 
 /**
  * 

@@ -1,4 +1,4 @@
-package fi.vm.sade.sijoittelu.batch.dao;
+package fi.vm.sade.sijoittelu.dao;
 
 import fi.vm.sade.sijoittelu.domain.Sijoittelu;
 import fi.vm.sade.sijoittelu.domain.SijoitteluAjo;

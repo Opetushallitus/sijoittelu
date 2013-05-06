@@ -7,7 +7,7 @@
 
     
     <context:annotation-config />
-    <context:component-scan base-package="fi.vm.sade.sijoittelu.batch" />
+    <context:component-scan base-package="fi.vm.sade.sijoittelu" />
                                          
     <!-- Database -->
 	<bean id="mongo" class="com.mongodb.Mongo" scope="singleton">
