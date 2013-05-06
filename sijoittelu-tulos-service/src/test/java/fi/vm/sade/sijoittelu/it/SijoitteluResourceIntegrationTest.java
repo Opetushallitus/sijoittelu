@@ -4,8 +4,8 @@ import com.google.code.morphia.Datastore;
 import fi.vm.sade.sijoittelu.domain.JsonViews;
 import fi.vm.sade.sijoittelu.domain.Sijoittelu;
 import fi.vm.sade.sijoittelu.domain.SijoitteluAjo;
-import fi.vm.sade.sijoittelu.resource.ObjectMapperProvider;
-import fi.vm.sade.sijoittelu.resource.SijoitteluResource;
+import fi.vm.sade.sijoittelu.tulos.resource.ObjectMapperProvider;
+import fi.vm.sade.sijoittelu.tulos.resource.SijoitteluResource;
 import fi.vm.sade.sijoittelu.util.DropMongoDbTestExecutionListener;
 import fi.vm.sade.sijoittelu.util.TestDataGenerator;
 import org.codehaus.jackson.map.ObjectMapper;
@@ -61,7 +61,7 @@ public class SijoitteluResourceIntegrationTest {
 
         assertEquals(sijoittelu.getCreated(), fromJson.getCreated());
         assertEquals(sijoittelu.getSijoitteluId(), fromJson.getSijoitteluId());
-        assertEquals(sijoittelu.getHaku().getOid(), fromJson.getHaku().getOid());
+        assertEquals(sijoittelu.getHakuOid(), fromJson.getHakuOid());
     }
 
     @Test

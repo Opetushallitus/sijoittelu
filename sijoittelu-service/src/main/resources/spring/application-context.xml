@@ -24,10 +24,13 @@
         </property>
     </bean>
 
-    <import resource="application-context-db.xml" />
-    <import resource="application-context-service.xml" />
-    <import resource="application-context-tulos.xml" />
-    <import resource="application-context-ws.xml" />
+    <import resource="context/application-context-db.xml" />
+    <import resource="context/application-context-service.xml" />
+    <import resource="context/application-context-tulos.xml" />
+    <import resource="context/application-context-ws.xml" />
+    <import resource="context/application-context-mongo.xml" />
+
+
 	<import resource="application-context-tulos.xml" /> <!-- tulee tulos projektilta jarrissa -->
 
 </beans>

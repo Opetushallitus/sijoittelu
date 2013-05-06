@@ -1,7 +1,8 @@
 package fi.vm.sade.sijoittelu.dao;
 
 import com.google.code.morphia.Datastore;
-import fi.vm.sade.sijoittelu.dao.exception.SijoitteluEntityNotFoundException;
+import fi.vm.sade.sijoittelu.tulos.dao.DAO;
+import fi.vm.sade.sijoittelu.tulos.dao.exception.SijoitteluEntityNotFoundException;
 import fi.vm.sade.sijoittelu.domain.Hakukohde;
 import fi.vm.sade.sijoittelu.domain.Sijoittelu;
 import fi.vm.sade.sijoittelu.domain.SijoitteluAjo;
