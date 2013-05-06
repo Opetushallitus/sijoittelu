@@ -8,14 +8,14 @@
        ">
 
     <context:annotation-config/>
-    <context:component-scan base-package="fi.vm.sade.sijoittelu"/>
+    <context:component-scan base-package="fi.vm.sade.sijoittelu.tulos"/>
 
     <context:property-placeholder
             location="classpath:sijoittelu-tulos-service.properties, file:///${user.home:''}/oph-configuration/common.properties, file:///${user.home:''}/oph-configuration/sijoittelu-tulos-service.properties"
             ignore-resource-not-found="true"/>
 
-    <import resource="context/application-context-aspect.xml" />
-    <import resource="context/application-context-converter.xml" />
-    <import resource="context/application-context-mongo.xml" />
-    <import resource="context/application-context-ws.xml" />
+    <import resource="context/application-context-tulos-aspect.xml" />
+    <import resource="context/application-context-tulos-converter.xml" />
+    <import resource="context/application-context-tulos-mongo.xml" />
+    <import resource="context/application-context-tulos-ws.xml" />
 </beans>

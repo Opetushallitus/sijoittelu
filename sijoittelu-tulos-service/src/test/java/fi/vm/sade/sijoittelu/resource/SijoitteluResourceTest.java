@@ -1,8 +1,10 @@
 package fi.vm.sade.sijoittelu.resource;
 
-import fi.vm.sade.sijoittelu.dao.DAO;
-import fi.vm.sade.sijoittelu.dao.exception.SijoitteluEntityNotFoundException;
+import fi.vm.sade.sijoittelu.tulos.dao.DAO;
+import fi.vm.sade.sijoittelu.tulos.dao.exception.SijoitteluEntityNotFoundException;
 import fi.vm.sade.sijoittelu.domain.*;
+import fi.vm.sade.sijoittelu.tulos.resource.ObjectMapperProvider;
+import fi.vm.sade.sijoittelu.tulos.resource.SijoitteluResource;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.type.TypeReference;
 import org.junit.Before;
