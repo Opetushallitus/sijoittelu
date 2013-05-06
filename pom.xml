@@ -17,15 +17,15 @@
     </parent>
 
     <modules>
-        <module>sijoittelu-algoritmi</module>
         <module>sijoittelu-tulos-api</module>
-        <module>sijoittelu-tulos-service</module>
-        <module>sijoittelu-service</module>
         <module>sijoittelu-algoritmi-api</module>
+
         <module>sijoittelu-algoritmi-domain</module>
         <module>sijoittelu-algoritmi-batch</module>
-        <!--
-        <module>sijoittelu-prosessi</module> -->
+
+        <module>sijoittelu-tulos-service</module>
+        <module>sijoittelu-service</module>
+
    </modules>
     <repositories>
         <repository>
