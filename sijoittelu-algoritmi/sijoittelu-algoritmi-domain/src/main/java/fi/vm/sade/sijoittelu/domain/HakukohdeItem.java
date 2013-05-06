@@ -6,8 +6,10 @@ import com.google.code.morphia.annotations.Reference;
 import org.bson.types.ObjectId;
 import org.codehaus.jackson.map.annotate.JsonView;
 
+import java.io.Serializable;
+
 @Embedded
-public class HakukohdeItem {
+public class HakukohdeItem implements Serializable {
 
     @SuppressWarnings("unused")
     @Id

@@ -6,6 +6,8 @@ import fi.vm.sade.sijoittelu.domain.JsonViews;
 import fi.vm.sade.sijoittelu.domain.Sijoittelu;
 import fi.vm.sade.sijoittelu.domain.SijoitteluAjo;
 import org.codehaus.jackson.map.annotate.JsonView;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -15,6 +17,7 @@ import javax.ws.rs.core.Response;
 import java.util.Arrays;
 import java.util.List;
 
+
 /**
  * User: wuoti
  * Date: 26.4.2013
@@ -23,6 +26,10 @@ import java.util.List;
 @Path("/sijoittelu")
 @Component
 public class SijoitteluResource {
+
+
+    private final static Logger LOGGER = LoggerFactory.getLogger(SijoitteluResource.class);
+
 
     @Autowired
     private DAO dao;
@@ -59,6 +66,7 @@ public class SijoitteluResource {
 
     /**
      * Palauttaa sijoitteluajon, jonka ajoajankohta osuu lähimmäksi annettua timestamp-parametria
+     *
      * @param hakuOid
      * @param timestamp
      * @return

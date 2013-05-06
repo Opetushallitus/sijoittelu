@@ -3,13 +3,15 @@ package fi.vm.sade.sijoittelu.domain;
 import com.google.code.morphia.annotations.Embedded;
 import org.codehaus.jackson.map.annotate.JsonView;
 
+import java.io.Serializable;
+
 /**
  * 
  * @author Kari Kammonen
  * 
  */
 @Embedded
-public class Hakemus {
+public class Hakemus implements Serializable {
 
     @JsonView(JsonViews.Basic.class)
     private String hakijaOid;

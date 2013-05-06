@@ -3,8 +3,10 @@ package fi.vm.sade.sijoittelu.domain;
 import com.google.code.morphia.annotations.Embedded;
 import org.codehaus.jackson.map.annotate.JsonView;
 
+import java.io.Serializable;
+
 @Embedded
-public class Haku {
+public class Haku implements Serializable {
 
     @JsonView(JsonViews.Basic.class)
     private String oid;
