@@ -61,9 +61,9 @@ public class SijoitteluResourceTest {
         toReturn.setSijoittele(true);
         toReturn.setSijoitteluId(1L);
 
-        Haku haku = new Haku();
-        haku.setOid(hakuOidExists);
-        toReturn.setHaku(haku);
+       // Haku haku = new Haku();
+        toReturn.setHakuOid(hakuOidExists);
+       // toReturn.setHaku(haku);
 
         Mockito.when(daoMock.getSijoitteluByHakuOid(hakuOidExists)).thenReturn(toReturn);
 
@@ -73,7 +73,7 @@ public class SijoitteluResourceTest {
 
         assertEquals(sijoittelu.getCreated(), fromJson.getCreated());
         assertEquals(sijoittelu.getSijoitteluId(), fromJson.getSijoitteluId());
-        assertEquals(sijoittelu.getHaku().getOid(), fromJson.getHaku().getOid());
+        assertEquals(sijoittelu.getHakuOid(), fromJson.getHakuOid());
     }
 
     @Test(expected = WebApplicationException.class)

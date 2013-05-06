@@ -61,7 +61,7 @@ public class SijoitteluResourceIntegrationTest {
 
         assertEquals(sijoittelu.getCreated(), fromJson.getCreated());
         assertEquals(sijoittelu.getSijoitteluId(), fromJson.getSijoitteluId());
-        assertEquals(sijoittelu.getHaku().getOid(), fromJson.getHaku().getOid());
+        assertEquals(sijoittelu.getHakuOid(), fromJson.getHakuOid());
     }
 
     @Test

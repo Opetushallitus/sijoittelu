@@ -13,7 +13,7 @@ public class HakuToHakuTyyppiConverter implements Converter<Sijoittelu, HakuTyyp
         HakuTyyppi converted = new HakuTyyppi();
         // FIXME: Pitäisikö tunniste-kenttää edes olla?
 //        converted.setHaunTunniste(source.getSijoitteluId());
-        converted.setOid(source.getHaku().getOid());
+        converted.setOid(source.getHakuOid());
  
         for (SijoitteluAjo sa : source.getSijoitteluajot()) {
             converted.getSijoitteluajoIds().add(sa.getSijoitteluajoId());

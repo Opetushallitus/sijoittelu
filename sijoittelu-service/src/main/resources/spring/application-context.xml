@@ -28,6 +28,9 @@
     <import resource="application-context-service.xml" />
     <import resource="application-context-tulos.xml" />
     <import resource="application-context-ws.xml" />
+    <import resource="application-context-mongo.xml" />
+
+
 	<import resource="application-context-tulos.xml" /> <!-- tulee tulos projektilta jarrissa -->
 
 </beans>

@@ -16,8 +16,6 @@
     </parent>
 
     <modules>
-        <module>sijoittelu-algoritmi-api</module>
-        <module>sijoittelu-algoritmi-domain</module>
-        <module>sijoittelu-algoritmi-batch</module>
+
     </modules>
 </project>

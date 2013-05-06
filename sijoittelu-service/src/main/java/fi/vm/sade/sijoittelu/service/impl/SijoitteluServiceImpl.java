@@ -2,8 +2,9 @@ package fi.vm.sade.sijoittelu.service.impl;
 
 import fi.vm.sade.service.sijoittelu.SijoitteluService;
 import fi.vm.sade.service.sijoittelu.types.SijoitteleTyyppi;
+import fi.vm.sade.sijoittelu.service.business.SijoitteluBusinessService;
 import org.springframework.beans.factory.annotation.Autowired;
-import fi.vm.sade.sijoittelu.batch.logic.SijoitteluBusinessService;
+import fi.vm.sade.sijoittelu.service.business.impl.SijoitteluBusinessService;
 
 import javax.jws.WebParam;
 

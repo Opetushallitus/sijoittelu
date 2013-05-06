@@ -37,8 +37,7 @@ public class TestDataGenerator {
 
     public void generateTestData() {
         Sijoittelu sijoittelu = new Sijoittelu();
-        sijoittelu.setHaku(new Haku());
-        sijoittelu.getHaku().setOid(HAKU_OID);
+        sijoittelu.setHakuOid(HAKU_OID);
         sijoittelu.setSijoitteluId(SIJOITTELU_ID_1);
         sijoittelu.getSijoitteluajot().addAll(createSijoitteluajos());
         for (SijoitteluAjo s : sijoittelu.getSijoitteluajot()) {
