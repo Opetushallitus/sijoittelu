@@ -6,6 +6,8 @@ import fi.vm.sade.sijoittelu.domain.Hakukohde;
 import fi.vm.sade.sijoittelu.domain.JsonViews;
 import fi.vm.sade.sijoittelu.domain.SijoitteluAjo;
 import org.codehaus.jackson.map.annotate.JsonView;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -21,6 +23,9 @@ import javax.ws.rs.core.Response;
 @Path("/sijoitteluajo")
 @Component
 public class SijoitteluajoResource {
+
+    private final static Logger LOGGER = LoggerFactory.getLogger(SijoitteluajoResource.class);
+
 
     @Autowired
     private DAO dao;

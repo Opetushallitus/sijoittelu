@@ -7,6 +7,7 @@ import com.google.code.morphia.annotations.Reference;
 import org.bson.types.ObjectId;
 import org.codehaus.jackson.map.annotate.JsonView;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -15,7 +16,7 @@ import java.util.List;
  * @author Kari Kammonen
  */
 @Entity("Sijoittelu")
-public class Sijoittelu {
+public class Sijoittelu implements Serializable {
 
     @SuppressWarnings("unused")
     @Id

@@ -6,6 +6,7 @@ import com.google.code.morphia.annotations.Id;
 import org.bson.types.ObjectId;
 import org.codehaus.jackson.map.annotate.JsonView;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
@@ -14,7 +15,7 @@ import java.util.ArrayList;
  * 
  */
 @Entity("Hakukohde")
-public class Hakukohde {
+public class Hakukohde implements Serializable {
 
     @SuppressWarnings("unused")
     @Id

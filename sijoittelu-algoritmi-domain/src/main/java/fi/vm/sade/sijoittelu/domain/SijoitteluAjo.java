@@ -6,6 +6,7 @@ import com.google.code.morphia.annotations.Id;
 import org.bson.types.ObjectId;
 import org.codehaus.jackson.map.annotate.JsonView;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,7 +16,7 @@ import java.util.List;
  * 
  */
 @Entity("SijoitteluAjo")
-public class SijoitteluAjo {
+public class SijoitteluAjo implements Serializable {
 
     @SuppressWarnings("unused")
     @Id

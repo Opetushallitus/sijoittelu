@@ -3,6 +3,7 @@ package fi.vm.sade.sijoittelu.domain;
 import com.google.code.morphia.annotations.Embedded;
 import org.codehaus.jackson.map.annotate.JsonView;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,7 +13,7 @@ import java.util.List;
  *
  */
 @Embedded
-public class Hakijaryhma {
+public class Hakijaryhma implements Serializable {
 
     @JsonView(JsonViews.Basic.class)
     private Integer prioriteetti;
