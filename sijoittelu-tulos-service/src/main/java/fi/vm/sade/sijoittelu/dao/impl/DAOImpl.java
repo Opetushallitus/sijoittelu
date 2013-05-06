@@ -45,7 +45,7 @@ public class DAOImpl implements DAO {
         Query<Sijoittelu> query = morphiaDS.createQuery(Sijoittelu.class);
         if (haeHautKriteerit != null) {
             if (haeHautKriteerit.getHakuOidLista() != null && !haeHautKriteerit.getHakuOidLista().isEmpty()) {
-                query.field("haku.oid").hasAnyOf(haeHautKriteerit.getHakuOidLista());
+                query.field("hakuOid").hasAnyOf(haeHautKriteerit.getHakuOidLista());
             }
         }
 
@@ -55,13 +55,13 @@ public class DAOImpl implements DAO {
     @Override
     public Sijoittelu getSijoitteluByHakuOid(String hakuOid) {
         Query<Sijoittelu> query = morphiaDS.createQuery(Sijoittelu.class);
-        query.field("haku.oid").equal(hakuOid);
+        query.field("hakuOid").equal(hakuOid);
         return query.get();
     }
 
     private Query<SijoitteluAjo> createSijoitteluajoByHakuOidQuery(String hakuOid) {
         Query<Sijoittelu> query = morphiaDS.createQuery(Sijoittelu.class);
-        query.field("haku.oid").equal(hakuOid);
+        query.field("hakuOid").equal(hakuOid);
         query.retrievedFields(true, "sijoitteluajot");
 
         Sijoittelu sijoittelu = query.get();

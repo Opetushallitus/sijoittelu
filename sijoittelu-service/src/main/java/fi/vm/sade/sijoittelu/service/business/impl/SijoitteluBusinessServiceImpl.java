@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
 
 import fi.vm.sade.service.sijoittelu.types.SijoitteleTyyppi;
 import fi.vm.sade.sijoittelu.batch.dao.Dao;
-import fi.vm.sade.sijoittelu.batch.logic.SijoitteluBusinessService;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoitteluAlgorithm;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoitteluAlgorithmFactory;
 import fi.vm.sade.sijoittelu.domain.Sijoittelu;
