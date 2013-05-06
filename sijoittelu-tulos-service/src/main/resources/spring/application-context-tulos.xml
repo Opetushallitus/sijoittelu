@@ -14,8 +14,8 @@
             location="classpath:sijoittelu-tulos-service.properties, file:///${user.home:''}/oph-configuration/common.properties, file:///${user.home:''}/oph-configuration/sijoittelu-tulos-service.properties"
             ignore-resource-not-found="true"/>
 
-    <import resource="application-context-tulos-aspect.xml" />
-    <import resource="application-context-tulos-converter.xml" />
-    <import resource="application-context-tulos-mongo.xml" />
-    <import resource="application-context-tulos-ws.xml" />
+    <import resource="context/application-context-tulos-aspect.xml" />
+    <import resource="context/application-context-tulos-converter.xml" />
+    <import resource="context/application-context-tulos-mongo.xml" />
+    <import resource="context/application-context-tulos-ws.xml" />
 </beans>
