@@ -17,10 +17,10 @@ import fi.vm.sade.sijoittelu.domain.SijoitteluAjo;
  * @author Kari Kammonen
  * 
  */
-@Repository()
+@Repository
 public class DaoImpl implements Dao {
 
-    @Autowired()
+    @Autowired
     private Datastore morphiaDS;
 
     @Override
