@@ -1,10 +1,10 @@
 package fi.vm.sade.sijoittelu.tulos.resource;
 
-import fi.vm.sade.sijoittelu.tulos.dao.DAO;
-import fi.vm.sade.sijoittelu.tulos.dao.exception.SijoitteluEntityNotFoundException;
 import fi.vm.sade.sijoittelu.domain.JsonViews;
 import fi.vm.sade.sijoittelu.domain.Sijoittelu;
 import fi.vm.sade.sijoittelu.domain.SijoitteluAjo;
+import fi.vm.sade.sijoittelu.tulos.dao.DAO;
+import fi.vm.sade.sijoittelu.tulos.dao.exception.SijoitteluEntityNotFoundException;
 import org.codehaus.jackson.map.annotate.JsonView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,6 +15,7 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 
@@ -60,7 +61,7 @@ public class SijoitteluResource {
                 return dao.getSijoitteluajoByHakuOid(hakuOid);
             }
         } catch (SijoitteluEntityNotFoundException e) {
-            throw new WebApplicationException(e, Response.Status.NOT_FOUND);
+            return Collections.EMPTY_LIST;
         }
     }
 

@@ -1,8 +1,11 @@
 package fi.vm.sade.sijoittelu.resource;
 
+import fi.vm.sade.sijoittelu.domain.HakukohdeItem;
+import fi.vm.sade.sijoittelu.domain.JsonViews;
+import fi.vm.sade.sijoittelu.domain.Sijoittelu;
+import fi.vm.sade.sijoittelu.domain.SijoitteluAjo;
 import fi.vm.sade.sijoittelu.tulos.dao.DAO;
 import fi.vm.sade.sijoittelu.tulos.dao.exception.SijoitteluEntityNotFoundException;
-import fi.vm.sade.sijoittelu.domain.*;
 import fi.vm.sade.sijoittelu.tulos.resource.ObjectMapperProvider;
 import fi.vm.sade.sijoittelu.tulos.resource.SijoitteluResource;
 import org.codehaus.jackson.map.ObjectMapper;
@@ -63,9 +66,9 @@ public class SijoitteluResourceTest {
         toReturn.setSijoittele(true);
         toReturn.setSijoitteluId(1L);
 
-       // Haku haku = new Haku();
+        // Haku haku = new Haku();
         toReturn.setHakuOid(hakuOidExists);
-       // toReturn.setHaku(haku);
+        // toReturn.setHaku(haku);
 
         Mockito.when(daoMock.getSijoitteluByHakuOid(hakuOidExists)).thenReturn(toReturn);
 
@@ -78,16 +81,11 @@ public class SijoitteluResourceTest {
         assertEquals(sijoittelu.getHakuOid(), fromJson.getHakuOid());
     }
 
-    @Test(expected = WebApplicationException.class)
+    @Test
     public void testGetSijoitteluajoByHakuOidNotExists() {
-        try {
-            final String hakuOidNotExists = "hakuoidNotExists";
-            Mockito.when(daoMock.getSijoitteluajoByHakuOid(hakuOidNotExists)).thenThrow(new SijoitteluEntityNotFoundException());
-            sijoitteluResource.getSijoitteluajoByHakuOid(hakuOidNotExists, false);
-        } catch (WebApplicationException e) {
-            assertEquals(Response.Status.NOT_FOUND.getStatusCode(), e.getResponse().getStatus());
-            throw e;
-        }
+        final String hakuOidNotExists = "hakuoidNotExists";
+        Mockito.when(daoMock.getSijoitteluajoByHakuOid(hakuOidNotExists)).thenThrow(new SijoitteluEntityNotFoundException());
+        assertEquals(0, sijoitteluResource.getSijoitteluajoByHakuOid(hakuOidNotExists, false).size());
     }
 
     @Test
