@@ -38,6 +38,22 @@ public class SijoitteluResource {
     @GET
     @JsonView(JsonViews.Basic.class)
     @Produces(MediaType.APPLICATION_JSON)
+    @Path("/")
+    public  List<Sijoittelu> getSijoittelu() {
+      List<Sijoittelu> sijoittelu = dao.getHakus(null);
+
+      //  if (sijoittelu == null) {
+      //      throw new WebApplicationException(Response.Status.NOT_FOUND);
+      //  }
+
+        return sijoittelu;
+    }
+
+
+
+    @GET
+    @JsonView(JsonViews.Basic.class)
+    @Produces(MediaType.APPLICATION_JSON)
     @Path("/{hakuOid}")
     public Sijoittelu getSijoitteluByHakuOid(@PathParam("hakuOid") String hakuOid) {
         Sijoittelu sijoittelu = dao.getSijoitteluByHakuOid(hakuOid);

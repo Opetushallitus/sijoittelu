@@ -118,6 +118,8 @@ public class DomainConverter {
         hakemus.setHakijaOid(hakijaTyyppi.getOid());
         hakemus.setJonosija(hakijaTyyppi.getJonosija());
         hakemus.setPrioriteetti(hakijaTyyppi.getPrioriteetti());
+
+
         if (hakijaTyyppi.getTila() == null || hakijaTyyppi.getTila().isEmpty()) {
             // kaikki aloittavat varalla oletuksena
             hakemus.setTila(HakemuksenTila.VARALLA);
