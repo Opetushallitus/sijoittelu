@@ -3,10 +3,7 @@ package fi.vm.sade.sijoittelu.batch.logic.impl.algorithm;
 
 import fi.vm.sade.service.sijoittelu.types.SijoitteleTyyppi;
 import fi.vm.sade.service.valintaperusteet.schema.TasasijasaantoTyyppi;
-import fi.vm.sade.service.valintatiedot.schema.HakijaTyyppi;
-import fi.vm.sade.service.valintatiedot.schema.HakukohdeTyyppi;
-import fi.vm.sade.service.valintatiedot.schema.ValinnanvaiheTyyppi;
-import fi.vm.sade.service.valintatiedot.schema.ValintatapajonoTyyppi;
+import fi.vm.sade.service.valintatiedot.schema.*;
 
 public class DomainBuilder {
 
@@ -52,14 +49,14 @@ public class DomainBuilder {
 
 		// lisää ensimmäiseen valintatapajonoon
 		ValintatapajonoTyyppi valintatapajonoTyyppi = hakukohdeTyyppi.getValinnanvaihe().get(0).getValintatapajono().get(0);
-		HakijaTyyppi hakijatyyppi = new HakijaTyyppi();
+
+        HakijaTyyppi hakijatyyppi = new HakijaTyyppi();
 		hakijatyyppi.setJonosija(-((int) pisteet));
 		hakijatyyppi.setPisteet(pisteet);
 		hakijatyyppi.setPrioriteetti(prioriteetti);
 		hakijatyyppi.setOid(hakijanro);
-		if (tila != null) {
-			hakijatyyppi.setTila(tila);
-		}
+        hakijatyyppi.setTila(HakemusTilaTyyppi.HYVAKSYTTAVISSA);
+
 
 		valintatapajonoTyyppi.getHakija().add(hakijatyyppi);
 	}

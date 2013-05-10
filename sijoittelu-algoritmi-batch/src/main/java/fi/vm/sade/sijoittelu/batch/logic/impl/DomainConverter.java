@@ -119,12 +119,11 @@ public class DomainConverter {
         hakemus.setJonosija(hakijaTyyppi.getJonosija());
         hakemus.setPrioriteetti(hakijaTyyppi.getPrioriteetti());
 
-
-        if (hakijaTyyppi.getTila() == null || hakijaTyyppi.getTila().isEmpty()) {
-            // kaikki aloittavat varalla oletuksena
+        if (hakijaTyyppi.getTila() != null && hakijaTyyppi.getTila() == HakemusTilaTyyppi.HYVAKSYTTAVISSA) {
+            // jos hyvaksyttavissa niin varalla, muuten hylatty
             hakemus.setTila(HakemuksenTila.VARALLA);
         } else {
-            hakemus.setTila(HakemuksenTila.valueOf(hakijaTyyppi.getTila()));
+            hakemus.setTila(HakemuksenTila.HYLATTY);
         }
 
         valintatapajono.getHakemukset().add(hakemus);
