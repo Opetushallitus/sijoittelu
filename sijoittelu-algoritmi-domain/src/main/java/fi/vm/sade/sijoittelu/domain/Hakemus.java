@@ -16,6 +16,9 @@ public class Hakemus implements Serializable {
     @JsonView(JsonViews.Basic.class)
     private String hakijaOid;
 
+    @JsonView(JsonViews.Basic.class)
+    private String hakemusOid;
+
     /**
      * defaulttina tosi epakorkea
      */
@@ -72,6 +75,14 @@ public class Hakemus implements Serializable {
         this.tasasijaJonosija = tasasijaJonosija;
     }
 
+    public String getHakemusOid() {
+        return hakemusOid;
+    }
+
+    public void setHakemusOid(String hakemusOid) {
+        this.hakemusOid = hakemusOid;
+    }
+
     @Override
     public String toString() {
         return "Hakemus{" +
@@ -82,4 +93,5 @@ public class Hakemus implements Serializable {
                 ", tila=" + tila +
                 '}';
     }
+
 }

@@ -116,6 +116,7 @@ public class DomainConverter {
     private static void addHakemus(HakijaTyyppi hakijaTyyppi, Valintatapajono valintatapajono) {
         Hakemus hakemus = new Hakemus();
         hakemus.setHakijaOid(hakijaTyyppi.getOid());
+        hakemus.setHakemusOid(hakijaTyyppi.getHakemusOid());
         hakemus.setJonosija(hakijaTyyppi.getJonosija());
         hakemus.setPrioriteetti(hakijaTyyppi.getPrioriteetti());
 
