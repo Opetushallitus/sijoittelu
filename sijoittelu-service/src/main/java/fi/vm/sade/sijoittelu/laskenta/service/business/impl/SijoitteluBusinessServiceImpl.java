@@ -5,6 +5,7 @@ import java.util.List;
 
 import fi.vm.sade.service.valintatiedot.schema.HakukohdeTyyppi;
 import fi.vm.sade.sijoittelu.batch.logic.impl.DomainConverter;
+import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.PrintHelper;
 import fi.vm.sade.sijoittelu.laskenta.dao.Dao;
 import fi.vm.sade.sijoittelu.laskenta.service.business.SijoitteluBusinessService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +34,11 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
     @Override
     public void sijoittele(SijoitteleTyyppi sijoitteluTyyppi) {
 
+
+
+
+
+
         String hakuOid = sijoitteluTyyppi.getTarjonta().getHaku().getOid();
 
         Sijoittelu sijoittelu = getOrCreateSijoittelu(sijoitteluTyyppi.getTarjonta().getHaku().getOid());
@@ -49,10 +55,14 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
         sijoittelu.getSijoitteluajot().add(sijoitteluAjo);
         dao.persistSijoittelu(sijoittelu);
 
-        if (sijoittelu.isSijoittele()) {
+      //  if (sijoittelu.isSijoittele()
+      // ) {
             SijoitteluAlgorithm sijoitteluAlgorithm = algorithmFactory.constructAlgorithm(sijoitteluAjo);
             sijoitteluAlgorithm.start();
-        }
+         System.out.println(   PrintHelper.tulostaSijoittelu(sijoitteluAlgorithm));
+      //  }
+
+
         sijoitteluAjo.setEndMils(System.currentTimeMillis());
 
         // and after
