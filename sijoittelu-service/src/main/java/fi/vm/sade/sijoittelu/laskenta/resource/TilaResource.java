@@ -1,5 +1,7 @@
-package fi.vm.sade.sijoittelu.tulos.resource;
+package fi.vm.sade.sijoittelu.laskenta.resource;
 
+import fi.vm.sade.sijoittelu.domain.ValintatuloksenTila;
+import fi.vm.sade.sijoittelu.laskenta.service.business.SijoitteluBusinessService;
 import fi.vm.sade.sijoittelu.tulos.dao.DAO;
 import fi.vm.sade.sijoittelu.tulos.dao.exception.SijoitteluEntityNotFoundException;
 import fi.vm.sade.sijoittelu.domain.Hakukohde;
@@ -16,39 +18,30 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 /**
- * User: wuoti
- * Date: 29.4.2013
- * Time: 15.34
+ * Created with IntelliJ IDEA.
+ * User: kkammone
+ * Date: 20.5.2013
+ * Time: 17:23
+ * To change this template use File | Settings | File Templates.
  */
-@Path("/sijoitteluajo")
+@Path("/hakemus")
 @Component
-public class SijoitteluajoResource {
-
-    private final static Logger LOGGER = LoggerFactory.getLogger(SijoitteluajoResource.class);
-
+public class TilaResource {
 
     @Autowired
-    private DAO dao;
+    private SijoitteluBusinessService sijoitteluBusinessService;
 
     @GET
     @JsonView(JsonViews.Basic.class)
     @Produces(MediaType.APPLICATION_JSON)
-    @Path("/{sijoitteluajoId}")
-    public SijoitteluAjo getSijoitteluajo(@PathParam("sijoitteluajoId") Long sijoitteluajoId) {
-        try {
-            return dao.getSijoitteluajo(sijoitteluajoId);
-        } catch (SijoitteluEntityNotFoundException e) {
-            throw new WebApplicationException(e, Response.Status.NOT_FOUND);
-        }
-    }
+    @Path("/{hakukohdeOid}/{valintatapajonoOid}/{hakemusOid}")
+    public boolean hakemus(@PathParam("sijoitteluajoId") Long sijoitteluajoId,
+                           @PathParam("hakukohdeOid") String hakukohdeOid,
+                           @PathParam("hakemusOid") String hakemusOid) {
 
-    @GET
-    @JsonView(JsonViews.Basic.class)
-    @Produces(MediaType.APPLICATION_JSON)
-    @Path("/{sijoitteluajoId}/{hakukohdeOid}")
-    public Hakukohde getHakukohdeBySijoitteluajo(@PathParam("sijoitteluajoId") Long sijoitteluajoId,
-                                                 @PathParam("hakukohdeOid") String hakukohdeOid) {
-        try {
+
+
+     /*   try {
             Hakukohde hakukohde = dao.getHakukohdeBySijoitteluajo(sijoitteluajoId, hakukohdeOid);
             if (hakukohde == null) {
                 throw new SijoitteluEntityNotFoundException("No hakukohde found for sijoitteluajo " + sijoitteluajoId
@@ -58,15 +51,22 @@ public class SijoitteluajoResource {
         } catch (SijoitteluEntityNotFoundException e) {
             throw new WebApplicationException(e, Response.Status.NOT_FOUND);
         }
+        */
+        return true;
     }
+
 
     @POST
     @JsonView(JsonViews.Basic.class)
     @Produces(MediaType.APPLICATION_JSON)
-    @Path("/{hakukohdeOid}/{valintatapajonoOid}")
-    public Hakukohde gg(@PathParam("sijoitteluajoId") Long sijoitteluajoId,
-                        @PathParam("hakukohdeOid") String hakukohdeOid) {
-        try {
+    @Path("/{hakukohdeOid}/{valintatapajonoOid}/{hakemusOid}/tila")
+    public boolean muutaHakemuksenTilaa(@PathParam("sijoitteluajoId") Long sijoitteluajoId,
+                                        @PathParam("hakukohdeOid") String hakukohdeOid,
+                                        @PathParam("hakemusOid") String hakemusOid,
+                                        ValintatuloksenTila tila) {
+
+        sijoitteluBusinessService.vaihdaHakemuksenTila(sijoitteluajoId,hakukohdeOid ,hakemusOid,tila );
+     /*   try {
             Hakukohde hakukohde = dao.getHakukohdeBySijoitteluajo(sijoitteluajoId, hakukohdeOid);
             if (hakukohde == null) {
                 throw new SijoitteluEntityNotFoundException("No hakukohde found for sijoitteluajo " + sijoitteluajoId
@@ -76,7 +76,12 @@ public class SijoitteluajoResource {
         } catch (SijoitteluEntityNotFoundException e) {
             throw new WebApplicationException(e, Response.Status.NOT_FOUND);
         }
+        */
+        return true;
     }
 
 
 }
+
+
+

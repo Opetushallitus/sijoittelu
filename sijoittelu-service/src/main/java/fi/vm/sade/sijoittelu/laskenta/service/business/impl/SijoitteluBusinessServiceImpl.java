@@ -6,6 +6,7 @@ import java.util.List;
 import fi.vm.sade.service.valintatiedot.schema.HakukohdeTyyppi;
 import fi.vm.sade.sijoittelu.batch.logic.impl.DomainConverter;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.PrintHelper;
+import fi.vm.sade.sijoittelu.domain.ValintatuloksenTila;
 import fi.vm.sade.sijoittelu.laskenta.dao.Dao;
 import fi.vm.sade.sijoittelu.laskenta.service.business.SijoitteluBusinessService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,11 +35,6 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
     @Override
     public void sijoittele(SijoitteleTyyppi sijoitteluTyyppi) {
 
-
-
-
-
-
         String hakuOid = sijoitteluTyyppi.getTarjonta().getHaku().getOid();
 
         Sijoittelu sijoittelu = getOrCreateSijoittelu(sijoitteluTyyppi.getTarjonta().getHaku().getOid());
@@ -59,7 +55,7 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
       // ) {
             SijoitteluAlgorithm sijoitteluAlgorithm = algorithmFactory.constructAlgorithm(sijoitteluAjo);
             sijoitteluAlgorithm.start();
-         System.out.println(   PrintHelper.tulostaSijoittelu(sijoitteluAlgorithm));
+    //     System.out.println(   PrintHelper.tulostaSijoittelu(sijoitteluAlgorithm));
       //  }
 
 
@@ -67,6 +63,11 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
 
         // and after
         dao.persistSijoitteluAjo(sijoitteluAjo);
+    }
+
+    @Override
+    public void vaihdaHakemuksenTila(Long sijoitteluajoId, String hakukohdeOid, String hakemusOid, ValintatuloksenTila tila) {
+        //To change body of implemented methods use File | Settings | File Templates.
     }
 
     private Sijoittelu getOrCreateSijoittelu(String hakuoid) {
@@ -79,5 +80,7 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
         }
         return sijoittelu;
     }
+
+
 
 }

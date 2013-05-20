@@ -56,35 +56,20 @@ public class DomainConverter {
     private static void addValintatapaJonos(HakukohdeTyyppi hakukohdeTyyppi, Hakukohde hakukohde) {
         for(ValinnanvaiheTyyppi v: hakukohdeTyyppi.getValinnanvaihe()) {
 
-
             for (ValintatapajonoTyyppi valintatapajonoTyyppi : v.getValintatapajono()) {
-                if(valintatapajonoTyyppi.isSiirretaanSijoitteluun()) {
-                    Valintatapajono valintatapajono = new Valintatapajono();
-                    valintatapajono.setOid(valintatapajonoTyyppi.getOid());
-                    valintatapajono.setPrioriteetti(valintatapajonoTyyppi.getPrioriteetti());
-                    valintatapajono.setAloituspaikat(valintatapajonoTyyppi.getAloituspaikat());
-			/*if (valintatapajonoTyyppi.getTila() != null) {
-				valintatapajono.setTila(ValintatapajonoTila.valueOf(valintatapajonoTyyppi.getTila().name()));
-			}*/
+                //  if(valintatapajonoTyyppi.isSiirretaanSijoitteluun()) {
+                Valintatapajono valintatapajono = new Valintatapajono();
+                valintatapajono.setOid(valintatapajonoTyyppi.getOid());
+                valintatapajono.setPrioriteetti(valintatapajonoTyyppi.getPrioriteetti());
+                valintatapajono.setAloituspaikat(valintatapajonoTyyppi.getAloituspaikat());
+                valintatapajono.setTasasijasaanto(Tasasijasaanto.valueOf(valintatapajonoTyyppi.getTasasijasaanto().toString()));
 
-			/*
-            for (SaantoTyyppi s : valintatapajonoTyyppi.getSaanto()) {
-				Saanto saanto = new Saanto();
-				saanto.setNimi(s.getNimi());
-				saanto.setTyyppi(s.getTyyppi());
-				saanto.getParameters().addAll(s.getParametri());
-				valintatapajono.getSaannot().add(saanto);
-			}
-*/
+                hakukohde.getValintatapajonot().add(valintatapajono);
 
-                    valintatapajono.setTasasijasaanto(Tasasijasaanto.valueOf(valintatapajonoTyyppi.getTasasijasaanto().toString()));
-
-                    hakukohde.getValintatapajonot().add(valintatapajono);
-
-                    for (HakijaTyyppi hakijaTyyppi : valintatapajonoTyyppi.getHakija()) {
-                        addHakemus(hakijaTyyppi, valintatapajono);
-                    }
+                for (HakijaTyyppi hakijaTyyppi : valintatapajonoTyyppi.getHakija()) {
+                    addHakemus(hakijaTyyppi, valintatapajono);
                 }
+                //     }
             }
         }
     }

@@ -57,9 +57,9 @@ public class SijoitteluResource {
     @Path("/{hakuOid}")
     public Sijoittelu getSijoitteluByHakuOid(@PathParam("hakuOid") String hakuOid) {
         Sijoittelu sijoittelu = dao.getSijoitteluByHakuOid(hakuOid);
-        if (sijoittelu == null) {
-            throw new WebApplicationException(Response.Status.NOT_FOUND);
-        }
+      //  if (sijoittelu == null) {
+     //       throw new WebApplicationException(Response.Status.NOT_FOUND);
+   //     }
 
         return sijoittelu;
     }

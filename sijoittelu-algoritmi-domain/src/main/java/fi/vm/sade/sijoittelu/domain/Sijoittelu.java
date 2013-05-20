@@ -41,6 +41,9 @@ public class Sijoittelu implements Serializable {
    // @JsonView(JsonViews.Basic.class)
    // private Haku haku;
 
+    @Reference(value = "Valintatulos", lazy = true)
+    private List<Valintatulos> valintatulokset = new ArrayList<Valintatulos>();
+
     @Reference(value = "SijoitteluAjo", lazy = true)
     private List<SijoitteluAjo> sijoitteluajot = new ArrayList<SijoitteluAjo>();
 
@@ -86,5 +89,13 @@ public class Sijoittelu implements Serializable {
 
     public void setHakuOid(String hakuOid) {
         this.hakuOid = hakuOid;
+    }
+
+    public List<Valintatulos> getValintatulokset() {
+        return valintatulokset;
+    }
+
+    public void setValintatulokset(List<Valintatulos> valintatulokset) {
+        this.valintatulokset = valintatulokset;
     }
 }
