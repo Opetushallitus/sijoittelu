@@ -47,7 +47,7 @@ public class TilaResource {
     @POST
     @JsonView(JsonViews.Basic.class)
     @Produces(MediaType.APPLICATION_JSON)
-    @Path("/{hakukohdeOid}/{valintatapajonoOid}/{hakemusOid}/tila")
+    @Path("/{hakukohdeOid}/{valintatapajonoOid}/{hakemusOid}")
     public boolean muutaHakemuksenTilaa(@PathParam("hakukohdeOid") String hakukohdeOid,
                                         @PathParam("valintatapajonoOid") String valintatapajonoOid,
                                         @PathParam("hakemusOid") String hakemusOid,
