@@ -51,8 +51,9 @@ public class TilaResource {
     public boolean muutaHakemuksenTilaa(@PathParam("hakukohdeOid") String hakukohdeOid,
                                         @PathParam("valintatapajonoOid") String valintatapajonoOid,
                                         @PathParam("hakemusOid") String hakemusOid,
-                                        ValintatuloksenTila tila) {
+                                        Valintatulos v) {
         try {
+            ValintatuloksenTila tila = v.getTila();
             sijoitteluBusinessService.vaihdaHakemuksenTila(hakukohdeOid, valintatapajonoOid, hakemusOid, tila);
         } catch (Exception e) {
             throw new WebApplicationException(e, Response.Status.FORBIDDEN);
