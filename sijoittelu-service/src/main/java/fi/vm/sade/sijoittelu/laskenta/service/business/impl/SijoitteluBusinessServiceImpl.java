@@ -7,8 +7,10 @@ import fi.vm.sade.service.valintatiedot.schema.HakukohdeTyyppi;
 import fi.vm.sade.sijoittelu.batch.logic.impl.DomainConverter;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.PrintHelper;
 import fi.vm.sade.sijoittelu.domain.ValintatuloksenTila;
+import fi.vm.sade.sijoittelu.domain.Valintatulos;
 import fi.vm.sade.sijoittelu.laskenta.dao.Dao;
 import fi.vm.sade.sijoittelu.laskenta.service.business.SijoitteluBusinessService;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,9 +21,9 @@ import fi.vm.sade.sijoittelu.domain.Sijoittelu;
 import fi.vm.sade.sijoittelu.domain.SijoitteluAjo;
 
 /**
- * 
+ *
  * @author Kari Kammonen
- * 
+ *
  */
 @Service
 public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService {
@@ -51,12 +53,12 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
         sijoittelu.getSijoitteluajot().add(sijoitteluAjo);
         dao.persistSijoittelu(sijoittelu);
 
-      //  if (sijoittelu.isSijoittele()
-      // ) {
-            SijoitteluAlgorithm sijoitteluAlgorithm = algorithmFactory.constructAlgorithm(sijoitteluAjo);
-            sijoitteluAlgorithm.start();
-    //     System.out.println(   PrintHelper.tulostaSijoittelu(sijoitteluAlgorithm));
-      //  }
+        //  if (sijoittelu.isSijoittele()
+        // ) {
+        SijoitteluAlgorithm sijoitteluAlgorithm = algorithmFactory.constructAlgorithm(sijoitteluAjo);
+        sijoitteluAlgorithm.start();
+        //     System.out.println(   PrintHelper.tulostaSijoittelu(sijoitteluAlgorithm));
+        //  }
 
 
         sijoitteluAjo.setEndMils(System.currentTimeMillis());
@@ -66,9 +68,33 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
     }
 
     @Override
-    public void vaihdaHakemuksenTila(Long sijoitteluajoId, String hakukohdeOid, String hakemusOid, ValintatuloksenTila tila) {
+    public Valintatulos haeHakemuksenTila(String hakukohdeOid, String valintatapajonoOid, String hakemusOid) {
+        if(StringUtils.isBlank(hakukohdeOid) || StringUtils.isBlank(hakukohdeOid) || StringUtils.isBlank(hakemusOid))    {
+            throw new RuntimeException("Invalid search params, fix exception later");
+        }
+        return dao.loadValintatuloksenTila(hakukohdeOid, valintatapajonoOid, hakemusOid);
+    }
+
+    @Override
+    public void vaihdaHakemuksenTila(String hakukohdeOid, String valintatapajonoOid, String hakemusOid, ValintatuloksenTila tila) {
+        if(StringUtils.isBlank(hakukohdeOid) || StringUtils.isBlank(hakukohdeOid) || StringUtils.isBlank(hakemusOid))    {
+            throw new RuntimeException("Invalid search params, fix exception later");
+        }
+
+        //TODO CHEKKAA ETTA TILAMUUTOS MAHDOLLINEN, HAE HAKIJAN OIDI
+        Valintatulos v =   dao.loadValintatuloksenTila(hakukohdeOid, valintatapajonoOid, hakemusOid);
+        if(v == null) {
+            v = new Valintatulos();
+            v.setHakemusOid(hakemusOid);
+            v.setValintatapajonoOid(valintatapajonoOid);
+            v.setHakukohdeOid(hakukohdeOid);
+            //TODO, LISAA HAKIJA OID
+        }
+        v.setTila(tila);
         //To change body of implemented methods use File | Settings | File Templates.
     }
+
+
 
     private Sijoittelu getOrCreateSijoittelu(String hakuoid) {
         Sijoittelu sijoittelu = dao.loadSijoittelu(hakuoid);

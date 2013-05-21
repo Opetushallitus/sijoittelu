@@ -2,6 +2,7 @@ package fi.vm.sade.sijoittelu.laskenta.dao;
 
 import fi.vm.sade.sijoittelu.domain.Sijoittelu;
 import fi.vm.sade.sijoittelu.domain.SijoitteluAjo;
+import fi.vm.sade.sijoittelu.domain.Valintatulos;
 
 /**
  * 
@@ -10,12 +11,13 @@ import fi.vm.sade.sijoittelu.domain.SijoitteluAjo;
  */
 public interface Dao {
 
-    Sijoittelu loadSijoittelu(String hakuOid);
-
-    SijoitteluAjo loadSijoitteluajo(Long ajoId);
-
     void persistSijoittelu(Sijoittelu sijoittelu);
 
     void persistSijoitteluAjo(SijoitteluAjo sijoitteluAjo);
 
+    Sijoittelu loadSijoittelu(String hakuOid);
+
+    SijoitteluAjo loadSijoitteluajo(Long ajoId);
+
+    Valintatulos loadValintatuloksenTila(String hakukohdeOid, String valintatapajonoOid, String hakemusOid);
 }

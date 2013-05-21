@@ -2,11 +2,9 @@ package fi.vm.sade.sijoittelu.laskenta.dao.impl;
 
 import com.google.code.morphia.Datastore;
 import com.google.code.morphia.query.Query;
-import fi.vm.sade.sijoittelu.domain.Hakukohde;
-import fi.vm.sade.sijoittelu.domain.HakukohdeItem;
-import fi.vm.sade.sijoittelu.domain.Sijoittelu;
-import fi.vm.sade.sijoittelu.domain.SijoitteluAjo;
+import fi.vm.sade.sijoittelu.domain.*;
 import fi.vm.sade.sijoittelu.laskenta.dao.Dao;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -35,6 +33,19 @@ public class DaoImpl implements Dao {
     public SijoitteluAjo loadSijoitteluajo(Long ajoId) {
         Query<SijoitteluAjo> q = morphiaDS.createQuery(SijoitteluAjo.class);
         q.criteria("sijoitteluajoId").equal(ajoId);
+        return q.get();
+    }
+
+    @Override
+    public Valintatulos loadValintatuloksenTila(String hakukohdeOid, String valintatapajonoOid, String hakemusOid) {
+        if(StringUtils.isBlank(hakukohdeOid) || StringUtils.isBlank(hakukohdeOid) || StringUtils.isBlank(hakemusOid))    {
+            throw new RuntimeException("Invalid searhch params, fix exception later");
+        }
+
+        Query<Valintatulos> q = morphiaDS.createQuery(Valintatulos.class);
+        q.criteria("hakukohdeOid").equal(hakukohdeOid);
+        q.criteria("valintatapajonoOid").equal(valintatapajonoOid);
+        q.criteria("hakemusOid").equal(hakemusOid);
         return q.get();
     }
 

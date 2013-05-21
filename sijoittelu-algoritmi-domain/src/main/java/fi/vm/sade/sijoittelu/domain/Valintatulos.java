@@ -14,14 +14,18 @@ import org.codehaus.jackson.map.annotate.JsonView;
 @Entity("Valintatulos")
 public class Valintatulos {
 
+    //Maarittaa 2 muun kanssa taman luokan hakemisen
     @JsonView(JsonViews.Basic.class)
-    private String hakijaOid;
-
+    private String valintatapajonoOid;
+    //Maarittaa 2 muun kanssa taman luokan hakemisen
     @JsonView(JsonViews.Basic.class)
     private String hakemusOid;
-
+    //Maarittaa 2 muun kanssa taman luokan hakemisen
     @JsonView(JsonViews.Basic.class)
     private String hakukohdeOid;
+
+    @JsonView(JsonViews.Basic.class)
+    private String hakijaOid;
 
     @JsonView(JsonViews.Basic.class)
     private int hakutoive;
@@ -67,5 +71,13 @@ public class Valintatulos {
 
     public void setTila(ValintatuloksenTila tila) {
         this.tila = tila;
+    }
+
+    public String getValintatapajonoOid() {
+        return valintatapajonoOid;
+    }
+
+    public void setValintatapajonoOid(String valintatapajonoOid) {
+        this.valintatapajonoOid = valintatapajonoOid;
     }
 }

@@ -2,6 +2,7 @@ package fi.vm.sade.sijoittelu.laskenta.service.business;
 
 import fi.vm.sade.service.sijoittelu.types.SijoitteleTyyppi;
 import fi.vm.sade.sijoittelu.domain.ValintatuloksenTila;
+import fi.vm.sade.sijoittelu.domain.Valintatulos;
 
 /**
  * 
@@ -12,5 +13,8 @@ public interface SijoitteluBusinessService {
 
     void sijoittele(SijoitteleTyyppi sijoitteluTyyppi);
 
-    void vaihdaHakemuksenTila(Long sijoitteluajoId, String hakukohdeOid, String hakemusOid, ValintatuloksenTila tila);
+
+    Valintatulos haeHakemuksenTila(String hakukohdeOid, String valintatapajonoOid, String hakemusOid);
+
+    void vaihdaHakemuksenTila(String hakukohdeOid, String valintatapajonoOid, String hakemusOid, ValintatuloksenTila tila);
 }
