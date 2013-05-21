@@ -40,11 +40,11 @@ public class SijoitteluResource {
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/")
     public  List<Sijoittelu> getSijoittelu() {
-      List<Sijoittelu> sijoittelu = dao.getHakus(null);
+        List<Sijoittelu> sijoittelu = dao.getHakus(null);
 
-      //  if (sijoittelu == null) {
-      //      throw new WebApplicationException(Response.Status.NOT_FOUND);
-      //  }
+        if (sijoittelu == null) {
+            throw new WebApplicationException(Response.Status.NOT_FOUND);
+        }
 
         return sijoittelu;
     }
@@ -57,9 +57,9 @@ public class SijoitteluResource {
     @Path("/{hakuOid}")
     public Sijoittelu getSijoitteluByHakuOid(@PathParam("hakuOid") String hakuOid) {
         Sijoittelu sijoittelu = dao.getSijoitteluByHakuOid(hakuOid);
-      //  if (sijoittelu == null) {
-     //       throw new WebApplicationException(Response.Status.NOT_FOUND);
-   //     }
+        if (sijoittelu == null) {
+            throw new WebApplicationException(Response.Status.NOT_FOUND);
+        }
 
         return sijoittelu;
     }
