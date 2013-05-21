@@ -37,10 +37,10 @@ public class TilaResource {
     public Valintatulos hakemus(@PathParam("hakukohdeOid") String hakukohdeOid,
                                 @PathParam("valintatapajonoOid") String valintatapajonoOid,
                                 @PathParam("hakemusOid") String hakemusOid) {
-       Valintatulos v = sijoitteluBusinessService.haeHakemuksenTila(hakukohdeOid,valintatapajonoOid,hakemusOid);
-        //if(v==null) {
-        //     v = new Valintatulos();
-        // }
+        Valintatulos v = sijoitteluBusinessService.haeHakemuksenTila(hakukohdeOid,valintatapajonoOid,hakemusOid);
+        if(v==null) {
+            v = new Valintatulos();
+     }
         return v;
     }
 
