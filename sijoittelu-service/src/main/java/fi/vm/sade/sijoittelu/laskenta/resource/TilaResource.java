@@ -21,7 +21,7 @@ import javax.ws.rs.core.Response;
  * Time: 17:23
  * To change this template use File | Settings | File Templates.
  */
-@Path("/hakemus")
+@Path("/tila")
 @Component
 public class TilaResource {
 
