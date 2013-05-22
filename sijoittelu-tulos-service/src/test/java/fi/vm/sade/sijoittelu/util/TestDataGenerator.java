@@ -170,7 +170,7 @@ public class TestDataGenerator {
                     hakemus.setHakijaOid(HAKEMUS_OID_2);
                     hakemus.setJonosija(i + 1);
                     hakemus.setPrioriteetti(i + 1);
-                    hakemus.setTila(HakemuksenTila.ILMOITETTU);
+                    hakemus.setTila(HakemuksenTila.VARALLA);
                     break;
                 case 2:
                     hakemus.setHakijaOid(HAKEMUS_OID_3);
