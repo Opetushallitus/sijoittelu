@@ -1,6 +1,10 @@
 package fi.vm.sade.sijoittelu.domain;
 
 import com.google.code.morphia.annotations.Entity;
+import com.google.code.morphia.annotations.Id;
+import com.google.code.morphia.annotations.Index;
+import com.google.code.morphia.annotations.Indexes;
+import org.bson.types.ObjectId;
 import org.codehaus.jackson.map.annotate.JsonView;
 
 /**
@@ -12,7 +16,16 @@ import org.codehaus.jackson.map.annotate.JsonView;
  */
 
 @Entity("Valintatulos")
+@Indexes({
+        @Index("hakukohdeOid, valintatapajonoOid, hakemusOid"),
+        @Index("hakukohdeOid, valintatapajonoOid"),
+        @Index("hakukohdeOid"),
+})
 public class Valintatulos {
+
+    @SuppressWarnings("unused")
+    @Id
+    private ObjectId id;
 
     //Maarittaa 2 muun kanssa taman luokan hakemisen
     //@JsonView(JsonViews.Basic.class)
@@ -79,5 +92,13 @@ public class Valintatulos {
 
     public void setValintatapajonoOid(String valintatapajonoOid) {
         this.valintatapajonoOid = valintatapajonoOid;
+    }
+
+    public ObjectId getId() {
+        return id;
+    }
+
+    public void setId(ObjectId id) {
+        this.id = id;
     }
 }
