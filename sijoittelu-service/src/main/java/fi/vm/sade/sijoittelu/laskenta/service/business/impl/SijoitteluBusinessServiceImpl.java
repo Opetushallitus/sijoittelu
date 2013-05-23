@@ -12,6 +12,8 @@ import fi.vm.sade.sijoittelu.domain.Valintatulos;
 import fi.vm.sade.sijoittelu.laskenta.dao.Dao;
 import fi.vm.sade.sijoittelu.laskenta.service.business.SijoitteluBusinessService;
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -23,6 +25,9 @@ import java.util.List;
  */
 @Service
 public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService {
+
+    private static final Logger LOG = LoggerFactory.getLogger(SijoitteluBusinessServiceImpl.class);
+
 
     @Autowired
     private SijoitteluAlgorithmFactory algorithmFactory;
@@ -86,6 +91,11 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
             v.setHakukohdeOid(hakukohdeOid);
             //TODO, LISAA HAKIJA OID
         }
+
+        LOG.info("Asetetaan valintatuloksen tila - hakukohdeoid {}, valintatapajonooid {}, hakemusoid {}",
+                new Object[]{hakukohdeOid, valintatapajonoOid, hakemusOid});
+        LOG.info("Valintatuloksen uusi tila {}", tila.name());
+
         v.setTila(tila);
         dao.createOrUpdateValintatulos(v);
     }
