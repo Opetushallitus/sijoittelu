@@ -366,9 +366,11 @@ public class SijoitteluAlgorithmImpl implements SijoitteluAlgorithm {
 				voidaanKorvata = false;
 			}
 		}
-		if (hakemusWrapper.getHakemus().getTila() == HakemuksenTila.ILMOITETTU) {
-			voidaanKorvata = false;
-		}
+
+        //TODO korjaa
+	//	if (hakemusWrapper.getHakemus().getTila() == HakemuksenTila.ILMOITETTU) {
+	//		voidaanKorvata = false;
+	//	}
 
 		// if (!voidaanKorvata) {
 		// System.out.println("ei voida korvata " +

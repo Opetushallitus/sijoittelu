@@ -6,15 +6,14 @@ package fi.vm.sade.sijoittelu.domain;
  *
  */
 public enum HakemuksenTila {
+
+    HYLATTY, // hakija ei voi koskaan tulla valituksi kohteeseen
     
-    HYLATTY, // kohde ei ole valittavissa
+    VARALLA, // Hakija voi tulla kohteeseen valituksi (jossain vaiheessa)
     
-    VARALLA, // VARALLA on alkutila kaikille sijoiteltaville
-    
-    PERUUNTUNUT, //PERUUNTUNUT, käyttäjä peruuttanyt tai tullut valittua parempaan kohteeseen
+    PERUUNTUNUT, // Hakija on tullut valituksi parempaan paikkaan
         
-    HYVAKSYTTY, // HYVÄKSYTTY, hakemus on hyväksytty. Tämä voi korvaantua PERUUNTUNYT, 
-                //jos myohemmin sijoittelussa henkilo tulee valittua korkeamman prioriteetin paikkaan 
-    
-    ILMOITETTU, //ILMOITETTU, hakijalle on ilmoitettu. Tata tilaa ei enaa voi muuttaa 
+    HYVAKSYTTY; //HAkija voi ottaa paikan vastaan
+
+
 }

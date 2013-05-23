@@ -101,7 +101,7 @@ public class SijoitteluajoResourceTest {
         hakemus.setJonosija(10);
         hakemus.setPrioriteetti(12);
         hakemus.setTasasijaJonosija(8);
-        hakemus.setTila(HakemuksenTila.ILMOITETTU);
+        //hakemus.setTila(HakemuksenTila.ILMOITETTU);
         jono.getHakemukset().add(hakemus);
 
         Hakijaryhma ryhma = new Hakijaryhma();
