@@ -50,6 +50,12 @@ public class DaoImpl implements Dao {
     }
 
     @Override
+    public void createOrUpdateValintatulos(Valintatulos tulos) {
+        morphiaDS.save(tulos);
+    }
+
+
+    @Override
     public void persistSijoittelu(Sijoittelu sijoittelu) {
         morphiaDS.save(sijoittelu);
 

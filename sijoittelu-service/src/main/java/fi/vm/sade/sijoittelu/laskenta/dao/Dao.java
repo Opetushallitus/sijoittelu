@@ -20,4 +20,6 @@ public interface Dao {
     SijoitteluAjo loadSijoitteluajo(Long ajoId);
 
     Valintatulos loadValintatuloksenTila(String hakukohdeOid, String valintatapajonoOid, String hakemusOid);
+
+    void createOrUpdateValintatulos(Valintatulos tulos);
 }
