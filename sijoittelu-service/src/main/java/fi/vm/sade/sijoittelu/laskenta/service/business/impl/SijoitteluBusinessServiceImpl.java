@@ -38,7 +38,7 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
     @Override
     public void sijoittele(SijoitteleTyyppi sijoitteluTyyppi) {
 
-        String hakuOid = sijoitteluTyyppi.getTarjonta().getHaku().getOid();
+        // String hakuOid = sijoitteluTyyppi.getTarjonta().getHaku().getOid();
 
         Sijoittelu sijoittelu = getOrCreateSijoittelu(sijoitteluTyyppi.getTarjonta().getHaku().getOid());
 
