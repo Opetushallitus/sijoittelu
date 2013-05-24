@@ -22,6 +22,9 @@ public class Hakukohde implements Serializable {
     private ObjectId id;
 
     @JsonView(JsonViews.Basic.class)
+    private Long sijoitteluajoId;
+
+    @JsonView(JsonViews.Basic.class)
     private String oid;
 
     @JsonView(JsonViews.Basic.class)
@@ -63,10 +66,19 @@ public class Hakukohde implements Serializable {
     public String toString() {
         return "Hakukohde{" +
                 "id=" + id +
+                ", sijoitteluajoId=" + sijoitteluajoId +
                 ", oid='" + oid + '\'' +
                 ", tila=" + tila +
                 ", valintatapajonot=" + valintatapajonot +
                 ", hakijaryhmat=" + hakijaryhmat +
                 '}';
+    }
+
+    public Long getSijoitteluajoId() {
+        return sijoitteluajoId;
+    }
+
+    public void setSijoitteluajoId(Long sijoitteluajoId) {
+        this.sijoitteluajoId = sijoitteluajoId;
     }
 }

@@ -15,11 +15,13 @@ public class HakukohdeItem implements Serializable {
     @Id
     private ObjectId id;
 
+    //hakukohdeoid
     @JsonView(JsonViews.Basic.class)
     private String oid;
 
-    @Reference(value = "Hakukohde", lazy = true)
-    private Hakukohde hakukohde;
+
+   // @Reference(value = "Hakukohde", lazy = true)
+   // private Hakukohde hakukohde;
 
     public String getOid() {
         return oid;
@@ -29,12 +31,12 @@ public class HakukohdeItem implements Serializable {
         this.oid = oid;
     }
 
-    public Hakukohde getHakukohde() {
-        return hakukohde;
-    }
+   // public Hakukohde getHakukohde() {
+   //     return hakukohde;
+   // }
 
-    public void setHakukohde(Hakukohde hakukohde) {
-        this.hakukohde = hakukohde;
-    }
+   // public void setHakukohde(Hakukohde hakukohde) {
+   //     this.hakukohde = hakukohde;
+   // }
 
 }

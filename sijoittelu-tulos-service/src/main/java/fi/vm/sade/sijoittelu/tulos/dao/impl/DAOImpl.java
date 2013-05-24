@@ -22,7 +22,10 @@ import java.util.List;
 /**
  * User: tommiha Date: 10/15/12 Time: 2:44 PM
  */
+//Siirretty itse busineksen puolelle, liikaa duplikaatteja metodeja.
+//poista luokka kun siirto suoritettu luoppuun
 @Repository
+@Deprecated()
 public class DAOImpl implements DAO {
     @Autowired
     private Datastore morphiaDS;

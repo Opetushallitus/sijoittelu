@@ -27,13 +27,14 @@ public class SijoitteluServiceImpl implements SijoitteluService {
     @Override
     public void sijoittele(@WebParam(partName = "parameters", name = "sijoittele", targetNamespace = "http://sijoittelu.service.sade.vm.fi/types") SijoitteleTyyppi sijoitteleTyyppi) {
 
+        /*
         if(LOGGER.isInfoEnabled()) {
             LOGGER.info("Sijoittele :: Haku: " + sijoitteleTyyppi.getTarjonta().getHaku().getOid());
             LOGGER.info("Sijoittele :: Hakukohteet");
             for(HakukohdeTyyppi ht : sijoitteleTyyppi.getTarjonta().getHakukohde())   {
                 LOGGER.info("Hakukohde:" + ht.getOid()); ;
             }
-        }
+        } */
 
         sijoitteluBusinessService.sijoittele(sijoitteleTyyppi);
     }

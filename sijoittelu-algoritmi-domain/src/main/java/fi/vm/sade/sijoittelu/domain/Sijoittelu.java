@@ -8,9 +8,7 @@ import org.bson.types.ObjectId;
 import org.codehaus.jackson.map.annotate.JsonView;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /**
  * @author Kari Kammonen
@@ -38,14 +36,26 @@ public class Sijoittelu implements Serializable {
     private boolean sijoittele = true;
 
     //@Embedded
-   // @JsonView(JsonViews.Basic.class)
-   // private Haku haku;
+    // @JsonView(JsonViews.Basic.class)
+    // private Haku haku;
 
     @Reference(value = "Valintatulos", lazy = true)
     private List<Valintatulos> valintatulokset = new ArrayList<Valintatulos>();
 
-    @Reference(value = "SijoitteluAjo", lazy = true)
+    // @Reference(value = "SijoitteluAjo", lazy = true)
+    @JsonView(JsonViews.Basic.class)
+    @Embedded
     private List<SijoitteluAjo> sijoitteluajot = new ArrayList<SijoitteluAjo>();
+
+    public SijoitteluAjo getLatestSijoitteluajo() {
+        SijoitteluAjo latest = null;
+        for(SijoitteluAjo sijoitteluAjo : sijoitteluajot) {
+            if(latest == null || latest.getEndMils() == null || latest.getEndMils().compareTo(sijoitteluAjo.getEndMils()) > 0) {
+                latest = sijoitteluAjo;
+            }
+        }
+        return latest;
+    }
 
     public List<SijoitteluAjo> getSijoitteluajot() {
         return sijoitteluajot;
@@ -59,13 +69,13 @@ public class Sijoittelu implements Serializable {
         this.sijoitteluId = sijoitteluId;
     }
 
-  //  public Haku getHaku() {
-   //     return haku;
-   // }
+    //  public Haku getHaku() {
+    //     return haku;
+    // }
 
-   // public void setHaku(Haku haku) {
-  //      this.haku = haku;
-   // }
+    // public void setHaku(Haku haku) {
+    //      this.haku = haku;
+    // }
 
     public Date getCreated() {
         return created;

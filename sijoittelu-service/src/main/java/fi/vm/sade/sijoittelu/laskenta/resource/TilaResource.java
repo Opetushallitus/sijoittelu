@@ -33,28 +33,30 @@ public class TilaResource {
     @GET
     @JsonView(JsonViews.Basic.class)
     @Produces(MediaType.APPLICATION_JSON)
-    @Path("/{hakukohdeOid}/{valintatapajonoOid}/{hakemusOid}")
-    public Valintatulos hakemus(@PathParam("hakukohdeOid") String hakukohdeOid,
+    @Path("/{hakuOid}/{/{hakukohdeOid}/{valintatapajonoOid}/{hakemusOid}")
+    public Valintatulos hakemus(@PathParam("hakuOid") String hakuOid,
+                                @PathParam("hakukohdeOid") String hakukohdeOid,
                                 @PathParam("valintatapajonoOid") String valintatapajonoOid,
                                 @PathParam("hakemusOid") String hakemusOid) {
-        Valintatulos v = sijoitteluBusinessService.haeHakemuksenTila(hakukohdeOid,valintatapajonoOid,hakemusOid);
+        Valintatulos v = sijoitteluBusinessService.haeHakemuksenTila(hakuOid, hakukohdeOid,valintatapajonoOid,hakemusOid);
         if(v==null) {
             v = new Valintatulos();
-     }
+        }
         return v;
     }
 
     @POST
     @JsonView(JsonViews.Basic.class)
     @Produces(MediaType.APPLICATION_JSON)
-    @Path("/{hakukohdeOid}/{valintatapajonoOid}/{hakemusOid}")
-    public boolean muutaHakemuksenTilaa(@PathParam("hakukohdeOid") String hakukohdeOid,
+    @Path("/{hakuOid}/{hakukohdeOid}/{valintatapajonoOid}/{hakemusOid}")
+    public boolean muutaHakemuksenTilaa(@PathParam("hakuOid") String hakuOid,
+                                        @PathParam("hakukohdeOid") String hakukohdeOid,
                                         @PathParam("valintatapajonoOid") String valintatapajonoOid,
                                         @PathParam("hakemusOid") String hakemusOid,
                                         Valintatulos v) {
         try {
             ValintatuloksenTila tila = v.getTila();
-            sijoitteluBusinessService.vaihdaHakemuksenTila(hakukohdeOid, valintatapajonoOid, hakemusOid, tila);
+            sijoitteluBusinessService.vaihdaHakemuksenTila(hakuOid, hakukohdeOid, valintatapajonoOid, hakemusOid, tila);
         } catch (Exception e) {
             throw new WebApplicationException(e, Response.Status.FORBIDDEN);
         }

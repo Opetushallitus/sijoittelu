@@ -1,6 +1,9 @@
 package fi.vm.sade.sijoittelu.batch.logic.impl.algorithm;
 
+import fi.vm.sade.sijoittelu.domain.Hakukohde;
 import fi.vm.sade.sijoittelu.domain.SijoitteluAjo;
+
+import java.util.List;
 
 /**
  * 
@@ -9,6 +12,6 @@ import fi.vm.sade.sijoittelu.domain.SijoitteluAjo;
  */
 public interface SijoitteluAlgorithmFactory {
 
-    public SijoitteluAlgorithm constructAlgorithm(SijoitteluAjo sijoitteluAjo);
+    public SijoitteluAlgorithm constructAlgorithm(List<Hakukohde> hakukohteet);
     
 }

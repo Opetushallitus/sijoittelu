@@ -4,14 +4,19 @@ import com.google.code.morphia.Datastore;
 import com.google.code.morphia.query.Query;
 import fi.vm.sade.sijoittelu.domain.*;
 import fi.vm.sade.sijoittelu.laskenta.dao.Dao;
+import fi.vm.sade.sijoittelu.tulos.dao.exception.SijoitteluEntityNotFoundException;
 import org.apache.commons.lang.StringUtils;
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
- * 
+ *
  * @author Kari Kammonen
- * 
+ *
  */
 @Repository
 public class DaoImpl implements Dao {
@@ -22,10 +27,11 @@ public class DaoImpl implements Dao {
     @Override
     public void persistSijoitteluAjo(SijoitteluAjo sijoitteluajo) {
 
+        /*
         for (HakukohdeItem hki : sijoitteluajo.getHakukohteet()) {
             Hakukohde hk = hki.getHakukohde();
             morphiaDS.save(hk);
-        }
+        } */
         morphiaDS.save(sijoitteluajo);
     }
 
@@ -48,6 +54,20 @@ public class DaoImpl implements Dao {
         q.criteria("hakemusOid").equal(hakemusOid);
         return q.get();
     }
+
+    @Override
+    public void persistHakukohde(Hakukohde hakukohde) {
+        morphiaDS.save(hakukohde);
+    }
+
+    @Override
+    public Hakukohde getHakukohdeForSijoitteluajo(Long sijoitteluajoId, String hakukohdeOid) {
+        Query<Hakukohde> q = morphiaDS.createQuery(Hakukohde.class);
+        q.criteria("sijoitteluajoId").equal(sijoitteluajoId);
+        q.criteria("oid").equal(hakukohdeOid);
+        return q.get();
+    }
+
 
     @Override
     public void createOrUpdateValintatulos(Valintatulos tulos) {

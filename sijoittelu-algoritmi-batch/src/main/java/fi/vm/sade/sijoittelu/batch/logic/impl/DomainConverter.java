@@ -19,38 +19,47 @@ public class DomainConverter {
      * @param haku
      * @param hakukohdeTyyppit
      * @return
-     */
+
     public static SijoitteluAjo convertToSijoitteluAjo(List<HakukohdeTyyppi> hakukohdeTyypit) {
-        List<HakukohdeItem> hakukohteet = createDomain(hakukohdeTyypit);
-        SijoitteluAjo ajo = new SijoitteluAjo();
-        ajo.getHakukohteet().addAll(hakukohteet);
-        return ajo;
-    }
+    List<HakukohdeItem> hakukohteet = createDomain(hakukohdeTyypit);
+    SijoitteluAjo ajo = new SijoitteluAjo();
+    ajo.getHakukohteet().addAll(hakukohteet);
+    return ajo;
+    }        */
 
     /**
      *
      * @param hakukohdeTyyppit
      * @param hakukohteet
-     */
+
     private static List<HakukohdeItem> createDomain(List<HakukohdeTyyppi> hakukohdeTyyppit) {
-        // hakukohteet
-        List<HakukohdeItem> hakukohdeItems = new ArrayList<HakukohdeItem>();
+    // hakukohteet
+    List<HakukohdeItem> hakukohdeItems = new ArrayList<HakukohdeItem>();
 
-        for (HakukohdeTyyppi hakukohdeTyyppi : hakukohdeTyyppit) {
-            Hakukohde hakukohde = new Hakukohde();
-            hakukohde.setOid(hakukohdeTyyppi.getOid());
+    for (HakukohdeTyyppi hakukohdeTyyppi : hakukohdeTyyppit) {
+    Hakukohde hakukohde = new Hakukohde();
+    hakukohde.setOid(hakukohdeTyyppi.getOid());
 
-            HakukohdeItem hakukohdeItem = new HakukohdeItem();
-            hakukohdeItem.setOid(hakukohdeTyyppi.getOid());
-            hakukohdeItem.setHakukohde(hakukohde);
+    HakukohdeItem hakukohdeItem = new HakukohdeItem();
+    hakukohdeItem.setOid(hakukohdeTyyppi.getOid());
+    hakukohdeItem.setHakukohde(hakukohde);
 
-            hakukohdeItems.add(hakukohdeItem);
+    hakukohdeItems.add(hakukohdeItem);
 
-            addValintatapaJonos(hakukohdeTyyppi, hakukohde);
-            addHakijaRyhmas(hakukohdeTyyppi, hakukohde);
+    addValintatapaJonos(hakukohdeTyyppi, hakukohde);
+    addHakijaRyhmas(hakukohdeTyyppi, hakukohde);
 
-        }
-        return hakukohdeItems;
+    }
+    return hakukohdeItems;
+    }
+     */
+
+    public static Hakukohde convertToHakukohde(HakukohdeTyyppi hakukohdeTyyppi) {
+        Hakukohde hakukohde = new Hakukohde();
+        hakukohde.setOid(hakukohdeTyyppi.getOid());
+        addValintatapaJonos(hakukohdeTyyppi, hakukohde);
+        addHakijaRyhmas(hakukohdeTyyppi, hakukohde);
+        return hakukohde;
     }
 
     private static void addValintatapaJonos(HakukohdeTyyppi hakukohdeTyyppi, Hakukohde hakukohde) {

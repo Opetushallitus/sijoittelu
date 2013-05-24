@@ -5,16 +5,16 @@ import fi.vm.sade.sijoittelu.domain.ValintatuloksenTila;
 import fi.vm.sade.sijoittelu.domain.Valintatulos;
 
 /**
- * 
+ *
  * @author Kari Kammonen
- * 
+ *
  */
 public interface SijoitteluBusinessService {
 
     void sijoittele(SijoitteleTyyppi sijoitteluTyyppi);
 
 
-    Valintatulos haeHakemuksenTila(String hakukohdeOid, String valintatapajonoOid, String hakemusOid);
+    Valintatulos haeHakemuksenTila(String hakuoid,String hakukohdeOid, String valintatapajonoOid, String hakemusOid);
 
-    void vaihdaHakemuksenTila(String hakukohdeOid, String valintatapajonoOid, String hakemusOid, ValintatuloksenTila tila);
+    void vaihdaHakemuksenTila(String hakuoid, String hakukohdeOid, String valintatapajonoOid, String hakemusOid, ValintatuloksenTila tila);
 }

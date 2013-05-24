@@ -5,10 +5,7 @@ import fi.vm.sade.service.valintatiedot.schema.HakukohdeTyyppi;
 import fi.vm.sade.sijoittelu.batch.logic.impl.DomainConverter;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoitteluAlgorithm;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoitteluAlgorithmFactory;
-import fi.vm.sade.sijoittelu.domain.Sijoittelu;
-import fi.vm.sade.sijoittelu.domain.SijoitteluAjo;
-import fi.vm.sade.sijoittelu.domain.ValintatuloksenTila;
-import fi.vm.sade.sijoittelu.domain.Valintatulos;
+import fi.vm.sade.sijoittelu.domain.*;
 import fi.vm.sade.sijoittelu.laskenta.dao.Dao;
 import fi.vm.sade.sijoittelu.laskenta.service.business.SijoitteluBusinessService;
 import org.apache.commons.lang.StringUtils;
@@ -17,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -35,41 +33,60 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
     @Autowired
     private Dao dao;
 
+    public void sijoittele() {
+
+    }
+
     @Override
     public void sijoittele(SijoitteleTyyppi sijoitteluTyyppi) {
 
         String hakuOid = sijoitteluTyyppi.getTarjonta().getHaku().getOid();
+        Sijoittelu sijoittelu = getOrCreateSijoittelu(hakuOid);
+        SijoitteluAjo sijoitteluAjo = createSijoitteluAjo(sijoittelu);
 
-        Sijoittelu sijoittelu = getOrCreateSijoittelu(sijoitteluTyyppi.getTarjonta().getHaku().getOid());
 
-        List<HakukohdeTyyppi> hakukohde = sijoitteluTyyppi.getTarjonta().getHakukohde();
-        SijoitteluAjo sijoitteluAjo = DomainConverter.convertToSijoitteluAjo(hakukohde);
+        List<HakukohdeTyyppi> sisaantulevatHakukohteet = sijoitteluTyyppi.getTarjonta().getHakukohde();
+        List<Hakukohde> hakukohteet = createHakukohteet(sisaantulevatHakukohteet, sijoitteluAjo);
 
-        Long now = System.currentTimeMillis();
-        sijoitteluAjo.setSijoitteluajoId(now);
-        sijoitteluAjo.setStartMils(now);
+        SijoitteluAlgorithm sijoitteluAlgorithm = algorithmFactory.constructAlgorithm(hakukohteet);
 
-        // persist domain before algorithm starts
-        dao.persistSijoitteluAjo(sijoitteluAjo);
-        sijoittelu.getSijoitteluajot().add(sijoitteluAjo);
-        dao.persistSijoittelu(sijoittelu);
-
-        //  if (sijoittelu.isSijoittele()
-        // ) {
-        SijoitteluAlgorithm sijoitteluAlgorithm = algorithmFactory.constructAlgorithm(sijoitteluAjo);
+        sijoitteluAjo.setStartMils(System.currentTimeMillis());
         sijoitteluAlgorithm.start();
-        //     System.out.println(   PrintHelper.tulostaSijoittelu(sijoitteluAlgorithm));
-        //  }
-
-
         sijoitteluAjo.setEndMils(System.currentTimeMillis());
 
         // and after
-        dao.persistSijoitteluAjo(sijoitteluAjo);
+        dao.persistSijoittelu(sijoittelu);
+        for(Hakukohde hakukohde : hakukohteet ) {
+            dao.persistHakukohde(hakukohde);
+        }
     }
 
+    private   List<Hakukohde> createHakukohteet( List<HakukohdeTyyppi> sisaantulevatHakukohteet, SijoitteluAjo sijoitteluAjo) {
+        List<Hakukohde>  hakukohdes = new ArrayList<Hakukohde>();
+        for(HakukohdeTyyppi hkt : sisaantulevatHakukohteet) {
+            Hakukohde hakukohde = DomainConverter.convertToHakukohde(hkt);
+            hakukohde.setSijoitteluajoId(sijoitteluAjo.getSijoitteluajoId());
+            hakukohdes.add(hakukohde);
+
+            HakukohdeItem hki = new HakukohdeItem();
+            hki.setOid(hakukohde.getOid());
+            sijoitteluAjo.getHakukohteet().add(hki);
+
+        }
+        return hakukohdes;
+    }
+
+    private SijoitteluAjo createSijoitteluAjo(Sijoittelu sijoittelu) {
+        SijoitteluAjo sijoitteluAjo = new SijoitteluAjo();
+        Long now = System.currentTimeMillis();
+        sijoitteluAjo.setSijoitteluajoId(now);
+        sijoittelu.getSijoitteluajot().add(sijoitteluAjo);
+        return  sijoitteluAjo;
+    }
+
+
     @Override
-    public Valintatulos haeHakemuksenTila(String hakukohdeOid, String valintatapajonoOid, String hakemusOid) {
+    public Valintatulos haeHakemuksenTila(String hakuoid,String hakukohdeOid, String valintatapajonoOid, String hakemusOid) {
         if (StringUtils.isBlank(hakukohdeOid) || StringUtils.isBlank(hakukohdeOid) || StringUtils.isBlank(hakemusOid)) {
             throw new RuntimeException("Invalid search params, fix exception later");
         }
@@ -77,9 +94,31 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
     }
 
     @Override
-    public void vaihdaHakemuksenTila(String hakukohdeOid, String valintatapajonoOid, String hakemusOid, ValintatuloksenTila tila) {
-        if (StringUtils.isBlank(hakukohdeOid) || StringUtils.isBlank(hakukohdeOid) || StringUtils.isBlank(hakemusOid)) {
+    public void vaihdaHakemuksenTila(String hakuoid, String hakukohdeOid, String valintatapajonoOid, String hakemusOid, ValintatuloksenTila tila) {
+        if (StringUtils.isBlank(hakuoid) ||StringUtils.isBlank(hakukohdeOid) || StringUtils.isBlank(valintatapajonoOid) || StringUtils.isBlank(hakemusOid)) {
             throw new RuntimeException("Invalid search params, fix exception later");
+        }
+
+        Sijoittelu sijoittelu = dao.loadSijoittelu(hakuoid);
+        SijoitteluAjo ajo = sijoittelu.getLatestSijoitteluajo();
+        Long ajoId = ajo.getSijoitteluajoId();
+
+        Hakukohde hakukohde =  dao.getHakukohdeForSijoitteluajo(ajoId,hakukohdeOid );
+        Valintatapajono valintatapajono = null;
+        for(Valintatapajono v : hakukohde.getValintatapajonot()) {
+            if(valintatapajonoOid.equals(v.getOid())) {
+                valintatapajono = v;
+                break;
+            }
+        }
+        Hakemus hakemus = null;
+        for(Hakemus h : valintatapajono.getHakemukset())  {
+            if(hakemusOid.equals(h)) {
+                hakemus = h;
+            }
+        }
+        if(hakemus.getTila() != HakemuksenTila.HYVAKSYTTY) {
+            throw new RuntimeException("sijoittelun hakemus ei ole hyvaksytty tilassa, fiksaa poikkeuskasittely myohemmin");
         }
 
         //TODO CHEKKAA ETTA TILAMUUTOS MAHDOLLINEN, HAE HAKIJAN OIDI

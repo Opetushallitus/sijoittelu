@@ -39,7 +39,7 @@ public class SijoitteluAlgorithmFactoryImpl implements SijoitteluAlgorithmFactor
 	 * Luo sijoittelualgoritmi.
 	 */
 	@Override
-	public SijoitteluAlgorithm constructAlgorithm(SijoitteluAjo sijoitteluajo) {
+	public SijoitteluAlgorithm constructAlgorithm(List<Hakukohde> hakukohteet) {
 
 		// private Map<String, Tasasijasaanto> tasasijasaannot = new
 		// HashMap<String,
@@ -58,25 +58,24 @@ public class SijoitteluAlgorithmFactoryImpl implements SijoitteluAlgorithmFactor
 		// algorithm.tasasijasaannot = this.tasasijasaannot;
 		algorithm.preSijoitteluProcessors = preSijoitteluProcessors;
 		algorithm.postSijoitteluProcessors = postSijoitteluProcessors;
-		algorithm.sijoitteluAjo = wrapDomain(sijoitteluajo);
+		algorithm.sijoitteluAjo = wrapDomain(hakukohteet);
 		return algorithm;
 	}
 
 	/**
 	 * Luo sijoittelun tarvitsema domaini
 	 * 
-	 * @param sijoitteluajo
+	 * @param hakukohteet
 	 * @return
 	 */
-	private SijoitteluajoWrapper wrapDomain(SijoitteluAjo sijoitteluajo) {
+	private SijoitteluajoWrapper wrapDomain(List<Hakukohde> hakukohteet) {
 
 		SijoitteluajoWrapper sijoitteluajoWrapper = new SijoitteluajoWrapper();
-		sijoitteluajoWrapper.setSijoitteluajo(sijoitteluajo);
+	//	sijoitteluajoWrapper.setSijoitteluajo(sijoitteluajo);
 
 		HashMap<String, HenkiloWrapper> henkilot = new HashMap<String, HenkiloWrapper>();
 
-		for (HakukohdeItem hakukohdeItem : sijoitteluajo.getHakukohteet()) {
-			Hakukohde hakukohde = hakukohdeItem.getHakukohde();
+		for (Hakukohde hakukohde : hakukohteet) {
 			HakukohdeWrapper hakukohdeWrapper = new HakukohdeWrapper();
 			hakukohdeWrapper.setHakukohde(hakukohde);
 			sijoitteluajoWrapper.getHakukohteet().add(hakukohdeWrapper);
