@@ -34,23 +34,26 @@ public class TulosServiceImpl implements TulosService {
 
     @Override
     public List<SijoitteluajoTyyppi> haeSijoitteluajot(HaeSijoitteluajotKriteeritTyyppi haeSijoitteluajotKriteerit) {
-        List<SijoitteluAjo> sijoitteluajos = dao.getSijoitteluajos(haeSijoitteluajotKriteerit);
-        return conversionService.convertAll(sijoitteluajos, SijoitteluajoTyyppi.class);
+     //   List<SijoitteluAjo> sijoitteluajos = dao.getSijoitteluajos(haeSijoitteluajotKriteerit);
+    //    return conversionService.convertAll(sijoitteluajos, SijoitteluajoTyyppi.class);
+        return null;
     }
 
     @Override
     public List<HakuTyyppi> haeHaut(HaeHautKriteeritTyyppi haeHautKriteerit) {
-        List<Sijoittelu> hakus = dao.getHakus(haeHautKriteerit);
-        return conversionService.convertAll(hakus, HakuTyyppi.class);
+      //  List<Sijoittelu> hakus = dao.getHakus(haeHautKriteerit);
+      //  return conversionService.convertAll(hakus, HakuTyyppi.class);
+        return null;
     }
 
     @Override
     public List<HakukohdeTyyppi> haeHakukohteet(long sijoitteluajoId, HaeHakukohteetKriteeritTyyppi haeHakukohteetKriteerit) {
-        try {
-            List<Hakukohde> hakukohdes = dao.getHakukohdes(sijoitteluajoId, haeHakukohteetKriteerit);
-            return conversionService.convertAll(hakukohdes, HakukohdeTyyppi.class);
-        } catch (SijoitteluEntityNotFoundException e) {
-            throw new SijoitteluajoNotFoundException("Could not find sijoitteluajo for id " + sijoitteluajoId);
-        }
+     //   try {
+     //       List<Hakukohde> hakukohdes = dao.getHakukohdes(sijoitteluajoId, haeHakukohteetKriteerit);
+       //     return conversionService.convertAll(hakukohdes, HakukohdeTyyppi.class);
+     //   } catch (SijoitteluEntityNotFoundException e) {
+          //  throw new SijoitteluajoNotFoundException("Could not find sijoitteluajo for id " + sijoitteluajoId);
+     //   }
+        return null;
     }
 }

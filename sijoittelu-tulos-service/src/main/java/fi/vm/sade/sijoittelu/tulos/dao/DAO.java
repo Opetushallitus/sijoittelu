@@ -13,6 +13,7 @@ import fi.vm.sade.tulos.service.types.HaeSijoitteluajotKriteeritTyyppi;
  * User: tommiha Date: 10/15/12 Time: 2:44 PM
  */
 public interface DAO {
+    /*
 
     List<Hakukohde> getHakukohdes(long sijoitteluajoId, HaeHakukohteetKriteeritTyyppi haeHakukohteetKriteerit);
 
@@ -20,7 +21,7 @@ public interface DAO {
 
     List<SijoitteluAjo> getSijoitteluajos(HaeSijoitteluajotKriteeritTyyppi haeSijoitteluajotKriteerit);
 
-    List<Sijoittelu> getHakus(HaeHautKriteeritTyyppi haeHautKriteerit);
+
 
     Sijoittelu getSijoitteluByHakuOid(String hakuOid);
 
@@ -29,6 +30,17 @@ public interface DAO {
     SijoitteluAjo getLatestSijoitteluajoByHakuOid(String hakuOid);
 
     SijoitteluAjo getSijoitteluajoByHakuOidAndTimestamp(String hakuOid, Long timestamp);
+
+    Hakukohde getHakukohdeBySijoitteluajo(Long sijoitteluajoId, String hakukohdeOid);
+  */
+
+
+
+    List<Sijoittelu> getSijoittelu();
+
+    Sijoittelu getSijoitteluByHakuOid(String hakuOid);
+
+    SijoitteluAjo getSijoitteluajo(Long sijoitteluajoId);
 
     Hakukohde getHakukohdeBySijoitteluajo(Long sijoitteluajoId, String hakukohdeOid);
 }

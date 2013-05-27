@@ -30,6 +30,40 @@ public class DAOImpl implements DAO {
     @Autowired
     private Datastore morphiaDS;
 
+    @Override
+    public List<Sijoittelu> getSijoittelu() {
+        Query<Sijoittelu> query = morphiaDS.createQuery(Sijoittelu.class);
+        return query.asList();
+    }
+
+    @Override
+    public Sijoittelu getSijoitteluByHakuOid(String hakuOid) {
+        Query<Sijoittelu> query = morphiaDS.createQuery(Sijoittelu.class);
+        query.field("hakuOid").equal(hakuOid);
+        return query.get();
+    }
+
+    @Override
+    public SijoitteluAjo getSijoitteluajo(Long sijoitteluajoId) {
+        Query<Sijoittelu> query = morphiaDS.createQuery(Sijoittelu.class);
+        query.field("sijoitteluajot.sijoitteluajoId").equal(sijoitteluajoId);
+        Sijoittelu a = query.get();
+        for(SijoitteluAjo sa : a.getSijoitteluajot()) {
+            if(sijoitteluajoId.equals(sa.getSijoitteluajoId())) {
+                return sa;
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public Hakukohde getHakukohdeBySijoitteluajo(Long sijoitteluajoId, String hakukohdeOid) {
+        Query<Hakukohde> query = morphiaDS.createQuery(Hakukohde.class);
+        query.field("sijoitteluajoId").equal(sijoitteluajoId);
+        query.field("oid").equal(hakukohdeOid);
+        return query.get();
+    }
+     /*
     private <T> T getSingleEntity(Class<T> clazz, String fieldName, Object fieldValue) {
         Query<T> query = morphiaDS.createQuery(clazz);
         List<T> result = query.field(fieldName).equal(fieldValue).asList();
@@ -106,6 +140,7 @@ public class DAOImpl implements DAO {
         return query.get();
     }
 
+
     @Override
     public Hakukohde getHakukohdeBySijoitteluajo(Long sijoitteluajoId, String hakukohdeOid) {
         SijoitteluAjo sijoitteluajo = getSijoitteluajo(sijoitteluajoId);
@@ -160,4 +195,5 @@ public class DAOImpl implements DAO {
 
         return query.asList();
     }
+    */
 }

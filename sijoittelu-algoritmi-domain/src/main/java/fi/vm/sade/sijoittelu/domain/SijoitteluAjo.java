@@ -27,6 +27,9 @@ public class SijoitteluAjo implements Serializable {
     private Long sijoitteluajoId;
 
     @JsonView(JsonViews.Basic.class)
+    private String hakuOid;
+
+    @JsonView(JsonViews.Basic.class)
     private Long startMils;
 
     @JsonView(JsonViews.Basic.class)
@@ -76,4 +79,11 @@ public class SijoitteluAjo implements Serializable {
         this.hakukohteet = hakukohteet;
     }
 
+    public String getHakuOid() {
+        return hakuOid;
+    }
+
+    public void setHakuOid(String hakuOid) {
+        this.hakuOid = hakuOid;
+    }
 }

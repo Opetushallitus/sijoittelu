@@ -59,7 +59,7 @@ public class SijoitteluajoResource {
             throw new WebApplicationException(e, Response.Status.NOT_FOUND);
         }
     }
-
+     /*
     @POST
     @JsonView(JsonViews.Basic.class)
     @Produces(MediaType.APPLICATION_JSON)
@@ -77,6 +77,6 @@ public class SijoitteluajoResource {
             throw new WebApplicationException(e, Response.Status.NOT_FOUND);
         }
     }
-
+       */
 
 }

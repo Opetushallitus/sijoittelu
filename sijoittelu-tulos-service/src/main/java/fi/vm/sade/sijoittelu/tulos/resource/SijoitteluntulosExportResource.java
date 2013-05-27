@@ -5,19 +5,15 @@ import javax.ws.rs.Path;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 
+import fi.vm.sade.sijoittelu.domain.*;
+import fi.vm.sade.sijoittelu.tulos.dao.impl.DAOImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import fi.vm.sade.sijoittelu.domain.Hakemus;
-import fi.vm.sade.sijoittelu.domain.Hakukohde;
-import fi.vm.sade.sijoittelu.domain.HakukohdeItem;
-import fi.vm.sade.sijoittelu.domain.SijoitteluAjo;
-import fi.vm.sade.sijoittelu.domain.Valintatapajono;
-
 /**
- * 
+ *
  * @author Jussi Jartamo
- * 
+ *
  */
 @Path("/export")
 @Component
@@ -28,7 +24,7 @@ public class SijoitteluntulosExportResource {
 
     // lets use same logic with export as with view
     @Autowired
-    private SijoitteluResource sijoitteluResource;
+    private DAOImpl dao;
 
     // @Autowired
     // private SijoitteluajoResource sijoitteluajoResource;
@@ -52,35 +48,31 @@ public class SijoitteluntulosExportResource {
      */
     @GET
     @Path("/sijoitteluntulos.xls")
-    public Response exportSijoitteluntulos(@QueryParam("hakuOid") String hakuOid) {
+    public Response exportSijoitteluntulos(@QueryParam("hakuOid") String hakuOid, @QueryParam("hakukohdeOid") String hakukohdeOid) {
+
+        Sijoittelu sijoittelu = dao.getSijoitteluByHakuOid(hakuOid);
+        SijoitteluAjo ajo = sijoittelu.getLatestSijoitteluajo();
+        Hakukohde hakukohde = dao.getHakukohdeBySijoitteluajo(ajo.getSijoitteluajoId(), hakukohdeOid);
 
         // getHakukohdeBySijoitteluajo
         StringBuilder builder = new StringBuilder();
         builder.append("<table>");
-        for (SijoitteluAjo ajo : sijoitteluResource.getSijoitteluajoByHakuOid(hakuOid, true)) {
 
-            Long sijoitteluajoId = ajo.getSijoitteluajoId();
-            for (HakukohdeItem hakukohdeItem : ajo.getHakukohteet()) {
-                Hakukohde hakukohde = hakukohdeItem.getHakukohde();
-                for (Valintatapajono jono : hakukohde.getValintatapajonot()) {
-                    builder.append("<tr>");
-                    builder.append("<td colspan=\"6\">Jono ").append(jono.getOid()).append("</td>");
-                    builder.append("</tr>");
-                    for (Hakemus hakemus : jono.getHakemukset()) {
-                        builder.append("<tr>");
-                        builder.append("<td>").append(hakemus.getJonosija()).append("</td>");
-                        builder.append("<td>").append(hakemus.getHakijaOid()).append("</td>");
-                        builder.append("<td>").append(hakemus.getPrioriteetti()).append("</td>");
-                        builder.append("<td>").append(hakemus.getTasasijaJonosija()).append("</td>");
-                        builder.append("<td>").append(hakemus.getTila()).append("</td>");
-                        builder.append("</tr>");
-                    }
-                }
-                // sijoitteluajoResource.getHakukohdeBySijoitteluajo(sijoitteluajoId,
-                // hakukohde.getOid());
-
+        for (Valintatapajono jono : hakukohde.getValintatapajonot()) {
+            builder.append("<tr>");
+            builder.append("<td colspan=\"6\">Jono ").append(jono.getOid()).append("</td>");
+            builder.append("</tr>");
+            for (Hakemus hakemus : jono.getHakemukset()) {
+                builder.append("<tr>");
+                builder.append("<td>").append(hakemus.getJonosija()).append("</td>");
+                builder.append("<td>").append(hakemus.getHakijaOid()).append("</td>");
+                builder.append("<td>").append(hakemus.getPrioriteetti()).append("</td>");
+                builder.append("<td>").append(hakemus.getTasasijaJonosija()).append("</td>");
+                builder.append("<td>").append(hakemus.getTila()).append("</td>");
+                builder.append("</tr>");
             }
         }
+
         builder.append("</table>");
 
         return Response.ok(builder.toString())

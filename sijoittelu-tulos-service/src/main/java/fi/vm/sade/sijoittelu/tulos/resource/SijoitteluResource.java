@@ -40,7 +40,7 @@ public class SijoitteluResource {
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/")
     public  List<Sijoittelu> getSijoittelu() {
-        List<Sijoittelu> sijoittelu = dao.getHakus(null);
+        List<Sijoittelu> sijoittelu = dao.getSijoittelu();
 
         if (sijoittelu == null) {
             throw new WebApplicationException(Response.Status.NOT_FOUND);
@@ -70,11 +70,13 @@ public class SijoitteluResource {
     @Path("/{hakuOid}/sijoitteluajo")
     public List<SijoitteluAjo> getSijoitteluajoByHakuOid(@PathParam("hakuOid") String hakuOid,
                                                          @QueryParam("latest") Boolean latest) {
+
+      Sijoittelu sijoittelu = dao.getSijoitteluByHakuOid(hakuOid);
         try {
             if (latest != null && latest) {
-                return Arrays.asList(dao.getLatestSijoitteluajoByHakuOid(hakuOid));
+                return Arrays.asList(sijoittelu.getLatestSijoitteluajo());
             } else {
-                return dao.getSijoitteluajoByHakuOid(hakuOid);
+                return sijoittelu.getSijoitteluajot();
             }
         } catch (SijoitteluEntityNotFoundException e) {
             return Collections.EMPTY_LIST;
@@ -87,14 +89,15 @@ public class SijoitteluResource {
      * @param hakuOid
      * @param timestamp
      * @return
-     */
+
     @GET
     @JsonView(JsonViews.Basic.class)
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/{hakuOid}/sijoitteluajo/{time}")
     public SijoitteluAjo getSijoitteluajoByTimestamp(@PathParam("hakuOid") String hakuOid,
                                                      @PathParam("time") Long timestamp) {
+
         return dao.getSijoitteluajoByHakuOidAndTimestamp(hakuOid, timestamp);
     }
-
+     */
 }

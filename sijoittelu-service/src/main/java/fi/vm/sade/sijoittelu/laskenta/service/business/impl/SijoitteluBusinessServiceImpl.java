@@ -80,6 +80,7 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
         SijoitteluAjo sijoitteluAjo = new SijoitteluAjo();
         Long now = System.currentTimeMillis();
         sijoitteluAjo.setSijoitteluajoId(now);
+        sijoitteluAjo.setHakuOid(sijoittelu.getHakuOid()); //silta varalta etta tehdaan omaksi entityksi
         sijoittelu.getSijoitteluajot().add(sijoitteluAjo);
         return  sijoitteluAjo;
     }
