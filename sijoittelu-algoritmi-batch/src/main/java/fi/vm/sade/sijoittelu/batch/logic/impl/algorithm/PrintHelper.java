@@ -1,8 +1,5 @@
 package fi.vm.sade.sijoittelu.batch.logic.impl.algorithm;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.HakemusWrapper;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.HakukohdeWrapper;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.SijoitteluajoWrapper;
@@ -12,64 +9,67 @@ import fi.vm.sade.sijoittelu.domain.Hakemus;
 import fi.vm.sade.sijoittelu.domain.Hakukohde;
 import fi.vm.sade.sijoittelu.domain.Valintatapajono;
 
+import java.util.HashSet;
+import java.util.Set;
+
 /**
  * @author Eetu Blomqvist
  */
 public final class PrintHelper {
 
-	private PrintHelper() {
+    private PrintHelper() {
 
-	}
+    }
 
-	public final static String tulostaSijoittelu(SijoitteluAlgorithm a) {
+    public final static String tulostaSijoittelu(SijoitteluAlgorithm a) {
 
-		SijoitteluajoWrapper s = ((SijoitteluAlgorithmImpl) a).sijoitteluAjo;
+        SijoitteluajoWrapper s = ((SijoitteluAlgorithmImpl) a).sijoitteluAjo;
 
-		StringBuilder sb = new StringBuilder();
+        StringBuilder sb = new StringBuilder();
 
-		Set<String> henkilot = new HashSet<String>();
-		int hakemukset = 0;
-		int valintatapajonot = 0;
-		int hakukohteet = 0;
+        Set<String> henkilot = new HashSet<String>();
+        int hakemukset = 0;
+        int valintatapajonot = 0;
+        int hakukohteet = 0;
 
-		for (HakukohdeWrapper hki : s.getHakukohteet()) {
-			hakukohteet++;
-			Hakukohde hk = hki.getHakukohde();
-			for (Valintatapajono vt : hk.getValintatapajonot()) {
-				valintatapajonot++;
-				for (Hakemus h : vt.getHakemukset()) {
-					hakemukset++;
-					henkilot.add(h.getHakijaOid());
-				}
-			}
-		}
+        for (HakukohdeWrapper hki : s.getHakukohteet()) {
+            hakukohteet++;
+            Hakukohde hk = hki.getHakukohde();
+            for (Valintatapajono vt : hk.getValintatapajonot()) {
+                valintatapajonot++;
+                for (Hakemus h : vt.getHakemukset()) {
+                    hakemukset++;
+                    henkilot.add(h.getHakijaOid());
+                }
+            }
+        }
 
-		sb.append("===================================================\n");
-		sb.append("Summary:\n");
-		sb.append("Hakukohteet:      " + hakukohteet + "\n");
-		sb.append("Valintatapajonot: " + valintatapajonot + "\n");
-		sb.append("Hakijat:          " + henkilot.size() + "\n");
-		sb.append("Hakemukset:       " + hakemukset + "\n");
-		sb.append("Rekursio syvyys:  " + ((SijoitteluAlgorithmImpl) a).depth + "\n");
-		sb.append("===================================================\n");
+        sb.append("===================================================\n");
+        sb.append("Summary:\n");
+        sb.append("Hakukohteet:      " + hakukohteet + "\n");
+        sb.append("Valintatapajonot: " + valintatapajonot + "\n");
+        sb.append("Hakijat:          " + henkilot.size() + "\n");
+        sb.append("Hakemukset:       " + hakemukset + "\n");
+        sb.append("Rekursio syvyys:  " + ((SijoitteluAlgorithmImpl) a).depth + "\n");
+        sb.append("===================================================\n");
 
-		for (HakukohdeWrapper hki : s.getHakukohteet()) {
-			sb.append("HAKUKOHDE: [" + hki.getHakukohde().getOid() + "]\n");
-			for (ValintatapajonoWrapper jono : hki.getValintatapajonot()) {
-				int hyväksytty = 0;
-				for (HakemusWrapper hakemus : jono.getHakemukset()) {
-					if (hakemus.getHakemus().getTila() == HakemuksenTila.HYVAKSYTTY) {
-						hyväksytty++;
-					}
-				}
-				sb.append("  JONO [" + jono.getValintatapajono().getOid() + "], prioriteetti [" + jono.getValintatapajono().getPrioriteetti() + "] aloituspaikat [" + jono.getValintatapajono().getAloituspaikat() + "], hyvaksytty[" + hyväksytty + "] tasasijasaanto [" + jono.getValintatapajono().getTasasijasaanto() + "]\n");
-				for (HakemusWrapper hakemus : jono.getHakemukset()) {
-					sb.append("          " + hakemus.getHakemus().getJonosija() + "." + hakemus.getHakemus().getTasasijaJonosija() + "  " + hakemus.getHakemus().getHakijaOid() + " " + hakemus.getHakemus().getTila() + " hakijan prijo:" + hakemus.getHakemus().getPrioriteetti() + "\n");
-				}
-			}
-		}
-		sb.append("===================================================\n");
-		return sb.toString();
-	}
+        for (HakukohdeWrapper hki : s.getHakukohteet()) {
+            sb.append("HAKUKOHDE: [" + hki.getHakukohde().getOid() + "]\n");
+            for (ValintatapajonoWrapper jono : hki.getValintatapajonot()) {
+                int hyvaksytty = 0;
+                for (HakemusWrapper hakemus : jono.getHakemukset()) {
+                    if (hakemus.getHakemus().getTila() == HakemuksenTila.HYVAKSYTTY) {
+                        hyvaksytty++;
+                    }
+                }
+                sb.append("  JONO [" + jono.getValintatapajono().getOid() + "], prioriteetti [" + jono.getValintatapajono().getPrioriteetti() + "] aloituspaikat [" + jono.getValintatapajono().getAloituspaikat() + "], hyvaksytty[" + hyvaksytty + "] tasasijasaanto [" + jono.getValintatapajono().getTasasijasaanto() + "]\n");
+                for (HakemusWrapper hakemus : jono.getHakemukset()) {
+                    sb.append("          " + hakemus.getHakemus().getJonosija() + "." + hakemus.getHakemus().getTasasijaJonosija() + "  " + hakemus.getHakemus().getHakijaOid() + " " + hakemus.getHakemus().getTila() + " hakijan prijo:" + hakemus.getHakemus().getPrioriteetti() + "\n");
+                }
+            }
+        }
+        sb.append("===================================================\n");
+        return sb.toString();
+    }
 
 }
