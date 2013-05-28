@@ -14,9 +14,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /**
  * @author Kari Kammonen
@@ -33,26 +31,19 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
     @Autowired
     private Dao dao;
 
-    public void sijoittele() {
 
-    }
+    //ei versioi sijoittelua, tekeee uuden sijoittelun olemassaoleville kohteille
+    public void sijoittele(String hakuOid) {
 
-    @Override
-    public void sijoittele(SijoitteleTyyppi sijoitteluTyyppi) {
-
-        String hakuOid = sijoitteluTyyppi.getTarjonta().getHaku().getOid();
         Sijoittelu sijoittelu = getOrCreateSijoittelu(hakuOid);
-        SijoitteluAjo sijoitteluAjo = createSijoitteluAjo(sijoittelu);
+        SijoitteluAjo viimeisinSijoitteluajo = sijoittelu.getLatestSijoitteluajo();
+        List<Hakukohde> hakukohteet = dao.getHakukohdeForSijoitteluajo(viimeisinSijoitteluajo.getSijoitteluajoId());
+        List<Valintatulos> valintatulokset = dao.loadValintatulokset(hakuOid);
+        SijoitteluAlgorithm sijoitteluAlgorithm = algorithmFactory.constructAlgorithm(hakukohteet, valintatulokset);
 
-
-        List<HakukohdeTyyppi> sisaantulevatHakukohteet = sijoitteluTyyppi.getTarjonta().getHakukohde();
-        List<Hakukohde> hakukohteet = createHakukohteet(sisaantulevatHakukohteet, sijoitteluAjo);
-
-        SijoitteluAlgorithm sijoitteluAlgorithm = algorithmFactory.constructAlgorithm(hakukohteet);
-
-        sijoitteluAjo.setStartMils(System.currentTimeMillis());
+        viimeisinSijoitteluajo.setStartMils(System.currentTimeMillis());
         sijoitteluAlgorithm.start();
-        sijoitteluAjo.setEndMils(System.currentTimeMillis());
+        viimeisinSijoitteluajo.setEndMils(System.currentTimeMillis());
 
         // and after
         dao.persistSijoittelu(sijoittelu);
@@ -61,17 +52,62 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
         }
     }
 
-    private   List<Hakukohde> createHakukohteet( List<HakukohdeTyyppi> sisaantulevatHakukohteet, SijoitteluAjo sijoitteluAjo) {
+    //verioi sijoittelun ja tuo uudet kohteet
+    @Override
+    public void sijoittele(SijoitteleTyyppi sijoitteluTyyppi) {
+
+        String hakuOid = sijoitteluTyyppi.getTarjonta().getHaku().getOid();
+        Sijoittelu sijoittelu = getOrCreateSijoittelu(hakuOid);
+        SijoitteluAjo viimeisinSijoitteluajo = sijoittelu.getLatestSijoitteluajo();
+
+        List<Hakukohde> uudetHakukohteet = convertHakukohteet(sijoitteluTyyppi.getTarjonta().getHakukohde());
+        List<Hakukohde> olemassaolevatHakukohteet = dao.getHakukohdeForSijoitteluajo(viimeisinSijoitteluajo.getSijoitteluajoId());
+
+        SijoitteluAjo uusiSijoitteluajo = createSijoitteluAjo(sijoittelu);
+        List<Hakukohde> kaikkiHakukohteet = merge(uusiSijoitteluajo, olemassaolevatHakukohteet, uudetHakukohteet);
+
+
+        List<Valintatulos> valintatulokset = dao.loadValintatulokset(hakuOid);
+        SijoitteluAlgorithm sijoitteluAlgorithm = algorithmFactory.constructAlgorithm(kaikkiHakukohteet,valintatulokset);
+
+        uusiSijoitteluajo.setStartMils(System.currentTimeMillis());
+        sijoitteluAlgorithm.start();
+        uusiSijoitteluajo.setEndMils(System.currentTimeMillis());
+
+        // and after
+        dao.persistSijoittelu(sijoittelu);
+        for(Hakukohde hakukohde : kaikkiHakukohteet ) {
+            dao.persistHakukohde(hakukohde);
+        }
+    }
+
+    //nykyisellaan vain korvaa hakukohteet, mietittava toiminta tarkemmin
+    private List<Hakukohde> merge(SijoitteluAjo uusiSijoitteluajo, List<Hakukohde> olemassaolevatHakukohteet, List<Hakukohde> uudetHakukohteet) {
+       Map<String,Hakukohde> kaikkiHakukohteet = new HashMap<String, Hakukohde>();
+        for(Hakukohde hakukohde : olemassaolevatHakukohteet) {
+            hakukohde.setOid(null);       //poista id vanhoilta hakukohteilta, niin etta ne voidaan peristoida uusina dokumentteina
+            kaikkiHakukohteet.put(hakukohde.getOid(), hakukohde);
+        }
+        //ylikirjoita uusilla kohteilla kylmasti
+        for(Hakukohde hakukohde : uudetHakukohteet) {
+            kaikkiHakukohteet.put(hakukohde.getOid(), hakukohde);
+        }
+
+        for(Hakukohde hakukohde : kaikkiHakukohteet.values()) {
+            HakukohdeItem hki = new HakukohdeItem();
+            hki.setOid(hakukohde.getOid());
+            uusiSijoitteluajo.getHakukohteet().add(hki);
+            hakukohde.setSijoitteluajoId(uusiSijoitteluajo.getSijoitteluajoId());
+        }
+
+        return new ArrayList<Hakukohde>(kaikkiHakukohteet.values());
+    }
+
+    private   List<Hakukohde> convertHakukohteet( List<HakukohdeTyyppi> sisaantulevatHakukohteet) {
         List<Hakukohde>  hakukohdes = new ArrayList<Hakukohde>();
         for(HakukohdeTyyppi hkt : sisaantulevatHakukohteet) {
             Hakukohde hakukohde = DomainConverter.convertToHakukohde(hkt);
-            hakukohde.setSijoitteluajoId(sijoitteluAjo.getSijoitteluajoId());
             hakukohdes.add(hakukohde);
-
-            HakukohdeItem hki = new HakukohdeItem();
-            hki.setOid(hakukohde.getOid());
-            sijoitteluAjo.getHakukohteet().add(hki);
-
         }
         return hakukohdes;
     }
@@ -91,7 +127,7 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
         if (StringUtils.isBlank(hakukohdeOid) || StringUtils.isBlank(hakukohdeOid) || StringUtils.isBlank(hakemusOid)) {
             throw new RuntimeException("Invalid search params, fix exception later");
         }
-        return dao.loadValintatuloksenTila(hakukohdeOid, valintatapajonoOid, hakemusOid);
+        return dao.loadValintatulos(hakukohdeOid, valintatapajonoOid, hakemusOid);
     }
 
     @Override
@@ -123,12 +159,13 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
         }
 
         //TODO CHEKKAA ETTA TILAMUUTOS MAHDOLLINEN, HAE HAKIJAN OIDI
-        Valintatulos v = dao.loadValintatuloksenTila(hakukohdeOid, valintatapajonoOid, hakemusOid);
+        Valintatulos v = dao.loadValintatulos(hakukohdeOid, valintatapajonoOid, hakemusOid);
         if (v == null) {
             v = new Valintatulos();
             v.setHakemusOid(hakemusOid);
             v.setValintatapajonoOid(valintatapajonoOid);
             v.setHakukohdeOid(hakukohdeOid);
+            v.setHakuOid(hakuoid);
             //TODO, LISAA HAKIJA OID
         }
 

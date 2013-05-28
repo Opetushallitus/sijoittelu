@@ -25,29 +25,28 @@ public class DaoImpl implements Dao {
     private Datastore morphiaDS;
 
     @Override
-    public void persistSijoitteluAjo(SijoitteluAjo sijoitteluajo) {
+    public void persistSijoittelu(Sijoittelu sijoittelu) {
+        morphiaDS.save(sijoittelu);
 
-        /*
-        for (HakukohdeItem hki : sijoitteluajo.getHakukohteet()) {
-            Hakukohde hk = hki.getHakukohde();
-            morphiaDS.save(hk);
-        } */
-        morphiaDS.save(sijoitteluajo);
+    }
+    @Override
+    public void persistHakukohde(Hakukohde hakukohde) {
+        morphiaDS.save(hakukohde);
     }
 
     @Override
-    public SijoitteluAjo loadSijoitteluajo(Long ajoId) {
-        Query<SijoitteluAjo> q = morphiaDS.createQuery(SijoitteluAjo.class);
-        q.criteria("sijoitteluajoId").equal(ajoId);
+    public Sijoittelu loadSijoittelu(String hakuOid) {
+        Query<Sijoittelu> q = morphiaDS.createQuery(Sijoittelu.class);
+        q.criteria("hakuOid").equal(hakuOid);
         return q.get();
     }
 
-    @Override
-    public Valintatulos loadValintatuloksenTila(String hakukohdeOid, String valintatapajonoOid, String hakemusOid) {
-        if(StringUtils.isBlank(hakukohdeOid) || StringUtils.isBlank(hakukohdeOid) || StringUtils.isBlank(hakemusOid))    {
-            throw new RuntimeException("Invalid searhch params, fix exception later");
-        }
 
+    @Override
+    public Valintatulos loadValintatulos(String hakukohdeOid, String valintatapajonoOid, String hakemusOid) {
+        if(StringUtils.isBlank(hakukohdeOid) || StringUtils.isBlank(hakukohdeOid) || StringUtils.isBlank(hakemusOid))    {
+            throw new RuntimeException("Invalid search params, fix exception later");
+        }
         Query<Valintatulos> q = morphiaDS.createQuery(Valintatulos.class);
         q.criteria("hakukohdeOid").equal(hakukohdeOid);
         q.criteria("valintatapajonoOid").equal(valintatapajonoOid);
@@ -56,9 +55,15 @@ public class DaoImpl implements Dao {
     }
 
     @Override
-    public void persistHakukohde(Hakukohde hakukohde) {
-        morphiaDS.save(hakukohde);
+    public List<Valintatulos> loadValintatulokset(String hakuOid) {
+        if(StringUtils.isBlank(hakuOid) )    {
+            throw new RuntimeException("Invalid search params, fix exception later");
+        }
+        Query<Valintatulos> q = morphiaDS.createQuery(Valintatulos.class);
+        q.criteria("hakuOid").equal(hakuOid);
+        return q.asList();
     }
+
 
     @Override
     public Hakukohde getHakukohdeForSijoitteluajo(Long sijoitteluajoId, String hakukohdeOid) {
@@ -68,24 +73,16 @@ public class DaoImpl implements Dao {
         return q.get();
     }
 
+    @Override
+    public List<Hakukohde> getHakukohdeForSijoitteluajo(Long sijoitteluajoId) {
+        Query<Hakukohde> q = morphiaDS.createQuery(Hakukohde.class);
+        q.criteria("sijoitteluajoId").equal(sijoitteluajoId);
+        return q.asList();
+    }
 
     @Override
     public void createOrUpdateValintatulos(Valintatulos tulos) {
         morphiaDS.save(tulos);
-    }
-
-
-    @Override
-    public void persistSijoittelu(Sijoittelu sijoittelu) {
-        morphiaDS.save(sijoittelu);
-
-    }
-
-    @Override
-    public Sijoittelu loadSijoittelu(String hakuOid) {
-        Query<Sijoittelu> q = morphiaDS.createQuery(Sijoittelu.class);
-        q.criteria("hakuOid").equal(hakuOid);
-        return q.get();
     }
 
 }

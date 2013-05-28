@@ -81,4 +81,8 @@ public class Hakukohde implements Serializable {
     public void setSijoitteluajoId(Long sijoitteluajoId) {
         this.sijoitteluajoId = sijoitteluajoId;
     }
+
+    public void setId(ObjectId id) {
+        this.id = id;
+    }
 }

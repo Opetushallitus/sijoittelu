@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import fi.vm.sade.sijoittelu.domain.*;
 import org.springframework.stereotype.Component;
 
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.postsijoitteluprocessor.PostSijoitteluProcessor;
@@ -16,12 +17,6 @@ import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.HakukohdeWrappe
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.HenkiloWrapper;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.SijoitteluajoWrapper;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.ValintatapajonoWrapper;
-import fi.vm.sade.sijoittelu.domain.Hakemus;
-import fi.vm.sade.sijoittelu.domain.Hakijaryhma;
-import fi.vm.sade.sijoittelu.domain.Hakukohde;
-import fi.vm.sade.sijoittelu.domain.HakukohdeItem;
-import fi.vm.sade.sijoittelu.domain.SijoitteluAjo;
-import fi.vm.sade.sijoittelu.domain.Valintatapajono;
 
 /**
  * 
@@ -39,7 +34,7 @@ public class SijoitteluAlgorithmFactoryImpl implements SijoitteluAlgorithmFactor
 	 * Luo sijoittelualgoritmi.
 	 */
 	@Override
-	public SijoitteluAlgorithm constructAlgorithm(List<Hakukohde> hakukohteet) {
+	public SijoitteluAlgorithm constructAlgorithm(List<Hakukohde> hakukohteet, List<Valintatulos> valintatulokset) {
 
 		// private Map<String, Tasasijasaanto> tasasijasaannot = new
 		// HashMap<String,
@@ -58,7 +53,7 @@ public class SijoitteluAlgorithmFactoryImpl implements SijoitteluAlgorithmFactor
 		// algorithm.tasasijasaannot = this.tasasijasaannot;
 		algorithm.preSijoitteluProcessors = preSijoitteluProcessors;
 		algorithm.postSijoitteluProcessors = postSijoitteluProcessors;
-		algorithm.sijoitteluAjo = wrapDomain(hakukohteet);
+		algorithm.sijoitteluAjo = wrapDomain(hakukohteet, valintatulokset);
 		return algorithm;
 	}
 
@@ -68,12 +63,12 @@ public class SijoitteluAlgorithmFactoryImpl implements SijoitteluAlgorithmFactor
 	 * @param hakukohteet
 	 * @return
 	 */
-	private SijoitteluajoWrapper wrapDomain(List<Hakukohde> hakukohteet) {
+	private SijoitteluajoWrapper wrapDomain(List<Hakukohde> hakukohteet, List<Valintatulos> valintatulokset) {
 
 		SijoitteluajoWrapper sijoitteluajoWrapper = new SijoitteluajoWrapper();
 	//	sijoitteluajoWrapper.setSijoitteluajo(sijoitteluajo);
 
-		HashMap<String, HenkiloWrapper> henkilot = new HashMap<String, HenkiloWrapper>();
+		HashMap<String, HenkiloWrapper> hakemusOidHenkiloMap = new HashMap<String, HenkiloWrapper>();
 
 		for (Hakukohde hakukohde : hakukohteet) {
 			HakukohdeWrapper hakukohdeWrapper = new HakukohdeWrapper();
@@ -93,7 +88,7 @@ public class SijoitteluAlgorithmFactoryImpl implements SijoitteluAlgorithmFactor
 					valintatapajonoWrapper.getHakemukset().add(hakemusWrapper);
 					hakemusWrapper.setValintatapajono(valintatapajonoWrapper);
 
-					HenkiloWrapper henkiloWrapper = getOrCreateHenkilo(hakemus.getHakijaOid(), henkilot);
+					HenkiloWrapper henkiloWrapper = getOrCreateHenkilo(hakemus.getHakijaOid(), hakemusOidHenkiloMap);
 					henkiloWrapper.getHakemukset().add(hakemusWrapper);
 					hakemusWrapper.setHenkilo(henkiloWrapper);
 				}
@@ -105,7 +100,7 @@ public class SijoitteluAlgorithmFactoryImpl implements SijoitteluAlgorithmFactor
 				hakijaryhmaWrapper.setHakukohdeWrapper(hakukohdeWrapper);
 				hakukohdeWrapper.getHakijaryhmaWrappers().add(hakijaryhmaWrapper);
 				for (String oid : hakijaryhma.getHakijaOid()) {
-					HenkiloWrapper henkilo = getOrCreateHenkilo(oid, henkilot);
+					HenkiloWrapper henkilo = getOrCreateHenkilo(oid, hakemusOidHenkiloMap);
 					hakijaryhmaWrapper.getHenkiloWrappers().add(henkilo);
 				}
 			}
@@ -113,14 +108,18 @@ public class SijoitteluAlgorithmFactoryImpl implements SijoitteluAlgorithmFactor
 		return sijoitteluajoWrapper;
 	}
 
-	private HenkiloWrapper getOrCreateHenkilo(String oid, HashMap<String, HenkiloWrapper> henkilot) {
-		HenkiloWrapper henkiloWrapper = henkilot.get(oid);
+	private HenkiloWrapper getOrCreateHenkilo(String oid, HashMap<String, HenkiloWrapper> hakemusOidHenkiloMap) {
+	    /*
+			HenkiloWrapper henkiloWrapper = henkilot.get(oid);
 		if (henkiloWrapper == null) {
 			henkiloWrapper = new HenkiloWrapper();
-			henkiloWrapper.setHenkiloOid(oid);
+			henkiloWrapper.setHakemusOid(oid);
 			henkilot.put(oid, henkiloWrapper);
 		}
 		return henkiloWrapper;
+
+		*/
+        return null;
 	}
 
 }

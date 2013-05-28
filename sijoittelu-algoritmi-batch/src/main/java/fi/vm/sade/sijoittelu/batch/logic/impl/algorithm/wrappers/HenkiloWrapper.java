@@ -1,5 +1,7 @@
 package fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers;
 
+import fi.vm.sade.sijoittelu.domain.Valintatulos;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,6 +16,10 @@ public class HenkiloWrapper {
 
     private String henkiloOid;
 
+    private String hakemusOid;
+
+    private Valintatulos valintatulos;
+
     public List<HakemusWrapper> getHakemukset() {
         return hakemukset;
     }
@@ -26,4 +32,19 @@ public class HenkiloWrapper {
         this.henkiloOid = henkiloOid;
     }
 
+    public String getHakemusOid() {
+        return hakemusOid;
+    }
+
+    public Valintatulos getValintatulos() {
+        return valintatulos;
+    }
+
+    public void setValintatulos(Valintatulos valintatulos) {
+        this.valintatulos = valintatulos;
+    }
+
+    public void setHakemusOid(String hakemusOid) {
+        this.hakemusOid = hakemusOid;
+    }
 }

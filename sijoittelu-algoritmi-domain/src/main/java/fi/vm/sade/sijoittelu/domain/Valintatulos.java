@@ -40,6 +40,8 @@ public class Valintatulos {
     //@JsonView(JsonViews.Basic.class)
     private String hakijaOid;
 
+    private String hakuOid;
+
     //@JsonView(JsonViews.Basic.class)
     private int hakutoive;
 
@@ -100,5 +102,13 @@ public class Valintatulos {
 
     public void setId(ObjectId id) {
         this.id = id;
+    }
+
+    public String getHakuOid() {
+        return hakuOid;
+    }
+
+    public void setHakuOid(String hakuOid) {
+        this.hakuOid = hakuOid;
     }
 }
