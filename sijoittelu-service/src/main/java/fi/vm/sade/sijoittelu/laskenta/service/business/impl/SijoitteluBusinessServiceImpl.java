@@ -61,8 +61,10 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
         SijoitteluAjo viimeisinSijoitteluajo = sijoittelu.getLatestSijoitteluajo();
 
         List<Hakukohde> uudetHakukohteet = convertHakukohteet(sijoitteluTyyppi.getTarjonta().getHakukohde());
-        List<Hakukohde> olemassaolevatHakukohteet = dao.getHakukohdeForSijoitteluajo(viimeisinSijoitteluajo.getSijoitteluajoId());
-
+        List<Hakukohde> olemassaolevatHakukohteet = Collections.<Hakukohde>emptyList();
+        if(viimeisinSijoitteluajo != null) {
+            olemassaolevatHakukohteet = dao.getHakukohdeForSijoitteluajo(viimeisinSijoitteluajo.getSijoitteluajoId());
+        }
         SijoitteluAjo uusiSijoitteluajo = createSijoitteluAjo(sijoittelu);
         List<Hakukohde> kaikkiHakukohteet = merge(uusiSijoitteluajo, olemassaolevatHakukohteet, uudetHakukohteet);
 
@@ -83,7 +85,7 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
 
     //nykyisellaan vain korvaa hakukohteet, mietittava toiminta tarkemmin
     private List<Hakukohde> merge(SijoitteluAjo uusiSijoitteluajo, List<Hakukohde> olemassaolevatHakukohteet, List<Hakukohde> uudetHakukohteet) {
-       Map<String,Hakukohde> kaikkiHakukohteet = new HashMap<String, Hakukohde>();
+        Map<String,Hakukohde> kaikkiHakukohteet = new HashMap<String, Hakukohde>();
         for(Hakukohde hakukohde : olemassaolevatHakukohteet) {
             hakukohde.setOid(null);       //poista id vanhoilta hakukohteilta, niin etta ne voidaan peristoida uusina dokumentteina
             kaikkiHakukohteet.put(hakukohde.getOid(), hakukohde);

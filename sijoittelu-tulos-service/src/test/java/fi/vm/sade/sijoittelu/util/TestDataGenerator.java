@@ -41,7 +41,7 @@ public class TestDataGenerator {
         sijoittelu.setSijoitteluId(SIJOITTELU_ID_1);
 
         SijoitteluAjo sijoitteluAjo1 = createSijoitteluajo1();
-        SijoitteluAjo sijoitteluAjo2 = createSijoitteluajo1();
+        SijoitteluAjo sijoitteluAjo2 = createSijoitteluajo2();
         sijoittelu.getSijoitteluajot().add(sijoitteluAjo1);
         sijoittelu.getSijoitteluajot().add(sijoitteluAjo2);
 
@@ -49,7 +49,7 @@ public class TestDataGenerator {
         List<Hakukohde> a1 = createHakukohdes(0);
         addHakukohdes(a1, sijoitteluAjo1)  ;
         List<Hakukohde> a2 = createHakukohdes(1);
-        addHakukohdes(a2, sijoitteluAjo1)  ;
+        addHakukohdes(a2, sijoitteluAjo2)  ;
 
 
         morphiaDS.save(sijoittelu);

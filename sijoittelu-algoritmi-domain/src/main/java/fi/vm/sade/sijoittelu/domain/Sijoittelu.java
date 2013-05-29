@@ -50,7 +50,7 @@ public class Sijoittelu implements Serializable {
     public SijoitteluAjo getLatestSijoitteluajo() {
         SijoitteluAjo latest = null;
         for(SijoitteluAjo sijoitteluAjo : sijoitteluajot) {
-            if(latest == null || latest.getEndMils() == null || latest.getEndMils().compareTo(sijoitteluAjo.getEndMils()) > 0) {
+            if(latest == null || latest.getEndMils() == null || latest.getEndMils().compareTo(sijoitteluAjo.getEndMils()) < 0) {
                 latest = sijoitteluAjo;
             }
         }
