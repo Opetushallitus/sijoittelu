@@ -8,6 +8,7 @@ import fi.vm.sade.sijoittelu.domain.Sijoittelu;
 import fi.vm.sade.sijoittelu.domain.SijoitteluAjo;
 import fi.vm.sade.sijoittelu.util.DropMongoDbTestExecutionListener;
 import fi.vm.sade.sijoittelu.util.TestDataGenerator;
+import junit.framework.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -44,74 +45,32 @@ public class DaoTest {
         testDataGenerator.generateTestData();
     }
 
-    @Test
-    public void testGetAllHakus() {
-        List<Sijoittelu> hakus = dao.getHakus(null);
-        assertEquals(1, hakus.size());
-    }
-
-    @Test
-    public void testGetAllHakukohdes() {
-        List<Hakukohde> hakukohdes = dao.getHakukohdes(TestDataGenerator.SIJOITTELU_AJO_ID_1, null);
-        assertEquals(3, hakukohdes.size());
-    }
 
     @Test
     public void testGetSijoitteluajo() {
         assertNotNull(dao.getSijoitteluajo(TestDataGenerator.SIJOITTELU_AJO_ID_1));
     }
 
-    @Test(expected = SijoitteluEntityNotFoundException.class)
-    public void testGetNonExistingSijoitteluajo() {
-        dao.getSijoitteluajo(-1);
+    @Test
+    public void  testGetSijoittelu() {
+        Assert.assertEquals(1, dao.getSijoittelu().size());
     }
 
     @Test
-    public void testGetAllSijoitteluajos() {
-        List<SijoitteluAjo> sijoitteluajos = dao.getSijoitteluajos(null);
-        assertEquals(2, sijoitteluajos.size());
+    public void testGetHakukohdeBySijoitteluajo() {
+        Assert.assertNotNull(    dao.getHakukohdeBySijoitteluajo(TestDataGenerator.SIJOITTELU_AJO_ID_1, TestDataGenerator.HAKUKOHDE_OID_1));
     }
+
 
     @Test
     public void testGetSijoitteluByHakuOid() {
         Sijoittelu sijoittelu = dao.getSijoitteluByHakuOid(TestDataGenerator.HAKU_OID);
         assertNotNull(sijoittelu);
-
         assertNull(dao.getSijoitteluByHakuOid("notexists"));
     }
 
-    @Test
-    public void testGetSijoitteluajoByHakuOid() {
-        List<SijoitteluAjo> sijoitteluajos = dao.getSijoitteluajoByHakuOid(TestDataGenerator.HAKU_OID);
-        assertEquals(2, sijoitteluajos.size());
-    }
 
-    @Test(expected = SijoitteluEntityNotFoundException.class)
-    public void testGetSijoitteluajoByHakuOidNotExists() {
-        dao.getSijoitteluajoByHakuOid("notexists");
-    }
 
-    @Test
-    public void testGetLatestSijoitteluajoByHakuOid() {
-        SijoitteluAjo latest = dao.getLatestSijoitteluajoByHakuOid(TestDataGenerator.HAKU_OID);
-        assertEquals(TestDataGenerator.SIJOITTELU_AJO_ID_2, latest.getSijoitteluajoId());
-    }
 
-    @Test
-    public void testGetSijoitteluajoByHakuOidAndTimestamp() {
-        Calendar startTime = Calendar.getInstance();
-        startTime.set(2012, 9, 18, 10, 23);
 
-        SijoitteluAjo sijoitteluajo = dao.getSijoitteluajoByHakuOidAndTimestamp(TestDataGenerator.HAKU_OID,
-                startTime.getTimeInMillis());
-        assertEquals(TestDataGenerator.SIJOITTELU_AJO_ID_1, sijoitteluajo.getSijoitteluajoId());
-
-        startTime.set(2012, 9, 28, 10, 24);
-        sijoitteluajo = dao.getSijoitteluajoByHakuOidAndTimestamp(TestDataGenerator.HAKU_OID,
-                startTime.getTimeInMillis());
-        assertEquals(TestDataGenerator.SIJOITTELU_AJO_ID_2, sijoitteluajo.getSijoitteluajoId());
-
-        startTime.set(2003, 9, 18, 10, 24);
-        assertNull(dao.getSijoitteluajoByHakuOidAndTimestamp(TestDataGenerator.HAKU_OID, startTime.getTimeInMillis()));
-    }
 }

@@ -10,6 +10,7 @@ import fi.vm.sade.tulos.service.types.HaeHautKriteeritTyyppi;
 import fi.vm.sade.tulos.service.types.HaeSijoitteluajotKriteeritTyyppi;
 import fi.vm.sade.tulos.service.types.tulos.*;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,7 +46,7 @@ public class TulosServiceIntegrationTest {
         testDataGenerator = new TestDataGenerator(morphiaDS);
         testDataGenerator.generateTestData();
     }
-
+    @Ignore
     @Test
     public void testHaeHaut() {
         List<HakuTyyppi> hakus = tulosService.haeHaut(null);
@@ -62,7 +63,7 @@ public class TulosServiceIntegrationTest {
         hakus = tulosService.haeHaut(kriteerit);
         assertEquals(0, hakus.size());
     }
-
+    @Ignore
     @Test
     public void testHaeSijoitteluajot() {
         List<SijoitteluajoTyyppi> ajos = tulosService.haeSijoitteluajot(null);
@@ -99,7 +100,7 @@ public class TulosServiceIntegrationTest {
         assertEquals(0, ajos.size());
 
     }
-
+    @Ignore
     @Test
     public void testHaeHakukohteet() {
         List<HakukohdeTyyppi> hakukohdes = tulosService.haeHakukohteet(TestDataGenerator.SIJOITTELU_AJO_ID_1, null);
@@ -136,6 +137,7 @@ public class TulosServiceIntegrationTest {
         assertEquals(2, hakukohdes.size());
     }
 
+    @Ignore
     @Test(expected = SijoitteluajoNotFoundException.class)
     public void testHaeHakukohteetWithNonExistingSijoitteluId() {
         tulosService.haeHakukohteet(-1L, null);

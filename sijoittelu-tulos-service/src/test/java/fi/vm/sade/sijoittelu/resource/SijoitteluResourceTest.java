@@ -80,14 +80,15 @@ public class SijoitteluResourceTest {
         assertEquals(sijoittelu.getSijoitteluId(), fromJson.getSijoitteluId());
         assertEquals(sijoittelu.getHakuOid(), fromJson.getHakuOid());
     }
-
+   /*
     @Test
     public void testGetSijoitteluajoByHakuOidNotExists() {
         final String hakuOidNotExists = "hakuoidNotExists";
         Mockito.when(daoMock.getSijoitteluajoByHakuOid(hakuOidNotExists)).thenThrow(new SijoitteluEntityNotFoundException());
         assertEquals(0, sijoitteluResource.getSijoitteluajoByHakuOid(hakuOidNotExists, false).size());
     }
-
+     */
+    /*
     @Test
     public void testGetSijoitteluajoByHakuOid() throws IOException {
         final String hakuOidExists = "hakuoidExists";
@@ -130,4 +131,5 @@ public class SijoitteluResourceTest {
         }
 
     }
+    */
 }

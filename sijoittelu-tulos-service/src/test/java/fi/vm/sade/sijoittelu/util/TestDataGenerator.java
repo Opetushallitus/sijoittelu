@@ -39,33 +39,50 @@ public class TestDataGenerator {
         Sijoittelu sijoittelu = new Sijoittelu();
         sijoittelu.setHakuOid(HAKU_OID);
         sijoittelu.setSijoitteluId(SIJOITTELU_ID_1);
-        sijoittelu.getSijoitteluajot().addAll(createSijoitteluajos());
-        for (SijoitteluAjo s : sijoittelu.getSijoitteluajot()) {
-            for (HakukohdeItem hki : s.getHakukohteet()) {
-                Hakukohde h = hki.getHakukohde();
-                morphiaDS.save(h);
-            }
-            morphiaDS.save(s);
-        }
+
+        SijoitteluAjo sijoitteluAjo1 = createSijoitteluajo1();
+        SijoitteluAjo sijoitteluAjo2 = createSijoitteluajo1();
+        sijoittelu.getSijoitteluajot().add(sijoitteluAjo1);
+        sijoittelu.getSijoitteluajot().add(sijoitteluAjo2);
+
+
+        List<Hakukohde> a1 = createHakukohdes(0);
+        addHakukohdes(a1, sijoitteluAjo1)  ;
+        List<Hakukohde> a2 = createHakukohdes(1);
+        addHakukohdes(a2, sijoitteluAjo1)  ;
+
+
         morphiaDS.save(sijoittelu);
+    }
+
+    private void addHakukohdes(  List<Hakukohde> a1, SijoitteluAjo sijoitteluAjo ) {
+        for(Hakukohde hk : a1) {
+            HakukohdeItem item = new HakukohdeItem();
+            item.setOid(hk.getOid());
+            hk.setSijoitteluajoId(sijoitteluAjo.getSijoitteluajoId());
+            sijoitteluAjo.getHakukohteet().add(item);
+            morphiaDS.save(hk) ;
+        }
     }
 
     public void cleanupTestData() {
         Query<Sijoittelu> hakuQuery = morphiaDS.createQuery(Sijoittelu.class);
         hakuQuery.field("oid").equal(HAKU_OID);
         Sijoittelu haku = hakuQuery.get();
-        for (SijoitteluAjo s : haku.getSijoitteluajot()) {
-            for (HakukohdeItem hki : s.getHakukohteet()) {
-                morphiaDS.delete(hki.getHakukohde());
-            }
+        morphiaDS.delete(haku);
+
+        Query<Hakukohde> hakukohdeQuery = morphiaDS.createQuery(Hakukohde.class);
+        hakukohdeQuery.field("sijoitteluajoId").equal(SIJOITTELU_ID_1);
+
+        for (Hakukohde s : hakukohdeQuery.field("sijoitteluajoId").equal(SIJOITTELU_ID_1).asList()) {
             morphiaDS.delete(s);
         }
-
-        morphiaDS.delete(haku);
+        for (Hakukohde s : hakukohdeQuery.field("sijoitteluajoId").equal(SIJOITTELU_ID_2).asList()) {
+            morphiaDS.delete(s);
+        }
     }
 
-    private List<SijoitteluAjo> createSijoitteluajos() {
-        List<SijoitteluAjo> ajos = new ArrayList<SijoitteluAjo>();
+    private SijoitteluAjo createSijoitteluajo1() {
 
         Calendar startTime = Calendar.getInstance();
         startTime.set(2012, 9, 17, 10, 23);
@@ -76,8 +93,17 @@ public class TestDataGenerator {
         ajo1.setStartMils(startTime.getTimeInMillis());
         ajo1.setEndMils(endTime.getTimeInMillis());
         ajo1.setSijoitteluajoId(SIJOITTELU_AJO_ID_1);
-        ajo1.getHakukohteet().addAll(createHakukohdes(1));
-        ajos.add(ajo1);
+
+
+        return ajo1;
+    }
+
+    private SijoitteluAjo createSijoitteluajo2() {
+
+        Calendar startTime = Calendar.getInstance();
+
+        Calendar endTime = Calendar.getInstance();
+
 
         startTime.set(2012, 9, 21, 10, 23);
         endTime.set(2012, 9, 25, 10, 24);
@@ -85,14 +111,14 @@ public class TestDataGenerator {
         ajo2.setStartMils(startTime.getTimeInMillis());
         ajo2.setEndMils(endTime.getTimeInMillis());
         ajo2.setSijoitteluajoId(SIJOITTELU_AJO_ID_2);
-        ajo2.getHakukohteet().addAll(createHakukohdes(2));
-        ajos.add(ajo2);
 
-        return ajos;
+
+
+        return ajo2;
     }
 
-    private List<HakukohdeItem> createHakukohdes(int sijoitteluajoNumber) {
-        List<HakukohdeItem> hakukohdes = new ArrayList<HakukohdeItem>();
+    private List<Hakukohde> createHakukohdes(int sijoitteluajoNumber) {
+        List<Hakukohde> hakukohdes = new ArrayList<Hakukohde>();
 
         for (int i = 0; i < 3; ++i) {
             Hakukohde hakukohde = new Hakukohde();
@@ -118,11 +144,7 @@ public class TestDataGenerator {
             }
 
             hakukohde.getValintatapajonot().addAll(createValintatapajonos());
-
-            HakukohdeItem hki = new HakukohdeItem();
-            hki.setOid(hakukohde.getOid());
-            hki.setHakukohde(hakukohde);
-            hakukohdes.add(hki);
+            hakukohdes.add(hakukohde);
         }
 
         return hakukohdes;
