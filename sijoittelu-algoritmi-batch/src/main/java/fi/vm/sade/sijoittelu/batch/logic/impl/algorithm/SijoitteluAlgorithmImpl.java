@@ -91,7 +91,7 @@ public class SijoitteluAlgorithmImpl implements SijoitteluAlgorithm {
 
 		// for (HakemusWrapper w : eiKorvattavissaOlevatHyvaksytytHakemukset) {
 		// System.out.print("======EI KORVATTAVISSA" +
-		// w.getHenkilo().getHenkiloOid());
+		// w.getHenkilo().getHakijaOid());
 		// }
 
 		int aloituspaikat = valintatapajono.getValintatapajono().getAloituspaikat();
@@ -368,9 +368,9 @@ public class SijoitteluAlgorithmImpl implements SijoitteluAlgorithm {
 		}
 
         //TODO korjaa
-	//	if (hakemusWrapper.getHakemus().getTila() == HakemuksenTila.ILMOITETTU) {
-	//		voidaanKorvata = false;
-	//	}
+		if (!hakemusWrapper.isTilaVoidaanVaihtaa()) {
+			voidaanKorvata = false;
+		}
 
 		// if (!voidaanKorvata) {
 		// System.out.println("ei voida korvata " +
@@ -438,7 +438,7 @@ public class SijoitteluAlgorithmImpl implements SijoitteluAlgorithm {
 			}
 		}
 		//
-		// System.out.println("hyväksy: " + hakemus.getHenkilo().getHenkiloOid()
+		// System.out.println("hyväksy: " + hakemus.getHenkilo().getHakijaOid()
 		// + " uudelleensijoiteltavat: " +
 		// uudelleenSijoiteltavatHakukohteet.size());
 

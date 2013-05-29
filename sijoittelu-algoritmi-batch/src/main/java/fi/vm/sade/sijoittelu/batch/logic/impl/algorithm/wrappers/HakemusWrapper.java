@@ -15,6 +15,9 @@ public class HakemusWrapper {
 
     private HenkiloWrapper henkilo;
 
+    //jos hakemuksen tilaa ei voida muuttaa, esm. ilmoitettu hakijalle jo
+    private boolean tilaVoidaanVaihtaa = true;
+
     public HenkiloWrapper getHenkilo() {
         return henkilo;
     }
@@ -37,5 +40,14 @@ public class HakemusWrapper {
 
     public void setValintatapajono(ValintatapajonoWrapper valintatapajono) {
         this.valintatapajono = valintatapajono;
+    }
+
+
+    public boolean isTilaVoidaanVaihtaa() {
+        return tilaVoidaanVaihtaa;
+    }
+
+    public void setTilaVoidaanVaihtaa(boolean tilaVoidaanVaihtaa) {
+        this.tilaVoidaanVaihtaa = tilaVoidaanVaihtaa;
     }
 }

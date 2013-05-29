@@ -14,37 +14,39 @@ public class HenkiloWrapper {
 
     private List<HakemusWrapper> hakemukset = new ArrayList<HakemusWrapper>();
 
-    private String henkiloOid;
+    private String hakijaOid;
 
     private String hakemusOid;
 
-    private Valintatulos valintatulos;
+    //henkilolla voi poikkeustapauksissa olla useampi valintatulos
+    private List<Valintatulos> valintatulos = new ArrayList<Valintatulos>();;
 
     public List<HakemusWrapper> getHakemukset() {
         return hakemukset;
     }
 
-    public String getHenkiloOid() {
-        return henkiloOid;
+    public String getHakijaOid() {
+        return hakijaOid;
     }
 
-    public void setHenkiloOid(String henkiloOid) {
-        this.henkiloOid = henkiloOid;
+    public void setHakijaOid(String henkiloOid) {
+        this.hakijaOid = henkiloOid;
     }
 
     public String getHakemusOid() {
         return hakemusOid;
     }
 
-    public Valintatulos getValintatulos() {
-        return valintatulos;
-    }
-
-    public void setValintatulos(Valintatulos valintatulos) {
-        this.valintatulos = valintatulos;
-    }
 
     public void setHakemusOid(String hakemusOid) {
         this.hakemusOid = hakemusOid;
+    }
+
+    public List<Valintatulos> getValintatulos() {
+        return valintatulos;
+    }
+
+    public void setValintatulos(List<Valintatulos> valintatulos) {
+        this.valintatulos = valintatulos;
     }
 }
