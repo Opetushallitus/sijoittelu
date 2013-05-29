@@ -2,7 +2,12 @@ package fi.vm.sade.sijoittelu.batch.logic.impl.algorithm;
 
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
+import de.flapdoodle.embed.process.collections.Collections;
+import fi.vm.sade.sijoittelu.domain.Hakukohde;
+import fi.vm.sade.sijoittelu.domain.Valintatulos;
 import org.junit.Test;
 
 import fi.vm.sade.service.sijoittelu.types.SijoitteleTyyppi;
@@ -26,10 +31,14 @@ public class SijoitteluCase023Test {
         // tee sijoittelu
         SijoitteleTyyppi t = TestHelper.xmlToObjects("testdata/sijoittelu_case_023.xml");
 
-        SijoitteluAjo sijoitteluAjo = DomainConverter.convertToSijoitteluAjo(t.getTarjonta().getHakukohde());
+        List<Hakukohde> hakukohteet = new ArrayList<Hakukohde>() ;
+        for(fi.vm.sade.service.valintatiedot.schema.HakukohdeTyyppi hkt : t.getTarjonta().getHakukohde()) {
+            Hakukohde hakukohde = DomainConverter.convertToHakukohde(hkt);
+            hakukohteet.add(hakukohde);
+        }
 
         SijoitteluAlgorithmFactoryImpl h = new SijoitteluAlgorithmFactoryImpl();
-        SijoitteluAlgorithm s = h.constructAlgorithm(sijoitteluAjo);
+        SijoitteluAlgorithm s = h.constructAlgorithm(hakukohteet, Collections.<Valintatulos>newArrayList());
         s.start();
 
         // tulosta

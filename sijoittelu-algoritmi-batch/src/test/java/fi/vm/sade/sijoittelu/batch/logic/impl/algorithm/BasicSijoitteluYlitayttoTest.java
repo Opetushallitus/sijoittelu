@@ -2,7 +2,12 @@ package fi.vm.sade.sijoittelu.batch.logic.impl.algorithm;
 
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
+import de.flapdoodle.embed.process.collections.Collections;
+import fi.vm.sade.sijoittelu.domain.Hakukohde;
+import fi.vm.sade.sijoittelu.domain.Valintatulos;
 import org.junit.Test;
 
 import fi.vm.sade.service.sijoittelu.types.SijoitteleTyyppi;
@@ -26,13 +31,18 @@ public class BasicSijoitteluYlitayttoTest {
 		// tee sijoittelu
 		SijoitteleTyyppi t = TestHelper.xmlToObjects("testdata/sijoittelu_basic_ylitaytto_case.xml");
 
-		SijoitteluAjo sijoitteluAjo = DomainConverter.convertToSijoitteluAjo(t.getTarjonta().getHakukohde());
+        List<Hakukohde> hakukohteet = new ArrayList<Hakukohde>() ;
+        for(fi.vm.sade.service.valintatiedot.schema.HakukohdeTyyppi hkt :t.getTarjonta().getHakukohde()) {
+            Hakukohde hakukohde = DomainConverter.convertToHakukohde(hkt);
+            hakukohteet.add(hakukohde);
+        }
 
-		SijoitteluAlgorithmFactoryImpl h = new SijoitteluAlgorithmFactoryImpl();
-		SijoitteluAlgorithm s = h.constructAlgorithm(sijoitteluAjo);
-		s.start();
+        SijoitteluAlgorithmFactoryImpl h = new SijoitteluAlgorithmFactoryImpl();
+        SijoitteluAlgorithm s = h.constructAlgorithm(hakukohteet, Collections.<Valintatulos>newArrayList());
+        s.start();
 
-		// tulosta
+
+        // tulosta
 		FileWriter fstream = new FileWriter("target/sijoittelu_basic_ylitaytto_case.sijoitteluresult");
 		fstream.write(PrintHelper.tulostaSijoittelu(s));
 		fstream.flush();
@@ -42,8 +52,8 @@ public class BasicSijoitteluYlitayttoTest {
 
 		// kohde1, jono1 ... arvonta, 1 hyvaksytty 3:sta, viimeinen aina
 		// varalla.
-		TestHelper.assertoiAinoastaanValittu(sijoitteluAjo.getHakukohteet().get(0).getHakukohde().getValintatapajonot().get(0), "1.2.246.562.24.00000000001", "1.2.246.562.24.00000000002");
-		TestHelper.assertoiAinoastaanValittu(sijoitteluAjo.getHakukohteet().get(0).getHakukohde().getValintatapajonot().get(1), "1.2.246.562.24.00000000003", "1.2.246.562.24.00000000004", "1.2.246.562.24.00000000005", "1.2.246.562.24.00000000006");
+		TestHelper.assertoiAinoastaanValittu(hakukohteet.get(0).getValintatapajonot().get(0), "1.2.246.562.24.00000000001", "1.2.246.562.24.00000000002");
+		TestHelper.assertoiAinoastaanValittu(hakukohteet.get(0).getValintatapajonot().get(1), "1.2.246.562.24.00000000003", "1.2.246.562.24.00000000004", "1.2.246.562.24.00000000005", "1.2.246.562.24.00000000006");
 
 	}
 }

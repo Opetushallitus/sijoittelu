@@ -1,10 +1,22 @@
 package fi.vm.sade.sijoittelu.batch.logic.impl;
 
-import fi.vm.sade.service.valintatiedot.schema.*;
-import fi.vm.sade.sijoittelu.domain.*;
 
-import java.util.ArrayList;
-import java.util.List;
+
+
+import fi.vm.sade.service.valintatiedot.schema.HakukohdeTyyppi;
+import fi.vm.sade.service.valintatiedot.schema.ValintatapajonoTyyppi;
+import fi.vm.sade.service.valintatiedot.schema.ValinnanvaiheTyyppi;
+import fi.vm.sade.service.valintatiedot.schema.HakijaTyyppi;
+import fi.vm.sade.service.valintatiedot.schema.HakijaryhmaTyyppi;
+import fi.vm.sade.service.valintatiedot.schema.HakemusTilaTyyppi;
+
+import fi.vm.sade.sijoittelu.domain.Hakijaryhma;
+import fi.vm.sade.sijoittelu.domain.Hakukohde;
+import fi.vm.sade.sijoittelu.domain.Tasasijasaanto;
+import fi.vm.sade.sijoittelu.domain.Valintatapajono;
+import fi.vm.sade.sijoittelu.domain.Hakemus;
+import fi.vm.sade.sijoittelu.domain.HakemuksenTila;
+
 
 /**
  *
@@ -12,47 +24,6 @@ import java.util.List;
  *
  */
 public class DomainConverter {
-
-    /**
-     * Luo sijoittelun domaini ja palauta algorimi/domain instanssi
-     *
-     * @param haku
-     * @param hakukohdeTyyppit
-     * @return
-
-    public static SijoitteluAjo convertToSijoitteluAjo(List<HakukohdeTyyppi> hakukohdeTyypit) {
-    List<HakukohdeItem> hakukohteet = createDomain(hakukohdeTyypit);
-    SijoitteluAjo ajo = new SijoitteluAjo();
-    ajo.getHakukohteet().addAll(hakukohteet);
-    return ajo;
-    }        */
-
-    /**
-     *
-     * @param hakukohdeTyyppit
-     * @param hakukohteet
-
-    private static List<HakukohdeItem> createDomain(List<HakukohdeTyyppi> hakukohdeTyyppit) {
-    // hakukohteet
-    List<HakukohdeItem> hakukohdeItems = new ArrayList<HakukohdeItem>();
-
-    for (HakukohdeTyyppi hakukohdeTyyppi : hakukohdeTyyppit) {
-    Hakukohde hakukohde = new Hakukohde();
-    hakukohde.setOid(hakukohdeTyyppi.getOid());
-
-    HakukohdeItem hakukohdeItem = new HakukohdeItem();
-    hakukohdeItem.setOid(hakukohdeTyyppi.getOid());
-    hakukohdeItem.setHakukohde(hakukohde);
-
-    hakukohdeItems.add(hakukohdeItem);
-
-    addValintatapaJonos(hakukohdeTyyppi, hakukohde);
-    addHakijaRyhmas(hakukohdeTyyppi, hakukohde);
-
-    }
-    return hakukohdeItems;
-    }
-     */
 
     public static Hakukohde convertToHakukohde(HakukohdeTyyppi hakukohdeTyyppi) {
         Hakukohde hakukohde = new Hakukohde();

@@ -5,7 +5,12 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
 
+import de.flapdoodle.embed.process.collections.Collections;
+import fi.vm.sade.sijoittelu.domain.Hakukohde;
+import fi.vm.sade.sijoittelu.domain.Valintatulos;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -27,9 +32,14 @@ public class Sijoitteludata_2011S_ALPATTest {
 	public void testSijoittele() throws IOException {
 		SijoitteleTyyppi t = TestHelper.xmlToObjects("testdata/sijoitteludata_2011S_ALPAT.xml");
 
-		SijoitteluAjo ajo = DomainConverter.convertToSijoitteluAjo(t.getTarjonta().getHakukohde());
-		SijoitteluAlgorithmFactory f = new SijoitteluAlgorithmFactoryImpl();
-		SijoitteluAlgorithm alg = f.constructAlgorithm(ajo);
+        List<Hakukohde> hakukohteet = new ArrayList<Hakukohde>() ;
+        for(fi.vm.sade.service.valintatiedot.schema.HakukohdeTyyppi hkt : t.getTarjonta().getHakukohde()) {
+            Hakukohde hakukohde = DomainConverter.convertToHakukohde(hkt);
+            hakukohteet.add(hakukohde);
+        }
+
+        SijoitteluAlgorithmFactoryImpl h = new SijoitteluAlgorithmFactoryImpl();
+        SijoitteluAlgorithm alg = h.constructAlgorithm(hakukohteet, Collections.<Valintatulos>newArrayList());
 
 		long timestart = System.currentTimeMillis();
 		long freeMemBefore = Runtime.getRuntime().freeMemory();

@@ -121,11 +121,13 @@ public class SijoitteluAlgorithmFactoryImpl implements SijoitteluAlgorithmFactor
     }
 
     private Valintatulos getValintatulos(Hakukohde hakukohde, Valintatapajono valintatapajono, Hakemus hakemus, List<Valintatulos> valintatulokset) {
-        for(Valintatulos vt : valintatulokset) {
-            if(vt.getHakukohdeOid().equals(hakukohde.getOid()) && vt.getValintatapajonoOid().equals(valintatapajono.getOid()) ) {
-                if( (vt.getHakijaOid() != null && !vt.getHakijaOid().isEmpty() && vt.getHakijaOid().equals(hakemus.getHakijaOid()) ) ||
-                        vt.getHakemusOid() != null && !vt.getHakemusOid().isEmpty() && vt.getHakemusOid().equals(hakemus.getHakemusOid()) ) {
-                    return vt;
+        if(valintatulokset != null) {
+            for(Valintatulos vt : valintatulokset) {
+                if(vt.getHakukohdeOid().equals(hakukohde.getOid()) && vt.getValintatapajonoOid().equals(valintatapajono.getOid()) ) {
+                    if( (vt.getHakijaOid() != null && !vt.getHakijaOid().isEmpty() && vt.getHakijaOid().equals(hakemus.getHakijaOid()) ) ||
+                            vt.getHakemusOid() != null && !vt.getHakemusOid().isEmpty() && vt.getHakemusOid().equals(hakemus.getHakemusOid()) ) {
+                        return vt;
+                    }
                 }
             }
         }

@@ -12,10 +12,10 @@ import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 
 import junit.framework.Assert;
-import fi.vm.sade.service.sijoittelu.types.SijoitteleTyyppi;
 import fi.vm.sade.sijoittelu.domain.HakemuksenTila;
 import fi.vm.sade.sijoittelu.domain.Hakemus;
 import fi.vm.sade.sijoittelu.domain.Valintatapajono;
+ import fi.vm.sade.service.sijoittelu.types.SijoitteleTyyppi;
 
 /**
  * 
@@ -27,7 +27,7 @@ public final class TestHelper {
     private TestHelper() {
     }
 
-    public static SijoitteleTyyppi xmlToObjects(String filename) {
+    public static fi.vm.sade.service.sijoittelu.types.SijoitteleTyyppi xmlToObjects(String filename) {
         try {
             InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream(filename);
             JAXBContext jc = JAXBContext.newInstance("fi.vm.sade.service.sijoittelu.types");

@@ -5,8 +5,13 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.StringTokenizer;
 
+import de.flapdoodle.embed.process.collections.Collections;
+import fi.vm.sade.sijoittelu.domain.Hakukohde;
+import fi.vm.sade.sijoittelu.domain.Valintatulos;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -38,12 +43,16 @@ public class Sijoitteludata_2011K_ALPATTest {
 		// tee sijoittelu
 		SijoitteleTyyppi t = csvToDomain("testdata/sijoitteludata_2011K_ALPAT.csv");
 		DomainConverter f = new DomainConverter();
-		SijoitteluAjo s = f.convertToSijoitteluAjo(t.getTarjonta().getHakukohde());
+        List<Hakukohde> hakukohteet = new ArrayList<Hakukohde>() ;
+        for(fi.vm.sade.service.valintatiedot.schema.HakukohdeTyyppi hkt : t.getTarjonta().getHakukohde()) {
+            Hakukohde hakukohde = DomainConverter.convertToHakukohde(hkt);
+            hakukohteet.add(hakukohde);
+        }
 
-		SijoitteluAlgorithmFactory factory = new SijoitteluAlgorithmFactoryImpl();
-		SijoitteluAlgorithm sa = factory.constructAlgorithm(s);
+        SijoitteluAlgorithmFactoryImpl h = new SijoitteluAlgorithmFactoryImpl();
+        SijoitteluAlgorithm sa = h.constructAlgorithm(hakukohteet, Collections.<Valintatulos>newArrayList());
 
-		long timestart = System.currentTimeMillis();
+        long timestart = System.currentTimeMillis();
 		sa.start();
 		long timeend = System.currentTimeMillis();
 
