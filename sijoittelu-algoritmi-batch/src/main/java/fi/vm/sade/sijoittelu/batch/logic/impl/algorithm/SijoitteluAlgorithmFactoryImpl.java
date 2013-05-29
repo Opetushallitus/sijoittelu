@@ -31,7 +31,7 @@ public class SijoitteluAlgorithmFactoryImpl implements SijoitteluAlgorithmFactor
      */
     @Override
     public SijoitteluAlgorithm constructAlgorithm(List<Hakukohde> hakukohteet, List<Valintatulos> valintatulokset) {
-3
+
         List<PreSijoitteluProcessor> preSijoitteluProcessors = new ArrayList<PreSijoitteluProcessor>();
         preSijoitteluProcessors.add(new PreSijoitteluProcessorTasasijaArvonta());
         preSijoitteluProcessors.add(new PreSijoitteluProcessorSort());
