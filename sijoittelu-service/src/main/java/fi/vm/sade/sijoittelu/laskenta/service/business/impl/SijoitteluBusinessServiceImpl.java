@@ -123,6 +123,17 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
         return  sijoitteluAjo;
     }
 
+    private Sijoittelu getOrCreateSijoittelu(String hakuoid) {
+        Sijoittelu sijoittelu = dao.loadSijoittelu(hakuoid);
+        if (sijoittelu == null) {
+            sijoittelu = new Sijoittelu();
+            sijoittelu.setCreated(new Date());
+            sijoittelu.setSijoitteluId(System.currentTimeMillis());
+            sijoittelu.setHakuOid(hakuoid);
+        }
+        return sijoittelu;
+    }
+
 
     @Override
     public Valintatulos haeHakemuksenTila(String hakuoid,String hakukohdeOid, String valintatapajonoOid, String hakemusOid) {
@@ -180,16 +191,6 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
     }
 
 
-    private Sijoittelu getOrCreateSijoittelu(String hakuoid) {
-        Sijoittelu sijoittelu = dao.loadSijoittelu(hakuoid);
-        if (sijoittelu == null) {
-            sijoittelu = new Sijoittelu();
-            sijoittelu.setCreated(new Date());
-            sijoittelu.setSijoitteluId(System.currentTimeMillis());
-            sijoittelu.setHakuOid(hakuoid);
-        }
-        return sijoittelu;
-    }
 
 
 }
