@@ -1,21 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<tns:sijoittele xmlns:tns="http://sijoittelu.service.sade.vm.fi/types">
-    <tarjonta>
-        <haku>
-            <oid>666</oid>
-            <sijoittelu>true</sijoittelu>
-            <haunAlkamisPvm>2001-01-01</haunAlkamisPvm>
-            <haunLoppumisPvm>2001-01-01</haunLoppumisPvm>
-            <hakuVuosi>0</hakuVuosi>
-            <hakukausiUri>hakukausiUri</hakukausiUri>
-            <hakutyyppiUri>hakutyyppiUri</hakutyyppiUri>
-            <kohdejoukkoUri>kohdejoukkoUri</kohdejoukkoUri>
-            <hakutapaUri>hakutapaUri</hakutapaUri>
-        </haku>
-        <hakukohde>
-            <oid>1.2.246.562.11.10000000001</oid>
-            <hakukohdeNimi>Laakkis</hakukohdeNimi>
-             <valinnanvaihe valinnanvaihe="1">
+<tns:sijoittele xmlns:tns="http://sijoittelu.service.sade.vm.fi/types" hakuoid="666">
+
+        <hakukohteet oid="1.2.246.562.11.10000000001">
+s             <valinnanvaihe valinnanvaihe="1">
 	            <valintatapajono oid="laakkis_jono_1" prioriteetti="1" aloituspaikat="2" tasasijasaanto="YLITAYTTO" siirretaanSijoitteluun="true">
 	                <hakija jonosija="1" oid="1.2.246.562.24.00000000001" prioriteetti="1" pisteet="0" tila="HYVAKSYTTAVISSA"/>
 	                <hakija jonosija="2" oid="1.2.246.562.24.00000000002" prioriteetti="1" pisteet="0" tila="HYVAKSYTTAVISSA"/>
@@ -42,7 +29,7 @@
             	<hakijaOid>1.2.246.562.24.00000000007</hakijaOid>
             	<hakijaOid>1.2.246.562.24.00000000008</hakijaOid>
             </hakijaryhma>
-        </hakukohde>
-    </tarjonta>
+        </hakukohteet>
+
 </tns:sijoittele>
 

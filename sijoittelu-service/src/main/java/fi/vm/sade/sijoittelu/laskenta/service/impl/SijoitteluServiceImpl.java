@@ -1,7 +1,7 @@
 package fi.vm.sade.sijoittelu.laskenta.service.impl;
 
 import fi.vm.sade.service.sijoittelu.SijoitteluService;
-import fi.vm.sade.service.sijoittelu.types.SijoitteleTyyppi;
+import fi.vm.sade.service.valintatiedot.schema.HakuTyyppi;
 import fi.vm.sade.service.valintatiedot.schema.HakukohdeTyyppi;
 import fi.vm.sade.sijoittelu.laskenta.service.business.SijoitteluBusinessService;
 import org.slf4j.Logger;
@@ -25,17 +25,8 @@ public class SijoitteluServiceImpl implements SijoitteluService {
     private SijoitteluBusinessService sijoitteluBusinessService;
 
     @Override
-    public void sijoittele(@WebParam(partName = "parameters", name = "sijoittele", targetNamespace = "http://sijoittelu.service.sade.vm.fi/types") SijoitteleTyyppi sijoitteleTyyppi) {
-
-        /*
-        if(LOGGER.isInfoEnabled()) {
-            LOGGER.info("Sijoittele :: Haku: " + sijoitteleTyyppi.getTarjonta().getHaku().getOid());
-            LOGGER.info("Sijoittele :: Hakukohteet");
-            for(HakukohdeTyyppi ht : sijoitteleTyyppi.getTarjonta().getHakukohde())   {
-                LOGGER.info("Hakukohde:" + ht.getOid()); ;
-            }
-        } */
-
-        sijoitteluBusinessService.sijoittele(sijoitteleTyyppi);
+    public void sijoittele(@WebParam(partName = "parameters", name = "sijoittele", targetNamespace = "http://sijoittelu.service.sade.vm.fi/types") HakuTyyppi haku) {
+        sijoitteluBusinessService.sijoittele(haku);
     }
 }
+

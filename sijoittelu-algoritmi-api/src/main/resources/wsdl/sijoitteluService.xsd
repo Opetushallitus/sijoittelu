@@ -11,7 +11,7 @@
     <xs:import namespace="http://valintatiedot.service.sade.vm.fi/schema" schemaLocation="http://pulpetti.hard.ware.fi/valintatulokset/wsdl/valintatiedot.xsd" />
 
 
-    <xs:element name="sijoittele" type="tns:SijoitteleTyyppi" />
+    <xs:element name="sijoittele" type="valintatiedot:HakuTyyppi" />
 
 
     <!--

@@ -1,12 +1,11 @@
 package fi.vm.sade.sijoittelu.batch.logic.impl.algorithm;
 
 import de.flapdoodle.embed.process.collections.Collections;
-import fi.vm.sade.service.sijoittelu.types.SijoitteleTyyppi;
-import fi.vm.sade.service.valintatiedot.schema.*;
+
+import fi.vm.sade.service.valintatiedot.schema.HakuTyyppi;
 import fi.vm.sade.sijoittelu.batch.logic.impl.DomainConverter;
 import fi.vm.sade.sijoittelu.domain.*;
-import fi.vm.sade.tarjonta.service.types.*;
-import fi.vm.sade.tarjonta.service.types.HakukohdeTyyppi;
+
 import org.junit.Test;
 
 import java.io.FileWriter;
@@ -32,10 +31,11 @@ public class BasicSijoitteluTest {
     @Test
     public void testSijoittelu() throws IOException {
         // tee sijoittelu
-        fi.vm.sade.service.sijoittelu.types.SijoitteleTyyppi t = TestHelper.xmlToObjects("testdata/sijoittelu_basic_case.xml");
+        HakuTyyppi t = TestHelper.xmlToObjects("testdata/sijoittelu_basic_case.xml");
+
 
         List<Hakukohde> hakukohteet = new ArrayList<Hakukohde>() ;
-        for(fi.vm.sade.service.valintatiedot.schema.HakukohdeTyyppi hkt : t.getTarjonta().getHakukohde()) {
+        for(fi.vm.sade.service.valintatiedot.schema.HakukohdeTyyppi hkt :t.getHakukohteet()) {
             Hakukohde hakukohde = DomainConverter.convertToHakukohde(hkt);
             hakukohteet.add(hakukohde);
         }

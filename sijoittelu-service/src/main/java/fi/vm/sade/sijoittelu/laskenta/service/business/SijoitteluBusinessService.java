@@ -1,6 +1,6 @@
 package fi.vm.sade.sijoittelu.laskenta.service.business;
 
-import fi.vm.sade.service.sijoittelu.types.SijoitteleTyyppi;
+import fi.vm.sade.service.valintatiedot.schema.HakuTyyppi;
 import fi.vm.sade.sijoittelu.domain.ValintatuloksenTila;
 import fi.vm.sade.sijoittelu.domain.Valintatulos;
 
@@ -11,8 +11,7 @@ import fi.vm.sade.sijoittelu.domain.Valintatulos;
  */
 public interface SijoitteluBusinessService {
 
-    void sijoittele(SijoitteleTyyppi sijoitteluTyyppi);
-
+    void sijoittele(HakuTyyppi sijoitteluTyyppi);
 
     Valintatulos haeHakemuksenTila(String hakuoid,String hakukohdeOid, String valintatapajonoOid, String hakemusOid);
 

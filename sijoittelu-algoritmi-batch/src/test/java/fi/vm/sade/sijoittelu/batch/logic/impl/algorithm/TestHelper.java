@@ -11,11 +11,11 @@ import javax.xml.bind.JAXBElement;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 
+import fi.vm.sade.service.valintatiedot.schema.HakuTyyppi;
 import junit.framework.Assert;
 import fi.vm.sade.sijoittelu.domain.HakemuksenTila;
 import fi.vm.sade.sijoittelu.domain.Hakemus;
 import fi.vm.sade.sijoittelu.domain.Valintatapajono;
- import fi.vm.sade.service.sijoittelu.types.SijoitteleTyyppi;
 
 /**
  * 
@@ -27,13 +27,13 @@ public final class TestHelper {
     private TestHelper() {
     }
 
-    public static fi.vm.sade.service.sijoittelu.types.SijoitteleTyyppi xmlToObjects(String filename) {
+    public static HakuTyyppi xmlToObjects(String filename) {
         try {
             InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream(filename);
             JAXBContext jc = JAXBContext.newInstance("fi.vm.sade.service.sijoittelu.types");
             Unmarshaller u = jc.createUnmarshaller();
             Object o = ((JAXBElement) u.unmarshal(is)).getValue();
-            SijoitteleTyyppi t = (SijoitteleTyyppi) o;
+            HakuTyyppi t = (HakuTyyppi) o;
             return t;
         } catch (Exception e) {
             e.printStackTrace();
@@ -41,7 +41,7 @@ public final class TestHelper {
         }
     }
 
-    public static String objectsToXml(SijoitteleTyyppi sijoitteluTyyppi) {
+    public static String objectsToXml(HakuTyyppi sijoitteluTyyppi) {
         try {
             JAXBContext jc = JAXBContext.newInstance("fi.vm.sade.service.sijoittelu.types");
             Marshaller m = jc.createMarshaller();

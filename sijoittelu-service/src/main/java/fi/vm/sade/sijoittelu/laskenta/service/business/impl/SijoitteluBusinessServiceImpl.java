@@ -1,6 +1,6 @@
 package fi.vm.sade.sijoittelu.laskenta.service.business.impl;
 
-import fi.vm.sade.service.sijoittelu.types.SijoitteleTyyppi;
+import fi.vm.sade.service.valintatiedot.schema.HakuTyyppi;
 import fi.vm.sade.service.valintatiedot.schema.HakukohdeTyyppi;
 import fi.vm.sade.sijoittelu.batch.logic.impl.DomainConverter;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoitteluAlgorithm;
@@ -54,13 +54,13 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
 
     //verioi sijoittelun ja tuo uudet kohteet
     @Override
-    public void sijoittele(SijoitteleTyyppi sijoitteluTyyppi) {
+    public void sijoittele(HakuTyyppi sijoitteluTyyppi) {
 
-        String hakuOid = sijoitteluTyyppi.getTarjonta().getHaku().getOid();
+        String hakuOid = sijoitteluTyyppi.getHakuOid();
         Sijoittelu sijoittelu = getOrCreateSijoittelu(hakuOid);
         SijoitteluAjo viimeisinSijoitteluajo = sijoittelu.getLatestSijoitteluajo();
 
-        List<Hakukohde> uudetHakukohteet = convertHakukohteet(sijoitteluTyyppi.getTarjonta().getHakukohde());
+        List<Hakukohde> uudetHakukohteet = convertHakukohteet(sijoitteluTyyppi.getHakukohteet());
         List<Hakukohde> olemassaolevatHakukohteet = Collections.<Hakukohde>emptyList();
         if(viimeisinSijoitteluajo != null) {
             olemassaolevatHakukohteet = dao.getHakukohdeForSijoitteluajo(viimeisinSijoitteluajo.getSijoitteluajoId());

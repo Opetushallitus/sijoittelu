@@ -1,15 +1,15 @@
 package fi.vm.sade.sijoittelu.batch.logic.impl.algorithm;
 
 
-import fi.vm.sade.service.sijoittelu.types.SijoitteleTyyppi;
+
 import fi.vm.sade.service.valintaperusteet.schema.TasasijasaantoTyyppi;
 import fi.vm.sade.service.valintatiedot.schema.*;
 
 public class DomainBuilder {
 
-	SijoitteleTyyppi sijoitteleTyyppi;
+	HakuTyyppi sijoitteleTyyppi;
 
-	public DomainBuilder(SijoitteleTyyppi sijoitteleTyyppi) {
+	public DomainBuilder(HakuTyyppi sijoitteleTyyppi) {
 		this.sijoitteleTyyppi = sijoitteleTyyppi;
 	}
 
@@ -17,7 +17,7 @@ public class DomainBuilder {
 
 		// etsi tai luo hakukohde
 		HakukohdeTyyppi hakukohdeTyyppi = null;
-		for (HakukohdeTyyppi hkt : sijoitteleTyyppi.getTarjonta().getHakukohde()) {
+		for (HakukohdeTyyppi hkt : sijoitteleTyyppi.getHakukohteet()) {
 			// System.out.println("WTF: " + hkt + " " + hakukohdeId + "# " +
 			// hkt.getOid());
 			if (hkt.getOid().equals(hakukohdeId)) {
@@ -44,7 +44,7 @@ public class DomainBuilder {
 
             hakukohdeTyyppi.getValinnanvaihe().add(v);
             v.getValintatapajono().add(valintatapajonotyyppi);
-			sijoitteleTyyppi.getTarjonta().getHakukohde().add(hakukohdeTyyppi);
+			sijoitteleTyyppi.getHakukohteet().add(hakukohdeTyyppi);
 		}
 
 		// lisää ensimmäiseen valintatapajonoon

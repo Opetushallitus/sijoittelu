@@ -6,13 +6,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.flapdoodle.embed.process.collections.Collections;
+import fi.vm.sade.service.valintatiedot.schema.HakuTyyppi;
 import fi.vm.sade.sijoittelu.domain.Hakukohde;
 import fi.vm.sade.sijoittelu.domain.Valintatulos;
 import org.junit.Test;
 
-import fi.vm.sade.service.sijoittelu.types.SijoitteleTyyppi;
 import fi.vm.sade.sijoittelu.batch.logic.impl.DomainConverter;
-import fi.vm.sade.sijoittelu.domain.SijoitteluAjo;
+
 
 /**
  * 
@@ -32,10 +32,11 @@ public class BasicSijoitteluHakijaryhmaTest {
 	@Test
 	public void testSijoittelu() throws IOException {
 		// tee sijoittelu
-		SijoitteleTyyppi t = TestHelper.xmlToObjects("testdata/sijoittelu_basic_hakijaryhma_case.xml");
+		HakuTyyppi t = TestHelper.xmlToObjects("testdata/sijoittelu_basic_hakijaryhma_case.xml");
+
 
         List<Hakukohde> hakukohteet = new ArrayList<Hakukohde>() ;
-        for(fi.vm.sade.service.valintatiedot.schema.HakukohdeTyyppi hkt :t.getTarjonta().getHakukohde()) {
+        for(fi.vm.sade.service.valintatiedot.schema.HakukohdeTyyppi hkt :t.getHakukohteet()) {
             Hakukohde hakukohde = DomainConverter.convertToHakukohde(hkt);
             hakukohteet.add(hakukohde);
         }

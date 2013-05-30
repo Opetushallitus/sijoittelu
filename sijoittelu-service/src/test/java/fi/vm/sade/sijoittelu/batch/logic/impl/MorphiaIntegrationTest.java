@@ -2,12 +2,11 @@
 package fi.vm.sade.sijoittelu.batch.logic.impl;
 
 import fi.vm.sade.service.sijoittelu.SijoitteluService;
-import fi.vm.sade.service.sijoittelu.schema.TarjontaTyyppi;
-import fi.vm.sade.service.sijoittelu.types.SijoitteleTyyppi;
+
+import fi.vm.sade.service.valintatiedot.schema.HakuTyyppi;
 import fi.vm.sade.sijoittelu.domain.*;
 import fi.vm.sade.sijoittelu.laskenta.dao.Dao;
-import fi.vm.sade.tarjonta.service.types.HakuTyyppi;
-import fi.vm.sade.tulos.service.types.tulos.SijoitteluajoTyyppi;
+
 import junit.framework.Assert;
 
 import org.junit.Test;
@@ -38,10 +37,9 @@ public class MorphiaIntegrationTest extends FlapdoodleMongoDbTest {
     @Test
     public void testSijoitteluService() {
 
-        SijoitteleTyyppi st = new SijoitteleTyyppi();
-        st.setTarjonta(new TarjontaTyyppi());
-        st.getTarjonta().setHaku(new HakuTyyppi());
-        st.getTarjonta().getHaku().setOid("testihakuoidi");
+        HakuTyyppi st = new HakuTyyppi();
+
+        st.setHakuOid("testihakuoidi");
 
         sijoitteluService.sijoittele(st);
         Sijoittelu sijoittelu = dao.loadSijoittelu("testihakuoidi");
