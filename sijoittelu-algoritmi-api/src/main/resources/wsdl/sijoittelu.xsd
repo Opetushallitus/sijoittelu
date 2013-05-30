@@ -4,24 +4,30 @@
 	elementFormDefault="unqualified"
 	targetNamespace="http://sijoittelu.service.sade.vm.fi/schema"
 	xmlns:tns="http://sijoittelu.service.sade.vm.fi/schema"
-	xmlns:tarjonta="http://service.tarjonta.sade.vm.fi/types"
-	xmlns:valintaperusteet="http://valintaperusteet.service.sade.vm.fi/schema"
+
 	xmlns:valintatiedot="http://valintatiedot.service.sade.vm.fi/schema"
 
 	xmlns:xs="http://www.w3.org/2001/XMLSchema"
 >
 
+    <!--
+    	xmlns:tarjonta="http://service.tarjonta.sade.vm.fi/types"
+	xmlns:valintaperusteet="http://valintaperusteet.service.sade.vm.fi/schema"
+
     <xs:import namespace="http://service.tarjonta.sade.vm.fi/types" schemaLocation="http://pulpetti.hard.ware.fi/tarjonta/wsdl/tarjonta.xsd" />
     <xs:import namespace="http://valintaperusteet.service.sade.vm.fi/schema" schemaLocation="http://pulpetti.hard.ware.fi/valintaperusteet/wsdl/valintaperusteet.xsd" />
+    -->
     <xs:import namespace="http://valintatiedot.service.sade.vm.fi/schema" schemaLocation="http://pulpetti.hard.ware.fi/valintatulokset/wsdl/valintatiedot.xsd" />
 
 	<!-- duplikaatti nimi estaa polymorphismin -->
+    <!--
 	<xs:complexType name="TarjontaTyyppi">
 		<xs:sequence>
 			<xs:element name="haku" type="tarjonta:HakuTyyppi" minOccurs="1" maxOccurs="1"/>
 			<xs:element name="hakukohde" type="valintatiedot:HakukohdeTyyppi"	minOccurs="0" maxOccurs="unbounded"/>
 		</xs:sequence>
 	</xs:complexType>
+	-->
     <!--
       <xs:complexType name="HakukohdeTyyppi">
           <xs:complexContent>
