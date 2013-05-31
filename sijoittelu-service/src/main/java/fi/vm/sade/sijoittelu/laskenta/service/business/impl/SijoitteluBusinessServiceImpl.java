@@ -163,7 +163,7 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
         }
         Hakemus hakemus = null;
         for(Hakemus h : valintatapajono.getHakemukset())  {
-            if(hakemusOid.equals(h)) {
+            if(hakemusOid.equals(h.getHakemusOid())) {
                 hakemus = h;
             }
         }
