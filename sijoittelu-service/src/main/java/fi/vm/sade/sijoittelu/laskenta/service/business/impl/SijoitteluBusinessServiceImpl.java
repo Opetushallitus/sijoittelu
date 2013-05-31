@@ -175,9 +175,11 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
         Valintatulos v = dao.loadValintatulos(hakukohdeOid, valintatapajonoOid, hakemusOid);
         if (v == null) {
             v = new Valintatulos();
-            v.setHakemusOid(hakemusOid);
-            v.setValintatapajonoOid(valintatapajonoOid);
-            v.setHakukohdeOid(hakukohdeOid);
+            v.setHakemusOid(hakemus.getHakemusOid());
+            v.setValintatapajonoOid(valintatapajono.getOid());
+            v.setHakukohdeOid(hakukohde.getOid());
+            v.setHakijaOid(hakemus.getHakijaOid());
+            v.setHakutoive(hakemus.getPrioriteetti());
             v.setHakuOid(hakuoid);
             //TODO, LISAA HAKIJA OID
         }
