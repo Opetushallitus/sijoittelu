@@ -57,6 +57,8 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
     @Override
     public void sijoittele(HakuTyyppi sijoitteluTyyppi) {
 
+        System.out.println(PrintHelper.tulostaSijoittelu(sijoitteluTyyppi));
+
         String hakuOid = sijoitteluTyyppi.getHakuOid();
         Sijoittelu sijoittelu = getOrCreateSijoittelu(hakuOid);
         SijoitteluAjo viimeisinSijoitteluajo = sijoittelu.getLatestSijoitteluajo();
@@ -89,7 +91,7 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
     private List<Hakukohde> merge(SijoitteluAjo uusiSijoitteluajo, List<Hakukohde> olemassaolevatHakukohteet, List<Hakukohde> uudetHakukohteet) {
         Map<String,Hakukohde> kaikkiHakukohteet = new HashMap<String, Hakukohde>();
         for(Hakukohde hakukohde : olemassaolevatHakukohteet) {
-            hakukohde.setOid(null);       //poista id vanhoilta hakukohteilta, niin etta ne voidaan peristoida uusina dokumentteina
+            hakukohde.setId(null);       //poista id vanhoilta hakukohteilta, niin etta ne voidaan peristoida uusina dokumentteina
             kaikkiHakukohteet.put(hakukohde.getOid(), hakukohde);
         }
         //ylikirjoita uusilla kohteilla kylmasti

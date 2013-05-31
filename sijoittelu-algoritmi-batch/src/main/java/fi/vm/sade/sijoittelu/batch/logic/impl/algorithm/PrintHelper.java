@@ -1,5 +1,6 @@
 package fi.vm.sade.sijoittelu.batch.logic.impl.algorithm;
 
+import fi.vm.sade.service.valintatiedot.schema.*;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.HakemusWrapper;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.HakukohdeWrapper;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.SijoitteluajoWrapper;
@@ -72,4 +73,27 @@ public final class PrintHelper {
         return sb.toString();
     }
 
+    public final static String tulostaSijoittelu(HakuTyyppi s) {
+
+        StringBuilder sb = new StringBuilder();
+
+        sb.append("===================================================\n");
+        sb.append("Haku: " + s.getHakuOid() + "\n");
+        sb.append("===================================================\n");
+
+        for (HakukohdeTyyppi hki : s.getHakukohteet()) {
+            sb.append("HAKUKOHDE: [" + hki.getOid() + "]\n");
+            for(ValinnanvaiheTyyppi v : hki.getValinnanvaihe()){
+
+                for (ValintatapajonoTyyppi jono : v.getValintatapajono()) {
+                    sb.append("  JONO [" + jono.getOid() + "], prioriteetti [" + jono.getPrioriteetti() + "] aloituspaikat [" + jono.getAloituspaikat() + "], tasasijasaanto [" + jono.getTasasijasaanto() + "]\n");
+                    for (HakijaTyyppi hakemus : jono.getHakija()) {
+                        sb.append("          " + hakemus.getJonosija() + "." + "  " + hakemus.getOid() + " " + hakemus.getHakemusOid() + " "  + hakemus.getTila() + " hakijan prijo:" + hakemus.getPrioriteetti() + "\n");
+                    }
+                }
+            }
+        }
+        sb.append("===================================================\n");
+        return sb.toString();
+    }
 }
