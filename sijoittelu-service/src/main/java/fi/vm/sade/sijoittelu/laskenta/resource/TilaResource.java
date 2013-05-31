@@ -1,9 +1,9 @@
 package fi.vm.sade.sijoittelu.laskenta.resource;
 
+import fi.vm.sade.sijoittelu.domain.JsonViews;
 import fi.vm.sade.sijoittelu.domain.ValintatuloksenTila;
 import fi.vm.sade.sijoittelu.domain.Valintatulos;
 import fi.vm.sade.sijoittelu.laskenta.service.business.SijoitteluBusinessService;
-import fi.vm.sade.sijoittelu.domain.JsonViews;
 import org.codehaus.jackson.map.annotate.JsonView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,13 +33,13 @@ public class TilaResource {
     @GET
     @JsonView(JsonViews.Basic.class)
     @Produces(MediaType.APPLICATION_JSON)
-    @Path("/{hakuOid}/{/{hakukohdeOid}/{valintatapajonoOid}/{hakemusOid}")
+    @Path("/{hakuOid}/{hakukohdeOid}/{valintatapajonoOid}/{hakemusOid}")
     public Valintatulos hakemus(@PathParam("hakuOid") String hakuOid,
                                 @PathParam("hakukohdeOid") String hakukohdeOid,
                                 @PathParam("valintatapajonoOid") String valintatapajonoOid,
                                 @PathParam("hakemusOid") String hakemusOid) {
-        Valintatulos v = sijoitteluBusinessService.haeHakemuksenTila(hakuOid, hakukohdeOid,valintatapajonoOid,hakemusOid);
-        if(v==null) {
+        Valintatulos v = sijoitteluBusinessService.haeHakemuksenTila(hakuOid, hakukohdeOid, valintatapajonoOid, hakemusOid);
+        if (v == null) {
             v = new Valintatulos();
         }
         return v;
