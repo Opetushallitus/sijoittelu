@@ -171,7 +171,6 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
             throw new RuntimeException("sijoittelun hakemus ei ole hyvaksytty tilassa, fiksaa poikkeuskasittely myohemmin");
         }
 
-        //TODO CHEKKAA ETTA TILAMUUTOS MAHDOLLINEN, HAE HAKIJAN OIDI
         Valintatulos v = dao.loadValintatulos(hakukohdeOid, valintatapajonoOid, hakemusOid);
         if (v == null) {
             v = new Valintatulos();
@@ -181,7 +180,6 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
             v.setHakijaOid(hakemus.getHakijaOid());
             v.setHakutoive(hakemus.getPrioriteetti());
             v.setHakuOid(hakuoid);
-            //TODO, LISAA HAKIJA OID
         }
 
         LOG.info("Asetetaan valintatuloksen tila - hakukohdeoid {}, valintatapajonooid {}, hakemusoid {}",
