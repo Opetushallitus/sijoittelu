@@ -43,7 +43,7 @@ public class SijoitteluntulosExportResource {
      * class="bold align-center">tila</td> </tr> </thead> <tr
      * ng-repeat="hakemus in jono.hakemukset"> <td>{{hakemus.jonosija}}</td>
      * <td>{{hakemus.hakijaOid}}</td> <td>{{hakemus.hakemusOid}}</td>
-     * <td>{{hakemus.prioriteetti}}</td> <td>{{hakemus.tasasijaJonosija}}</td>                     s
+     * <td>{{hakemus.prioriteetti}}</td> <td>{{hakemus.tasasijaJonosija}}</td>
      * <td>{{hakemus.tila}}</td> </tr>
      */
     @GET

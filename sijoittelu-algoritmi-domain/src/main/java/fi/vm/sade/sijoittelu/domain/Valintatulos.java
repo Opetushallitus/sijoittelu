@@ -19,7 +19,7 @@ import org.codehaus.jackson.map.annotate.JsonView;
 @Indexes({
         @Index("hakukohdeOid, valintatapajonoOid, hakemusOid"),
         @Index("hakukohdeOid, valintatapajonoOid"),
-        @Index("hakukohdeOid"),
+        @Index("hakukohdeOid")
 })
 public class Valintatulos {
 
