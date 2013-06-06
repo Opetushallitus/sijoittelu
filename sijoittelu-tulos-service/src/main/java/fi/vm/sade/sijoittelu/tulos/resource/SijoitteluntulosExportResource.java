@@ -43,37 +43,43 @@ public class SijoitteluntulosExportResource {
      * class="bold align-center">tila</td> </tr> </thead> <tr
      * ng-repeat="hakemus in jono.hakemukset"> <td>{{hakemus.jonosija}}</td>
      * <td>{{hakemus.hakijaOid}}</td> <td>{{hakemus.hakemusOid}}</td>
-     * <td>{{hakemus.prioriteetti}}</td> <td>{{hakemus.tasasijaJonosija}}</td>
+     * <td>{{hakemus.prioriteetti}}</td> <td>{{hakemus.tasasijaJonosija}}</td>                     s
      * <td>{{hakemus.tila}}</td> </tr>
      */
     @GET
     @Path("/sijoitteluntulos.xls")
     public Response exportSijoitteluntulos(@QueryParam("hakuOid") String hakuOid, @QueryParam("hakukohdeOid") String hakukohdeOid) {
 
-        Sijoittelu sijoittelu = dao.getSijoitteluByHakuOid(hakuOid);
-        SijoitteluAjo ajo = sijoittelu.getLatestSijoitteluajo();
-        Hakukohde hakukohde = dao.getHakukohdeBySijoitteluajo(ajo.getSijoitteluajoId(), hakukohdeOid);
-
-        // getHakukohdeBySijoitteluajo
         StringBuilder builder = new StringBuilder();
-        builder.append("<table>");
 
-        for (Valintatapajono jono : hakukohde.getValintatapajonot()) {
-            builder.append("<tr>");
-            builder.append("<td colspan=\"6\">Jono ").append(jono.getOid()).append("</td>");
-            builder.append("</tr>");
-            for (Hakemus hakemus : jono.getHakemukset()) {
-                builder.append("<tr>");
-                builder.append("<td>").append(hakemus.getJonosija()).append("</td>");
-                builder.append("<td>").append(hakemus.getHakijaOid()).append("</td>");
-                builder.append("<td>").append(hakemus.getPrioriteetti()).append("</td>");
-                builder.append("<td>").append(hakemus.getTasasijaJonosija()).append("</td>");
-                builder.append("<td>").append(hakemus.getTila()).append("</td>");
-                builder.append("</tr>");
+        Sijoittelu sijoittelu = dao.getSijoitteluByHakuOid(hakuOid);
+        if(sijoittelu!=null) {
+            SijoitteluAjo ajo = sijoittelu.getLatestSijoitteluajo();
+            if(ajo != null) {
+                Hakukohde hakukohde = dao.getHakukohdeBySijoitteluajo(ajo.getSijoitteluajoId(), hakukohdeOid);
+
+                // getHakukohdeBySijoitteluajo
+
+                builder.append("<table>");
+
+                for (Valintatapajono jono : hakukohde.getValintatapajonot()) {
+                    builder.append("<tr>");
+                    builder.append("<td colspan=\"6\">Jono ").append(jono.getOid()).append("</td>");
+                    builder.append("</tr>");
+                    for (Hakemus hakemus : jono.getHakemukset()) {
+                        builder.append("<tr>");
+                        builder.append("<td>").append(hakemus.getJonosija()).append("</td>");
+                        builder.append("<td>").append(hakemus.getHakijaOid()).append("</td>");
+                        builder.append("<td>").append(hakemus.getPrioriteetti()).append("</td>");
+                        builder.append("<td>").append(hakemus.getTasasijaJonosija()).append("</td>");
+                        builder.append("<td>").append(hakemus.getTila()).append("</td>");
+                        builder.append("</tr>");
+                    }
+                }
+
+                builder.append("</table>");
             }
         }
-
-        builder.append("</table>");
 
         return Response.ok(builder.toString())
                 .header("Content-Disposition", "attachment; filename*=UTF-8''sijoitteluntulos.xls;").build();
