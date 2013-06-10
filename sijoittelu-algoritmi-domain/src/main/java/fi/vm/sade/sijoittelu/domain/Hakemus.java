@@ -32,7 +32,10 @@ public class Hakemus implements Serializable {
     private Integer tasasijaJonosija;
 
     @JsonView(JsonViews.Basic.class)
-    private HakemuksenTila tila; 
+    private HakemuksenTila tila;
+
+    @JsonView(JsonViews.Basic.class)
+    private boolean harkinnanvarainen = false;
 
 
      public int getPrioriteetti() {
@@ -94,4 +97,11 @@ public class Hakemus implements Serializable {
                 '}';
     }
 
+    public boolean isHarkinnanvarainen() {
+        return harkinnanvarainen;
+    }
+
+    public void setHarkinnanvarainen(boolean harkinnanvarainen) {
+        this.harkinnanvarainen = harkinnanvarainen;
+    }
 }
