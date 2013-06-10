@@ -84,7 +84,7 @@ public class DomainConverter {
         hakemus.setHakemusOid(hakijaTyyppi.getHakemusOid());
         hakemus.setJonosija(hakijaTyyppi.getJonosija());
         hakemus.setPrioriteetti(hakijaTyyppi.getPrioriteetti());
-        //hakemus.setHarkinnanvarainen();
+        hakemus.setHarkinnanvarainen(hakijaTyyppi.getHarkinnanvarainen());
 
         if (hakijaTyyppi.getTila() != null && hakijaTyyppi.getTila() == HakemusTilaTyyppi.HYVAKSYTTAVISSA) {
             // jos hyvaksyttavissa niin varalla, muuten hylatty
