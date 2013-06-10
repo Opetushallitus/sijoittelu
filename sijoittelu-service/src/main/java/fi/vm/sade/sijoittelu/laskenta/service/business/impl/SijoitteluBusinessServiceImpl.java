@@ -171,7 +171,7 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
                 hakemus = h;
             }
         }
-        if(hakemus.getTila() != HakemuksenTila.HYVAKSYTTY) {
+        if(hakemus.isHarkinnanvarainen() || hakemus.getTila() != HakemuksenTila.HYVAKSYTTY) {
             throw new RuntimeException("sijoittelun hakemus ei ole hyvaksytty tilassa, fiksaa poikkeuskasittely myohemmin");
         }
 
