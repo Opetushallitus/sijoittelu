@@ -172,7 +172,7 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
             }
         }
         if(hakemus.isHarkinnanvarainen() || hakemus.getTila() != HakemuksenTila.HYVAKSYTTY) {
-            throw new RuntimeException("sijoittelun hakemus ei ole hyvaksytty tilassa, fiksaa poikkeuskasittely myohemmin");
+            throw new RuntimeException("sijoittelun hakemus ei ole hyvaksytty tilassa tai harkinnanvarainen, fiksaa poikkeuskasittely myohemmin");
         }
 
         Valintatulos v = dao.loadValintatulos(hakukohdeOid, valintatapajonoOid, hakemusOid);
