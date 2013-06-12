@@ -24,7 +24,7 @@ import java.util.List;
  * Date: 26.4.2013
  * Time: 12.41
  */
-@Path("/sijoittelu")
+@Path("sijoittelu")
 @Component
 public class SijoitteluResource {
 
@@ -38,7 +38,6 @@ public class SijoitteluResource {
     @GET
     @JsonView(JsonViews.Basic.class)
     @Produces(MediaType.APPLICATION_JSON)
-    @Path("/")
     public  List<Sijoittelu> getSijoittelu() {
         List<Sijoittelu> sijoittelu = dao.getSijoittelu();
 
@@ -54,7 +53,7 @@ public class SijoitteluResource {
     @GET
     @JsonView(JsonViews.Basic.class)
     @Produces(MediaType.APPLICATION_JSON)
-    @Path("/{hakuOid}")
+    @Path("{hakuOid}")
     public Sijoittelu getSijoitteluByHakuOid(@PathParam("hakuOid") String hakuOid) {
         Sijoittelu sijoittelu = dao.getSijoitteluByHakuOid(hakuOid);
         if (sijoittelu == null) {
@@ -67,7 +66,7 @@ public class SijoitteluResource {
     @GET
     @JsonView(JsonViews.Basic.class)
     @Produces(MediaType.APPLICATION_JSON)
-    @Path("/{hakuOid}/sijoitteluajo")
+    @Path("{hakuOid}/sijoitteluajo")
     public List<SijoitteluAjo> getSijoitteluajoByHakuOid(@PathParam("hakuOid") String hakuOid,
                                                          @QueryParam("latest") Boolean latest) {
 

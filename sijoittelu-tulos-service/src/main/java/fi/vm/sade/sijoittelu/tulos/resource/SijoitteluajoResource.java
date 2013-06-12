@@ -20,7 +20,7 @@ import javax.ws.rs.core.Response;
  * Date: 29.4.2013
  * Time: 15.34
  */
-@Path("/sijoitteluajo")
+@Path("sijoitteluajo")
 @Component
 public class SijoitteluajoResource {
 
@@ -33,7 +33,7 @@ public class SijoitteluajoResource {
     @GET
     @JsonView(JsonViews.Basic.class)
     @Produces(MediaType.APPLICATION_JSON)
-    @Path("/{sijoitteluajoId}")
+    @Path("{sijoitteluajoId}")
     public SijoitteluAjo getSijoitteluajo(@PathParam("sijoitteluajoId") Long sijoitteluajoId) {
         try {
             return dao.getSijoitteluajo(sijoitteluajoId);
@@ -45,7 +45,7 @@ public class SijoitteluajoResource {
     @GET
     @JsonView(JsonViews.Basic.class)
     @Produces(MediaType.APPLICATION_JSON)
-    @Path("/{sijoitteluajoId}/{hakukohdeOid}")
+    @Path("{sijoitteluajoId}/{hakukohdeOid}")
     public Hakukohde getHakukohdeBySijoitteluajo(@PathParam("sijoitteluajoId") Long sijoitteluajoId,
                                                  @PathParam("hakukohdeOid") String hakukohdeOid) {
         try {

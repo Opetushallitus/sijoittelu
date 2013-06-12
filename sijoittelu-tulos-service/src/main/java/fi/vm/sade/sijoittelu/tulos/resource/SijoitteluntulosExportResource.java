@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
  * @author Jussi Jartamo
  *
  */
-@Path("/export")
+@Path("export")
 @Component
 public class SijoitteluntulosExportResource {
 
@@ -47,7 +47,7 @@ public class SijoitteluntulosExportResource {
      * <td>{{hakemus.tila}}</td> </tr>
      */
     @GET
-    @Path("/sijoitteluntulos.xls")
+    @Path("sijoitteluntulos.xls")
     public Response exportSijoitteluntulos(@QueryParam("hakuOid") String hakuOid, @QueryParam("hakukohdeOid") String hakukohdeOid) {
 
         StringBuilder builder = new StringBuilder();

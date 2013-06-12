@@ -21,7 +21,7 @@ import javax.ws.rs.core.Response;
  * Time: 17:23
  * To change this template use File | Settings | File Templates.
  */
-@Path("/tila")
+@Path("tila")
 @Component
 public class TilaResource {
 
@@ -33,7 +33,7 @@ public class TilaResource {
     @GET
     @JsonView(JsonViews.Basic.class)
     @Produces(MediaType.APPLICATION_JSON)
-    @Path("/{hakuOid}/{hakukohdeOid}/{valintatapajonoOid}/{hakemusOid}")
+    @Path("{hakuOid}/{hakukohdeOid}/{valintatapajonoOid}/{hakemusOid}")
     public Valintatulos hakemus(@PathParam("hakuOid") String hakuOid,
                                 @PathParam("hakukohdeOid") String hakukohdeOid,
                                 @PathParam("valintatapajonoOid") String valintatapajonoOid,
@@ -48,7 +48,7 @@ public class TilaResource {
     @POST
     @JsonView(JsonViews.Basic.class)
     @Produces(MediaType.APPLICATION_JSON)
-    @Path("/{hakuOid}/{hakukohdeOid}/{valintatapajonoOid}/{hakemusOid}")
+    @Path("{hakuOid}/{hakukohdeOid}/{valintatapajonoOid}/{hakemusOid}")
     public boolean muutaHakemuksenTilaa(@PathParam("hakuOid") String hakuOid,
                                         @PathParam("hakukohdeOid") String hakukohdeOid,
                                         @PathParam("valintatapajonoOid") String valintatapajonoOid,
