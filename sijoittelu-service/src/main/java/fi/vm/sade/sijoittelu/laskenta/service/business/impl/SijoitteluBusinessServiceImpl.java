@@ -57,7 +57,7 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
     @Override
     public void sijoittele(HakuTyyppi sijoitteluTyyppi) {
 
-        System.out.println(PrintHelper.tulostaSijoittelu(sijoitteluTyyppi));
+    //    System.out.println(PrintHelper.tulostaSijoittelu(sijoitteluTyyppi));
 
         String hakuOid = sijoitteluTyyppi.getHakuOid();
         Sijoittelu sijoittelu = getOrCreateSijoittelu(hakuOid);
@@ -76,7 +76,7 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
         SijoitteluAlgorithm sijoitteluAlgorithm = algorithmFactory.constructAlgorithm(kaikkiHakukohteet,valintatulokset);
 
         uusiSijoitteluajo.setStartMils(System.currentTimeMillis());
-        System.out.println(PrintHelper.tulostaSijoittelu(sijoitteluAlgorithm));
+       // System.out.println(PrintHelper.tulostaSijoittelu(sijoitteluAlgorithm));
         sijoitteluAlgorithm.start();
         uusiSijoitteluajo.setEndMils(System.currentTimeMillis());
 
@@ -171,8 +171,8 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
                 hakemus = h;
             }
         }
-        if(hakemus.getTila() != HakemuksenTila.HYVAKSYTTY) {
-            throw new RuntimeException("sijoittelun hakemus ei ole hyvaksytty tilassa, fiksaa poikkeuskasittely myohemmin");
+        if(hakemus.isHarkinnanvarainen() || hakemus.getTila() != HakemuksenTila.HYVAKSYTTY) {
+            throw new RuntimeException("sijoittelun hakemus ei ole hyvaksytty tilassa tai harkinnanvarainen, fiksaa poikkeuskasittely myohemmin");
         }
 
         Valintatulos v = dao.loadValintatulos(hakukohdeOid, valintatapajonoOid, hakemusOid);

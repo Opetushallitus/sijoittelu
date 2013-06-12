@@ -50,14 +50,17 @@ public class SijoitteluntulosExportResource {
     @Path("sijoitteluntulos.xls")
     public Response exportSijoitteluntulos(@QueryParam("hakuOid") String hakuOid, @QueryParam("hakukohdeOid") String hakukohdeOid) {
 
+
+
         StringBuilder builder = new StringBuilder();
 
         Sijoittelu sijoittelu = dao.getSijoitteluByHakuOid(hakuOid);
         if(sijoittelu!=null) {
             SijoitteluAjo ajo = sijoittelu.getLatestSijoitteluajo();
             if(ajo != null) {
+            //    System.out.println(ajo.getSijoitteluajoId() + "<>" + hakukohdeOid);
                 Hakukohde hakukohde = dao.getHakukohdeBySijoitteluajo(ajo.getSijoitteluajoId(), hakukohdeOid);
-
+                //  System.out.println("JORMA! " + hakukohde);
                 // getHakukohdeBySijoitteluajo
 
                 builder.append("<table>");
