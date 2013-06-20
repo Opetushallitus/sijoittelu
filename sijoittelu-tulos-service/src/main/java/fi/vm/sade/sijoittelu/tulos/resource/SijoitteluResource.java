@@ -5,10 +5,13 @@ import fi.vm.sade.sijoittelu.domain.Sijoittelu;
 import fi.vm.sade.sijoittelu.domain.SijoitteluAjo;
 import fi.vm.sade.sijoittelu.tulos.dao.DAO;
 import fi.vm.sade.sijoittelu.tulos.dao.exception.SijoitteluEntityNotFoundException;
+import fi.vm.sade.sijoittelu.tulos.roles.SijoitteluRole;
 import org.codehaus.jackson.map.annotate.JsonView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
 
 import javax.ws.rs.*;
@@ -18,6 +21,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import static fi.vm.sade.sijoittelu.tulos.roles.SijoitteluRole.*;
+
 
 /**
  * User: wuoti
@@ -26,6 +31,7 @@ import java.util.List;
  */
 @Path("sijoittelu")
 @Component
+@PreAuthorize("isAuthenticated()")
 public class SijoitteluResource {
 
 
@@ -38,6 +44,7 @@ public class SijoitteluResource {
     @GET
     @JsonView(JsonViews.Basic.class)
     @Produces(MediaType.APPLICATION_JSON)
+    @Secured({READ, UPDATE, CRUD})
     public  List<Sijoittelu> getSijoittelu() {
         List<Sijoittelu> sijoittelu = dao.getSijoittelu();
 
@@ -54,6 +61,7 @@ public class SijoitteluResource {
     @JsonView(JsonViews.Basic.class)
     @Produces(MediaType.APPLICATION_JSON)
     @Path("{hakuOid}")
+    @Secured({READ, UPDATE, CRUD})
     public Sijoittelu getSijoitteluByHakuOid(@PathParam("hakuOid") String hakuOid) {
         Sijoittelu sijoittelu = dao.getSijoitteluByHakuOid(hakuOid);
         if (sijoittelu == null) {
@@ -67,6 +75,7 @@ public class SijoitteluResource {
     @JsonView(JsonViews.Basic.class)
     @Produces(MediaType.APPLICATION_JSON)
     @Path("{hakuOid}/sijoitteluajo")
+    @Secured({READ, UPDATE, CRUD})
     public List<SijoitteluAjo> getSijoitteluajoByHakuOid(@PathParam("hakuOid") String hakuOid,
                                                          @QueryParam("latest") Boolean latest) {
 

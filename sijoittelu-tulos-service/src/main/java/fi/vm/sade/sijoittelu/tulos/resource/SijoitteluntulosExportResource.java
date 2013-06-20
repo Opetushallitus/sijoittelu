@@ -8,7 +8,13 @@ import javax.ws.rs.core.Response;
 import fi.vm.sade.sijoittelu.domain.*;
 import fi.vm.sade.sijoittelu.tulos.dao.impl.DAOImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
+
+import static fi.vm.sade.sijoittelu.tulos.roles.SijoitteluRole.CRUD;
+import static fi.vm.sade.sijoittelu.tulos.roles.SijoitteluRole.READ;
+import static fi.vm.sade.sijoittelu.tulos.roles.SijoitteluRole.UPDATE;
 
 /**
  *
@@ -17,6 +23,7 @@ import org.springframework.stereotype.Component;
  */
 @Path("export")
 @Component
+@PreAuthorize("isAuthenticated()")
 public class SijoitteluntulosExportResource {
 
     // @Autowired
@@ -48,6 +55,7 @@ public class SijoitteluntulosExportResource {
      */
     @GET
     @Path("sijoitteluntulos.xls")
+    @Secured({READ, UPDATE, CRUD})
     public Response exportSijoitteluntulos(@QueryParam("hakuOid") String hakuOid, @QueryParam("hakukohdeOid") String hakukohdeOid) {
 
 

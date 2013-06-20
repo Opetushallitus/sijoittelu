@@ -8,12 +8,14 @@ import org.codehaus.jackson.map.annotate.JsonView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-
+import static fi.vm.sade.sijoittelu.laskenta.roles.SijoitteluRole.*;
 /**
  * Created with IntelliJ IDEA.
  * User: kkammone
@@ -23,6 +25,7 @@ import javax.ws.rs.core.Response;
  */
 @Path("tila")
 @Component
+@PreAuthorize("isAuthenticated()")
 public class TilaResource {
 
     private final static Logger LOGGER = LoggerFactory.getLogger(TilaResource.class);
@@ -34,6 +37,7 @@ public class TilaResource {
     @JsonView(JsonViews.Basic.class)
     @Produces(MediaType.APPLICATION_JSON)
     @Path("{hakuOid}/{hakukohdeOid}/{valintatapajonoOid}/{hakemusOid}")
+    @Secured({READ, UPDATE, CRUD})
     public Valintatulos hakemus(@PathParam("hakuOid") String hakuOid,
                                 @PathParam("hakukohdeOid") String hakukohdeOid,
                                 @PathParam("valintatapajonoOid") String valintatapajonoOid,
@@ -49,6 +53,7 @@ public class TilaResource {
     @JsonView(JsonViews.Basic.class)
     @Produces(MediaType.APPLICATION_JSON)
     @Path("{hakuOid}/{hakukohdeOid}/{valintatapajonoOid}/{hakemusOid}")
+    @Secured({UPDATE, CRUD})
     public boolean muutaHakemuksenTilaa(@PathParam("hakuOid") String hakuOid,
                                         @PathParam("hakukohdeOid") String hakukohdeOid,
                                         @PathParam("valintatapajonoOid") String valintatapajonoOid,
