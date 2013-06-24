@@ -33,7 +33,12 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
     private Dao dao;
 
 
-    //ei versioi sijoittelua, tekeee uuden sijoittelun olemassaoleville kohteille
+    /**
+     * ei versioi sijoittelua, tekeee uuden sijoittelun olemassaoleville kohteille
+     * ei kayteta viela mihinkaan
+     *
+     * @param hakuOid
+     */
     public void sijoittele(String hakuOid) {
 
         Sijoittelu sijoittelu = getOrCreateSijoittelu(hakuOid);
@@ -53,11 +58,15 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
         }
     }
 
-    //verioi sijoittelun ja tuo uudet kohteet
+    /**
+     * verioi sijoittelun ja tuo uudet kohteet
+     *
+     * @param sijoitteluTyyppi
+     */
     @Override
     public void sijoittele(HakuTyyppi sijoitteluTyyppi) {
 
-    //    System.out.println(PrintHelper.tulostaSijoittelu(sijoitteluTyyppi));
+        //    System.out.println(PrintHelper.tulostaSijoittelu(sijoitteluTyyppi));
 
         String hakuOid = sijoitteluTyyppi.getHakuOid();
         Sijoittelu sijoittelu = getOrCreateSijoittelu(hakuOid);
@@ -76,7 +85,7 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
         SijoitteluAlgorithm sijoitteluAlgorithm = algorithmFactory.constructAlgorithm(kaikkiHakukohteet,valintatulokset);
 
         uusiSijoitteluajo.setStartMils(System.currentTimeMillis());
-       // System.out.println(PrintHelper.tulostaSijoittelu(sijoitteluAlgorithm));
+        // System.out.println(PrintHelper.tulostaSijoittelu(sijoitteluAlgorithm));
         sijoitteluAlgorithm.start();
         uusiSijoitteluajo.setEndMils(System.currentTimeMillis());
 
