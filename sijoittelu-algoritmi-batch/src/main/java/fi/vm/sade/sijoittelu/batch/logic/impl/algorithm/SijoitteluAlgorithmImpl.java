@@ -18,377 +18,392 @@ import fi.vm.sade.sijoittelu.domain.Hakemus;
 import fi.vm.sade.sijoittelu.domain.Tasasijasaanto;
 
 /**
- * 
+ *
  * @author Kari Kammonen
- * 
+ *
  */
 public class SijoitteluAlgorithmImpl implements SijoitteluAlgorithm {
 
-	protected SijoitteluAlgorithmImpl() { 	}
+    protected SijoitteluAlgorithmImpl() { 	}
 
-	protected SijoitteluajoWrapper sijoitteluAjo;
+    protected SijoitteluajoWrapper sijoitteluAjo;
 
-	protected List<PreSijoitteluProcessor> preSijoitteluProcessors;
+    protected List<PreSijoitteluProcessor> preSijoitteluProcessors;
 
-	protected List<PostSijoitteluProcessor> postSijoitteluProcessors;
+    protected List<PostSijoitteluProcessor> postSijoitteluProcessors;
 
-	protected int depth = 0;
+    protected int depth = 0;
 
-	@Override
-	public void start() {
-		runPreProcessors();
-		sijoittele();
-		runPostProcessors();
-	}
+    @Override
+    public void start() {
+        runPreProcessors();
+        sijoittele();
+        runPostProcessors();
+    }
 
-	private void runPostProcessors() {
-		for (PostSijoitteluProcessor processor : postSijoitteluProcessors) {
-			processor.process(sijoitteluAjo);
-		}
-	}
+    private void runPostProcessors() {
+        for (PostSijoitteluProcessor processor : postSijoitteluProcessors) {
+            processor.process(sijoitteluAjo);
+        }
+    }
 
-	private void runPreProcessors() {
-		for (PreSijoitteluProcessor processor : preSijoitteluProcessors) {
-			processor.process(sijoitteluAjo);
-		}
-	}
+    private void runPreProcessors() {
+        for (PreSijoitteluProcessor processor : preSijoitteluProcessors) {
+            processor.process(sijoitteluAjo);
+        }
+    }
 
-	private void sijoittele() {
-		for (HakukohdeWrapper hakukohde : sijoitteluAjo.getHakukohteet()) {
-			sijoittele(hakukohde, 0);
-		}
-	}
+    private void sijoittele() {
+        for (HakukohdeWrapper hakukohde : sijoitteluAjo.getHakukohteet()) {
+            sijoittele(hakukohde, 0);
+        }
+    }
 
-	private void sijoittele(HakukohdeWrapper hakukohde, int n) {
-		n++;
-		if (n > depth) {
-			depth = n;
-		}
-		// System.out.println("Depth = " + n);
+    private void sijoittele(HakukohdeWrapper hakukohde, int n) {
+        n++;
+        if (n > depth) {
+            depth = n;
+        }
+        // System.out.println("Depth = " + n);
 
-		for (ValintatapajonoWrapper valintatapajono : hakukohde.getValintatapajonot()) {
-			this.sijoittele(valintatapajono, n);
-		}
-		for (HakijaryhmaWrapper hakijaryhmaWrapper : hakukohde.getHakijaryhmaWrappers()) {
-			this.sijoittele(hakijaryhmaWrapper, n);
-		}
-	}
+        for (ValintatapajonoWrapper valintatapajono : hakukohde.getValintatapajonot()) {
+            this.sijoittele(valintatapajono, n);
+        }
+        for (HakijaryhmaWrapper hakijaryhmaWrapper : hakukohde.getHakijaryhmaWrappers()) {
+            this.sijoittele(hakijaryhmaWrapper, n);
+        }
+    }
 
-	private void sijoittele(ValintatapajonoWrapper valintatapajono, int n) {
+    private void sijoittele(ValintatapajonoWrapper valintatapajono, int n) {
 
-		ArrayList<HakemusWrapper> hyvaksyttavaksi = new ArrayList<HakemusWrapper>();
-		ArrayList<HakemusWrapper> varalle = new ArrayList<HakemusWrapper>();
+        ArrayList<HakemusWrapper> hyvaksyttavaksi = new ArrayList<HakemusWrapper>();
+        ArrayList<HakemusWrapper> varalle = new ArrayList<HakemusWrapper>();
 
-		Tasasijasaanto saanto = valintatapajono.getValintatapajono().getTasasijasaanto();
+        Tasasijasaanto saanto = valintatapajono.getValintatapajono().getTasasijasaanto();
 
-		ArrayList<HakemusWrapper> eiKorvattavissaOlevatHyvaksytytHakemukset = eiKorvattavissaOlevatHyvaksytytHakemukset(valintatapajono);
+        ArrayList<HakemusWrapper> eiKorvattavissaOlevatHyvaksytytHakemukset = eiKorvattavissaOlevatHyvaksytytHakemukset(valintatapajono);
 
-		int aloituspaikat = valintatapajono.getValintatapajono().getAloituspaikat();
-		int tilaa = aloituspaikat - eiKorvattavissaOlevatHyvaksytytHakemukset.size();
-		boolean tasaSijaTilanne = false;
-		boolean tasasijaTilanneRatkaistu = false;
+        int aloituspaikat = valintatapajono.getValintatapajono().getAloituspaikat();
+        int tilaa = aloituspaikat - eiKorvattavissaOlevatHyvaksytytHakemukset.size();
+        boolean tasaSijaTilanne = false;
+        boolean tasasijaTilanneRatkaistu = false;
 
-		ListIterator<HakemusWrapper> it = valintatapajono.getHakemukset().listIterator();
-		while (it.hasNext()) {
-			ArrayList<HakemusWrapper> kaikkiTasasijaHakemukset = tasasijaHakemukset(it);
-			ArrayList<HakemusWrapper> valituksiHaluavatHakemukset = valituksiHaluavatHakemukset(kaikkiTasasijaHakemukset);
+        ListIterator<HakemusWrapper> it = valintatapajono.getHakemukset().listIterator();
+        while (it.hasNext()) {
+            ArrayList<HakemusWrapper> kaikkiTasasijaHakemukset = tasasijaHakemukset(it);
+            ArrayList<HakemusWrapper> valituksiHaluavatHakemukset = valituksiHaluavatHakemukset(kaikkiTasasijaHakemukset);
 
-			if (tilaa - valituksiHaluavatHakemukset.size() <= 0) {
-				// vain ylitaytto tai alitaytto vaatii erillista
-				// tasasijanhallintaa
-				if (saanto == Tasasijasaanto.YLITAYTTO || saanto == Tasasijasaanto.ALITAYTTO) {
-					tasaSijaTilanne = true;
-				}
-			}
-			for (HakemusWrapper hk : kaikkiTasasijaHakemukset) {
-				if (eiKorvattavissaOlevatHyvaksytytHakemukset.contains(hk)) {
-					// ei voida tehdä mitaan, tila on jo poistettu. ignoretetaan
-				} else if (valituksiHaluavatHakemukset.contains(hk)) {
-					if (tasaSijaTilanne && !tasasijaTilanneRatkaistu) {
-						if (saanto == Tasasijasaanto.ALITAYTTO) {
-							varalle.add(hk);
-						} else if (saanto == Tasasijasaanto.YLITAYTTO) {
-							hyvaksyttavaksi.add(hk);
-						}
-					} else if (tasasijaTilanneRatkaistu) {
-						varalle.add(hk);
-					} else if (tilaa > 0) {
-						hyvaksyttavaksi.add(hk);
-						tilaa--;
-					} else {
-						varalle.add(hk);
-					}
-				} else {
-					varalle.add(hk);
-				}
-			}
-			if (tasaSijaTilanne) {
-				tasasijaTilanneRatkaistu = true;
-			}
+            if (tilaa - valituksiHaluavatHakemukset.size() <= 0) {
+                // vain ylitaytto tai alitaytto vaatii erillista
+                // tasasijanhallintaa
+                if (saanto == Tasasijasaanto.YLITAYTTO || saanto == Tasasijasaanto.ALITAYTTO) {
+                    tasaSijaTilanne = true;
+                }
+            }
+            for (HakemusWrapper hk : kaikkiTasasijaHakemukset) {
+                if (eiKorvattavissaOlevatHyvaksytytHakemukset.contains(hk)) {
+                    // ei voida tehdä mitaan, tila on jo poistettu. ignoretetaan
+                } else if (valituksiHaluavatHakemukset.contains(hk)) {
+                    if (tasaSijaTilanne && !tasasijaTilanneRatkaistu) {
+                        if (saanto == Tasasijasaanto.ALITAYTTO) {
+                            varalle.add(hk);
+                        } else if (saanto == Tasasijasaanto.YLITAYTTO) {
+                            hyvaksyttavaksi.add(hk);
+                        }
+                    } else if (tasasijaTilanneRatkaistu) {
+                        varalle.add(hk);
+                    } else if (tilaa > 0) {
+                        hyvaksyttavaksi.add(hk);
+                        tilaa--;
+                    } else {
+                        varalle.add(hk);
+                    }
+                } else {
+                    varalle.add(hk);
+                }
+            }
+            if (tasaSijaTilanne) {
+                tasasijaTilanneRatkaistu = true;
+            }
 
-		}
+        }
 
-		// kay lavitse muutokset ja tarkista tarvitaanko rekursiota?
-		ArrayList<HakemusWrapper> muuttuneetHakemukset = new ArrayList<HakemusWrapper>();
-		for (HakemusWrapper hakemusWrapper : hyvaksyttavaksi) {
-			if (hakemusWrapper.getHakemus().getTila() != HakemuksenTila.HYVAKSYTTY) {
-				muuttuneetHakemukset.addAll(hyvaksyHakemus(hakemusWrapper));
-			}
-		}
-		for (HakemusWrapper hakemusWrapper : varalle) {
-			if (hakemusWrapper.getHakemus().getTila() == HakemuksenTila.HYVAKSYTTY) {
-				muuttuneetHakemukset.addAll(asetaVaralleHakemus(hakemusWrapper));
-			}
-		}
+        // kay lavitse muutokset ja tarkista tarvitaanko rekursiota?
+        ArrayList<HakemusWrapper> muuttuneetHakemukset = new ArrayList<HakemusWrapper>();
+        for (HakemusWrapper hakemusWrapper : hyvaksyttavaksi) {
+            if (hakemusWrapper.getHakemus().getTila() != HakemuksenTila.HYVAKSYTTY) {
+                muuttuneetHakemukset.addAll(hyvaksyHakemus(hakemusWrapper));
+            }
+        }
+        for (HakemusWrapper hakemusWrapper : varalle) {
+            if (hakemusWrapper.getHakemus().getTila() == HakemuksenTila.HYVAKSYTTY) {
+                muuttuneetHakemukset.addAll(asetaVaralleHakemus(hakemusWrapper));
+            }
+        }
 
-		// System.out.println("====DONE");
+        // System.out.println("====DONE");
 
-		for (HakukohdeWrapper v : uudelleenSijoiteltavatHakukohteet(muuttuneetHakemukset)) {
-			sijoittele(v, n);
-		}
+        for (HakukohdeWrapper v : uudelleenSijoiteltavatHakukohteet(muuttuneetHakemukset)) {
+            sijoittele(v, n);
+        }
 
-	}
+    }
 
-	private void sijoittele(HakijaryhmaWrapper hakijaryhmaWrapper, int n) {
-		ArrayList<HakemusWrapper> muuttuneetHakemukset = new ArrayList<HakemusWrapper>();
-		List<List<HakemusWrapper>> hakijaryhmanVarasijallaOlevat = hakijaryhmanVarasijajarjestys(hakijaryhmaWrapper);
-		ListIterator<List<HakemusWrapper>> it = hakijaryhmanVarasijallaOlevat.listIterator();
+    private void sijoittele(HakijaryhmaWrapper hakijaryhmaWrapper, int n) {
+        ArrayList<HakemusWrapper> muuttuneetHakemukset = new ArrayList<HakemusWrapper>();
+        List<List<HakemusWrapper>> hakijaryhmanVarasijallaOlevat = hakijaryhmanVarasijajarjestys(hakijaryhmaWrapper);
+        ListIterator<List<HakemusWrapper>> it = hakijaryhmanVarasijallaOlevat.listIterator();
 
-		while (it.hasNext() && hakijaryhmassaVajaata(hakijaryhmaWrapper) > 0) {
-			List<HakemusWrapper> tasasijaVarasijaHakemukset = it.next();
-			for (HakemusWrapper paras : tasasijaVarasijaHakemukset) {
-				ValintatapajonoWrapper v = paras.getValintatapajono();
-				HakemusWrapper huonoin = haeHuonoinValittuEiVajaaseenRyhmaanKuuluva(v);
-				muuttuneetHakemukset.addAll(hyvaksyHakemus(paras));
-				muuttuneetHakemukset.add(paras);
-				if (huonoin != null) {
-					muuttuneetHakemukset.addAll(asetaVaralleHakemus(huonoin));
-				}
-			}
-		}
-		HashSet<HakukohdeWrapper> uudelleenSijoiteltavatHakukohteet = uudelleenSijoiteltavatHakukohteet(muuttuneetHakemukset);
-		for (HakukohdeWrapper h : uudelleenSijoiteltavatHakukohteet) {
-			sijoittele(h, n);
-		}
+        while (it.hasNext() && hakijaryhmassaVajaata(hakijaryhmaWrapper) > 0) {
+            List<HakemusWrapper> tasasijaVarasijaHakemukset = it.next();
+            for (HakemusWrapper paras : tasasijaVarasijaHakemukset) {
+                ValintatapajonoWrapper v = paras.getValintatapajono();
+                HakemusWrapper huonoin = haeHuonoinValittuEiVajaaseenRyhmaanKuuluva(v);
+                muuttuneetHakemukset.addAll(hyvaksyHakemus(paras));
+                muuttuneetHakemukset.add(paras);
+                if (huonoin != null) {
+                    muuttuneetHakemukset.addAll(asetaVaralleHakemus(huonoin));
+                }
+            }
+        }
+        HashSet<HakukohdeWrapper> uudelleenSijoiteltavatHakukohteet = uudelleenSijoiteltavatHakukohteet(muuttuneetHakemukset);
+        for (HakukohdeWrapper h : uudelleenSijoiteltavatHakukohteet) {
+            sijoittele(h, n);
+        }
 
-	}
+    }
 
-	private ArrayList<HakemusWrapper> valituksiHaluavatHakemukset(ArrayList<HakemusWrapper> hakemukset) {
-		ArrayList<HakemusWrapper> tasasijaHakemukset = new ArrayList<HakemusWrapper>();
-		for (HakemusWrapper hakemusWrapper : hakemukset) {
-			if (hakijaHaluaa(hakemusWrapper) && saannotSallii(hakemusWrapper)) {
-				tasasijaHakemukset.add(hakemusWrapper);
-			}
-		}
-		return tasasijaHakemukset;
-	}
+    private ArrayList<HakemusWrapper> valituksiHaluavatHakemukset(ArrayList<HakemusWrapper> hakemukset) {
+        ArrayList<HakemusWrapper> tasasijaHakemukset = new ArrayList<HakemusWrapper>();
+        for (HakemusWrapper hakemusWrapper : hakemukset) {
+            if (hakijaHaluaa(hakemusWrapper) && saannotSallii(hakemusWrapper)) {
+                tasasijaHakemukset.add(hakemusWrapper);
+            }
+        }
+        return tasasijaHakemukset;
+    }
 
-	// hae hakemukset jotka ovat seuraavana samalla sijalla
-	private ArrayList<HakemusWrapper> tasasijaHakemukset(ListIterator<HakemusWrapper> it) {
-		ArrayList<HakemusWrapper> tasasijaHakemukset = new ArrayList<HakemusWrapper>();
-		while (it.hasNext()) {
-			HakemusWrapper h = it.next();
-			tasasijaHakemukset.add(h);
-			HakemusWrapper seuraava = SijoitteluHelper.peek(it);
-			if (seuraava == null || seuraava.getHakemus().getJonosija() != h.getHakemus().getJonosija()) {
-				break;
-			}
-		}
-		return tasasijaHakemukset;
-	}
+    // hae hakemukset jotka ovat seuraavana samalla sijalla
+    private ArrayList<HakemusWrapper> tasasijaHakemukset(ListIterator<HakemusWrapper> it) {
+        ArrayList<HakemusWrapper> tasasijaHakemukset = new ArrayList<HakemusWrapper>();
+        while (it.hasNext()) {
+            HakemusWrapper h = it.next();
+            tasasijaHakemukset.add(h);
+            HakemusWrapper seuraava = SijoitteluHelper.peek(it);
+            if (seuraava == null || seuraava.getHakemus().getJonosija() != h.getHakemus().getJonosija()) {
+                break;
+            }
+        }
+        return tasasijaHakemukset;
+    }
 
-	private List<HakemusWrapper> hakijaRyhmaanKuuluvat(List<HakemusWrapper> hakemus, HakijaryhmaWrapper ryhma) {
-		List<HakemusWrapper> kuuluvat = new ArrayList<HakemusWrapper>();
-		for (HakemusWrapper hakemusWrapper : hakemus) {
-			if (ryhma.getHenkiloWrappers().contains(hakemusWrapper.getHenkilo())) {
-				kuuluvat.add(hakemusWrapper);
-			}
-		}
-		return kuuluvat;
-	}
+    private List<HakemusWrapper> hakijaRyhmaanKuuluvat(List<HakemusWrapper> hakemus, HakijaryhmaWrapper ryhma) {
+        List<HakemusWrapper> kuuluvat = new ArrayList<HakemusWrapper>();
+        for (HakemusWrapper hakemusWrapper : hakemus) {
+            if (ryhma.getHenkiloWrappers().contains(hakemusWrapper.getHenkilo())) {
+                kuuluvat.add(hakemusWrapper);
+            }
+        }
+        return kuuluvat;
+    }
 
-	private List<List<HakemusWrapper>> hakijaryhmanVarasijajarjestys(HakijaryhmaWrapper hakijaryhmaWrapper) {
+    private List<List<HakemusWrapper>> hakijaryhmanVarasijajarjestys(HakijaryhmaWrapper hakijaryhmaWrapper) {
 
-		List<List<HakemusWrapper>> list = new ArrayList<List<HakemusWrapper>>();
-		List<ListIterator<HakemusWrapper>> iterators = new ArrayList<ListIterator<HakemusWrapper>>();
+        List<List<HakemusWrapper>> list = new ArrayList<List<HakemusWrapper>>();
+        List<ListIterator<HakemusWrapper>> iterators = new ArrayList<ListIterator<HakemusWrapper>>();
 
-		for (ValintatapajonoWrapper valintatapajonoWrapper : hakijaryhmaWrapper.getHakukohdeWrapper().getValintatapajonot()) {
-			iterators.add(muodostaVarasijaJono(valintatapajonoWrapper.getHakemukset()).listIterator());
-		}
-		while (true) {
-			boolean jatka = false;
-			for (ListIterator<HakemusWrapper> it : iterators) {
-				if (it.hasNext()) {
+        for (ValintatapajonoWrapper valintatapajonoWrapper : hakijaryhmaWrapper.getHakukohdeWrapper().getValintatapajonot()) {
+            iterators.add(muodostaVarasijaJono(valintatapajonoWrapper.getHakemukset()).listIterator());
+        }
+        while (true) {
+            boolean jatka = false;
+            for (ListIterator<HakemusWrapper> it : iterators) {
+                if (it.hasNext()) {
 
-					ArrayList<HakemusWrapper> kaikkiTasasijaHakemukset = tasasijaHakemukset(it);
-					ArrayList<HakemusWrapper> valituksiHaluavatHakemukset = valituksiHaluavatHakemukset(kaikkiTasasijaHakemukset);
+                    ArrayList<HakemusWrapper> kaikkiTasasijaHakemukset = tasasijaHakemukset(it);
+                    ArrayList<HakemusWrapper> valituksiHaluavatHakemukset = valituksiHaluavatHakemukset(kaikkiTasasijaHakemukset);
 
-					List<HakemusWrapper> a = hakijaRyhmaanKuuluvat(valituksiHaluavatHakemukset, hakijaryhmaWrapper);
-					a = poistaDuplikaatit(a, list);
-					if (a != null && !a.isEmpty()) {
-						list.add(a);
-					}
-					jatka = true;
-				}
-			}
-			if (!jatka) {
-				break;
-			}
-		}
+                    List<HakemusWrapper> a = hakijaRyhmaanKuuluvat(valituksiHaluavatHakemukset, hakijaryhmaWrapper);
+                    a = poistaDuplikaatit(a, list);
+                    if (a != null && !a.isEmpty()) {
+                        list.add(a);
+                    }
+                    jatka = true;
+                }
+            }
+            if (!jatka) {
+                break;
+            }
+        }
 
-		return list;
-	}
+        return list;
+    }
 
-	private List<HakemusWrapper> muodostaVarasijaJono(List<HakemusWrapper> hakemukset) {
-		List<HakemusWrapper> list = new ArrayList<HakemusWrapper>();
-		for (HakemusWrapper hakemusWrapper : hakemukset) {
-			if (hakemusWrapper.getHakemus().getTila() != HakemuksenTila.HYVAKSYTTY && hakijaHaluaa(hakemusWrapper) && saannotSallii(hakemusWrapper)) {
-				list.add(hakemusWrapper);
-			}
-		}
-		return list;
-	}
+    private List<HakemusWrapper> muodostaVarasijaJono(List<HakemusWrapper> hakemukset) {
+        List<HakemusWrapper> list = new ArrayList<HakemusWrapper>();
+        for (HakemusWrapper hakemusWrapper : hakemukset) {
+            if (hakemusWrapper.getHakemus().getTila() != HakemuksenTila.HYVAKSYTTY && hakijaHaluaa(hakemusWrapper) && saannotSallii(hakemusWrapper)) {
+                list.add(hakemusWrapper);
+            }
+        }
+        return list;
+    }
 
-	private List<HakemusWrapper> poistaDuplikaatit(List<HakemusWrapper> hakemukset, List<List<HakemusWrapper>> lista) {
-		List<HakemusWrapper> returnable = new ArrayList<HakemusWrapper>();
-		for (HakemusWrapper h : hakemukset) {
-			boolean found = false;
-			for (List<HakemusWrapper> l : lista) {
-				for (HakemusWrapper hakemusWrapper : l) {
-					if (hakemusWrapper.getHenkilo().equals(h.getHenkilo())) {
-						found = true;
-						break;
-					}
-				}
-				if (found) {
-					break;
-				}
-			}
-			if (!found) {
-				returnable.add(h);
-			}
-		}
-		return returnable;
-	}
+    private List<HakemusWrapper> poistaDuplikaatit(List<HakemusWrapper> hakemukset, List<List<HakemusWrapper>> lista) {
+        List<HakemusWrapper> returnable = new ArrayList<HakemusWrapper>();
+        for (HakemusWrapper h : hakemukset) {
+            boolean found = false;
+            for (List<HakemusWrapper> l : lista) {
+                for (HakemusWrapper hakemusWrapper : l) {
+                    if (hakemusWrapper.getHenkilo().equals(h.getHenkilo())) {
+                        found = true;
+                        break;
+                    }
+                }
+                if (found) {
+                    break;
+                }
+            }
+            if (!found) {
+                returnable.add(h);
+            }
+        }
+        return returnable;
+    }
 
-	private HashSet<HakukohdeWrapper> uudelleenSijoiteltavatHakukohteet(ArrayList<HakemusWrapper> muuttuneetHakemukset) {
-		HashSet<HakukohdeWrapper> hakukohteet = new HashSet<HakukohdeWrapper>();
-		for (HakemusWrapper h : muuttuneetHakemukset) {
-			hakukohteet.add(h.getValintatapajono().getHakukohdeWrapper());
-		}
-		return hakukohteet;
-	}
+    private HashSet<HakukohdeWrapper> uudelleenSijoiteltavatHakukohteet(ArrayList<HakemusWrapper> muuttuneetHakemukset) {
+        HashSet<HakukohdeWrapper> hakukohteet = new HashSet<HakukohdeWrapper>();
+        for (HakemusWrapper h : muuttuneetHakemukset) {
+            hakukohteet.add(h.getValintatapajono().getHakukohdeWrapper());
+        }
+        return hakukohteet;
+    }
 
-	private ArrayList<HakemusWrapper> eiKorvattavissaOlevatHyvaksytytHakemukset(ValintatapajonoWrapper valintatapajono) {
-		ArrayList<HakemusWrapper> eiKorvattavissaOlevatHyvaksytytHakemukset = new ArrayList<HakemusWrapper>();
-		for (HakemusWrapper h : valintatapajono.getHakemukset()) {
-			if (h.getHakemus().getTila() == HakemuksenTila.HYVAKSYTTY) {
-				if (!voidaanKorvata(h)) {
-					eiKorvattavissaOlevatHyvaksytytHakemukset.add(h);
-				}
-			}
-		}
+    private ArrayList<HakemusWrapper> eiKorvattavissaOlevatHyvaksytytHakemukset(ValintatapajonoWrapper valintatapajono) {
+        ArrayList<HakemusWrapper> eiKorvattavissaOlevatHyvaksytytHakemukset = new ArrayList<HakemusWrapper>();
+        for (HakemusWrapper h : valintatapajono.getHakemukset()) {
+            if (h.getHakemus().getTila() == HakemuksenTila.HYVAKSYTTY) {
+                if (!voidaanKorvata(h)) {
+                    eiKorvattavissaOlevatHyvaksytytHakemukset.add(h);
+                }
+            }
+        }
 
-		return eiKorvattavissaOlevatHyvaksytytHakemukset;
-	}
+        return eiKorvattavissaOlevatHyvaksytytHakemukset;
+    }
 
-	private boolean voidaanKorvata(HakemusWrapper hakemusWrapper) {
+    private boolean voidaanKorvata(HakemusWrapper hakemusWrapper) {
 
-		boolean voidaanKorvata = true;
+        boolean voidaanKorvata = true;
 
-		ArrayList<HakijaryhmaWrapper> hakijanHakijaryhmat = new ArrayList<HakijaryhmaWrapper>();
-		for (HakijaryhmaWrapper hakijaryhmaWrapper : hakemusWrapper.getValintatapajono().getHakukohdeWrapper().getHakijaryhmaWrappers()) {
-			if (hakijaryhmaWrapper.getHenkiloWrappers().contains(hakemusWrapper.getHenkilo())) {
-				hakijanHakijaryhmat.add(hakijaryhmaWrapper);
-			}
-		}
-		for (HakijaryhmaWrapper a : hakijanHakijaryhmat) {
-			if (hakijaryhmassaVajaata(a) >= 0) {
-				voidaanKorvata = false;
-			}
-		}
+        ArrayList<HakijaryhmaWrapper> hakijanHakijaryhmat = new ArrayList<HakijaryhmaWrapper>();
+        for (HakijaryhmaWrapper hakijaryhmaWrapper : hakemusWrapper.getValintatapajono().getHakukohdeWrapper().getHakijaryhmaWrappers()) {
+            if (hakijaryhmaWrapper.getHenkiloWrappers().contains(hakemusWrapper.getHenkilo())) {
+                hakijanHakijaryhmat.add(hakijaryhmaWrapper);
+            }
+        }
+        for (HakijaryhmaWrapper a : hakijanHakijaryhmat) {
+            if (hakijaryhmassaVajaata(a) >= 0) {
+                voidaanKorvata = false;
+            }
+        }
 
-		if (!hakemusWrapper.isTilaVoidaanVaihtaa()) {
-			voidaanKorvata = false;
-		}
+        if (!hakemusWrapper.isTilaVoidaanVaihtaa()) {
+            voidaanKorvata = false;
+        }
 
-		return voidaanKorvata;
-	}
+        return voidaanKorvata;
+    }
 
-	private HashSet<HakemusWrapper> asetaVaralleHakemus(HakemusWrapper varalleAsetettavaHakemusWrapper) {
+    private HashSet<HakemusWrapper> asetaVaralleHakemus(HakemusWrapper varalleAsetettavaHakemusWrapper) {
 
-		HashSet<HakemusWrapper> uudelleenSijoiteltavatHakukohteet = new HashSet<HakemusWrapper>();
-		for (HakemusWrapper hakemusWrapper : varalleAsetettavaHakemusWrapper.getHenkilo().getHakemukset()) {
-			if (hakemusWrapper.getHakemus().getTila() != HakemuksenTila.HYLATTY) {
-				hakemusWrapper.getHakemus().setTila(HakemuksenTila.VARALLA);
-				if (varalleAsetettavaHakemusWrapper.getHakemus().getTila() == HakemuksenTila.HYVAKSYTTY) {
-					uudelleenSijoiteltavatHakukohteet.add(hakemusWrapper);
-				}
-			}
-		}
-		return uudelleenSijoiteltavatHakukohteet;
-	}
+        HashSet<HakemusWrapper> uudelleenSijoiteltavatHakukohteet = new HashSet<HakemusWrapper>();
+        for (HakemusWrapper hakemusWrapper : varalleAsetettavaHakemusWrapper.getHenkilo().getHakemukset()) {
+            if (hakemusWrapper.getHakemus().getTila() != HakemuksenTila.HYLATTY) {
+                hakemusWrapper.getHakemus().setTila(HakemuksenTila.VARALLA);
+                if (varalleAsetettavaHakemusWrapper.getHakemus().getTila() == HakemuksenTila.HYVAKSYTTY) {
+                    uudelleenSijoiteltavatHakukohteet.add(hakemusWrapper);
+                }
+            }
+        }
+        return uudelleenSijoiteltavatHakukohteet;
+    }
 
-	private HashSet<HakemusWrapper> hyvaksyHakemus(HakemusWrapper hakemus) {
+    private HashSet<HakemusWrapper> hyvaksyHakemus(HakemusWrapper hakemus) {
 
-		HashSet<HakemusWrapper> uudelleenSijoiteltavatHakukohteet = new HashSet<HakemusWrapper>();
-		hakemus.getHakemus().setTila(HakemuksenTila.HYVAKSYTTY);
-		for (HakemusWrapper h : hakemus.getHenkilo().getHakemukset()) {
-			if (h != hakemus && hakemus.getHakemus().getPrioriteetti() <= h.getHakemus().getPrioriteetti()) {
-				if (h.getHakemus().getTila() == HakemuksenTila.HYVAKSYTTY) {
-					h.getHakemus().setTila(HakemuksenTila.PERUUNTUNUT);
-					uudelleenSijoiteltavatHakukohteet.add(h);
-				} else {
-					if (h.getHakemus().getTila() == HakemuksenTila.VARALLA) {
-						h.getHakemus().setTila(HakemuksenTila.PERUUNTUNUT);
-					}
-				}
-			}
-		}
+        HashSet<HakemusWrapper> uudelleenSijoiteltavatHakukohteet = new HashSet<HakemusWrapper>();
+        hakemus.getHakemus().setTila(HakemuksenTila.HYVAKSYTTY);
+        for (HakemusWrapper h : hakemus.getHenkilo().getHakemukset()) {
+            if (h != hakemus && hakemus.getHakemus().getPrioriteetti() <= h.getHakemus().getPrioriteetti()) {
+                if (h.getHakemus().getTila() == HakemuksenTila.HYVAKSYTTY) {
+                    h.getHakemus().setTila(HakemuksenTila.PERUUNTUNUT);
+                    uudelleenSijoiteltavatHakukohteet.add(h);
+                } else {
+                    if (h.getHakemus().getTila() == HakemuksenTila.VARALLA) {
+                        h.getHakemus().setTila(HakemuksenTila.PERUUNTUNUT);
+                    }
+                }
+            }
+        }
 
-		return uudelleenSijoiteltavatHakukohteet;
-	}
+        return uudelleenSijoiteltavatHakukohteet;
+    }
 
-	private boolean saannotSallii(HakemusWrapper hakemusWrapper) {
-		Hakemus hakemus = hakemusWrapper.getHakemus();
-		return hakemus.getTila() != HakemuksenTila.HYLATTY;
-	}
+    private boolean saannotSallii(HakemusWrapper hakemusWrapper) {
+        Hakemus hakemus = hakemusWrapper.getHakemus();
+        boolean hakemuksenTila = hakemus.getTila() != HakemuksenTila.HYLATTY;
 
-	private boolean hakijaHaluaa(HakemusWrapper hakemusWrapper) {
-		HenkiloWrapper henkilo = hakemusWrapper.getHenkilo();
-		for (HakemusWrapper h : henkilo.getHakemukset()) {
-			if (h.getHakemus().getTila() != null && h.getHakemus().getTila() == HakemuksenTila.HYVAKSYTTY && h.getHakemus().getPrioriteetti() <= hakemusWrapper.getHakemus().getPrioriteetti() && hakemusWrapper != h) {
-				return false;
-			}
-		}
-		return true;
-	}
+        boolean hakijaAloistuspaikkojenSisallaTaiVarasijataytto = true;
+        if(hakemusWrapper.getValintatapajono().getValintatapajono().getEiVarasijatayttoa() != null && hakemusWrapper.getValintatapajono().getValintatapajono().getEiVarasijatayttoa() ==true ) {
+            hakijaAloistuspaikkojenSisallaTaiVarasijataytto  = hakijaAloistuspaikkojenSisalla(hakemusWrapper);
+        }
 
-	private HakemusWrapper haeHuonoinValittuEiVajaaseenRyhmaanKuuluva(ValintatapajonoWrapper valintatapajonoWrapper) {
-		HakemusWrapper huonoinHakemus = null;
-		for (int i = valintatapajonoWrapper.getHakemukset().size() - 1; i >= 0; i--) {
-			HakemusWrapper h = valintatapajonoWrapper.getHakemukset().get(i);
-			if (h.getHakemus().getTila() == HakemuksenTila.HYVAKSYTTY) {
-				if (voidaanKorvata(h)) {
-					huonoinHakemus = h;
-					break;
-				}
-			}
-		}
+        return hakemuksenTila && hakijaAloistuspaikkojenSisallaTaiVarasijataytto;
+    }
 
-		return huonoinHakemus;
-	}
+    //TODO pitaisiko huomioda hylatyt myos. Jos pitaisi, niin pitaa peruuntunut tila lisata.
+    private boolean hakijaAloistuspaikkojenSisalla(HakemusWrapper hakemusWrapper) {
+        ValintatapajonoWrapper valintatapajono = hakemusWrapper.getValintatapajono() ;
+        List<HakemusWrapper> hakemukset = valintatapajono.getHakemukset();
+        int aloituspaikat = valintatapajono.getValintatapajono().getAloituspaikat();
+        return hakemukset.indexOf(hakemusWrapper) < aloituspaikat;
+    }
 
-	private int hakijaryhmassaVajaata(HakijaryhmaWrapper hakijaryhmaWrapper) {
-		int needed = hakijaryhmaWrapper.getHakijaryhma().getPaikat();
-		for (ValintatapajonoWrapper valintatapajonoWrapper : hakijaryhmaWrapper.getHakukohdeWrapper().getValintatapajonot()) {
-			for (HakemusWrapper h : valintatapajonoWrapper.getHakemukset()) {
-				if (h.getHakemus().getTila() == HakemuksenTila.HYVAKSYTTY && hakijaryhmaWrapper.getHenkiloWrappers().contains(h.getHenkilo())) {
-					needed--;
-				}
-			}
-		}
-		return needed;
-	}
+    private boolean hakijaHaluaa(HakemusWrapper hakemusWrapper) {
+        HenkiloWrapper henkilo = hakemusWrapper.getHenkilo();
+        for (HakemusWrapper h : henkilo.getHakemukset()) {
+            if (h.getHakemus().getTila() != null && h.getHakemus().getTila() == HakemuksenTila.HYVAKSYTTY && h.getHakemus().getPrioriteetti() <= hakemusWrapper.getHakemus().getPrioriteetti() && hakemusWrapper != h) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private HakemusWrapper haeHuonoinValittuEiVajaaseenRyhmaanKuuluva(ValintatapajonoWrapper valintatapajonoWrapper) {
+        HakemusWrapper huonoinHakemus = null;
+        for (int i = valintatapajonoWrapper.getHakemukset().size() - 1; i >= 0; i--) {
+            HakemusWrapper h = valintatapajonoWrapper.getHakemukset().get(i);
+            if (h.getHakemus().getTila() == HakemuksenTila.HYVAKSYTTY) {
+                if (voidaanKorvata(h)) {
+                    huonoinHakemus = h;
+                    break;
+                }
+            }
+        }
+
+        return huonoinHakemus;
+    }
+
+    private int hakijaryhmassaVajaata(HakijaryhmaWrapper hakijaryhmaWrapper) {
+        int needed = hakijaryhmaWrapper.getHakijaryhma().getPaikat();
+        for (ValintatapajonoWrapper valintatapajonoWrapper : hakijaryhmaWrapper.getHakukohdeWrapper().getValintatapajonot()) {
+            for (HakemusWrapper h : valintatapajonoWrapper.getHakemukset()) {
+                if (h.getHakemus().getTila() == HakemuksenTila.HYVAKSYTTY && hakijaryhmaWrapper.getHenkiloWrappers().contains(h.getHenkilo())) {
+                    needed--;
+                }
+            }
+        }
+        return needed;
+    }
 
 }

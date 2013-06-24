@@ -43,7 +43,12 @@ public class DomainConverter {
                 valintatapajono.setPrioriteetti(valintatapajonoTyyppi.getPrioriteetti());
                 valintatapajono.setAloituspaikat(valintatapajonoTyyppi.getAloituspaikat());
                 valintatapajono.setTasasijasaanto(Tasasijasaanto.valueOf(valintatapajonoTyyppi.getTasasijasaanto().toString()));
-                valintatapajono.setEiVarasijatayttoa(valintatapajonoTyyppi.isEiVarasijatayttoa());
+
+                if(valintatapajonoTyyppi.isEiVarasijatayttoa() != null && valintatapajonoTyyppi.isEiVarasijatayttoa()) {
+                    valintatapajono.setEiVarasijatayttoa(true);
+                }     else {
+                    valintatapajono.setEiVarasijatayttoa(false);
+                }
 
                 hakukohde.getValintatapajonot().add(valintatapajono);
 
