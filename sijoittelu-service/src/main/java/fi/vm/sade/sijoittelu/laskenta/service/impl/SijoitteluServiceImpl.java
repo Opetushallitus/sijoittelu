@@ -33,8 +33,9 @@ public class SijoitteluServiceImpl implements SijoitteluService {
 
     @Override
     @Secured({CRUD})
-    public void sijoittele(@WebParam(partName = "parameters", name = "sijoittele", targetNamespace = "http://sijoittelu.service.sade.vm.fi/types") HakuTyyppi haku) {
+    public HakuTyyppi sijoittele(@WebParam(partName = "parameters", name = "sijoittele", targetNamespace = "http://sijoittelu.service.sade.vm.fi/types") HakuTyyppi haku) {
         sijoitteluBusinessService.sijoittele(haku);
+        return haku;
     }
 }
 
