@@ -27,6 +27,9 @@ public class Valintatapajono implements Serializable {
     @JsonView(JsonViews.Basic.class)
     private Integer aloituspaikat;
 
+    @JsonView(JsonViews.Basic.class)
+    private Boolean eiVarasijatayttoa;
+
     //@Embedded
     //private List<Saanto> saannot = new ArrayList<Saanto>();
 
@@ -92,5 +95,13 @@ public class Valintatapajono implements Serializable {
                 ", aloituspaikat=" + aloituspaikat +
                 ", hakemukset=" + hakemukset +
                 '}';
+    }
+
+    public Boolean getEiVarasijatayttoa() {
+        return eiVarasijatayttoa;
+    }
+
+    public void setEiVarasijatayttoa(Boolean eiVarasijatayttoa) {
+        this.eiVarasijatayttoa = eiVarasijatayttoa;
     }
 }

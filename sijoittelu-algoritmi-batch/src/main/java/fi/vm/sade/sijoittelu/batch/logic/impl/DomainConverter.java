@@ -43,6 +43,7 @@ public class DomainConverter {
                 valintatapajono.setPrioriteetti(valintatapajonoTyyppi.getPrioriteetti());
                 valintatapajono.setAloituspaikat(valintatapajonoTyyppi.getAloituspaikat());
                 valintatapajono.setTasasijasaanto(Tasasijasaanto.valueOf(valintatapajonoTyyppi.getTasasijasaanto().toString()));
+                valintatapajono.setEiVarasijatayttoa(valintatapajonoTyyppi.isEiVarasijatayttoa());
 
                 hakukohde.getValintatapajonot().add(valintatapajono);
 
