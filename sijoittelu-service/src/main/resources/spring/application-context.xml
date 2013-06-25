@@ -19,10 +19,15 @@
     <bean id="defaultProps" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
         <property name="properties">
             <util:properties local-override="true">
-
+                <prop key="cas_mode">front</prop>
+                <prop key="cas_key">sijoittelu-service</prop>
+                <prop key="cas_service">${cas.service.sijoittelu-service}</prop>
+                <prop key="spring_security_default_access">permitAll</prop>
             </util:properties>
         </property>
     </bean>
+
+    <import resource="file:///${user.home:''}/oph-configuration/security-context-backend.xml"/>
 
     <import resource="context/application-context-db.xml" />
     <import resource="context/application-context-service.xml" />

@@ -5,6 +5,7 @@
                   xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" 
                   xmlns:tns="http://sijoittelu.service.sade.vm.fi/"
                   xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+                  xmlns:xs="http://www.w3.org/2001/XMLSchema"
                   xmlns:xsd="http://www.w3.org/2001/XMLSchema">
                   
     <wsdl:types>
@@ -16,6 +17,9 @@
 	<wsdl:message name="sijoittele">
 		<wsdl:part element="ns1:sijoittele" name="parameters"/>
 	</wsdl:message>
+    <wsdl:message name="sijoitteluResult">
+        <wsdl:part element="ns1:sijoittele" name="result" />
+    </wsdl:message>
 
     <!-- TODO faultin määritys -->
 
@@ -28,7 +32,7 @@
              	Suorittaa sijoitteluajon haulle. Sijoittelu tehdään vain syötetyille hakukohteille ja niiden sijoiteltavissa oleville valintatapajonoille.
             </wsdl:documentation>
             <wsdl:input message="tns:sijoittele" name="sijoittele" />
-
+            <wsdl:output message="tns:sijoitteluResult" name="sijoitteluResult" />
             <!-- TODO fault? -->
 
         </wsdl:operation>
@@ -42,6 +46,9 @@
 			<wsdl:input name="sijoittele">
 				<soap:body use="literal" />
 			</wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
 		</wsdl:operation>
 	</wsdl:binding>
 

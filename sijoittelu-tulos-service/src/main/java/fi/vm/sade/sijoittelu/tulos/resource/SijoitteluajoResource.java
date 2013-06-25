@@ -9,11 +9,17 @@ import org.codehaus.jackson.map.annotate.JsonView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+
+import static fi.vm.sade.sijoittelu.tulos.roles.SijoitteluRole.CRUD;
+import static fi.vm.sade.sijoittelu.tulos.roles.SijoitteluRole.READ;
+import static fi.vm.sade.sijoittelu.tulos.roles.SijoitteluRole.UPDATE;
 
 /**
  * User: wuoti
@@ -22,6 +28,7 @@ import javax.ws.rs.core.Response;
  */
 @Path("sijoitteluajo")
 @Component
+@PreAuthorize("isAuthenticated()")
 public class SijoitteluajoResource {
 
     private final static Logger LOGGER = LoggerFactory.getLogger(SijoitteluajoResource.class);
@@ -34,6 +41,7 @@ public class SijoitteluajoResource {
     @JsonView(JsonViews.Basic.class)
     @Produces(MediaType.APPLICATION_JSON)
     @Path("{sijoitteluajoId}")
+    @Secured({READ, UPDATE, CRUD})
     public SijoitteluAjo getSijoitteluajo(@PathParam("sijoitteluajoId") Long sijoitteluajoId) {
         try {
             return dao.getSijoitteluajo(sijoitteluajoId);
@@ -46,6 +54,7 @@ public class SijoitteluajoResource {
     @JsonView(JsonViews.Basic.class)
     @Produces(MediaType.APPLICATION_JSON)
     @Path("{sijoitteluajoId}/{hakukohdeOid}")
+    @Secured({READ, UPDATE, CRUD})
     public Hakukohde getHakukohdeBySijoitteluajo(@PathParam("sijoitteluajoId") Long sijoitteluajoId,
                                                  @PathParam("hakukohdeOid") String hakukohdeOid) {
         try {
