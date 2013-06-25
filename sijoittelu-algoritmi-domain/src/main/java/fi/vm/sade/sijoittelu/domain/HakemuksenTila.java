@@ -7,13 +7,13 @@ package fi.vm.sade.sijoittelu.domain;
  */
 public enum HakemuksenTila {
 
-    HYLATTY, // hakija ei voi koskaan tulla valituksi kohteeseen
-    
+    HYLATTY, // hakija ei voi koskaan tulla valituksi kohteeseen, hakijaa
+
     VARALLA, // Hakija voi tulla kohteeseen valituksi (jossain vaiheessa)
-    
+
     PERUUNTUNUT, // Hakija on tullut valituksi parempaan paikkaan
         
-    HYVAKSYTTY; //HAkija voi ottaa paikan vastaan
+    HYVAKSYTTY, //Hakija voi ottaa paikan vastaan
 
-
+    PERUNUT; //Hakija ei ole vastaanottanut paikkaa
 }
