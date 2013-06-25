@@ -351,28 +351,54 @@ public class SijoitteluAlgorithmImpl implements SijoitteluAlgorithm {
 
     private boolean saannotSallii(HakemusWrapper hakemusWrapper) {
         Hakemus hakemus = hakemusWrapper.getHakemus();
-        boolean hakemuksenTila = hakemus.getTila() != HakemuksenTila.HYLATTY;
+
+        boolean hakemuksenTila = hakemus.getTila() != HakemuksenTila.HYLATTY && hakemus.getTila() != HakemuksenTila.PERUNUT ;
 
         boolean hakijaAloistuspaikkojenSisallaTaiVarasijataytto = true;
         if(hakemusWrapper.getValintatapajono().getValintatapajono().getEiVarasijatayttoa() != null && hakemusWrapper.getValintatapajono().getValintatapajono().getEiVarasijatayttoa() ==true ) {
             hakijaAloistuspaikkojenSisallaTaiVarasijataytto  = hakijaAloistuspaikkojenSisalla(hakemusWrapper);
         }
 
-        return hakemuksenTila && hakijaAloistuspaikkojenSisallaTaiVarasijataytto;
+        boolean eiPeruttuaKorkeampaaTaiSamaaHakutoivetta =  eiPeruttuaKorkeampaaTaiSamaaHakutoivetta(hakemusWrapper);
+
+        return hakemuksenTila && hakijaAloistuspaikkojenSisallaTaiVarasijataytto && eiPeruttuaKorkeampaaTaiSamaaHakutoivetta;
     }
 
-    //TODO pitaisiko huomioda hylatyt myos. Jos pitaisi, niin pitaa peruuntunut tila lisata.
+    private boolean eiPeruttuaKorkeampaaTaiSamaaHakutoivetta(HakemusWrapper hakemusWrapper) {
+        HenkiloWrapper henkilo = hakemusWrapper.getHenkilo();
+        for (HakemusWrapper h : henkilo.getHakemukset()) {
+            if (HakemuksenTila.PERUNUT.equals(h.getHakemus().getTila())
+                    && h.getHakemus().getPrioriteetti() >= hakemusWrapper.getHakemus().getPrioriteetti()
+                    && hakemusWrapper != h) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     private boolean hakijaAloistuspaikkojenSisalla(HakemusWrapper hakemusWrapper) {
         ValintatapajonoWrapper valintatapajono = hakemusWrapper.getValintatapajono() ;
-        List<HakemusWrapper> hakemukset = valintatapajono.getHakemukset();
         int aloituspaikat = valintatapajono.getValintatapajono().getAloituspaikat();
-        return hakemukset.indexOf(hakemusWrapper) < aloituspaikat;
+        List<HakemusWrapper> hakemukset = valintatapajono.getHakemukset();
+
+        int i = 0;
+        for(HakemusWrapper h : hakemukset )  {
+            if(h.getHakemus().getTila() != HakemuksenTila.HYLATTY) {
+                i++;
+            }
+            if(h == hakemusWrapper && i <= aloituspaikat) { //vertaa instanssia
+                return true;
+            }  else if(i>aloituspaikat)   {
+                return false;
+            }
+        }
+        return true;
     }
 
     private boolean hakijaHaluaa(HakemusWrapper hakemusWrapper) {
         HenkiloWrapper henkilo = hakemusWrapper.getHenkilo();
         for (HakemusWrapper h : henkilo.getHakemukset()) {
-            if (h.getHakemus().getTila() != null && h.getHakemus().getTila() == HakemuksenTila.HYVAKSYTTY && h.getHakemus().getPrioriteetti() <= hakemusWrapper.getHakemus().getPrioriteetti() && hakemusWrapper != h) {
+            if (HakemuksenTila.HYVAKSYTTY.equals(h.getHakemus().getTila()) && h.getHakemus().getPrioriteetti() <= hakemusWrapper.getHakemus().getPrioriteetti() && hakemusWrapper != h) {
                 return false;
             }
         }
