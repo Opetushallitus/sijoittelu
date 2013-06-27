@@ -66,7 +66,8 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
     @Override
     public void sijoittele(HakuTyyppi sijoitteluTyyppi) {
 
-        //    System.out.println(PrintHelper.tulostaSijoittelu(sijoitteluTyyppi));
+        System.out.println("SIJOITTELE");
+        System.out.println(PrintHelper.tulostaSijoittelu(sijoitteluTyyppi));
 
         String hakuOid = sijoitteluTyyppi.getHakuOid();
         Sijoittelu sijoittelu = getOrCreateSijoittelu(hakuOid);
