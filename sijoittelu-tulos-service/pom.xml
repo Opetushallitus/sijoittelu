@@ -37,12 +37,12 @@
         <dependency>
             <groupId>fi.vm.sade.generic</groupId>
             <artifactId>generic-common</artifactId>
-            <version>${project.version}</version>
+            <version>${sade-generic.version}</version>
         </dependency>
         <dependency>
             <groupId>fi.vm.sade.generic</groupId>
             <artifactId>dependencies-service</artifactId>
-            <version>${project.version}</version>
+            <version>${sade-generic.version}</version>
             <type>pom</type>
         </dependency>
         <dependency>
