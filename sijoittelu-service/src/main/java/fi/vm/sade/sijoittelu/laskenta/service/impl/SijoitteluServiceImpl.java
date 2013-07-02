@@ -23,7 +23,7 @@ import static fi.vm.sade.sijoittelu.laskenta.roles.SijoitteluRole.UPDATE;
  * Time: 9:21
  * To change this template use File | Settings | File Templates.
  */
-//@PreAuthorize("isAuthenticated()")
+@PreAuthorize("isAuthenticated()")
 public class SijoitteluServiceImpl implements SijoitteluService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SijoitteluServiceImpl.class);
@@ -32,7 +32,7 @@ public class SijoitteluServiceImpl implements SijoitteluService {
     private SijoitteluBusinessService sijoitteluBusinessService;
 
     @Override
-//    @Secured({CRUD})
+    @Secured({CRUD})
     public HakuTyyppi sijoittele(@WebParam(partName = "parameters", name = "sijoittele", targetNamespace = "http://sijoittelu.service.sade.vm.fi/types") HakuTyyppi haku) {
         sijoitteluBusinessService.sijoittele(haku);
         return haku;
