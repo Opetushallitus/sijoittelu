@@ -3,7 +3,6 @@ package fi.vm.sade.sijoittelu.laskenta.service.business.impl;
 import fi.vm.sade.service.valintatiedot.schema.HakuTyyppi;
 import fi.vm.sade.service.valintatiedot.schema.HakukohdeTyyppi;
 import fi.vm.sade.sijoittelu.batch.logic.impl.DomainConverter;
-import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.PrintHelper;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoitteluAlgorithm;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoitteluAlgorithmFactory;
 import fi.vm.sade.sijoittelu.domain.*;
@@ -53,7 +52,7 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
 
         // and after
         dao.persistSijoittelu(sijoittelu);
-        for(Hakukohde hakukohde : hakukohteet ) {
+        for (Hakukohde hakukohde : hakukohteet) {
             dao.persistHakukohde(hakukohde);
         }
     }
@@ -66,8 +65,8 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
     @Override
     public void sijoittele(HakuTyyppi sijoitteluTyyppi) {
 
-        System.out.println("SIJOITTELE");
-        System.out.println(PrintHelper.tulostaSijoittelu(sijoitteluTyyppi));
+        //System.out.println("SIJOITTELE");
+        //System.out.println(PrintHelper.tulostaSijoittelu(sijoitteluTyyppi));
 
         String hakuOid = sijoitteluTyyppi.getHakuOid();
         Sijoittelu sijoittelu = getOrCreateSijoittelu(hakuOid);
@@ -75,7 +74,7 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
 
         List<Hakukohde> uudetHakukohteet = convertHakukohteet(sijoitteluTyyppi.getHakukohteet());
         List<Hakukohde> olemassaolevatHakukohteet = Collections.<Hakukohde>emptyList();
-        if(viimeisinSijoitteluajo != null) {
+        if (viimeisinSijoitteluajo != null) {
             olemassaolevatHakukohteet = dao.getHakukohdeForSijoitteluajo(viimeisinSijoitteluajo.getSijoitteluajoId());
         }
         SijoitteluAjo uusiSijoitteluajo = createSijoitteluAjo(sijoittelu);
@@ -83,7 +82,7 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
 
 
         List<Valintatulos> valintatulokset = dao.loadValintatulokset(hakuOid);
-        SijoitteluAlgorithm sijoitteluAlgorithm = algorithmFactory.constructAlgorithm(kaikkiHakukohteet,valintatulokset);
+        SijoitteluAlgorithm sijoitteluAlgorithm = algorithmFactory.constructAlgorithm(kaikkiHakukohteet, valintatulokset);
 
         uusiSijoitteluajo.setStartMils(System.currentTimeMillis());
         // System.out.println(PrintHelper.tulostaSijoittelu(sijoitteluAlgorithm));
@@ -92,24 +91,24 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
 
         // and after
         dao.persistSijoittelu(sijoittelu);
-        for(Hakukohde hakukohde : kaikkiHakukohteet ) {
+        for (Hakukohde hakukohde : kaikkiHakukohteet) {
             dao.persistHakukohde(hakukohde);
         }
     }
 
     //nykyisellaan vain korvaa hakukohteet, mietittava toiminta tarkemmin
     private List<Hakukohde> merge(SijoitteluAjo uusiSijoitteluajo, List<Hakukohde> olemassaolevatHakukohteet, List<Hakukohde> uudetHakukohteet) {
-        Map<String,Hakukohde> kaikkiHakukohteet = new HashMap<String, Hakukohde>();
-        for(Hakukohde hakukohde : olemassaolevatHakukohteet) {
+        Map<String, Hakukohde> kaikkiHakukohteet = new HashMap<String, Hakukohde>();
+        for (Hakukohde hakukohde : olemassaolevatHakukohteet) {
             hakukohde.setId(null);       //poista id vanhoilta hakukohteilta, niin etta ne voidaan peristoida uusina dokumentteina
             kaikkiHakukohteet.put(hakukohde.getOid(), hakukohde);
         }
         //ylikirjoita uusilla kohteilla kylmasti
-        for(Hakukohde hakukohde : uudetHakukohteet) {
+        for (Hakukohde hakukohde : uudetHakukohteet) {
             kaikkiHakukohteet.put(hakukohde.getOid(), hakukohde);
         }
 
-        for(Hakukohde hakukohde : kaikkiHakukohteet.values()) {
+        for (Hakukohde hakukohde : kaikkiHakukohteet.values()) {
             HakukohdeItem hki = new HakukohdeItem();
             hki.setOid(hakukohde.getOid());
             uusiSijoitteluajo.getHakukohteet().add(hki);
@@ -119,9 +118,9 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
         return new ArrayList<Hakukohde>(kaikkiHakukohteet.values());
     }
 
-    private   List<Hakukohde> convertHakukohteet( List<HakukohdeTyyppi> sisaantulevatHakukohteet) {
-        List<Hakukohde>  hakukohdes = new ArrayList<Hakukohde>();
-        for(HakukohdeTyyppi hkt : sisaantulevatHakukohteet) {
+    private List<Hakukohde> convertHakukohteet(List<HakukohdeTyyppi> sisaantulevatHakukohteet) {
+        List<Hakukohde> hakukohdes = new ArrayList<Hakukohde>();
+        for (HakukohdeTyyppi hkt : sisaantulevatHakukohteet) {
             Hakukohde hakukohde = DomainConverter.convertToHakukohde(hkt);
             hakukohdes.add(hakukohde);
         }
@@ -134,7 +133,7 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
         sijoitteluAjo.setSijoitteluajoId(now);
         sijoitteluAjo.setHakuOid(sijoittelu.getHakuOid()); //silta varalta etta tehdaan omaksi entityksi
         sijoittelu.getSijoitteluajot().add(sijoitteluAjo);
-        return  sijoitteluAjo;
+        return sijoitteluAjo;
     }
 
     private Sijoittelu getOrCreateSijoittelu(String hakuoid) {
@@ -150,7 +149,7 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
 
 
     @Override
-    public Valintatulos haeHakemuksenTila(String hakuoid,String hakukohdeOid, String valintatapajonoOid, String hakemusOid) {
+    public Valintatulos haeHakemuksenTila(String hakuoid, String hakukohdeOid, String valintatapajonoOid, String hakemusOid) {
         if (StringUtils.isBlank(hakukohdeOid) || StringUtils.isBlank(hakukohdeOid) || StringUtils.isBlank(hakemusOid)) {
             throw new RuntimeException("Invalid search params, fix exception later");
         }
@@ -159,7 +158,7 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
 
     @Override
     public void vaihdaHakemuksenTila(String hakuoid, String hakukohdeOid, String valintatapajonoOid, String hakemusOid, ValintatuloksenTila tila) {
-        if (StringUtils.isBlank(hakuoid) ||StringUtils.isBlank(hakukohdeOid) || StringUtils.isBlank(valintatapajonoOid) || StringUtils.isBlank(hakemusOid)) {
+        if (StringUtils.isBlank(hakuoid) || StringUtils.isBlank(hakukohdeOid) || StringUtils.isBlank(valintatapajonoOid) || StringUtils.isBlank(hakemusOid)) {
             throw new RuntimeException("Invalid search params, fix exception later");
         }
 
@@ -167,21 +166,21 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
         SijoitteluAjo ajo = sijoittelu.getLatestSijoitteluajo();
         Long ajoId = ajo.getSijoitteluajoId();
 
-        Hakukohde hakukohde =  dao.getHakukohdeForSijoitteluajo(ajoId,hakukohdeOid );
+        Hakukohde hakukohde = dao.getHakukohdeForSijoitteluajo(ajoId, hakukohdeOid);
         Valintatapajono valintatapajono = null;
-        for(Valintatapajono v : hakukohde.getValintatapajonot()) {
-            if(valintatapajonoOid.equals(v.getOid())) {
+        for (Valintatapajono v : hakukohde.getValintatapajonot()) {
+            if (valintatapajonoOid.equals(v.getOid())) {
                 valintatapajono = v;
                 break;
             }
         }
         Hakemus hakemus = null;
-        for(Hakemus h : valintatapajono.getHakemukset())  {
-            if(hakemusOid.equals(h.getHakemusOid())) {
+        for (Hakemus h : valintatapajono.getHakemukset()) {
+            if (hakemusOid.equals(h.getHakemusOid())) {
                 hakemus = h;
             }
         }
-        if(hakemus.isHarkinnanvarainen() || hakemus.getTila() != HakemuksenTila.HYVAKSYTTY) {
+        if (hakemus.isHarkinnanvarainen() || hakemus.getTila() != HakemuksenTila.HYVAKSYTTY) {
             throw new RuntimeException("sijoittelun hakemus ei ole hyvaksytty tilassa tai harkinnanvarainen, fiksaa poikkeuskasittely myohemmin");
         }
 
@@ -203,8 +202,6 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
         v.setTila(tila);
         dao.createOrUpdateValintatulos(v);
     }
-
-
 
 
 }
