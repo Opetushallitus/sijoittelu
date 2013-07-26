@@ -43,8 +43,6 @@
         </dependency>
 
 
-
-
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-web</artifactId>
@@ -137,7 +135,7 @@
                 <groupId>org.mortbay.jetty</groupId>
                 <artifactId>jetty-maven-plugin</artifactId>
                 <version>8.1.9.v20130131</version>
-           </plugin>
+            </plugin>
         </plugins>
     </build>
 
