@@ -80,6 +80,7 @@ public class SijoitteluAlgorithmFactoryImpl implements SijoitteluAlgorithmFactor
                     hakemusWrapper.setHenkilo(henkiloWrapper);
 
                     Valintatulos valintatulos = getValintatulos(hakukohde, valintatapajono, hakemus, valintatulokset);
+
                     if(valintatulos != null && valintatulos.getTila() != null)  {
                         ValintatuloksenTila tila =  valintatulos.getTila();
                         if(tila == ValintatuloksenTila.ILMOITETTU || tila == ValintatuloksenTila.VASTAANOTTANUT_LASNA || tila == ValintatuloksenTila.VASTAANOTTANUT_POISSAOLEVA)  {
