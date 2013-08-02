@@ -95,7 +95,9 @@ public class DomainConverter {
             hakemus.setHarkinnanvarainen(true);
         }
 
-        if (hakijaTyyppi.getTila() != null && hakijaTyyppi.getTila() == HakemusTilaTyyppi.HYVAKSYTTAVISSA) {
+        if(hakijaTyyppi.getTila() != null && hakijaTyyppi.getTila() == HakemusTilaTyyppi.HYVAKSYTTY_HARKINNANVARAISESTI)     {
+            hakemus.setTila(HakemuksenTila.HYVAKSYTTY);
+        }  else if (hakijaTyyppi.getTila() != null && hakijaTyyppi.getTila() == HakemusTilaTyyppi.HYVAKSYTTAVISSA) {
             // jos hyvaksyttavissa niin varalla, muuten hylatty
             hakemus.setTila(HakemuksenTila.VARALLA);
         } else {
