@@ -58,10 +58,11 @@ public class TilaResource {
                                         @PathParam("hakukohdeOid") String hakukohdeOid,
                                         @PathParam("valintatapajonoOid") String valintatapajonoOid,
                                         @PathParam("hakemusOid") String hakemusOid,
-                                        Valintatulos v) {
+                                        Valintatulos v,
+                                        @QueryParam("selite") String selite) {
         try {
             ValintatuloksenTila tila = v.getTila();
-            sijoitteluBusinessService.vaihdaHakemuksenTila(hakuOid, hakukohdeOid, valintatapajonoOid, hakemusOid, tila);
+            sijoitteluBusinessService.vaihdaHakemuksenTila(hakuOid, hakukohdeOid, valintatapajonoOid, hakemusOid, tila, selite);
         } catch (Exception e) {
             throw new WebApplicationException(e, Response.Status.FORBIDDEN);
         }

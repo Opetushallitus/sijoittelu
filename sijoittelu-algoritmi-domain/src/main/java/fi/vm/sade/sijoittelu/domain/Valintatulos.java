@@ -1,11 +1,11 @@
 package fi.vm.sade.sijoittelu.domain;
 
-import com.google.code.morphia.annotations.Entity;
-import com.google.code.morphia.annotations.Id;
-import com.google.code.morphia.annotations.Index;
-import com.google.code.morphia.annotations.Indexes;
+import com.google.code.morphia.annotations.*;
 import org.bson.types.ObjectId;
 import org.codehaus.jackson.map.annotate.JsonView;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.
@@ -47,6 +47,9 @@ public class Valintatulos {
 
     @JsonView(JsonViews.Basic.class)
     private ValintatuloksenTila tila;
+
+    @Embedded
+    private List<LogEntry> logEntries = new ArrayList<LogEntry>();
 
     public int getHakutoive() {
         return hakutoive;
@@ -110,5 +113,13 @@ public class Valintatulos {
 
     public void setHakuOid(String hakuOid) {
         this.hakuOid = hakuOid;
+    }
+
+    public List<LogEntry> getLogEntries() {
+        return logEntries;
+    }
+
+    public void setLogEntries(List<LogEntry> logEntries) {
+        this.logEntries = logEntries;
     }
 }

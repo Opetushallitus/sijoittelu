@@ -1,5 +1,6 @@
 package fi.vm.sade.sijoittelu.laskenta.service.business.impl;
 
+import fi.vm.sade.security.service.authz.util.AuthorizationUtil;
 import fi.vm.sade.service.valintatiedot.schema.HakuTyyppi;
 import fi.vm.sade.service.valintatiedot.schema.HakukohdeTyyppi;
 import fi.vm.sade.sijoittelu.batch.logic.impl.DomainConverter;
@@ -157,7 +158,7 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
     }
 
     @Override
-    public void vaihdaHakemuksenTila(String hakuoid, String hakukohdeOid, String valintatapajonoOid, String hakemusOid, ValintatuloksenTila tila) {
+    public void vaihdaHakemuksenTila(String hakuoid, String hakukohdeOid, String valintatapajonoOid, String hakemusOid, ValintatuloksenTila tila, String selite) {
         if (StringUtils.isBlank(hakuoid) || StringUtils.isBlank(hakukohdeOid) || StringUtils.isBlank(valintatapajonoOid) || StringUtils.isBlank(hakemusOid)) {
             throw new RuntimeException("Invalid search params, fix exception later");
         }
@@ -195,11 +196,21 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
             v.setHakuOid(hakuoid);
         }
 
+
+
+
         LOG.info("Asetetaan valintatuloksen tila - hakukohdeoid {}, valintatapajonooid {}, hakemusoid {}",
                 new Object[]{hakukohdeOid, valintatapajonoOid, hakemusOid});
         LOG.info("Valintatuloksen uusi tila {}", tila.name());
 
         v.setTila(tila);
+        LogEntry logEntry = new LogEntry();
+        logEntry.setLuotu(new Date());
+        logEntry.setMuokkaaja(AuthorizationUtil.getCurrentUser());
+        logEntry.setSelite(selite);
+
+        v.getLogEntries().add(logEntry);
+
         dao.createOrUpdateValintatulos(v);
     }
 
