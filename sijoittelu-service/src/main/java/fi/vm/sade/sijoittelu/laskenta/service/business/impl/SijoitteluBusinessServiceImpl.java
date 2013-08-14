@@ -181,6 +181,10 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
                 hakemus = h;
             }
         }
+
+        // TODO: käyttöoikeustarkistukset
+        // Oph-admin voi muokata aina
+        // organisaatio updater voi muokata, jos hyväksytty
 //        if (hakemus.getTila() != HakemuksenTila.HYVAKSYTTY) {
 //            throw new RuntimeException("sijoittelun hakemus ei ole hyvaksytty tilassa tai harkinnanvarainen, fiksaa poikkeuskasittely myohemmin");
 //        }
