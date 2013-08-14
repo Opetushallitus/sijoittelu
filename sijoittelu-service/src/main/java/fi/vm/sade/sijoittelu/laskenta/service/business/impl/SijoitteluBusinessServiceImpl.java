@@ -208,6 +208,7 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
         logEntry.setLuotu(new Date());
         logEntry.setMuokkaaja(AuthorizationUtil.getCurrentUser());
         logEntry.setSelite(selite);
+        logEntry.setMuutos(tila.name());
 
         v.getLogEntries().add(logEntry);
 
