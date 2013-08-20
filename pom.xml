@@ -46,11 +46,6 @@
             	<artifactId>morphia</artifactId>
             	<version>0.102</version>
             </dependency>
-            <dependency>
-            	<groupId>com.google.code.morphia</groupId>
-            	<artifactId>morphia</artifactId>
-            	<version>0.102</version>
-            </dependency>
 			<dependency>
 	    		<groupId>org.mongodb</groupId>
 	    		<artifactId>mongo-java-driver</artifactId>

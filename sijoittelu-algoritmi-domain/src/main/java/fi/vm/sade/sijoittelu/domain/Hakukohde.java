@@ -8,6 +8,7 @@ import org.codehaus.jackson.map.annotate.JsonView;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * 
@@ -17,7 +18,6 @@ import java.util.ArrayList;
 @Entity("Hakukohde")
 public class Hakukohde implements Serializable {
 
-    @SuppressWarnings("unused")
     @Id
     private ObjectId id;
 
@@ -32,18 +32,27 @@ public class Hakukohde implements Serializable {
 
     @Embedded
     @JsonView(JsonViews.Basic.class)
-    private ArrayList<Valintatapajono> valintatapajonot = new ArrayList<Valintatapajono>();
+    private List<Valintatapajono> valintatapajonot = new ArrayList<Valintatapajono>();
     
     @Embedded
     @JsonView(JsonViews.Basic.class)
-    private ArrayList<Hakijaryhma> hakijaryhmat = new ArrayList<Hakijaryhma>();
+    private List<Hakijaryhma> hakijaryhmat = new ArrayList<Hakijaryhma>();
 
-    public String getOid() {
-        return oid;
+
+    public List<Valintatapajono> getValintatapajonot() {
+        return valintatapajonot;
     }
 
-    public void setOid(String oid) {
-        this.oid = oid;
+    public void setValintatapajonot(List<Valintatapajono> valintatapajonot) {
+        this.valintatapajonot = valintatapajonot;
+    }
+
+    public List<Hakijaryhma> getHakijaryhmat() {
+        return hakijaryhmat;
+    }
+
+    public void setHakijaryhmat(List<Hakijaryhma> hakijaryhmat) {
+        this.hakijaryhmat = hakijaryhmat;
     }
 
     public HakukohdeTila getTila() {
@@ -54,12 +63,28 @@ public class Hakukohde implements Serializable {
         this.tila = tila;
     }
 
-    public ArrayList<Valintatapajono> getValintatapajonot() {
-        return valintatapajonot;
+    public String getOid() {
+        return oid;
     }
 
-    public ArrayList<Hakijaryhma> getHakijaryhmat() {
-        return hakijaryhmat;
+    public void setOid(String oid) {
+        this.oid = oid;
+    }
+
+    public Long getSijoitteluajoId() {
+        return sijoitteluajoId;
+    }
+
+    public void setSijoitteluajoId(Long sijoitteluajoId) {
+        this.sijoitteluajoId = sijoitteluajoId;
+    }
+
+    public ObjectId getId() {
+        return id;
+    }
+
+    public void setId(ObjectId id) {
+        this.id = id;
     }
 
     @Override
@@ -72,17 +97,5 @@ public class Hakukohde implements Serializable {
                 ", valintatapajonot=" + valintatapajonot +
                 ", hakijaryhmat=" + hakijaryhmat +
                 '}';
-    }
-
-    public Long getSijoitteluajoId() {
-        return sijoitteluajoId;
-    }
-
-    public void setSijoitteluajoId(Long sijoitteluajoId) {
-        this.sijoitteluajoId = sijoitteluajoId;
-    }
-
-    public void setId(ObjectId id) {
-        this.id = id;
     }
 }
