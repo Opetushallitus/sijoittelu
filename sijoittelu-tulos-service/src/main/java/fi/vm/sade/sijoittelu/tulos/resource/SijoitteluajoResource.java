@@ -1,10 +1,8 @@
 package fi.vm.sade.sijoittelu.tulos.resource;
 
+import fi.vm.sade.sijoittelu.domain.*;
 import fi.vm.sade.sijoittelu.tulos.dao.DAO;
 import fi.vm.sade.sijoittelu.tulos.dao.exception.SijoitteluEntityNotFoundException;
-import fi.vm.sade.sijoittelu.domain.Hakukohde;
-import fi.vm.sade.sijoittelu.domain.JsonViews;
-import fi.vm.sade.sijoittelu.domain.SijoitteluAjo;
 import org.codehaus.jackson.map.annotate.JsonView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,9 +15,7 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import static fi.vm.sade.sijoittelu.tulos.roles.SijoitteluRole.CRUD;
-import static fi.vm.sade.sijoittelu.tulos.roles.SijoitteluRole.READ;
-import static fi.vm.sade.sijoittelu.tulos.roles.SijoitteluRole.UPDATE;
+import static fi.vm.sade.sijoittelu.tulos.roles.SijoitteluRole.*;
 
 /**
  * User: wuoti
@@ -59,6 +55,8 @@ public class SijoitteluajoResource {
                                                  @PathParam("hakukohdeOid") String hakukohdeOid) {
         try {
             Hakukohde hakukohde = dao.getHakukohdeBySijoitteluajo(sijoitteluajoId, hakukohdeOid);
+            System.out.println("no tää on tää metodi");
+            System.out.println( tulostaHakukohde(hakukohde));
             if (hakukohde == null) {
                 throw new SijoitteluEntityNotFoundException("No hakukohde found for sijoitteluajo " + sijoitteluajoId
                         + " with and hakukohde OID " + hakukohdeOid);
@@ -68,24 +66,42 @@ public class SijoitteluajoResource {
             throw new WebApplicationException(e, Response.Status.NOT_FOUND);
         }
     }
-     /*
-    @POST
-    @JsonView(JsonViews.Basic.class)
-    @Produces(MediaType.APPLICATION_JSON)
-    @Path("/{hakukohdeOid}/{valintatapajonoOid}")
-    public Hakukohde gg(@PathParam("sijoitteluajoId") Long sijoitteluajoId,
-                        @PathParam("hakukohdeOid") String hakukohdeOid) {
-        try {
-            Hakukohde hakukohde = dao.getHakukohdeBySijoitteluajo(sijoitteluajoId, hakukohdeOid);
-            if (hakukohde == null) {
-                throw new SijoitteluEntityNotFoundException("No hakukohde found for sijoitteluajo " + sijoitteluajoId
-                        + " with and hakukohde OID " + hakukohdeOid);
-            }
-            return hakukohde;
-        } catch (SijoitteluEntityNotFoundException e) {
-            throw new WebApplicationException(e, Response.Status.NOT_FOUND);
-        }
-    }
-       */
+    /*
+   @POST
+   @JsonView(JsonViews.Basic.class)
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("/{hakukohdeOid}/{valintatapajonoOid}")
+   public Hakukohde gg(@PathParam("sijoitteluajoId") Long sijoitteluajoId,
+                       @PathParam("hakukohdeOid") String hakukohdeOid) {
+       try {
+           Hakukohde hakukohde = dao.getHakukohdeBySijoitteluajo(sijoitteluajoId, hakukohdeOid);
+           if (hakukohde == null) {
+               throw new SijoitteluEntityNotFoundException("No hakukohde found for sijoitteluajo " + sijoitteluajoId
+                       + " with and hakukohde OID " + hakukohdeOid);
+           }
+           return hakukohde;
+       } catch (SijoitteluEntityNotFoundException e) {
+           throw new WebApplicationException(e, Response.Status.NOT_FOUND);
+       }
+   }
+      */
+    public final static String tulostaHakukohde(Hakukohde s) {
 
+        StringBuilder sb = new StringBuilder();
+
+        sb.append("===================================================\n");
+        sb.append("Hakukohde: " + s.getOid() + "\n");
+        sb.append("===================================================\n");
+
+        sb.append("HAKUKOHDE: [" + s.getOid() + "]\n");
+
+        for (Valintatapajono jono : s.getValintatapajonot()) {
+            sb.append("  JONO [" + jono.getOid() + "], prioriteetti [" + jono.getPrioriteetti() + "] aloituspaikat [" + jono.getAloituspaikat() + "], tasasijasaanto [" + jono.getTasasijasaanto() + "]\n");
+            for (Hakemus hakemus : jono.getHakemukset()) {
+                sb.append("          " + hakemus.getJonosija() + "." + hakemus.getTasasijaJonosija()  + "  " + hakemus.getHakijaOid() + " " + hakemus.getHakemusOid() + " "  + hakemus.getTila() + " hakijan prijo:" + hakemus.getPrioriteetti() + "\n");
+            }
+        }
+        sb.append("===================================================\n");
+        return sb.toString();
+    }
 }
