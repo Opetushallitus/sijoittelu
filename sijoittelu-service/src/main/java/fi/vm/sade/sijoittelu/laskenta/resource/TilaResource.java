@@ -15,6 +15,9 @@ import org.springframework.stereotype.Component;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.util.HashMap;
+import java.util.Map;
+
 import static fi.vm.sade.sijoittelu.laskenta.roles.SijoitteluRole.*;
 /**
  * Created with IntelliJ IDEA.
@@ -54,20 +57,23 @@ public class TilaResource {
     @Produces(MediaType.APPLICATION_JSON)
     @Path("{hakuOid}/{hakukohdeOid}/{valintatapajonoOid}/{hakemusOid}")
     @Secured({UPDATE, CRUD})
-    public boolean muutaHakemuksenTilaa(@PathParam("hakuOid") String hakuOid,
-                                        @PathParam("hakukohdeOid") String hakukohdeOid,
-                                        @PathParam("valintatapajonoOid") String valintatapajonoOid,
-                                        @PathParam("hakemusOid") String hakemusOid,
-                                        Valintatulos v,
-                                        @QueryParam("selite") String selite) {
+    public Response muutaHakemuksenTilaa(@PathParam("hakuOid") String hakuOid,
+                                         @PathParam("hakukohdeOid") String hakukohdeOid,
+                                         @PathParam("valintatapajonoOid") String valintatapajonoOid,
+                                         @PathParam("hakemusOid") String hakemusOid,
+                                         Valintatulos v,
+                                         @QueryParam("selite") String selite) {
+
         try {
             ValintatuloksenTila tila = v.getTila();
             sijoitteluBusinessService.vaihdaHakemuksenTila(hakuOid, hakukohdeOid, valintatapajonoOid, hakemusOid, tila, selite);
+            return Response.status(Response.Status.ACCEPTED).build();
         } catch (Exception e) {
-            throw new WebApplicationException(e, Response.Status.FORBIDDEN);
+            LOGGER.error("Error inserting valintakoekoodi.", e);
+            Map error = new HashMap();
+            error.put("message", e.getMessage());
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(error).build();
         }
-
-        return true;
     }
 
 }

@@ -1,5 +1,7 @@
 package fi.vm.sade.sijoittelu.laskenta.service.business.impl;
 
+import fi.vm.sade.authentication.business.service.Authorizer;
+import fi.vm.sade.generic.service.exception.NotAuthorizedException;
 import fi.vm.sade.security.service.authz.util.AuthorizationUtil;
 import fi.vm.sade.service.valintatiedot.schema.HakuTyyppi;
 import fi.vm.sade.service.valintatiedot.schema.HakukohdeTyyppi;
@@ -10,10 +12,12 @@ import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoitteluAlgorithmFacto
 import fi.vm.sade.sijoittelu.domain.*;
 import fi.vm.sade.sijoittelu.laskenta.dao.Dao;
 import fi.vm.sade.sijoittelu.laskenta.service.business.SijoitteluBusinessService;
+import fi.vm.sade.sijoittelu.tulos.roles.SijoitteluRole;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -26,12 +30,17 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
 
     private static final Logger LOG = LoggerFactory.getLogger(SijoitteluBusinessServiceImpl.class);
 
-
     @Autowired
     private SijoitteluAlgorithmFactory algorithmFactory;
 
     @Autowired
     private Dao dao;
+
+    @Autowired
+    private Authorizer authorizer;
+
+    @Value("${root.organisaatio.oid}")
+    private String rootOrgOid;
 
 
     /**
@@ -190,12 +199,20 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
             }
         }
 
-        // TODO: käyttöoikeustarkistukset
         // Oph-admin voi muokata aina
         // organisaatio updater voi muokata, jos hyväksytty
-        if (hakemus.getTila() != HakemuksenTila.HYVAKSYTTY) {
-            throw new RuntimeException("sijoittelun hakemus ei ole hyvaksytty tilassa tai harkinnanvarainen, fiksaa poikkeuskasittely myohemmin");
+
+        String tarjoajaOid = hakukohde.getTarjoajaOid();
+        authorizer.checkOrganisationAccess(tarjoajaOid, SijoitteluRole.UPDATE, SijoitteluRole.CRUD);
+
+        try {
+            authorizer.checkOrganisationAccess(rootOrgOid, SijoitteluRole.CRUD);
+        } catch (NotAuthorizedException nae) {
+            if (hakemus.getTila() != HakemuksenTila.HYVAKSYTTY) {
+                throw new RuntimeException("sijoittelun hakemus ei ole hyvaksytty tilassa tai harkinnanvarainen, fiksaa poikkeuskasittely myohemmin");
+            }
         }
+
 
         Valintatulos v = dao.loadValintatulos(hakukohdeOid, valintatapajonoOid, hakemusOid);
         if (v == null) {
@@ -207,9 +224,6 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
             v.setHakutoive(hakemus.getPrioriteetti());
             v.setHakuOid(hakuoid);
         }
-
-
-
 
         LOG.info("Asetetaan valintatuloksen tila - hakukohdeoid {}, valintatapajonooid {}, hakemusoid {}",
                 new Object[]{hakukohdeOid, valintatapajonoOid, hakemusOid});

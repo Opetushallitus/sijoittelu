@@ -9,6 +9,7 @@
     <context:annotation-config />
     <context:component-scan base-package="fi.vm.sade.sijoittelu.laskenta" />
     <context:component-scan base-package="fi.vm.sade.sijoittelu.batch" />
+    <context:component-scan base-package="fi.vm.sade.security" />
 
     <bean id="sijoitteluServiceImpl" class="fi.vm.sade.sijoittelu.laskenta.service.impl.SijoitteluServiceImpl" />
 
