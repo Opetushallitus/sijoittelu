@@ -5,7 +5,6 @@ import fi.vm.sade.sijoittelu.domain.Sijoittelu;
 import fi.vm.sade.sijoittelu.domain.SijoitteluAjo;
 import fi.vm.sade.sijoittelu.tulos.dao.DAO;
 import fi.vm.sade.sijoittelu.tulos.dao.exception.SijoitteluEntityNotFoundException;
-import fi.vm.sade.sijoittelu.tulos.roles.SijoitteluRole;
 import org.codehaus.jackson.map.annotate.JsonView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,7 +15,6 @@ import org.springframework.stereotype.Component;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -49,7 +47,8 @@ public class SijoitteluResource {
         List<Sijoittelu> sijoittelu = dao.getSijoittelu();
 
         if (sijoittelu == null) {
-            throw new WebApplicationException(Response.Status.NOT_FOUND);
+            //    throw new WebApplicationException(Response.Status.NOT_FOUND);
+            sijoittelu =  Collections.EMPTY_LIST;
         }
 
         return sijoittelu;
@@ -64,9 +63,9 @@ public class SijoitteluResource {
     @Secured({READ, UPDATE, CRUD})
     public Sijoittelu getSijoitteluByHakuOid(@PathParam("hakuOid") String hakuOid) {
         Sijoittelu sijoittelu = dao.getSijoitteluByHakuOid(hakuOid);
-        if (sijoittelu == null) {
-            throw new WebApplicationException(Response.Status.NOT_FOUND);
-        }
+        //if (sijoittelu == null) {
+        //    throw new WebApplicationException(Response.Status.NOT_FOUND);
+        // }
 
         return sijoittelu;
     }
@@ -79,7 +78,7 @@ public class SijoitteluResource {
     public List<SijoitteluAjo> getSijoitteluajoByHakuOid(@PathParam("hakuOid") String hakuOid,
                                                          @QueryParam("latest") Boolean latest) {
 
-      Sijoittelu sijoittelu = dao.getSijoitteluByHakuOid(hakuOid);
+        Sijoittelu sijoittelu = dao.getSijoitteluByHakuOid(hakuOid);
         try {
             if (latest != null && latest) {
                 return Arrays.asList(sijoittelu.getLatestSijoitteluajo());
@@ -98,14 +97,14 @@ public class SijoitteluResource {
      * @param timestamp
      * @return
 
-    @GET
-    @JsonView(JsonViews.Basic.class)
-    @Produces(MediaType.APPLICATION_JSON)
-    @Path("/{hakuOid}/sijoitteluajo/{time}")
-    public SijoitteluAjo getSijoitteluajoByTimestamp(@PathParam("hakuOid") String hakuOid,
-                                                     @PathParam("time") Long timestamp) {
+     @GET
+     @JsonView(JsonViews.Basic.class)
+     @Produces(MediaType.APPLICATION_JSON)
+     @Path("/{hakuOid}/sijoitteluajo/{time}")
+     public SijoitteluAjo getSijoitteluajoByTimestamp(@PathParam("hakuOid") String hakuOid,
+     @PathParam("time") Long timestamp) {
 
-        return dao.getSijoitteluajoByHakuOidAndTimestamp(hakuOid, timestamp);
-    }
+     return dao.getSijoitteluajoByHakuOidAndTimestamp(hakuOid, timestamp);
+     }
      */
 }

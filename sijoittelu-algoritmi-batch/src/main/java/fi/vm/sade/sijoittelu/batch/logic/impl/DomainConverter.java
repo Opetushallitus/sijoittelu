@@ -28,6 +28,7 @@ public class DomainConverter {
     public static Hakukohde convertToHakukohde(HakukohdeTyyppi hakukohdeTyyppi) {
         Hakukohde hakukohde = new Hakukohde();
         hakukohde.setOid(hakukohdeTyyppi.getOid());
+        hakukohde.setTarjoajaOid(hakukohdeTyyppi.getTarjoajaOid());
         addValintatapaJonos(hakukohdeTyyppi, hakukohde);
         addHakijaRyhmas(hakukohdeTyyppi, hakukohde);
         return hakukohde;

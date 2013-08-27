@@ -30,6 +30,8 @@ public class Hakukohde implements Serializable {
     @JsonView(JsonViews.Basic.class)
     private HakukohdeTila tila;
 
+    private String tarjoajaOid;
+
     @Embedded
     @JsonView(JsonViews.Basic.class)
     private List<Valintatapajono> valintatapajonot = new ArrayList<Valintatapajono>();
@@ -85,6 +87,14 @@ public class Hakukohde implements Serializable {
 
     public void setId(ObjectId id) {
         this.id = id;
+    }
+
+    public String getTarjoajaOid() {
+        return tarjoajaOid;
+    }
+
+    public void setTarjoajaOid(String tarjoajaOid) {
+        this.tarjoajaOid = tarjoajaOid;
     }
 
     @Override
