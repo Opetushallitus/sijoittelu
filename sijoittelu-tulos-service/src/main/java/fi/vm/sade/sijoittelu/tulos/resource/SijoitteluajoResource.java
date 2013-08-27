@@ -55,7 +55,6 @@ public class SijoitteluajoResource {
                                                  @PathParam("hakukohdeOid") String hakukohdeOid) {
         try {
             Hakukohde hakukohde = dao.getHakukohdeBySijoitteluajo(sijoitteluajoId, hakukohdeOid);
-            System.out.println("no tää on tää metodi");
             System.out.println( tulostaHakukohde(hakukohde));
             if (hakukohde == null) {
                 throw new SijoitteluEntityNotFoundException("No hakukohde found for sijoitteluajo " + sijoitteluajoId
