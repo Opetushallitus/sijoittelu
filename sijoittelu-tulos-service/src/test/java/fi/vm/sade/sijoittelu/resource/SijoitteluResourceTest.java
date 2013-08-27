@@ -1,27 +1,18 @@
 package fi.vm.sade.sijoittelu.resource;
 
-import fi.vm.sade.sijoittelu.domain.HakukohdeItem;
 import fi.vm.sade.sijoittelu.domain.JsonViews;
 import fi.vm.sade.sijoittelu.domain.Sijoittelu;
-import fi.vm.sade.sijoittelu.domain.SijoitteluAjo;
 import fi.vm.sade.sijoittelu.tulos.dao.DAO;
-import fi.vm.sade.sijoittelu.tulos.dao.exception.SijoitteluEntityNotFoundException;
 import fi.vm.sade.sijoittelu.tulos.resource.ObjectMapperProvider;
 import fi.vm.sade.sijoittelu.tulos.resource.SijoitteluResource;
 import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.type.TypeReference;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.Response;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
-import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 
@@ -43,18 +34,6 @@ public class SijoitteluResourceTest {
 
         sijoitteluResource = new SijoitteluResource();
         ReflectionTestUtils.setField(sijoitteluResource, "dao", daoMock);
-    }
-
-    @Test(expected = WebApplicationException.class)
-    public void testGetSijoitteluByHakuOidNotExists() {
-        try {
-            final String hakuOidNotExists = "hakuoidNotExists";
-            Mockito.when(daoMock.getSijoitteluByHakuOid(hakuOidNotExists)).thenReturn(null);
-            sijoitteluResource.getSijoitteluByHakuOid(hakuOidNotExists);
-        } catch (WebApplicationException e) {
-            assertEquals(Response.Status.NOT_FOUND.getStatusCode(), e.getResponse().getStatus());
-            throw e;
-        }
     }
 
     @Test
