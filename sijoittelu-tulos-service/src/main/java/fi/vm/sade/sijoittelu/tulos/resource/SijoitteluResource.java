@@ -79,15 +79,17 @@ public class SijoitteluResource {
                                                          @QueryParam("latest") Boolean latest) {
 
         Sijoittelu sijoittelu = dao.getSijoitteluByHakuOid(hakuOid);
-        try {
-            if (latest != null && latest) {
-                return Arrays.asList(sijoittelu.getLatestSijoitteluajo());
-            } else {
-                return sijoittelu.getSijoitteluajot();
+        if (sijoittelu != null) {
+            try {
+                if (latest != null && latest) {
+                    return Arrays.asList(sijoittelu.getLatestSijoitteluajo());
+                } else {
+                    return sijoittelu.getSijoitteluajot();
+                }
+            } catch (SijoitteluEntityNotFoundException e) {
             }
-        } catch (SijoitteluEntityNotFoundException e) {
-            return Collections.EMPTY_LIST;
         }
+        return Collections.EMPTY_LIST;
     }
 
     /**
