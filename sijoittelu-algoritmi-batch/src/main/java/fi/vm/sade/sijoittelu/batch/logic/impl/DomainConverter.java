@@ -91,6 +91,8 @@ public class DomainConverter {
         hakemus.setHakemusOid(hakijaTyyppi.getHakemusOid());
         hakemus.setJonosija(hakijaTyyppi.getJonosija());
         hakemus.setPrioriteetti(hakijaTyyppi.getPrioriteetti());
+        hakemus.setEtunimi(hakijaTyyppi.getEtunimi());
+        hakemus.setSukunimi(hakijaTyyppi.getSukunimi());
 
         if(hakijaTyyppi.isHarkinnanvarainen() != null && hakijaTyyppi.isHarkinnanvarainen() ) {
             hakemus.setHarkinnanvarainen(true);

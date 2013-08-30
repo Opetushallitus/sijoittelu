@@ -19,6 +19,12 @@ public class Hakemus implements Serializable {
     @JsonView(JsonViews.Basic.class)
     private String hakemusOid;
 
+    @JsonView(JsonViews.Basic.class)
+    private String etunimi;
+
+    @JsonView(JsonViews.Basic.class)
+    private String sukunimi;
+
     /**
      * defaulttina tosi epakorkea
      */
@@ -103,5 +109,21 @@ public class Hakemus implements Serializable {
 
     public void setHarkinnanvarainen(boolean harkinnanvarainen) {
         this.harkinnanvarainen = harkinnanvarainen;
+    }
+
+    public String getSukunimi() {
+        return sukunimi;
+    }
+
+    public void setSukunimi(String sukunimi) {
+        this.sukunimi = sukunimi;
+    }
+
+    public String getEtunimi() {
+        return etunimi;
+    }
+
+    public void setEtunimi(String etunimi) {
+        this.etunimi = etunimi;
     }
 }
