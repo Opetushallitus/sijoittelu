@@ -1,18 +1,17 @@
 package fi.vm.sade.sijoittelu.batch.logic.impl.algorithm;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.*;
-import fi.vm.sade.sijoittelu.domain.*;
-import org.springframework.stereotype.Component;
-
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.postsijoitteluprocessor.PostSijoitteluProcessor;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.presijoitteluprocessor.PreSijoitteluProcessor;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.presijoitteluprocessor.PreSijoitteluProcessorSort;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.presijoitteluprocessor.PreSijoitteluProcessorTasasijaArvonta;
+import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.*;
+import fi.vm.sade.sijoittelu.domain.*;
+import org.springframework.stereotype.Component;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -87,6 +86,8 @@ public class SijoitteluAlgorithmFactoryImpl implements SijoitteluAlgorithmFactor
                             hakemus.setTila(HakemuksenTila.HYVAKSYTTY);
                         } else if(tila== ValintatuloksenTila.PERUNUT) {
                             hakemus.setTila(HakemuksenTila.PERUNUT);
+                        } else if(tila == ValintatuloksenTila.EI_VASTAANOTETTU_MAARA_AIKANA) {
+                           hakemus.setTila(HakemuksenTila.PERUNUT);
                         }
                         hakemusWrapper.setTilaVoidaanVaihtaa(false);
                         henkiloWrapper.getValintatulos().add(valintatulos);
