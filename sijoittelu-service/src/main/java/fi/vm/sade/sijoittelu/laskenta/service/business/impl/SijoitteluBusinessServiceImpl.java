@@ -179,6 +179,9 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
         if (StringUtils.isBlank(hakuoid) || StringUtils.isBlank(hakukohdeOid) || StringUtils.isBlank(valintatapajonoOid) || StringUtils.isBlank(hakemusOid)) {
             throw new RuntimeException("Invalid search params, fix exception later");
         }
+        if(tila == null) {
+            throw new RuntimeException("Vaihdettava tila oli tyhjä.");
+        }
 
         Sijoittelu sijoittelu = dao.loadSijoittelu(hakuoid);
         SijoitteluAjo ajo = sijoittelu.getLatestSijoitteluajo();
@@ -205,16 +208,27 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
         String tarjoajaOid = hakukohde.getTarjoajaOid();
         authorizer.checkOrganisationAccess(tarjoajaOid, SijoitteluRole.UPDATE, SijoitteluRole.CRUD);
 
+        boolean ophAdmin = false;
         try {
             authorizer.checkOrganisationAccess(rootOrgOid, SijoitteluRole.CRUD);
+            ophAdmin = true;
         } catch (NotAuthorizedException nae) {
             if (hakemus.getTila() != HakemuksenTila.HYVAKSYTTY) {
                 throw new RuntimeException("sijoittelun hakemus ei ole hyvaksytty tilassa tai harkinnanvarainen, fiksaa poikkeuskasittely myohemmin");
             }
         }
 
-
         Valintatulos v = dao.loadValintatulos(hakukohdeOid, valintatapajonoOid, hakemusOid);
+
+        if(!ophAdmin) {
+            if(v.getTila() == null && tila != ValintatuloksenTila.ILMOITETTU) {
+                throw new RuntimeException("Valintatulosta ei ole ilmoitettu");
+            }
+            if(v.getTila() != null && v.getTila() != ValintatuloksenTila.ILMOITETTU) {
+                throw new RuntimeException("Valintatulos on jo vastaanotettu");
+            }
+        }
+
         if (v == null) {
             v = new Valintatulos();
             v.setHakemusOid(hakemus.getHakemusOid());
