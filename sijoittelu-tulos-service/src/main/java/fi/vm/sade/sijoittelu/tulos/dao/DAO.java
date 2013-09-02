@@ -43,4 +43,6 @@ public interface DAO {
     SijoitteluAjo getSijoitteluajo(Long sijoitteluajoId);
 
     Hakukohde getHakukohdeBySijoitteluajo(Long sijoitteluajoId, String hakukohdeOid);
+
+    List<Hakukohde> haeHakukohteetJoihinHakemusOsallistuu(Long sijoitteluajoId, String hakemusOid);
 }

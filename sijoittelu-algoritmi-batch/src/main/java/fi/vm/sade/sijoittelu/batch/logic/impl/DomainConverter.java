@@ -75,16 +75,6 @@ public class DomainConverter {
         }
     }
 
-    /**
-     *
-     * Luo hakemus valintatapajonoon. Pitaa sisallaan kohteen prioriteetin
-     * hakijalle, sijan jonossa, pisteet, etc. Naita luodaan per valintatapajono
-     * per henkilo
-     *
-     * @param hakijaTyyppi
-     * @param valintatapajono
-     * @return
-     */
     private static void addHakemus(HakijaTyyppi hakijaTyyppi, Valintatapajono valintatapajono) {
         Hakemus hakemus = new Hakemus();
         hakemus.setHakijaOid(hakijaTyyppi.getOid());
@@ -94,8 +84,8 @@ public class DomainConverter {
         hakemus.setEtunimi(hakijaTyyppi.getEtunimi());
         hakemus.setSukunimi(hakijaTyyppi.getSukunimi());
 
-        if(hakijaTyyppi.isHarkinnanvarainen() != null && hakijaTyyppi.isHarkinnanvarainen() ) {
-            hakemus.setHarkinnanvarainen(true);
+        if(hakijaTyyppi.getTila() == HakemusTilaTyyppi.HYVAKSYTTY_HARKINNANVARAISESTI) {
+            hakemus.setHyvaksyttyHarkinnanvaraisesti(true);
         }
 
         if(hakijaTyyppi.getTila() != null && hakijaTyyppi.getTila() == HakemusTilaTyyppi.HYVAKSYTTY_HARKINNANVARAISESTI)     {

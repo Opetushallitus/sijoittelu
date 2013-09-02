@@ -2,15 +2,14 @@ package fi.vm.sade.sijoittelu.laskenta.dao.impl;
 
 import com.google.code.morphia.Datastore;
 import com.google.code.morphia.query.Query;
-import fi.vm.sade.sijoittelu.domain.*;
+import fi.vm.sade.sijoittelu.domain.Hakukohde;
+import fi.vm.sade.sijoittelu.domain.Sijoittelu;
+import fi.vm.sade.sijoittelu.domain.Valintatulos;
 import fi.vm.sade.sijoittelu.laskenta.dao.Dao;
-import fi.vm.sade.sijoittelu.tulos.dao.exception.SijoitteluEntityNotFoundException;
 import org.apache.commons.lang.StringUtils;
-import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -41,6 +40,15 @@ public class DaoImpl implements Dao {
         return q.get();
     }
 
+    @Override
+    public List<Valintatulos> loadValintatulos(String hakemusOid) {
+        if(StringUtils.isBlank(hakemusOid))    {
+            throw new RuntimeException("Invalid search params, fix exception later");
+        }
+        Query<Valintatulos> q = morphiaDS.createQuery(Valintatulos.class);
+        q.criteria("hakemusOid").equal(hakemusOid);
+        return q.asList();
+    }
 
     @Override
     public Valintatulos loadValintatulos(String hakukohdeOid, String valintatapajonoOid, String hakemusOid) {
@@ -79,6 +87,8 @@ public class DaoImpl implements Dao {
         q.criteria("sijoitteluajoId").equal(sijoitteluajoId);
         return q.asList();
     }
+
+
 
     @Override
     public void createOrUpdateValintatulos(Valintatulos tulos) {

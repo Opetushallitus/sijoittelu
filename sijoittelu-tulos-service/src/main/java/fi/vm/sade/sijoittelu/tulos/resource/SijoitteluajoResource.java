@@ -1,6 +1,7 @@
 package fi.vm.sade.sijoittelu.tulos.resource;
 
 import fi.vm.sade.sijoittelu.domain.*;
+import fi.vm.sade.sijoittelu.domain.dto.HakemusDTO;
 import fi.vm.sade.sijoittelu.tulos.dao.DAO;
 import fi.vm.sade.sijoittelu.tulos.dao.exception.SijoitteluEntityNotFoundException;
 import org.codehaus.jackson.map.annotate.JsonView;
@@ -14,6 +15,8 @@ import org.springframework.stereotype.Component;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.util.ArrayList;
+import java.util.List;
 
 import static fi.vm.sade.sijoittelu.tulos.roles.SijoitteluRole.*;
 
@@ -49,22 +52,55 @@ public class SijoitteluajoResource {
     @GET
     @JsonView(JsonViews.Basic.class)
     @Produces(MediaType.APPLICATION_JSON)
-    @Path("{sijoitteluajoId}/{hakukohdeOid}")
+    @Path("{sijoitteluajoId}/hakukohde/{hakukohdeOid}")
     @Secured({READ, UPDATE, CRUD})
     public Hakukohde getHakukohdeBySijoitteluajo(@PathParam("sijoitteluajoId") Long sijoitteluajoId,
                                                  @PathParam("hakukohdeOid") String hakukohdeOid) {
-        try {
-            Hakukohde hakukohde = dao.getHakukohdeBySijoitteluajo(sijoitteluajoId, hakukohdeOid);
-            System.out.println( tulostaHakukohde(hakukohde));
-            if (hakukohde == null) {
-                throw new SijoitteluEntityNotFoundException("No hakukohde found for sijoitteluajo " + sijoitteluajoId
-                        + " with and hakukohde OID " + hakukohdeOid);
-            }
-            return hakukohde;
-        } catch (SijoitteluEntityNotFoundException e) {
-            throw new WebApplicationException(e, Response.Status.NOT_FOUND);
-        }
+
+        Hakukohde hakukohde = dao.getHakukohdeBySijoitteluajo(sijoitteluajoId, hakukohdeOid);
+
+        return hakukohde;
+
     }
+
+    @GET
+    @JsonView(JsonViews.Basic.class)
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("{sijoitteluajoId}/hakemus/{hakemusOid}")
+    @Secured({READ, UPDATE, CRUD})
+    public List<HakemusDTO> getHakemusBySijoitteluajo(@PathParam("sijoitteluajoId") Long sijoitteluajoId,
+                                               @PathParam("hakemusOid") String hakemusOid) {
+
+        List<Hakukohde> hakukohdeList = dao.haeHakukohteetJoihinHakemusOsallistuu(sijoitteluajoId, hakemusOid);
+        List<HakemusDTO> hakemusDTOList = new ArrayList<HakemusDTO>();
+
+        for(Hakukohde h : hakukohdeList) {
+            for(Valintatapajono v : h.getValintatapajonot()) {
+                for(Hakemus ha : v.getHakemukset()) {
+                    if(hakemusOid.equals(ha.getHakemusOid())) {
+                        HakemusDTO dto = new HakemusDTO();
+                        hakemusDTOList.add(dto);
+                        dto.setEtunimi(ha.getEtunimi());
+                        dto.setHakemusOid(ha.getHakemusOid());
+                        dto.setHakijaOid(ha.getHakijaOid());
+                        dto.setHakukohdeOid(h.getOid());
+                        //dto.setHakuOid(h.get);//add to domain later
+                        dto.setJonosija(ha.getJonosija());
+                        dto.setPrioriteetti(ha.getPrioriteetti());
+                        dto.setSijoitteluajoId(h.getSijoitteluajoId());
+                        dto.setSukunimi(ha.getSukunimi());
+                        dto.setTarjoajaOid(h.getTarjoajaOid());
+                        dto.setTasasijaJonosija(ha.getTasasijaJonosija());
+                        dto.setTila(ha.getTila());
+                        dto.setValintatapajonoOid(v.getOid());
+                    }
+                }
+            }
+        }
+        return hakemusDTOList;
+    }
+
+
     /*
    @POST
    @JsonView(JsonViews.Basic.class)
@@ -84,6 +120,7 @@ public class SijoitteluajoResource {
        }
    }
       */
+    /*
     public final static String tulostaHakukohde(Hakukohde s) {
 
         StringBuilder sb = new StringBuilder();
@@ -103,4 +140,5 @@ public class SijoitteluajoResource {
         sb.append("===================================================\n");
         return sb.toString();
     }
+    */
 }

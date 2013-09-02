@@ -1,4 +1,4 @@
-package fi.vm.sade.sijoittelu.tulos.converter;
+/*package fi.vm.sade.sijoittelu.tulos.converter;
 
 import org.springframework.core.convert.converter.Converter;
 
@@ -22,3 +22,4 @@ public class ValintatapajonoToValintatapajonoTyyppiConverter implements Converte
         return converted;
     }
 }
+  */

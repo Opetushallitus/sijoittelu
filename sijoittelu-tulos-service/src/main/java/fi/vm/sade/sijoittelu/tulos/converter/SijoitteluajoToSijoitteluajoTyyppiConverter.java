@@ -1,4 +1,4 @@
-package fi.vm.sade.sijoittelu.tulos.converter;
+/*package fi.vm.sade.sijoittelu.tulos.converter;
 
 import java.sql.Date;
 
@@ -27,3 +27,4 @@ public class SijoitteluajoToSijoitteluajoTyyppiConverter implements Converter<Si
         return converted;
     }
 }
+  */

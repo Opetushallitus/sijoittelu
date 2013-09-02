@@ -15,7 +15,9 @@ import org.springframework.stereotype.Component;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static fi.vm.sade.sijoittelu.laskenta.roles.SijoitteluRole.*;
@@ -36,10 +38,24 @@ public class TilaResource {
     @Autowired
     private SijoitteluBusinessService sijoitteluBusinessService;
 
+
     @GET
     @JsonView(JsonViews.Basic.class)
     @Produces(MediaType.APPLICATION_JSON)
-    @Path("{hakuOid}/{hakukohdeOid}/{valintatapajonoOid}/{hakemusOid}")
+    @Path("{hakemusOid}")
+    @Secured({READ, UPDATE, CRUD})
+    public List<Valintatulos> hakemus(@PathParam("hakemusOid") String hakemusOid) {
+        List<Valintatulos> v = sijoitteluBusinessService.haeHakemuksenTila(hakemusOid);
+        if (v == null) {
+            v = new ArrayList<Valintatulos>();
+        }
+        return v;
+    }
+
+    @GET
+    @JsonView(JsonViews.Basic.class)
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("{hakemusOid}/{hakuOid}/{hakukohdeOid}/{valintatapajonoOid}/")
     @Secured({READ, UPDATE, CRUD})
     public Valintatulos hakemus(@PathParam("hakuOid") String hakuOid,
                                 @PathParam("hakukohdeOid") String hakukohdeOid,
@@ -55,7 +71,7 @@ public class TilaResource {
     @POST
     @JsonView(JsonViews.Basic.class)
     @Produces(MediaType.APPLICATION_JSON)
-    @Path("{hakuOid}/{hakukohdeOid}/{valintatapajonoOid}/{hakemusOid}")
+    @Path("{hakemusOid}/{hakuOid}/{hakukohdeOid}/{valintatapajonoOid}/")
     @Secured({UPDATE, CRUD})
     public Response muutaHakemuksenTilaa(@PathParam("hakuOid") String hakuOid,
                                          @PathParam("hakukohdeOid") String hakukohdeOid,

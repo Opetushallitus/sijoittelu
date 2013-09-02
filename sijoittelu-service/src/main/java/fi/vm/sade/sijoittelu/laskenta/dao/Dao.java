@@ -2,7 +2,6 @@ package fi.vm.sade.sijoittelu.laskenta.dao;
 
 import fi.vm.sade.sijoittelu.domain.Hakukohde;
 import fi.vm.sade.sijoittelu.domain.Sijoittelu;
-import fi.vm.sade.sijoittelu.domain.SijoitteluAjo;
 import fi.vm.sade.sijoittelu.domain.Valintatulos;
 
 import java.util.List;
@@ -29,4 +28,6 @@ public interface Dao {
     List<Valintatulos> loadValintatulokset(String hakuOid);
 
     List<Hakukohde> getHakukohdeForSijoitteluajo(Long sijoitteluajoId);
+
+    List<Valintatulos> loadValintatulos(String oid);
 }

@@ -2,21 +2,13 @@ package fi.vm.sade.sijoittelu.tulos.dao.impl;
 
 import com.google.code.morphia.Datastore;
 import com.google.code.morphia.query.Query;
-import fi.vm.sade.sijoittelu.tulos.dao.DAO;
-import fi.vm.sade.sijoittelu.tulos.dao.exception.MultipleSijoitteluEntitiesFoundException;
-import fi.vm.sade.sijoittelu.tulos.dao.exception.SijoitteluEntityNotFoundException;
 import fi.vm.sade.sijoittelu.domain.Hakukohde;
-import fi.vm.sade.sijoittelu.domain.HakukohdeItem;
 import fi.vm.sade.sijoittelu.domain.Sijoittelu;
 import fi.vm.sade.sijoittelu.domain.SijoitteluAjo;
-import fi.vm.sade.tulos.service.types.HaeHakukohteetKriteeritTyyppi;
-import fi.vm.sade.tulos.service.types.HaeHautKriteeritTyyppi;
-import fi.vm.sade.tulos.service.types.HaeSijoitteluajotKriteeritTyyppi;
-import org.bson.types.ObjectId;
+import fi.vm.sade.sijoittelu.tulos.dao.DAO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -63,6 +55,16 @@ public class DAOImpl implements DAO {
         query.field("oid").equal(hakukohdeOid);
         return query.get();
     }
+
+    @Override
+    public List<Hakukohde> haeHakukohteetJoihinHakemusOsallistuu(Long sijoitteluajoId, String hakemusOid) {
+        Query<Hakukohde> query = morphiaDS.createQuery(Hakukohde.class);
+        query.field("sijoitteluajoId").equal(sijoitteluajoId);
+        query.field("valintatapajonot.hakemukset.hakemusOid").equal(hakemusOid);
+        List<Hakukohde> list = query.asList();
+        return list;
+    }
+
      /*
     private <T> T getSingleEntity(Class<T> clazz, String fieldName, Object fieldValue) {
         Query<T> query = morphiaDS.createQuery(clazz);

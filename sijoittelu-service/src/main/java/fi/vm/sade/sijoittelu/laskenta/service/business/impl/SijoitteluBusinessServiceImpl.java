@@ -99,10 +99,6 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
         sijoitteluAlgorithm.start();
         uusiSijoitteluajo.setEndMils(System.currentTimeMillis());
 
-
-
-
-
         for (Hakukohde hakukohde : kaikkiHakukohteet) {
             dao.persistHakukohde(hakukohde);
         }
@@ -172,6 +168,14 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
             throw new RuntimeException("Invalid search params, fix exception later");
         }
         return dao.loadValintatulos(hakukohdeOid, valintatapajonoOid, hakemusOid);
+    }
+
+    @Override
+    public List<Valintatulos> haeHakemuksenTila(String hakemusOid) {
+        if (StringUtils.isBlank(hakemusOid)) {
+            throw new RuntimeException("Invalid search params, fix exception later");
+        }
+        return dao.loadValintatulos(hakemusOid);
     }
 
     @Override

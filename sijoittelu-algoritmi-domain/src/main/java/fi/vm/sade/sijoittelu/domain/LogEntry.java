@@ -11,6 +11,7 @@ package fi.vm.sade.sijoittelu.domain;
 import com.google.code.morphia.annotations.Embedded;
 import com.google.code.morphia.annotations.Id;
 import org.bson.types.ObjectId;
+import org.codehaus.jackson.map.annotate.JsonView;
 
 import java.util.Date;
 
@@ -19,9 +20,13 @@ public class    LogEntry {
     @Id
     private ObjectId id;
 
+    @JsonView(JsonViews.Basic.class)
     private Date luotu;
+    @JsonView(JsonViews.Basic.class)
     private String muokkaaja;
+    @JsonView(JsonViews.Basic.class)
     private String muutos;
+    @JsonView(JsonViews.Basic.class)
     private String selite;
 
     public Date getLuotu() {

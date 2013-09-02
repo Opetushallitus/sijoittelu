@@ -41,7 +41,7 @@ public class Hakemus implements Serializable {
     private HakemuksenTila tila;
 
     @JsonView(JsonViews.Basic.class)
-    private boolean harkinnanvarainen = false;
+    private boolean hyvaksyttyHarkinnanvaraisesti = false;
 
 
      public int getPrioriteetti() {
@@ -103,14 +103,6 @@ public class Hakemus implements Serializable {
                 '}';
     }
 
-    public boolean isHarkinnanvarainen() {
-        return harkinnanvarainen;
-    }
-
-    public void setHarkinnanvarainen(boolean harkinnanvarainen) {
-        this.harkinnanvarainen = harkinnanvarainen;
-    }
-
     public String getSukunimi() {
         return sukunimi;
     }
@@ -125,5 +117,13 @@ public class Hakemus implements Serializable {
 
     public void setEtunimi(String etunimi) {
         this.etunimi = etunimi;
+    }
+
+    public boolean isHyvaksyttyHarkinnanvaraisesti() {
+        return hyvaksyttyHarkinnanvaraisesti;
+    }
+
+    public void setHyvaksyttyHarkinnanvaraisesti(boolean hyvaksyttyHarkinnanvaraisesti) {
+        this.hyvaksyttyHarkinnanvaraisesti = hyvaksyttyHarkinnanvaraisesti;
     }
 }
