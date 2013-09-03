@@ -12,7 +12,8 @@
     <import resource="classpath:META-INF/cxf/cxf.xml"/>
     <import resource="classpath:META-INF/cxf/cxf-extension-http.xml" />
 
+    <!--
     <jaxws:endpoint address="/sijoitteluTulosService" implementor="#tulosService" />
     <bean id="tulosService" class="fi.vm.sade.sijoittelu.tulos.service.impl.TulosServiceImpl" />
-
+        -->
 </beans>

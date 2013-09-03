@@ -1,6 +1,7 @@
 package fi.vm.sade.sijoittelu.tulos.resource;
 
 import fi.vm.sade.sijoittelu.domain.*;
+import fi.vm.sade.sijoittelu.domain.comparator.HakemusComparator;
 import fi.vm.sade.sijoittelu.domain.dto.HakemusDTO;
 import fi.vm.sade.sijoittelu.tulos.dao.DAO;
 import fi.vm.sade.sijoittelu.tulos.dao.exception.SijoitteluEntityNotFoundException;
@@ -16,6 +17,7 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import static fi.vm.sade.sijoittelu.tulos.roles.SijoitteluRole.*;
@@ -58,7 +60,10 @@ public class SijoitteluajoResource {
                                                  @PathParam("hakukohdeOid") String hakukohdeOid) {
 
         Hakukohde hakukohde = dao.getHakukohdeBySijoitteluajo(sijoitteluajoId, hakukohdeOid);
-
+        HakemusComparator c = new HakemusComparator();
+        for(Valintatapajono v : hakukohde.getValintatapajonot()) {
+            Collections.sort(v.getHakemukset(), c);
+        }
         return hakukohde;
 
     }
@@ -69,7 +74,7 @@ public class SijoitteluajoResource {
     @Path("{sijoitteluajoId}/hakemus/{hakemusOid}")
     @Secured({READ, UPDATE, CRUD})
     public List<HakemusDTO> getHakemusBySijoitteluajo(@PathParam("sijoitteluajoId") Long sijoitteluajoId,
-                                               @PathParam("hakemusOid") String hakemusOid) {
+                                                      @PathParam("hakemusOid") String hakemusOid) {
 
         List<Hakukohde> hakukohdeList = dao.haeHakukohteetJoihinHakemusOsallistuu(sijoitteluajoId, hakemusOid);
         List<HakemusDTO> hakemusDTOList = new ArrayList<HakemusDTO>();
@@ -120,25 +125,7 @@ public class SijoitteluajoResource {
        }
    }
       */
-    /*
-    public final static String tulostaHakukohde(Hakukohde s) {
 
-        StringBuilder sb = new StringBuilder();
 
-        sb.append("===================================================\n");
-        sb.append("Hakukohde: " + s.getOid() + "\n");
-        sb.append("===================================================\n");
 
-        sb.append("HAKUKOHDE: [" + s.getOid() + "]\n");
-
-        for (Valintatapajono jono : s.getValintatapajonot()) {
-            sb.append("  JONO [" + jono.getOid() + "], prioriteetti [" + jono.getPrioriteetti() + "] aloituspaikat [" + jono.getAloituspaikat() + "], tasasijasaanto [" + jono.getTasasijasaanto() + "]\n");
-            for (Hakemus hakemus : jono.getHakemukset()) {
-                sb.append("          " + hakemus.getJonosija() + "." + hakemus.getTasasijaJonosija()  + "  " + hakemus.getHakijaOid() + " " + hakemus.getHakemusOid() + " "  + hakemus.getTila() + " hakijan prijo:" + hakemus.getPrioriteetti() + "\n");
-            }
-        }
-        sb.append("===================================================\n");
-        return sb.toString();
-    }
-    */
 }

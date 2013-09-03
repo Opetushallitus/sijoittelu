@@ -1,14 +1,14 @@
-package fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.comparator;
+/*package fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.comparator;
 
 import java.util.Comparator;
 
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.HakemusWrapper;
 
-/**
+**
  * 
  * @author Kari Kammonen
  * 
- */
+ *
 public class HakemusWrapperForHakukohdeComparator implements Comparator<HakemusWrapper> {
 
     @Override
@@ -39,3 +39,4 @@ public class HakemusWrapperForHakukohdeComparator implements Comparator<HakemusW
         }
     }
 }
+*/

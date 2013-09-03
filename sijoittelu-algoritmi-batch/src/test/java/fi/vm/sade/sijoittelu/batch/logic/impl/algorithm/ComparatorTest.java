@@ -1,13 +1,5 @@
 package fi.vm.sade.sijoittelu.batch.logic.impl.algorithm;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-
-import junit.framework.Assert;
-
-import org.junit.Test;
-
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.comparator.HakemusWrapperComparator;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.comparator.HakijaryhmaWrapperComparator;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.comparator.HakukohdeWrapperComparator;
@@ -20,6 +12,12 @@ import fi.vm.sade.sijoittelu.domain.Hakemus;
 import fi.vm.sade.sijoittelu.domain.Hakijaryhma;
 import fi.vm.sade.sijoittelu.domain.Hakukohde;
 import fi.vm.sade.sijoittelu.domain.Valintatapajono;
+import junit.framework.Assert;
+import org.junit.Test;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
 
 /**
  * 

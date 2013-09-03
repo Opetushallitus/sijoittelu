@@ -6,7 +6,6 @@ import fi.vm.sade.security.service.authz.util.AuthorizationUtil;
 import fi.vm.sade.service.valintatiedot.schema.HakuTyyppi;
 import fi.vm.sade.service.valintatiedot.schema.HakukohdeTyyppi;
 import fi.vm.sade.sijoittelu.batch.logic.impl.DomainConverter;
-import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.PrintHelper;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoitteluAlgorithm;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoitteluAlgorithmFactory;
 import fi.vm.sade.sijoittelu.domain.*;
@@ -80,8 +79,7 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
     @Override
     public void sijoittele(HakuTyyppi sijoitteluTyyppi) {
 
-     //   System.out.println("SIJOITTELE SISAANTULEVA");
-       // System.out.println(PrintHelper.tulostaSijoittelu(sijoitteluTyyppi));
+
 
         String hakuOid = sijoitteluTyyppi.getHakuOid();
         Sijoittelu sijoittelu = getOrCreateSijoittelu(hakuOid);
@@ -107,12 +105,9 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
             dao.persistHakukohde(hakukohde);
         }
         dao.persistSijoittelu(sijoittelu);
-
-        System.out.println("ALGORITMI");
-        System.out.println(PrintHelper.tulostaSijoittelu(sijoitteluAlgorithm));
-
-
     }
+
+
 
     //nykyisellaan vain korvaa hakukohteet, mietittava toiminta tarkemmin
     private List<Hakukohde> merge(SijoitteluAjo uusiSijoitteluajo, List<Hakukohde> olemassaolevatHakukohteet, List<Hakukohde> uudetHakukohteet) {
