@@ -12,6 +12,10 @@ import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoitteluAlgorithmFacto
 import fi.vm.sade.sijoittelu.domain.*;
 import fi.vm.sade.sijoittelu.laskenta.dao.Dao;
 import fi.vm.sade.sijoittelu.laskenta.service.business.SijoitteluBusinessService;
+import fi.vm.sade.sijoittelu.laskenta.service.exception.HakemusEiOleHyvaksyttyException;
+import fi.vm.sade.sijoittelu.laskenta.service.exception.TilaNullException;
+import fi.vm.sade.sijoittelu.laskenta.service.exception.ValintatulosOnJoVastaanotettuException;
+import fi.vm.sade.sijoittelu.laskenta.service.exception.ValintatulostaEiOleIlmoitettuException;
 import fi.vm.sade.sijoittelu.tulos.roles.SijoitteluRole;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -180,7 +184,7 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
             throw new RuntimeException("Invalid search params, fix exception later");
         }
         if(tila == null) {
-            throw new RuntimeException("Vaihdettava tila oli tyhjä.");
+            throw new TilaNullException("Vaihdettava tila oli tyhjä.");
         }
 
         Sijoittelu sijoittelu = dao.loadSijoittelu(hakuoid);
@@ -214,7 +218,7 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
             ophAdmin = true;
         } catch (NotAuthorizedException nae) {
             if (hakemus.getTila() != HakemuksenTila.HYVAKSYTTY) {
-                throw new RuntimeException("sijoittelun hakemus ei ole hyvaksytty tilassa tai harkinnanvarainen, fiksaa poikkeuskasittely myohemmin");
+                throw new HakemusEiOleHyvaksyttyException("sijoittelun hakemus ei ole hyvaksytty tilassa tai harkinnanvarainen");
             }
         }
 
@@ -222,10 +226,10 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
 
         if(!ophAdmin) {
             if(v.getTila() == null && tila != ValintatuloksenTila.ILMOITETTU) {
-                throw new RuntimeException("Valintatulosta ei ole ilmoitettu");
+                throw new ValintatulostaEiOleIlmoitettuException("Valintatulosta ei ole ilmoitettu");
             }
             if(v.getTila() != null && v.getTila() != ValintatuloksenTila.ILMOITETTU) {
-                throw new RuntimeException("Valintatulos on jo vastaanotettu");
+                throw new ValintatulosOnJoVastaanotettuException("Valintatulos on jo vastaanotettu");
             }
         }
 
