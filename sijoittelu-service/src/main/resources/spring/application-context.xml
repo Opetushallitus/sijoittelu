@@ -12,7 +12,7 @@
     <context:component-scan base-package="fi.vm.sade.sijoittelu"/>
 
     <context:property-placeholder
-            location="classpath:sijoittelu-service.properties, file:///${user.home:''}/oph-configuration/common.properties, file:///${user.home:''}/oph-configuration/sijoittelu-service.properties, file:///${user.home:''}/oph-configuration/override.properties"
+            location="classpath:sijoittelu-service.properties, file:///${user.home:''}/oph-configuration/common.properties, file:///${user.home:''}/oph-configuration/valinta.properties, file:///${user.home:''}/oph-configuration/sijoittelu-service.properties,  file:///${user.home:''}/oph-configuration/override.properties"
             ignore-resource-not-found="true"
             properties-ref="defaultProps"/>
 

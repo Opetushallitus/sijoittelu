@@ -14,7 +14,7 @@
     <context:component-scan base-package="fi.vm.sade.security" />
 
     <context:property-placeholder
-            location="classpath:sijoittelu-tulos-service.properties, file:///${user.home:''}/oph-configuration/common.properties, file:///${user.home:''}/oph-configuration/sijoittelu-tulos-service.properties"
+            location="classpath:sijoittelu-tulos-service.properties, file:///${user.home:''}/oph-configuration/common.properties, file:///${user.home:''}/oph-configuration/valinta.properties, file:///${user.home:''}/oph-configuration/sijoittelu-tulos-service.properties"
             ignore-resource-not-found="true"
             properties-ref="defaultProps"/>
 
