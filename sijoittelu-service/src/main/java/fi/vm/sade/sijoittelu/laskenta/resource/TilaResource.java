@@ -40,7 +40,7 @@ public class TilaResource {
 
 
     @GET
-    @JsonView(JsonViews.Tila.class)
+    @JsonView(JsonViews.MonenHakemuksenTila.class)
     @Produces(MediaType.APPLICATION_JSON)
     @Path("{hakemusOid}")
     @Secured({READ, UPDATE, CRUD})

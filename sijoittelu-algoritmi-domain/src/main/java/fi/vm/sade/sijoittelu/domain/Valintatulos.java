@@ -28,19 +28,25 @@ public class Valintatulos {
     private ObjectId id;
 
     //Maarittaa 2 muun kanssa taman luokan hakemisen
+    @JsonView(JsonViews.MonenHakemuksenTila.class)
     private String valintatapajonoOid;
     //Maarittaa 2 muun kanssa taman luokan hakemisen
+    @JsonView(JsonViews.MonenHakemuksenTila.class)
     private String hakemusOid;
     //Maarittaa 2 muun kanssa taman luokan hakemisen
+    @JsonView(JsonViews.MonenHakemuksenTila.class)
     private String hakukohdeOid;
 
+    @JsonView(JsonViews.MonenHakemuksenTila.class)
     private String hakijaOid;
 
+    @JsonView(JsonViews.MonenHakemuksenTila.class)
     private String hakuOid;
 
+    @JsonView(JsonViews.MonenHakemuksenTila.class)
     private int hakutoive;
 
-    @JsonView(JsonViews.Tila.class)
+    @JsonView({JsonViews.Tila.class, JsonViews.MonenHakemuksenTila.class})
     private ValintatuloksenTila tila;
 
     @Embedded
