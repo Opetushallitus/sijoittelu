@@ -1,21 +1,5 @@
 package fi.vm.sade.sijoittelu.resource;
 
-import fi.vm.sade.sijoittelu.domain.JsonViews;
-import fi.vm.sade.sijoittelu.domain.Sijoittelu;
-import fi.vm.sade.sijoittelu.tulos.dao.DAO;
-import fi.vm.sade.sijoittelu.tulos.resource.ObjectMapperProvider;
-import fi.vm.sade.sijoittelu.tulos.resource.SijoitteluResource;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.junit.Before;
-import org.junit.Test;
-import org.mockito.Mockito;
-import org.springframework.test.util.ReflectionTestUtils;
-
-import java.io.IOException;
-import java.util.Date;
-
-import static org.junit.Assert.assertEquals;
-
 /**
  * User: wuoti
  * Date: 26.4.2013
@@ -23,6 +7,7 @@ import static org.junit.Assert.assertEquals;
  */
 public class SijoitteluResourceTest {
 
+    /*
     private ObjectMapper mapper = new ObjectMapperProvider().getContext(SijoitteluResource.class);
 
     private SijoitteluResource sijoitteluResource;

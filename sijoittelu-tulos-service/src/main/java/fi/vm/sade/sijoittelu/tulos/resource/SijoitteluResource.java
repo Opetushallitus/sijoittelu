@@ -1,10 +1,11 @@
 package fi.vm.sade.sijoittelu.tulos.resource;
 
 import fi.vm.sade.sijoittelu.domain.JsonViews;
-import fi.vm.sade.sijoittelu.domain.Sijoittelu;
-import fi.vm.sade.sijoittelu.domain.SijoitteluAjo;
-import fi.vm.sade.sijoittelu.tulos.dao.DAO;
-import fi.vm.sade.sijoittelu.tulos.dao.exception.SijoitteluEntityNotFoundException;
+import fi.vm.sade.sijoittelu.domain.dto.HakemusDTO;
+import fi.vm.sade.sijoittelu.domain.dto.HakukohdeDTO;
+import fi.vm.sade.sijoittelu.domain.dto.SijoitteluDTO;
+import fi.vm.sade.sijoittelu.domain.dto.SijoitteluajoDTO;
+import fi.vm.sade.sijoittelu.tulos.service.SijoitteluTulosService;
 import org.codehaus.jackson.map.annotate.JsonView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,10 +14,11 @@ import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
 
-import javax.ws.rs.*;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import static fi.vm.sade.sijoittelu.tulos.roles.SijoitteluRole.*;
@@ -35,78 +37,62 @@ public class SijoitteluResource {
 
     private final static Logger LOGGER = LoggerFactory.getLogger(SijoitteluResource.class);
 
-
     @Autowired
-    private DAO dao;
+    private SijoitteluTulosService sijoitteluTulosService;
 
     @GET
-    @JsonView(JsonViews.Basic.class)
-    @Produces(MediaType.APPLICATION_JSON)
-    @Secured({READ, UPDATE, CRUD})
-    public  List<Sijoittelu> getSijoittelu() {
-        List<Sijoittelu> sijoittelu = dao.getSijoittelu();
-
-        if (sijoittelu == null) {
-            //    throw new WebApplicationException(Response.Status.NOT_FOUND);
-            sijoittelu =  Collections.EMPTY_LIST;
-        }
-
-        return sijoittelu;
-    }
-
-
-
-    @GET
-    @JsonView(JsonViews.Basic.class)
+    @JsonView(JsonViews.Sijoittelu.class)
     @Produces(MediaType.APPLICATION_JSON)
     @Path("{hakuOid}")
     @Secured({READ, UPDATE, CRUD})
-    public Sijoittelu getSijoitteluByHakuOid(@PathParam("hakuOid") String hakuOid) {
-        Sijoittelu sijoittelu = dao.getSijoitteluByHakuOid(hakuOid);
-        //if (sijoittelu == null) {
-        //    throw new WebApplicationException(Response.Status.NOT_FOUND);
-        // }
-
-        return sijoittelu;
+    public SijoitteluDTO getSijoitteluByHakuOid(@PathParam("hakuOid") String hakuOid) {
+        return sijoitteluTulosService.getSijoitteluByHakuOid(hakuOid);
     }
 
     @GET
-    @JsonView(JsonViews.Basic.class)
+    @JsonView(JsonViews.Sijoitteluajo.class)
     @Produces(MediaType.APPLICATION_JSON)
-    @Path("{hakuOid}/sijoitteluajo")
+    @Path("{hakuOid}/sijoitteluajo/{sijoitteluajoId}")
     @Secured({READ, UPDATE, CRUD})
-    public List<SijoitteluAjo> getSijoitteluajoByHakuOid(@PathParam("hakuOid") String hakuOid,
-                                                         @QueryParam("latest") Boolean latest) {
-
-        Sijoittelu sijoittelu = dao.getSijoitteluByHakuOid(hakuOid);
-        if (sijoittelu != null) {
-            try {
-                if (latest != null && latest) {
-                    return Arrays.asList(sijoittelu.getLatestSijoitteluajo());
-                } else {
-                    return sijoittelu.getSijoitteluajot();
-                }
-            } catch (SijoitteluEntityNotFoundException e) {
-            }
+    public SijoitteluajoDTO getSijoitteluajo(@PathParam("hakuOid") String hakuOid, @PathParam("sijoitteluajoId") String sijoitteluajoId) {
+        if("latest".equals(sijoitteluajoId)) {
+            return sijoitteluTulosService.getLatestSijoitteluajo(hakuOid);
+        } else {
+            return sijoitteluTulosService.getSijoitteluajo(sijoitteluajoId);
         }
-        return Collections.EMPTY_LIST;
     }
 
-    /**
-     * Palauttaa sijoitteluajon, jonka ajoajankohta osuu lähimmäksi annettua timestamp-parametria
-     *
-     * @param hakuOid
-     * @param timestamp
-     * @return
+    @GET
+    @JsonView(JsonViews.Hakukohde.class)
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("{hakuOid}/sijoitteluajo/{sijoitteluajoId}/hakukohde/{hakukohdeOid}")
+    @Secured({READ, UPDATE, CRUD})
+    public HakukohdeDTO getHakukohdeBySijoitteluajo(@PathParam("hakuOid") String hakuOid,
+                                                    @PathParam("sijoitteluajoId") String sijoitteluajoId,
+                                                    @PathParam("hakukohdeOid") String hakukohdeOid) {
+        if("latest".equals(sijoitteluajoId)) {
+            return sijoitteluTulosService.getLatestHakukohdeBySijoitteluajo(hakuOid, hakukohdeOid);
+        }else {
+            return sijoitteluTulosService.getHakukohdeBySijoitteluajo(sijoitteluajoId, hakukohdeOid);
+        }
+    }
 
-     @GET
-     @JsonView(JsonViews.Basic.class)
-     @Produces(MediaType.APPLICATION_JSON)
-     @Path("/{hakuOid}/sijoitteluajo/{time}")
-     public SijoitteluAjo getSijoitteluajoByTimestamp(@PathParam("hakuOid") String hakuOid,
-     @PathParam("time") Long timestamp) {
-
-     return dao.getSijoitteluajoByHakuOidAndTimestamp(hakuOid, timestamp);
-     }
-     */
+    @GET
+    @JsonView(JsonViews.Hakemus.class)
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("{hakuOid}/sijoitteluajo/{sijoitteluajoId}/hakemus/{hakemusOid}")
+    @Secured({READ, UPDATE, CRUD})
+    public List<HakemusDTO> getHakemusBySijoitteluajo(@PathParam("hakuOid") String hakuOid,
+                                                      @PathParam("sijoitteluajoId") String sijoitteluajoId,
+                                                      @PathParam("hakemusOid") String hakemusOid) {
+        if("latest".equals(sijoitteluajoId)) {
+            return sijoitteluTulosService.haeLatestHakukohteetJoihinHakemusOsallistuu(hakuOid, hakemusOid);
+        }   else {
+            return sijoitteluTulosService.haeHakukohteetJoihinHakemusOsallistuu(sijoitteluajoId, hakemusOid);
+        }
+    }
 }
+
+
+
+

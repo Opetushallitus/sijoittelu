@@ -1,4 +1,4 @@
-package fi.vm.sade.sijoittelu.it;
+/*package fi.vm.sade.sijoittelu.it;
 
 import com.google.code.morphia.Datastore;
 import fi.vm.sade.sijoittelu.domain.Hakukohde;
@@ -21,11 +21,6 @@ import org.springframework.test.context.support.DirtiesContextTestExecutionListe
 
 import java.io.IOException;
 
-/**
- * User: wuoti
- * Date: 30.4.2013
- * Time: 9.59
- */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = "classpath:test-context.xml")
 @TestExecutionListeners(listeners = {DependencyInjectionTestExecutionListener.class,
@@ -62,4 +57,4 @@ public class SijoitteluajoResourceIntegrationTest {
         String json = mapper.writerWithView(JsonViews.Basic.class).writeValueAsString(haettu);
         mapper.readValue(json, Hakukohde.class);
     }
-}
+} */

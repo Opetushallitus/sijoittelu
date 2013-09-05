@@ -40,7 +40,7 @@ public class TilaResource {
 
 
     @GET
-    @JsonView(JsonViews.Basic.class)
+    @JsonView(JsonViews.Tila.class)
     @Produces(MediaType.APPLICATION_JSON)
     @Path("{hakemusOid}")
     @Secured({READ, UPDATE, CRUD})
@@ -53,7 +53,7 @@ public class TilaResource {
     }
 
     @GET
-    @JsonView(JsonViews.Basic.class)
+    @JsonView(JsonViews.Tila.class)
     @Produces(MediaType.APPLICATION_JSON)
     @Path("{hakemusOid}/{hakuOid}/{hakukohdeOid}/{valintatapajonoOid}/")
     @Secured({READ, UPDATE, CRUD})
@@ -69,7 +69,7 @@ public class TilaResource {
     }
 
     @POST
-    @JsonView(JsonViews.Basic.class)
+    @JsonView(JsonViews.Tila.class)
     @Produces(MediaType.APPLICATION_JSON)
     @Path("{hakemusOid}/{hakuOid}/{hakukohdeOid}/{valintatapajonoOid}/")
     @Secured({UPDATE, CRUD})

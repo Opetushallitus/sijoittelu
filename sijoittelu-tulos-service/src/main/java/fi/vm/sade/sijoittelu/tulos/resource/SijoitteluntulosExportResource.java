@@ -1,10 +1,5 @@
 package fi.vm.sade.sijoittelu.tulos.resource;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.Response;
-
 import fi.vm.sade.sijoittelu.domain.*;
 import fi.vm.sade.sijoittelu.tulos.dao.impl.DAOImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,9 +7,12 @@ import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
 
-import static fi.vm.sade.sijoittelu.tulos.roles.SijoitteluRole.CRUD;
-import static fi.vm.sade.sijoittelu.tulos.roles.SijoitteluRole.READ;
-import static fi.vm.sade.sijoittelu.tulos.roles.SijoitteluRole.UPDATE;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Response;
+
+import static fi.vm.sade.sijoittelu.tulos.roles.SijoitteluRole.*;
 
 /**
  *
@@ -24,6 +22,7 @@ import static fi.vm.sade.sijoittelu.tulos.roles.SijoitteluRole.UPDATE;
 @Path("export")
 @Component
 @PreAuthorize("isAuthenticated()")
+@Deprecated()  //Siirra koostepalveluun
 public class SijoitteluntulosExportResource {
 
     // @Autowired
@@ -67,7 +66,7 @@ public class SijoitteluntulosExportResource {
             SijoitteluAjo ajo = sijoittelu.getLatestSijoitteluajo();
             if(ajo != null) {
             //    System.out.println(ajo.getSijoitteluajoId() + "<>" + hakukohdeOid);
-                Hakukohde hakukohde = dao.getHakukohdeBySijoitteluajo(ajo.getSijoitteluajoId(), hakukohdeOid);
+                Hakukohde hakukohde = dao.getHakukohdeBySijoitteluajo("" + ajo.getSijoitteluajoId(), hakukohdeOid);  //dirty stuff
                 //  System.out.println("JORMA! " + hakukohde);
                 // getHakukohdeBySijoitteluajo
 

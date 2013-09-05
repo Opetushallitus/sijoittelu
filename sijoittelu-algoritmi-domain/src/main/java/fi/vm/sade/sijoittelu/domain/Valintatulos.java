@@ -40,6 +40,7 @@ public class Valintatulos {
 
     private int hakutoive;
 
+    @JsonView(JsonViews.Tila.class)
     private ValintatuloksenTila tila;
 
     @Embedded

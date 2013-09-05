@@ -17,16 +17,16 @@ import java.util.List;
  */
 public class SijoitteluajoDTO implements Serializable {
 
-    @JsonView(JsonViews.Sijoitteluajo.class)
+    @JsonView({JsonViews.Sijoitteluajo.class,JsonViews.Sijoittelu.class})
     private Long sijoitteluajoId;
 
     @JsonView(JsonViews.Sijoitteluajo.class)
     private String hakuOid;
 
-    @JsonView(JsonViews.Sijoitteluajo.class)
+    @JsonView({JsonViews.Sijoitteluajo.class,JsonViews.Sijoittelu.class})
     private Long startMils;
 
-    @JsonView(JsonViews.Sijoitteluajo.class)
+    @JsonView({JsonViews.Sijoitteluajo.class,JsonViews.Sijoittelu.class})
     private Long endMils;
 
     @JsonView(JsonViews.Sijoitteluajo.class)

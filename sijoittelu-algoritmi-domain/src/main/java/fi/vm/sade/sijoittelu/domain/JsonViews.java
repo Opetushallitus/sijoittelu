@@ -6,7 +6,10 @@ package fi.vm.sade.sijoittelu.domain;
  * Time: 16.00
  */
 public class JsonViews {
+    public static class Tila { }
+
     public static class Hakukohde { }
     public static class Hakemus { }
     public static class Sijoitteluajo { }
+    public static class Sijoittelu { }
 }

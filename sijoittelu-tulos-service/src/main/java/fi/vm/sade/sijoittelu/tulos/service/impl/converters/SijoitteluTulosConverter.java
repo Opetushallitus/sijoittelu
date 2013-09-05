@@ -1,9 +1,11 @@
 package fi.vm.sade.sijoittelu.tulos.service.impl.converters;
 
 import fi.vm.sade.sijoittelu.domain.Hakukohde;
+import fi.vm.sade.sijoittelu.domain.Sijoittelu;
 import fi.vm.sade.sijoittelu.domain.SijoitteluAjo;
 import fi.vm.sade.sijoittelu.domain.dto.HakemusDTO;
 import fi.vm.sade.sijoittelu.domain.dto.HakukohdeDTO;
+import fi.vm.sade.sijoittelu.domain.dto.SijoitteluDTO;
 import fi.vm.sade.sijoittelu.domain.dto.SijoitteluajoDTO;
 
 import java.util.List;
@@ -21,4 +23,6 @@ public interface SijoitteluTulosConverter {
     HakukohdeDTO convert(Hakukohde a);
 
     SijoitteluajoDTO convert(SijoitteluAjo a);
+
+    SijoitteluDTO convert(Sijoittelu s);
 }

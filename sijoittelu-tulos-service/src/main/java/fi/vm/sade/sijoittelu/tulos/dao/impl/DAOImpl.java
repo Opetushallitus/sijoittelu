@@ -36,7 +36,7 @@ public class DAOImpl implements DAO {
     }
 
     @Override
-    public SijoitteluAjo getSijoitteluajo(Long sijoitteluajoId) {
+    public SijoitteluAjo getSijoitteluajo(String sijoitteluajoId) {
         Query<Sijoittelu> query = morphiaDS.createQuery(Sijoittelu.class);
         query.field("sijoitteluajot.sijoitteluajoId").equal(sijoitteluajoId);
         Sijoittelu a = query.get();
@@ -49,7 +49,7 @@ public class DAOImpl implements DAO {
     }
 
     @Override
-    public Hakukohde getHakukohdeBySijoitteluajo(Long sijoitteluajoId, String hakukohdeOid) {
+    public Hakukohde getHakukohdeBySijoitteluajo(String sijoitteluajoId, String hakukohdeOid) {
         Query<Hakukohde> query = morphiaDS.createQuery(Hakukohde.class);
         query.field("sijoitteluajoId").equal(sijoitteluajoId);
         query.field("oid").equal(hakukohdeOid);
@@ -57,13 +57,47 @@ public class DAOImpl implements DAO {
     }
 
     @Override
-    public List<Hakukohde> haeHakukohteetJoihinHakemusOsallistuu(Long sijoitteluajoId, String hakemusOid) {
+    public List<Hakukohde> haeHakukohteetJoihinHakemusOsallistuu(String sijoitteluajoId, String hakemusOid) {
         Query<Hakukohde> query = morphiaDS.createQuery(Hakukohde.class);
         query.field("sijoitteluajoId").equal(sijoitteluajoId);
         query.field("valintatapajonot.hakemukset.hakemusOid").equal(hakemusOid);
         List<Hakukohde> list = query.asList();
         return list;
     }
+
+    @Override
+    public SijoitteluAjo getLatestSijoitteluajo(String hakuOid) {
+        Query<Sijoittelu> query = morphiaDS.createQuery(Sijoittelu.class);
+        query.field("hakuOid").equal(hakuOid);
+        Sijoittelu a = query.get();
+        return a.getLatestSijoitteluajo(); //this is shit, refactor
+    }
+
+    @Override
+    public Hakukohde getLatestHakukohdeBySijoitteluajo(String hakuOid, String hakukohdeOid) {
+
+        SijoitteluAjo sa = getLatestSijoitteluajo(hakuOid);               //refactor this shit also
+
+        Query<Hakukohde> query = morphiaDS.createQuery(Hakukohde.class);
+        query.field("oid").equal(hakukohdeOid);
+        query.field("sijoitteluajoId").equal(sa.getSijoitteluajoId());
+        return query.get();
+    }
+
+    @Override
+    public List<Hakukohde> haeLatestHakukohteetJoihinHakemusOsallistuu(String hakuOid, String hakemusOid) {
+
+        SijoitteluAjo sa = getLatestSijoitteluajo(hakuOid);               //refactor this shit also
+
+        Query<Hakukohde> query = morphiaDS.createQuery(Hakukohde.class);
+        query.field("sijoitteluajoId").equal(sa.getSijoitteluajoId());
+        query.field("valintatapajonot.hakemukset.hakemusOid").equal(hakemusOid);
+        List<Hakukohde> list = query.asList();
+        return list;
+
+    }
+
+
 
      /*
     private <T> T getSingleEntity(Class<T> clazz, String fieldName, Object fieldValue) {

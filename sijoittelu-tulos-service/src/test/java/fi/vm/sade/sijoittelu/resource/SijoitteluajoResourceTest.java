@@ -1,30 +1,12 @@
 package fi.vm.sade.sijoittelu.resource;
 
-import fi.vm.sade.sijoittelu.tulos.dao.DAO;
-import fi.vm.sade.sijoittelu.tulos.dao.exception.SijoitteluEntityNotFoundException;
-import fi.vm.sade.sijoittelu.domain.*;
-import fi.vm.sade.sijoittelu.tulos.resource.ObjectMapperProvider;
-import fi.vm.sade.sijoittelu.tulos.resource.SijoitteluajoResource;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.junit.Before;
-import org.junit.Test;
-import org.mockito.Mockito;
-import org.springframework.test.util.ReflectionTestUtils;
-
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.Response;
-import java.io.IOException;
-import java.util.Date;
-
-import static org.junit.Assert.assertEquals;
-
 /**
  * User: wuoti
  * Date: 30.4.2013
  * Time: 9.48
  */
 public class SijoitteluajoResourceTest {
-    private ObjectMapper mapper = new ObjectMapperProvider().getContext(SijoitteluAjo.class);
+   /* private ObjectMapper mapper = new ObjectMapperProvider().getContext(SijoitteluAjo.class);
 
     private SijoitteluajoResource sijoitteluajoResource;
     private DAO daoMock;
@@ -162,5 +144,5 @@ public class SijoitteluajoResourceTest {
                 assertEquals(hr1.getHakijaOid().get(ii), hr2.getHakijaOid().get(ii));
             }
         }
-    }
+    }  */
 }
