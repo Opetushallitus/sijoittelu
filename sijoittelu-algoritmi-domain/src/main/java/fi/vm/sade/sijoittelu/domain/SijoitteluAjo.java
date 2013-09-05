@@ -1,10 +1,8 @@
 package fi.vm.sade.sijoittelu.domain;
 
 import com.google.code.morphia.annotations.Embedded;
-import com.google.code.morphia.annotations.Entity;
 import com.google.code.morphia.annotations.Id;
 import org.bson.types.ObjectId;
-import org.codehaus.jackson.map.annotate.JsonView;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -23,19 +21,14 @@ public class SijoitteluAjo implements Serializable {
     @Id
     private ObjectId id;
 
-    @JsonView(JsonViews.Basic.class)
     private Long sijoitteluajoId;
 
-    @JsonView(JsonViews.Basic.class)
     private String hakuOid;
 
-    @JsonView(JsonViews.Basic.class)
     private Long startMils;
 
-    @JsonView(JsonViews.Basic.class)
     private Long endMils;
 
-    @JsonView(JsonViews.Basic.class)
     @Embedded
     private List<HakukohdeItem> hakukohteet = new ArrayList<HakukohdeItem>();
 

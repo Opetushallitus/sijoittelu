@@ -20,13 +20,9 @@ public class    LogEntry {
     @Id
     private ObjectId id;
 
-    @JsonView(JsonViews.Basic.class)
     private Date luotu;
-    @JsonView(JsonViews.Basic.class)
     private String muokkaaja;
-    @JsonView(JsonViews.Basic.class)
     private String muutos;
-    @JsonView(JsonViews.Basic.class)
     private String selite;
 
     public Date getLuotu() {

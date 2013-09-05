@@ -1,7 +1,6 @@
 package fi.vm.sade.sijoittelu.it;
 
 import com.google.code.morphia.Datastore;
-import fi.vm.sade.sijoittelu.tulos.service.exception.SijoitteluajoNotFoundException;
 import fi.vm.sade.sijoittelu.util.DropMongoDbTestExecutionListener;
 import fi.vm.sade.sijoittelu.util.TestDataGenerator;
 import fi.vm.sade.tulos.service.TulosService;
@@ -137,10 +136,5 @@ public class TulosServiceIntegrationTest {
         assertEquals(2, hakukohdes.size());
     }
 
-    @Ignore
-    @Test(expected = SijoitteluajoNotFoundException.class)
-    public void testHaeHakukohteetWithNonExistingSijoitteluId() {
-        tulosService.haeHakukohteet(-1L, null);
-    }
 
 }

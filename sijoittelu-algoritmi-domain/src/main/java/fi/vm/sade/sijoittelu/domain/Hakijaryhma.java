@@ -15,19 +15,14 @@ import java.util.List;
 @Embedded
 public class Hakijaryhma implements Serializable {
 
-    @JsonView(JsonViews.Basic.class)
     private Integer prioriteetti;
 
-    @JsonView(JsonViews.Basic.class)
     private int paikat;
 
-    @JsonView(JsonViews.Basic.class)
     private String oid;
 
-    @JsonView(JsonViews.Basic.class)
     private String nimi;
 
-    @JsonView(JsonViews.Basic.class)
     private List<String> hakijaOid = new ArrayList<String>();
 
     public List<String> getHakijaOid() {

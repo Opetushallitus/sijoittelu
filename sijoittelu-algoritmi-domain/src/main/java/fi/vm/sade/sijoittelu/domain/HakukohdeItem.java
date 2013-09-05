@@ -2,9 +2,7 @@ package fi.vm.sade.sijoittelu.domain;
 
 import com.google.code.morphia.annotations.Embedded;
 import com.google.code.morphia.annotations.Id;
-import com.google.code.morphia.annotations.Reference;
 import org.bson.types.ObjectId;
-import org.codehaus.jackson.map.annotate.JsonView;
 
 import java.io.Serializable;
 
@@ -16,7 +14,6 @@ public class HakukohdeItem implements Serializable {
     private ObjectId id;
 
     //hakukohdeoid
-    @JsonView(JsonViews.Basic.class)
     private String oid;
 
 

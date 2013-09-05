@@ -15,46 +15,46 @@ import java.io.Serializable;
  */
 public class HakemusDTO implements Serializable {
 
-    @JsonView(JsonViews.Basic.class)
+    @JsonView({JsonViews.Hakemus.class,JsonViews.Hakukohde.class})
     private String hakijaOid;
 
-    @JsonView(JsonViews.Basic.class)
+    @JsonView({JsonViews.Hakemus.class,JsonViews.Hakukohde.class})
     private String hakemusOid;
 
-    @JsonView(JsonViews.Basic.class)
+    @JsonView({JsonViews.Hakemus.class,JsonViews.Hakukohde.class})
     private String etunimi;
 
-    @JsonView(JsonViews.Basic.class)
+    @JsonView({JsonViews.Hakemus.class,JsonViews.Hakukohde.class})
     private String sukunimi;
 
-    @JsonView(JsonViews.Basic.class)
+    @JsonView({JsonViews.Hakemus.class,JsonViews.Hakukohde.class})
     private Integer prioriteetti;
 
-    @JsonView(JsonViews.Basic.class)
+    @JsonView({JsonViews.Hakemus.class,JsonViews.Hakukohde.class})
     private Integer jonosija;
 
-    @JsonView(JsonViews.Basic.class)
+    @JsonView({JsonViews.Hakemus.class,JsonViews.Hakukohde.class})
     private Integer tasasijaJonosija;
 
-    @JsonView(JsonViews.Basic.class)
+    @JsonView({JsonViews.Hakemus.class,JsonViews.Hakukohde.class})
     private HakemuksenTila tila;
 
-    @JsonView(JsonViews.Basic.class)
+    @JsonView({JsonViews.Hakemus.class,JsonViews.Hakukohde.class})
     private boolean hyvaksyttyHarkinnanvaraisesti = false;
 
-    @JsonView(JsonViews.Basic.class)
+    @JsonView(JsonViews.Hakemus.class)
     private Long sijoitteluajoId;
 
-    @JsonView(JsonViews.Basic.class)
+    @JsonView(JsonViews.Hakemus.class)
     private String hakukohdeOid;
 
-    @JsonView(JsonViews.Basic.class)
+    @JsonView(JsonViews.Hakemus.class)
     private String tarjoajaOid;
 
-    @JsonView(JsonViews.Basic.class)
+    @JsonView(JsonViews.Hakemus.class)
     private String valintatapajonoOid;
 
-    @JsonView(JsonViews.Basic.class)
+    @JsonView(JsonViews.Hakemus.class)
     private String hakuOid;
 
     public String getHakuOid() {

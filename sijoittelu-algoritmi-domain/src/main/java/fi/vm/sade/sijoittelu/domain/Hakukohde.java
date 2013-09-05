@@ -4,7 +4,6 @@ import com.google.code.morphia.annotations.Embedded;
 import com.google.code.morphia.annotations.Entity;
 import com.google.code.morphia.annotations.Id;
 import org.bson.types.ObjectId;
-import org.codehaus.jackson.map.annotate.JsonView;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -21,23 +20,18 @@ public class Hakukohde implements Serializable {
     @Id
     private ObjectId id;
 
-    @JsonView(JsonViews.Basic.class)
     private Long sijoitteluajoId;
 
-    @JsonView(JsonViews.Basic.class)
     private String oid;
 
-    @JsonView(JsonViews.Basic.class)
     private HakukohdeTila tila;
 
     private String tarjoajaOid;
 
     @Embedded
-    @JsonView(JsonViews.Basic.class)
     private List<Valintatapajono> valintatapajonot = new ArrayList<Valintatapajono>();
     
     @Embedded
-    @JsonView(JsonViews.Basic.class)
     private List<Hakijaryhma> hakijaryhmat = new ArrayList<Hakijaryhma>();
 
 

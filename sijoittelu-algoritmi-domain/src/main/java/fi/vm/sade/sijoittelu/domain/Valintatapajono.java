@@ -1,7 +1,6 @@
 package fi.vm.sade.sijoittelu.domain;
 
 import com.google.code.morphia.annotations.Embedded;
-import org.codehaus.jackson.map.annotate.JsonView;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -12,29 +11,22 @@ import java.util.ArrayList;
 @Embedded
 public class Valintatapajono implements Serializable {
 
-    @JsonView(JsonViews.Basic.class)
     private Tasasijasaanto tasasijasaanto;
 
-    @JsonView(JsonViews.Basic.class)
     private ValintatapajonoTila tila;
 
-    @JsonView(JsonViews.Basic.class)
     private String oid;
 
-    @JsonView(JsonViews.Basic.class)
     private Integer prioriteetti;
 
-    @JsonView(JsonViews.Basic.class)
     private Integer aloituspaikat;
 
-    @JsonView(JsonViews.Basic.class)
     private Boolean eiVarasijatayttoa;
 
     //@Embedded
     //private List<Saanto> saannot = new ArrayList<Saanto>();
 
     @Embedded
-    @JsonView(JsonViews.Basic.class)
     private ArrayList<Hakemus> hakemukset = new ArrayList<Hakemus>();
 
     public ValintatapajonoTila getTila() {

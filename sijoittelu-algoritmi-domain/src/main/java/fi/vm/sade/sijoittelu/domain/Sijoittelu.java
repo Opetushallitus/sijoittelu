@@ -20,19 +20,15 @@ public class Sijoittelu implements Serializable {
     @Id
     private ObjectId id;
 
-    @JsonView(JsonViews.Basic.class)
     private String hakuOid;
 
-    @JsonView(JsonViews.Basic.class)
     private Long sijoitteluId;
 
-    @JsonView(JsonViews.Basic.class)
     private Date created;
 
     /**
      * Maarittaa sijoitellaanko taman sijoittelun sijoitteluajot
      */
-    @JsonView(JsonViews.Basic.class)
     private boolean sijoittele = true;
 
     //@Embedded
@@ -43,7 +39,6 @@ public class Sijoittelu implements Serializable {
     private List<Valintatulos> valintatulokset = new ArrayList<Valintatulos>();
 
     // @Reference(value = "SijoitteluAjo", lazy = true)
-    @JsonView(JsonViews.Basic.class)
     @Embedded
     private List<SijoitteluAjo> sijoitteluajot = new ArrayList<SijoitteluAjo>();
 

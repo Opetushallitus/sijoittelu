@@ -1,7 +1,6 @@
 package fi.vm.sade.sijoittelu.domain;
 
 import com.google.code.morphia.annotations.Embedded;
-import org.codehaus.jackson.map.annotate.JsonView;
 
 import java.io.Serializable;
 
@@ -13,34 +12,25 @@ import java.io.Serializable;
 @Embedded
 public class Hakemus implements Serializable {
 
-    @JsonView(JsonViews.Basic.class)
     private String hakijaOid;
 
-    @JsonView(JsonViews.Basic.class)
     private String hakemusOid;
 
-    @JsonView(JsonViews.Basic.class)
     private String etunimi;
 
-    @JsonView(JsonViews.Basic.class)
     private String sukunimi;
 
     /**
      * defaulttina tosi epakorkea
      */
-    @JsonView(JsonViews.Basic.class)
     private Integer prioriteetti;
 
-    @JsonView(JsonViews.Basic.class)
     private Integer jonosija;
 
-    @JsonView(JsonViews.Basic.class)
     private Integer tasasijaJonosija;
 
-    @JsonView(JsonViews.Basic.class)
     private HakemuksenTila tila;
 
-    @JsonView(JsonViews.Basic.class)
     private boolean hyvaksyttyHarkinnanvaraisesti = false;
 
 
