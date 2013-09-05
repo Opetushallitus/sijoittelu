@@ -89,6 +89,7 @@ public class SijoitteluTulosConverterImpl implements SijoitteluTulosConverter {
         for(HakukohdeItem hki : ajo.getHakukohteet())  {
             HakukohdeDTO hdto = new HakukohdeDTO();
             hdto.setOid(hki.getOid());
+            dto.getHakukohteet().add(hdto);
         }
         return dto;
     }
