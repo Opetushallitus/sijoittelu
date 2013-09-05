@@ -48,12 +48,13 @@ public class SijoitteluTulosServiceImpl implements SijoitteluTulosService{
         return b;
     }
 
-    private void sortHakemukset(Hakukohde hakukohde)    {
+    private void sortHakemukset(Hakukohde hakukohde) {
         HakemusComparator c = new HakemusComparator();
         for(Valintatapajono v : hakukohde.getValintatapajonot()) {
             Collections.sort(v.getHakemukset(), c);
         }
     }
+
     @Override
     public SijoitteluajoDTO getSijoitteluajo(Long id) {
         SijoitteluAjo a = dao.getSijoitteluajo(id);
