@@ -1,26 +1,23 @@
 package fi.vm.sade.sijoittelu.tulos.service;
 
+import java.util.List;
+
 import fi.vm.sade.sijoittelu.domain.dto.HakemusDTO;
 import fi.vm.sade.sijoittelu.domain.dto.HakukohdeDTO;
 import fi.vm.sade.sijoittelu.domain.dto.SijoitteluDTO;
 import fi.vm.sade.sijoittelu.domain.dto.SijoitteluajoDTO;
 
-import java.util.List;
-
 /**
- * Created with IntelliJ IDEA.
- * User: kkammone
- * Date: 5.9.2013
- * Time: 14:22
- * To change this template use File | Settings | File Templates.
+ * Created with IntelliJ IDEA. User: kkammone Date: 5.9.2013 Time: 14:22 To
+ * change this template use File | Settings | File Templates.
  */
 public interface SijoitteluTulosService {
 
-    List<HakemusDTO> haeHakukohteetJoihinHakemusOsallistuu(String sijoitteluajoId, String hakemusOid);
+    List<HakemusDTO> haeHakukohteetJoihinHakemusOsallistuu(Long sijoitteluajoId, String hakemusOid);
 
-    HakukohdeDTO getHakukohdeBySijoitteluajo(String sijoitteluajoId, String hakukohdeOid);
+    HakukohdeDTO getHakukohdeBySijoitteluajo(Long sijoitteluajoId, String hakukohdeOid);
 
-    SijoitteluajoDTO getSijoitteluajo(String sijoitteluajoId);
+    SijoitteluajoDTO getSijoitteluajo(Long sijoitteluajoId);
 
     SijoitteluDTO getSijoitteluByHakuOid(String hakuOid);
 

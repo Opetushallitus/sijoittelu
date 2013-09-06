@@ -1,10 +1,10 @@
 package fi.vm.sade.sijoittelu.tulos.dao;
 
+import java.util.List;
+
 import fi.vm.sade.sijoittelu.domain.Hakukohde;
 import fi.vm.sade.sijoittelu.domain.Sijoittelu;
 import fi.vm.sade.sijoittelu.domain.SijoitteluAjo;
-
-import java.util.List;
 
 /**
  * User: tommiha Date: 10/15/12 Time: 2:44 PM
@@ -15,11 +15,11 @@ public interface DAO {
 
     Sijoittelu getSijoitteluByHakuOid(String hakuOid);
 
-    SijoitteluAjo getSijoitteluajo(String sijoitteluajoId);
+    SijoitteluAjo getSijoitteluajo(Long sijoitteluajoId);
 
-    Hakukohde getHakukohdeBySijoitteluajo(String sijoitteluajoId, String hakukohdeOid);
+    Hakukohde getHakukohdeBySijoitteluajo(Long sijoitteluajoId, String hakukohdeOid);
 
-    List<Hakukohde> haeHakukohteetJoihinHakemusOsallistuu(String sijoitteluajoId, String hakemusOid);
+    List<Hakukohde> haeHakukohteetJoihinHakemusOsallistuu(Long sijoitteluajoId, String hakemusOid);
 
     SijoitteluAjo getLatestSijoitteluajo(String hakuOid);
 

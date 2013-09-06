@@ -1,5 +1,11 @@
 package fi.vm.sade.sijoittelu.tulos.service.impl;
 
+import java.util.Collections;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import fi.vm.sade.sijoittelu.domain.Hakukohde;
 import fi.vm.sade.sijoittelu.domain.Sijoittelu;
 import fi.vm.sade.sijoittelu.domain.SijoitteluAjo;
@@ -12,21 +18,13 @@ import fi.vm.sade.sijoittelu.domain.dto.SijoitteluajoDTO;
 import fi.vm.sade.sijoittelu.tulos.dao.DAO;
 import fi.vm.sade.sijoittelu.tulos.service.SijoitteluTulosService;
 import fi.vm.sade.sijoittelu.tulos.service.impl.converters.SijoitteluTulosConverter;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.util.Collections;
-import java.util.List;
 
 /**
- * Created with IntelliJ IDEA.
- * User: kkammone
- * Date: 5.9.2013
- * Time: 14:24
- * To change this template use File | Settings | File Templates.
+ * Created with IntelliJ IDEA. User: kkammone Date: 5.9.2013 Time: 14:24 To
+ * change this template use File | Settings | File Templates.
  */
 @Service
-public class SijoitteluTulosServiceImpl implements SijoitteluTulosService{
+public class SijoitteluTulosServiceImpl implements SijoitteluTulosService {
 
     @Autowired
     private DAO dao;
@@ -35,22 +33,22 @@ public class SijoitteluTulosServiceImpl implements SijoitteluTulosService{
     private SijoitteluTulosConverter sijoitteluTulosConverter;
 
     @Override
-    public List<HakemusDTO> haeHakukohteetJoihinHakemusOsallistuu(String sijoitteluajoId, String hakemusOid) {
+    public List<HakemusDTO> haeHakukohteetJoihinHakemusOsallistuu(Long sijoitteluajoId, String hakemusOid) {
         List<Hakukohde> b = dao.haeHakukohteetJoihinHakemusOsallistuu(sijoitteluajoId, hakemusOid);
         List<HakemusDTO> a = sijoitteluTulosConverter.extractHakemukset(b, hakemusOid);
         return a;
     }
 
     @Override
-    public HakukohdeDTO getHakukohdeBySijoitteluajo(String sijoitteluajoId, String hakukohdeOid) {
+    public HakukohdeDTO getHakukohdeBySijoitteluajo(Long sijoitteluajoId, String hakukohdeOid) {
         Hakukohde a = dao.getHakukohdeBySijoitteluajo(sijoitteluajoId, hakukohdeOid);
         sortHakemukset(a);
-        HakukohdeDTO b =  sijoitteluTulosConverter.convert(a);
+        HakukohdeDTO b = sijoitteluTulosConverter.convert(a);
         return b;
     }
 
     @Override
-    public SijoitteluajoDTO getSijoitteluajo(String sijoitteluajoId) {
+    public SijoitteluajoDTO getSijoitteluajo(Long sijoitteluajoId) {
         SijoitteluAjo a = dao.getSijoitteluajo(sijoitteluajoId);
         SijoitteluajoDTO b = sijoitteluTulosConverter.convert(a);
         return b;
@@ -72,7 +70,7 @@ public class SijoitteluTulosServiceImpl implements SijoitteluTulosService{
     public HakukohdeDTO getLatestHakukohdeBySijoitteluajo(String hakuOid, String hakukohdeOid) {
         Hakukohde a = dao.getLatestHakukohdeBySijoitteluajo(hakuOid, hakukohdeOid);
         sortHakemukset(a);
-        HakukohdeDTO b =  sijoitteluTulosConverter.convert(a);
+        HakukohdeDTO b = sijoitteluTulosConverter.convert(a);
         return b;
     }
 
@@ -85,7 +83,7 @@ public class SijoitteluTulosServiceImpl implements SijoitteluTulosService{
 
     private void sortHakemukset(Hakukohde hakukohde) {
         HakemusComparator c = new HakemusComparator();
-        for(Valintatapajono v : hakukohde.getValintatapajonot()) {
+        for (Valintatapajono v : hakukohde.getValintatapajonot()) {
             Collections.sort(v.getHakemukset(), c);
         }
     }
