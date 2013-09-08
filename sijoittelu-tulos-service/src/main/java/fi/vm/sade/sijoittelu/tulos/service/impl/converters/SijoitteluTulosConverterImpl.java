@@ -18,22 +18,10 @@ import java.util.List;
 public class SijoitteluTulosConverterImpl implements SijoitteluTulosConverter {
 
     @Override
-    public List<HakemusDTO> extractHakemukset(List<Hakukohde> hakukohdeList, String hakemusOid) {
-        List<HakemusDTO> hakemusDTOList = new ArrayList<HakemusDTO>();
-
+    public List<HakukohdeDTO> convert(List<Hakukohde> hakukohdeList) {
+        List<HakukohdeDTO> hakemusDTOList = new ArrayList<HakukohdeDTO>();
         for(Hakukohde h : hakukohdeList) {
-            for(Valintatapajono v : h.getValintatapajonot()) {
-                for(Hakemus ha : v.getHakemukset()) {
-                    if(hakemusOid.equals(ha.getHakemusOid())) {
-                        HakemusDTO dto = convert(ha);
-                        dto.setTarjoajaOid(h.getTarjoajaOid());
-                        dto.setValintatapajonoOid(v.getOid());
-                        dto.setHakukohdeOid(h.getOid());
-                        dto.setSijoitteluajoId(h.getSijoitteluajoId());
-                        hakemusDTOList.add(dto);
-                    }
-                }
-            }
+            hakemusDTOList.add(convert(h));
         }
         return hakemusDTOList;
     }
@@ -46,12 +34,12 @@ public class SijoitteluTulosConverterImpl implements SijoitteluTulosConverter {
         dto.setTarjoajaOid(hakukohde.getTarjoajaOid());
         dto.setTila(hakukohde.getTila());
         for(Valintatapajono valintatapajono : hakukohde.getValintatapajonot()) {
-            dto.getValintatapajonot().add(convert(valintatapajono));
+            dto.getValintatapajonot().add(convert(valintatapajono,hakukohde));
         }
         return dto;
     }
 
-    private ValintatapajonoDTO convert(Valintatapajono valintatapajono) {
+    private ValintatapajonoDTO convert(Valintatapajono valintatapajono,Hakukohde hakukohde) {
         ValintatapajonoDTO dto = new ValintatapajonoDTO();
         dto.setAloituspaikat(valintatapajono.getAloituspaikat());
         dto.setEiVarasijatayttoa(valintatapajono.getEiVarasijatayttoa());
@@ -60,12 +48,12 @@ public class SijoitteluTulosConverterImpl implements SijoitteluTulosConverter {
         dto.setTasasijasaanto(valintatapajono.getTasasijasaanto());
         dto.setTila(valintatapajono.getTila());
         for(Hakemus hakemus : valintatapajono.getHakemukset()) {
-            dto.getHakemukset().add(convert(hakemus));
+            dto.getHakemukset().add(convert(hakemus,valintatapajono,hakukohde));
         }
         return dto;
     }
 
-    private HakemusDTO convert(Hakemus ha) {
+    private HakemusDTO convert(Hakemus ha,Valintatapajono valintatapajono,Hakukohde hakukohde) {
         HakemusDTO dto = new HakemusDTO();
         dto.setEtunimi(ha.getEtunimi());
         dto.setHakemusOid(ha.getHakemusOid());
@@ -76,6 +64,14 @@ public class SijoitteluTulosConverterImpl implements SijoitteluTulosConverter {
         dto.setSukunimi(ha.getSukunimi());
         dto.setTasasijaJonosija(ha.getTasasijaJonosija());
         dto.setTila(ha.getTila());
+        if(hakukohde != null) {
+            dto.setTarjoajaOid(hakukohde.getTarjoajaOid());
+            dto.setHakukohdeOid(hakukohde.getOid());
+            dto.setSijoitteluajoId(hakukohde.getSijoitteluajoId());
+        }
+        if(valintatapajono != null) {
+            dto.setValintatapajonoOid(valintatapajono.getOid());
+        }
         return dto;
     }
 
@@ -101,13 +97,13 @@ public class SijoitteluTulosConverterImpl implements SijoitteluTulosConverter {
         dto.setHakuOid(s.getHakuOid());
         dto.setSijoittele(s.isSijoittele());
         dto.setSijoitteluId(s.getSijoitteluId());
-         for(SijoitteluAjo sa : s.getSijoitteluajot()) {
-             SijoitteluajoDTO sdto = new SijoitteluajoDTO();
-             sdto.setEndMils(sa.getEndMils());
-             sdto.setSijoitteluajoId(sa.getSijoitteluajoId());
-             sdto.setStartMils(sa.getStartMils());
-             dto.getSijoitteluajot().add(sdto);
-         }
+        for(SijoitteluAjo sa : s.getSijoitteluajot()) {
+            SijoitteluajoDTO sdto = new SijoitteluajoDTO();
+            sdto.setEndMils(sa.getEndMils());
+            sdto.setSijoitteluajoId(sa.getSijoitteluajoId());
+            sdto.setStartMils(sa.getStartMils());
+            dto.getSijoitteluajot().add(sdto);
+        }
         return dto;
     }
 }

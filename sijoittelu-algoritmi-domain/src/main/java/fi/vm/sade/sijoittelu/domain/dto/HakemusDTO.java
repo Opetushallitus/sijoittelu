@@ -42,6 +42,9 @@ public class HakemusDTO implements Serializable {
     @JsonView({JsonViews.Hakemus.class,JsonViews.Hakukohde.class})
     private boolean hyvaksyttyHarkinnanvaraisesti = false;
 
+    @JsonView({JsonViews.Hakemus.class,JsonViews.Hakukohde.class})
+    private Integer varasijanNumero;
+
     @JsonView(JsonViews.Hakemus.class)
     private Long sijoitteluajoId;
 
@@ -167,5 +170,13 @@ public class HakemusDTO implements Serializable {
 
     public void setHakijaOid(String hakijaOid) {
         this.hakijaOid = hakijaOid;
+    }
+
+    public Integer getVarasijanNumero() {
+        return varasijanNumero;
+    }
+
+    public void setVarasijanNumero(Integer varasijanNumero) {
+        this.varasijanNumero = varasijanNumero;
     }
 }
