@@ -57,7 +57,7 @@ public class DomainBuilder {
 
         HakijaTyyppi hakijatyyppi = new HakijaTyyppi();
         hakijatyyppi.setJonosija(-((int) pisteet));
-        hakijatyyppi.setPisteet(pisteet);
+        hakijatyyppi.setPisteet(String.valueOf(pisteet));
         hakijatyyppi.setPrioriteetti(prioriteetti);
         hakijatyyppi.setOid(hakijanro);
         hakijatyyppi.setTila(HakemusTilaTyyppi.HYVAKSYTTAVISSA);
