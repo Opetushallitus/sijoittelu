@@ -1,8 +1,12 @@
 package fi.vm.sade.sijoittelu.batch.logic.impl.algorithm;
 
-
 import fi.vm.sade.service.valintaperusteet.schema.TasasijasaantoTyyppi;
-import fi.vm.sade.service.valintatiedot.schema.*;
+import fi.vm.sade.service.valintatiedot.schema.HakemusTilaTyyppi;
+import fi.vm.sade.service.valintatiedot.schema.HakijaTyyppi;
+import fi.vm.sade.service.valintatiedot.schema.HakuTyyppi;
+import fi.vm.sade.service.valintatiedot.schema.HakukohdeTyyppi;
+import fi.vm.sade.service.valintatiedot.schema.ValinnanvaiheTyyppi;
+import fi.vm.sade.service.valintatiedot.schema.ValintatapajonoTyyppi;
 
 public class DomainBuilder {
 
@@ -12,7 +16,8 @@ public class DomainBuilder {
         this.sijoitteleTyyppi = sijoitteleTyyppi;
     }
 
-    public void addRow(String hakijanro, int prioriteetti, String linjannimi, String hakukohdeId, int aloituspaikat, float pisteet, String tila) {
+    public void addRow(String hakijanro, int prioriteetti, String linjannimi, String hakukohdeId, int aloituspaikat,
+            float pisteet, String tila) {
 
         // etsi tai luo hakukohde
         HakukohdeTyyppi hakukohdeTyyppi = null;
@@ -47,15 +52,15 @@ public class DomainBuilder {
         }
 
         // lisää ensimmäiseen valintatapajonoon
-        ValintatapajonoTyyppi valintatapajonoTyyppi = hakukohdeTyyppi.getValinnanvaihe().get(0).getValintatapajono().get(0);
+        ValintatapajonoTyyppi valintatapajonoTyyppi = hakukohdeTyyppi.getValinnanvaihe().get(0).getValintatapajono()
+                .get(0);
 
         HakijaTyyppi hakijatyyppi = new HakijaTyyppi();
         hakijatyyppi.setJonosija(-((int) pisteet));
-        hakijatyyppi.setPisteet(String.valueOf(pisteet));
+        hakijatyyppi.setPisteet(pisteet);
         hakijatyyppi.setPrioriteetti(prioriteetti);
         hakijatyyppi.setOid(hakijanro);
         hakijatyyppi.setTila(HakemusTilaTyyppi.HYVAKSYTTAVISSA);
-
 
         valintatapajonoTyyppi.getHakija().add(hakijatyyppi);
     }
