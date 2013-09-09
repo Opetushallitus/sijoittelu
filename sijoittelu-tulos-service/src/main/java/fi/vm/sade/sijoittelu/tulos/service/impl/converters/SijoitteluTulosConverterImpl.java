@@ -28,6 +28,9 @@ public class SijoitteluTulosConverterImpl implements SijoitteluTulosConverter {
 
     @Override
     public HakukohdeDTO convert(Hakukohde hakukohde) {
+        if(hakukohde == null) {
+            return null;
+        }
         HakukohdeDTO dto = new HakukohdeDTO();
         dto.setOid(hakukohde.getOid());
         dto.setSijoitteluajoId(hakukohde.getSijoitteluajoId());
