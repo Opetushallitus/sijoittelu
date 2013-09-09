@@ -1,9 +1,12 @@
 package fi.vm.sade.sijoittelu.domain;
 
-import com.google.code.morphia.annotations.Embedded;
-
 import java.io.Serializable;
 import java.math.BigDecimal;
+
+import com.google.code.morphia.annotations.Converters;
+import com.google.code.morphia.annotations.Embedded;
+
+import fi.vm.sade.sijoittelu.domain.converter.BigDecimalConverter;
 
 /**
  * 
@@ -11,6 +14,7 @@ import java.math.BigDecimal;
  * 
  */
 @Embedded
+@Converters(BigDecimalConverter.class)
 public class Hakemus implements Serializable {
 
     private String hakijaOid;
@@ -28,7 +32,7 @@ public class Hakemus implements Serializable {
 
     private Integer jonosija;
 
-    //ensimmaisen jarjestyskriteerin pisteet
+    // ensimmaisen jarjestyskriteerin pisteet
     private BigDecimal pisteet;
 
     private Integer tasasijaJonosija;
@@ -36,8 +40,6 @@ public class Hakemus implements Serializable {
     private HakemuksenTila tila;
 
     private boolean hyvaksyttyHarkinnanvaraisesti = false;
-
-
 
     public int getPrioriteetti() {
         return prioriteetti;
@@ -89,13 +91,8 @@ public class Hakemus implements Serializable {
 
     @Override
     public String toString() {
-        return "Hakemus{" +
-                "hakijaOid='" + hakijaOid + '\'' +
-                ", prioriteetti=" + prioriteetti +
-                ", jonosija=" + jonosija +
-                ", tasasijaJonosija=" + tasasijaJonosija +
-                ", tila=" + tila +
-                '}';
+        return "Hakemus{" + "hakijaOid='" + hakijaOid + '\'' + ", prioriteetti=" + prioriteetti + ", jonosija="
+                + jonosija + ", tasasijaJonosija=" + tasasijaJonosija + ", tila=" + tila + '}';
     }
 
     public String getSukunimi() {
