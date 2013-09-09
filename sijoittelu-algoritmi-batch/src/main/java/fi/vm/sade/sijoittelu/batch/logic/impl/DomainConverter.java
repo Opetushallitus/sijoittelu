@@ -85,7 +85,7 @@ public class DomainConverter {
         hakemus.setPrioriteetti(hakijaTyyppi.getPrioriteetti());
         hakemus.setEtunimi(hakijaTyyppi.getEtunimi());
         hakemus.setSukunimi(hakijaTyyppi.getSukunimi());
-        if(hakijaTyyppi.getPisteet() != null) {
+        if(hakijaTyyppi.getPisteet() != null && !hakijaTyyppi.getPisteet().isEmpty()) {
             hakemus.setPisteet(new BigDecimal(hakijaTyyppi.getPisteet()));
         }
 
