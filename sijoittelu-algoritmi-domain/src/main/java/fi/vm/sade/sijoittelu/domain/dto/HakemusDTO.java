@@ -1,48 +1,50 @@
 package fi.vm.sade.sijoittelu.domain.dto;
 
-import fi.vm.sade.sijoittelu.domain.HakemuksenTila;
-import fi.vm.sade.sijoittelu.domain.JsonViews;
+import java.io.Serializable;
+import java.math.BigDecimal;
+
 import org.codehaus.jackson.map.annotate.JsonView;
 
-import java.io.Serializable;
+import fi.vm.sade.sijoittelu.domain.HakemuksenTila;
+import fi.vm.sade.sijoittelu.domain.JsonViews;
 
 /**
- * Created with IntelliJ IDEA.
- * User: kkammone
- * Date: 2.9.2013
- * Time: 13:22
- * To change this template use File | Settings | File Templates.
+ * Created with IntelliJ IDEA. User: kkammone Date: 2.9.2013 Time: 13:22 To
+ * change this template use File | Settings | File Templates.
  */
 public class HakemusDTO implements Serializable {
 
-    @JsonView({JsonViews.Hakemus.class,JsonViews.Hakukohde.class})
+    @JsonView({ JsonViews.Hakemus.class, JsonViews.Hakukohde.class })
     private String hakijaOid;
 
-    @JsonView({JsonViews.Hakemus.class,JsonViews.Hakukohde.class})
+    @JsonView({ JsonViews.Hakemus.class, JsonViews.Hakukohde.class })
     private String hakemusOid;
 
-    @JsonView({JsonViews.Hakemus.class,JsonViews.Hakukohde.class})
+    @JsonView({ JsonViews.Hakemus.class, JsonViews.Hakukohde.class })
+    private BigDecimal pisteet;
+
+    @JsonView({ JsonViews.Hakemus.class, JsonViews.Hakukohde.class })
     private String etunimi;
 
-    @JsonView({JsonViews.Hakemus.class,JsonViews.Hakukohde.class})
+    @JsonView({ JsonViews.Hakemus.class, JsonViews.Hakukohde.class })
     private String sukunimi;
 
-    @JsonView({JsonViews.Hakemus.class,JsonViews.Hakukohde.class})
+    @JsonView({ JsonViews.Hakemus.class, JsonViews.Hakukohde.class })
     private Integer prioriteetti;
 
-    @JsonView({JsonViews.Hakemus.class,JsonViews.Hakukohde.class})
+    @JsonView({ JsonViews.Hakemus.class, JsonViews.Hakukohde.class })
     private Integer jonosija;
 
-    @JsonView({JsonViews.Hakemus.class,JsonViews.Hakukohde.class})
+    @JsonView({ JsonViews.Hakemus.class, JsonViews.Hakukohde.class })
     private Integer tasasijaJonosija;
 
-    @JsonView({JsonViews.Hakemus.class,JsonViews.Hakukohde.class})
+    @JsonView({ JsonViews.Hakemus.class, JsonViews.Hakukohde.class })
     private HakemuksenTila tila;
 
-    @JsonView({JsonViews.Hakemus.class,JsonViews.Hakukohde.class})
+    @JsonView({ JsonViews.Hakemus.class, JsonViews.Hakukohde.class })
     private boolean hyvaksyttyHarkinnanvaraisesti = false;
 
-    @JsonView({JsonViews.Hakemus.class,JsonViews.Hakukohde.class})
+    @JsonView({ JsonViews.Hakemus.class, JsonViews.Hakukohde.class })
     private Integer varasijanNumero;
 
     @JsonView(JsonViews.Hakemus.class)
@@ -178,5 +180,13 @@ public class HakemusDTO implements Serializable {
 
     public void setVarasijanNumero(Integer varasijanNumero) {
         this.varasijanNumero = varasijanNumero;
+    }
+
+    public BigDecimal getPisteet() {
+        return pisteet;
+    }
+
+    public void setPisteet(BigDecimal pisteet) {
+        this.pisteet = pisteet;
     }
 }

@@ -1,21 +1,20 @@
 package fi.vm.sade.sijoittelu.domain.dto;
 
+import java.io.Serializable;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+
+import org.codehaus.jackson.map.annotate.JsonView;
+
 import fi.vm.sade.sijoittelu.domain.JsonViews;
 import fi.vm.sade.sijoittelu.domain.Tasasijasaanto;
 import fi.vm.sade.sijoittelu.domain.ValintatapajonoTila;
-import org.codehaus.jackson.map.annotate.JsonView;
-
-import java.io.Serializable;
-import java.util.ArrayList;
 
 /**
- * Created with IntelliJ IDEA.
- * User: kkammone
- * Date: 5.9.2013
- * Time: 12:47
- * To change this template use File | Settings | File Templates.
+ * Created with IntelliJ IDEA. User: kkammone Date: 5.9.2013 Time: 12:47 To
+ * change this template use File | Settings | File Templates.
  */
-public class ValintatapajonoDTO  implements Serializable {
+public class ValintatapajonoDTO implements Serializable {
 
     @JsonView(JsonViews.Hakukohde.class)
     private Tasasijasaanto tasasijasaanto;
@@ -33,6 +32,9 @@ public class ValintatapajonoDTO  implements Serializable {
     private Integer aloituspaikat;
 
     @JsonView(JsonViews.Hakukohde.class)
+    private BigDecimal alinHyvaksyttyPistemaara;
+
+    @JsonView(JsonViews.Hakukohde.class)
     private Boolean eiVarasijatayttoa;
 
     @JsonView(JsonViews.Hakukohde.class)
@@ -48,6 +50,14 @@ public class ValintatapajonoDTO  implements Serializable {
 
     public ValintatapajonoTila getTila() {
         return tila;
+    }
+
+    public BigDecimal getAlinHyvaksyttyPistemaara() {
+        return alinHyvaksyttyPistemaara;
+    }
+
+    public void setAlinHyvaksyttyPistemaara(BigDecimal alinHyvaksyttyPistemaara) {
+        this.alinHyvaksyttyPistemaara = alinHyvaksyttyPistemaara;
     }
 
     public void setTila(ValintatapajonoTila tila) {
