@@ -64,6 +64,7 @@ public class SijoitteluTulosConverterImpl implements SijoitteluTulosConverter {
         dto.setSukunimi(ha.getSukunimi());
         dto.setTasasijaJonosija(ha.getTasasijaJonosija());
         dto.setTila(ha.getTila());
+        dto.setPisteet(ha.getPisteet());
         if(hakukohde != null) {
             dto.setTarjoajaOid(hakukohde.getTarjoajaOid());
             dto.setHakukohdeOid(hakukohde.getOid());

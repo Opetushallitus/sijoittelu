@@ -12,6 +12,7 @@ import fi.vm.sade.sijoittelu.tulos.service.impl.converters.SijoitteluTulosConver
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -105,8 +106,21 @@ public class SijoitteluTulosServiceImpl implements SijoitteluTulosService {
         //apply varalla jonosija
         for(ValintatapajonoDTO v : hakukohde.getValintatapajonot()) {
             applyVarasijaJonosija(v);
+            applyAlinHyvaksyttyPistemaara(v);
         }
 
+    }
+
+    private void applyAlinHyvaksyttyPistemaara(ValintatapajonoDTO v) {
+        BigDecimal alinHyvaksyttyPistemaara = null;
+        for(HakemusDTO hakemusDTO: v.getHakemukset()) {
+            if(hakemusDTO.getTila() == HakemuksenTila.HYVAKSYTTY) {
+                if(hakemusDTO.getPisteet() != null && (alinHyvaksyttyPistemaara == null || alinHyvaksyttyPistemaara.compareTo(hakemusDTO.getPisteet()) < 0) ) {
+                    alinHyvaksyttyPistemaara = hakemusDTO.getPisteet();
+                }
+            }
+        }
+        v.setAlinHyvaksyttyPistemaara(alinHyvaksyttyPistemaara);
     }
 
     /**

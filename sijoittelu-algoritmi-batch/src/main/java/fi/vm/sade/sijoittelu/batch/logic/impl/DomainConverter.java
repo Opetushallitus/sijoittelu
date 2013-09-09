@@ -17,6 +17,8 @@ import fi.vm.sade.sijoittelu.domain.Valintatapajono;
 import fi.vm.sade.sijoittelu.domain.Hakemus;
 import fi.vm.sade.sijoittelu.domain.HakemuksenTila;
 
+import java.math.BigDecimal;
+
 
 /**
  *
@@ -83,6 +85,10 @@ public class DomainConverter {
         hakemus.setPrioriteetti(hakijaTyyppi.getPrioriteetti());
         hakemus.setEtunimi(hakijaTyyppi.getEtunimi());
         hakemus.setSukunimi(hakijaTyyppi.getSukunimi());
+      //  if(hakijaTyyppi.getPisteet() != null)) {
+            hakemus.setPisteet(new BigDecimal(hakijaTyyppi.getPisteet()));
+       // }
+
 
         if(hakijaTyyppi.getTila() == HakemusTilaTyyppi.HYVAKSYTTY_HARKINNANVARAISESTI) {
             hakemus.setHyvaksyttyHarkinnanvaraisesti(true);

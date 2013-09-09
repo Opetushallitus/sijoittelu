@@ -3,6 +3,7 @@ package fi.vm.sade.sijoittelu.domain;
 import com.google.code.morphia.annotations.Embedded;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 
 /**
  * 
@@ -27,6 +28,9 @@ public class Hakemus implements Serializable {
 
     private Integer jonosija;
 
+    //ensimmaisen jarjestyskriteerin pisteet
+    private BigDecimal pisteet;
+
     private Integer tasasijaJonosija;
 
     private HakemuksenTila tila;
@@ -34,7 +38,8 @@ public class Hakemus implements Serializable {
     private boolean hyvaksyttyHarkinnanvaraisesti = false;
 
 
-     public int getPrioriteetti() {
+
+    public int getPrioriteetti() {
         return prioriteetti;
     }
 
@@ -115,5 +120,13 @@ public class Hakemus implements Serializable {
 
     public void setHyvaksyttyHarkinnanvaraisesti(boolean hyvaksyttyHarkinnanvaraisesti) {
         this.hyvaksyttyHarkinnanvaraisesti = hyvaksyttyHarkinnanvaraisesti;
+    }
+
+    public void setPisteet(BigDecimal pisteet) {
+        this.pisteet = pisteet;
+    }
+
+    public BigDecimal getPisteet() {
+        return pisteet;
     }
 }
