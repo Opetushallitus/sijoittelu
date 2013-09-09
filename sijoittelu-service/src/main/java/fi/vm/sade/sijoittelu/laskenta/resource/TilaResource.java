@@ -68,6 +68,20 @@ public class TilaResource {
         return v;
     }
 
+    @GET
+    @JsonView(JsonViews.MonenHakemuksenTila.class)
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("/hakukohde/{hakukohdeOid}/{valintatapajonoOid}/")
+    @Secured({READ, UPDATE, CRUD})
+    public List<Valintatulos> haku(@PathParam("hakukohdeOid") String hakukohdeOid,
+                                @PathParam("valintatapajonoOid") String valintatapajonoOid) {
+        List<Valintatulos> v = sijoitteluBusinessService.haeHakemustenTilat(hakukohdeOid, valintatapajonoOid);
+        if (v == null) {
+            v = new ArrayList<Valintatulos>();
+        }
+        return v;
+    }
+
     @POST
     @JsonView(JsonViews.Tila.class)
     @Produces(MediaType.APPLICATION_JSON)

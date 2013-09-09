@@ -170,6 +170,15 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
     }
 
     @Override
+    public List<Valintatulos> haeHakemustenTilat(String hakukohdeOid, String valintatapajonoOid) {
+        if (StringUtils.isBlank(hakukohdeOid) || StringUtils.isBlank(hakukohdeOid)) {
+            throw new RuntimeException("Invalid search params, fix exception later");
+        }
+
+        return dao.loadValintatulokset(hakukohdeOid, valintatapajonoOid);
+    }
+
+    @Override
     public List<Valintatulos> haeHakemuksenTila(String hakemusOid) {
         if (StringUtils.isBlank(hakemusOid)) {
             throw new RuntimeException("Invalid search params, fix exception later");
