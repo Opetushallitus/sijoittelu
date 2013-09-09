@@ -63,6 +63,18 @@ public class DaoImpl implements Dao {
     }
 
     @Override
+    public List<Valintatulos> loadValintatulokset(String hakukohdeOid, String valintatapajonoOid) {
+        if(StringUtils.isBlank(hakukohdeOid) || StringUtils.isBlank(hakukohdeOid))    {
+            throw new RuntimeException("Invalid search params, fix exception later");
+        }
+        Query<Valintatulos> q = morphiaDS.createQuery(Valintatulos.class);
+        q.criteria("hakukohdeOid").equal(hakukohdeOid);
+        q.criteria("valintatapajonoOid").equal(valintatapajonoOid);
+
+        return q.asList();
+    }
+
+    @Override
     public List<Valintatulos> loadValintatulokset(String hakuOid) {
         if(StringUtils.isBlank(hakuOid) )    {
             throw new RuntimeException("Invalid search params, fix exception later");

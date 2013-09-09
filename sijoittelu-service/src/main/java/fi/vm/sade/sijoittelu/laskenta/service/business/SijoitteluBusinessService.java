@@ -20,4 +20,6 @@ public interface SijoitteluBusinessService {
     List<Valintatulos> haeHakemuksenTila(String hakemusOid);
 
     void vaihdaHakemuksenTila(String hakuoid, String hakukohdeOid, String valintatapajonoOid, String hakemusOid, ValintatuloksenTila tila, String selite);
+
+    List<Valintatulos> haeHakemustenTilat(String hakukohdeOid, String valintatapajonoOid);
 }

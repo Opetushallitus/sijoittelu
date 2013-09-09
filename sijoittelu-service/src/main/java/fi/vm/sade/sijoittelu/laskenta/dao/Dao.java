@@ -30,4 +30,6 @@ public interface Dao {
     List<Hakukohde> getHakukohdeForSijoitteluajo(Long sijoitteluajoId);
 
     List<Valintatulos> loadValintatulos(String oid);
+
+    List<Valintatulos> loadValintatulokset(String hakukohdeOid, String valintatapajonoOid);
 }
