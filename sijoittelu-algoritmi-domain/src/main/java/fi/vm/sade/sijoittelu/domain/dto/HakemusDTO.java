@@ -24,6 +24,9 @@ public class HakemusDTO implements Serializable {
     private BigDecimal pisteet;
 
     @JsonView({ JsonViews.Hakemus.class, JsonViews.Hakukohde.class })
+    private BigDecimal paasyJaSoveltuvuusKokeenTulos;
+
+    @JsonView({ JsonViews.Hakemus.class, JsonViews.Hakukohde.class })
     private String etunimi;
 
     @JsonView({ JsonViews.Hakemus.class, JsonViews.Hakukohde.class })
@@ -104,6 +107,14 @@ public class HakemusDTO implements Serializable {
 
     public boolean isHyvaksyttyHarkinnanvaraisesti() {
         return hyvaksyttyHarkinnanvaraisesti;
+    }
+
+    public BigDecimal getPaasyJaSoveltuvuusKokeenTulos() {
+        return paasyJaSoveltuvuusKokeenTulos;
+    }
+
+    public void setPaasyJaSoveltuvuusKokeenTulos(BigDecimal paasyJaSoveltuvuusKokeenTulos) {
+        this.paasyJaSoveltuvuusKokeenTulos = paasyJaSoveltuvuusKokeenTulos;
     }
 
     public void setHyvaksyttyHarkinnanvaraisesti(boolean hyvaksyttyHarkinnanvaraisesti) {
