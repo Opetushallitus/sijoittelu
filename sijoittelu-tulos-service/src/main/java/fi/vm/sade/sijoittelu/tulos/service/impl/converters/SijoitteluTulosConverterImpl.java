@@ -61,6 +61,7 @@ public class SijoitteluTulosConverterImpl implements SijoitteluTulosConverter {
         dto.setEtunimi(ha.getEtunimi());
         dto.setHakemusOid(ha.getHakemusOid());
         dto.setHakijaOid(ha.getHakijaOid());
+        dto.setHyvaksyttyHarkinnanvaraisesti(ha.isHyvaksyttyHarkinnanvaraisesti());
         //dto.setHakuOid(h.get);//add to domain later
         dto.setJonosija(ha.getJonosija());
         dto.setPrioriteetti(ha.getPrioriteetti());
