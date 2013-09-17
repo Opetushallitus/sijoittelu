@@ -18,9 +18,9 @@ import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
  *         Autentikointi annotaatiot implementaatiossa!
  */
 @Path("sijoittelu")
-// @Component
-// @PreAuthorize("isAuthenticated()")
 public interface SijoitteluResource {
+
+    public static final String LATEST = "LATEST";
 
     @GET
     @JsonView(JsonViews.Sijoittelu.class)

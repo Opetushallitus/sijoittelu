@@ -11,6 +11,6 @@ public class EnumConverter {
         if (e2 == null) {
             return null;
         }
-        return Enum.valueOf(e1, e2.toString());
+        return Enum.<T> valueOf(e1, e2.toString());
     }
 }
