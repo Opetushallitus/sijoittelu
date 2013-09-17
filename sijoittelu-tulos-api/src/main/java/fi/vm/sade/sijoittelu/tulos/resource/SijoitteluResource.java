@@ -24,9 +24,9 @@ import fi.vm.sade.sijoittelu.tulos.dto.SijoitteluajoDTO;
  *         Autentikointi annotaatiot implementaatiossa!
  */
 @Path("sijoittelu")
-// @Component
-// @PreAuthorize("isAuthenticated()")
 public interface SijoitteluResource {
+
+    public static final String LATEST = "LATEST";
 
     @GET
     @JsonView(JsonViews.Sijoittelu.class)

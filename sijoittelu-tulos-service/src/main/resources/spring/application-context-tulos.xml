@@ -28,8 +28,6 @@
         </property>
     </bean>
 
-    <import resource="context/application-context-tulos-aspect.xml" />
     <import resource="context/application-context-tulos-converter.xml" />
     <import resource="context/application-context-tulos-mongo.xml" />
-    <import resource="context/application-context-tulos-ws.xml" />
 </beans>
