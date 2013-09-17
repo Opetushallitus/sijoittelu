@@ -1,18 +1,18 @@
-package fi.vm.sade.sijoittelu.domain.comparator;
-
-import fi.vm.sade.sijoittelu.domain.Hakemus;
+package fi.vm.sade.sijoittelu.tulos.dto.comparator;
 
 import java.util.Comparator;
 
+import fi.vm.sade.sijoittelu.tulos.dto.HakemusDTO;
+
 /**
- *
+ * 
  * @author Kari Kammonen
- *
+ * 
  */
-public class HakemusComparator implements Comparator<Hakemus> {
+public class HakemusDTOComparator implements Comparator<HakemusDTO> {
 
     @Override
-    public int compare(Hakemus o1, Hakemus o2) {
+    public int compare(HakemusDTO o1, HakemusDTO o2) {
         int p1 = o1.getJonosija();
         int p2 = o2.getJonosija();
 

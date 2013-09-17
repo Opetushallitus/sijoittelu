@@ -1,4 +1,4 @@
-package fi.vm.sade.sijoittelu.domain.dto;
+package fi.vm.sade.sijoittelu.tulos.dto;
 
 /**
  * Created with IntelliJ IDEA.

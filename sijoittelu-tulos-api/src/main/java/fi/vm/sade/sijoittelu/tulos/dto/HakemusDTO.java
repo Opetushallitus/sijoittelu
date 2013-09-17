@@ -1,12 +1,9 @@
-package fi.vm.sade.sijoittelu.domain.dto;
+package fi.vm.sade.sijoittelu.tulos.dto;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
 
 import org.codehaus.jackson.map.annotate.JsonView;
-
-import fi.vm.sade.sijoittelu.domain.HakemuksenTila;
-import fi.vm.sade.sijoittelu.domain.JsonViews;
 
 /**
  * Created with IntelliJ IDEA. User: kkammone Date: 2.9.2013 Time: 13:22 To

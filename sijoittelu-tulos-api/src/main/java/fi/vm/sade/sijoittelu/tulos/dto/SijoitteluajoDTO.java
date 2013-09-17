@@ -1,32 +1,27 @@
-package fi.vm.sade.sijoittelu.domain.dto;
-
-
-import fi.vm.sade.sijoittelu.domain.JsonViews;
-import org.codehaus.jackson.map.annotate.JsonView;
+package fi.vm.sade.sijoittelu.tulos.dto;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.codehaus.jackson.map.annotate.JsonView;
+
 /**
- * Created with IntelliJ IDEA.
- * User: kkammone
- * Date: 5.9.2013
- * Time: 14:32
- * To change this template use File | Settings | File Templates.
+ * Created with IntelliJ IDEA. User: kkammone Date: 5.9.2013 Time: 14:32 To
+ * change this template use File | Settings | File Templates.
  */
 public class SijoitteluajoDTO implements Serializable {
 
-    @JsonView({JsonViews.Sijoitteluajo.class,JsonViews.Sijoittelu.class})
+    @JsonView({ JsonViews.Sijoitteluajo.class, JsonViews.Sijoittelu.class })
     private Long sijoitteluajoId;
 
     @JsonView(JsonViews.Sijoitteluajo.class)
     private String hakuOid;
 
-    @JsonView({JsonViews.Sijoitteluajo.class,JsonViews.Sijoittelu.class})
+    @JsonView({ JsonViews.Sijoitteluajo.class, JsonViews.Sijoittelu.class })
     private Long startMils;
 
-    @JsonView({JsonViews.Sijoitteluajo.class,JsonViews.Sijoittelu.class})
+    @JsonView({ JsonViews.Sijoitteluajo.class, JsonViews.Sijoittelu.class })
     private Long endMils;
 
     @JsonView(JsonViews.Sijoitteluajo.class)

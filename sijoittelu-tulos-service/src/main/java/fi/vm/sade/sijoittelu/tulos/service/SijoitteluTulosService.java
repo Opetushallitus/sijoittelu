@@ -2,10 +2,10 @@ package fi.vm.sade.sijoittelu.tulos.service;
 
 import java.util.List;
 
-import fi.vm.sade.sijoittelu.domain.dto.HakemusDTO;
-import fi.vm.sade.sijoittelu.domain.dto.HakukohdeDTO;
-import fi.vm.sade.sijoittelu.domain.dto.SijoitteluDTO;
-import fi.vm.sade.sijoittelu.domain.dto.SijoitteluajoDTO;
+import fi.vm.sade.sijoittelu.tulos.dto.HakemusDTO;
+import fi.vm.sade.sijoittelu.tulos.dto.HakukohdeDTO;
+import fi.vm.sade.sijoittelu.tulos.dto.SijoitteluDTO;
+import fi.vm.sade.sijoittelu.tulos.dto.SijoitteluajoDTO;
 
 /**
  * Created with IntelliJ IDEA. User: kkammone Date: 5.9.2013 Time: 14:22 To

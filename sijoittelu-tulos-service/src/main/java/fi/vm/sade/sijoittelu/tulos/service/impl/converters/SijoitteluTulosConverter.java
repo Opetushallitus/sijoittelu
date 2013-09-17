@@ -3,9 +3,9 @@ package fi.vm.sade.sijoittelu.tulos.service.impl.converters;
 import fi.vm.sade.sijoittelu.domain.Hakukohde;
 import fi.vm.sade.sijoittelu.domain.Sijoittelu;
 import fi.vm.sade.sijoittelu.domain.SijoitteluAjo;
-import fi.vm.sade.sijoittelu.domain.dto.HakukohdeDTO;
-import fi.vm.sade.sijoittelu.domain.dto.SijoitteluDTO;
-import fi.vm.sade.sijoittelu.domain.dto.SijoitteluajoDTO;
+import fi.vm.sade.sijoittelu.tulos.dto.HakukohdeDTO;
+import fi.vm.sade.sijoittelu.tulos.dto.SijoitteluDTO;
+import fi.vm.sade.sijoittelu.tulos.dto.SijoitteluajoDTO;
 
 import java.util.List;
 

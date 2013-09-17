@@ -8,17 +8,17 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import fi.vm.sade.sijoittelu.domain.HakemuksenTila;
 import fi.vm.sade.sijoittelu.domain.Hakukohde;
 import fi.vm.sade.sijoittelu.domain.Sijoittelu;
 import fi.vm.sade.sijoittelu.domain.SijoitteluAjo;
-import fi.vm.sade.sijoittelu.domain.comparator.HakemusDTOComparator;
-import fi.vm.sade.sijoittelu.domain.dto.HakemusDTO;
-import fi.vm.sade.sijoittelu.domain.dto.HakukohdeDTO;
-import fi.vm.sade.sijoittelu.domain.dto.SijoitteluDTO;
-import fi.vm.sade.sijoittelu.domain.dto.SijoitteluajoDTO;
-import fi.vm.sade.sijoittelu.domain.dto.ValintatapajonoDTO;
 import fi.vm.sade.sijoittelu.tulos.dao.DAO;
+import fi.vm.sade.sijoittelu.tulos.dto.HakemuksenTila;
+import fi.vm.sade.sijoittelu.tulos.dto.HakemusDTO;
+import fi.vm.sade.sijoittelu.tulos.dto.HakukohdeDTO;
+import fi.vm.sade.sijoittelu.tulos.dto.SijoitteluDTO;
+import fi.vm.sade.sijoittelu.tulos.dto.SijoitteluajoDTO;
+import fi.vm.sade.sijoittelu.tulos.dto.ValintatapajonoDTO;
+import fi.vm.sade.sijoittelu.tulos.dto.comparator.HakemusDTOComparator;
 import fi.vm.sade.sijoittelu.tulos.service.SijoitteluTulosService;
 import fi.vm.sade.sijoittelu.tulos.service.impl.converters.SijoitteluTulosConverter;
 
@@ -138,7 +138,7 @@ public class SijoitteluTulosServiceImpl implements SijoitteluTulosService {
     private void applyAlinHyvaksyttyPistemaara(ValintatapajonoDTO v) {
         BigDecimal alinHyvaksyttyPistemaara = null;
         for (HakemusDTO hakemusDTO : v.getHakemukset()) {
-            if (hakemusDTO.getTila() == HakemuksenTila.HYVAKSYTTY) {
+            if (hakemusDTO.getTila().equals(HakemuksenTila.HYVAKSYTTY)) {
                 BigDecimal pisteet = hakemusDTO.getPisteet();
                 if (pisteet != null) {
                     if (alinHyvaksyttyPistemaara == null) { // jos ei viel

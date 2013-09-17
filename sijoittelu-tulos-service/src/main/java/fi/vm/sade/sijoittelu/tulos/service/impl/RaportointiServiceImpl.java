@@ -1,6 +1,6 @@
 package fi.vm.sade.sijoittelu.tulos.service.impl;
 
-import fi.vm.sade.sijoittelu.domain.dto.HakijaRaportointiDTO;
+import fi.vm.sade.sijoittelu.tulos.dto.HakijaRaportointiDTO;
 import fi.vm.sade.sijoittelu.tulos.service.RaportointiService;
 
 import java.util.List;
