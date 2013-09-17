@@ -44,19 +44,17 @@ public interface SijoitteluResource {
                                                     @PathParam("hakukohdeOid") String hakukohdeOid);
 
     @GET
-    @JsonView(JsonViews.Hakemus.class)
+    @JsonView(JsonViews.Hakija.class)
     @Produces(APPLICATION_JSON)
     @Path("{hakuOid}/sijoitteluajo/{sijoitteluajoId}/koulutuspaikalliset}")
-    public List<HakijaRaportointiDTO> koulutuspaikalliset(@PathParam("hakuOid") String hakuOid,
-                                                          @PathParam("sijoitteluajoId") String sijoitteluajoId,
-                                                          @PathParam("hakemusOid") String hakemusOid);
+    public List<HakijaDTO> koulutuspaikalliset(@PathParam("hakuOid") String hakuOid,
+                                                          @PathParam("sijoitteluajoId") String sijoitteluajoId);
 
     @GET
-    @JsonView(JsonViews.Hakemus.class)
+    @JsonView(JsonViews.Hakija.class)
     @Produces(APPLICATION_JSON)
     @Path("{hakuOid}/sijoitteluajo/{sijoitteluajoId}/ilmankoulutuspaikkaa}")
-    public List<HakijaRaportointiDTO> ilmankoulutuspaikkaa(@PathParam("hakuOid") String hakuOid,
-                                                           @PathParam("sijoitteluajoId") String sijoitteluajoId,
-                                                           @PathParam("hakemusOid") String hakemusOid);
+    public List<HakijaDTO> ilmankoulutuspaikkaa(@PathParam("hakuOid") String hakuOid,
+                                                           @PathParam("sijoitteluajoId") String sijoitteluajoId);
 
 }

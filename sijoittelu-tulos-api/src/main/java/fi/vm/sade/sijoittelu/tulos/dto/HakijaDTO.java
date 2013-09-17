@@ -1,5 +1,7 @@
 package fi.vm.sade.sijoittelu.tulos.dto;
 
+import org.codehaus.jackson.map.annotate.JsonView;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -7,15 +9,19 @@ import java.util.List;
  * Created with IntelliJ IDEA. User: kkammone Date: 16.9.2013 Time: 14:45 To
  * change this template use File | Settings | File Templates.
  */
-public class HakijaRaportointiDTO {
+public class HakijaDTO {
 
+    @JsonView(JsonViews.Hakija.class)
     private String hakemusOid;
 
+    @JsonView(JsonViews.Hakija.class)
     private String etunimi;
 
+    @JsonView(JsonViews.Hakija.class)
     private String sukunimi;
 
-    private List<RaportointiHakutoiveDTO> hakutoiveet = new ArrayList<RaportointiHakutoiveDTO>();
+    @JsonView(JsonViews.Hakija.class)
+    private List<HakutoiveDTO> hakutoiveet = new ArrayList<HakutoiveDTO>();
 
     public String getHakemusOid() {
         return hakemusOid;
@@ -41,11 +47,11 @@ public class HakijaRaportointiDTO {
         this.sukunimi = sukunimi;
     }
 
-    public List<RaportointiHakutoiveDTO> getHakutoiveet() {
+    public List<HakutoiveDTO> getHakutoiveet() {
         return hakutoiveet;
     }
 
-    public void setHakutoiveet(List<RaportointiHakutoiveDTO> hakutoiveet) {
+    public void setHakutoiveet(List<HakutoiveDTO> hakutoiveet) {
         this.hakutoiveet = hakutoiveet;
     }
 }

@@ -13,4 +13,6 @@ public class JsonViews {
     public static class Hakemus { }
     public static class Sijoitteluajo { }
     public static class Sijoittelu { }
+
+    public static class Hakija { }
 }

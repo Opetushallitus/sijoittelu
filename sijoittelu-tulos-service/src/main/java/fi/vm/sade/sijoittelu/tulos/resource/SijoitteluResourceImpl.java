@@ -1,6 +1,6 @@
 package fi.vm.sade.sijoittelu.tulos.resource;
 
-import fi.vm.sade.sijoittelu.tulos.dto.HakijaRaportointiDTO;
+import fi.vm.sade.sijoittelu.tulos.dto.HakijaDTO;
 import fi.vm.sade.sijoittelu.tulos.dto.HakukohdeDTO;
 import fi.vm.sade.sijoittelu.tulos.dto.SijoitteluDTO;
 import fi.vm.sade.sijoittelu.tulos.dto.SijoitteluajoDTO;
@@ -56,7 +56,7 @@ public class SijoitteluResourceImpl implements SijoitteluResource {
     }
 
     @Secured({ READ, UPDATE, CRUD })
-    public List<HakijaRaportointiDTO> koulutuspaikalliset(String hakuOid, String sijoitteluajoId, String hakemusOid) {
+    public List<HakijaDTO> koulutuspaikalliset(String hakuOid, String sijoitteluajoId) {
         if ("latest".equals(sijoitteluajoId)) {
             return raportointiService.latestKoulutuspaikalliset(hakuOid);
         } else {
@@ -65,9 +65,9 @@ public class SijoitteluResourceImpl implements SijoitteluResource {
     }
 
     @Secured({ READ, UPDATE, CRUD })
-    public List<HakijaRaportointiDTO> ilmankoulutuspaikkaa(String hakuOid, String sijoitteluajoId, String hakemusOid) {
+    public List<HakijaDTO> ilmankoulutuspaikkaa(String hakuOid, String sijoitteluajoId) {
         if ("latest".equals(sijoitteluajoId)) {
-            return raportointiService.latestIlmankoulutuspaikkaa(hakuOid, hakemusOid);
+            return raportointiService.latestIlmankoulutuspaikkaa(hakuOid);
         } else {
             return raportointiService.ilmankoulutuspaikkaa(Long.parseLong(sijoitteluajoId));
         }

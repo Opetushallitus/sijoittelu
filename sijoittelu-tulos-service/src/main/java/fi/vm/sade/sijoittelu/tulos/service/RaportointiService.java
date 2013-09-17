@@ -1,6 +1,6 @@
 package fi.vm.sade.sijoittelu.tulos.service;
 
-import fi.vm.sade.sijoittelu.tulos.dto.HakijaRaportointiDTO;
+import fi.vm.sade.sijoittelu.tulos.dto.HakijaDTO;
 
 import java.util.List;
 
@@ -12,11 +12,13 @@ import java.util.List;
  * To change this template use File | Settings | File Templates.
  */
 public interface RaportointiService {
-    List<HakijaRaportointiDTO> latestKoulutuspaikalliset(String hakuOid);
 
-    List<HakijaRaportointiDTO> koulutuspaikalliset(long sijoitteluajoId);
+    List<HakijaDTO> latestKoulutuspaikalliset(String hakuOid);
 
-    List<HakijaRaportointiDTO> latestIlmankoulutuspaikkaa(String hakuOid, String hakemusOid);
+    List<HakijaDTO> koulutuspaikalliset(long sijoitteluajoId);
 
-    List<HakijaRaportointiDTO> ilmankoulutuspaikkaa(long sijoitteluajoId);
+    List<HakijaDTO> latestIlmankoulutuspaikkaa(String hakuOid);
+
+    List<HakijaDTO> ilmankoulutuspaikkaa(long sijoitteluajoId);
+
 }
