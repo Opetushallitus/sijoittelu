@@ -12,11 +12,11 @@ import java.util.List;
  * To change this template use File | Settings | File Templates.
  */
 public interface RaportointiService {
-    List<HakijaRaportointiDTO> latestKoulutuspaikalliset(String oid);
+    List<HakijaRaportointiDTO> latestKoulutuspaikalliset(String hakuOid);
 
-    List<HakijaRaportointiDTO> Koulutuspaikalliset(long l);
+    List<HakijaRaportointiDTO> koulutuspaikalliset(long sijoitteluajoId);
 
-    List<HakijaRaportointiDTO> latestIlmankoulutuspaikkaa(String oid, String oid1);
+    List<HakijaRaportointiDTO> latestIlmankoulutuspaikkaa(String hakuOid, String hakemusOid);
 
-    List<HakijaRaportointiDTO> ilmankoulutuspaikkaa(long l);
+    List<HakijaRaportointiDTO> ilmankoulutuspaikkaa(long sijoitteluajoId);
 }

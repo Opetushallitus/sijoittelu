@@ -1,11 +1,11 @@
 package fi.vm.sade.sijoittelu.tulos.resource;
 
-import static fi.vm.sade.sijoittelu.tulos.roles.SijoitteluRole.CRUD;
-import static fi.vm.sade.sijoittelu.tulos.roles.SijoitteluRole.READ;
-import static fi.vm.sade.sijoittelu.tulos.roles.SijoitteluRole.UPDATE;
-
-import java.util.List;
-
+import fi.vm.sade.sijoittelu.tulos.dto.HakijaRaportointiDTO;
+import fi.vm.sade.sijoittelu.tulos.dto.HakukohdeDTO;
+import fi.vm.sade.sijoittelu.tulos.dto.SijoitteluDTO;
+import fi.vm.sade.sijoittelu.tulos.dto.SijoitteluajoDTO;
+import fi.vm.sade.sijoittelu.tulos.service.RaportointiService;
+import fi.vm.sade.sijoittelu.tulos.service.SijoitteluTulosService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,12 +13,9 @@ import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
 
-import fi.vm.sade.sijoittelu.tulos.dto.HakijaRaportointiDTO;
-import fi.vm.sade.sijoittelu.tulos.dto.HakukohdeDTO;
-import fi.vm.sade.sijoittelu.tulos.dto.SijoitteluDTO;
-import fi.vm.sade.sijoittelu.tulos.dto.SijoitteluajoDTO;
-import fi.vm.sade.sijoittelu.tulos.service.RaportointiService;
-import fi.vm.sade.sijoittelu.tulos.service.SijoitteluTulosService;
+import java.util.List;
+
+import static fi.vm.sade.sijoittelu.tulos.roles.SijoitteluRole.*;
 
 /**
  * User: wuoti Date: 26.4.2013 Time: 12.41
@@ -63,7 +60,7 @@ public class SijoitteluResourceImpl implements SijoitteluResource {
         if ("latest".equals(sijoitteluajoId)) {
             return raportointiService.latestKoulutuspaikalliset(hakuOid);
         } else {
-            return raportointiService.Koulutuspaikalliset((Long.parseLong(sijoitteluajoId)));
+            return raportointiService.koulutuspaikalliset((Long.parseLong(sijoitteluajoId)));
         }
     }
 
