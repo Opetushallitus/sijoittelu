@@ -2,6 +2,7 @@ package fi.vm.sade.sijoittelu.tulos.service.impl;
 
 import fi.vm.sade.sijoittelu.tulos.dto.HakijaRaportointiDTO;
 import fi.vm.sade.sijoittelu.tulos.service.RaportointiService;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
@@ -12,6 +13,7 @@ import java.util.List;
  * Time: 14:51
  * To change this template use File | Settings | File Templates.
  */
+@Service
 public class RaportointiServiceImpl implements RaportointiService {
     @Override
     public List<HakijaRaportointiDTO> latestKoulutuspaikalliset(String oid) {
