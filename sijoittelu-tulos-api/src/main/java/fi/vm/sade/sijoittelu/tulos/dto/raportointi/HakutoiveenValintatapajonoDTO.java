@@ -1,5 +1,7 @@
-package fi.vm.sade.sijoittelu.tulos.dto;
+package fi.vm.sade.sijoittelu.tulos.dto.raportointi;
 
+import fi.vm.sade.sijoittelu.tulos.dto.HakemuksenTila;
+import fi.vm.sade.sijoittelu.tulos.dto.JsonViews;
 import org.codehaus.jackson.map.annotate.JsonView;
 
 import java.math.BigDecimal;
@@ -7,17 +9,17 @@ import java.math.BigDecimal;
 /**
  * Created with IntelliJ IDEA.
  * User: kkammone
- * Date: 17.9.2013
- * Time: 9:47
+ * Date: 18.9.2013
+ * Time: 14:11
  * To change this template use File | Settings | File Templates.
  */
-public class HakutoiveDTO {
+public class HakutoiveenValintatapajonoDTO {
 
     @JsonView(JsonViews.Hakija.class)
-    private Integer hakutoive ;
+    private String valintatapajonoPrioriteetti;
 
     @JsonView(JsonViews.Hakija.class)
-    private String hakukohdeOid;
+    private String valintatapajonoOid;
 
     @JsonView(JsonViews.Hakija.class)
     private Integer jonosija;
@@ -40,18 +42,23 @@ public class HakutoiveDTO {
     @JsonView(JsonViews.Hakija.class)
     private Integer tasasijaJonosija;
 
-    //etc...
+    @JsonView(JsonViews.Hakija.class)
+    private BigDecimal alinHyvaksyttyPistemaara;
 
-    public Integer getHakutoive() {
-        return hakutoive;
+    public String getValintatapajonoPrioriteetti() {
+        return valintatapajonoPrioriteetti;
     }
 
-    public void setHakutoive(Integer hakutoive) {
-        this.hakutoive = hakutoive;
+    public void setValintatapajonoPrioriteetti(String valintatapajonoPrioriteetti) {
+        this.valintatapajonoPrioriteetti = valintatapajonoPrioriteetti;
     }
 
-    public String getHakukohdeOid() {
-        return hakukohdeOid;
+    public String getValintatapajonoOid() {
+        return valintatapajonoOid;
+    }
+
+    public void setValintatapajonoOid(String valintatapajonoOid) {
+        this.valintatapajonoOid = valintatapajonoOid;
     }
 
     public Integer getJonosija() {
@@ -62,17 +69,12 @@ public class HakutoiveDTO {
         this.jonosija = jonosija;
     }
 
-
-    public void setHakukohdeOid(String hakukohdeOid) {
-        this.hakukohdeOid = hakukohdeOid;
+    public BigDecimal getPisteet() {
+        return pisteet;
     }
 
-    public HakemuksenTila getTila() {
-        return tila;
-    }
-
-    public void setTila(HakemuksenTila tila) {
-        this.tila = tila;
+    public void setPisteet(BigDecimal pisteet) {
+        this.pisteet = pisteet;
     }
 
     public Integer getVarasijanNumero() {
@@ -91,12 +93,12 @@ public class HakutoiveDTO {
         this.paasyJaSoveltuvuusKokeenTulos = paasyJaSoveltuvuusKokeenTulos;
     }
 
-    public BigDecimal getPisteet() {
-        return pisteet;
+    public HakemuksenTila getTila() {
+        return tila;
     }
 
-    public void setPisteet(BigDecimal pisteet) {
-        this.pisteet = pisteet;
+    public void setTila(HakemuksenTila tila) {
+        this.tila = tila;
     }
 
     public boolean isHyvaksyttyHarkinnanvaraisesti() {
@@ -113,5 +115,13 @@ public class HakutoiveDTO {
 
     public void setTasasijaJonosija(Integer tasasijaJonosija) {
         this.tasasijaJonosija = tasasijaJonosija;
+    }
+
+    public BigDecimal getAlinHyvaksyttyPistemaara() {
+        return alinHyvaksyttyPistemaara;
+    }
+
+    public void setAlinHyvaksyttyPistemaara(BigDecimal alinHyvaksyttyPistemaara) {
+        this.alinHyvaksyttyPistemaara = alinHyvaksyttyPistemaara;
     }
 }
