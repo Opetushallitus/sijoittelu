@@ -6,6 +6,7 @@ import fi.vm.sade.sijoittelu.domain.SijoitteluAjo;
 import fi.vm.sade.sijoittelu.tulos.dto.HakukohdeDTO;
 import fi.vm.sade.sijoittelu.tulos.dto.SijoitteluDTO;
 import fi.vm.sade.sijoittelu.tulos.dto.SijoitteluajoDTO;
+import fi.vm.sade.sijoittelu.tulos.dto.ValintatapajonoDTO;
 
 import java.util.List;
 
@@ -25,4 +26,6 @@ public interface SijoitteluTulosConverter {
     SijoitteluDTO convert(Sijoittelu s);
 
     List<HakukohdeDTO> convert(List<Hakukohde> hakukohdeList);
+
+    void sortHakemukset(ValintatapajonoDTO valintatapajonoDTO);
 }

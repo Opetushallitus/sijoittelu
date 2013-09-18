@@ -1,6 +1,6 @@
 package fi.vm.sade.sijoittelu.tulos.service;
 
-import fi.vm.sade.sijoittelu.tulos.dto.HakijaDTO;
+import fi.vm.sade.sijoittelu.tulos.dto.raportointi.HakijaDTO;
 
 import java.util.List;
 
@@ -21,4 +21,7 @@ public interface RaportointiService {
 
     List<HakijaDTO> ilmankoulutuspaikkaa(long sijoitteluajoId);
 
+    List<HakijaDTO> latestHakijat(String oid);
+
+    List<HakijaDTO> hakijat(long l);
 }

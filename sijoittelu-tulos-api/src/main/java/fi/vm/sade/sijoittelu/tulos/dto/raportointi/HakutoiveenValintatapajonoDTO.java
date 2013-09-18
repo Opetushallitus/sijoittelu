@@ -45,6 +45,13 @@ public class HakutoiveenValintatapajonoDTO {
     @JsonView(JsonViews.Hakija.class)
     private BigDecimal alinHyvaksyttyPistemaara;
 
+    @JsonView(JsonViews.Hakija.class)
+    private Integer hyvaksytty;
+
+    @JsonView(JsonViews.Hakija.class)
+    private Integer varalla;
+
+
     public String getValintatapajonoPrioriteetti() {
         return valintatapajonoPrioriteetti;
     }
@@ -123,5 +130,21 @@ public class HakutoiveenValintatapajonoDTO {
 
     public void setAlinHyvaksyttyPistemaara(BigDecimal alinHyvaksyttyPistemaara) {
         this.alinHyvaksyttyPistemaara = alinHyvaksyttyPistemaara;
+    }
+
+    public Integer getVaralla() {
+        return varalla;
+    }
+
+    public void setVaralla(Integer varalla) {
+        this.varalla = varalla;
+    }
+
+    public Integer getHyvaksytty() {
+        return hyvaksytty;
+    }
+
+    public void setHyvaksytty(Integer hyvaksytty) {
+        this.hyvaksytty = hyvaksytty;
     }
 }

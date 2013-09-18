@@ -1,10 +1,10 @@
 package fi.vm.sade.sijoittelu.tulos.dto;
 
+import org.codehaus.jackson.map.annotate.JsonView;
+
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.ArrayList;
-
-import org.codehaus.jackson.map.annotate.JsonView;
 
 /**
  * Created with IntelliJ IDEA. User: kkammone Date: 5.9.2013 Time: 12:47 To
@@ -35,6 +35,12 @@ public class ValintatapajonoDTO implements Serializable {
 
     @JsonView(JsonViews.Hakukohde.class)
     private ArrayList<HakemusDTO> hakemukset = new ArrayList<HakemusDTO>();
+
+    @JsonView(JsonViews.Hakukohde.class)
+    private Integer hyvaksytty;
+
+    @JsonView(JsonViews.Hakukohde.class)
+    private Integer varalla;
 
     public Tasasijasaanto getTasasijasaanto() {
         return tasasijasaanto;
@@ -98,5 +104,21 @@ public class ValintatapajonoDTO implements Serializable {
 
     public void setHakemukset(ArrayList<HakemusDTO> hakemukset) {
         this.hakemukset = hakemukset;
+    }
+
+    public Integer getHyvaksytty() {
+        return hyvaksytty;
+    }
+
+    public void setHyvaksytty(Integer hyvaksytty) {
+        this.hyvaksytty = hyvaksytty;
+    }
+
+    public Integer getVaralla() {
+        return varalla;
+    }
+
+    public void setVaralla(Integer varalla) {
+        this.varalla = varalla;
     }
 }

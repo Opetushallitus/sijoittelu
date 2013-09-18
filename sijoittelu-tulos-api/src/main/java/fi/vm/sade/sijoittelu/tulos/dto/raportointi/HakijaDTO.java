@@ -1,6 +1,5 @@
 package fi.vm.sade.sijoittelu.tulos.dto.raportointi;
 
-import fi.vm.sade.sijoittelu.tulos.dto.HakutoiveDTO;
 import fi.vm.sade.sijoittelu.tulos.dto.JsonViews;
 import org.codehaus.jackson.map.annotate.JsonView;
 

@@ -1,6 +1,7 @@
 package fi.vm.sade.sijoittelu.tulos.resource;
 
 import fi.vm.sade.sijoittelu.tulos.dto.*;
+import fi.vm.sade.sijoittelu.tulos.dto.raportointi.HakijaDTO;
 import org.codehaus.jackson.map.annotate.JsonView;
 
 import javax.ws.rs.GET;
@@ -46,23 +47,23 @@ public interface SijoitteluResource {
     @GET
     @JsonView(JsonViews.Hakija.class)
     @Produces(APPLICATION_JSON)
-    @Path("{hakuOid}/sijoitteluajo/{sijoitteluajoId}/koulutuspaikalliset}")
+    @Path("{hakuOid}/sijoitteluajo/{sijoitteluajoId}/koulutuspaikalliset")
     public List<HakijaDTO> koulutuspaikalliset(@PathParam("hakuOid") String hakuOid,
                                                @PathParam("sijoitteluajoId") String sijoitteluajoId);
 
     @GET
     @JsonView(JsonViews.Hakija.class)
     @Produces(APPLICATION_JSON)
-    @Path("{hakuOid}/hakukohde/{hakukohdeOid}/sijoitteluajo/{sijoitteluajoId}/koulutuspaikalliset}")
-    public List<HakijaDTO> koulutuspaikalliset(@PathParam("hakuOid") String hakuOid,
-                                               @PathParam("hakukohdeOid") String hakukohdeOid,
-                                               @PathParam("sijoitteluajoId") String sijoitteluajoId);
-
-    @GET
-    @JsonView(JsonViews.Hakija.class)
-    @Produces(APPLICATION_JSON)
-    @Path("{hakuOid}/sijoitteluajo/{sijoitteluajoId}/ilmankoulutuspaikkaa}")
+    @Path("{hakuOid}/sijoitteluajo/{sijoitteluajoId}/ilmankoulutuspaikkaa")
     public List<HakijaDTO> ilmankoulutuspaikkaa(@PathParam("hakuOid") String hakuOid,
+                                                @PathParam("sijoitteluajoId") String sijoitteluajoId);
+
+
+    @GET
+    @JsonView(JsonViews.Hakija.class)
+    @Produces(APPLICATION_JSON)
+    @Path("{hakuOid}/sijoitteluajo/{sijoitteluajoId}/hakijat")
+    public List<HakijaDTO> hakijat(@PathParam("hakuOid") String hakuOid,
                                                 @PathParam("sijoitteluajoId") String sijoitteluajoId);
 
 }

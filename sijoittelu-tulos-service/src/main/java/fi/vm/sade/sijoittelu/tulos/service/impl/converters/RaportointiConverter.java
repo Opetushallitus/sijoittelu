@@ -1,7 +1,7 @@
 package fi.vm.sade.sijoittelu.tulos.service.impl.converters;
 
-import fi.vm.sade.sijoittelu.domain.Hakukohde;
-import fi.vm.sade.sijoittelu.tulos.dto.HakijaDTO;
+import fi.vm.sade.sijoittelu.tulos.dto.raportointi.HakijaDTO;
+import fi.vm.sade.sijoittelu.tulos.dto.HakukohdeDTO;
 
 import java.util.List;
 
@@ -13,5 +13,5 @@ import java.util.List;
  * To change this template use File | Settings | File Templates.
  */
 public interface RaportointiConverter {
-    List<HakijaDTO> convert(List<Hakukohde> hakukohteet);
+    List<HakijaDTO> convert(List<HakukohdeDTO> hakukohteet);
 }

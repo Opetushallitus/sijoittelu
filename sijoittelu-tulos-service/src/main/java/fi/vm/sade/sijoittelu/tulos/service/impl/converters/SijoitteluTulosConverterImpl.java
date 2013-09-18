@@ -1,25 +1,18 @@
 package fi.vm.sade.sijoittelu.tulos.service.impl.converters;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import fi.vm.sade.sijoittelu.domain.*;
+import fi.vm.sade.sijoittelu.tulos.dto.HakemuksenTila;
+import fi.vm.sade.sijoittelu.tulos.dto.*;
+import fi.vm.sade.sijoittelu.tulos.dto.HakukohdeTila;
+import fi.vm.sade.sijoittelu.tulos.dto.Tasasijasaanto;
+import fi.vm.sade.sijoittelu.tulos.dto.ValintatapajonoTila;
+import fi.vm.sade.sijoittelu.tulos.dto.comparator.HakemusDTOComparator;
 import org.springframework.stereotype.Component;
 
-import fi.vm.sade.sijoittelu.domain.Hakemus;
-import fi.vm.sade.sijoittelu.domain.Hakukohde;
-import fi.vm.sade.sijoittelu.domain.HakukohdeItem;
-import fi.vm.sade.sijoittelu.domain.Sijoittelu;
-import fi.vm.sade.sijoittelu.domain.SijoitteluAjo;
-import fi.vm.sade.sijoittelu.domain.Valintatapajono;
-import fi.vm.sade.sijoittelu.tulos.dto.HakemuksenTila;
-import fi.vm.sade.sijoittelu.tulos.dto.HakemusDTO;
-import fi.vm.sade.sijoittelu.tulos.dto.HakukohdeDTO;
-import fi.vm.sade.sijoittelu.tulos.dto.HakukohdeTila;
-import fi.vm.sade.sijoittelu.tulos.dto.SijoitteluDTO;
-import fi.vm.sade.sijoittelu.tulos.dto.SijoitteluajoDTO;
-import fi.vm.sade.sijoittelu.tulos.dto.Tasasijasaanto;
-import fi.vm.sade.sijoittelu.tulos.dto.ValintatapajonoDTO;
-import fi.vm.sade.sijoittelu.tulos.dto.ValintatapajonoTila;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Created with IntelliJ IDEA. User: kkammone Date: 5.9.2013 Time: 14:28 To
@@ -27,6 +20,8 @@ import fi.vm.sade.sijoittelu.tulos.dto.ValintatapajonoTila;
  */
 @Component
 public class SijoitteluTulosConverterImpl implements SijoitteluTulosConverter {
+
+    private HakemusDTOComparator hakemusDTOComparator = new HakemusDTOComparator();
 
     @Override
     public List<HakukohdeDTO> convert(List<Hakukohde> hakukohdeList) {
@@ -64,6 +59,7 @@ public class SijoitteluTulosConverterImpl implements SijoitteluTulosConverter {
         for (Hakemus hakemus : valintatapajono.getHakemukset()) {
             dto.getHakemukset().add(convert(hakemus, valintatapajono, hakukohde));
         }
+        sortHakemukset(dto);
         return dto;
     }
 
@@ -122,4 +118,67 @@ public class SijoitteluTulosConverterImpl implements SijoitteluTulosConverter {
         }
         return dto;
     }
+
+    @Override
+    public void sortHakemukset(ValintatapajonoDTO valintatapajonoDTO) {
+        Collections.sort(valintatapajonoDTO.getHakemukset(), hakemusDTOComparator);
+        applyVarasijaJonosija(valintatapajonoDTO);
+        applyAlinHyvaksyttyPistemaara(valintatapajonoDTO);
+        valintatapajonoDTO.setHyvaksytty(getMaara(valintatapajonoDTO, HakemuksenTila.HYVAKSYTTY));
+        valintatapajonoDTO.setVaralla(getMaara(valintatapajonoDTO, HakemuksenTila.VARALLA));
+    }
+
+    private Integer getMaara(ValintatapajonoDTO dto, HakemuksenTila tila) {
+        int maara = 0;
+        for (HakemusDTO hakemusDTO : dto.getHakemukset()) {
+            if (hakemusDTO.getTila() == tila) {
+                maara++;
+            }
+        }
+        if(maara == 0) {
+            return null;
+        } else {
+            return  maara;
+        }
+    }
+
+
+
+    private void applyAlinHyvaksyttyPistemaara(ValintatapajonoDTO v) {
+        BigDecimal alinHyvaksyttyPistemaara = null;
+        for (HakemusDTO hakemusDTO : v.getHakemukset()) {
+            if (hakemusDTO.getTila().equals(HakemuksenTila.HYVAKSYTTY)) {
+                BigDecimal pisteet = hakemusDTO.getPisteet();
+                if (pisteet != null) {
+                    if (alinHyvaksyttyPistemaara == null) { // jos ei viel
+                        // alinta pistetta
+                        // niin pisteet on
+                        // alin piste
+                        alinHyvaksyttyPistemaara = pisteet;
+                    } else {
+                        // alimmat pisteet on alin.min(pisteet)
+                        alinHyvaksyttyPistemaara = alinHyvaksyttyPistemaara.min(pisteet);
+                    }
+                }
+            }
+        }
+        v.setAlinHyvaksyttyPistemaara(alinHyvaksyttyPistemaara);
+    }
+
+    /**
+     * kutsu vasta sorttauksen jalkeen valintatapajonolle
+     *
+     * @param v
+     */
+    private void applyVarasijaJonosija(ValintatapajonoDTO v) {
+        ArrayList<HakemusDTO> hakemukset = v.getHakemukset();
+        int paikka = 0;
+        for (HakemusDTO hakemusDTO : hakemukset) {
+            if (hakemusDTO.getTila() == HakemuksenTila.VARALLA) {
+                paikka++;
+                hakemusDTO.setVarasijanNumero(paikka);
+            }
+        }
+    }
+
 }
