@@ -47,7 +47,7 @@ public class SijoitteluResourceImpl implements SijoitteluResource {
 
     @Secured({ READ, UPDATE, CRUD })
     public SijoitteluajoDTO getSijoitteluajo(String hakuOid, String sijoitteluajoId) {
-        if ("latest".equals(sijoitteluajoId)) {
+        if (LATEST.equals(sijoitteluajoId)) {
             return sijoitteluTulosService.getLatestSijoitteluajo(hakuOid);
         } else {
             return sijoitteluTulosService.getSijoitteluajo(Long.parseLong(sijoitteluajoId));
@@ -56,7 +56,7 @@ public class SijoitteluResourceImpl implements SijoitteluResource {
 
     @Secured({ READ, UPDATE, CRUD })
     public HakukohdeDTO getHakukohdeBySijoitteluajo(String hakuOid, String sijoitteluajoId, String hakukohdeOid) {
-        if ("latest".equals(sijoitteluajoId)) {
+        if (LATEST.equals(sijoitteluajoId)) {
             return sijoitteluTulosService.getLatestHakukohdeBySijoitteluajo(hakuOid, hakukohdeOid);
         } else {
             return sijoitteluTulosService.getHakukohdeBySijoitteluajo(Long.parseLong(sijoitteluajoId), hakukohdeOid);
@@ -65,7 +65,7 @@ public class SijoitteluResourceImpl implements SijoitteluResource {
 
     @Secured({ READ, UPDATE, CRUD })
     public List<HakijaDTO> koulutuspaikalliset(String hakuOid, String sijoitteluajoId) {
-        if ("latest".equals(sijoitteluajoId)) {
+        if (LATEST.equals(sijoitteluajoId)) {
             return raportointiService.latestKoulutuspaikalliset(hakuOid);
         } else {
             return raportointiService.koulutuspaikalliset((Long.parseLong(sijoitteluajoId)));
@@ -93,7 +93,7 @@ public class SijoitteluResourceImpl implements SijoitteluResource {
 
     @Secured({ READ, UPDATE, CRUD })
     public List<HakijaDTO> ilmankoulutuspaikkaa(String hakuOid, String sijoitteluajoId) {
-        if ("latest".equals(sijoitteluajoId)) {
+        if (LATEST.equals(sijoitteluajoId)) {
             return raportointiService.latestIlmankoulutuspaikkaa(hakuOid);
         } else {
             return raportointiService.ilmankoulutuspaikkaa(Long.parseLong(sijoitteluajoId));

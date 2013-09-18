@@ -26,7 +26,7 @@ import fi.vm.sade.sijoittelu.tulos.dto.SijoitteluajoDTO;
 @Path("sijoittelu")
 public interface SijoitteluResource {
 
-    public static final String LATEST = "LATEST";
+    public static final String LATEST = "latest";
 
     @GET
     @JsonView(JsonViews.Sijoittelu.class)
