@@ -21,7 +21,7 @@ import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 @Path("sijoittelu")
 public interface SijoitteluResource {
 
-    public static final String LATEST = "LATEST";
+    public static final String LATEST = "latest";
 
     @GET
     @JsonView(JsonViews.Sijoittelu.class)
