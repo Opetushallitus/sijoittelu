@@ -1,46 +1,50 @@
 package fi.vm.sade.sijoittelu.tulos.service.impl.converters;
 
-import fi.vm.sade.sijoittelu.tulos.dto.*;
-import fi.vm.sade.sijoittelu.tulos.dto.raportointi.HakijaDTO;
-import fi.vm.sade.sijoittelu.tulos.dto.raportointi.HakutoiveDTO;
-import fi.vm.sade.sijoittelu.tulos.dto.raportointi.HakutoiveenValintatapajonoDTO;
-import org.springframework.stereotype.Component;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import org.springframework.stereotype.Component;
+
+import fi.vm.sade.sijoittelu.tulos.dto.HakemuksenTila;
+import fi.vm.sade.sijoittelu.tulos.dto.HakemusDTO;
+import fi.vm.sade.sijoittelu.tulos.dto.HakukohdeDTO;
+import fi.vm.sade.sijoittelu.tulos.dto.ValintatapajonoDTO;
+import fi.vm.sade.sijoittelu.tulos.dto.raportointi.HakijaDTO;
+import fi.vm.sade.sijoittelu.tulos.dto.raportointi.HakutoiveDTO;
+import fi.vm.sade.sijoittelu.tulos.dto.raportointi.HakutoiveenValintatapajonoDTO;
+
 /**
- * Created with IntelliJ IDEA.
- * User: kkammone
- * Date: 17.9.2013
- * Time: 14:49
- * To change this template use File | Settings | File Templates.
+ * Created with IntelliJ IDEA. User: kkammone Date: 17.9.2013 Time: 14:49 To
+ * change this template use File | Settings | File Templates.
  */
 @Component
 public class RaportointiConverterImpl implements RaportointiConverter {
 
-
     @Override
     public List<HakijaDTO> convert(List<HakukohdeDTO> hakukohteet) {
         HashMap<String, HakijaDTO> hakijat = new HashMap<String, HakijaDTO>();
-        for(HakukohdeDTO hakukohde : hakukohteet) {
-            for(ValintatapajonoDTO valintatapajono : hakukohde.getValintatapajonot()) {
-                for(HakemusDTO hakemusDTO : valintatapajono.getHakemukset()) {
-                    HakijaDTO hakijaRaportointiDTO =  getOrCreateHakijaRaportointiDTO(hakijat, hakemusDTO);
-                    HakutoiveDTO raportointiHakutoiveDTO =  getOrCreateHakutoive(hakijaRaportointiDTO, hakemusDTO);
+        for (HakukohdeDTO hakukohde : hakukohteet) {
+            for (ValintatapajonoDTO valintatapajono : hakukohde.getValintatapajonot()) {
+                for (HakemusDTO hakemusDTO : valintatapajono.getHakemukset()) {
+                    HakijaDTO hakijaRaportointiDTO = getOrCreateHakijaRaportointiDTO(hakijat, hakemusDTO);
+                    HakutoiveDTO raportointiHakutoiveDTO = getOrCreateHakutoive(hakijaRaportointiDTO, hakemusDTO);
                     HakutoiveenValintatapajonoDTO hakutoiveenValintatapajonoDTO = new HakutoiveenValintatapajonoDTO();
                     raportointiHakutoiveDTO.getHakutoiveenValintatapajonot().add(hakutoiveenValintatapajonoDTO);
+                    hakutoiveenValintatapajonoDTO.setHakeneet(valintatapajono.getHakeneet());
                     hakutoiveenValintatapajonoDTO.setJonosija(hakemusDTO.getJonosija());
-                    hakutoiveenValintatapajonoDTO.setHyvaksyttyHarkinnanvaraisesti(hakemusDTO.isHyvaksyttyHarkinnanvaraisesti());
+                    hakutoiveenValintatapajonoDTO.setHyvaksyttyHarkinnanvaraisesti(hakemusDTO
+                            .isHyvaksyttyHarkinnanvaraisesti());
                     hakutoiveenValintatapajonoDTO.setPisteet(hakemusDTO.getPisteet());
                     hakutoiveenValintatapajonoDTO.setTasasijaJonosija(hakemusDTO.getTasasijaJonosija());
-                    hakutoiveenValintatapajonoDTO.setTila(EnumConverter.convert(HakemuksenTila.class, hakemusDTO.getTila()));
-                    hakutoiveenValintatapajonoDTO.setAlinHyvaksyttyPistemaara(valintatapajono.getAlinHyvaksyttyPistemaara());
+                    hakutoiveenValintatapajonoDTO.setTila(EnumConverter.convert(HakemuksenTila.class,
+                            hakemusDTO.getTila()));
+                    hakutoiveenValintatapajonoDTO.setAlinHyvaksyttyPistemaara(valintatapajono
+                            .getAlinHyvaksyttyPistemaara());
                     hakutoiveenValintatapajonoDTO.setHyvaksytty(valintatapajono.getHyvaksytty());
                     hakutoiveenValintatapajonoDTO.setVaralla(valintatapajono.getVaralla());
                     raportointiHakutoiveDTO.getHakutoiveenValintatapajonot().add(hakutoiveenValintatapajonoDTO);
-                    }
+                }
             }
         }
         return new ArrayList<HakijaDTO>(hakijat.values());
@@ -48,12 +52,12 @@ public class RaportointiConverterImpl implements RaportointiConverter {
 
     private HakutoiveDTO getOrCreateHakutoive(HakijaDTO hakijaDTO, HakemusDTO hakemusDTO) {
         HakutoiveDTO hakutoiveDTO = null;
-        for(HakutoiveDTO hd : hakijaDTO.getHakutoiveet()) {
-            if(hd.getHakukohdeOid().equals(hakemusDTO.getHakukohdeOid()) ) {
+        for (HakutoiveDTO hd : hakijaDTO.getHakutoiveet()) {
+            if (hd.getHakukohdeOid().equals(hakemusDTO.getHakukohdeOid())) {
                 hakutoiveDTO = hd;
             }
         }
-        if(hakutoiveDTO == null )        {
+        if (hakutoiveDTO == null) {
             hakutoiveDTO = new HakutoiveDTO();
             hakutoiveDTO.setHakukohdeOid(hakemusDTO.getHakukohdeOid());
             hakutoiveDTO.setHakutoive(hakemusDTO.getPrioriteetti());
@@ -61,12 +65,11 @@ public class RaportointiConverterImpl implements RaportointiConverter {
         }
         return hakutoiveDTO;
 
-
     }
 
     private HakijaDTO getOrCreateHakijaRaportointiDTO(HashMap<String, HakijaDTO> hakijat, HakemusDTO hakemus) {
         HakijaDTO hakijaRaportointiDTO = hakijat.get(hakemus.getHakemusOid());
-        if(hakijaRaportointiDTO == null) {
+        if (hakijaRaportointiDTO == null) {
             hakijaRaportointiDTO = new HakijaDTO();
             hakijaRaportointiDTO.setEtunimi(hakemus.getEtunimi());
             hakijaRaportointiDTO.setSukunimi(hakemus.getSukunimi());
@@ -75,6 +78,5 @@ public class RaportointiConverterImpl implements RaportointiConverter {
         hakijat.put(hakemus.getHakemusOid(), hakijaRaportointiDTO);
         return hakijaRaportointiDTO;
     }
-
 
 }

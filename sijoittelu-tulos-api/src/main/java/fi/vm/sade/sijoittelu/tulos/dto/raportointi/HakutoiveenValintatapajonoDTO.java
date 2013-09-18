@@ -1,17 +1,15 @@
 package fi.vm.sade.sijoittelu.tulos.dto.raportointi;
 
-import fi.vm.sade.sijoittelu.tulos.dto.HakemuksenTila;
-import fi.vm.sade.sijoittelu.tulos.dto.JsonViews;
-import org.codehaus.jackson.map.annotate.JsonView;
-
 import java.math.BigDecimal;
 
+import org.codehaus.jackson.map.annotate.JsonView;
+
+import fi.vm.sade.sijoittelu.tulos.dto.HakemuksenTila;
+import fi.vm.sade.sijoittelu.tulos.dto.JsonViews;
+
 /**
- * Created with IntelliJ IDEA.
- * User: kkammone
- * Date: 18.9.2013
- * Time: 14:11
- * To change this template use File | Settings | File Templates.
+ * Created with IntelliJ IDEA. User: kkammone Date: 18.9.2013 Time: 14:11 To
+ * change this template use File | Settings | File Templates.
  */
 public class HakutoiveenValintatapajonoDTO {
 
@@ -45,12 +43,14 @@ public class HakutoiveenValintatapajonoDTO {
     @JsonView(JsonViews.Hakija.class)
     private BigDecimal alinHyvaksyttyPistemaara;
 
+    @JsonView(JsonViews.Hakukohde.class)
+    private Integer hakeneet;
+
     @JsonView(JsonViews.Hakija.class)
     private Integer hyvaksytty;
 
     @JsonView(JsonViews.Hakija.class)
     private Integer varalla;
-
 
     public String getValintatapajonoPrioriteetti() {
         return valintatapajonoPrioriteetti;
@@ -146,5 +146,13 @@ public class HakutoiveenValintatapajonoDTO {
 
     public void setHyvaksytty(Integer hyvaksytty) {
         this.hyvaksytty = hyvaksytty;
+    }
+
+    public Integer getHakeneet() {
+        return hakeneet;
+    }
+
+    public void setHakeneet(Integer hakeneet) {
+        this.hakeneet = hakeneet;
     }
 }
