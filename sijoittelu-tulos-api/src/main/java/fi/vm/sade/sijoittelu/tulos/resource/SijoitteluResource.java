@@ -1,6 +1,9 @@
 package fi.vm.sade.sijoittelu.tulos.resource;
 
-import fi.vm.sade.sijoittelu.tulos.dto.*;
+import fi.vm.sade.sijoittelu.tulos.dto.HakukohdeDTO;
+import fi.vm.sade.sijoittelu.tulos.dto.JsonViews;
+import fi.vm.sade.sijoittelu.tulos.dto.SijoitteluDTO;
+import fi.vm.sade.sijoittelu.tulos.dto.SijoitteluajoDTO;
 import fi.vm.sade.sijoittelu.tulos.dto.raportointi.HakijaDTO;
 import org.codehaus.jackson.map.annotate.JsonView;
 
@@ -64,6 +67,6 @@ public interface SijoitteluResource {
     @Produces(APPLICATION_JSON)
     @Path("{hakuOid}/sijoitteluajo/{sijoitteluajoId}/hakijat")
     public List<HakijaDTO> hakijat(@PathParam("hakuOid") String hakuOid,
-                                                @PathParam("sijoitteluajoId") String sijoitteluajoId);
+                                   @PathParam("sijoitteluajoId") String sijoitteluajoId);
 
 }

@@ -3,14 +3,18 @@ package fi.vm.sade.sijoittelu.tulos.service.impl;
 import fi.vm.sade.sijoittelu.domain.Hakukohde;
 import fi.vm.sade.sijoittelu.domain.SijoitteluAjo;
 import fi.vm.sade.sijoittelu.tulos.dao.DAO;
-import fi.vm.sade.sijoittelu.tulos.dto.raportointi.HakijaDTO;
+import fi.vm.sade.sijoittelu.tulos.dto.HakemuksenTila;
 import fi.vm.sade.sijoittelu.tulos.dto.HakukohdeDTO;
+import fi.vm.sade.sijoittelu.tulos.dto.raportointi.HakijaDTO;
+import fi.vm.sade.sijoittelu.tulos.dto.raportointi.HakutoiveDTO;
+import fi.vm.sade.sijoittelu.tulos.dto.raportointi.HakutoiveenValintatapajonoDTO;
 import fi.vm.sade.sijoittelu.tulos.service.RaportointiService;
 import fi.vm.sade.sijoittelu.tulos.service.impl.converters.RaportointiConverter;
 import fi.vm.sade.sijoittelu.tulos.service.impl.converters.SijoitteluTulosConverter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -42,7 +46,7 @@ public class RaportointiServiceImpl implements RaportointiService {
         List<Hakukohde> hakukohteet=  dao.getHakukohteetForSijoitteluajo(ajo.getSijoitteluajoId());
         List<HakukohdeDTO> hakukohdeDTOs = sijoitteluTulosConverter.convert(hakukohteet);
         List<HakijaDTO> hakijat  =   raportointiConverter.convert(hakukohdeDTOs);
-        return hakijat;
+        return filterkoulutuspaikalliset( hakijat);
     }
 
     @Override
@@ -50,7 +54,7 @@ public class RaportointiServiceImpl implements RaportointiService {
         List<Hakukohde> hakukohteet=  dao.getHakukohteetForSijoitteluajo(sijoitteluajoId);
         List<HakukohdeDTO> hakukohdeDTOs = sijoitteluTulosConverter.convert(hakukohteet);
         List<HakijaDTO> hakijat  =   raportointiConverter.convert(hakukohdeDTOs);
-        return hakijat;
+        return filterkoulutuspaikalliset( hakijat);
     }
 
     @Override
@@ -59,7 +63,7 @@ public class RaportointiServiceImpl implements RaportointiService {
         List<Hakukohde> hakukohteet=  dao.getHakukohteetForSijoitteluajo(ajo.getSijoitteluajoId());
         List<HakukohdeDTO> hakukohdeDTOs = sijoitteluTulosConverter.convert(hakukohteet);
         List<HakijaDTO> hakijat  =   raportointiConverter.convert(hakukohdeDTOs);
-        return hakijat;
+        return filterIlmanKoulutuspaikkaa(hakijat);
     }
 
     @Override
@@ -67,7 +71,42 @@ public class RaportointiServiceImpl implements RaportointiService {
         List<Hakukohde> hakukohteet=  dao.getHakukohteetForSijoitteluajo(sijoitteluajoId);
         List<HakukohdeDTO> hakukohdeDTOs = sijoitteluTulosConverter.convert(hakukohteet);
         List<HakijaDTO> hakijat  =   raportointiConverter.convert(hakukohdeDTOs);
-        return hakijat;
+        return filterIlmanKoulutuspaikkaa(hakijat);
+    }
+
+    private List<HakijaDTO> filterIlmanKoulutuspaikkaa(List<HakijaDTO>  kaikkiHakijat){
+        List<HakijaDTO> ilmanKoulutuspaikkaa = new ArrayList<HakijaDTO>();
+        for(HakijaDTO hakijaDTO : kaikkiHakijat) {
+            boolean lisataan = true;
+            for(HakutoiveDTO hakutoiveDTO : hakijaDTO.getHakutoiveet())  {
+                for(HakutoiveenValintatapajonoDTO vt: hakutoiveDTO.getHakutoiveenValintatapajonot()) {
+                    if(vt.getTila() == HakemuksenTila.HYVAKSYTTY) {
+                        lisataan = false;
+                    }
+                }
+            }
+            if(lisataan) {
+                ilmanKoulutuspaikkaa.add(hakijaDTO);
+            }
+        }
+        return ilmanKoulutuspaikkaa;
+    }
+    private List<HakijaDTO> filterkoulutuspaikalliset(List<HakijaDTO>  kaikkiHakijat){
+        List<HakijaDTO> ilmanKoulutuspaikkaa = new ArrayList<HakijaDTO>();
+        for(HakijaDTO hakijaDTO : kaikkiHakijat) {
+            boolean lisataan = false;
+            for(HakutoiveDTO hakutoiveDTO : hakijaDTO.getHakutoiveet())  {
+                for(HakutoiveenValintatapajonoDTO vt: hakutoiveDTO.getHakutoiveenValintatapajonot()) {
+                    if(vt.getTila() == HakemuksenTila.HYVAKSYTTY) {
+                        lisataan = true;
+                    }
+                }
+            }
+            if(lisataan) {
+                ilmanKoulutuspaikkaa.add(hakijaDTO);
+            }
+        }
+        return ilmanKoulutuspaikkaa;
     }
 
     @Override
