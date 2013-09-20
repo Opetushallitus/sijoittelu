@@ -1,28 +1,18 @@
 package fi.vm.sade.sijoittelu.tulos.service.impl.converters;
 
+import fi.vm.sade.sijoittelu.domain.*;
+import fi.vm.sade.sijoittelu.tulos.dto.HakemuksenTila;
+import fi.vm.sade.sijoittelu.tulos.dto.*;
+import fi.vm.sade.sijoittelu.tulos.dto.HakukohdeTila;
+import fi.vm.sade.sijoittelu.tulos.dto.Tasasijasaanto;
+import fi.vm.sade.sijoittelu.tulos.dto.ValintatapajonoTila;
+import fi.vm.sade.sijoittelu.tulos.dto.comparator.HakemusDTOComparator;
+import org.springframework.stereotype.Component;
+
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
-import org.springframework.stereotype.Component;
-
-import fi.vm.sade.sijoittelu.domain.Hakemus;
-import fi.vm.sade.sijoittelu.domain.Hakukohde;
-import fi.vm.sade.sijoittelu.domain.HakukohdeItem;
-import fi.vm.sade.sijoittelu.domain.Sijoittelu;
-import fi.vm.sade.sijoittelu.domain.SijoitteluAjo;
-import fi.vm.sade.sijoittelu.domain.Valintatapajono;
-import fi.vm.sade.sijoittelu.tulos.dto.HakemuksenTila;
-import fi.vm.sade.sijoittelu.tulos.dto.HakemusDTO;
-import fi.vm.sade.sijoittelu.tulos.dto.HakukohdeDTO;
-import fi.vm.sade.sijoittelu.tulos.dto.HakukohdeTila;
-import fi.vm.sade.sijoittelu.tulos.dto.SijoitteluDTO;
-import fi.vm.sade.sijoittelu.tulos.dto.SijoitteluajoDTO;
-import fi.vm.sade.sijoittelu.tulos.dto.Tasasijasaanto;
-import fi.vm.sade.sijoittelu.tulos.dto.ValintatapajonoDTO;
-import fi.vm.sade.sijoittelu.tulos.dto.ValintatapajonoTila;
-import fi.vm.sade.sijoittelu.tulos.dto.comparator.HakemusDTOComparator;
 
 /**
  * Created with IntelliJ IDEA. User: kkammone Date: 5.9.2013 Time: 14:28 To
@@ -139,22 +129,18 @@ public class SijoitteluTulosConverterImpl implements SijoitteluTulosConverter {
         valintatapajonoDTO.setVaralla(getMaara(valintatapajonoDTO, HakemuksenTila.VARALLA));
     }
 
-    private Integer getCount(ValintatapajonoDTO dto) {
+    private int getCount(ValintatapajonoDTO dto) {
         return dto.getHakemukset().size();
     }
 
-    private Integer getMaara(ValintatapajonoDTO dto, HakemuksenTila tila) {
+    private int getMaara(ValintatapajonoDTO dto, HakemuksenTila tila) {
         int maara = 0;
         for (HakemusDTO hakemusDTO : dto.getHakemukset()) {
             if (hakemusDTO.getTila() == tila) {
                 maara++;
             }
         }
-        if (maara == 0) {
-            return null;
-        } else {
-            return maara;
-        }
+        return maara;
     }
 
     private void applyAlinHyvaksyttyPistemaara(ValintatapajonoDTO v) {
@@ -180,7 +166,7 @@ public class SijoitteluTulosConverterImpl implements SijoitteluTulosConverter {
 
     /**
      * kutsu vasta sorttauksen jalkeen valintatapajonolle
-     * 
+     *
      * @param v
      */
     private void applyVarasijaJonosija(ValintatapajonoDTO v) {
