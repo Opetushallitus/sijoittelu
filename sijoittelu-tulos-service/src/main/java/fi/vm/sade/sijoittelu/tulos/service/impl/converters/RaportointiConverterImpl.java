@@ -1,11 +1,5 @@
 package fi.vm.sade.sijoittelu.tulos.service.impl.converters;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-
-import org.springframework.stereotype.Component;
-
 import fi.vm.sade.sijoittelu.tulos.dto.HakemuksenTila;
 import fi.vm.sade.sijoittelu.tulos.dto.HakemusDTO;
 import fi.vm.sade.sijoittelu.tulos.dto.HakukohdeDTO;
@@ -13,6 +7,11 @@ import fi.vm.sade.sijoittelu.tulos.dto.ValintatapajonoDTO;
 import fi.vm.sade.sijoittelu.tulos.dto.raportointi.HakijaDTO;
 import fi.vm.sade.sijoittelu.tulos.dto.raportointi.HakutoiveDTO;
 import fi.vm.sade.sijoittelu.tulos.dto.raportointi.HakutoiveenValintatapajonoDTO;
+import org.springframework.stereotype.Component;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 /**
  * Created with IntelliJ IDEA. User: kkammone Date: 17.9.2013 Time: 14:49 To
@@ -43,7 +42,7 @@ public class RaportointiConverterImpl implements RaportointiConverter {
                             .getAlinHyvaksyttyPistemaara());
                     hakutoiveenValintatapajonoDTO.setHyvaksytty(valintatapajono.getHyvaksytty());
                     hakutoiveenValintatapajonoDTO.setVaralla(valintatapajono.getVaralla());
-                    raportointiHakutoiveDTO.getHakutoiveenValintatapajonot().add(hakutoiveenValintatapajonoDTO);
+                    hakutoiveenValintatapajonoDTO.setHakeneet(valintatapajono.getHakeneet());
                 }
             }
         }

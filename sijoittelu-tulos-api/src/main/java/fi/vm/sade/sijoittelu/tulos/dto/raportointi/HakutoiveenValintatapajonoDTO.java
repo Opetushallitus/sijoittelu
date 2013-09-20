@@ -1,11 +1,10 @@
 package fi.vm.sade.sijoittelu.tulos.dto.raportointi;
 
-import java.math.BigDecimal;
-
-import org.codehaus.jackson.map.annotate.JsonView;
-
 import fi.vm.sade.sijoittelu.tulos.dto.HakemuksenTila;
 import fi.vm.sade.sijoittelu.tulos.dto.JsonViews;
+import org.codehaus.jackson.map.annotate.JsonView;
+
+import java.math.BigDecimal;
 
 /**
  * Created with IntelliJ IDEA. User: kkammone Date: 18.9.2013 Time: 14:11 To
@@ -43,7 +42,7 @@ public class HakutoiveenValintatapajonoDTO {
     @JsonView(JsonViews.Hakija.class)
     private BigDecimal alinHyvaksyttyPistemaara;
 
-    @JsonView(JsonViews.Hakukohde.class)
+    @JsonView(JsonViews.Hakija.class)
     private Integer hakeneet;
 
     @JsonView(JsonViews.Hakija.class)

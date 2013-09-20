@@ -43,6 +43,9 @@ public class RaportointiServiceImpl implements RaportointiService {
     @Override
     public List<HakijaDTO> latestKoulutuspaikalliset(String hakuOid){
         SijoitteluAjo ajo =  dao.getLatestSijoitteluajo(hakuOid);
+        if(ajo==null)  {
+            return new ArrayList<HakijaDTO>();
+        }
         List<Hakukohde> hakukohteet=  dao.getHakukohteetForSijoitteluajo(ajo.getSijoitteluajoId());
         List<HakukohdeDTO> hakukohdeDTOs = sijoitteluTulosConverter.convert(hakukohteet);
         List<HakijaDTO> hakijat  =   raportointiConverter.convert(hakukohdeDTOs);
@@ -60,6 +63,9 @@ public class RaportointiServiceImpl implements RaportointiService {
     @Override
     public List<HakijaDTO> latestIlmankoulutuspaikkaa(String hakuOid) {
         SijoitteluAjo ajo =  dao.getLatestSijoitteluajo(hakuOid);
+        if(ajo==null)  {
+            return new ArrayList<HakijaDTO>();
+        }
         List<Hakukohde> hakukohteet=  dao.getHakukohteetForSijoitteluajo(ajo.getSijoitteluajoId());
         List<HakukohdeDTO> hakukohdeDTOs = sijoitteluTulosConverter.convert(hakukohteet);
         List<HakijaDTO> hakijat  =   raportointiConverter.convert(hakukohdeDTOs);
