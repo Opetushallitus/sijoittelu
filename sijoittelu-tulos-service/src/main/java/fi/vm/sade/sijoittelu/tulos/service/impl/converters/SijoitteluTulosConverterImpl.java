@@ -143,19 +143,19 @@ public class SijoitteluTulosConverterImpl implements SijoitteluTulosConverter {
         return maara;
     }
 
+    /**
+     * Harkinnanvaraisesti hyvaksytyt eivat ole mukana alimman pistemaaran laskemisessa.
+     * @param v
+     */
     private void applyAlinHyvaksyttyPistemaara(ValintatapajonoDTO v) {
         BigDecimal alinHyvaksyttyPistemaara = null;
         for (HakemusDTO hakemusDTO : v.getHakemukset()) {
-            if (hakemusDTO.getTila().equals(HakemuksenTila.HYVAKSYTTY)) {
+            if (hakemusDTO.getTila().equals(HakemuksenTila.HYVAKSYTTY) && !hakemusDTO.isHyvaksyttyHarkinnanvaraisesti()) {
                 BigDecimal pisteet = hakemusDTO.getPisteet();
                 if (pisteet != null) {
-                    if (alinHyvaksyttyPistemaara == null) { // jos ei viel
-                        // alinta pistetta
-                        // niin pisteet on
-                        // alin piste
+                    if (alinHyvaksyttyPistemaara == null) {
                         alinHyvaksyttyPistemaara = pisteet;
                     } else {
-                        // alimmat pisteet on alin.min(pisteet)
                         alinHyvaksyttyPistemaara = alinHyvaksyttyPistemaara.min(pisteet);
                     }
                 }
