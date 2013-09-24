@@ -12,6 +12,7 @@ import javax.ws.rs.Produces;
 
 import org.codehaus.jackson.map.annotate.JsonView;
 
+import fi.vm.sade.sijoittelu.tulos.dto.HakemusDTO;
 import fi.vm.sade.sijoittelu.tulos.dto.HakukohdeDTO;
 import fi.vm.sade.sijoittelu.tulos.dto.JsonViews;
 import fi.vm.sade.sijoittelu.tulos.dto.SijoitteluDTO;
@@ -27,54 +28,59 @@ import fi.vm.sade.sijoittelu.tulos.dto.raportointi.HakijaDTO;
 @Path("sijoittelu")
 public interface SijoitteluResource {
 
-    public static final String LATEST = "latest";
+    static final String LATEST = "latest";
+
+    @GET
+    @Produces(APPLICATION_JSON)
+    @Path("{hakuOid}/sijoitteluajo/{sijoitteluajoId}/hakemus/{hakemusOid}")
+    List<HakemusDTO> getHakemusBySijoitteluajo(@PathParam("hakuOid") String hakuOid,
+            @PathParam("sijoitteluajoId") String sijoitteluajoId, @PathParam("hakemusOid") String hakemusOid);
 
     @GET
     @JsonView(JsonViews.Sijoittelu.class)
     @Produces(APPLICATION_JSON)
     @Path("{hakuOid}")
-    public SijoitteluDTO getSijoitteluByHakuOid(@PathParam("hakuOid") String hakuOid);
+    SijoitteluDTO getSijoitteluByHakuOid(@PathParam("hakuOid") String hakuOid);
 
     @GET
     @JsonView(JsonViews.Sijoitteluajo.class)
     @Produces(APPLICATION_JSON)
     @Path("{hakuOid}/sijoitteluajo/{sijoitteluajoId}")
-    public SijoitteluajoDTO getSijoitteluajo(@PathParam("hakuOid") String hakuOid,
+    SijoitteluajoDTO getSijoitteluajo(@PathParam("hakuOid") String hakuOid,
             @PathParam("sijoitteluajoId") String sijoitteluajoId);
 
     @GET
     @JsonView(JsonViews.Hakukohde.class)
     @Produces(APPLICATION_JSON)
     @Path("{hakuOid}/sijoitteluajo/{sijoitteluajoId}/hakukohde/{hakukohdeOid}")
-    public HakukohdeDTO getHakukohdeBySijoitteluajo(@PathParam("hakuOid") String hakuOid,
+    HakukohdeDTO getHakukohdeBySijoitteluajo(@PathParam("hakuOid") String hakuOid,
             @PathParam("sijoitteluajoId") String sijoitteluajoId, @PathParam("hakukohdeOid") String hakukohdeOid);
 
     @GET
     @JsonView(JsonViews.Hakija.class)
     @Produces(APPLICATION_JSON)
     @Path("{hakuOid}/sijoitteluajo/{sijoitteluajoId}/koulutuspaikalliset")
-    public List<HakijaDTO> koulutuspaikalliset(@PathParam("hakuOid") String hakuOid,
+    List<HakijaDTO> koulutuspaikalliset(@PathParam("hakuOid") String hakuOid,
             @PathParam("sijoitteluajoId") String sijoitteluajoId);
 
     @GET
     @JsonView(JsonViews.Hakija.class)
     @Produces(APPLICATION_JSON)
     @Path("{hakuOid}/hakukohde/{hakukohdeOid}/sijoitteluajo/{sijoitteluajoId}/koulutuspaikalliset")
-    public Collection<HakijaDTO> koulutuspaikalliset(@PathParam("hakuOid") String hakuOid,
+    Collection<HakijaDTO> koulutuspaikalliset(@PathParam("hakuOid") String hakuOid,
             @PathParam("hakukohdeOid") String hakukohdeOid, @PathParam("sijoitteluajoId") String sijoitteluajoId);
 
     @GET
     @JsonView(JsonViews.Hakija.class)
     @Produces(APPLICATION_JSON)
     @Path("{hakuOid}/sijoitteluajo/{sijoitteluajoId}/ilmankoulutuspaikkaa")
-    public List<HakijaDTO> ilmankoulutuspaikkaa(@PathParam("hakuOid") String hakuOid,
+    List<HakijaDTO> ilmankoulutuspaikkaa(@PathParam("hakuOid") String hakuOid,
             @PathParam("sijoitteluajoId") String sijoitteluajoId);
 
     @GET
     @JsonView(JsonViews.Hakija.class)
     @Produces(APPLICATION_JSON)
     @Path("{hakuOid}/sijoitteluajo/{sijoitteluajoId}/hakijat")
-    public List<HakijaDTO> hakijat(@PathParam("hakuOid") String hakuOid,
-            @PathParam("sijoitteluajoId") String sijoitteluajoId);
+    List<HakijaDTO> hakijat(@PathParam("hakuOid") String hakuOid, @PathParam("sijoitteluajoId") String sijoitteluajoId);
 
 }

@@ -20,6 +20,7 @@ import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
 
 import fi.vm.sade.sijoittelu.tulos.dto.HakemuksenTila;
+import fi.vm.sade.sijoittelu.tulos.dto.HakemusDTO;
 import fi.vm.sade.sijoittelu.tulos.dto.HakukohdeDTO;
 import fi.vm.sade.sijoittelu.tulos.dto.SijoitteluDTO;
 import fi.vm.sade.sijoittelu.tulos.dto.SijoitteluajoDTO;
@@ -43,6 +44,16 @@ public class SijoitteluResourceImpl implements SijoitteluResource {
 
     @Autowired
     private RaportointiService raportointiService;
+
+    @Secured({ READ, UPDATE, CRUD })
+    public List<HakemusDTO> getHakemusBySijoitteluajo(String hakuOid, String sijoitteluajoId, String hakemusOid) {
+        if (LATEST.equals(sijoitteluajoId)) {
+            return sijoitteluTulosService.haeLatestHakukohteetJoihinHakemusOsallistuu(hakuOid, hakemusOid);
+        } else {
+            return sijoitteluTulosService.haeHakukohteetJoihinHakemusOsallistuu(Long.parseLong(sijoitteluajoId),
+                    hakemusOid);
+        }
+    }
 
     @Secured({ READ, UPDATE, CRUD })
     public SijoitteluDTO getSijoitteluByHakuOid(String hakuOid) {
