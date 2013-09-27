@@ -1,9 +1,11 @@
 package fi.vm.sade.sijoittelu.tulos.dto;
 
+import org.codehaus.jackson.map.annotate.JsonView;
+
 import java.io.Serializable;
 import java.math.BigDecimal;
-
-import org.codehaus.jackson.map.annotate.JsonView;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created with IntelliJ IDEA. User: kkammone Date: 2.9.2013 Time: 13:22 To
@@ -61,6 +63,8 @@ public class HakemusDTO implements Serializable {
 
     @JsonView(JsonViews.Hakemus.class)
     private String hakuOid;
+
+    private List<PistetietoDTO> pistetiedot = new ArrayList<PistetietoDTO>();
 
     public String getHakuOid() {
         return hakuOid;
@@ -196,5 +200,9 @@ public class HakemusDTO implements Serializable {
 
     public void setPisteet(BigDecimal pisteet) {
         this.pisteet = pisteet;
+    }
+
+    public List<PistetietoDTO> getPistetiedot() {
+        return pistetiedot;
     }
 }

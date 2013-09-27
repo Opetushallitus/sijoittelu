@@ -1,6 +1,7 @@
 package fi.vm.sade.sijoittelu.tulos.dto.raportointi;
 
 import fi.vm.sade.sijoittelu.tulos.dto.JsonViews;
+import fi.vm.sade.sijoittelu.tulos.dto.PistetietoDTO;
 import org.codehaus.jackson.map.annotate.JsonView;
 
 import java.util.ArrayList;
@@ -20,6 +21,9 @@ public class HakutoiveDTO {
 
     @JsonView(JsonViews.Hakija.class)
     private String hakukohdeOid;
+
+    @JsonView(JsonViews.Hakija.class)
+    private List<PistetietoDTO> pistetiedot = new ArrayList<PistetietoDTO>();
 
     @JsonView(JsonViews.Hakija.class)
     private List<HakutoiveenValintatapajonoDTO> hakutoiveenValintatapajonot = new ArrayList<HakutoiveenValintatapajonoDTO>();
@@ -46,5 +50,13 @@ public class HakutoiveDTO {
 
     public void setHakutoiveenValintatapajonot(List<HakutoiveenValintatapajonoDTO> hakutoiveenValintatapajonot) {
         this.hakutoiveenValintatapajonot = hakutoiveenValintatapajonot;
+    }
+
+    public List<PistetietoDTO> getPistetiedot() {
+        return pistetiedot;
+    }
+
+    public void setPistetiedot(List<PistetietoDTO> pistetiedot) {
+        this.pistetiedot = pistetiedot;
     }
 }

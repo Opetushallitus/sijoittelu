@@ -1,23 +1,11 @@
 package fi.vm.sade.sijoittelu.batch.logic.impl;
 
 
-
-
-import fi.vm.sade.service.valintatiedot.schema.HakukohdeTyyppi;
-import fi.vm.sade.service.valintatiedot.schema.ValintatapajonoTyyppi;
-import fi.vm.sade.service.valintatiedot.schema.ValinnanvaiheTyyppi;
-import fi.vm.sade.service.valintatiedot.schema.HakijaTyyppi;
-import fi.vm.sade.service.valintatiedot.schema.HakijaryhmaTyyppi;
-import fi.vm.sade.service.valintatiedot.schema.HakemusTilaTyyppi;
-
-import fi.vm.sade.sijoittelu.domain.Hakijaryhma;
-import fi.vm.sade.sijoittelu.domain.Hakukohde;
-import fi.vm.sade.sijoittelu.domain.Tasasijasaanto;
-import fi.vm.sade.sijoittelu.domain.Valintatapajono;
-import fi.vm.sade.sijoittelu.domain.Hakemus;
-import fi.vm.sade.sijoittelu.domain.HakemuksenTila;
+import fi.vm.sade.service.valintatiedot.schema.*;
+import fi.vm.sade.sijoittelu.domain.*;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 
 /**
@@ -85,10 +73,12 @@ public class DomainConverter {
         hakemus.setPrioriteetti(hakijaTyyppi.getPrioriteetti());
         hakemus.setEtunimi(hakijaTyyppi.getEtunimi());
         hakemus.setSukunimi(hakijaTyyppi.getSukunimi());
+
         if(hakijaTyyppi.getPisteet() != null && !hakijaTyyppi.getPisteet().isEmpty()) {
             hakemus.setPisteet(new BigDecimal(hakijaTyyppi.getPisteet()));
         }
 
+        applyPistetiedot(hakemus, hakijaTyyppi.getSyotettyArvo()) ;
 
         if(hakijaTyyppi.getTila() == HakemusTilaTyyppi.HYVAKSYTTY_HARKINNANVARAISESTI) {
             hakemus.setHyvaksyttyHarkinnanvaraisesti(true);
@@ -104,6 +94,17 @@ public class DomainConverter {
         }
 
         valintatapajono.getHakemukset().add(hakemus);
+    }
+
+    private static void applyPistetiedot(Hakemus hakemus, List<SyotettyArvoTyyppi> arvot) {
+        for(SyotettyArvoTyyppi arvo : arvot) {
+            Pistetieto pistetieto = new Pistetieto();
+            pistetieto.setArvo(arvo.getArvo());
+            pistetieto.setLaskennallinenArvo(arvo.getLaskennallinenArvo());
+            pistetieto.setOsallistuminen(arvo.getOsallistuminen());
+            pistetieto.setTunniste(arvo.getTunniste());
+            hakemus.getPistetiedot().add(pistetieto);
+        }
     }
 
 }

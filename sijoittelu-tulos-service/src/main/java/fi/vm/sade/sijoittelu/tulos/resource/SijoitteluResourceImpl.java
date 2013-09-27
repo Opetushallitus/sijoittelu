@@ -1,14 +1,13 @@
 package fi.vm.sade.sijoittelu.tulos.resource;
 
-import static fi.vm.sade.sijoittelu.tulos.roles.SijoitteluRole.CRUD;
-import static fi.vm.sade.sijoittelu.tulos.roles.SijoitteluRole.READ;
-import static fi.vm.sade.sijoittelu.tulos.roles.SijoitteluRole.UPDATE;
-
-import java.util.Collection;
-import java.util.List;
-
-import javax.ws.rs.PathParam;
-
+import com.google.common.base.Predicate;
+import com.google.common.collect.Collections2;
+import fi.vm.sade.sijoittelu.tulos.dto.*;
+import fi.vm.sade.sijoittelu.tulos.dto.raportointi.HakijaDTO;
+import fi.vm.sade.sijoittelu.tulos.dto.raportointi.HakutoiveDTO;
+import fi.vm.sade.sijoittelu.tulos.dto.raportointi.HakutoiveenValintatapajonoDTO;
+import fi.vm.sade.sijoittelu.tulos.service.RaportointiService;
+import fi.vm.sade.sijoittelu.tulos.service.SijoitteluTulosService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,19 +15,11 @@ import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
 
-import com.google.common.base.Predicate;
-import com.google.common.collect.Collections2;
+import javax.ws.rs.PathParam;
+import java.util.Collection;
+import java.util.List;
 
-import fi.vm.sade.sijoittelu.tulos.dto.HakemuksenTila;
-import fi.vm.sade.sijoittelu.tulos.dto.HakemusDTO;
-import fi.vm.sade.sijoittelu.tulos.dto.HakukohdeDTO;
-import fi.vm.sade.sijoittelu.tulos.dto.SijoitteluDTO;
-import fi.vm.sade.sijoittelu.tulos.dto.SijoitteluajoDTO;
-import fi.vm.sade.sijoittelu.tulos.dto.raportointi.HakijaDTO;
-import fi.vm.sade.sijoittelu.tulos.dto.raportointi.HakutoiveDTO;
-import fi.vm.sade.sijoittelu.tulos.dto.raportointi.HakutoiveenValintatapajonoDTO;
-import fi.vm.sade.sijoittelu.tulos.service.RaportointiService;
-import fi.vm.sade.sijoittelu.tulos.service.SijoitteluTulosService;
+import static fi.vm.sade.sijoittelu.tulos.roles.SijoitteluRole.*;
 
 /**
  * User: wuoti Date: 26.4.2013 Time: 12.41

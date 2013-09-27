@@ -84,7 +84,21 @@ public class SijoitteluTulosConverterImpl implements SijoitteluTulosConverter {
         if (valintatapajono != null) {
             dto.setValintatapajonoOid(valintatapajono.getOid());
         }
+        applyPistetiedot(dto, ha.getPistetiedot());
+
         return dto;
+    }
+
+    private void applyPistetiedot(HakemusDTO dto, List<Pistetieto> pistetiedot) {
+        for(Pistetieto pistetieto : pistetiedot) {
+            PistetietoDTO pistetietoDTO = new PistetietoDTO();
+            pistetietoDTO.setArvo(pistetieto.getArvo());
+            pistetietoDTO.setLaskennallinenArvo(pistetieto.getLaskennallinenArvo());
+            pistetietoDTO.setOsallistuminen(pistetieto.getOsallistuminen());
+            pistetietoDTO.setTunniste(pistetieto.getTunniste());
+            dto.getPistetiedot().add(pistetietoDTO);
+        }
+
     }
 
     @Override

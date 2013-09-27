@@ -1,12 +1,13 @@
 package fi.vm.sade.sijoittelu.domain;
 
-import java.io.Serializable;
-import java.math.BigDecimal;
-
 import com.google.code.morphia.annotations.Converters;
 import com.google.code.morphia.annotations.Embedded;
-
 import fi.vm.sade.sijoittelu.domain.converter.BigDecimalConverter;
+
+import java.io.Serializable;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * 
@@ -40,6 +41,8 @@ public class Hakemus implements Serializable {
     private HakemuksenTila tila;
 
     private boolean hyvaksyttyHarkinnanvaraisesti = false;
+
+    private List<Pistetieto> pistetiedot = new ArrayList<Pistetieto>();
 
     public int getPrioriteetti() {
         return prioriteetti;
@@ -125,5 +128,13 @@ public class Hakemus implements Serializable {
 
     public BigDecimal getPisteet() {
         return pisteet;
+    }
+
+    public List<Pistetieto> getPistetiedot() {
+        return pistetiedot;
+    }
+
+    public void setPistetiedot(List<Pistetieto> pistetiedot) {
+        this.pistetiedot = pistetiedot;
     }
 }

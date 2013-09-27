@@ -1,9 +1,6 @@
 package fi.vm.sade.sijoittelu.tulos.service.impl.converters;
 
-import fi.vm.sade.sijoittelu.tulos.dto.HakemuksenTila;
-import fi.vm.sade.sijoittelu.tulos.dto.HakemusDTO;
-import fi.vm.sade.sijoittelu.tulos.dto.HakukohdeDTO;
-import fi.vm.sade.sijoittelu.tulos.dto.ValintatapajonoDTO;
+import fi.vm.sade.sijoittelu.tulos.dto.*;
 import fi.vm.sade.sijoittelu.tulos.dto.raportointi.HakijaDTO;
 import fi.vm.sade.sijoittelu.tulos.dto.raportointi.HakutoiveDTO;
 import fi.vm.sade.sijoittelu.tulos.dto.raportointi.HakutoiveenValintatapajonoDTO;
@@ -43,10 +40,34 @@ public class RaportointiConverterImpl implements RaportointiConverter {
                     hakutoiveenValintatapajonoDTO.setHyvaksytty(valintatapajono.getHyvaksytty());
                     hakutoiveenValintatapajonoDTO.setVaralla(valintatapajono.getVaralla());
                     hakutoiveenValintatapajonoDTO.setHakeneet(valintatapajono.getHakeneet());
+                    applyPistetiedot(raportointiHakutoiveDTO, hakemusDTO.getPistetiedot());
                 }
             }
         }
         return new ArrayList<HakijaDTO>(hakijat.values());
+    }
+
+    private void applyPistetiedot(HakutoiveDTO dto, List<PistetietoDTO> pistetiedot) {
+        for(PistetietoDTO pistetieto : pistetiedot) {
+            if(pistetieto.getTunniste() != null) {
+                PistetietoDTO pt = null;
+                for(PistetietoDTO lpto : dto.getPistetiedot()){
+                    if(pistetieto.getTunniste().equals(lpto.getTunniste())) {
+                        pt = lpto;
+                        continue;
+                    }
+                }
+                if(pt==null) {
+                    pt = new PistetietoDTO();
+                    dto.getPistetiedot().add(pt);
+                }
+                pt.setArvo(pistetieto.getArvo());
+                pt.setLaskennallinenArvo(pistetieto.getLaskennallinenArvo());
+                pt.setOsallistuminen(pistetieto.getOsallistuminen());
+                pt.setTunniste(pistetieto.getTunniste());
+
+            }
+        }
     }
 
     private HakutoiveDTO getOrCreateHakutoive(HakijaDTO hakijaDTO, HakemusDTO hakemusDTO) {
