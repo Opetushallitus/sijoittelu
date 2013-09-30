@@ -1,14 +1,19 @@
 package fi.vm.sade.sijoittelu.tulos.service.impl.converters;
 
-import fi.vm.sade.sijoittelu.tulos.dto.*;
-import fi.vm.sade.sijoittelu.tulos.dto.raportointi.HakijaDTO;
-import fi.vm.sade.sijoittelu.tulos.dto.raportointi.HakutoiveDTO;
-import fi.vm.sade.sijoittelu.tulos.dto.raportointi.HakutoiveenValintatapajonoDTO;
-import org.springframework.stereotype.Component;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+
+import org.springframework.stereotype.Component;
+
+import fi.vm.sade.sijoittelu.tulos.dto.HakemuksenTila;
+import fi.vm.sade.sijoittelu.tulos.dto.HakemusDTO;
+import fi.vm.sade.sijoittelu.tulos.dto.HakukohdeDTO;
+import fi.vm.sade.sijoittelu.tulos.dto.PistetietoDTO;
+import fi.vm.sade.sijoittelu.tulos.dto.ValintatapajonoDTO;
+import fi.vm.sade.sijoittelu.tulos.dto.raportointi.HakijaDTO;
+import fi.vm.sade.sijoittelu.tulos.dto.raportointi.HakutoiveDTO;
+import fi.vm.sade.sijoittelu.tulos.dto.raportointi.HakutoiveenValintatapajonoDTO;
 
 /**
  * Created with IntelliJ IDEA. User: kkammone Date: 17.9.2013 Time: 14:49 To
@@ -31,7 +36,6 @@ public class RaportointiConverterImpl implements RaportointiConverter {
                     hakutoiveenValintatapajonoDTO.setJonosija(hakemusDTO.getJonosija());
                     hakutoiveenValintatapajonoDTO.setHyvaksyttyHarkinnanvaraisesti(hakemusDTO
                             .isHyvaksyttyHarkinnanvaraisesti());
-                    hakutoiveenValintatapajonoDTO.setPisteet(hakemusDTO.getPisteet());
                     hakutoiveenValintatapajonoDTO.setTasasijaJonosija(hakemusDTO.getTasasijaJonosija());
                     hakutoiveenValintatapajonoDTO.setTila(EnumConverter.convert(HakemuksenTila.class,
                             hakemusDTO.getTila()));
@@ -48,16 +52,16 @@ public class RaportointiConverterImpl implements RaportointiConverter {
     }
 
     private void applyPistetiedot(HakutoiveDTO dto, List<PistetietoDTO> pistetiedot) {
-        for(PistetietoDTO pistetieto : pistetiedot) {
-            if(pistetieto.getTunniste() != null) {
+        for (PistetietoDTO pistetieto : pistetiedot) {
+            if (pistetieto.getTunniste() != null) {
                 PistetietoDTO pt = null;
-                for(PistetietoDTO lpto : dto.getPistetiedot()){
-                    if(pistetieto.getTunniste().equals(lpto.getTunniste())) {
+                for (PistetietoDTO lpto : dto.getPistetiedot()) {
+                    if (pistetieto.getTunniste().equals(lpto.getTunniste())) {
                         pt = lpto;
                         continue;
                     }
                 }
-                if(pt==null) {
+                if (pt == null) {
                     pt = new PistetietoDTO();
                     dto.getPistetiedot().add(pt);
                 }

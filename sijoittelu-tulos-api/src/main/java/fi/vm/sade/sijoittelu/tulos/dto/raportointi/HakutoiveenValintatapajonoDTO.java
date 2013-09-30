@@ -22,13 +22,6 @@ public class HakutoiveenValintatapajonoDTO {
     @JsonView(JsonViews.Hakija.class)
     private Integer jonosija;
 
-    /**
-     * @Deprecated Koostepalvelu ei kayta tata enaa vaan PistetietoDTO:ta
-     */
-    @Deprecated
-    @JsonView(JsonViews.Hakija.class)
-    private BigDecimal pisteet;
-
     @JsonView(JsonViews.Hakija.class)
     private BigDecimal paasyJaSoveltuvuusKokeenTulos;
 
@@ -78,14 +71,6 @@ public class HakutoiveenValintatapajonoDTO {
 
     public void setJonosija(Integer jonosija) {
         this.jonosija = jonosija;
-    }
-
-    public BigDecimal getPisteet() {
-        return pisteet;
-    }
-
-    public void setPisteet(BigDecimal pisteet) {
-        this.pisteet = pisteet;
     }
 
     public Integer getVarasijanNumero() {
