@@ -83,6 +83,7 @@ public class RaportointiConverterImpl implements RaportointiConverter {
         }
         if (hakutoiveDTO == null) {
             hakutoiveDTO = new HakutoiveDTO();
+            hakutoiveDTO.setTarjoajaOid(hakemusDTO.getTarjoajaOid());
             hakutoiveDTO.setHakukohdeOid(hakemusDTO.getHakukohdeOid());
             hakutoiveDTO.setHakutoive(hakemusDTO.getPrioriteetti());
             hakijaDTO.getHakutoiveet().add(hakutoiveDTO);
