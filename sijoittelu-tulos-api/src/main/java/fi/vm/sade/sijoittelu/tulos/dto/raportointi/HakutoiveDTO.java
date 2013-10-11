@@ -1,26 +1,27 @@
 package fi.vm.sade.sijoittelu.tulos.dto.raportointi;
 
-import fi.vm.sade.sijoittelu.tulos.dto.JsonViews;
-import fi.vm.sade.sijoittelu.tulos.dto.PistetietoDTO;
-import org.codehaus.jackson.map.annotate.JsonView;
-
 import java.util.ArrayList;
 import java.util.List;
 
+import org.codehaus.jackson.map.annotate.JsonView;
+
+import fi.vm.sade.sijoittelu.tulos.dto.JsonViews;
+import fi.vm.sade.sijoittelu.tulos.dto.PistetietoDTO;
+
 /**
- * Created with IntelliJ IDEA.
- * User: kkammone
- * Date: 17.9.2013
- * Time: 9:47
- * To change this template use File | Settings | File Templates.
+ * Created with IntelliJ IDEA. User: kkammone Date: 17.9.2013 Time: 9:47 To
+ * change this template use File | Settings | File Templates.
  */
 public class HakutoiveDTO {
 
     @JsonView(JsonViews.Hakija.class)
-    private Integer hakutoive ;
+    private Integer hakutoive;
 
     @JsonView(JsonViews.Hakija.class)
     private String hakukohdeOid;
+
+    @JsonView(JsonViews.Hakija.class)
+    private String tarjoajaOid;
 
     @JsonView(JsonViews.Hakija.class)
     private List<PistetietoDTO> pistetiedot = new ArrayList<PistetietoDTO>();
@@ -30,6 +31,14 @@ public class HakutoiveDTO {
 
     public String getHakukohdeOid() {
         return hakukohdeOid;
+    }
+
+    public void setTarjoajaOid(String tarjoajaOid) {
+        this.tarjoajaOid = tarjoajaOid;
+    }
+
+    public String getTarjoajaOid() {
+        return tarjoajaOid;
     }
 
     public void setHakukohdeOid(String hakukohdeOid) {
