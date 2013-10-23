@@ -36,9 +36,13 @@ public class RaportointiConverterImpl implements RaportointiConverter {
                     hakutoiveenValintatapajonoDTO.setJonosija(hakemusDTO.getJonosija());
                     hakutoiveenValintatapajonoDTO.setHyvaksyttyHarkinnanvaraisesti(hakemusDTO
                             .isHyvaksyttyHarkinnanvaraisesti());
+                    hakutoiveenValintatapajonoDTO.setPaasyJaSoveltuvuusKokeenTulos(hakemusDTO
+                            .getPaasyJaSoveltuvuusKokeenTulos());
                     hakutoiveenValintatapajonoDTO.setTasasijaJonosija(hakemusDTO.getTasasijaJonosija());
                     hakutoiveenValintatapajonoDTO.setTila(EnumConverter.convert(HakemuksenTila.class,
                             hakemusDTO.getTila()));
+                    hakutoiveenValintatapajonoDTO.setVaralla(hakemusDTO.getVarasijanNumero());
+                    hakutoiveenValintatapajonoDTO.setVarasijanNumero(hakemusDTO.getVarasijanNumero());
                     hakutoiveenValintatapajonoDTO.setAlinHyvaksyttyPistemaara(valintatapajono
                             .getAlinHyvaksyttyPistemaara());
                     hakutoiveenValintatapajonoDTO.setHyvaksytty(valintatapajono.getHyvaksytty());
