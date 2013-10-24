@@ -1,10 +1,11 @@
 package fi.vm.sade.sijoittelu.tulos.dto.raportointi;
 
-import fi.vm.sade.sijoittelu.tulos.dto.JsonViews;
+import java.util.SortedSet;
+import java.util.TreeSet;
+
 import org.codehaus.jackson.map.annotate.JsonView;
 
-import java.util.ArrayList;
-import java.util.List;
+import fi.vm.sade.sijoittelu.tulos.dto.JsonViews;
 
 /**
  * Created with IntelliJ IDEA. User: kkammone Date: 16.9.2013 Time: 14:45 To
@@ -22,7 +23,7 @@ public class HakijaDTO {
     private String sukunimi;
 
     @JsonView(JsonViews.Hakija.class)
-    private List<HakutoiveDTO> hakutoiveet = new ArrayList<HakutoiveDTO>();
+    private SortedSet<HakutoiveDTO> hakutoiveet = new TreeSet<HakutoiveDTO>();
 
     public String getHakemusOid() {
         return hakemusOid;
@@ -48,11 +49,11 @@ public class HakijaDTO {
         this.sukunimi = sukunimi;
     }
 
-    public List<HakutoiveDTO> getHakutoiveet() {
+    public SortedSet<HakutoiveDTO> getHakutoiveet() {
         return hakutoiveet;
     }
 
-    public void setHakutoiveet(List<HakutoiveDTO> hakutoiveet) {
+    public void setHakutoiveet(SortedSet<HakutoiveDTO> hakutoiveet) {
         this.hakutoiveet = hakutoiveet;
     }
 }
