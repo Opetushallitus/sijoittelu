@@ -31,6 +31,9 @@ public class HakutoiveDTO implements Comparable<HakutoiveDTO> {
 
     @Override
     public int compareTo(HakutoiveDTO o) {
+        if (hakutoive == null) {
+            return 0;
+        }
         return hakutoive.compareTo(o.hakutoive);
     }
 
