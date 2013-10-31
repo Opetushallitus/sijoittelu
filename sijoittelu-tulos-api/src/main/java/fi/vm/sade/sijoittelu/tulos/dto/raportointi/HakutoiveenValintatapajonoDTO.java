@@ -36,7 +36,7 @@ public class HakutoiveenValintatapajonoDTO {
     @JsonView(JsonViews.Hakija.class)
     private Integer tasasijaJonosija;
 
-    @JsonView({ JsonViews.Hakemus.class, JsonViews.Hakukohde.class })
+    @JsonView(JsonViews.Hakija.class)
     private BigDecimal pisteet;
 
     @JsonView(JsonViews.Hakija.class)
