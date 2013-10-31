@@ -1,11 +1,10 @@
 package fi.vm.sade.sijoittelu.tulos.dto.raportointi;
 
-import java.math.BigDecimal;
-
-import org.codehaus.jackson.map.annotate.JsonView;
-
 import fi.vm.sade.sijoittelu.tulos.dto.HakemuksenTila;
 import fi.vm.sade.sijoittelu.tulos.dto.JsonViews;
+import org.codehaus.jackson.map.annotate.JsonView;
+
+import java.math.BigDecimal;
 
 /**
  * Created with IntelliJ IDEA. User: kkammone Date: 18.9.2013 Time: 14:11 To
@@ -36,6 +35,9 @@ public class HakutoiveenValintatapajonoDTO {
 
     @JsonView(JsonViews.Hakija.class)
     private Integer tasasijaJonosija;
+
+    @JsonView({ JsonViews.Hakemus.class, JsonViews.Hakukohde.class })
+    private BigDecimal pisteet;
 
     @JsonView(JsonViews.Hakija.class)
     private BigDecimal alinHyvaksyttyPistemaara;
@@ -143,5 +145,13 @@ public class HakutoiveenValintatapajonoDTO {
 
     public void setHakeneet(Integer hakeneet) {
         this.hakeneet = hakeneet;
+    }
+
+    public BigDecimal getPisteet() {
+        return pisteet;
+    }
+
+    public void setPisteet(BigDecimal pisteet) {
+        this.pisteet = pisteet;
     }
 }
