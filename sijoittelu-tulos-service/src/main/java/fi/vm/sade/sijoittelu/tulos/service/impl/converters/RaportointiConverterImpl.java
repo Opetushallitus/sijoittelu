@@ -1,19 +1,14 @@
 package fi.vm.sade.sijoittelu.tulos.service.impl.converters;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-
-import org.springframework.stereotype.Component;
-
-import fi.vm.sade.sijoittelu.tulos.dto.HakemuksenTila;
-import fi.vm.sade.sijoittelu.tulos.dto.HakemusDTO;
-import fi.vm.sade.sijoittelu.tulos.dto.HakukohdeDTO;
-import fi.vm.sade.sijoittelu.tulos.dto.PistetietoDTO;
-import fi.vm.sade.sijoittelu.tulos.dto.ValintatapajonoDTO;
+import fi.vm.sade.sijoittelu.tulos.dto.*;
 import fi.vm.sade.sijoittelu.tulos.dto.raportointi.HakijaDTO;
 import fi.vm.sade.sijoittelu.tulos.dto.raportointi.HakutoiveDTO;
 import fi.vm.sade.sijoittelu.tulos.dto.raportointi.HakutoiveenValintatapajonoDTO;
+import org.springframework.stereotype.Component;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 /**
  * Created with IntelliJ IDEA. User: kkammone Date: 17.9.2013 Time: 14:49 To
@@ -32,22 +27,21 @@ public class RaportointiConverterImpl implements RaportointiConverter {
                     HakutoiveDTO raportointiHakutoiveDTO = getOrCreateHakutoive(hakijaRaportointiDTO, hakemusDTO);
                     HakutoiveenValintatapajonoDTO hakutoiveenValintatapajonoDTO = new HakutoiveenValintatapajonoDTO();
                     raportointiHakutoiveDTO.getHakutoiveenValintatapajonot().add(hakutoiveenValintatapajonoDTO);
+
                     hakutoiveenValintatapajonoDTO.setHakeneet(valintatapajono.getHakeneet());
-                    hakutoiveenValintatapajonoDTO.setJonosija(hakemusDTO.getJonosija());
-                    hakutoiveenValintatapajonoDTO.setHyvaksyttyHarkinnanvaraisesti(hakemusDTO
-                            .isHyvaksyttyHarkinnanvaraisesti());
-                    hakutoiveenValintatapajonoDTO.setPaasyJaSoveltuvuusKokeenTulos(hakemusDTO
-                            .getPaasyJaSoveltuvuusKokeenTulos());
-                    hakutoiveenValintatapajonoDTO.setTasasijaJonosija(hakemusDTO.getTasasijaJonosija());
-                    hakutoiveenValintatapajonoDTO.setTila(EnumConverter.convert(HakemuksenTila.class,
-                            hakemusDTO.getTila()));
-                    hakutoiveenValintatapajonoDTO.setVaralla(hakemusDTO.getVarasijanNumero());
-                    hakutoiveenValintatapajonoDTO.setVarasijanNumero(hakemusDTO.getVarasijanNumero());
-                    hakutoiveenValintatapajonoDTO.setAlinHyvaksyttyPistemaara(valintatapajono
-                            .getAlinHyvaksyttyPistemaara());
+                    hakutoiveenValintatapajonoDTO.setAlinHyvaksyttyPistemaara(valintatapajono.getAlinHyvaksyttyPistemaara());
                     hakutoiveenValintatapajonoDTO.setHyvaksytty(valintatapajono.getHyvaksytty());
                     hakutoiveenValintatapajonoDTO.setVaralla(valintatapajono.getVaralla());
                     hakutoiveenValintatapajonoDTO.setHakeneet(valintatapajono.getHakeneet());
+
+                    hakutoiveenValintatapajonoDTO.setVarasijanNumero(hakemusDTO.getVarasijanNumero());
+                    hakutoiveenValintatapajonoDTO.setTasasijaJonosija(hakemusDTO.getTasasijaJonosija());
+                    hakutoiveenValintatapajonoDTO.setPisteet(hakemusDTO.getPisteet());
+                    hakutoiveenValintatapajonoDTO.setJonosija(hakemusDTO.getJonosija());
+                    hakutoiveenValintatapajonoDTO.setTila(EnumConverter.convert(HakemuksenTila.class, hakemusDTO.getTila()));
+                    hakutoiveenValintatapajonoDTO.setHyvaksyttyHarkinnanvaraisesti(hakemusDTO.isHyvaksyttyHarkinnanvaraisesti());
+                    hakutoiveenValintatapajonoDTO.setPaasyJaSoveltuvuusKokeenTulos(hakemusDTO.getPaasyJaSoveltuvuusKokeenTulos());
+
                     applyPistetiedot(raportointiHakutoiveDTO, hakemusDTO.getPistetiedot());
                 }
             }
