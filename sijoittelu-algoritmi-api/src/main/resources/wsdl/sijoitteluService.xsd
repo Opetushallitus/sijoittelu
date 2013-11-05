@@ -8,7 +8,8 @@
          <!--
     <xs:import namespace="http://sijoittelu.service.sade.vm.fi/schema" schemaLocation="sijoittelu.xsd" />
              -->
-    <xs:import namespace="http://valintatiedot.service.sade.vm.fi/schema" schemaLocation="http://pulpetti.hard.ware.fi/valintatulokset/wsdl/valintatiedot.xsd" />
+    <xs:import namespace="http://valintatiedot.service.sade.vm.fi/schema" 
+    schemaLocation="../../../../../../valintalaskenta/valintalaskenta-tulos-api/src/main/resources/wsdl/valintatiedot.xsd" />
 
 
     <xs:element name="sijoittele" type="valintatiedot:HakuTyyppi" />
