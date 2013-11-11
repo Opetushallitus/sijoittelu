@@ -89,56 +89,56 @@ Toissijaista hakukohdetta ei pitäisi tarvita sijoittelussa, koska ensitiaiset s
     <hakukohteet oid="Laakkis_oid_1">
         <valinnanvaihe valinnanvaihe="1">
             <valintatapajono oid="laakkis_jono_1" prioriteetti="1" aloituspaikat="2" tasasijasaanto="ARVONTA" siirretaanSijoitteluun="true">
-                <hakija jonosija="1" oid="Alaakkis_1_Ateku_oid_12" prioriteetti="1" pisteet="0" tila="HYVAKSYTTAVISSA"/>
-                <hakija jonosija="1" oid="Blaakkis_2_Bteku_oid_12" prioriteetti="1" pisteet="0" tila="HYVAKSYTTAVISSA"/>
-                <hakija jonosija="1" oid="Claakkis_3_Cteku_oid_12" prioriteetti="1" pisteet="1" tila="HYVAKSYTTAVISSA"/>
-                <hakija jonosija="1" oid="Dlaakkis_4_Dteku_oid_12" prioriteetti="1" pisteet="1" tila="HYVAKSYTTAVISSA"/>
-                <hakija jonosija="1" oid="Okoodariopisto_1_Olaakkis_oid_41" prioriteetti="2" pisteet="0" tila="HYVAKSYTTAVISSA"/>
-                <hakija jonosija="1" oid="Pkoodariopisto_2_Plaakkis_oid_41" prioriteetti="2" pisteet="0" tila="HYVAKSYTTAVISSA"/>
-                <hakija jonosija="1" oid="Qkoodariopisto_3_Qlaakkis_oid_41" prioriteetti="2" pisteet="1" tila="HYVAKSYTTAVISSA"/>
-                <hakija jonosija="1" oid="Rkoodariopisto_4_Rlaakkis_oid_41" prioriteetti="2" pisteet="1" tila="HYVAKSYTTAVISSA"/>
+                <hakija jonosija="1" hakemusOid="Alaakkis_1_Ateku_oid_12" prioriteetti="1" pisteet="0" tila="HYVAKSYTTAVISSA"/>
+                <hakija jonosija="1" hakemusOid="Blaakkis_2_Bteku_oid_12" prioriteetti="1" pisteet="0" tila="HYVAKSYTTAVISSA"/>
+                <hakija jonosija="1" hakemusOid="Claakkis_3_Cteku_oid_12" prioriteetti="1" pisteet="1" tila="HYVAKSYTTAVISSA"/>
+                <hakija jonosija="1" hakemusOid="Dlaakkis_4_Dteku_oid_12" prioriteetti="1" pisteet="1" tila="HYVAKSYTTAVISSA"/>
+                <hakija jonosija="1" hakemusOid="Okoodariopisto_1_Olaakkis_oid_41" prioriteetti="2" pisteet="0" tila="HYVAKSYTTAVISSA"/>
+                <hakija jonosija="1" hakemusOid="Pkoodariopisto_2_Plaakkis_oid_41" prioriteetti="2" pisteet="0" tila="HYVAKSYTTAVISSA"/>
+                <hakija jonosija="1" hakemusOid="Qkoodariopisto_3_Qlaakkis_oid_41" prioriteetti="2" pisteet="1" tila="HYVAKSYTTAVISSA"/>
+                <hakija jonosija="1" hakemusOid="Rkoodariopisto_4_Rlaakkis_oid_41" prioriteetti="2" pisteet="1" tila="HYVAKSYTTAVISSA"/>
             </valintatapajono>
         </valinnanvaihe>
     </hakukohteet>
     <hakukohteet oid="Teku_oid_2">
         <valinnanvaihe valinnanvaihe="1">
             <valintatapajono oid="teku_jono_2" prioriteetti="1" aloituspaikat="2" tasasijasaanto="ARVONTA" siirretaanSijoitteluun="true">
-                <hakija jonosija="1" oid="Eteku_1_Etestiopisto_oid_23" prioriteetti="1" pisteet="0" tila="HYVAKSYTTAVISSA"/>
-                <hakija jonosija="1" oid="Fteku_2_Ftestiopisto_oid_23" prioriteetti="1" pisteet="0" tila="HYVAKSYTTAVISSA"/>
-                <hakija jonosija="1" oid="Gteku_3_Gtestiopisto_oid_23" prioriteetti="1" pisteet="1" tila="HYVAKSYTTAVISSA"/>
-                <hakija jonosija="1" oid="Hteku_4_Htestiopisto_oid_23" prioriteetti="1" pisteet="1" tila="HYVAKSYTTAVISSA"/>
-                <hakija jonosija="1" oid="Alaakkis_1_Ateku_oid_12" prioriteetti="2" pisteet="0" tila="HYVAKSYTTAVISSA"/>
-                <hakija jonosija="1" oid="Blaakkis_2_Bteku_oid_12" prioriteetti="2" pisteet="0" tila="HYVAKSYTTAVISSA"/>
-                <hakija jonosija="1" oid="Claakkis_3_Cteku_oid_12" prioriteetti="2" pisteet="1"  tila="HYVAKSYTTAVISSA"/>
-                <hakija jonosija="1" oid="Dlaakkis_4_Dteku_oid_12" prioriteetti="2" pisteet="1" tila="HYVAKSYTTAVISSA"/>
+                <hakija jonosija="1" hakemusOid="Eteku_1_Etestiopisto_oid_23" prioriteetti="1" pisteet="0" tila="HYVAKSYTTAVISSA"/>
+                <hakija jonosija="1" hakemusOid="Fteku_2_Ftestiopisto_oid_23" prioriteetti="1" pisteet="0" tila="HYVAKSYTTAVISSA"/>
+                <hakija jonosija="1" hakemusOid="Gteku_3_Gtestiopisto_oid_23" prioriteetti="1" pisteet="1" tila="HYVAKSYTTAVISSA"/>
+                <hakija jonosija="1" hakemusOid="Hteku_4_Htestiopisto_oid_23" prioriteetti="1" pisteet="1" tila="HYVAKSYTTAVISSA"/>
+                <hakija jonosija="1" hakemusOid="Alaakkis_1_Ateku_oid_12" prioriteetti="2" pisteet="0" tila="HYVAKSYTTAVISSA"/>
+                <hakija jonosija="1" hakemusOid="Blaakkis_2_Bteku_oid_12" prioriteetti="2" pisteet="0" tila="HYVAKSYTTAVISSA"/>
+                <hakija jonosija="1" hakemusOid="Claakkis_3_Cteku_oid_12" prioriteetti="2" pisteet="1"  tila="HYVAKSYTTAVISSA"/>
+                <hakija jonosija="1" hakemusOid="Dlaakkis_4_Dteku_oid_12" prioriteetti="2" pisteet="1" tila="HYVAKSYTTAVISSA"/>
             </valintatapajono>
         </valinnanvaihe>
     </hakukohteet>
     <hakukohteet oid="Testiopisto_oid_3">
         <valinnanvaihe valinnanvaihe="1">
             <valintatapajono oid="oid" prioriteetti="1" aloituspaikat="2" tasasijasaanto="ARVONTA" siirretaanSijoitteluun="true">
-                <hakija jonosija="1" oid="Ktestiopisto_1_Kkoodariopisto_oid_34" prioriteetti="1" pisteet="0" tila="HYVAKSYTTAVISSA"/>
-                <hakija jonosija="1" oid="Ltestiopisto_2_Lkoodariopisto_oid_34" prioriteetti="1" pisteet="0" tila="HYVAKSYTTAVISSA"/>
-                <hakija jonosija="1" oid="Mtestiopisto_3_Mkoodariopisto_oid_34" prioriteetti="1" pisteet="1" tila="HYVAKSYTTAVISSA"/>
-                <hakija jonosija="1" oid="Ntestiopisto_4_Nkoodariopisto_oid_34" prioriteetti="1" pisteet="1" tila="HYVAKSYTTAVISSA"/>
-                <hakija jonosija="1" oid="Eteku_1_Etestiopisto_oid_23" prioriteetti="2" pisteet="0" tila="HYVAKSYTTAVISSA"/>
-                <hakija jonosija="1" oid="Fteku_2_Ftestiopisto_oid_23" prioriteetti="2" pisteet="0" tila="HYVAKSYTTAVISSA"/>
-                <hakija jonosija="1" oid="Gteku_3_Gtestiopisto_oid_23" prioriteetti="2" pisteet="1" tila="HYVAKSYTTAVISSA"/>
-                <hakija jonosija="1" oid="Hteku_4_Htestiopisto_oid_23" prioriteetti="2" pisteet="1" tila="HYVAKSYTTAVISSA"/>
+                <hakija jonosija="1" hakemusOid="Ktestiopisto_1_Kkoodariopisto_oid_34" prioriteetti="1" pisteet="0" tila="HYVAKSYTTAVISSA"/>
+                <hakija jonosija="1" hakemusOid="Ltestiopisto_2_Lkoodariopisto_oid_34" prioriteetti="1" pisteet="0" tila="HYVAKSYTTAVISSA"/>
+                <hakija jonosija="1" hakemusOid="Mtestiopisto_3_Mkoodariopisto_oid_34" prioriteetti="1" pisteet="1" tila="HYVAKSYTTAVISSA"/>
+                <hakija jonosija="1" hakemusOid="Ntestiopisto_4_Nkoodariopisto_oid_34" prioriteetti="1" pisteet="1" tila="HYVAKSYTTAVISSA"/>
+                <hakija jonosija="1" hakemusOid="Eteku_1_Etestiopisto_oid_23" prioriteetti="2" pisteet="0" tila="HYVAKSYTTAVISSA"/>
+                <hakija jonosija="1" hakemusOid="Fteku_2_Ftestiopisto_oid_23" prioriteetti="2" pisteet="0" tila="HYVAKSYTTAVISSA"/>
+                <hakija jonosija="1" hakemusOid="Gteku_3_Gtestiopisto_oid_23" prioriteetti="2" pisteet="1" tila="HYVAKSYTTAVISSA"/>
+                <hakija jonosija="1" hakemusOid="Hteku_4_Htestiopisto_oid_23" prioriteetti="2" pisteet="1" tila="HYVAKSYTTAVISSA"/>
             </valintatapajono>
         </valinnanvaihe>
     </hakukohteet>
     <hakukohteet oid="Koodariopisto_oid_4">
         <valinnanvaihe valinnanvaihe="1">
             <valintatapajono oid="oid" prioriteetti="1" aloituspaikat="2" tasasijasaanto="ARVONTA" siirretaanSijoitteluun="true">
-                <hakija jonosija="1" oid="Okoodariopisto_1_Olaakkis_oid_41" prioriteetti="1" pisteet="0" tila="HYVAKSYTTAVISSA"/>
-                <hakija jonosija="1" oid="Pkoodariopisto_2_Plaakkis_oid_41" prioriteetti="1" pisteet="0" tila="HYVAKSYTTAVISSA"/>
-                <hakija jonosija="1" oid="Qkoodariopisto_3_Qlaakkis_oid_41" prioriteetti="1" pisteet="1" tila="HYVAKSYTTAVISSA"/>
-                <hakija jonosija="1" oid="Rkoodariopisto_4_Rlaakkis_oid_41" prioriteetti="1" pisteet="1" tila="HYVAKSYTTAVISSA"/>
-                <hakija jonosija="1" oid="Ktestiopisto_1_Kkoodariopisto_oid_34" prioriteetti="2" pisteet="0" tila="HYVAKSYTTAVISSA"/>
-                <hakija jonosija="1" oid="Ltestiopisto_2_Lkoodariopisto_oid_34" prioriteetti="2" pisteet="0" tila="HYVAKSYTTAVISSA"/>
-                <hakija jonosija="1" oid="Mtestiopisto_3_Mkoodariopisto_oid_34" prioriteetti="2" pisteet="1" tila="HYVAKSYTTAVISSA"/>
-                <hakija jonosija="1" oid="Ntestiopisto_4_Nkoodariopisto_oid_34" prioriteetti="2" pisteet="1" tila="HYVAKSYTTAVISSA"/>
+                <hakija jonosija="1" hakemusOid="Okoodariopisto_1_Olaakkis_oid_41" prioriteetti="1" pisteet="0" tila="HYVAKSYTTAVISSA"/>
+                <hakija jonosija="1" hakemusOid="Pkoodariopisto_2_Plaakkis_oid_41" prioriteetti="1" pisteet="0" tila="HYVAKSYTTAVISSA"/>
+                <hakija jonosija="1" hakemusOid="Qkoodariopisto_3_Qlaakkis_oid_41" prioriteetti="1" pisteet="1" tila="HYVAKSYTTAVISSA"/>
+                <hakija jonosija="1" hakemusOid="Rkoodariopisto_4_Rlaakkis_oid_41" prioriteetti="1" pisteet="1" tila="HYVAKSYTTAVISSA"/>
+                <hakija jonosija="1" hakemusOid="Ktestiopisto_1_Kkoodariopisto_oid_34" prioriteetti="2" pisteet="0" tila="HYVAKSYTTAVISSA"/>
+                <hakija jonosija="1" hakemusOid="Ltestiopisto_2_Lkoodariopisto_oid_34" prioriteetti="2" pisteet="0" tila="HYVAKSYTTAVISSA"/>
+                <hakija jonosija="1" hakemusOid="Mtestiopisto_3_Mkoodariopisto_oid_34" prioriteetti="2" pisteet="1" tila="HYVAKSYTTAVISSA"/>
+                <hakija jonosija="1" hakemusOid="Ntestiopisto_4_Nkoodariopisto_oid_34" prioriteetti="2" pisteet="1" tila="HYVAKSYTTAVISSA"/>
             </valintatapajono>
         </valinnanvaihe>
     </hakukohteet>

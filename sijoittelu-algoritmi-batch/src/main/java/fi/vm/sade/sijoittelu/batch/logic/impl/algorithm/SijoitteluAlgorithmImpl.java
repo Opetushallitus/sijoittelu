@@ -1,21 +1,16 @@
 package fi.vm.sade.sijoittelu.batch.logic.impl.algorithm;
 
+import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.postsijoitteluprocessor.PostSijoitteluProcessor;
+import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.presijoitteluprocessor.PreSijoitteluProcessor;
+import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.*;
+import fi.vm.sade.sijoittelu.domain.HakemuksenTila;
+import fi.vm.sade.sijoittelu.domain.Hakemus;
+import fi.vm.sade.sijoittelu.domain.Tasasijasaanto;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.ListIterator;
-
-import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.postsijoitteluprocessor.PostSijoitteluProcessor;
-import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.presijoitteluprocessor.PreSijoitteluProcessor;
-import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.HakemusWrapper;
-import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.HakijaryhmaWrapper;
-import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.HakukohdeWrapper;
-import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.HenkiloWrapper;
-import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.SijoitteluajoWrapper;
-import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.ValintatapajonoWrapper;
-import fi.vm.sade.sijoittelu.domain.HakemuksenTila;
-import fi.vm.sade.sijoittelu.domain.Hakemus;
-import fi.vm.sade.sijoittelu.domain.Tasasijasaanto;
 
 /**
  *
@@ -316,21 +311,23 @@ public class SijoitteluAlgorithmImpl implements SijoitteluAlgorithm {
     }
 
     private HashSet<HakemusWrapper> asetaVaralleHakemus(HakemusWrapper varalleAsetettavaHakemusWrapper) {
-
         HashSet<HakemusWrapper> uudelleenSijoiteltavatHakukohteet = new HashSet<HakemusWrapper>();
-        for (HakemusWrapper hakemusWrapper : varalleAsetettavaHakemusWrapper.getHenkilo().getHakemukset()) {
-            if (hakemusWrapper.getHakemus().getTila() != HakemuksenTila.HYLATTY) {
-                hakemusWrapper.getHakemus().setTila(HakemuksenTila.VARALLA);
-                if (varalleAsetettavaHakemusWrapper.getHakemus().getTila() == HakemuksenTila.HYVAKSYTTY) {
+        if(varalleAsetettavaHakemusWrapper.getHakemus().getTila() == HakemuksenTila.HYVAKSYTTY) {
+            for (HakemusWrapper hakemusWrapper : varalleAsetettavaHakemusWrapper.getHenkilo().getHakemukset()) {
+                if (hakemusWrapper.getHakemus().getTila() != HakemuksenTila.HYLATTY || hakemusWrapper.getHakemus().getTila() != HakemuksenTila.PERUNUT ) {
+                    hakemusWrapper.getHakemus().setTila(HakemuksenTila.VARALLA);
                     uudelleenSijoiteltavatHakukohteet.add(hakemusWrapper);
                 }
+            }
+        } else {
+            if (varalleAsetettavaHakemusWrapper.getHakemus().getTila() != HakemuksenTila.HYLATTY || varalleAsetettavaHakemusWrapper.getHakemus().getTila() != HakemuksenTila.PERUNUT) {
+                varalleAsetettavaHakemusWrapper.getHakemus().setTila(HakemuksenTila.VARALLA);
             }
         }
         return uudelleenSijoiteltavatHakukohteet;
     }
 
     private HashSet<HakemusWrapper> hyvaksyHakemus(HakemusWrapper hakemus) {
-
         HashSet<HakemusWrapper> uudelleenSijoiteltavatHakukohteet = new HashSet<HakemusWrapper>();
         hakemus.getHakemus().setTila(HakemuksenTila.HYVAKSYTTY);
         for (HakemusWrapper h : hakemus.getHenkilo().getHakemukset()) {
@@ -339,9 +336,9 @@ public class SijoitteluAlgorithmImpl implements SijoitteluAlgorithm {
                     h.getHakemus().setTila(HakemuksenTila.PERUUNTUNUT);
                     uudelleenSijoiteltavatHakukohteet.add(h);
                 } else {
-                    if (h.getHakemus().getTila() == HakemuksenTila.VARALLA) {
+                    if (h.getHakemus().getTila() != HakemuksenTila.HYLATTY || h.getHakemus().getTila() != HakemuksenTila.PERUNUT) {
                         h.getHakemus().setTila(HakemuksenTila.PERUUNTUNUT);
-                    }
+                   }
                 }
             }
         }
