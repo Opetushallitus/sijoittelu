@@ -1,16 +1,12 @@
 package fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.presijoitteluprocessor;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoitteluFailedException;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.HakemusWrapper;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.HakukohdeWrapper;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.SijoitteluajoWrapper;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.ValintatapajonoWrapper;
+
+import java.util.*;
 
 /**
  * 
@@ -48,7 +44,7 @@ public class PreSijoitteluProcessorTasasijaArvonta implements PreSijoitteluProce
             if (hakemus.getHakemus().getTasasijaJonosija() == null) {
                 if (has) {
                     throw new SijoitteluFailedException("Partial data on tasasijajonosija for hakemus: "
-                            + hakemus.getHakemus().getHakijaOid());
+                            + hakemus.getHakemus().getHakemusOid());
                 }
             } else {
                 has = true;

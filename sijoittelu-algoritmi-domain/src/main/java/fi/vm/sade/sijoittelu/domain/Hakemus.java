@@ -94,7 +94,7 @@ public class Hakemus implements Serializable {
 
     @Override
     public String toString() {
-        return "Hakemus{" + "hakijaOid='" + hakijaOid + '\'' + ", prioriteetti=" + prioriteetti + ", jonosija="
+        return "Hakemus{" + "hakemusOid='" + hakemusOid + '\'' + ", prioriteetti=" + prioriteetti + ", jonosija="
                 + jonosija + ", tasasijaJonosija=" + tasasijaJonosija + ", tila=" + tila + '}';
     }
 

@@ -53,7 +53,6 @@ public class SijoitteluAlgorithmFactoryImpl implements SijoitteluAlgorithmFactor
     private SijoitteluajoWrapper wrapDomain(List<Hakukohde> hakukohteet, List<Valintatulos> valintatulokset) {
         SijoitteluajoWrapper sijoitteluajoWrapper = new SijoitteluajoWrapper();
 
-        Map<String, HenkiloWrapper> hakijaOidMap = new HashMap<String, HenkiloWrapper>();
         Map<String, HenkiloWrapper> hakemusOidMap = new HashMap<String, HenkiloWrapper>();
 
         for (Hakukohde hakukohde : hakukohteet) {
@@ -74,7 +73,7 @@ public class SijoitteluAlgorithmFactoryImpl implements SijoitteluAlgorithmFactor
                     valintatapajonoWrapper.getHakemukset().add(hakemusWrapper);
                     hakemusWrapper.setValintatapajono(valintatapajonoWrapper);
 
-                    HenkiloWrapper henkiloWrapper = getOrCreateHenkilo(hakemus, hakijaOidMap, hakemusOidMap);
+                    HenkiloWrapper henkiloWrapper = getOrCreateHenkilo(hakemus, hakemusOidMap);
                     henkiloWrapper.getHakemukset().add(hakemusWrapper);
                     hakemusWrapper.setHenkilo(henkiloWrapper);
 
@@ -87,7 +86,7 @@ public class SijoitteluAlgorithmFactoryImpl implements SijoitteluAlgorithmFactor
                         } else if(tila== ValintatuloksenTila.PERUNUT) {
                             hakemus.setTila(HakemuksenTila.PERUNUT);
                         } else if(tila == ValintatuloksenTila.EI_VASTAANOTETTU_MAARA_AIKANA) {
-                           hakemus.setTila(HakemuksenTila.PERUNUT);
+                            hakemus.setTila(HakemuksenTila.PERUNUT);
                         }
                         hakemusWrapper.setTilaVoidaanVaihtaa(false);
                         henkiloWrapper.getValintatulos().add(valintatulos);
@@ -99,8 +98,8 @@ public class SijoitteluAlgorithmFactoryImpl implements SijoitteluAlgorithmFactor
                 hakijaryhmaWrapper.setHakijaryhma(hakijaryhma);
                 hakijaryhmaWrapper.setHakukohdeWrapper(hakukohdeWrapper);
                 hakukohdeWrapper.getHakijaryhmaWrappers().add(hakijaryhmaWrapper);
-                for (String oid : hakijaryhma.getHakijaOid()) {
-                    HenkiloWrapper henkilo = getHenkilo(oid, hakijaOidMap);
+                for (String oid : hakijaryhma.getHakemusOid()) {
+                    HenkiloWrapper henkilo = getHenkilo(oid, hakemusOidMap);
                     hakijaryhmaWrapper.getHenkiloWrappers().add(henkilo);
                 }
             }
@@ -108,26 +107,19 @@ public class SijoitteluAlgorithmFactoryImpl implements SijoitteluAlgorithmFactor
         return sijoitteluajoWrapper;
     }
 
-    private HenkiloWrapper getOrCreateHenkilo(Hakemus hakemus, Map<String, HenkiloWrapper> hakijaOidMap, Map<String, HenkiloWrapper> hakemusOidMap) {
+    private HenkiloWrapper getOrCreateHenkilo(Hakemus hakemus, Map<String, HenkiloWrapper> hakemusOidMap) {
         HenkiloWrapper henkiloWrapper = null;
 
         if(hakemus.getHakemusOid() != null && !hakemus.getHakemusOid().isEmpty()) {
             henkiloWrapper =   hakemusOidMap.get(hakemus.getHakemusOid());
         }
 
-        if(henkiloWrapper == null && hakemus.getHakijaOid() != null && !hakemus.getHakijaOid().isEmpty()) {
-            henkiloWrapper = hakijaOidMap.get(hakemus.getHakijaOid());
-        }
-
         if(henkiloWrapper == null) {
             henkiloWrapper = new HenkiloWrapper();
             henkiloWrapper.setHakemusOid(hakemus.getHakemusOid());
-            henkiloWrapper.setHakijaOid(hakemus.getHakijaOid());
+            //  henkiloWrapper.setHakijaOid(hakemus.getHakijaOid());
             if(hakemus.getHakemusOid() != null && !hakemus.getHakemusOid().isEmpty()) {
                 hakemusOidMap.put(hakemus.getHakemusOid(), henkiloWrapper);
-            }
-            if(hakemus.getHakijaOid() != null && !hakemus.getHakijaOid().isEmpty()) {
-                hakijaOidMap.put(hakemus.getHakijaOid(), henkiloWrapper);
             }
         }
         return henkiloWrapper;
@@ -139,8 +131,7 @@ public class SijoitteluAlgorithmFactoryImpl implements SijoitteluAlgorithmFactor
         if(valintatulokset != null) {
             for(Valintatulos vt : valintatulokset) {
                 if(vt.getHakukohdeOid().equals(hakukohde.getOid()) && vt.getValintatapajonoOid().equals(valintatapajono.getOid()) ) {
-                    if( (vt.getHakijaOid() != null && !vt.getHakijaOid().isEmpty() && vt.getHakijaOid().equals(hakemus.getHakijaOid()) ) ||
-                            vt.getHakemusOid() != null && !vt.getHakemusOid().isEmpty() && vt.getHakemusOid().equals(hakemus.getHakemusOid()) ) {
+                    if( vt.getHakemusOid() != null && !vt.getHakemusOid().isEmpty() && vt.getHakemusOid().equals(hakemus.getHakemusOid()) ) {
                         return vt;
                     }
                 }

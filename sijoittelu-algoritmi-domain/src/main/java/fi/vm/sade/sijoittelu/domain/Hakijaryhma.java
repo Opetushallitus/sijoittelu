@@ -1,7 +1,6 @@
 package fi.vm.sade.sijoittelu.domain;
 
 import com.google.code.morphia.annotations.Embedded;
-import org.codehaus.jackson.map.annotate.JsonView;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -23,10 +22,10 @@ public class Hakijaryhma implements Serializable {
 
     private String nimi;
 
-    private List<String> hakijaOid = new ArrayList<String>();
+    private List<String> hakemusOid = new ArrayList<String>();
 
-    public List<String> getHakijaOid() {
-        return hakijaOid;
+    public List<String> getHakemusOid() {
+        return hakemusOid;
     }
  
     public String getOid() {
@@ -68,7 +67,7 @@ public class Hakijaryhma implements Serializable {
                 ", paikat=" + paikat +
                 ", oid='" + oid + '\'' +
                 ", nimi='" + nimi + '\'' +
-                ", hakijaOid=" + hakijaOid +
+                ", hakemusOid=" + hakemusOid +
                 '}';
     }
 }
