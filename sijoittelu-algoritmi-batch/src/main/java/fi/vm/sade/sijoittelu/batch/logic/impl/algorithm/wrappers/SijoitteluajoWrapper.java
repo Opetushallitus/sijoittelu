@@ -1,9 +1,9 @@
 package fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers;
 
+import fi.vm.sade.sijoittelu.domain.SijoitteluAjo;
+
 import java.util.ArrayList;
 import java.util.List;
-
-import fi.vm.sade.sijoittelu.domain.SijoitteluAjo;
 
 /**
  * 

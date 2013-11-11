@@ -1,11 +1,10 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<wsdl:definitions name="sijoitteluService" 
+<wsdl:definitions name="sijoitteluService"
                   targetNamespace="http://sijoittelu.service.sade.vm.fi/"
                   xmlns:ns1="http://sijoittelu.service.sade.vm.fi/types"
-                  xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" 
+                  xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
                   xmlns:tns="http://sijoittelu.service.sade.vm.fi/"
                   xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
-                  xmlns:xs="http://www.w3.org/2001/XMLSchema"
                   xmlns:xsd="http://www.w3.org/2001/XMLSchema">
                   
     <wsdl:types>

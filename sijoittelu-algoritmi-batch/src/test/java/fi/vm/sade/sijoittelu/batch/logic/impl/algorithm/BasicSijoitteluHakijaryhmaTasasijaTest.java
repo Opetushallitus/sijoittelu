@@ -1,20 +1,18 @@
 package fi.vm.sade.sijoittelu.batch.logic.impl.algorithm;
 
+import de.flapdoodle.embed.process.collections.Collections;
+import fi.vm.sade.service.valintatiedot.schema.HakuTyyppi;
+import fi.vm.sade.sijoittelu.batch.logic.impl.DomainConverter;
+import fi.vm.sade.sijoittelu.domain.Hakukohde;
+import fi.vm.sade.sijoittelu.domain.Valintatulos;
+import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
-import de.flapdoodle.embed.process.collections.Collections;
-import fi.vm.sade.service.valintatiedot.schema.HakuTyyppi;
-import fi.vm.sade.sijoittelu.domain.Hakukohde;
-import fi.vm.sade.sijoittelu.domain.Valintatulos;
-import org.junit.Test;
-
-import fi.vm.sade.sijoittelu.batch.logic.impl.DomainConverter;
-import fi.vm.sade.sijoittelu.domain.SijoitteluAjo;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  *

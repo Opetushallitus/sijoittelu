@@ -1,8 +1,6 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <xs:schema elementFormDefault="unqualified"
            targetNamespace="http://sijoittelu.service.sade.vm.fi/types" version="1.0"
-           xmlns:tns="http://sijoittelu.service.sade.vm.fi/types"
-           xmlns:sijoittelu="http://sijoittelu.service.sade.vm.fi/schema"
            xmlns:valintatiedot="http://valintatiedot.service.sade.vm.fi/schema"
            xmlns:xs="http://www.w3.org/2001/XMLSchema">
          <!--

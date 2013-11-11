@@ -1,11 +1,8 @@
 package fi.vm.sade.sijoittelu.tulos.resource;
 
-import org.codehaus.jackson.Version;
 import org.codehaus.jackson.map.DeserializationConfig;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.SerializationConfig;
-import org.codehaus.jackson.map.module.SimpleModule;
-import org.hibernate.collection.internal.PersistentSet;
 import org.springframework.stereotype.Component;
 
 import javax.ws.rs.ext.ContextResolver;

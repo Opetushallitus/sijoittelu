@@ -1,13 +1,7 @@
 package fi.vm.sade.sijoittelu.batch.logic.impl.itutil;
 
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.springframework.beans.factory.annotation.Autowired;
-
 import com.google.code.morphia.Datastore;
 import com.mongodb.Mongo;
-
 import de.flapdoodle.embed.mongo.MongodExecutable;
 import de.flapdoodle.embed.mongo.MongodProcess;
 import de.flapdoodle.embed.mongo.MongodStarter;
@@ -15,6 +9,10 @@ import de.flapdoodle.embed.mongo.config.MongodConfig;
 import de.flapdoodle.embed.mongo.config.RuntimeConfig;
 import de.flapdoodle.embed.mongo.distribution.Version;
 import de.flapdoodle.embed.process.config.io.ProcessOutput;
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * 

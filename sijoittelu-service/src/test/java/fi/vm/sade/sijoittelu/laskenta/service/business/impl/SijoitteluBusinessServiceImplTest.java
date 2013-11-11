@@ -2,7 +2,6 @@ package fi.vm.sade.sijoittelu.laskenta.service.business.impl;
 
 import fi.vm.sade.authentication.business.service.Authorizer;
 import fi.vm.sade.generic.service.exception.NotAuthorizedException;
-import fi.vm.sade.sijoittelu.domain.HakukohdeItem;
 import fi.vm.sade.sijoittelu.domain.Sijoittelu;
 import fi.vm.sade.sijoittelu.domain.ValintatuloksenTila;
 import fi.vm.sade.sijoittelu.domain.Valintatulos;

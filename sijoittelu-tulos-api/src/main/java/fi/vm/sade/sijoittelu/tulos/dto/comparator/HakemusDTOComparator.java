@@ -1,8 +1,8 @@
 package fi.vm.sade.sijoittelu.tulos.dto.comparator;
 
-import java.util.Comparator;
-
 import fi.vm.sade.sijoittelu.tulos.dto.HakemusDTO;
+
+import java.util.Comparator;
 
 /**
  * 

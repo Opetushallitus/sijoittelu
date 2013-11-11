@@ -1,11 +1,10 @@
 package fi.vm.sade.sijoittelu.batch.logic.impl.algorithm;
 
 import de.flapdoodle.embed.process.collections.Collections;
-
 import fi.vm.sade.service.valintatiedot.schema.HakuTyyppi;
 import fi.vm.sade.sijoittelu.batch.logic.impl.DomainConverter;
-import fi.vm.sade.sijoittelu.domain.*;
-
+import fi.vm.sade.sijoittelu.domain.Hakukohde;
+import fi.vm.sade.sijoittelu.domain.Valintatulos;
 import org.junit.Test;
 
 import java.io.FileWriter;

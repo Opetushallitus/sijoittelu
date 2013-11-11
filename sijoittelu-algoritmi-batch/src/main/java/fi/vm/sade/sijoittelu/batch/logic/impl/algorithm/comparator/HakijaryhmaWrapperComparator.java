@@ -1,8 +1,8 @@
 package fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.comparator;
 
-import java.util.Comparator;
-
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.HakijaryhmaWrapper;
+
+import java.util.Comparator;
 
 /**
  * 

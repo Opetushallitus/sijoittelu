@@ -2,21 +2,17 @@
 package fi.vm.sade.sijoittelu.batch.logic.impl;
 
 import fi.vm.sade.service.sijoittelu.SijoitteluService;
-
 import fi.vm.sade.service.valintatiedot.schema.HakuTyyppi;
-import fi.vm.sade.sijoittelu.domain.*;
+import fi.vm.sade.sijoittelu.batch.logic.impl.itutil.FlapdoodleMongoDbTest;
+import fi.vm.sade.sijoittelu.domain.Sijoittelu;
 import fi.vm.sade.sijoittelu.laskenta.dao.Dao;
-
 import junit.framework.Assert;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-
-import fi.vm.sade.sijoittelu.batch.logic.impl.itutil.FlapdoodleMongoDbTest;
 
 /**
  * 

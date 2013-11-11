@@ -1,12 +1,11 @@
 package fi.vm.sade.sijoittelu.tulos.dto.raportointi;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.codehaus.jackson.map.annotate.JsonView;
-
 import fi.vm.sade.sijoittelu.tulos.dto.JsonViews;
 import fi.vm.sade.sijoittelu.tulos.dto.PistetietoDTO;
+import org.codehaus.jackson.map.annotate.JsonView;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created with IntelliJ IDEA. User: kkammone Date: 17.9.2013 Time: 9:47 To

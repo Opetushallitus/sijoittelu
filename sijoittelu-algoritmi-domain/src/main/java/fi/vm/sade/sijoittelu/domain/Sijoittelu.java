@@ -5,10 +5,11 @@ import com.google.code.morphia.annotations.Entity;
 import com.google.code.morphia.annotations.Id;
 import com.google.code.morphia.annotations.Reference;
 import org.bson.types.ObjectId;
-import org.codehaus.jackson.map.annotate.JsonView;
 
 import java.io.Serializable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 /**
  * @author Kari Kammonen

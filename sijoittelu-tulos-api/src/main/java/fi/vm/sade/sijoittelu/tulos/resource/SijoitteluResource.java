@@ -1,23 +1,17 @@
 package fi.vm.sade.sijoittelu.tulos.resource;
 
-import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
-
-import java.util.Collection;
-import java.util.List;
+import fi.vm.sade.sijoittelu.tulos.dto.*;
+import fi.vm.sade.sijoittelu.tulos.dto.raportointi.HakijaDTO;
+import org.codehaus.jackson.map.annotate.JsonView;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import java.util.Collection;
+import java.util.List;
 
-import org.codehaus.jackson.map.annotate.JsonView;
-
-import fi.vm.sade.sijoittelu.tulos.dto.HakemusDTO;
-import fi.vm.sade.sijoittelu.tulos.dto.HakukohdeDTO;
-import fi.vm.sade.sijoittelu.tulos.dto.JsonViews;
-import fi.vm.sade.sijoittelu.tulos.dto.SijoitteluDTO;
-import fi.vm.sade.sijoittelu.tulos.dto.SijoitteluajoDTO;
-import fi.vm.sade.sijoittelu.tulos.dto.raportointi.HakijaDTO;
+import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 
 /**
  * 

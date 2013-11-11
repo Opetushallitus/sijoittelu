@@ -1,10 +1,10 @@
 package fi.vm.sade.sijoittelu.tulos.dto;
 
+import org.codehaus.jackson.map.annotate.JsonView;
+
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.ArrayList;
-
-import org.codehaus.jackson.map.annotate.JsonView;
 
 /**
  * Created with IntelliJ IDEA. User: kkammone Date: 5.9.2013 Time: 12:47 To
