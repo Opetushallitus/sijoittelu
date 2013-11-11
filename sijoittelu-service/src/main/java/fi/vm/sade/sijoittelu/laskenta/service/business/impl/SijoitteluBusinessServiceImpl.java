@@ -12,7 +12,6 @@ import fi.vm.sade.sijoittelu.domain.*;
 import fi.vm.sade.sijoittelu.laskenta.dao.Dao;
 import fi.vm.sade.sijoittelu.laskenta.service.business.SijoitteluBusinessService;
 import fi.vm.sade.sijoittelu.laskenta.service.exception.HakemusEiOleHyvaksyttyException;
-import fi.vm.sade.sijoittelu.laskenta.service.exception.TilaNullException;
 import fi.vm.sade.sijoittelu.laskenta.service.exception.ValintatulosOnJoVastaanotettuException;
 import fi.vm.sade.sijoittelu.laskenta.service.exception.ValintatulostaEiOleIlmoitettuException;
 import fi.vm.sade.sijoittelu.tulos.roles.SijoitteluRole;
@@ -191,9 +190,7 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
         if (StringUtils.isBlank(hakuoid) || StringUtils.isBlank(hakukohdeOid) || StringUtils.isBlank(valintatapajonoOid) || StringUtils.isBlank(hakemusOid)) {
             throw new RuntimeException("Invalid search params, fix exception later");
         }
-        if(tila == null) {
-            throw new TilaNullException("Vaihdettava tila oli tyhjä.");
-        }
+
 
         Sijoittelu sijoittelu = dao.loadSijoittelu(hakuoid);
         SijoitteluAjo ajo = sijoittelu.getLatestSijoitteluajo();
@@ -233,10 +230,10 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
         Valintatulos v = dao.loadValintatulos(hakukohdeOid, valintatapajonoOid, hakemusOid);
 
         if(!ophAdmin) {
-            if(v.getTila() == null && tila != ValintatuloksenTila.ILMOITETTU) {
+            if( (v ==null || v.getTila() == null) && tila != ValintatuloksenTila.ILMOITETTU) {
                 throw new ValintatulostaEiOleIlmoitettuException("Valintatulosta ei ole ilmoitettu");
             }
-            if(v.getTila() != null && v.getTila() != ValintatuloksenTila.ILMOITETTU) {
+            if( (v != null && v.getTila() != null) && v.getTila() != ValintatuloksenTila.ILMOITETTU) {
                 throw new ValintatulosOnJoVastaanotettuException("Valintatulos on jo vastaanotettu");
             }
         }
@@ -250,17 +247,20 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
             v.setHakutoive(hakemus.getPrioriteetti());
             v.setHakuOid(hakuoid);
         }
-
-        LOG.info("Asetetaan valintatuloksen tila - hakukohdeoid {}, valintatapajonooid {}, hakemusoid {}",
-                new Object[]{hakukohdeOid, valintatapajonoOid, hakemusOid});
-        LOG.info("Valintatuloksen uusi tila {}", tila.name());
-
         v.setTila(tila);
+
+        LOG.info("Asetetaan valintatuloksen tila - hakukohdeoid {}, valintatapajonooid {}, hakemusoid {}", new Object[]{hakukohdeOid, valintatapajonoOid, hakemusOid});
+        LOG.info("Valintatuloksen uusi tila {}", tila);
+
         LogEntry logEntry = new LogEntry();
         logEntry.setLuotu(new Date());
         logEntry.setMuokkaaja(AuthorizationUtil.getCurrentUser());
         logEntry.setSelite(selite);
-        logEntry.setMuutos(tila.name());
+        if(tila == null) {
+            logEntry.setMuutos("");
+        }   else {
+            logEntry.setMuutos(tila.name());
+        }
 
         v.getLogEntries().add(logEntry);
 
