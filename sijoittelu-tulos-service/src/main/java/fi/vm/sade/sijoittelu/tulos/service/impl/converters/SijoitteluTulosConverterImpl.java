@@ -1,18 +1,30 @@
 package fi.vm.sade.sijoittelu.tulos.service.impl.converters;
 
-import fi.vm.sade.sijoittelu.domain.*;
-import fi.vm.sade.sijoittelu.tulos.dto.HakemuksenTila;
-import fi.vm.sade.sijoittelu.tulos.dto.*;
-import fi.vm.sade.sijoittelu.tulos.dto.HakukohdeTila;
-import fi.vm.sade.sijoittelu.tulos.dto.Tasasijasaanto;
-import fi.vm.sade.sijoittelu.tulos.dto.ValintatapajonoTila;
-import fi.vm.sade.sijoittelu.tulos.dto.comparator.HakemusDTOComparator;
-import org.springframework.stereotype.Component;
-
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
+import org.springframework.stereotype.Component;
+
+import fi.vm.sade.sijoittelu.domain.Hakemus;
+import fi.vm.sade.sijoittelu.domain.Hakukohde;
+import fi.vm.sade.sijoittelu.domain.HakukohdeItem;
+import fi.vm.sade.sijoittelu.domain.Pistetieto;
+import fi.vm.sade.sijoittelu.domain.Sijoittelu;
+import fi.vm.sade.sijoittelu.domain.SijoitteluAjo;
+import fi.vm.sade.sijoittelu.domain.Valintatapajono;
+import fi.vm.sade.sijoittelu.tulos.dto.HakemuksenTila;
+import fi.vm.sade.sijoittelu.tulos.dto.HakemusDTO;
+import fi.vm.sade.sijoittelu.tulos.dto.HakukohdeDTO;
+import fi.vm.sade.sijoittelu.tulos.dto.HakukohdeTila;
+import fi.vm.sade.sijoittelu.tulos.dto.PistetietoDTO;
+import fi.vm.sade.sijoittelu.tulos.dto.SijoitteluDTO;
+import fi.vm.sade.sijoittelu.tulos.dto.SijoitteluajoDTO;
+import fi.vm.sade.sijoittelu.tulos.dto.Tasasijasaanto;
+import fi.vm.sade.sijoittelu.tulos.dto.ValintatapajonoDTO;
+import fi.vm.sade.sijoittelu.tulos.dto.ValintatapajonoTila;
+import fi.vm.sade.sijoittelu.tulos.dto.comparator.HakemusDTOComparator;
 
 /**
  * Created with IntelliJ IDEA. User: kkammone Date: 5.9.2013 Time: 14:28 To
@@ -90,7 +102,7 @@ public class SijoitteluTulosConverterImpl implements SijoitteluTulosConverter {
     }
 
     private void applyPistetiedot(HakemusDTO dto, List<Pistetieto> pistetiedot) {
-        for(Pistetieto pistetieto : pistetiedot) {
+        for (Pistetieto pistetieto : pistetiedot) {
             PistetietoDTO pistetietoDTO = new PistetietoDTO();
             pistetietoDTO.setArvo(pistetieto.getArvo());
             pistetietoDTO.setLaskennallinenArvo(pistetieto.getLaskennallinenArvo());
@@ -158,7 +170,9 @@ public class SijoitteluTulosConverterImpl implements SijoitteluTulosConverter {
     }
 
     /**
-     * Harkinnanvaraisesti hyvaksytyt eivat ole mukana alimman pistemaaran laskemisessa.
+     * Harkinnanvaraisesti hyvaksytyt eivat ole mukana alimman pistemaaran
+     * laskemisessa.
+     * 
      * @param v
      */
     private void applyAlinHyvaksyttyPistemaara(ValintatapajonoDTO v) {
@@ -180,7 +194,7 @@ public class SijoitteluTulosConverterImpl implements SijoitteluTulosConverter {
 
     /**
      * kutsu vasta sorttauksen jalkeen valintatapajonolle
-     *
+     * 
      * @param v
      */
     private void applyVarasijaJonosija(ValintatapajonoDTO v) {
