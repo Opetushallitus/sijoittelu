@@ -33,9 +33,9 @@ import static com.lordofthejars.nosqlunit.mongodb.MongoDbRule.MongoDbRuleBuilder
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = { "classpath:test-sijoittelu-batch-mongo.xml" })
-public class SijoitteluTesti {
+public class SijoitteluTest {
 
-    private static final Logger LOG = LoggerFactory.getLogger(SijoitteluTesti.class);
+    private static final Logger LOG = LoggerFactory.getLogger(SijoitteluTest.class);
 
     @Autowired
     private Dao dao;
