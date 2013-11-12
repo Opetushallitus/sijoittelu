@@ -1,14 +1,16 @@
 package fi.vm.sade.sijoittelu;
 
-import static com.lordofthejars.nosqlunit.mongodb.MongoDbRule.MongoDbRuleBuilder.newMongoDbRule;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
+import com.lordofthejars.nosqlunit.annotation.UsingDataSet;
+import com.lordofthejars.nosqlunit.core.LoadStrategyEnum;
+import com.lordofthejars.nosqlunit.mongodb.MongoDbRule;
+import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoitteluAlgorithm;
+import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoitteluAlgorithmFactory;
+import fi.vm.sade.sijoittelu.domain.HakemuksenTila;
+import fi.vm.sade.sijoittelu.domain.Hakemus;
+import fi.vm.sade.sijoittelu.domain.Hakukohde;
+import fi.vm.sade.sijoittelu.domain.Valintatapajono;
+import fi.vm.sade.sijoittelu.laskenta.dao.Dao;
 import junit.framework.Assert;
-
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -19,17 +21,12 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import com.lordofthejars.nosqlunit.annotation.UsingDataSet;
-import com.lordofthejars.nosqlunit.core.LoadStrategyEnum;
-import com.lordofthejars.nosqlunit.mongodb.MongoDbRule;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoitteluAlgorithm;
-import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoitteluAlgorithmFactory;
-import fi.vm.sade.sijoittelu.domain.HakemuksenTila;
-import fi.vm.sade.sijoittelu.domain.Hakemus;
-import fi.vm.sade.sijoittelu.domain.Hakukohde;
-import fi.vm.sade.sijoittelu.domain.Valintatapajono;
-import fi.vm.sade.sijoittelu.laskenta.dao.Dao;
+import static com.lordofthejars.nosqlunit.mongodb.MongoDbRule.MongoDbRuleBuilder.newMongoDbRule;
 
 /**
  * User: wuoti Date: 11.11.2013 Time: 15.13
@@ -79,17 +76,12 @@ public class SijoitteluTesti {
         }
 
         SijoitteluAlgorithm sijoitteluAlgorithm = algorithmFactory.constructAlgorithm(hakukohteet, null);
-        LOG.info("START");
         sijoitteluAlgorithm.start();
-        LOG.info("END");
 
-        ass(hakemusMapByHakemusOid, "1.2.246.562.11.00000011992", 1,
-                getHakukohde(hakukohteet, "1.2.246.562.14.2013082908162538927436"), HakemuksenTila.HYVAKSYTTY);
-        ass(hakemusMapByHakemusOid, "1.2.246.562.11.00000011992", 2,
-                getHakukohde(hakukohteet, "1.2.246.562.5.02563_04_873_0530"), HakemuksenTila.PERUUNTUNUT);
+        ass(hakemusMapByHakemusOid, "1.2.246.562.11.00000011992", 1, getHakukohde(hakukohteet, "1.2.246.562.14.2013082908162538927436"), HakemuksenTila.HYVAKSYTTY);
+        ass(hakemusMapByHakemusOid, "1.2.246.562.11.00000011993", 2, getHakukohde(hakukohteet, "1.2.246.562.5.02563_04_873_0530"), HakemuksenTila.PERUUNTUNUT);
 
-        // System.out.println(
-        // PrintHelper.tulostaSijoittelu(sijoitteluAlgorithm));
+        // System.out.println PrintHelper.tulostaSijoittelu(sijoitteluAlgorithm));
     }
 
     private Hakukohde getHakukohde(List<Hakukohde> hakukohteet, String hakukohdeOid) {
@@ -110,8 +102,8 @@ public class SijoitteluTesti {
         return null;
     }
 
-    private void ass(Map<String, List<Hakemus>> oid, String hakemusOid, int hakutoive, Hakukohde hakukohde,
-            HakemuksenTila tila) {
+    private void ass(Map<String, List<Hakemus>> oid, String hakemusOid, int hakutoive, Hakukohde hakukohde, HakemuksenTila tila) {
+
         for (Valintatapajono jono : hakukohde.getValintatapajonot()) {
             Hakemus hakemusHakukohteessa = getHakemus(jono.getHakemukset(), hakemusOid);
             if (hakemusHakukohteessa == null) {
@@ -122,10 +114,13 @@ public class SijoitteluTesti {
                     LOG.debug("Hakemuksen {} tila tarkistus {} == {}",
                             new Object[] { hakemus.getHakemusOid(), hakemus.getTila(), tila });
                     Assert.assertTrue(tila.equals(hakemus.getTila()));
+                    return;
                 }
             }
         }
-
+        // LOG.debug("Hakukohteen {} hakemus {} hakutoiveella {} ja tilalla {} ei loytynyt",
+        //         new Object[] {hakukohde.getOid(), hakemusOid, hakutoive, tila });
+        Assert.fail("Hakukohteen {"+hakukohde.getOid()+ "} hakemus {"+hakemusOid+ "} hakutoiveella {" +hakutoive+ "} ja tilalla {"+tila+ "} ei loytynyt");
     }
 
 }
