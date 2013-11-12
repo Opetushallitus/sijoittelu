@@ -186,16 +186,7 @@
                 <artifactId>jetty-maven-plugin</artifactId>
                 <version>8.1.9.v20130131</version>
             </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-surefire-plugin</artifactId>
-                    <version>${surefire.plugin.version}</version>
-                    <configuration>
-                        <argLine>-Xmx1024M</argLine>
-                    </configuration>
-                </plugin>
         </plugins>
-
     </build>
 
 
