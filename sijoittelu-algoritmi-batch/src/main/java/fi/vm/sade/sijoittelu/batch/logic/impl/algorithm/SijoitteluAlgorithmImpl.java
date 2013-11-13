@@ -311,21 +311,23 @@ public class SijoitteluAlgorithmImpl implements SijoitteluAlgorithm {
     }
 
     private HashSet<HakemusWrapper> asetaVaralleHakemus(HakemusWrapper varalleAsetettavaHakemusWrapper) {
-
         HashSet<HakemusWrapper> uudelleenSijoiteltavatHakukohteet = new HashSet<HakemusWrapper>();
-        for (HakemusWrapper hakemusWrapper : varalleAsetettavaHakemusWrapper.getHenkilo().getHakemukset()) {
-            if (hakemusWrapper.getHakemus().getTila() != HakemuksenTila.HYLATTY) {
-                hakemusWrapper.getHakemus().setTila(HakemuksenTila.VARALLA);
-                if (varalleAsetettavaHakemusWrapper.getHakemus().getTila() == HakemuksenTila.HYVAKSYTTY) {
+        if(varalleAsetettavaHakemusWrapper.getHakemus().getTila() == HakemuksenTila.HYVAKSYTTY) {
+            for (HakemusWrapper hakemusWrapper : varalleAsetettavaHakemusWrapper.getHenkilo().getHakemukset()) {
+                if (hakemusWrapper.getHakemus().getTila() != HakemuksenTila.HYLATTY || hakemusWrapper.getHakemus().getTila() != HakemuksenTila.PERUNUT ) {
+                    hakemusWrapper.getHakemus().setTila(HakemuksenTila.VARALLA);
                     uudelleenSijoiteltavatHakukohteet.add(hakemusWrapper);
                 }
+            }
+        } else {
+            if (varalleAsetettavaHakemusWrapper.getHakemus().getTila() != HakemuksenTila.HYLATTY || varalleAsetettavaHakemusWrapper.getHakemus().getTila() != HakemuksenTila.PERUNUT) {
+                varalleAsetettavaHakemusWrapper.getHakemus().setTila(HakemuksenTila.VARALLA);
             }
         }
         return uudelleenSijoiteltavatHakukohteet;
     }
 
     private HashSet<HakemusWrapper> hyvaksyHakemus(HakemusWrapper hakemus) {
-
         HashSet<HakemusWrapper> uudelleenSijoiteltavatHakukohteet = new HashSet<HakemusWrapper>();
         hakemus.getHakemus().setTila(HakemuksenTila.HYVAKSYTTY);
         for (HakemusWrapper h : hakemus.getHenkilo().getHakemukset()) {
@@ -334,9 +336,9 @@ public class SijoitteluAlgorithmImpl implements SijoitteluAlgorithm {
                     h.getHakemus().setTila(HakemuksenTila.PERUUNTUNUT);
                     uudelleenSijoiteltavatHakukohteet.add(h);
                 } else {
-                    if (h.getHakemus().getTila() == HakemuksenTila.VARALLA) {
+                    if (h.getHakemus().getTila() != HakemuksenTila.HYLATTY || h.getHakemus().getTila() != HakemuksenTila.PERUNUT) {
                         h.getHakemus().setTila(HakemuksenTila.PERUUNTUNUT);
-                    }
+                   }
                 }
             }
         }

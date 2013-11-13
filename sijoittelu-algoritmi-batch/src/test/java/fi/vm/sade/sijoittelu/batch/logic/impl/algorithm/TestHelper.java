@@ -65,7 +65,7 @@ public final class TestHelper {
         List<String> actual = new ArrayList<String>();
         for (Hakemus hakemus : h.getHakemukset()) {
             if (hakemus.getTila() == HakemuksenTila.HYVAKSYTTY) {
-                actual.add(hakemus.getHakijaOid());
+                actual.add(hakemus.getHakemusOid());
             }
         }
         Assert.assertTrue("Actual result does not contain all wanted approved OIDs", actual.containsAll(wanted));
@@ -77,7 +77,7 @@ public final class TestHelper {
         List<String> actual = new ArrayList<String>();
         for (Hakemus hakemus : h.getHakemukset()) {
             if (hakemus.getTila() == HakemuksenTila.HYVAKSYTTY) {
-                actual.add(hakemus.getHakijaOid());
+                actual.add(hakemus.getHakemusOid());
             }
         }
         Assert.assertTrue("Actual result does not contain all wanted approved OIDs", actual.containsAll(wanted));
@@ -88,7 +88,7 @@ public final class TestHelper {
 
         for (String s : string) {
             for (Hakemus hakemus : valintatapajono.getHakemukset()) {
-                if (hakemus.getHakijaOid().equals(s) && hakemus.getTila() == HakemuksenTila.HYVAKSYTTY) {
+                if (hakemus.getHakemusOid().equals(s) && hakemus.getTila() == HakemuksenTila.HYVAKSYTTY) {
                     hyvaksytty.add(hakemus);
                 }
             }
@@ -102,7 +102,7 @@ public final class TestHelper {
     public static void assertoiKukaanEiValittu(Valintatapajono valintatapajono) {
         for (Hakemus hakemus : valintatapajono.getHakemukset()) {
             if (hakemus.getTila() == HakemuksenTila.HYVAKSYTTY) {
-                Assert.assertTrue("HAKEMUS " + hakemus.getHakijaOid() + " WAS HYVAKSYTTY", false);
+                Assert.assertTrue("HAKEMUS " + hakemus.getHakemusOid() + " WAS HYVAKSYTTY", false);
             }
         }
     }

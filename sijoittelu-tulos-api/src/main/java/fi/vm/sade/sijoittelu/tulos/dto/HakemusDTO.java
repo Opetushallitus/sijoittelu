@@ -1,11 +1,11 @@
 package fi.vm.sade.sijoittelu.tulos.dto;
 
-import org.codehaus.jackson.map.annotate.JsonView;
-
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.codehaus.jackson.map.annotate.JsonView;
 
 /**
  * Created with IntelliJ IDEA. User: kkammone Date: 2.9.2013 Time: 13:22 To
@@ -44,6 +44,9 @@ public class HakemusDTO implements Serializable {
     private HakemuksenTila tila;
 
     @JsonView({ JsonViews.Hakemus.class, JsonViews.Hakukohde.class })
+    private String valintatuloksenTila;
+
+    @JsonView({ JsonViews.Hakemus.class, JsonViews.Hakukohde.class })
     private boolean hyvaksyttyHarkinnanvaraisesti = false;
 
     @JsonView({ JsonViews.Hakemus.class, JsonViews.Hakukohde.class })
@@ -65,6 +68,14 @@ public class HakemusDTO implements Serializable {
     private String hakuOid;
 
     private List<PistetietoDTO> pistetiedot = new ArrayList<PistetietoDTO>();
+
+    public String getValintatuloksenTila() {
+        return valintatuloksenTila;
+    }
+
+    public void setValintatuloksenTila(String valintatuloksenTila) {
+        this.valintatuloksenTila = valintatuloksenTila;
+    }
 
     public String getHakuOid() {
         return hakuOid;

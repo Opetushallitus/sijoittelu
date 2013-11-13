@@ -59,7 +59,7 @@ public class DomainConverter {
             hakijaryhma.setOid(h.getOid());
             hakijaryhma.setPrioriteetti(h.getPrioriteetti());
             for (String s : h.getHakijaOid()) {
-                hakijaryhma.getHakijaOid().add(s);
+                hakijaryhma.getHakemusOid().add(s);
             }
             hakukohde.getHakijaryhmat().add(hakijaryhma);
         }

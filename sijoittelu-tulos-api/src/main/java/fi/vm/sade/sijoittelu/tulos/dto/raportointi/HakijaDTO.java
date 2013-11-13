@@ -1,10 +1,11 @@
 package fi.vm.sade.sijoittelu.tulos.dto.raportointi;
 
-import fi.vm.sade.sijoittelu.tulos.dto.JsonViews;
-import org.codehaus.jackson.map.annotate.JsonView;
-
 import java.util.SortedSet;
 import java.util.TreeSet;
+
+import org.codehaus.jackson.map.annotate.JsonView;
+
+import fi.vm.sade.sijoittelu.tulos.dto.JsonViews;
 
 /**
  * Created with IntelliJ IDEA. User: kkammone Date: 16.9.2013 Time: 14:45 To

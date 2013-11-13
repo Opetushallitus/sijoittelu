@@ -44,7 +44,7 @@ public class PreSijoitteluProcessorTasasijaArvonta implements PreSijoitteluProce
             if (hakemus.getHakemus().getTasasijaJonosija() == null) {
                 if (has) {
                     throw new SijoitteluFailedException("Partial data on tasasijajonosija for hakemus: "
-                            + hakemus.getHakemus().getHakijaOid());
+                            + hakemus.getHakemus().getHakemusOid());
                 }
             } else {
                 has = true;
