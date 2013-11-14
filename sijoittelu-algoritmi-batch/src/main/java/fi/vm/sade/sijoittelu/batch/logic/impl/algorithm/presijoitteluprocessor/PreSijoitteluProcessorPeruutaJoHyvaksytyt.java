@@ -13,7 +13,8 @@ import fi.vm.sade.sijoittelu.domain.HakemuksenTila;
 public class PreSijoitteluProcessorPeruutaJoHyvaksytyt implements PreSijoitteluProcessor {
     /**
      * Peruutetaan jo jonnekkin hyväksyttyjen alemmat hakemukset.
-     * Tata voisi optimoida bitusti luuppaamalla vain
+     * Tata voisi optimoida bitusti luuppaamalla vain henkilo=>hakemus tyyliin. mutta kiire.
+     * Kaytannossa tata tarvitaan jos algoritmi on tyytyvainen nykytilanteeseeen eika koskaan muuta henkilon tilaa, jolloin varalla olevat jaavat koskemattomiksi.
      * @param sijoitteluajoWrapper
      */
 
