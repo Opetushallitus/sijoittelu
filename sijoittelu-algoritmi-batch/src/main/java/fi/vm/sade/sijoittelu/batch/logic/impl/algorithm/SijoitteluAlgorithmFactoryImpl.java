@@ -2,6 +2,7 @@ package fi.vm.sade.sijoittelu.batch.logic.impl.algorithm;
 
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.postsijoitteluprocessor.PostSijoitteluProcessor;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.presijoitteluprocessor.PreSijoitteluProcessor;
+import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.presijoitteluprocessor.PreSijoitteluProcessorPeruutaJoHyvaksytyt;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.presijoitteluprocessor.PreSijoitteluProcessorSort;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.presijoitteluprocessor.PreSijoitteluProcessorTasasijaArvonta;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.*;
@@ -34,6 +35,8 @@ public class SijoitteluAlgorithmFactoryImpl implements SijoitteluAlgorithmFactor
         List<PreSijoitteluProcessor> preSijoitteluProcessors = new ArrayList<PreSijoitteluProcessor>();
         preSijoitteluProcessors.add(new PreSijoitteluProcessorTasasijaArvonta());
         preSijoitteluProcessors.add(new PreSijoitteluProcessorSort());
+        preSijoitteluProcessors.add(new PreSijoitteluProcessorPeruutaJoHyvaksytyt());
+
 
         List<PostSijoitteluProcessor> postSijoitteluProcessors = new ArrayList<PostSijoitteluProcessor>();
 
