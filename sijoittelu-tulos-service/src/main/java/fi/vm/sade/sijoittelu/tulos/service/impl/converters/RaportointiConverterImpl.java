@@ -1,5 +1,6 @@
 package fi.vm.sade.sijoittelu.tulos.service.impl.converters;
 
+import fi.vm.sade.sijoittelu.domain.Valintatulos;
 import fi.vm.sade.sijoittelu.tulos.dto.*;
 import fi.vm.sade.sijoittelu.tulos.dto.raportointi.HakijaDTO;
 import fi.vm.sade.sijoittelu.tulos.dto.raportointi.HakutoiveDTO;
@@ -9,6 +10,7 @@ import org.springframework.stereotype.Component;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created with IntelliJ IDEA. User: kkammone Date: 17.9.2013 Time: 14:49 To
@@ -47,6 +49,35 @@ public class RaportointiConverterImpl implements RaportointiConverter {
             }
         }
         return new ArrayList<HakijaDTO>(hakijat.values());
+    }
+
+    @Override
+    public List<HakijaDTO> convert(List<HakukohdeDTO> hakukohteet, List<Valintatulos> valintatulokset) {
+        //convert hakijat
+        List<HakijaDTO> hakijat = convert(hakukohteet);
+        //apply valintatulos
+        Map<String, Valintatulos> valintatulosMap = mapValintatulokset(valintatulokset);
+        for(HakijaDTO hakija : hakijat) {
+            Valintatulos valintatulos = valintatulosMap.get(hakija.getHakemusOid());
+            if(valintatulos!=null) {
+                for(HakutoiveDTO hakutoiveDTO : hakija.getHakutoiveet()) {
+                    for(HakutoiveenValintatapajonoDTO valintatapajonoDTO : hakutoiveDTO.getHakutoiveenValintatapajonot())  {
+                        if(valintatulos.getValintatapajonoOid().equals(valintatapajonoDTO.getValintatapajonoOid())) {
+                            valintatapajonoDTO.setVastaanottotieto(EnumConverter.convert(ValintatuloksenTila.class, valintatulos.getTila()));
+                        }
+                    }
+                }
+            }
+        }
+        return hakijat;
+    }
+
+    private Map<String, Valintatulos> mapValintatulokset(List<Valintatulos> valintatulokset) {
+        Map <String, Valintatulos> map = new HashMap<String, Valintatulos>();
+        for(Valintatulos valintatulos : valintatulokset) {
+            map.put(valintatulos.getHakemusOid(), valintatulos);
+        }
+        return map;
     }
 
     private void applyPistetiedot(HakutoiveDTO dto, List<PistetietoDTO> pistetiedot) {

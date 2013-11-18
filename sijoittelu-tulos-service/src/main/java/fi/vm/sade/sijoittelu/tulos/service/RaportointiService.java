@@ -1,7 +1,9 @@
 package fi.vm.sade.sijoittelu.tulos.service;
 
+import fi.vm.sade.sijoittelu.domain.SijoitteluAjo;
 import fi.vm.sade.sijoittelu.tulos.dto.raportointi.HakijaDTO;
 
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -13,15 +15,24 @@ import java.util.List;
  */
 public interface RaportointiService {
 
-    List<HakijaDTO> latestKoulutuspaikalliset(String hakuOid);
 
-    List<HakijaDTO> koulutuspaikalliset(long sijoitteluajoId);
+    SijoitteluAjo getSijoitteluAjo(Long SijoitteluajoId);
 
-    List<HakijaDTO> latestIlmankoulutuspaikkaa(String hakuOid);
+    SijoitteluAjo latestSijoitteluAjoForHaku(String hakuOid);
 
-    List<HakijaDTO> ilmankoulutuspaikkaa(long sijoitteluajoId);
+    List<HakijaDTO> hyvaksytyt(SijoitteluAjo sijoitteluAjo);
 
-    List<HakijaDTO> latestHakijat(String oid);
+    Collection<HakijaDTO> hyvaksytyt(SijoitteluAjo sijoitteluAjo, String hakukohdeOid);
 
-    List<HakijaDTO> hakijat(long l);
+    List<HakijaDTO> ilmanhyvaksyntaa(SijoitteluAjo sijoitteluAjo);
+
+    List<HakijaDTO> ilmanhyvaksyntaa(SijoitteluAjo sijoitteluAjo, String hakukohdeOid);
+
+    Collection<HakijaDTO> vastaanottaneet(SijoitteluAjo sijoitteluAjo);
+
+    Collection<HakijaDTO> vastaanottaneet(SijoitteluAjo sijoitteluAjo, String hakukohdeOid);
+
+    List<HakijaDTO> hakemukset(SijoitteluAjo sijoitteluAjo);
+
+    HakijaDTO hakemus(SijoitteluAjo sijoitteluAjo, String hakemusOid);
 }
