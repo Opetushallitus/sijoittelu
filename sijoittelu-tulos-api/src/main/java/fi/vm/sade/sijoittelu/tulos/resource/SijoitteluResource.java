@@ -120,7 +120,7 @@ public interface SijoitteluResource {
     @JsonView(JsonViews.Hakija.class)
     @Produces(APPLICATION_JSON)
     @Deprecated
-    @Path("{hakuOid}//sijoitteluajo/{sijoitteluajoId}/vastaanottaneet")
+    @Path("{hakuOid}/sijoitteluajo/{sijoitteluajoId}/vastaanottaneet")
     Collection<HakijaDTO> vastaanottaneet(@PathParam("hakuOid") String hakuOid,
                                           @PathParam("sijoitteluajoId") String sijoitteluajoId);
 

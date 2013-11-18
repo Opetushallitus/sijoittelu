@@ -79,39 +79,6 @@ public class DAOImpl implements DAO {
     }
 
     @Override
-    //TODO REFACTOR
-    public Hakukohde getLatestHakukohdeBySijoitteluajo(String hakuOid, String hakukohdeOid) {
-
-        SijoitteluAjo sa = getLatestSijoitteluajo(hakuOid);
-
-        if(sa == null) {
-            return null;
-        }
-
-        Query<Hakukohde> query = morphiaDS.createQuery(Hakukohde.class);
-        query.field("oid").equal(hakukohdeOid);
-        query.field("sijoitteluajoId").equal(sa.getSijoitteluajoId());
-        return query.get();
-    }
-
-    @Override
-    //TODO REFACTOR
-    public List<Hakukohde> haeLatestHakukohteetJoihinHakemusOsallistuu(String hakuOid, String hakemusOid) {
-
-        SijoitteluAjo sa = getLatestSijoitteluajo(hakuOid);
-
-        if(sa == null) {
-            return null;
-        }
-        Query<Hakukohde> query = morphiaDS.createQuery(Hakukohde.class);
-        query.field("sijoitteluajoId").equal(sa.getSijoitteluajoId());
-        query.field("valintatapajonot.hakemukset.hakemusOid").equal(hakemusOid);
-        List<Hakukohde> list = query.asList();
-        return list;
-
-    }
-
-    @Override
     public List<Hakukohde> getHakukohteetForSijoitteluajo(Long sijoitteluAjoId) {
         Query<Hakukohde> query = morphiaDS.createQuery(Hakukohde.class);
         query.field("sijoitteluajoId").equal(sijoitteluAjoId);

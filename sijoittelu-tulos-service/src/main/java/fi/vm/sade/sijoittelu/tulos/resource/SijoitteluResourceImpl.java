@@ -36,36 +36,24 @@ public class SijoitteluResourceImpl implements SijoitteluResource {
     @Autowired
     private RaportointiService raportointiService;
 
-    @Secured({ READ, UPDATE, CRUD })
-    public List<HakemusDTO> getHakemusBySijoitteluajo(String hakuOid, String sijoitteluajoId, String hakemusOid) {
-        if (LATEST.equals(sijoitteluajoId)) {
-            return sijoitteluTulosService.haeLatestHakukohteetJoihinHakemusOsallistuu(hakuOid, hakemusOid);
-        } else {
-            return sijoitteluTulosService.haeHakukohteetJoihinHakemusOsallistuu(Long.parseLong(sijoitteluajoId), hakemusOid);
-        }
-    }
-
+    @Override
     @Secured({ READ, UPDATE, CRUD })
     public SijoitteluDTO getSijoitteluByHakuOid(String hakuOid) {
         return sijoitteluTulosService.getSijoitteluByHakuOid(hakuOid);
     }
 
+    @Override
     @Secured({ READ, UPDATE, CRUD })
     public SijoitteluajoDTO getSijoitteluajo(String hakuOid, String sijoitteluajoId) {
-        if (LATEST.equals(sijoitteluajoId)) {
-            return sijoitteluTulosService.getLatestSijoitteluajo(hakuOid);
-        } else {
-            return sijoitteluTulosService.getSijoitteluajo(Long.parseLong(sijoitteluajoId));
-        }
+        SijoitteluAjo ajo  = getSijoitteluAjo(sijoitteluajoId, hakuOid) ;
+        return sijoitteluTulosService.getSijoitteluajo(ajo);
     }
 
+    @Override
     @Secured({ READ, UPDATE, CRUD })
     public HakukohdeDTO getHakukohdeBySijoitteluajo(String hakuOid, String sijoitteluajoId, String hakukohdeOid) {
-        if (LATEST.equals(sijoitteluajoId)) {
-            return sijoitteluTulosService.getLatestHakukohdeBySijoitteluajo(hakuOid, hakukohdeOid);
-        } else {
-            return sijoitteluTulosService.getHakukohdeBySijoitteluajo(Long.parseLong(sijoitteluajoId), hakukohdeOid);
-        }
+        SijoitteluAjo ajo  = getSijoitteluAjo(sijoitteluajoId, hakuOid) ;
+        return sijoitteluTulosService.getHakukohdeBySijoitteluajo(ajo, hakukohdeOid);
     }
 
     @Override
@@ -76,7 +64,14 @@ public class SijoitteluResourceImpl implements SijoitteluResource {
         return raportointiService.hakemukset(ajo);
     }
 
+    @Override
+    @Secured({ READ, UPDATE, CRUD })
+    public List<HakemusDTO> getHakemusBySijoitteluajo(String hakuOid, String sijoitteluajoId, String hakemusOid) {
+        SijoitteluAjo ajo  = getSijoitteluAjo(sijoitteluajoId, hakuOid) ;
+        return sijoitteluTulosService.haeHakukohteetJoihinHakemusOsallistuu(ajo, hakemusOid);
+    }
 
+   // @Override
     @Secured({ READ, UPDATE, CRUD })
     public HakijaDTO hakemus(@PathParam("hakuOid") String hakuOid,
                              @PathParam("sijoitteluajoId") String sijoitteluajoId,
