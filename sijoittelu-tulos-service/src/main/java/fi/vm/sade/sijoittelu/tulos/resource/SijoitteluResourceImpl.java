@@ -100,7 +100,7 @@ public class SijoitteluResourceImpl implements SijoitteluResource {
     @Override
     @Deprecated
     @Secured({ READ, UPDATE, CRUD })
-    public Collection<HakijaDTO> hyvaksytyt(String hakuOid, final String hakukohdeOid, String sijoitteluajoId) {
+    public Collection<HakijaDTO> hyvaksytyt(String hakuOid, String hakukohdeOid, String sijoitteluajoId) {
         SijoitteluAjo ajo = getSijoitteluAjo(sijoitteluajoId, hakuOid) ;
         return raportointiService.hyvaksytyt(ajo, hakukohdeOid);
     }

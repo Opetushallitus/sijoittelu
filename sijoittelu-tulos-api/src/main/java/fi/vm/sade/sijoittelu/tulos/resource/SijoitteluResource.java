@@ -58,6 +58,7 @@ public interface SijoitteluResource {
 
     @GET
     @Produces(APPLICATION_JSON)
+    @JsonView(JsonViews.Hakemus.class)
     @Path("{hakuOid}/sijoitteluajo/{sijoitteluajoId}/hakemus/{hakemusOid}")
     List<HakemusDTO> getHakemusBySijoitteluajo(@PathParam("hakuOid") String hakuOid,
                                                @PathParam("sijoitteluajoId") String sijoitteluajoId,
