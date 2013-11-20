@@ -1,5 +1,6 @@
 package fi.vm.sade.sijoittelu.tulos.service;
 
+import fi.vm.sade.sijoittelu.domain.SijoitteluAjo;
 import fi.vm.sade.sijoittelu.tulos.dto.HakemusDTO;
 import fi.vm.sade.sijoittelu.tulos.dto.HakukohdeDTO;
 import fi.vm.sade.sijoittelu.tulos.dto.SijoitteluDTO;
@@ -13,17 +14,11 @@ import java.util.List;
  */
 public interface SijoitteluTulosService {
 
-    List<HakemusDTO> haeHakukohteetJoihinHakemusOsallistuu(Long sijoitteluajoId, String hakemusOid);
+    List<HakemusDTO> haeHakukohteetJoihinHakemusOsallistuu(SijoitteluAjo sijoitteluAjo, String hakemusOid);
 
-    HakukohdeDTO getHakukohdeBySijoitteluajo(Long sijoitteluajoId, String hakukohdeOid);
+    HakukohdeDTO getHakukohdeBySijoitteluajo(SijoitteluAjo sijoitteluAjo, String hakukohdeOid);
 
-    SijoitteluajoDTO getSijoitteluajo(Long sijoitteluajoId);
+    SijoitteluajoDTO getSijoitteluajo(SijoitteluAjo sijoitteluAjo);
 
     SijoitteluDTO getSijoitteluByHakuOid(String hakuOid);
-
-    SijoitteluajoDTO getLatestSijoitteluajo(String hakuOid);
-
-    HakukohdeDTO getLatestHakukohdeBySijoitteluajo(String hakuOid, String hakukohdeOid);
-
-    List<HakemusDTO> haeLatestHakukohteetJoihinHakemusOsallistuu(String hakuOid, String hakemusOid);
 }

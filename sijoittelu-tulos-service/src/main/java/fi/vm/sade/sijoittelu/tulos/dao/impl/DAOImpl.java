@@ -5,7 +5,9 @@ import com.google.code.morphia.query.Query;
 import fi.vm.sade.sijoittelu.domain.Hakukohde;
 import fi.vm.sade.sijoittelu.domain.Sijoittelu;
 import fi.vm.sade.sijoittelu.domain.SijoitteluAjo;
+import fi.vm.sade.sijoittelu.domain.Valintatulos;
 import fi.vm.sade.sijoittelu.tulos.dao.DAO;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -77,43 +79,50 @@ public class DAOImpl implements DAO {
     }
 
     @Override
-    //TODO REFACTOR
-    public Hakukohde getLatestHakukohdeBySijoitteluajo(String hakuOid, String hakukohdeOid) {
-
-        SijoitteluAjo sa = getLatestSijoitteluajo(hakuOid);
-
-        if(sa == null) {
-            return null;
-        }
-
+    public List<Hakukohde> getHakukohteetForSijoitteluajo(Long sijoitteluAjoId) {
         Query<Hakukohde> query = morphiaDS.createQuery(Hakukohde.class);
-        query.field("oid").equal(hakukohdeOid);
-        query.field("sijoitteluajoId").equal(sa.getSijoitteluajoId());
-        return query.get();
-    }
-
-    @Override
-    //TODO REFACTOR
-    public List<Hakukohde> haeLatestHakukohteetJoihinHakemusOsallistuu(String hakuOid, String hakemusOid) {
-
-        SijoitteluAjo sa = getLatestSijoitteluajo(hakuOid);
-
-        if(sa == null) {
-            return null;
-        }
-        Query<Hakukohde> query = morphiaDS.createQuery(Hakukohde.class);
-        query.field("sijoitteluajoId").equal(sa.getSijoitteluajoId());
-        query.field("valintatapajonot.hakemukset.hakemusOid").equal(hakemusOid);
-        List<Hakukohde> list = query.asList();
-        return list;
-
-    }
-
-    @Override
-    public List<Hakukohde> getHakukohteetForSijoitteluajo(Long id) {
-        Query<Hakukohde> query = morphiaDS.createQuery(Hakukohde.class);
-        query.field("sijoitteluajoId").equal(id);
+        query.field("sijoitteluajoId").equal(sijoitteluAjoId);
         return query.asList();
     }
+    @Override
+    public List<Hakukohde> getHakukohteetForSijoitteluajo(Long sijoitteluAjoId, String hakukohdeOid) {
+        Query<Hakukohde> query = morphiaDS.createQuery(Hakukohde.class);
+        query.field("sijoitteluajoId").equal(sijoitteluAjoId);
+        query.field("oid").equal(hakukohdeOid);
+        return query.asList();
+    }
+
+
+    @Override
+    public List<Valintatulos> loadValintatulokset(String hakuOid) {
+        if(StringUtils.isBlank(hakuOid) )    {
+            throw new RuntimeException("Invalid search params, fix exception later");
+        }
+        Query<Valintatulos> q = morphiaDS.createQuery(Valintatulos.class);
+        q.criteria("hakuOid").equal(hakuOid);
+        return q.asList();
+    }
+
+    @Override
+    public List<Valintatulos> loadValintatulokset(String hakuOid, String hakukohdeOid) {
+        if(StringUtils.isBlank(hakuOid) || StringUtils.isBlank(hakukohdeOid))    {
+            throw new RuntimeException("Invalid search params, fix exception later");
+        }
+        Query<Valintatulos> q = morphiaDS.createQuery(Valintatulos.class);
+        q.criteria("hakuOid").equal(hakuOid);
+        q.criteria("hakukohdeOid").equal(hakukohdeOid);
+        return q.asList();
+    }
+
+    @Override
+    public List<Valintatulos> loadValintatuloksetForHakemus(String hakemusOid) {
+        if(StringUtils.isBlank(hakemusOid) )    {
+            throw new RuntimeException("Invalid search params, fix exception later");
+        }
+        Query<Valintatulos> q = morphiaDS.createQuery(Valintatulos.class);
+        q.criteria("hakemusOid").equal(hakemusOid);
+        return q.asList();
+    }
+
 
 }

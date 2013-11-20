@@ -59,7 +59,6 @@ public class SijoitteluAlgorithmImpl implements SijoitteluAlgorithm {
         if (n > depth) {
             depth = n;
         }
-        // System.out.println("Depth = " + n);
 
         for (ValintatapajonoWrapper valintatapajono : hakukohde.getValintatapajonot()) {
             this.sijoittele(valintatapajono, n);
@@ -136,7 +135,6 @@ public class SijoitteluAlgorithmImpl implements SijoitteluAlgorithm {
             }
         }
 
-        // System.out.println("====DONE");
 
         for (HakukohdeWrapper v : uudelleenSijoiteltavatHakukohteet(muuttuneetHakemukset)) {
             sijoittele(v, n);

@@ -27,8 +27,18 @@ public class SijoitteluTulosServiceImpl implements SijoitteluTulosService {
     private SijoitteluTulosConverter sijoitteluTulosConverter;
 
     @Override
-    public HakukohdeDTO getHakukohdeBySijoitteluajo(Long sijoitteluajoId, String hakukohdeOid) {
-        Hakukohde a = dao.getHakukohdeBySijoitteluajo(sijoitteluajoId, hakukohdeOid);
+    public List<HakemusDTO> haeHakukohteetJoihinHakemusOsallistuu(SijoitteluAjo sijoitteluAjo, String hakemusOid) {
+        List<Hakukohde> b = dao.haeHakukohteetJoihinHakemusOsallistuu( sijoitteluAjo.getSijoitteluajoId(), hakemusOid);
+        if (b == null) {
+            return null;
+        }
+        List<HakukohdeDTO> a = sijoitteluTulosConverter.convert(b);
+        return getDtos(a, hakemusOid);
+    }
+
+    @Override
+    public HakukohdeDTO getHakukohdeBySijoitteluajo(SijoitteluAjo sijoitteluAjo, String hakukohdeOid) {
+        Hakukohde a = dao.getHakukohdeBySijoitteluajo(sijoitteluAjo.getSijoitteluajoId(), hakukohdeOid);
         if (a == null) {
             return null;
         }
@@ -37,12 +47,11 @@ public class SijoitteluTulosServiceImpl implements SijoitteluTulosService {
     }
 
     @Override
-    public SijoitteluajoDTO getSijoitteluajo(Long sijoitteluajoId) {
-        SijoitteluAjo a = dao.getSijoitteluajo(sijoitteluajoId);
-        if (a == null) {
+    public SijoitteluajoDTO getSijoitteluajo(SijoitteluAjo sijoitteluAjo) {
+        if (sijoitteluAjo == null) {
             return null;
         }
-        SijoitteluajoDTO b = sijoitteluTulosConverter.convert(a);
+        SijoitteluajoDTO b = sijoitteluTulosConverter.convert(sijoitteluAjo);
         return b;
     }
 
@@ -55,34 +64,8 @@ public class SijoitteluTulosServiceImpl implements SijoitteluTulosService {
         return sijoitteluTulosConverter.convert(s);
     }
 
-    @Override
-    public SijoitteluajoDTO getLatestSijoitteluajo(String hakuOid) {
-        SijoitteluAjo s = dao.getLatestSijoitteluajo(hakuOid);
-        if (s == null) {
-            return null;
-        }
-        return sijoitteluTulosConverter.convert(s);
-    }
 
-    @Override
-    public HakukohdeDTO getLatestHakukohdeBySijoitteluajo(String hakuOid, String hakukohdeOid) {
-        Hakukohde a = dao.getLatestHakukohdeBySijoitteluajo(hakuOid, hakukohdeOid);
-        if (a == null) {
-            return null;
-        }
-        HakukohdeDTO b = sijoitteluTulosConverter.convert(a);
-        return b;
-    }
 
-    @Override
-    public List<HakemusDTO> haeLatestHakukohteetJoihinHakemusOsallistuu(String hakuOid, String hakemusOid) {
-        List<Hakukohde> b = dao.haeLatestHakukohteetJoihinHakemusOsallistuu(hakuOid, hakemusOid);
-        if (b == null) {
-            return null;
-        }
-        List<HakukohdeDTO> a = sijoitteluTulosConverter.convert(b);
-        return getDtos(a, hakemusOid);
-    }
 
     private List<HakemusDTO> getDtos(List<HakukohdeDTO> b, String hakemusOid) {
         List<HakemusDTO> hakemukset = new ArrayList<HakemusDTO>();
@@ -97,16 +80,5 @@ public class SijoitteluTulosServiceImpl implements SijoitteluTulosService {
         }
         return hakemukset;
     }
-
-    @Override
-    public List<HakemusDTO> haeHakukohteetJoihinHakemusOsallistuu(Long sijoitteluajoId, String hakemusOid) {
-        List<Hakukohde> b = dao.haeHakukohteetJoihinHakemusOsallistuu(sijoitteluajoId, hakemusOid);
-        if (b == null) {
-            return null;
-        }
-        List<HakukohdeDTO> a = sijoitteluTulosConverter.convert(b);
-        return getDtos(a, hakemusOid);
-    }
-
 
 }

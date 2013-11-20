@@ -2,6 +2,7 @@ package fi.vm.sade.sijoittelu.tulos.dto.raportointi;
 
 import fi.vm.sade.sijoittelu.tulos.dto.HakemuksenTila;
 import fi.vm.sade.sijoittelu.tulos.dto.JsonViews;
+import fi.vm.sade.sijoittelu.tulos.dto.ValintatuloksenTila;
 import org.codehaus.jackson.map.annotate.JsonView;
 
 import java.math.BigDecimal;
@@ -29,6 +30,9 @@ public class HakutoiveenValintatapajonoDTO {
 
     @JsonView(JsonViews.Hakija.class)
     private HakemuksenTila tila;
+
+    @JsonView(JsonViews.Hakija.class)
+    private ValintatuloksenTila vastaanottotieto;
 
     @JsonView(JsonViews.Hakija.class)
     private boolean hyvaksyttyHarkinnanvaraisesti = false;
@@ -153,5 +157,13 @@ public class HakutoiveenValintatapajonoDTO {
 
     public void setPisteet(BigDecimal pisteet) {
         this.pisteet = pisteet;
+    }
+
+    public ValintatuloksenTila getVastaanottotieto() {
+        return vastaanottotieto;
+    }
+
+    public void setVastaanottotieto(ValintatuloksenTila vastaanottotieto) {
+        this.vastaanottotieto = vastaanottotieto;
     }
 }

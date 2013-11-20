@@ -3,6 +3,7 @@ package fi.vm.sade.sijoittelu.tulos.dao;
 import fi.vm.sade.sijoittelu.domain.Hakukohde;
 import fi.vm.sade.sijoittelu.domain.Sijoittelu;
 import fi.vm.sade.sijoittelu.domain.SijoitteluAjo;
+import fi.vm.sade.sijoittelu.domain.Valintatulos;
 
 import java.util.List;
 
@@ -23,9 +24,15 @@ public interface DAO {
 
     SijoitteluAjo getLatestSijoitteluajo(String hakuOid);
 
-    Hakukohde getLatestHakukohdeBySijoitteluajo(String hakuOid, String hakukohdeOid);
-
-    List<Hakukohde> haeLatestHakukohteetJoihinHakemusOsallistuu(String hakuOid, String hakemusOid);
-
     List<Hakukohde> getHakukohteetForSijoitteluajo(Long id);
+
+    List<Valintatulos> loadValintatulokset(String hakuOid);
+
+    List<Valintatulos> loadValintatulokset(String hakuOid, String hakukohdeOid);
+
+    List<Valintatulos> loadValintatuloksetForHakemus(String hakemusOid);
+
+    List<Hakukohde> getHakukohteetForSijoitteluajo(Long sijoitteluAjoId, String hakukohdeOid);
+
+
 }

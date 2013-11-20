@@ -2,9 +2,11 @@ package fi.vm.sade.sijoittelu.tulos.service.impl;
 
 import fi.vm.sade.sijoittelu.domain.Hakukohde;
 import fi.vm.sade.sijoittelu.domain.SijoitteluAjo;
+import fi.vm.sade.sijoittelu.domain.Valintatulos;
 import fi.vm.sade.sijoittelu.tulos.dao.DAO;
 import fi.vm.sade.sijoittelu.tulos.dto.HakemuksenTila;
 import fi.vm.sade.sijoittelu.tulos.dto.HakukohdeDTO;
+import fi.vm.sade.sijoittelu.tulos.dto.ValintatuloksenTila;
 import fi.vm.sade.sijoittelu.tulos.dto.raportointi.HakijaDTO;
 import fi.vm.sade.sijoittelu.tulos.dto.raportointi.HakutoiveDTO;
 import fi.vm.sade.sijoittelu.tulos.dto.raportointi.HakutoiveenValintatapajonoDTO;
@@ -15,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -40,47 +43,89 @@ public class RaportointiServiceImpl implements RaportointiService {
     private SijoitteluTulosConverter sijoitteluTulosConverter;
 
 
+
     @Override
-    public List<HakijaDTO> latestKoulutuspaikalliset(String hakuOid){
-        SijoitteluAjo ajo =  dao.getLatestSijoitteluajo(hakuOid);
-        if(ajo==null)  {
-            return new ArrayList<HakijaDTO>();
+    public SijoitteluAjo getSijoitteluAjo(Long SijoitteluajoId) {
+        return dao.getSijoitteluajo(SijoitteluajoId);
+    }
+
+    @Override
+    public SijoitteluAjo latestSijoitteluAjoForHaku(String hakuOid) {
+        return dao.getLatestSijoitteluajo(hakuOid);
+    }
+
+    @Override
+    public List<HakijaDTO> hyvaksytyt(SijoitteluAjo sijoitteluAjoId) {
+        return filterHyvakstyt(getHakijat(sijoitteluAjoId));
+    }
+
+    @Override
+    public Collection<HakijaDTO> hyvaksytyt(SijoitteluAjo sijoitteluAjoId, String hakukohdeOid) {
+        return filterHyvakstyt(getHakijat(sijoitteluAjoId, hakukohdeOid));
+    }
+
+    @Override
+    public List<HakijaDTO> ilmanhyvaksyntaa(SijoitteluAjo sijoitteluAjoId) {
+        return filterIlmanhyvaksyntaa(getHakijat(sijoitteluAjoId));
+    }
+
+    @Override
+    public List<HakijaDTO> ilmanhyvaksyntaa(SijoitteluAjo sijoitteluAjoId, String hakukohdeOid) {
+        return filterIlmanhyvaksyntaa(getHakijat(sijoitteluAjoId, hakukohdeOid));
+    }
+
+    @Override
+    public Collection<HakijaDTO> vastaanottaneet(SijoitteluAjo sijoitteluAjoId) {
+        return filterVastanottaneet(getHakijat(sijoitteluAjoId));
+    }
+
+    @Override
+    public Collection<HakijaDTO> vastaanottaneet(SijoitteluAjo sijoitteluAjoId, String hakukohdeOid) {
+        return filterVastanottaneet(getHakijat(sijoitteluAjoId,hakukohdeOid));
+    }
+
+    @Override
+    public List<HakijaDTO> hakemukset(SijoitteluAjo sijoitteluAjoId) {
+        return getHakijat(sijoitteluAjoId);
+    }
+
+    @Override
+    public HakijaDTO hakemus(SijoitteluAjo sijoitteluAjo, String hakemusOid) {
+        List<Hakukohde> hakukohteetJoihinHakemusOsallistuu =    dao.haeHakukohteetJoihinHakemusOsallistuu(sijoitteluAjo.getSijoitteluajoId(), hakemusOid);
+        List<Valintatulos> valintatulokset = dao.loadValintatuloksetForHakemus(hakemusOid);
+        List<HakukohdeDTO> hakukohdeDTOs = sijoitteluTulosConverter.convert(hakukohteetJoihinHakemusOsallistuu);
+        List<HakijaDTO> hakijat  =   raportointiConverter.convert(hakukohdeDTOs, valintatulokset);
+        return filterHakemus(hakijat, hakemusOid);
+
+    }
+
+
+
+    private List<HakijaDTO> getHakijat(SijoitteluAjo sijoitteluAjo){
+        List<Hakukohde> hakukohteet=  dao.getHakukohteetForSijoitteluajo(sijoitteluAjo.getSijoitteluajoId());
+        List<Valintatulos> valintatulokset = dao.loadValintatulokset(sijoitteluAjo.getHakuOid());
+        List<HakukohdeDTO> hakukohdeDTOs = sijoitteluTulosConverter.convert(hakukohteet);
+        List<HakijaDTO> hakijat  =   raportointiConverter.convert(hakukohdeDTOs,valintatulokset);
+        return  hakijat;
+    }
+    private List<HakijaDTO> getHakijat(SijoitteluAjo sijoitteluAjo, String hakukohdeOid){
+        List<Hakukohde> hakukohteet=  dao.getHakukohteetForSijoitteluajo(sijoitteluAjo.getSijoitteluajoId(), hakukohdeOid);
+        List<Valintatulos> valintatulokset = dao.loadValintatulokset(sijoitteluAjo.getHakuOid(), hakukohdeOid);
+        List<HakukohdeDTO> hakukohdeDTOs = sijoitteluTulosConverter.convert(hakukohteet);
+        List<HakijaDTO> hakijat  =   raportointiConverter.convert(hakukohdeDTOs,valintatulokset);
+        return  hakijat;
+    }
+
+    private HakijaDTO filterHakemus(List<HakijaDTO> hakijat, String hakemusOid) {
+        for(HakijaDTO hakijaDTO : hakijat) {
+            if(hakemusOid.equals(hakijaDTO.getHakemusOid())) {
+                return hakijaDTO;
+            }
         }
-        List<Hakukohde> hakukohteet=  dao.getHakukohteetForSijoitteluajo(ajo.getSijoitteluajoId());
-        List<HakukohdeDTO> hakukohdeDTOs = sijoitteluTulosConverter.convert(hakukohteet);
-        List<HakijaDTO> hakijat  =   raportointiConverter.convert(hakukohdeDTOs);
-        return filterkoulutuspaikalliset( hakijat);
+        return null;
     }
 
-    @Override
-    public List<HakijaDTO> koulutuspaikalliset(long sijoitteluajoId){
-        List<Hakukohde> hakukohteet=  dao.getHakukohteetForSijoitteluajo(sijoitteluajoId);
-        List<HakukohdeDTO> hakukohdeDTOs = sijoitteluTulosConverter.convert(hakukohteet);
-        List<HakijaDTO> hakijat  =   raportointiConverter.convert(hakukohdeDTOs);
-        return filterkoulutuspaikalliset( hakijat);
-    }
-
-    @Override
-    public List<HakijaDTO> latestIlmankoulutuspaikkaa(String hakuOid) {
-        SijoitteluAjo ajo =  dao.getLatestSijoitteluajo(hakuOid);
-        if(ajo==null)  {
-            return new ArrayList<HakijaDTO>();
-        }
-        List<Hakukohde> hakukohteet=  dao.getHakukohteetForSijoitteluajo(ajo.getSijoitteluajoId());
-        List<HakukohdeDTO> hakukohdeDTOs = sijoitteluTulosConverter.convert(hakukohteet);
-        List<HakijaDTO> hakijat  =   raportointiConverter.convert(hakukohdeDTOs);
-        return filterIlmanKoulutuspaikkaa(hakijat);
-    }
-
-    @Override
-    public List<HakijaDTO> ilmankoulutuspaikkaa(long sijoitteluajoId){
-        List<Hakukohde> hakukohteet=  dao.getHakukohteetForSijoitteluajo(sijoitteluajoId);
-        List<HakukohdeDTO> hakukohdeDTOs = sijoitteluTulosConverter.convert(hakukohteet);
-        List<HakijaDTO> hakijat  =   raportointiConverter.convert(hakukohdeDTOs);
-        return filterIlmanKoulutuspaikkaa(hakijat);
-    }
-
-    private List<HakijaDTO> filterIlmanKoulutuspaikkaa(List<HakijaDTO>  kaikkiHakijat){
+    private List<HakijaDTO> filterIlmanhyvaksyntaa(List<HakijaDTO>  kaikkiHakijat){
         List<HakijaDTO> ilmanKoulutuspaikkaa = new ArrayList<HakijaDTO>();
         for(HakijaDTO hakijaDTO : kaikkiHakijat) {
             boolean lisataan = true;
@@ -97,7 +142,7 @@ public class RaportointiServiceImpl implements RaportointiService {
         }
         return ilmanKoulutuspaikkaa;
     }
-    private List<HakijaDTO> filterkoulutuspaikalliset(List<HakijaDTO>  kaikkiHakijat){
+    private List<HakijaDTO> filterHyvakstyt(List<HakijaDTO>  kaikkiHakijat){
         List<HakijaDTO> ilmanKoulutuspaikkaa = new ArrayList<HakijaDTO>();
         for(HakijaDTO hakijaDTO : kaikkiHakijat) {
             boolean lisataan = false;
@@ -114,22 +159,22 @@ public class RaportointiServiceImpl implements RaportointiService {
         }
         return ilmanKoulutuspaikkaa;
     }
-
-    @Override
-    public List<HakijaDTO> latestHakijat(String hakuOid) {
-        SijoitteluAjo ajo =  dao.getLatestSijoitteluajo(hakuOid);
-        List<Hakukohde> hakukohteet=  dao.getHakukohteetForSijoitteluajo(ajo.getSijoitteluajoId());
-        List<HakukohdeDTO> hakukohdeDTOs = sijoitteluTulosConverter.convert(hakukohteet);
-        List<HakijaDTO> hakijat  =   raportointiConverter.convert(hakukohdeDTOs);
-        return hakijat;
-    }
-
-    @Override
-    public List<HakijaDTO> hakijat(long sijoitteluajoId) {
-        List<Hakukohde> hakukohteet=  dao.getHakukohteetForSijoitteluajo(sijoitteluajoId);
-        List<HakukohdeDTO> hakukohdeDTOs = sijoitteluTulosConverter.convert(hakukohteet);
-        List<HakijaDTO> hakijat  =   raportointiConverter.convert(hakukohdeDTOs);
-        return hakijat;
+    private List<HakijaDTO> filterVastanottaneet(List<HakijaDTO>  kaikkiHakijat){
+        List<HakijaDTO> ilmanKoulutuspaikkaa = new ArrayList<HakijaDTO>();
+        for(HakijaDTO hakijaDTO : kaikkiHakijat) {
+            boolean lisataan = false;
+            for(HakutoiveDTO hakutoiveDTO : hakijaDTO.getHakutoiveet())  {
+                for(HakutoiveenValintatapajonoDTO vt: hakutoiveDTO.getHakutoiveenValintatapajonot()) {
+                    if(vt.getVastaanottotieto() == ValintatuloksenTila.VASTAANOTTANUT_LASNA || vt.getVastaanottotieto() == ValintatuloksenTila.VASTAANOTTANUT_POISSAOLEVA) {
+                        lisataan = true;
+                    }
+                }
+            }
+            if(lisataan) {
+                ilmanKoulutuspaikkaa.add(hakijaDTO);
+            }
+        }
+        return ilmanKoulutuspaikkaa;
     }
 
 }
