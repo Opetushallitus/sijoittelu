@@ -24,15 +24,21 @@ public interface DAO {
 
     SijoitteluAjo getLatestSijoitteluajo(String hakuOid);
 
-    List<Hakukohde> getHakukohteetForSijoitteluajo(Long id);
+   // List<Hakukohde> getHakukohteetForSijoitteluajo(Long id);
+
+   // List<Valintatulos> loadValintatulokset(String hakuOid, List<String> vastaanottotieto);
 
     List<Valintatulos> loadValintatulokset(String hakuOid);
 
-    List<Valintatulos> loadValintatulokset(String hakuOid, String hakukohdeOid);
-
     List<Valintatulos> loadValintatuloksetForHakemus(String hakemusOid);
 
-    List<Hakukohde> getHakukohteetForSijoitteluajo(Long sijoitteluAjoId, String hakukohdeOid);
+    List<String> hakukohteet(Long sijoitteluajoId,
+                             List<String> vastaanottotieto,
+                             List<String> tila,
+                             List<String> hakukohdeOid,
+                             Integer count,
+                             Integer index);
 
+    // List<Hakukohde> getHakukohteetForSijoitteluajo(Long sijoitteluAjoId, String hakukohdeOid);
 
 }

@@ -11,6 +11,8 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
 
 /**
@@ -78,6 +80,7 @@ public class DAOImpl implements DAO {
         return ajo;
     }
 
+    /*
     @Override
     public List<Hakukohde> getHakukohteetForSijoitteluajo(Long sijoitteluAjoId) {
         Query<Hakukohde> query = morphiaDS.createQuery(Hakukohde.class);
@@ -91,7 +94,7 @@ public class DAOImpl implements DAO {
         query.field("oid").equal(hakukohdeOid);
         return query.asList();
     }
-
+    */
 
     @Override
     public List<Valintatulos> loadValintatulokset(String hakuOid) {
@@ -103,17 +106,24 @@ public class DAOImpl implements DAO {
         return q.asList();
     }
 
+
+    /*
     @Override
-    public List<Valintatulos> loadValintatulokset(String hakuOid, String hakukohdeOid) {
-        if(StringUtils.isBlank(hakuOid) || StringUtils.isBlank(hakukohdeOid))    {
+    public List<Valintatulos> loadValintatulokset(String hakuOid, String hakukohdeOid,  List<String> vastaanottotieto) {
+        if(StringUtils.isBlank(hakuOid))    {
             throw new RuntimeException("Invalid search params, fix exception later");
         }
         Query<Valintatulos> q = morphiaDS.createQuery(Valintatulos.class);
         q.criteria("hakuOid").equal(hakuOid);
-        q.criteria("hakukohdeOid").equal(hakukohdeOid);
+        if(StringUtils.isNotBlank(hakukohdeOid)){
+            q.criteria("hakukohdeOid").equal(hakukohdeOid);
+        }
+        if(vastaanottotieto !=null && vastaanottotieto.size() > 0){
+            q.criteria("tila").in(vastaanottotieto);
+        }
         return q.asList();
     }
-
+      */
     @Override
     public List<Valintatulos> loadValintatuloksetForHakemus(String hakemusOid) {
         if(StringUtils.isBlank(hakemusOid) )    {
@@ -122,6 +132,51 @@ public class DAOImpl implements DAO {
         Query<Valintatulos> q = morphiaDS.createQuery(Valintatulos.class);
         q.criteria("hakemusOid").equal(hakemusOid);
         return q.asList();
+    }
+
+
+    /**
+     * This right here is some fucked up shit, but mongoDB & domain
+     * @param sijoitteluajoId
+     * @param vastaanottotieto
+     * @param tila
+     * @param hakukohdeOid
+     * @param count
+     * @param index
+     * @return
+     */
+    @Override
+    public List<String> hakukohteet(Long sijoitteluajoId,
+                                    List<String> vastaanottotieto,
+                                    List<String> tila,
+                                    List<String> hakukohdeOid,
+                                    Integer count,
+                                    Integer index) {
+
+        Query query = morphiaDS.createQuery(Hakukohde.class);
+        query.field("sijoitteluajoId").equal(sijoitteluajoId);
+
+        if(tila!=null && tila.size() > 0) {
+            query.field("valintatapajonot.hakemukset.tila").in(tila);
+        }
+        if(hakukohdeOid!=null && hakukohdeOid.size() > 0) {
+            query.field("oid").in(hakukohdeOid);
+        }
+
+
+        query.retrievedFields(true, "valintatapajonot.hakemukset.hakemusOid");
+        LinkedHashSet<String> set = new LinkedHashSet<String>();
+        set.addAll(query.asList());
+        ArrayList<String> list = new ArrayList<String>();
+        list.addAll(set);
+
+        if(count != null && index != null) {
+            return list.subList(index, index+count);
+        }   else if(count!=null) {
+            return list.subList(0, count);
+        }
+        return list;
+
     }
 
 

@@ -1,7 +1,8 @@
 package fi.vm.sade.sijoittelu.tulos.service.impl.converters;
 
-import fi.vm.sade.sijoittelu.tulos.dto.raportointi.HakijaDTO;
+import fi.vm.sade.sijoittelu.domain.Valintatulos;
 import fi.vm.sade.sijoittelu.tulos.dto.HakukohdeDTO;
+import fi.vm.sade.sijoittelu.tulos.dto.raportointi.HakijaDTO;
 
 import java.util.List;
 

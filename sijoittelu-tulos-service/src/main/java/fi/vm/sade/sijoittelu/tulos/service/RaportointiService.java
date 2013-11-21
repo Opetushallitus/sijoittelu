@@ -3,7 +3,6 @@ package fi.vm.sade.sijoittelu.tulos.service;
 import fi.vm.sade.sijoittelu.domain.SijoitteluAjo;
 import fi.vm.sade.sijoittelu.tulos.dto.raportointi.HakijaDTO;
 
-import java.util.Collection;
 import java.util.List;
 
 /**
@@ -20,6 +19,7 @@ public interface RaportointiService {
 
     SijoitteluAjo latestSijoitteluAjoForHaku(String hakuOid);
 
+      /*
     List<HakijaDTO> hyvaksytyt(SijoitteluAjo sijoitteluAjo);
 
     Collection<HakijaDTO> hyvaksytyt(SijoitteluAjo sijoitteluAjo, String hakukohdeOid);
@@ -31,8 +31,10 @@ public interface RaportointiService {
     Collection<HakijaDTO> vastaanottaneet(SijoitteluAjo sijoitteluAjo);
 
     Collection<HakijaDTO> vastaanottaneet(SijoitteluAjo sijoitteluAjo, String hakukohdeOid);
+    */
 
-    List<HakijaDTO> hakemukset(SijoitteluAjo sijoitteluAjo);
 
     HakijaDTO hakemus(SijoitteluAjo sijoitteluAjo, String hakemusOid);
+
+    List<String> hakemukset(SijoitteluAjo ajo, List<String> vastaanottotieto, List<String> tila,  List <String> hakukohdeOid, Integer count, Integer index);
 }

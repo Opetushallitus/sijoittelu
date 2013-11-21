@@ -1,7 +1,6 @@
 package fi.vm.sade.sijoittelu.tulos.resource;
 
 import fi.vm.sade.sijoittelu.domain.SijoitteluAjo;
-import fi.vm.sade.sijoittelu.tulos.dto.HakemusDTO;
 import fi.vm.sade.sijoittelu.tulos.dto.HakukohdeDTO;
 import fi.vm.sade.sijoittelu.tulos.dto.SijoitteluDTO;
 import fi.vm.sade.sijoittelu.tulos.dto.SijoitteluajoDTO;
@@ -16,7 +15,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
 
 import javax.ws.rs.PathParam;
-import java.util.Collection;
+import javax.ws.rs.QueryParam;
 import java.util.List;
 
 import static fi.vm.sade.sijoittelu.tulos.roles.SijoitteluRole.*;
@@ -57,21 +56,22 @@ public class SijoitteluResourceImpl implements SijoitteluResource {
     }
 
     @Override
-    @Secured({ READ, UPDATE, CRUD })
-    public List<HakijaDTO> hakemukset(@PathParam("hakuOid") String hakuOid,
-                                      @PathParam("sijoitteluajoId") String sijoitteluajoId) {
+    public List<String> hakemukset(@PathParam("hakuOid") String hakuOid,
+                                      @PathParam("sijoitteluajoId") String sijoitteluajoId,
+                                      @QueryParam("vastaanottotieto") List<String> vastaanottotieto,
+                                      @QueryParam("tila") List<String> tila,
+                                      @QueryParam("hakukohdeOid")  List <String> hakukohdeOid,
+                                      @QueryParam("count") Integer count,
+                                      @QueryParam("startIndex") Integer startIndex) {
+
+
         SijoitteluAjo ajo  = getSijoitteluAjo(sijoitteluajoId, hakuOid) ;
-        return raportointiService.hakemukset(ajo);
+        return raportointiService.hakemukset(ajo, vastaanottotieto, tila, hakukohdeOid,count,startIndex);
     }
+
+
 
     @Override
-    @Secured({ READ, UPDATE, CRUD })
-    public List<HakemusDTO> getHakemusBySijoitteluajo(String hakuOid, String sijoitteluajoId, String hakemusOid) {
-        SijoitteluAjo ajo  = getSijoitteluAjo(sijoitteluajoId, hakuOid) ;
-        return sijoitteluTulosService.haeHakukohteetJoihinHakemusOsallistuu(ajo, hakemusOid);
-    }
-
-   // @Override
     @Secured({ READ, UPDATE, CRUD })
     public HakijaDTO hakemus(@PathParam("hakuOid") String hakuOid,
                              @PathParam("sijoitteluajoId") String sijoitteluajoId,
@@ -89,7 +89,17 @@ public class SijoitteluResourceImpl implements SijoitteluResource {
         }
     }
 
+        /*
+    @Override
+    @Secured({ READ, UPDATE, CRUD })
+    public List<HakemusDTO> getHakemusBySijoitteluajo(String hakuOid, String sijoitteluajoId, String hakemusOid) {
+        SijoitteluAjo ajo  = getSijoitteluAjo(sijoitteluajoId, hakuOid) ;
+        return sijoitteluTulosService.haeHakukohteetJoihinHakemusOsallistuu(ajo, hakemusOid);
+    }
+      */
 
+
+   /*
     @Override
     @Deprecated
     @Secured({ READ, UPDATE, CRUD })
@@ -137,4 +147,5 @@ public class SijoitteluResourceImpl implements SijoitteluResource {
         SijoitteluAjo ajo = getSijoitteluAjo(sijoitteluajoId, hakuOid) ;
         return raportointiService.vastaanottaneet(ajo, hakukohdeOid);
     }
+    */
 }
