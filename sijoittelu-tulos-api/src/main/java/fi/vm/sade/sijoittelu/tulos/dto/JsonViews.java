@@ -6,13 +6,15 @@ package fi.vm.sade.sijoittelu.tulos.dto;
  * Time: 16.00
  */
 public class JsonViews {
-    public static class Tila { }
-    public static class MonenHakemuksenTila { }
+    public static class All { }
 
-    public static class Hakukohde { }
-    public static class Hakemus { }
-    public static class Sijoitteluajo { }
-    public static class Sijoittelu { }
+    public static class Tila extends All{ }
+    public static class MonenHakemuksenTila extends All { }
 
-    public static class Hakija { }
+    public static class Hakukohde extends All{ }
+    public static class Hakemus extends All{ }
+    public static class Sijoitteluajo extends All{ }
+    public static class Sijoittelu extends All{ }
+
+    public static class Hakija extends All{ }
 }

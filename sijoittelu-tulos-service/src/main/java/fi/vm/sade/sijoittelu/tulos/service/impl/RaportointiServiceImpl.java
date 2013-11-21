@@ -10,6 +10,7 @@ import fi.vm.sade.sijoittelu.tulos.dto.HakukohdeDTO;
 import fi.vm.sade.sijoittelu.tulos.dto.raportointi.HakijaDTO;
 import fi.vm.sade.sijoittelu.tulos.dto.raportointi.HakutoiveDTO;
 import fi.vm.sade.sijoittelu.tulos.dto.raportointi.HakutoiveenValintatapajonoDTO;
+import fi.vm.sade.sijoittelu.tulos.dto.raportointi.PaginationObject;
 import fi.vm.sade.sijoittelu.tulos.service.RaportointiService;
 import fi.vm.sade.sijoittelu.tulos.service.impl.comparators.HakijaDTOComparator;
 import fi.vm.sade.sijoittelu.tulos.service.impl.converters.EnumConverter;
@@ -86,7 +87,7 @@ public class RaportointiServiceImpl implements RaportointiService {
      * @return
      */
     @Override
-    public List<HakijaDTO> hakemukset(SijoitteluAjo ajo,
+    public PaginationObject<HakijaDTO> hakemukset(SijoitteluAjo ajo,
                                       List<String> vastaanottotieto,
                                       List<String> tila,
                                       List<String> hakukohdeOid,
@@ -103,6 +104,7 @@ public class RaportointiServiceImpl implements RaportointiService {
         Collections.sort(hakijat, new HakijaDTOComparator());
 
         //hakijat should be cached & set to non-mutable
+        PaginationObject<HakijaDTO> paginationObject = new PaginationObject<HakijaDTO>();
 
         List<HakijaDTO> result = new ArrayList<HakijaDTO>();
         for ( HakijaDTO hakija : hakijat) {
@@ -110,7 +112,10 @@ public class RaportointiServiceImpl implements RaportointiService {
                 result.add(hakija);
             }
         }
-        return applyPagination(result, count, index);
+
+        paginationObject.setTotalCount(result.size());
+        paginationObject.setResults(applyPagination(result, count, index));
+        return paginationObject;
     }
 
     private boolean filter(HakijaDTO hakija, List<ValintatuloksenTila> vastaanottotieto, List<HakemuksenTila> tila, List<String> hakukohdeOid) {

@@ -2,6 +2,7 @@ package fi.vm.sade.sijoittelu.tulos.service;
 
 import fi.vm.sade.sijoittelu.domain.SijoitteluAjo;
 import fi.vm.sade.sijoittelu.tulos.dto.raportointi.HakijaDTO;
+import fi.vm.sade.sijoittelu.tulos.dto.raportointi.PaginationObject;
 
 import java.util.List;
 
@@ -36,5 +37,5 @@ public interface RaportointiService {
 
     HakijaDTO hakemus(SijoitteluAjo sijoitteluAjo, String hakemusOid);
 
-    List<HakijaDTO> hakemukset(SijoitteluAjo ajo, List<String> vastaanottotieto, List<String> tila,  List <String> hakukohdeOid, Integer count, Integer index);
+    PaginationObject<HakijaDTO> hakemukset(SijoitteluAjo ajo, List<String> vastaanottotieto, List<String> tila,  List <String> hakukohdeOid, Integer count, Integer index);
 }

@@ -5,6 +5,7 @@ import fi.vm.sade.sijoittelu.tulos.dto.HakukohdeDTO;
 import fi.vm.sade.sijoittelu.tulos.dto.SijoitteluDTO;
 import fi.vm.sade.sijoittelu.tulos.dto.SijoitteluajoDTO;
 import fi.vm.sade.sijoittelu.tulos.dto.raportointi.HakijaDTO;
+import fi.vm.sade.sijoittelu.tulos.dto.raportointi.PaginationObject;
 import fi.vm.sade.sijoittelu.tulos.service.RaportointiService;
 import fi.vm.sade.sijoittelu.tulos.service.SijoitteluTulosService;
 import org.slf4j.Logger;
@@ -56,7 +57,7 @@ public class SijoitteluResourceImpl implements SijoitteluResource {
     }
 
     @Override
-    public List<HakijaDTO> hakemukset(@PathParam("hakuOid") String hakuOid,
+    public PaginationObject<HakijaDTO> hakemukset(@PathParam("hakuOid") String hakuOid,
                                       @PathParam("sijoitteluajoId") String sijoitteluajoId,
                                       @QueryParam("vastaanottotieto") List<String> vastaanottotieto,
                                       @QueryParam("tila") List<String> tila,
