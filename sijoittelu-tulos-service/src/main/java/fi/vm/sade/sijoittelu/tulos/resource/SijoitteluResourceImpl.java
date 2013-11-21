@@ -56,7 +56,7 @@ public class SijoitteluResourceImpl implements SijoitteluResource {
     }
 
     @Override
-    public List<String> hakemukset(@PathParam("hakuOid") String hakuOid,
+    public List<HakijaDTO> hakemukset(@PathParam("hakuOid") String hakuOid,
                                       @PathParam("sijoitteluajoId") String sijoitteluajoId,
                                       @QueryParam("vastaanottotieto") List<String> vastaanottotieto,
                                       @QueryParam("tila") List<String> tila,

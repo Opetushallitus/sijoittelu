@@ -44,7 +44,7 @@ public interface SijoitteluResource {
     @JsonView(JsonViews.Hakija.class)
     @Produces(APPLICATION_JSON)
     @Path("{hakuOid}/sijoitteluajo/{sijoitteluajoId}/hakemukset")
-    List<String> hakemukset(@PathParam("hakuOid") String hakuOid,
+    List<HakijaDTO>  hakemukset(@PathParam("hakuOid") String hakuOid,
                             @PathParam("sijoitteluajoId") String sijoitteluajoId,
                             @QueryParam("vastaanottotieto") List<String> vastaanottotieto,
                             @QueryParam("tila") List<String> tila,

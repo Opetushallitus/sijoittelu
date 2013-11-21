@@ -36,5 +36,5 @@ public interface RaportointiService {
 
     HakijaDTO hakemus(SijoitteluAjo sijoitteluAjo, String hakemusOid);
 
-    List<String> hakemukset(SijoitteluAjo ajo, List<String> vastaanottotieto, List<String> tila,  List <String> hakukohdeOid, Integer count, Integer index);
+    List<HakijaDTO> hakemukset(SijoitteluAjo ajo, List<String> vastaanottotieto, List<String> tila,  List <String> hakukohdeOid, Integer count, Integer index);
 }

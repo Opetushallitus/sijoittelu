@@ -2,16 +2,24 @@ package fi.vm.sade.sijoittelu.tulos.service.impl;
 
 import fi.vm.sade.sijoittelu.domain.Hakukohde;
 import fi.vm.sade.sijoittelu.domain.SijoitteluAjo;
+import fi.vm.sade.sijoittelu.domain.ValintatuloksenTila;
 import fi.vm.sade.sijoittelu.domain.Valintatulos;
 import fi.vm.sade.sijoittelu.tulos.dao.DAO;
+import fi.vm.sade.sijoittelu.tulos.dto.HakemuksenTila;
 import fi.vm.sade.sijoittelu.tulos.dto.HakukohdeDTO;
 import fi.vm.sade.sijoittelu.tulos.dto.raportointi.HakijaDTO;
+import fi.vm.sade.sijoittelu.tulos.dto.raportointi.HakutoiveDTO;
+import fi.vm.sade.sijoittelu.tulos.dto.raportointi.HakutoiveenValintatapajonoDTO;
 import fi.vm.sade.sijoittelu.tulos.service.RaportointiService;
+import fi.vm.sade.sijoittelu.tulos.service.impl.comparators.HakijaDTOComparator;
+import fi.vm.sade.sijoittelu.tulos.service.impl.converters.EnumConverter;
 import fi.vm.sade.sijoittelu.tulos.service.impl.converters.RaportointiConverter;
 import fi.vm.sade.sijoittelu.tulos.service.impl.converters.SijoitteluTulosConverter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -66,89 +74,77 @@ public class RaportointiServiceImpl implements RaportointiService {
         return null;
     }
 
+    /**
+     *  Unfortunately this has to be done like this, on the positive side, these results can be cached, only valintatulokset needs
+     * to be refreshed, EVER!
+     * @param ajo
+     * @param vastaanottotieto
+     * @param tila
+     * @param hakukohdeOid
+     * @param count
+     * @param index
+     * @return
+     */
     @Override
-    public List<String> hakemukset(SijoitteluAjo ajo,
+    public List<HakijaDTO> hakemukset(SijoitteluAjo ajo,
                                       List<String> vastaanottotieto,
                                       List<String> tila,
-                                      List <String> hakukohdeOid,
+                                      List<String> hakukohdeOid,
                                       Integer count,
                                       Integer index) {
+
+        List<ValintatuloksenTila> vastaanottotietoEnums = EnumConverter.convertStringListToEnum(ValintatuloksenTila.class, vastaanottotieto);
+        List<HakemuksenTila> tilaEnums = EnumConverter.convertStringListToEnum(HakemuksenTila.class, tila);
+
         List<Valintatulos> valintatulokset =  dao.loadValintatulokset(ajo.getHakuOid());
-         List<String> hakemusOid = dao.lo
-        // List<HakukohdeDTO> hakukohdeDTOs = sijoitteluTulosConverter.convert(hakukohteetJoihinHakemusOsallistuu);
-        // List<HakijaDTO> hakijat  =   raportointiConverter.convert(hakukohdeDTOs,valintatulokset);
-        // return hakijat;
-        return hakemusOid;
+        List<Hakukohde> hakukohteet = dao.getHakukohteetForSijoitteluajo(ajo.getSijoitteluajoId());
+        List<HakukohdeDTO> hakukohdeDTOs = sijoitteluTulosConverter.convert(hakukohteet);
+        List<HakijaDTO> hakijat  =   raportointiConverter.convert(hakukohdeDTOs,valintatulokset);
+        Collections.sort(hakijat, new HakijaDTOComparator());
+
+        //hakijat should be cached & set to non-mutable
+
+        List<HakijaDTO> result = new ArrayList<HakijaDTO>();
+        for ( HakijaDTO hakija : hakijat) {
+            if(filter(hakija, vastaanottotietoEnums,tilaEnums,hakukohdeOid)) {
+                result.add(hakija);
+            }
+        }
+        return applyPagination(result, count, index);
     }
 
-    /*
-      private List<HakijaDTO> getHakijat(SijoitteluAjo sijoitteluAjo){
-          List<Hakukohde> hakukohteet=  dao.getHakukohteetForSijoitteluajo(sijoitteluAjo.getSijoitteluajoId());
-          List<Valintatulos> valintatulokset = dao.loadValintatulokset(sijoitteluAjo.getHakuOid());
-          List<HakukohdeDTO> hakukohdeDTOs = sijoitteluTulosConverter.convert(hakukohteet);
-          List<HakijaDTO> hakijat  =   raportointiConverter.convert(hakukohdeDTOs,valintatulokset);
-          return  hakijat;
-      }
-      private List<HakijaDTO> getHakijat(SijoitteluAjo sijoitteluAjo, String hakukohdeOid){
-          List<Hakukohde> hakukohteet=  dao.getHakukohteetForSijoitteluajo(sijoitteluAjo.getSijoitteluajoId(), hakukohdeOid);
-          List<Valintatulos> valintatulokset = dao.loadValintatulokset(sijoitteluAjo.getHakuOid(), hakukohdeOid);
-          List<HakukohdeDTO> hakukohdeDTOs = sijoitteluTulosConverter.convert(hakukohteet);
-          List<HakijaDTO> hakijat  =   raportointiConverter.convert(hakukohdeDTOs,valintatulokset);
-          return  hakijat;
-      }
-     */
+    private boolean filter(HakijaDTO hakija, List<ValintatuloksenTila> vastaanottotieto, List<HakemuksenTila> tila, List<String> hakukohdeOid) {
+        boolean vastaanottotietoOK = false;
+        boolean tilaOk =false;
+        boolean hakukohdeOidOk=false;
+        if(vastaanottotieto == null || vastaanottotieto.size() > 0) {
+            vastaanottotietoOK = true;
+        }
+        if(tila == null || tila.size() > 0) {
+            tilaOk = true;
+        }
+        if(hakukohdeOid == null || hakukohdeOid.size() > 0) {
+            hakukohdeOidOk = true;
+        }
+        for(HakutoiveDTO hakutoiveDTO : hakija.getHakutoiveet()) {
+            if(hakukohdeOid.contains(hakutoiveDTO.getHakukohdeOid())) {
+                hakukohdeOidOk = true;
+            }
+            for(HakutoiveenValintatapajonoDTO valintatapajono : hakutoiveDTO.getHakutoiveenValintatapajonot()){
+                if(tila.contains(valintatapajono.getTila())) {
+                    tilaOk = true;
+                }
+                if(vastaanottotieto.contains(valintatapajono.getVastaanottotieto())) {
+                    vastaanottotietoOK = true;
+                }
+            }
+        }
+        return vastaanottotietoOK && tilaOk && hakukohdeOidOk;
+    }
 
-    /*
-    private List<HakijaDTO> filterIlmanhyvaksyntaa(List<HakijaDTO>  kaikkiHakijat){
-        List<HakijaDTO> ilmanKoulutuspaikkaa = new ArrayList<HakijaDTO>();
-        for(HakijaDTO hakijaDTO : kaikkiHakijat) {
-            boolean lisataan = true;
-            for(HakutoiveDTO hakutoiveDTO : hakijaDTO.getHakutoiveet())  {
-                for(HakutoiveenValintatapajonoDTO vt: hakutoiveDTO.getHakutoiveenValintatapajonot()) {
-                    if(vt.getTila() == HakemuksenTila.HYVAKSYTTY) {
-                        lisataan = false;
-                    }
-                }
-            }
-            if(lisataan) {
-                ilmanKoulutuspaikkaa.add(hakijaDTO);
-            }
-        }
-        return ilmanKoulutuspaikkaa;
+
+    private List<HakijaDTO> applyPagination(List<HakijaDTO> result, Integer count, Integer index) {
+        return result.subList(index, index+count);
     }
-    private List<HakijaDTO> filterHyvakstyt(List<HakijaDTO>  kaikkiHakijat){
-        List<HakijaDTO> ilmanKoulutuspaikkaa = new ArrayList<HakijaDTO>();
-        for(HakijaDTO hakijaDTO : kaikkiHakijat) {
-            boolean lisataan = false;
-            for(HakutoiveDTO hakutoiveDTO : hakijaDTO.getHakutoiveet())  {
-                for(HakutoiveenValintatapajonoDTO vt: hakutoiveDTO.getHakutoiveenValintatapajonot()) {
-                    if(vt.getTila() == HakemuksenTila.HYVAKSYTTY) {
-                        lisataan = true;
-                    }
-                }
-            }
-            if(lisataan) {
-                ilmanKoulutuspaikkaa.add(hakijaDTO);
-            }
-        }
-        return ilmanKoulutuspaikkaa;
-    }
-    private List<HakijaDTO> filterVastanottaneet(List<HakijaDTO>  kaikkiHakijat){
-        List<HakijaDTO> ilmanKoulutuspaikkaa = new ArrayList<HakijaDTO>();
-        for(HakijaDTO hakijaDTO : kaikkiHakijat) {
-            boolean lisataan = false;
-            for(HakutoiveDTO hakutoiveDTO : hakijaDTO.getHakutoiveet())  {
-                for(HakutoiveenValintatapajonoDTO vt: hakutoiveDTO.getHakutoiveenValintatapajonot()) {
-                    if(vt.getVastaanottotieto() == ValintatuloksenTila.VASTAANOTTANUT_LASNA || vt.getVastaanottotieto() == ValintatuloksenTila.VASTAANOTTANUT_POISSAOLEVA) {
-                        lisataan = true;
-                    }
-                }
-            }
-            if(lisataan) {
-                ilmanKoulutuspaikkaa.add(hakijaDTO);
-            }
-        }
-        return ilmanKoulutuspaikkaa;
-    }
-      */
+
 }

@@ -24,7 +24,7 @@ public interface DAO {
 
     SijoitteluAjo getLatestSijoitteluajo(String hakuOid);
 
-   // List<Hakukohde> getHakukohteetForSijoitteluajo(Long id);
+    List<Hakukohde> getHakukohteetForSijoitteluajo(Long id);
 
    // List<Valintatulos> loadValintatulokset(String hakuOid, List<String> vastaanottotieto);
 
