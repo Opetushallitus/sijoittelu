@@ -91,6 +91,7 @@ public class RaportointiServiceImpl implements RaportointiService {
         if(hakukohdeOid== null) {
             hakukohdeOid = new ArrayList<String>();
         }
+
         PaginationObject<HakijaDTO> paginationObject = new PaginationObject<HakijaDTO>();
 
         List<HakijaDTO> result = new ArrayList<HakijaDTO>();
@@ -123,12 +124,13 @@ public class RaportointiServiceImpl implements RaportointiService {
                 }
             }
         }
-        return ((hakukohdeOid == null || hakukohdeOid.size() <0) || isPartOfHakukohdeList) &&
+        return ((hakukohdeOid == null || hakukohdeOid.size() <=0) || isPartOfHakukohdeList) &&
                 (
-                    (!Boolean.TRUE.equals(hyvaksytyt) || isHyvaksytty ) &&
-                    (!Boolean.TRUE.equals(ilmanHyvaksyntaa) || !isHyvaksytty ) &&
-                    (!Boolean.TRUE.equals(vastaanottaneet) || isVastaanottanut )
+                        (!Boolean.TRUE.equals(hyvaksytyt) || isHyvaksytty ) &&
+                                (!Boolean.TRUE.equals(ilmanHyvaksyntaa) || !isHyvaksytty ) &&
+                                (!Boolean.TRUE.equals(vastaanottaneet) || isVastaanottanut )
                 );
+
     }
 
 
@@ -146,7 +148,14 @@ public class RaportointiServiceImpl implements RaportointiService {
 
 
     private List<HakijaDTO> applyPagination(List<HakijaDTO> result, Integer count, Integer index) {
-        return result.subList(index, index+count);
+        if(index != null && count !=null) {
+            return result.subList(index, index+count);
+        } else if(index != null) {
+            return result.subList(index, result.size()-1);
+        } else if(count != null) {
+            return result.subList(0, count);
+        }
+        return result;
     }
 
 }
