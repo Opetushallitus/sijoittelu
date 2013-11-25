@@ -47,8 +47,9 @@ public interface SijoitteluResource {
     @Path("{hakuOid}/sijoitteluajo/{sijoitteluajoId}/hakemukset")
     PaginationObject<HakijaDTO> hakemukset(@PathParam("hakuOid") String hakuOid,
                             @PathParam("sijoitteluajoId") String sijoitteluajoId,
-                            @QueryParam("vastaanottotieto") List<String> vastaanottotieto,
-                            @QueryParam("tila") List<String> tila,
+                            @QueryParam("hyvaksytyt") Boolean hyvaksytyt,
+                            @QueryParam("ilmanHyvaksyntaa") Boolean ilmanHyvaksyntaa,
+                            @QueryParam("vastaanottaneet") Boolean vastaanottaneet,
                             @QueryParam("hakukohdeOid")  List <String> hakukohdeOid,
                             @QueryParam("count") Integer count,
                             @QueryParam("startIndex") Integer startIndex);

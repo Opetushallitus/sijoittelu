@@ -58,17 +58,17 @@ public class SijoitteluResourceImpl implements SijoitteluResource {
 
     @Override
     public PaginationObject<HakijaDTO> hakemukset(@PathParam("hakuOid") String hakuOid,
-                                      @PathParam("sijoitteluajoId") String sijoitteluajoId,
-                                      @QueryParam("vastaanottotieto") List<String> vastaanottotieto,
-                                      @QueryParam("tila") List<String> tila,
-                                      @QueryParam("hakukohdeOid")  List <String> hakukohdeOid,
-                                      @QueryParam("count") Integer count,
-                                      @QueryParam("startIndex") Integer startIndex) {
-
-
+                                                  @PathParam("sijoitteluajoId") String sijoitteluajoId,
+                                                  @QueryParam("hyvaksytyt") Boolean hyvaksytyt,
+                                                  @QueryParam("ilmanHyvaksyntaa") Boolean ilmanHyvaksyntaa,
+                                                  @QueryParam("vastaanottaneet") Boolean vastaanottaneet,
+                                                  @QueryParam("hakukohdeOid") List<String> hakukohdeOid,
+                                                  @QueryParam("count") Integer count,
+                                                  @QueryParam("startIndex") Integer startIndex) {
         SijoitteluAjo ajo  = getSijoitteluAjo(sijoitteluajoId, hakuOid) ;
-        return raportointiService.hakemukset(ajo, vastaanottotieto, tila, hakukohdeOid,count,startIndex);
+        return raportointiService.hakemukset(ajo, hyvaksytyt, ilmanHyvaksyntaa,vastaanottaneet, hakukohdeOid,count,startIndex);
     }
+
 
 
 

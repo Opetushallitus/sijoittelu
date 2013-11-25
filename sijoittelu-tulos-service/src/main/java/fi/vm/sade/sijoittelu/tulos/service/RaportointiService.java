@@ -20,22 +20,7 @@ public interface RaportointiService {
 
     SijoitteluAjo latestSijoitteluAjoForHaku(String hakuOid);
 
-      /*
-    List<HakijaDTO> hyvaksytyt(SijoitteluAjo sijoitteluAjo);
-
-    Collection<HakijaDTO> hyvaksytyt(SijoitteluAjo sijoitteluAjo, String hakukohdeOid);
-
-    List<HakijaDTO> ilmanhyvaksyntaa(SijoitteluAjo sijoitteluAjo);
-
-    List<HakijaDTO> ilmanhyvaksyntaa(SijoitteluAjo sijoitteluAjo, String hakukohdeOid);
-
-    Collection<HakijaDTO> vastaanottaneet(SijoitteluAjo sijoitteluAjo);
-
-    Collection<HakijaDTO> vastaanottaneet(SijoitteluAjo sijoitteluAjo, String hakukohdeOid);
-    */
-
-
     HakijaDTO hakemus(SijoitteluAjo sijoitteluAjo, String hakemusOid);
 
-    PaginationObject<HakijaDTO> hakemukset(SijoitteluAjo ajo, List<String> vastaanottotieto, List<String> tila,  List <String> hakukohdeOid, Integer count, Integer index);
+    PaginationObject<HakijaDTO> hakemukset(SijoitteluAjo ajo,Boolean hyvaksytyt, Boolean ilmanHyvaksyntaa,Boolean vastaanottaneet, List <String> hakukohdeOid, Integer count, Integer index);
 }

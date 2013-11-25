@@ -26,6 +26,7 @@ public class SijoitteluTulosServiceImpl implements SijoitteluTulosService {
     @Autowired
     private SijoitteluTulosConverter sijoitteluTulosConverter;
 
+    /*
     @Override
     public List<HakemusDTO> haeHakukohteetJoihinHakemusOsallistuu(SijoitteluAjo sijoitteluAjo, String hakemusOid) {
         List<Hakukohde> b = dao.haeHakukohteetJoihinHakemusOsallistuu( sijoitteluAjo.getSijoitteluajoId(), hakemusOid);
@@ -35,7 +36,7 @@ public class SijoitteluTulosServiceImpl implements SijoitteluTulosService {
         List<HakukohdeDTO> a = sijoitteluTulosConverter.convert(b);
         return getDtos(a, hakemusOid);
     }
-
+      */
     @Override
     public HakukohdeDTO getHakukohdeBySijoitteluajo(SijoitteluAjo sijoitteluAjo, String hakukohdeOid) {
         Hakukohde a = dao.getHakukohdeBySijoitteluajo(sijoitteluAjo.getSijoitteluajoId(), hakukohdeOid);
