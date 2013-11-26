@@ -46,6 +46,10 @@ public class RaportointiConverterImpl implements RaportointiConverter {
                     hakutoiveenValintatapajonoDTO.setPaasyJaSoveltuvuusKokeenTulos(hakemusDTO.getPaasyJaSoveltuvuusKokeenTulos());
                     hakutoiveenValintatapajonoDTO.setValintatapajonoPrioriteetti(hakemusDTO.getPrioriteetti());
 
+
+                    //hakutoiveenValintatapajonoDTO.setValintatapajonoPrioriteetti(hakemusDTO.getPrioriteetti());
+                    hakutoiveenValintatapajonoDTO.setValintatapajonoOid(valintatapajono.getOid());
+
                     applyPistetiedot(raportointiHakutoiveDTO, hakemusDTO.getPistetiedot());
                 }
             }
