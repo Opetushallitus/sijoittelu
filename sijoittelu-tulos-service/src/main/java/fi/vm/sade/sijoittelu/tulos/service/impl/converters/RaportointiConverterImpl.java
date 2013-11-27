@@ -35,6 +35,7 @@ public class RaportointiConverterImpl implements RaportointiConverter {
                     hakutoiveenValintatapajonoDTO.setHyvaksytty(valintatapajono.getHyvaksytty());
                     hakutoiveenValintatapajonoDTO.setVaralla(valintatapajono.getVaralla());
                     hakutoiveenValintatapajonoDTO.setHakeneet(valintatapajono.getHakeneet());
+                    hakutoiveenValintatapajonoDTO.setValintatapajonoOid(valintatapajono.getOid());
 
                     hakutoiveenValintatapajonoDTO.setVarasijanNumero(hakemusDTO.getVarasijanNumero());
                     hakutoiveenValintatapajonoDTO.setTasasijaJonosija(hakemusDTO.getTasasijaJonosija());
@@ -43,6 +44,7 @@ public class RaportointiConverterImpl implements RaportointiConverter {
                     hakutoiveenValintatapajonoDTO.setTila(EnumConverter.convert(HakemuksenTila.class, hakemusDTO.getTila()));
                     hakutoiveenValintatapajonoDTO.setHyvaksyttyHarkinnanvaraisesti(hakemusDTO.isHyvaksyttyHarkinnanvaraisesti());
                     hakutoiveenValintatapajonoDTO.setPaasyJaSoveltuvuusKokeenTulos(hakemusDTO.getPaasyJaSoveltuvuusKokeenTulos());
+                    hakutoiveenValintatapajonoDTO.setValintatapajonoPrioriteetti(hakemusDTO.getPrioriteetti());
 
                     applyPistetiedot(raportointiHakutoiveDTO, hakemusDTO.getPistetiedot());
                 }

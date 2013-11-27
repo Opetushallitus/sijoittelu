@@ -14,7 +14,7 @@ import java.math.BigDecimal;
 public class HakutoiveenValintatapajonoDTO {
 
     @JsonView(JsonViews.Hakija.class)
-    private String valintatapajonoPrioriteetti;
+    private Integer valintatapajonoPrioriteetti;
 
     @JsonView(JsonViews.Hakija.class)
     private String valintatapajonoOid;
@@ -55,13 +55,7 @@ public class HakutoiveenValintatapajonoDTO {
     @JsonView(JsonViews.Hakija.class)
     private Integer varalla;
 
-    public String getValintatapajonoPrioriteetti() {
-        return valintatapajonoPrioriteetti;
-    }
 
-    public void setValintatapajonoPrioriteetti(String valintatapajonoPrioriteetti) {
-        this.valintatapajonoPrioriteetti = valintatapajonoPrioriteetti;
-    }
 
     public String getValintatapajonoOid() {
         return valintatapajonoOid;
@@ -165,5 +159,13 @@ public class HakutoiveenValintatapajonoDTO {
 
     public void setVastaanottotieto(ValintatuloksenTila vastaanottotieto) {
         this.vastaanottotieto = vastaanottotieto;
+    }
+
+    public Integer getValintatapajonoPrioriteetti() {
+        return valintatapajonoPrioriteetti;
+    }
+
+    public void setValintatapajonoPrioriteetti(Integer valintatapajonoPrioriteetti) {
+        this.valintatapajonoPrioriteetti = valintatapajonoPrioriteetti;
     }
 }
