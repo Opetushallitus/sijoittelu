@@ -359,17 +359,18 @@ public class SijoitteluAlgorithmImpl implements SijoitteluAlgorithm {
         return hakemuksenTila && hakijaAloistuspaikkojenSisallaTaiVarasijataytto && eiPeruttuaKorkeampaaTaiSamaaHakutoivetta;
     }
 
-    private boolean eiPeruttuaKorkeampaaTaiSamaaHakutoivetta(HakemusWrapper hakemusWrapper) {
+    protected boolean eiPeruttuaKorkeampaaTaiSamaaHakutoivetta(HakemusWrapper hakemusWrapper) {
         HenkiloWrapper henkilo = hakemusWrapper.getHenkilo();
         for (HakemusWrapper h : henkilo.getHakemukset()) {
             if (HakemuksenTila.PERUNUT.equals(h.getHakemus().getTila())
-                    && h.getHakemus().getPrioriteetti() >= hakemusWrapper.getHakemus().getPrioriteetti()
+                    && h.getHakemus().getPrioriteetti() <= hakemusWrapper.getHakemus().getPrioriteetti()
                     && hakemusWrapper != h) {
                 return false;
             }
         }
         return true;
     }
+
 
     private boolean hakijaAloistuspaikkojenSisalla(HakemusWrapper hakemusWrapper) {
         ValintatapajonoWrapper valintatapajono = hakemusWrapper.getValintatapajono() ;
