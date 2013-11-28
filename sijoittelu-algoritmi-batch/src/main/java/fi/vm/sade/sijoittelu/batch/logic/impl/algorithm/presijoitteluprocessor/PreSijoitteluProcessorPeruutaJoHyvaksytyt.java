@@ -24,9 +24,9 @@ public class PreSijoitteluProcessorPeruutaJoHyvaksytyt implements PreSijoitteluP
             for(ValintatapajonoWrapper valintatapajonoWrapper : hakukohdeWrapper.getValintatapajonot()) {
                 for(HakemusWrapper hakemusWrapper : valintatapajonoWrapper.getHakemukset()) {
                     HenkiloWrapper henkiloWrapper = hakemusWrapper.getHenkilo();
-                    Integer parasHyvaksyttyHakutoive = parasHyvaksyttyHakutoive(henkiloWrapper);
+                    Integer parasHyvaksyttyHakutoive = parasHyvaksyttyTaiPeruttuHakutoive(henkiloWrapper);
                     if(parasHyvaksyttyHakutoive != null) {
-                        if(hakemusWrapper.getHakemus().getTila() == HakemuksenTila.VARALLA && hakemusWrapper.getHakemus().getPrioriteetti() >= parasHyvaksyttyHakutoive) {
+                        if(hakemusWrapper.isTilaVoidaanVaihtaa() && hakemusWrapper.getHakemus().getTila() == HakemuksenTila.VARALLA && hakemusWrapper.getHakemus().getPrioriteetti() >= parasHyvaksyttyHakutoive) {
                             hakemusWrapper.getHakemus().setTila(HakemuksenTila.PERUUNTUNUT);
                         }
                     }
@@ -35,10 +35,10 @@ public class PreSijoitteluProcessorPeruutaJoHyvaksytyt implements PreSijoitteluP
         }
     }
 
-    private Integer parasHyvaksyttyHakutoive(HenkiloWrapper wrapper) {
+    private Integer parasHyvaksyttyTaiPeruttuHakutoive(HenkiloWrapper wrapper) {
         Integer parasHyvaksyttyHakutoive = null;
         for(HakemusWrapper hakemusWrapper :  wrapper.getHakemukset()) {
-            if(hakemusWrapper.getHakemus().getTila() == HakemuksenTila.HYVAKSYTTY) {
+            if(hakemusWrapper.getHakemus().getTila() == HakemuksenTila.HYVAKSYTTY || hakemusWrapper.getHakemus().getTila() == HakemuksenTila.PERUNUT) {
                 if(parasHyvaksyttyHakutoive == null || parasHyvaksyttyHakutoive > hakemusWrapper.getHakemus().getPrioriteetti())  {
                     parasHyvaksyttyHakutoive = hakemusWrapper.getHakemus().getPrioriteetti();
                 }
