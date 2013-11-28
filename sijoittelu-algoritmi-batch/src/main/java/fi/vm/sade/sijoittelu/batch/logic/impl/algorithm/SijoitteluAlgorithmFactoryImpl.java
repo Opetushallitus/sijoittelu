@@ -2,7 +2,7 @@ package fi.vm.sade.sijoittelu.batch.logic.impl.algorithm;
 
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.postsijoitteluprocessor.PostSijoitteluProcessor;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.presijoitteluprocessor.PreSijoitteluProcessor;
-import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.presijoitteluprocessor.PreSijoitteluProcessorPeruutaJoHyvaksytyt;
+import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.presijoitteluprocessor.PreSijoitteluProcessorPeruutaAlemmatPeruneetJaHyvaksytyt;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.presijoitteluprocessor.PreSijoitteluProcessorSort;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.presijoitteluprocessor.PreSijoitteluProcessorTasasijaArvonta;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.*;
@@ -35,7 +35,7 @@ public class SijoitteluAlgorithmFactoryImpl implements SijoitteluAlgorithmFactor
         List<PreSijoitteluProcessor> preSijoitteluProcessors = new ArrayList<PreSijoitteluProcessor>();
         preSijoitteluProcessors.add(new PreSijoitteluProcessorTasasijaArvonta());
         preSijoitteluProcessors.add(new PreSijoitteluProcessorSort());
-        preSijoitteluProcessors.add(new PreSijoitteluProcessorPeruutaJoHyvaksytyt());
+        preSijoitteluProcessors.add(new PreSijoitteluProcessorPeruutaAlemmatPeruneetJaHyvaksytyt());
 
 
         List<PostSijoitteluProcessor> postSijoitteluProcessors = new ArrayList<PostSijoitteluProcessor>();
@@ -95,7 +95,7 @@ public class SijoitteluAlgorithmFactoryImpl implements SijoitteluAlgorithmFactor
                         henkiloWrapper.getValintatulos().add(valintatulos);
                     }
                 }
-            } //TODO REFAKTOROI OIDIEN OSALTA, HENKILO JA HAKEMUS OIDIT AIKA SEKAVASTI
+            }
             for (Hakijaryhma hakijaryhma : hakukohde.getHakijaryhmat()) {
                 HakijaryhmaWrapper hakijaryhmaWrapper = new HakijaryhmaWrapper();
                 hakijaryhmaWrapper.setHakijaryhma(hakijaryhma);

@@ -10,7 +10,7 @@ import fi.vm.sade.sijoittelu.domain.HakemuksenTila;
  * Time: 9:03
  * To change this template use File | Settings | File Templates.
  */
-public class PreSijoitteluProcessorPeruutaJoHyvaksytyt implements PreSijoitteluProcessor {
+public class PreSijoitteluProcessorPeruutaAlemmatPeruneetJaHyvaksytyt implements PreSijoitteluProcessor {
     /**
      * Peruutetaan jo jonnekkin hyväksyttyjen alemmat hakemukset.
      * Tata voisi optimoida bitusti luuppaamalla vain henkilo=>hakemus tyyliin. mutta kiire.

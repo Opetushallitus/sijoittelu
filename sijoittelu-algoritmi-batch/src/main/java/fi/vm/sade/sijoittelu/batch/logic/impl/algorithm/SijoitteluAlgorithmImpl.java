@@ -315,14 +315,14 @@ public class SijoitteluAlgorithmImpl implements SijoitteluAlgorithm {
             if(varalleAsetettavaHakemusWrapper.getHakemus().getTila() == HakemuksenTila.HYVAKSYTTY) {
                 for (HakemusWrapper hakemusWrapper : varalleAsetettavaHakemusWrapper.getHenkilo().getHakemukset()) {
                     if(hakemusWrapper.isTilaVoidaanVaihtaa()) {
-                        if (hakemusWrapper.getHakemus().getTila() != HakemuksenTila.HYLATTY || hakemusWrapper.getHakemus().getTila() != HakemuksenTila.PERUNUT ) {
+                        if (hakemusWrapper.getHakemus().getTila() != HakemuksenTila.HYLATTY && hakemusWrapper.getHakemus().getTila() != HakemuksenTila.PERUNUT ) {
                             hakemusWrapper.getHakemus().setTila(HakemuksenTila.VARALLA);
                             uudelleenSijoiteltavatHakukohteet.add(hakemusWrapper);
                         }
                     }
                 }
             } else {
-                if (varalleAsetettavaHakemusWrapper.getHakemus().getTila() != HakemuksenTila.HYLATTY || varalleAsetettavaHakemusWrapper.getHakemus().getTila() != HakemuksenTila.PERUNUT) {
+                if (varalleAsetettavaHakemusWrapper.getHakemus().getTila() != HakemuksenTila.HYLATTY && varalleAsetettavaHakemusWrapper.getHakemus().getTila() != HakemuksenTila.PERUNUT) {
                     varalleAsetettavaHakemusWrapper.getHakemus().setTila(HakemuksenTila.VARALLA);
                 }
             }
@@ -341,7 +341,7 @@ public class SijoitteluAlgorithmImpl implements SijoitteluAlgorithm {
                             h.getHakemus().setTila(HakemuksenTila.PERUUNTUNUT);
                             uudelleenSijoiteltavatHakukohteet.add(h);
                         } else {
-                            if (h.getHakemus().getTila() != HakemuksenTila.HYLATTY || h.getHakemus().getTila() != HakemuksenTila.PERUNUT) {
+                            if (h.getHakemus().getTila() != HakemuksenTila.HYLATTY && h.getHakemus().getTila() != HakemuksenTila.PERUNUT) {
                                 h.getHakemus().setTila(HakemuksenTila.PERUUNTUNUT);
                             }
                         }
