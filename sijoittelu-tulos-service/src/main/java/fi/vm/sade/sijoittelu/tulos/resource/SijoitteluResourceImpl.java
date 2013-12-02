@@ -64,9 +64,9 @@ public class SijoitteluResourceImpl implements SijoitteluResource {
                                                   @QueryParam("vastaanottaneet") Boolean vastaanottaneet,
                                                   @QueryParam("hakukohdeOid") List<String> hakukohdeOid,
                                                   @QueryParam("count") Integer count,
-                                                  @QueryParam("startIndex") Integer startIndex) {
+                                                  @QueryParam("index") Integer index) {
         SijoitteluAjo ajo  = getSijoitteluAjo(sijoitteluajoId, hakuOid) ;
-        return raportointiService.hakemukset(ajo, hyvaksytyt, ilmanHyvaksyntaa,vastaanottaneet, hakukohdeOid,count,startIndex);
+        return raportointiService.hakemukset(ajo, hyvaksytyt, ilmanHyvaksyntaa,vastaanottaneet, hakukohdeOid,count,index);
     }
 
 
@@ -90,63 +90,4 @@ public class SijoitteluResourceImpl implements SijoitteluResource {
         }
     }
 
-        /*
-    @Override
-    @Secured({ READ, UPDATE, CRUD })
-    public List<HakemusDTO> getHakemusBySijoitteluajo(String hakuOid, String sijoitteluajoId, String hakemusOid) {
-        SijoitteluAjo ajo  = getSijoitteluAjo(sijoitteluajoId, hakuOid) ;
-        return sijoitteluTulosService.haeHakukohteetJoihinHakemusOsallistuu(ajo, hakemusOid);
-    }
-      */
-
-
-   /*
-    @Override
-    @Deprecated
-    @Secured({ READ, UPDATE, CRUD })
-    public List<HakijaDTO> hyvaksytyt(String hakuOid, String sijoitteluajoId) {
-        SijoitteluAjo ajo = getSijoitteluAjo(sijoitteluajoId, hakuOid) ;
-        return raportointiService.hyvaksytyt(ajo);
-    }
-    @Override
-    @Deprecated
-    @Secured({ READ, UPDATE, CRUD })
-    public Collection<HakijaDTO> hyvaksytyt(String hakuOid, String hakukohdeOid, String sijoitteluajoId) {
-        SijoitteluAjo ajo = getSijoitteluAjo(sijoitteluajoId, hakuOid) ;
-        return raportointiService.hyvaksytyt(ajo, hakukohdeOid);
-    }
-    @Override
-    @Deprecated
-    @Secured({ READ, UPDATE, CRUD })
-    public List<HakijaDTO> ilmanhyvaksyntaa(String hakuOid, String sijoitteluajoId) {
-        SijoitteluAjo ajo  = getSijoitteluAjo(sijoitteluajoId, hakuOid) ;
-        return raportointiService.ilmanhyvaksyntaa(ajo);
-    }
-    @Override
-    @Deprecated
-    @Secured({ READ, UPDATE, CRUD })
-    public List<HakijaDTO> ilmanhyvaksyntaa(@PathParam("hakuOid") String hakuOid,
-                                            @PathParam("hakukohdeOid") String hakukohdeOid,
-                                            @PathParam("sijoitteluajoId") String sijoitteluajoId) {
-        SijoitteluAjo ajo  = getSijoitteluAjo(sijoitteluajoId, hakuOid) ;
-        return raportointiService.ilmanhyvaksyntaa(ajo, hakukohdeOid);
-    }
-    @Override
-    @Deprecated
-    @Secured({ READ, UPDATE, CRUD })
-    public Collection<HakijaDTO> vastaanottaneet(@PathParam("hakuOid") String hakuOid,
-                                                 @PathParam("sijoitteluajoId") String sijoitteluajoId) {
-        SijoitteluAjo ajo  = getSijoitteluAjo(sijoitteluajoId, hakuOid) ;
-        return raportointiService.vastaanottaneet(ajo);
-    }
-    @Override
-    @Deprecated
-    @Secured({ READ, UPDATE, CRUD })
-    public Collection<HakijaDTO> vastaanottaneet(@PathParam("hakuOid") String hakuOid,
-                                                 @PathParam("hakukohdeOid") String hakukohdeOid,
-                                                 @PathParam("sijoitteluajoId") String sijoitteluajoId) {
-        SijoitteluAjo ajo = getSijoitteluAjo(sijoitteluajoId, hakuOid) ;
-        return raportointiService.vastaanottaneet(ajo, hakukohdeOid);
-    }
-    */
 }

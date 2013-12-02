@@ -52,7 +52,7 @@ public interface SijoitteluResource {
                             @QueryParam("vastaanottaneet") Boolean vastaanottaneet,
                             @QueryParam("hakukohdeOid")  List <String> hakukohdeOid,
                             @QueryParam("count") Integer count,
-                            @QueryParam("startIndex") Integer startIndex);
+                            @QueryParam("index") Integer index);
 
     @GET
     @JsonView(JsonViews.Hakija.class)
