@@ -80,14 +80,10 @@ public class DomainConverter {
 
         applyPistetiedot(hakemus, hakijaTyyppi.getSyotettyArvo()) ;
 
-        if(hakijaTyyppi.getTila() == HakemusTilaTyyppi.HYVAKSYTTY_HARKINNANVARAISESTI) {
+        if(hakijaTyyppi.getTila() == HakemusTilaTyyppi.HYVAKSYTTY_HARKINNANVARAISESTI)     {
+            hakemus.setTila(HakemuksenTila.VARALLA);
             hakemus.setHyvaksyttyHarkinnanvaraisesti(true);
-        }
-
-        if(hakijaTyyppi.getTila() != null && hakijaTyyppi.getTila() == HakemusTilaTyyppi.HYVAKSYTTY_HARKINNANVARAISESTI)     {
-            hakemus.setTila(HakemuksenTila.HYVAKSYTTY);
-        }  else if (hakijaTyyppi.getTila() != null && hakijaTyyppi.getTila() == HakemusTilaTyyppi.HYVAKSYTTAVISSA) {
-            // jos hyvaksyttavissa niin varalla, muuten hylatty
+        }  else if (hakijaTyyppi.getTila() == HakemusTilaTyyppi.HYVAKSYTTAVISSA) {
             hakemus.setTila(HakemuksenTila.VARALLA);
         } else {
             hakemus.setTila(HakemuksenTila.HYLATTY);
