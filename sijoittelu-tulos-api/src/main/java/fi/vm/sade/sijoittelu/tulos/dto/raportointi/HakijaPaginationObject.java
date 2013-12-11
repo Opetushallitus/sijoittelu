@@ -1,26 +1,24 @@
-/**package fi.vm.sade.sijoittelu.tulos.dto.raportointi;
+package fi.vm.sade.sijoittelu.tulos.dto.raportointi;
 
 import fi.vm.sade.sijoittelu.tulos.dto.JsonViews;
 import org.codehaus.jackson.map.annotate.JsonView;
 
 import java.util.List;
 
-
- *
- * Hylatty kun swaggeri ei tajua genericseista toistaiseksi
+/**
  * Created with IntelliJ IDEA.
  * User: kkammone
  * Date: 21.11.2013
  * Time: 15:28
  * To change this template use File | Settings | File Templates.
-
-public abstract class PaginationObject<T> {
+ */
+public class HakijaPaginationObject {
 
     @JsonView({ JsonViews.All.class})
     private Integer totalCount;
 
     @JsonView({ JsonViews.All.class})
-    private List<T> results;
+    private List<HakijaDTO> results;
 
     public Integer getTotalCount() {
         return totalCount;
@@ -30,12 +28,11 @@ public abstract class PaginationObject<T> {
         this.totalCount = totalCount;
     }
 
-    public List<T> getResults() {
+    public List<HakijaDTO> getResults() {
         return results;
     }
 
-    public void setResults(List<T> results) {
+    public void setResults(List<HakijaDTO> results) {
         this.results = results;
     }
 }
- */

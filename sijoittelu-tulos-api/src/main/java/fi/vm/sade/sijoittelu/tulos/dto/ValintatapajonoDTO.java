@@ -5,6 +5,7 @@ import org.codehaus.jackson.map.annotate.JsonView;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created with IntelliJ IDEA. User: kkammone Date: 5.9.2013 Time: 12:47 To
@@ -34,7 +35,7 @@ public class ValintatapajonoDTO implements Serializable {
     private Boolean eiVarasijatayttoa;
 
     @JsonView(JsonViews.Hakukohde.class)
-    private ArrayList<HakemusDTO> hakemukset = new ArrayList<HakemusDTO>();
+    private List<HakemusDTO> hakemukset = new ArrayList<HakemusDTO>();
 
     @JsonView(JsonViews.Hakukohde.class)
     private Integer hakeneet;
@@ -109,11 +110,11 @@ public class ValintatapajonoDTO implements Serializable {
         this.eiVarasijatayttoa = eiVarasijatayttoa;
     }
 
-    public ArrayList<HakemusDTO> getHakemukset() {
+    public List<HakemusDTO> getHakemukset() {
         return hakemukset;
     }
 
-    public void setHakemukset(ArrayList<HakemusDTO> hakemukset) {
+    public void setHakemukset(List<HakemusDTO> hakemukset) {
         this.hakemukset = hakemukset;
     }
 

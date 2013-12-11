@@ -7,10 +7,7 @@ import fi.vm.sade.sijoittelu.tulos.dao.DAO;
 import fi.vm.sade.sijoittelu.tulos.dto.HakemuksenTila;
 import fi.vm.sade.sijoittelu.tulos.dto.HakukohdeDTO;
 import fi.vm.sade.sijoittelu.tulos.dto.ValintatuloksenTila;
-import fi.vm.sade.sijoittelu.tulos.dto.raportointi.HakijaDTO;
-import fi.vm.sade.sijoittelu.tulos.dto.raportointi.HakutoiveDTO;
-import fi.vm.sade.sijoittelu.tulos.dto.raportointi.HakutoiveenValintatapajonoDTO;
-import fi.vm.sade.sijoittelu.tulos.dto.raportointi.PaginationObject;
+import fi.vm.sade.sijoittelu.tulos.dto.raportointi.*;
 import fi.vm.sade.sijoittelu.tulos.service.RaportointiService;
 import fi.vm.sade.sijoittelu.tulos.service.impl.comparators.HakijaDTOComparator;
 import fi.vm.sade.sijoittelu.tulos.service.impl.converters.RaportointiConverter;
@@ -78,7 +75,7 @@ public class RaportointiServiceImpl implements RaportointiService {
      * @return
      */
     @Override
-    public PaginationObject<HakijaDTO> hakemukset(SijoitteluAjo ajo, Boolean hyvaksytyt, Boolean ilmanHyvaksyntaa, Boolean vastaanottaneet, List<String> hakukohdeOid, Integer count, Integer index) {
+    public HakijaPaginationObject hakemukset(SijoitteluAjo ajo, Boolean hyvaksytyt, Boolean ilmanHyvaksyntaa, Boolean vastaanottaneet, List<String> hakukohdeOid, Integer count, Integer index) {
 
         List<Valintatulos> valintatulokset =  dao.loadValintatulokset(ajo.getHakuOid());
         List<Hakukohde> hakukohteet = dao.getHakukohteetForSijoitteluajo(ajo.getSijoitteluajoId());
@@ -92,7 +89,7 @@ public class RaportointiServiceImpl implements RaportointiService {
             hakukohdeOid = new ArrayList<String>();
         }
 
-        PaginationObject<HakijaDTO> paginationObject = new PaginationObject<HakijaDTO>();
+        HakijaPaginationObject paginationObject = new HakijaPaginationObject();
 
         List<HakijaDTO> result = new ArrayList<HakijaDTO>();
         for ( HakijaDTO hakija : hakijat) {

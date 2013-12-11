@@ -1,11 +1,12 @@
 package fi.vm.sade.sijoittelu.tulos.resource;
 
+import com.wordnik.swagger.annotations.ApiOperation;
 import fi.vm.sade.sijoittelu.domain.SijoitteluAjo;
 import fi.vm.sade.sijoittelu.tulos.dto.HakukohdeDTO;
 import fi.vm.sade.sijoittelu.tulos.dto.SijoitteluDTO;
 import fi.vm.sade.sijoittelu.tulos.dto.SijoitteluajoDTO;
 import fi.vm.sade.sijoittelu.tulos.dto.raportointi.HakijaDTO;
-import fi.vm.sade.sijoittelu.tulos.dto.raportointi.PaginationObject;
+import fi.vm.sade.sijoittelu.tulos.dto.raportointi.HakijaPaginationObject;
 import fi.vm.sade.sijoittelu.tulos.service.RaportointiService;
 import fi.vm.sade.sijoittelu.tulos.service.SijoitteluTulosService;
 import org.slf4j.Logger;
@@ -16,7 +17,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
 
 import javax.ws.rs.PathParam;
-import javax.ws.rs.QueryParam;
 import java.util.List;
 
 import static fi.vm.sade.sijoittelu.tulos.roles.SijoitteluRole.*;
@@ -38,12 +38,14 @@ public class SijoitteluResourceImpl implements SijoitteluResource {
 
     @Override
     @Secured({ READ, UPDATE, CRUD })
+    @ApiOperation(value = "xxxx1", httpMethod = "GET")
     public SijoitteluDTO getSijoitteluByHakuOid(String hakuOid) {
         return sijoitteluTulosService.getSijoitteluByHakuOid(hakuOid);
     }
 
     @Override
     @Secured({ READ, UPDATE, CRUD })
+    @ApiOperation(value = "xxxx2", httpMethod = "GET")
     public SijoitteluajoDTO getSijoitteluajo(String hakuOid, String sijoitteluajoId) {
         SijoitteluAjo ajo  = getSijoitteluAjo(sijoitteluajoId, hakuOid) ;
         return sijoitteluTulosService.getSijoitteluajo(ajo);
@@ -51,29 +53,30 @@ public class SijoitteluResourceImpl implements SijoitteluResource {
 
     @Override
     @Secured({ READ, UPDATE, CRUD })
+    @ApiOperation(value = "xxxx3", httpMethod = "GET")
     public HakukohdeDTO getHakukohdeBySijoitteluajo(String hakuOid, String sijoitteluajoId, String hakukohdeOid) {
         SijoitteluAjo ajo  = getSijoitteluAjo(sijoitteluajoId, hakuOid) ;
         return sijoitteluTulosService.getHakukohdeBySijoitteluajo(ajo, hakukohdeOid);
     }
 
     @Override
-    public PaginationObject<HakijaDTO> hakemukset(@PathParam("hakuOid") String hakuOid,
-                                                  @PathParam("sijoitteluajoId") String sijoitteluajoId,
-                                                  @QueryParam("hyvaksytyt") Boolean hyvaksytyt,
-                                                  @QueryParam("ilmanHyvaksyntaa") Boolean ilmanHyvaksyntaa,
-                                                  @QueryParam("vastaanottaneet") Boolean vastaanottaneet,
-                                                  @QueryParam("hakukohdeOid") List<String> hakukohdeOid,
-                                                  @QueryParam("count") Integer count,
-                                                  @QueryParam("index") Integer index) {
+    @Secured({ READ, UPDATE, CRUD })
+    @ApiOperation(value = "xxxx4", httpMethod = "GET")
+    public HakijaPaginationObject hakemukset( String hakuOid,
+                                                   String sijoitteluajoId,
+                                                   Boolean hyvaksytyt,
+                                                   Boolean ilmanHyvaksyntaa,
+                                                   Boolean vastaanottaneet,
+                                                   List<String> hakukohdeOid,
+                                                   Integer count,
+                                                   Integer index) {
         SijoitteluAjo ajo  = getSijoitteluAjo(sijoitteluajoId, hakuOid) ;
         return raportointiService.hakemukset(ajo, hyvaksytyt, ilmanHyvaksyntaa,vastaanottaneet, hakukohdeOid,count,index);
     }
 
-
-
-
     @Override
     @Secured({ READ, UPDATE, CRUD })
+    @ApiOperation(value = "xxxx5", httpMethod = "GET")
     public HakijaDTO hakemus(@PathParam("hakuOid") String hakuOid,
                              @PathParam("sijoitteluajoId") String sijoitteluajoId,
                              @PathParam("hakemusOid") String hakemusOid) {
