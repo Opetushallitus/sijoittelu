@@ -37,25 +37,29 @@ public class PreSijoitteluProcessorTasasijaArvonta implements PreSijoitteluProce
     }
 
     private void randomize(List<HakemusWrapper> tasasijaHakemukset) {
-        // first check that no tasasija data exists
-        // and if it does, it exists for all hakemus
-        boolean has = false;
-        for (HakemusWrapper hakemus : tasasijaHakemukset) {
-            if (hakemus.getHakemus().getTasasijaJonosija() == null) {
-                if (has) {
-                    throw new SijoitteluFailedException("Partial data on tasasijajonosija for hakemus: "
-                            + hakemus.getHakemus().getHakemusOid());
-                }
-            } else {
-                has = true;
+
+        Collections.shuffle(tasasijaHakemukset);
+        List<HakemusWrapper> jonosija = new ArrayList<HakemusWrapper>();
+        for (HakemusWrapper hakemusWrapper : tasasijaHakemukset) {
+            if(hakemusWrapper.getHakemus().getTasasijaJonosija() != null) {
+                jonosija.add(hakemusWrapper);
             }
         }
-        if (!has) {
-            // if data does not exist, lets create it
-            Collections.shuffle(tasasijaHakemukset);
-            for (int i = 0; tasasijaHakemukset.size() > i; i++) {
-                tasasijaHakemukset.get(i).getHakemus().setTasasijaJonosija(i + 1);
+
+        Collections.sort(jonosija, new Comparator<HakemusWrapper>() {
+            @Override
+            public int compare(HakemusWrapper hakemusWrapper, HakemusWrapper hakemusWrapper2) {
+                return hakemusWrapper.getHakemus().getTasasijaJonosija().compareTo(hakemusWrapper2.getHakemus().getTasasijaJonosija());
             }
+        });
+
+        for (int i = 0; tasasijaHakemukset.size() > i; i++) {
+            if(tasasijaHakemukset.get(i).getHakemus().getTasasijaJonosija() != null) {
+                tasasijaHakemukset.remove(i);
+                tasasijaHakemukset.add(i, jonosija.remove(0));
+            }
+            tasasijaHakemukset.get(i).getHakemus().setTasasijaJonosija(i + 1);
         }
+
     }
 }
