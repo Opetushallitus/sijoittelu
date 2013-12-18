@@ -3,8 +3,11 @@ package fi.vm.sade.sijoittelu.batch.logic.impl.algorithm;
 import de.flapdoodle.embed.process.collections.Collections;
 import fi.vm.sade.service.valintatiedot.schema.HakuTyyppi;
 import fi.vm.sade.sijoittelu.batch.logic.impl.DomainConverter;
+import fi.vm.sade.sijoittelu.domain.Hakemus;
 import fi.vm.sade.sijoittelu.domain.Hakukohde;
+import fi.vm.sade.sijoittelu.domain.Valintatapajono;
 import fi.vm.sade.sijoittelu.domain.Valintatulos;
+import junit.framework.Assert;
 import org.junit.Test;
 
 import java.io.FileWriter;
@@ -13,23 +16,22 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-
 /**
  *
  * @author Kari Kammonen
  *
  */
-public class BasicSijoitteluTasasijaTest {
+public class BasicSijoitteluTasasijaJonosijaTest {
 
     /**
      * Testaa perustapaus
      *
-     * @throws IOException
+     * @throws java.io.IOException
      */
     @Test
     public void testSijoittelu() throws IOException {
         // tee sijoittelu
-        HakuTyyppi t = TestHelper.xmlToObjects("testdata/sijoittelu_basic_tasasija_case.xml");
+        HakuTyyppi t = TestHelper.xmlToObjects("testdata/sijoittelu_basic_tasasija_jonosija_case.xml");
 
 
         List<Hakukohde> hakukohteet = new ArrayList<Hakukohde>() ;
@@ -44,26 +46,25 @@ public class BasicSijoitteluTasasijaTest {
 
         System.out.println(PrintHelper.tulostaSijoittelu(s));
 
-        // tulosta
-        FileWriter fstream = new FileWriter("target/sijoittelu_basic_tasasija_case.sijoitteluresult");
-        fstream.write(PrintHelper.tulostaSijoittelu(s));
-        fstream.flush();
-        fstream.close();
+        Hakemus hakemus1 = getHakemus(hakukohteet, "1.2.246.562.24.00000000001");
+        Hakemus hakemus2 = getHakemus(hakukohteet, "1.2.246.562.24.00000000003");
+        Hakemus hakemus3 = getHakemus(hakukohteet, "1.2.246.562.24.00000000005");
 
-        // assertoi
+        Assert.assertTrue(hakemus1.getTasasijaJonosija() > hakemus2.getTasasijaJonosija());
+        Assert.assertTrue(hakemus3.getTasasijaJonosija() > hakemus1.getTasasijaJonosija());
 
-        // kohde1, jono1 ... arvonta, 1 hyvaksytty 3:sta, viimeinen aina
-        // varalla.
-        TestHelper.assertoiVainYksiJoukostaValittu(hakukohteet.get(0).getValintatapajonot().get(0), "1.2.246.562.24.00000000001", "1.2.246.562.24.00000000002",
-                "1.2.246.562.24.00000000003");
 
-        // kohde1, jono2 ... ylitaytto, kaikki valittu
-        TestHelper.assertoiAinoastaanValittu(hakukohteet.get(0).getValintatapajonot()
-                .get(1), "1.2.246.562.24.00000000005", "1.2.246.562.24.00000000006", "1.2.246.562.24.00000000007");
+    }
 
-        // kohde2, jono1 ... alitaytto, kukaan ei hyvaksytty
-        TestHelper.assertoiKukaanEiValittu(hakukohteet.get(1).getValintatapajonot()
-                .get(0));
+    private Hakemus getHakemus(List<Hakukohde> hakukohteet, String oid) {
 
+        Valintatapajono valintatapajono = hakukohteet.get(0).getValintatapajonot().get(0);
+        for (Hakemus temp : valintatapajono.getHakemukset()) {
+            if(temp.getHakemusOid().equals(oid)) {
+                return temp;
+            }
+        }
+
+        return null;
     }
 }

@@ -70,6 +70,7 @@ public class DomainConverter {
         hakemus.setHakijaOid(hakijaTyyppi.getOid());
         hakemus.setHakemusOid(hakijaTyyppi.getHakemusOid());
         hakemus.setJonosija(hakijaTyyppi.getJonosija());
+        hakemus.setTasasijaJonosija(hakijaTyyppi.getTasasijaJonosija());
         hakemus.setPrioriteetti(hakijaTyyppi.getPrioriteetti());
         hakemus.setEtunimi(hakijaTyyppi.getEtunimi());
         hakemus.setSukunimi(hakijaTyyppi.getSukunimi());
