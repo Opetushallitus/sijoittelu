@@ -55,7 +55,7 @@ public class RaportointiServiceImpl implements RaportointiService {
 
     @Override
     public HakijaDTO hakemus(SijoitteluAjo sijoitteluAjo, String hakemusOid) {
-        List<Hakukohde> hakukohteetJoihinHakemusOsallistuu =    dao.haeHakukohteetJoihinHakemusOsallistuu(sijoitteluAjo.getSijoitteluajoId(), hakemusOid);
+        List<Hakukohde> hakukohteetJoihinHakemusOsallistuu = dao.haeHakukohteetJoihinHakemusOsallistuu(sijoitteluAjo.getSijoitteluajoId(), hakemusOid);
         List<Valintatulos> valintatulokset = dao.loadValintatuloksetForHakemus(hakemusOid);
         List<HakukohdeDTO> hakukohdeDTOs = sijoitteluTulosConverter.convert(hakukohteetJoihinHakemusOsallistuu);
         List<HakijaDTO> hakijat  =   raportointiConverter.convert(hakukohdeDTOs, valintatulokset);
