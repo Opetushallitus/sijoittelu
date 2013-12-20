@@ -80,7 +80,11 @@ public class SijoitteluResourceImpl implements SijoitteluResource {
     public HakijaDTO hakemus(@PathParam("hakuOid") String hakuOid,
                              @PathParam("sijoitteluajoId") String sijoitteluajoId,
                              @PathParam("hakemusOid") String hakemusOid) {
+
         SijoitteluAjo ajo  = getSijoitteluAjo(sijoitteluajoId, hakuOid) ;
+        if(ajo == null) {
+            return new HakijaDTO();
+        }
         return raportointiService.hakemus(ajo, hakemusOid);
     }
 
