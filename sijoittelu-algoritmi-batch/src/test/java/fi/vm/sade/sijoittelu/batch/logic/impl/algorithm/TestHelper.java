@@ -107,4 +107,16 @@ public final class TestHelper {
         }
     }
 
+    public static void assertoi(Valintatapajono valintatapajono, String oid, HakemuksenTila tila) {
+        Hakemus check = null;
+
+        for (Hakemus hakemus : valintatapajono.getHakemukset()) {
+            if(hakemus.getHakemusOid().equals(oid)) {
+                check = hakemus;
+            }
+        }
+
+        Assert.assertTrue(check.getTila().equals(tila));
+
+    }
 }
