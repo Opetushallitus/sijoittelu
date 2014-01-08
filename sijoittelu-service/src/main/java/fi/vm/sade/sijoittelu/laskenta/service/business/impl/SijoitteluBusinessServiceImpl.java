@@ -11,9 +11,7 @@ import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoitteluAlgorithmFacto
 import fi.vm.sade.sijoittelu.domain.*;
 import fi.vm.sade.sijoittelu.laskenta.dao.Dao;
 import fi.vm.sade.sijoittelu.laskenta.service.business.SijoitteluBusinessService;
-import fi.vm.sade.sijoittelu.laskenta.service.exception.HakemusEiOleHyvaksyttyException;
-import fi.vm.sade.sijoittelu.laskenta.service.exception.ValintatulosOnJoVastaanotettuException;
-import fi.vm.sade.sijoittelu.laskenta.service.exception.ValintatulostaEiOleIlmoitettuException;
+import fi.vm.sade.sijoittelu.laskenta.service.exception.*;
 import fi.vm.sade.sijoittelu.tulos.roles.SijoitteluRole;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -204,11 +202,20 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
                 break;
             }
         }
+
+        if(valintatapajono == null) {
+            throw new ValintatapajonoaEiLoytynytException("Valintatapajonoa ei löytynyt.");
+        }
+
         Hakemus hakemus = null;
         for (Hakemus h : valintatapajono.getHakemukset()) {
             if (hakemusOid.equals(h.getHakemusOid())) {
                 hakemus = h;
             }
+        }
+
+        if(hakemus == null) {
+            throw new HakemustaEiLoytynytException("Hakemusta ei löytynyt.");
         }
 
         // Oph-admin voi muokata aina
