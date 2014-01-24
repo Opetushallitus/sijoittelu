@@ -53,6 +53,7 @@ public class SijoitteluTulosConverterImpl implements SijoitteluTulosConverter {
         dto.setAloituspaikat(valintatapajono.getAloituspaikat());
         dto.setEiVarasijatayttoa(valintatapajono.getEiVarasijatayttoa());
         dto.setOid(valintatapajono.getOid());
+        dto.setNimi(valintatapajono.getNimi());
         dto.setPrioriteetti(valintatapajono.getPrioriteetti());
         dto.setTasasijasaanto(EnumConverter.convert(Tasasijasaanto.class, valintatapajono.getTasasijasaanto()));
         dto.setTila(EnumConverter.convert(ValintatapajonoTila.class, valintatapajono.getTila()));

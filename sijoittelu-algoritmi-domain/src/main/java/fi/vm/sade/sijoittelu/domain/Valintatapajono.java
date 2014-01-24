@@ -17,6 +17,8 @@ public class Valintatapajono implements Serializable {
 
     private String oid;
 
+    private String nimi;
+
     private Integer prioriteetti;
 
     private Integer aloituspaikat;
@@ -43,6 +45,14 @@ public class Valintatapajono implements Serializable {
 
     public void setOid(String oid) {
         this.oid = oid;
+    }
+
+    public String getNimi() {
+        return nimi;
+    }
+
+    public void setNimi(String nimi) {
+        this.nimi = nimi;
     }
 
     public int getPrioriteetti() {
@@ -82,6 +92,7 @@ public class Valintatapajono implements Serializable {
         return "Valintatapajono{" +
                 "tasasijasaanto=" + tasasijasaanto +
                 ", tila=" + tila +
+                ", nimi=" + nimi +
                 ", oid='" + oid + '\'' +
                 ", prioriteetti=" + prioriteetti +
                 ", aloituspaikat=" + aloituspaikat +

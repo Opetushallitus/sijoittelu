@@ -36,6 +36,7 @@ public class RaportointiConverterImpl implements RaportointiConverter {
                     hakutoiveenValintatapajonoDTO.setVaralla(valintatapajono.getVaralla());
                     hakutoiveenValintatapajonoDTO.setHakeneet(valintatapajono.getHakeneet());
                     hakutoiveenValintatapajonoDTO.setValintatapajonoOid(valintatapajono.getOid());
+                    hakutoiveenValintatapajonoDTO.setValintatapajonoNimi(valintatapajono.getNimi());
 
                     hakutoiveenValintatapajonoDTO.setVarasijanNumero(hakemusDTO.getVarasijanNumero());
                     hakutoiveenValintatapajonoDTO.setTasasijaJonosija(hakemusDTO.getTasasijaJonosija());

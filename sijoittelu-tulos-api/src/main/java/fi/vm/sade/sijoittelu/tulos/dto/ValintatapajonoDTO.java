@@ -23,6 +23,9 @@ public class ValintatapajonoDTO implements Serializable {
     private String oid;
 
     @JsonView(JsonViews.Hakukohde.class)
+    private String nimi;
+
+    @JsonView(JsonViews.Hakukohde.class)
     private Integer prioriteetti;
 
     @JsonView(JsonViews.Hakukohde.class)
@@ -132,5 +135,13 @@ public class ValintatapajonoDTO implements Serializable {
 
     public void setVaralla(Integer varalla) {
         this.varalla = varalla;
+    }
+
+    public String getNimi() {
+        return nimi;
+    }
+
+    public void setNimi(String nimi) {
+        this.nimi = nimi;
     }
 }

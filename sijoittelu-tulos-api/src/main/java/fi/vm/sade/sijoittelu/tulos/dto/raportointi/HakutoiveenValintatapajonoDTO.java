@@ -20,6 +20,9 @@ public class HakutoiveenValintatapajonoDTO {
     private String valintatapajonoOid;
 
     @JsonView(JsonViews.Hakija.class)
+    private String valintatapajonoNimi;
+
+    @JsonView(JsonViews.Hakija.class)
     private Integer jonosija;
 
     @JsonView(JsonViews.Hakija.class)
@@ -63,6 +66,14 @@ public class HakutoiveenValintatapajonoDTO {
 
     public void setValintatapajonoOid(String valintatapajonoOid) {
         this.valintatapajonoOid = valintatapajonoOid;
+    }
+
+    public String getValintatapajonoNimi() {
+        return valintatapajonoNimi;
+    }
+
+    public void setValintatapajonoNimi(String valintatapajonoNimi) {
+        this.valintatapajonoNimi = valintatapajonoNimi;
     }
 
     public Integer getJonosija() {

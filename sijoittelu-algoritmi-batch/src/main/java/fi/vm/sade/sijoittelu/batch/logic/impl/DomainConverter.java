@@ -31,6 +31,7 @@ public class DomainConverter {
                 //  if(valintatapajonoTyyppi.isSiirretaanSijoitteluun()) {
                 Valintatapajono valintatapajono = new Valintatapajono();
                 valintatapajono.setOid(valintatapajonoTyyppi.getOid());
+                valintatapajono.setNimi(valintatapajonoTyyppi.getNimi());
                 valintatapajono.setPrioriteetti(valintatapajonoTyyppi.getPrioriteetti());
                 valintatapajono.setAloituspaikat(valintatapajonoTyyppi.getAloituspaikat());
                 valintatapajono.setTasasijasaanto(Tasasijasaanto.valueOf(valintatapajonoTyyppi.getTasasijasaanto().toString()));
