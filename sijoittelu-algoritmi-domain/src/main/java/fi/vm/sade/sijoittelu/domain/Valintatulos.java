@@ -50,6 +50,7 @@ public class Valintatulos {
     private ValintatuloksenTila tila;
 
     @Embedded
+    @JsonView({JsonViews.Tila.class, JsonViews.MonenHakemuksenTila.class})
     private List<LogEntry> logEntries = new ArrayList<LogEntry>();
 
     public int getHakutoive() {

@@ -11,17 +11,22 @@ package fi.vm.sade.sijoittelu.domain;
 import com.google.code.morphia.annotations.Embedded;
 import com.google.code.morphia.annotations.Id;
 import org.bson.types.ObjectId;
+import org.codehaus.jackson.map.annotate.JsonView;
 
 import java.util.Date;
 
 @Embedded("LogEntry")
-public class    LogEntry {
+public class LogEntry {
     @Id
     private ObjectId id;
 
+    @JsonView({JsonViews.Tila.class, JsonViews.MonenHakemuksenTila.class})
     private Date luotu;
+    @JsonView({JsonViews.Tila.class, JsonViews.MonenHakemuksenTila.class})
     private String muokkaaja;
+    @JsonView({JsonViews.Tila.class, JsonViews.MonenHakemuksenTila.class})
     private String muutos;
+    @JsonView({JsonViews.Tila.class, JsonViews.MonenHakemuksenTila.class})
     private String selite;
 
     public Date getLuotu() {
