@@ -15,5 +15,7 @@ public enum HakemuksenTila {
 
     HYVAKSYTTY, //Hakija voi ottaa paikan vastaan
 
-    PERUNUT; //Hakija ei ole vastaanottanut paikkaa. Hakija ei voi tulla enää valituksi matalamman prioriteetin kohteissa
+    PERUNUT, //Hakija ei ole vastaanottanut paikkaa. Hakija ei voi tulla enää valituksi matalamman prioriteetin kohteissa
+
+    PERUUTETTU; // Virkailija on perunut paikan. Sama toiminnallisuuks kuil HYLATTY
 }
