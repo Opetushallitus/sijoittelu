@@ -86,10 +86,12 @@ public class SijoitteluAlgorithmFactoryImpl implements SijoitteluAlgorithmFactor
                         ValintatuloksenTila tila =  valintatulos.getTila();
                         if(tila == ValintatuloksenTila.ILMOITETTU || tila == ValintatuloksenTila.VASTAANOTTANUT_LASNA || tila == ValintatuloksenTila.VASTAANOTTANUT_POISSAOLEVA)  {
                             hakemus.setTila(HakemuksenTila.HYVAKSYTTY);
-                        } else if(tila== ValintatuloksenTila.PERUNUT) {
+                        } else if(tila == ValintatuloksenTila.PERUNUT) {
                             hakemus.setTila(HakemuksenTila.PERUNUT);
                         } else if(tila == ValintatuloksenTila.EI_VASTAANOTETTU_MAARA_AIKANA) {
                             hakemus.setTila(HakemuksenTila.PERUNUT);
+                        } else if(tila == ValintatuloksenTila.PERUUTETTU) {
+                            hakemus.setTila(HakemuksenTila.PERUUTETTU);
                         }
                         hakemusWrapper.setTilaVoidaanVaihtaa(false);
                         henkiloWrapper.getValintatulos().add(valintatulos);

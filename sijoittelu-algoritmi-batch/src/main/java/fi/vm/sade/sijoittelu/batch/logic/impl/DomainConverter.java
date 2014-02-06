@@ -85,7 +85,7 @@ public class DomainConverter {
         if(hakijaTyyppi.getTila() == HakemusTilaTyyppi.HYVAKSYTTY_HARKINNANVARAISESTI)     {
             hakemus.setTila(HakemuksenTila.VARALLA);
             hakemus.setHyvaksyttyHarkinnanvaraisesti(true);
-        }  else if (hakijaTyyppi.getTila() == HakemusTilaTyyppi.HYVAKSYTTAVISSA) {
+        } else if (hakijaTyyppi.getTila() == HakemusTilaTyyppi.HYVAKSYTTAVISSA) {
             hakemus.setTila(HakemuksenTila.VARALLA);
         } else {
             hakemus.setTila(HakemuksenTila.HYLATTY);
