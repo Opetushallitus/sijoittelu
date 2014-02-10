@@ -12,6 +12,7 @@ import fi.vm.sade.sijoittelu.tulos.dto.raportointi.HakijaPaginationObject;
 import org.codehaus.jackson.map.annotate.JsonView;
 
 import javax.ws.rs.*;
+import javax.ws.rs.core.Response;
 import java.util.List;
 
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
@@ -48,7 +49,7 @@ public interface SijoitteluResource {
     @Produces(APPLICATION_JSON)
     @Path("/{hakuOid}/sijoitteluajo/{sijoitteluajoId}/hakukohde/{hakukohdeOid}")
     @ApiOperation(position = 3, value = "Hakee hakukohteen tiedot tietyssa sijoitteluajossa.", response = HakukohdeDTO.class)
-    HakukohdeDTO getHakukohdeBySijoitteluajo( @ApiParam(value = "Haun tunniste", required = true) @PathParam("hakuOid") String hakuOid,
+    Response getHakukohdeBySijoitteluajo( @ApiParam(value = "Haun tunniste", required = true) @PathParam("hakuOid") String hakuOid,
                                               @ApiParam(value = "Sijoitteluajon tunniste tai 'latest' avainsana", required = true) @PathParam("sijoitteluajoId") String sijoitteluajoId,
                                               @ApiParam(value = "Hakukohteen tunniste", required = true) @PathParam("hakukohdeOid") String hakukohdeOid);
     @GET

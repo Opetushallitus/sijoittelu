@@ -2,6 +2,7 @@ package fi.vm.sade.sijoittelu.tulos.resource;
 
 import com.wordnik.swagger.annotations.ApiOperation;
 import fi.vm.sade.sijoittelu.domain.SijoitteluAjo;
+import fi.vm.sade.sijoittelu.tulos.dto.ErrorDTO;
 import fi.vm.sade.sijoittelu.tulos.dto.HakukohdeDTO;
 import fi.vm.sade.sijoittelu.tulos.dto.SijoitteluDTO;
 import fi.vm.sade.sijoittelu.tulos.dto.SijoitteluajoDTO;
@@ -17,6 +18,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
 
 import javax.ws.rs.PathParam;
+import javax.ws.rs.core.Response;
 import java.util.List;
 
 import static fi.vm.sade.sijoittelu.tulos.roles.SijoitteluRole.*;
@@ -54,9 +56,14 @@ public class SijoitteluResourceImpl implements SijoitteluResource {
     @Override
     @Secured({ READ, UPDATE, CRUD })
     @ApiOperation(value = "xxxx3", httpMethod = "GET")
-    public HakukohdeDTO getHakukohdeBySijoitteluajo(String hakuOid, String sijoitteluajoId, String hakukohdeOid) {
-        SijoitteluAjo ajo  = getSijoitteluAjo(sijoitteluajoId, hakuOid) ;
-        return sijoitteluTulosService.getHakukohdeBySijoitteluajo(ajo, hakukohdeOid);
+    public Response getHakukohdeBySijoitteluajo(String hakuOid, String sijoitteluajoId, String hakukohdeOid) {
+        SijoitteluAjo ajo  = getSijoitteluAjo(sijoitteluajoId, hakuOid);
+        if(ajo != null) {
+            HakukohdeDTO hakukohdeBySijoitteluajo = sijoitteluTulosService.getHakukohdeBySijoitteluajo(ajo, hakukohdeOid);
+            return Response.ok().entity(hakukohdeBySijoitteluajo).build();
+        } else {
+            return Response.status(Response.Status.BAD_REQUEST).entity(new ErrorDTO("Haulta ("+ hakuOid +") ei löytynyt SijoitteluAjoa (" + sijoitteluajoId + ").")).build();
+        }
     }
 
     @Override
