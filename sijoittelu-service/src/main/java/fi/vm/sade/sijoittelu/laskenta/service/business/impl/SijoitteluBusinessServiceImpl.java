@@ -112,10 +112,13 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
         for (Hakukohde hakukohde : kaikkiHakukohteet) {
             for (Valintatapajono valintatapajono : hakukohde.getValintatapajonot()) {
                 for (Hakemus hakemus : valintatapajono.getHakemukset()) {
-                    Hakemus wanha = hakemusHashMap.get(hakukohde.getOid()+valintatapajono.getOid()+hakemus.getHakemusOid());
-                    if(wanha != null) {
-                        hakemus.setTilaHistoria(wanha.getTilaHistoria());
-                        if(hakemus.getTila() != wanha.getTila()) {
+                    Hakemus edellinen = hakemusHashMap.get(hakukohde.getOid()+valintatapajono.getOid()+hakemus.getHakemusOid());
+                    if(edellinen != null
+                            && edellinen.getTilaHistoria() != null
+                            && edellinen.getTilaHistoria().size() > 0) {
+                        hakemus.setTilaHistoria(edellinen.getTilaHistoria());
+
+                        if(hakemus.getTila() != edellinen.getTila()) {
                             TilaHistoria th = new TilaHistoria();
                             th.setLuotu(new Date());
                             th.setTila(hakemus.getTila());

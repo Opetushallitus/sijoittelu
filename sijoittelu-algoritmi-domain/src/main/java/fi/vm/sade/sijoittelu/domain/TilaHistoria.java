@@ -17,9 +17,6 @@ import java.util.Date;
 
 @Embedded("TilaHistoria")
 public class TilaHistoria {
-    @Id
-    private ObjectId id;
-
     @JsonView({JsonViews.Tila.class, JsonViews.MonenHakemuksenTila.class})
     private Date luotu;
     @JsonView({JsonViews.Tila.class, JsonViews.MonenHakemuksenTila.class})
