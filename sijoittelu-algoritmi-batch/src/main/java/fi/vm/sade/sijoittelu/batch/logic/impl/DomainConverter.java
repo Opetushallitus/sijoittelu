@@ -28,26 +28,28 @@ public class DomainConverter {
         for(ValinnanvaiheTyyppi v: hakukohdeTyyppi.getValinnanvaihe()) {
 
             for (ValintatapajonoTyyppi valintatapajonoTyyppi : v.getValintatapajono()) {
-                //  if(valintatapajonoTyyppi.isSiirretaanSijoitteluun()) {
-                Valintatapajono valintatapajono = new Valintatapajono();
-                valintatapajono.setOid(valintatapajonoTyyppi.getOid());
-                valintatapajono.setNimi(valintatapajonoTyyppi.getNimi());
-                valintatapajono.setPrioriteetti(valintatapajonoTyyppi.getPrioriteetti());
-                valintatapajono.setAloituspaikat(valintatapajonoTyyppi.getAloituspaikat());
-                valintatapajono.setTasasijasaanto(Tasasijasaanto.valueOf(valintatapajonoTyyppi.getTasasijasaanto().toString()));
+                if(valintatapajonoTyyppi.isSiirretaanSijoitteluun()) {
 
-                if(valintatapajonoTyyppi.isEiVarasijatayttoa() != null && valintatapajonoTyyppi.isEiVarasijatayttoa()) {
-                    valintatapajono.setEiVarasijatayttoa(true);
-                }     else {
-                    valintatapajono.setEiVarasijatayttoa(false);
+                    Valintatapajono valintatapajono = new Valintatapajono();
+                    valintatapajono.setOid(valintatapajonoTyyppi.getOid());
+                    valintatapajono.setNimi(valintatapajonoTyyppi.getNimi());
+                    valintatapajono.setPrioriteetti(valintatapajonoTyyppi.getPrioriteetti());
+                    valintatapajono.setAloituspaikat(valintatapajonoTyyppi.getAloituspaikat());
+                    valintatapajono.setTasasijasaanto(Tasasijasaanto.valueOf(valintatapajonoTyyppi.getTasasijasaanto().toString()));
+
+                    if(valintatapajonoTyyppi.isEiVarasijatayttoa() != null && valintatapajonoTyyppi.isEiVarasijatayttoa()) {
+                        valintatapajono.setEiVarasijatayttoa(true);
+                    }     else {
+                        valintatapajono.setEiVarasijatayttoa(false);
+                    }
+
+                    hakukohde.getValintatapajonot().add(valintatapajono);
+
+                    for (HakijaTyyppi hakijaTyyppi : valintatapajonoTyyppi.getHakija()) {
+                        addHakemus(hakijaTyyppi, valintatapajono);
+                    }
+
                 }
-
-                hakukohde.getValintatapajonot().add(valintatapajono);
-
-                for (HakijaTyyppi hakijaTyyppi : valintatapajonoTyyppi.getHakija()) {
-                    addHakemus(hakijaTyyppi, valintatapajono);
-                }
-                //     }
             }
         }
     }
