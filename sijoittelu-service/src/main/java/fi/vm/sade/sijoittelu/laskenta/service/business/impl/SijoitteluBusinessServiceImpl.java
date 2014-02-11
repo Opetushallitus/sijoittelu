@@ -98,7 +98,39 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
         sijoitteluAlgorithm.start();
         uusiSijoitteluajo.setEndMils(System.currentTimeMillis());
 
+        // wanhat hakemukset
+        Map<String, Hakemus> hakemusHashMap = new HashMap<String, Hakemus>();
+        for (Hakukohde hakukohde : olemassaolevatHakukohteet) {
+            for (Valintatapajono valintatapajono : hakukohde.getValintatapajonot()) {
+                for (Hakemus hakemus : valintatapajono.getHakemukset()) {
+                    hakemusHashMap.put(hakukohde.getOid()+valintatapajono.getOid()+hakemus.getHakemusOid(), hakemus);
+                }
+            }
+        }
+
+
         for (Hakukohde hakukohde : kaikkiHakukohteet) {
+            for (Valintatapajono valintatapajono : hakukohde.getValintatapajonot()) {
+                for (Hakemus hakemus : valintatapajono.getHakemukset()) {
+                    Hakemus wanha = hakemusHashMap.get(hakukohde.getOid()+valintatapajono.getOid()+hakemus.getHakemusOid());
+                    if(wanha != null) {
+                        hakemus.setTilaHistoria(wanha.getTilaHistoria());
+                        if(hakemus.getTila() != wanha.getTila()) {
+                            TilaHistoria th = new TilaHistoria();
+                            th.setLuotu(new Date());
+                            th.setTila(hakemus.getTila());
+                            hakemus.getTilaHistoria().add(th);
+                        }
+                    } else {
+                        TilaHistoria th = new TilaHistoria();
+                        th.setLuotu(new Date());
+                        th.setTila(hakemus.getTila());
+                        hakemus.getTilaHistoria().add(th);
+                    }
+
+                }
+            }
+
             dao.persistHakukohde(hakukohde);
         }
         dao.persistSijoittelu(sijoittelu);

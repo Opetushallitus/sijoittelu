@@ -43,6 +43,9 @@ public class HakemusDTO implements Serializable {
     @JsonView({ JsonViews.Hakemus.class, JsonViews.Hakukohde.class })
     private HakemuksenTila tila;
 
+    @JsonView({ JsonViews.Hakemus.class, JsonViews.Hakukohde.class })
+    private List<TilaHistoriaDTO> tilaHistoria = new ArrayList<TilaHistoriaDTO>();
+
    // @JsonView({ JsonViews.Hakemus.class, JsonViews.Hakukohde.class })
    // private String valintatuloksenTila;
 
@@ -215,5 +218,13 @@ public class HakemusDTO implements Serializable {
 
     public List<PistetietoDTO> getPistetiedot() {
         return pistetiedot;
+    }
+
+    public List<TilaHistoriaDTO> getTilaHistoria() {
+        return tilaHistoria;
+    }
+
+    public void setTilaHistoria(List<TilaHistoriaDTO> tilaHistoria) {
+        this.tilaHistoria = tilaHistoria;
     }
 }

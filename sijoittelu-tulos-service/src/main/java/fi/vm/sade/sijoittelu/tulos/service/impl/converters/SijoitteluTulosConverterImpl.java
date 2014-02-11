@@ -76,6 +76,8 @@ public class SijoitteluTulosConverterImpl implements SijoitteluTulosConverter {
         dto.setSukunimi(ha.getSukunimi());
         dto.setTasasijaJonosija(ha.getTasasijaJonosija());
         dto.setTila(EnumConverter.convert(HakemuksenTila.class, ha.getTila()));
+        applyTilaHistoria(ha, dto);
+
         dto.setPisteet(ha.getPisteet());
         if (hakukohde != null) {
             dto.setTarjoajaOid(hakukohde.getTarjoajaOid());
@@ -88,6 +90,15 @@ public class SijoitteluTulosConverterImpl implements SijoitteluTulosConverter {
         applyPistetiedot(dto, ha.getPistetiedot());
 
         return dto;
+    }
+
+    private void applyTilaHistoria(Hakemus ha, HakemusDTO dto) {
+        for (TilaHistoria tilaHistoria : ha.getTilaHistoria()) {
+            TilaHistoriaDTO thDTO = new TilaHistoriaDTO();
+            thDTO.setLuotu(tilaHistoria.getLuotu());
+            thDTO.setTila(tilaHistoria.getTila().name());
+            dto.getTilaHistoria().add(thDTO);
+        }
     }
 
     private void applyPistetiedot(HakemusDTO dto, List<Pistetieto> pistetiedot) {
