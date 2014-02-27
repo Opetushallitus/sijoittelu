@@ -257,11 +257,11 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
         // organisaatio updater voi muokata, jos hyväksytty
 
         String tarjoajaOid = hakukohde.getTarjoajaOid();
-        authorizer.checkOrganisationAccess(tarjoajaOid, SijoitteluRole.UPDATE, SijoitteluRole.CRUD);
+        authorizer.checkOrganisationAccess(tarjoajaOid, SijoitteluRole.UPDATE_ROLE, SijoitteluRole.CRUD_ROLE);
 
         boolean ophAdmin = false;
         try {
-            authorizer.checkOrganisationAccess(rootOrgOid, SijoitteluRole.CRUD);
+            authorizer.checkOrganisationAccess(rootOrgOid, SijoitteluRole.CRUD_ROLE);
             ophAdmin = true;
         } catch (NotAuthorizedException nae) {
             if (hakemus.getTila() != HakemuksenTila.HYVAKSYTTY) {

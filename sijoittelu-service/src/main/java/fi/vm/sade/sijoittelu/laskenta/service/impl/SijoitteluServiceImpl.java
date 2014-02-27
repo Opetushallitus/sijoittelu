@@ -6,7 +6,6 @@ import fi.vm.sade.sijoittelu.laskenta.service.business.SijoitteluBusinessService
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.access.prepost.PreAuthorize;
 
 import javax.jws.WebParam;
@@ -29,7 +28,7 @@ public class SijoitteluServiceImpl implements SijoitteluService {
     private SijoitteluBusinessService sijoitteluBusinessService;
 
     @Override
-    @Secured({CRUD})
+    @PreAuthorize(CRUD)
     public HakuTyyppi sijoittele(@WebParam(partName = "parameters", name = "sijoittele", targetNamespace = "http://sijoittelu.service.sade.vm.fi/types") HakuTyyppi haku) {
         sijoitteluBusinessService.sijoittele(haku);
         return haku;

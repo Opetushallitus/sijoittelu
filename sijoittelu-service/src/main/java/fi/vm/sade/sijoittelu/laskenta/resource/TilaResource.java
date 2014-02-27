@@ -8,7 +8,6 @@ import org.codehaus.jackson.map.annotate.JsonView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
 
@@ -43,7 +42,7 @@ public class TilaResource {
     @JsonView(JsonViews.MonenHakemuksenTila.class)
     @Produces(MediaType.APPLICATION_JSON)
     @Path("{hakemusOid}")
-    @Secured({READ, UPDATE, CRUD})
+    @PreAuthorize(READ_UPDATE_CRUD)
     public List<Valintatulos> hakemus(@PathParam("hakemusOid") String hakemusOid) {
         List<Valintatulos> v = sijoitteluBusinessService.haeHakemuksenTila(hakemusOid);
         if (v == null) {
@@ -56,7 +55,7 @@ public class TilaResource {
     @JsonView(JsonViews.Tila.class)
     @Produces(MediaType.APPLICATION_JSON)
     @Path("{hakemusOid}/{hakuOid}/{hakukohdeOid}/{valintatapajonoOid}/")
-    @Secured({READ, UPDATE, CRUD})
+    @PreAuthorize(READ_UPDATE_CRUD)
     public Valintatulos hakemus(@PathParam("hakuOid") String hakuOid,
                                 @PathParam("hakukohdeOid") String hakukohdeOid,
                                 @PathParam("valintatapajonoOid") String valintatapajonoOid,
@@ -72,7 +71,7 @@ public class TilaResource {
     @JsonView(JsonViews.MonenHakemuksenTila.class)
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/hakukohde/{hakukohdeOid}/{valintatapajonoOid}/")
-    @Secured({READ, UPDATE, CRUD})
+    @PreAuthorize(READ_UPDATE_CRUD)
     public List<Valintatulos> haku(@PathParam("hakukohdeOid") String hakukohdeOid,
                                 @PathParam("valintatapajonoOid") String valintatapajonoOid) {
         List<Valintatulos> v = sijoitteluBusinessService.haeHakemustenTilat(hakukohdeOid, valintatapajonoOid);
@@ -86,7 +85,7 @@ public class TilaResource {
     @JsonView(JsonViews.Tila.class)
     @Produces(MediaType.APPLICATION_JSON)
     @Path("{hakemusOid}/{hakuOid}/{hakukohdeOid}/{valintatapajonoOid}/")
-    @Secured({UPDATE, CRUD})
+    @PreAuthorize(UPDATE_CRUD)
     public Response muutaHakemuksenTilaa(@PathParam("hakuOid") String hakuOid,
                                          @PathParam("hakukohdeOid") String hakukohdeOid,
                                          @PathParam("valintatapajonoOid") String valintatapajonoOid,

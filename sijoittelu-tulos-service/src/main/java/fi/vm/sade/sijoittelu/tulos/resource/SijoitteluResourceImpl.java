@@ -13,7 +13,6 @@ import fi.vm.sade.sijoittelu.tulos.service.SijoitteluTulosService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
 
@@ -39,14 +38,14 @@ public class SijoitteluResourceImpl implements SijoitteluResource {
     private RaportointiService raportointiService;
 
     @Override
-    @Secured({ READ, UPDATE, CRUD })
+    @PreAuthorize(READ_UPDATE_CRUD)
     @ApiOperation(value = "xxxx1", httpMethod = "GET")
     public SijoitteluDTO getSijoitteluByHakuOid(String hakuOid) {
         return sijoitteluTulosService.getSijoitteluByHakuOid(hakuOid);
     }
 
     @Override
-    @Secured({ READ, UPDATE, CRUD })
+    @PreAuthorize(READ_UPDATE_CRUD)
     @ApiOperation(value = "xxxx2", httpMethod = "GET")
     public SijoitteluajoDTO getSijoitteluajo(String hakuOid, String sijoitteluajoId) {
         SijoitteluAjo ajo  = getSijoitteluAjo(sijoitteluajoId, hakuOid) ;
@@ -54,7 +53,7 @@ public class SijoitteluResourceImpl implements SijoitteluResource {
     }
 
     @Override
-    @Secured({ READ, UPDATE, CRUD })
+    @PreAuthorize(READ_UPDATE_CRUD)
     @ApiOperation(value = "xxxx3", httpMethod = "GET")
     public Response getHakukohdeBySijoitteluajo(String hakuOid, String sijoitteluajoId, String hakukohdeOid) {
         SijoitteluAjo ajo  = getSijoitteluAjo(sijoitteluajoId, hakuOid);
@@ -67,7 +66,7 @@ public class SijoitteluResourceImpl implements SijoitteluResource {
     }
 
     @Override
-    @Secured({ READ, UPDATE, CRUD })
+    @PreAuthorize(READ_UPDATE_CRUD)
     @ApiOperation(value = "xxxx4", httpMethod = "GET")
     public HakijaPaginationObject hakemukset( String hakuOid,
                                                    String sijoitteluajoId,
@@ -82,7 +81,7 @@ public class SijoitteluResourceImpl implements SijoitteluResource {
     }
 
     @Override
-    @Secured({ READ, UPDATE, CRUD })
+    @PreAuthorize(READ_UPDATE_CRUD)
     @ApiOperation(value = "xxxx5", httpMethod = "GET")
     public HakijaDTO hakemus(@PathParam("hakuOid") String hakuOid,
                              @PathParam("sijoitteluajoId") String sijoitteluajoId,
