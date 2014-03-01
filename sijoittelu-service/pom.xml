@@ -23,6 +23,10 @@
                    <groupId>net.sf.ehcache</groupId>
 		   <artifactId>ehcache</artifactId>
 		</exclusion>
+                <exclusion>
+                	<artifactId>commons-logging</artifactId>
+                	<groupId>commons-logging</groupId>
+                </exclusion>
             </exclusions>
 	</dependency>
         <!-- internal -->
