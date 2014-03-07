@@ -5,7 +5,9 @@ import org.codehaus.jackson.map.annotate.JsonView;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created with IntelliJ IDEA. User: kkammone Date: 2.9.2013 Time: 13:22 To
@@ -42,6 +44,9 @@ public class HakemusDTO implements Serializable {
 
     @JsonView({ JsonViews.Hakemus.class, JsonViews.Hakukohde.class })
     private HakemuksenTila tila;
+
+    @JsonView({ JsonViews.Hakemus.class, JsonViews.Hakukohde.class })
+    private Map<String,String> tilanKuvaukset = new HashMap<String,String>();
 
     @JsonView({ JsonViews.Hakemus.class, JsonViews.Hakukohde.class })
     private List<TilaHistoriaDTO> tilaHistoria = new ArrayList<TilaHistoriaDTO>();
@@ -226,5 +231,13 @@ public class HakemusDTO implements Serializable {
 
     public void setTilaHistoria(List<TilaHistoriaDTO> tilaHistoria) {
         this.tilaHistoria = tilaHistoria;
+    }
+
+    public Map<String, String> getTilanKuvaukset() {
+        return tilanKuvaukset;
+    }
+
+    public void setTilanKuvaukset(Map<String, String> tilanKuvaukset) {
+        this.tilanKuvaukset = tilanKuvaukset;
     }
 }

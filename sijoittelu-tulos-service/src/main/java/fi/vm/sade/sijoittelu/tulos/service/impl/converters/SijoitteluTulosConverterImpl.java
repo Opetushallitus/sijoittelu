@@ -76,6 +76,7 @@ public class SijoitteluTulosConverterImpl implements SijoitteluTulosConverter {
         dto.setSukunimi(ha.getSukunimi());
         dto.setTasasijaJonosija(ha.getTasasijaJonosija());
         dto.setTila(EnumConverter.convert(HakemuksenTila.class, ha.getTila()));
+        dto.setTilanKuvaukset(ha.getTilanKuvaukset());
         applyTilaHistoria(ha, dto);
 
         dto.setPisteet(ha.getPisteet());

@@ -6,6 +6,8 @@ import fi.vm.sade.sijoittelu.tulos.dto.ValintatuloksenTila;
 import org.codehaus.jackson.map.annotate.JsonView;
 
 import java.math.BigDecimal;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created with IntelliJ IDEA. User: kkammone Date: 18.9.2013 Time: 14:11 To
@@ -33,6 +35,9 @@ public class HakutoiveenValintatapajonoDTO {
 
     @JsonView(JsonViews.Hakija.class)
     private HakemuksenTila tila;
+
+    @JsonView(JsonViews.Hakija.class)
+    private Map<String,String> tilanKuvaukset = new HashMap<String,String>();
 
     @JsonView(JsonViews.Hakija.class)
     private ValintatuloksenTila vastaanottotieto;
@@ -178,5 +183,13 @@ public class HakutoiveenValintatapajonoDTO {
 
     public void setValintatapajonoPrioriteetti(Integer valintatapajonoPrioriteetti) {
         this.valintatapajonoPrioriteetti = valintatapajonoPrioriteetti;
+    }
+
+    public Map<String, String> getTilanKuvaukset() {
+        return tilanKuvaukset;
+    }
+
+    public void setTilanKuvaukset(Map<String, String> tilanKuvaukset) {
+        this.tilanKuvaukset = tilanKuvaukset;
     }
 }

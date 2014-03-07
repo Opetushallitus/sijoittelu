@@ -5,7 +5,9 @@ import fi.vm.sade.service.valintatiedot.schema.*;
 import fi.vm.sade.sijoittelu.domain.*;
 
 import java.math.BigDecimal;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -90,6 +92,11 @@ public class DomainConverter {
         } else if (hakijaTyyppi.getTila() == HakemusTilaTyyppi.HYVAKSYTTAVISSA) {
             hakemus.setTila(HakemuksenTila.VARALLA);
         } else {
+            Map<String,String> tilanKuvaukset = new HashMap<String, String>();
+            for (AvainArvoTyyppi tyyppi : hakijaTyyppi.getTilanKuvaus()) {
+                tilanKuvaukset.put(tyyppi.getAvain(),tyyppi.getArvo());
+            }
+            hakemus.setTilanKuvaukset(tilanKuvaukset);
             hakemus.setTila(HakemuksenTila.HYLATTY);
         }
 

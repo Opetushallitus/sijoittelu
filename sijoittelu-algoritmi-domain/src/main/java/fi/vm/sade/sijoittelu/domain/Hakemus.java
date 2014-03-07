@@ -6,9 +6,7 @@ import fi.vm.sade.sijoittelu.domain.converter.BigDecimalConverter;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /**
  * 
@@ -46,6 +44,8 @@ public class Hakemus implements Serializable {
     private boolean hyvaksyttyHarkinnanvaraisesti = false;
 
     private List<Pistetieto> pistetiedot = new ArrayList<Pistetieto>();
+
+    private Map<String,String> tilanKuvaukset = new HashMap<String,String>();
 
     public int getPrioriteetti() {
         return prioriteetti;
@@ -147,5 +147,13 @@ public class Hakemus implements Serializable {
 
     public void setTilaHistoria(List<TilaHistoria> tilaHistoria) {
         this.tilaHistoria = tilaHistoria;
+    }
+
+    public Map<String, String> getTilanKuvaukset() {
+        return tilanKuvaukset;
+    }
+
+    public void setTilanKuvaukset(Map<String, String> tilanKuvaukset) {
+        this.tilanKuvaukset = tilanKuvaukset;
     }
 }
