@@ -9,6 +9,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Response;
 
 import org.codehaus.jackson.map.annotate.JsonView;
 
@@ -57,7 +58,17 @@ public interface SijoitteluResource {
 	@Produces(APPLICATION_JSON)
 	@Path("/{hakuOid}/sijoitteluajo/{sijoitteluajoId}/hakukohde/{hakukohdeOid}")
 	@ApiOperation(position = 3, value = "Hakee hakukohteen tiedot tietyssa sijoitteluajossa.", response = HakukohdeDTO.class)
-	HakukohdeDTO getHakukohdeBySijoitteluajo(
+	Response getHakukohdeBySijoitteluajo(
+			@ApiParam(value = "Haun tunniste", required = true) @PathParam("hakuOid") String hakuOid,
+			@ApiParam(value = "Sijoitteluajon tunniste tai 'latest' avainsana", required = true) @PathParam("sijoitteluajoId") String sijoitteluajoId,
+			@ApiParam(value = "Hakukohteen tunniste", required = true) @PathParam("hakukohdeOid") String hakukohdeOid);
+
+	@GET
+	@JsonView(JsonViews.Hakukohde.class)
+	@Produces(APPLICATION_JSON)
+	@Path("/{hakuOid}/sijoitteluajo/{sijoitteluajoId}/hakukohdedto/{hakukohdeOid}")
+	@ApiOperation(position = 3, value = "Hakee hakukohteen tiedot tietyssa sijoitteluajossa.", response = HakukohdeDTO.class)
+	HakukohdeDTO getHakukohdeBySijoitteluajoPlainDTO(
 			@ApiParam(value = "Haun tunniste", required = true) @PathParam("hakuOid") String hakuOid,
 			@ApiParam(value = "Sijoitteluajon tunniste tai 'latest' avainsana", required = true) @PathParam("sijoitteluajoId") String sijoitteluajoId,
 			@ApiParam(value = "Hakukohteen tunniste", required = true) @PathParam("hakukohdeOid") String hakukohdeOid);
