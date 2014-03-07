@@ -98,7 +98,7 @@ public class TilaResource {
 	@PreAuthorize(UPDATE_CRUD)
 	public Response muutaHakemustenTilaa(@PathParam("hakuOid") String hakuOid,
 			@PathParam("hakukohdeOid") String hakukohdeOid,
-			@PathParam("valintatapajonoOid") String valintatapajonoOid,
+			// @PathParam("valintatapajonoOid") String valintatapajonoOid,
 			List<Valintatulos> valintatulokset,
 			@QueryParam("selite") String selite) {
 
