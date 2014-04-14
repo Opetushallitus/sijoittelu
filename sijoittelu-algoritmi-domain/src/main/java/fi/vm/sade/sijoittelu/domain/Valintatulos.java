@@ -49,6 +49,9 @@ public class Valintatulos {
     @JsonView({JsonViews.Tila.class, JsonViews.MonenHakemuksenTila.class})
     private ValintatuloksenTila tila;
 
+    @JsonView({JsonViews.Tila.class, JsonViews.MonenHakemuksenTila.class})
+    private IlmoittautumisTila ilmoittautumisTila;
+
     @Embedded
     @JsonView({JsonViews.Tila.class, JsonViews.MonenHakemuksenTila.class})
     private List<LogEntry> logEntries = new ArrayList<LogEntry>();
@@ -123,5 +126,13 @@ public class Valintatulos {
 
     public void setLogEntries(List<LogEntry> logEntries) {
         this.logEntries = logEntries;
+    }
+
+    public IlmoittautumisTila getIlmoittautumisTila() {
+        return ilmoittautumisTila;
+    }
+
+    public void setIlmoittautumisTila(final IlmoittautumisTila ilmoittautumisTila) {
+        this.ilmoittautumisTila = ilmoittautumisTila;
     }
 }

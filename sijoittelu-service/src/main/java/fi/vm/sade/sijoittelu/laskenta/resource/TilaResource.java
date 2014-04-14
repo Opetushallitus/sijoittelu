@@ -17,6 +17,7 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import fi.vm.sade.sijoittelu.domain.IlmoittautumisTila;
 import org.codehaus.jackson.map.annotate.JsonView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -98,16 +99,16 @@ public class TilaResource {
 	@PreAuthorize(UPDATE_CRUD)
 	public Response muutaHakemustenTilaa(@PathParam("hakuOid") String hakuOid,
 			@PathParam("hakukohdeOid") String hakukohdeOid,
-			// @PathParam("valintatapajonoOid") String valintatapajonoOid,
 			List<Valintatulos> valintatulokset,
 			@QueryParam("selite") String selite) {
 
 		try {
 			for (Valintatulos v : valintatulokset) {
 				ValintatuloksenTila tila = v.getTila();
+                IlmoittautumisTila ilmoittautumisTila = v.getIlmoittautumisTila();
 				sijoitteluBusinessService.vaihdaHakemuksenTila(hakuOid,
 						hakukohdeOid, v.getValintatapajonoOid(),
-						v.getHakemusOid(), tila, selite);
+						v.getHakemusOid(), tila, selite, ilmoittautumisTila);
 			}
 			return Response.status(Response.Status.ACCEPTED).build();
 		} catch (Exception e) {

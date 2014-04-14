@@ -2,6 +2,7 @@ package fi.vm.sade.sijoittelu.laskenta.service.business.impl;
 
 import fi.vm.sade.authentication.business.service.Authorizer;
 import fi.vm.sade.generic.service.exception.NotAuthorizedException;
+import fi.vm.sade.sijoittelu.domain.IlmoittautumisTila;
 import fi.vm.sade.sijoittelu.domain.Sijoittelu;
 import fi.vm.sade.sijoittelu.domain.ValintatuloksenTila;
 import fi.vm.sade.sijoittelu.domain.Valintatulos;
@@ -64,7 +65,7 @@ public class SijoitteluBusinessServiceImplTest {
 
         Mockito.when(daoMock.loadValintatulos(HAKUKOHDE_OID, VALINTATAPAJONO_OID, HAKEMUS_OID)).thenReturn(getValintatulos(null));
 
-        sijoitteluBusinessService.vaihdaHakemuksenTila(HAKU_OID, HAKUKOHDE_OID, VALINTATAPAJONO_OID, HAKEMUS_OID, ValintatuloksenTila.PERUNUT, SELITE);
+        sijoitteluBusinessService.vaihdaHakemuksenTila(HAKU_OID, HAKUKOHDE_OID, VALINTATAPAJONO_OID, HAKEMUS_OID, ValintatuloksenTila.PERUNUT, SELITE, IlmoittautumisTila.EI_TEHTY);
     }
 
     @Test(expected = ValintatulosOnJoVastaanotettuException.class)
@@ -79,7 +80,7 @@ public class SijoitteluBusinessServiceImplTest {
 
         Mockito.when(daoMock.loadValintatulos(HAKUKOHDE_OID, VALINTATAPAJONO_OID, HAKEMUS_OID)).thenReturn(getValintatulos(ValintatuloksenTila.PERUNUT));
 
-        sijoitteluBusinessService.vaihdaHakemuksenTila(HAKU_OID, HAKUKOHDE_OID, VALINTATAPAJONO_OID, HAKEMUS_OID, ValintatuloksenTila.PERUNUT, SELITE);
+        sijoitteluBusinessService.vaihdaHakemuksenTila(HAKU_OID, HAKUKOHDE_OID, VALINTATAPAJONO_OID, HAKEMUS_OID, ValintatuloksenTila.PERUNUT, SELITE, IlmoittautumisTila.EI_TEHTY);
     }
 
     @Test(expected = HakemusEiOleHyvaksyttyException.class)
@@ -94,7 +95,7 @@ public class SijoitteluBusinessServiceImplTest {
 
         Mockito.when(daoMock.loadValintatulos(HAKUKOHDE_OID, VALINTATAPAJONO_OID, HAKEMUS_OID_2)).thenReturn(getValintatulos(null));
 
-        sijoitteluBusinessService.vaihdaHakemuksenTila(HAKU_OID, HAKUKOHDE_OID, VALINTATAPAJONO_OID, HAKEMUS_OID_2, ValintatuloksenTila.ILMOITETTU, SELITE);
+        sijoitteluBusinessService.vaihdaHakemuksenTila(HAKU_OID, HAKUKOHDE_OID, VALINTATAPAJONO_OID, HAKEMUS_OID_2, ValintatuloksenTila.ILMOITETTU, SELITE, IlmoittautumisTila.EI_TEHTY);
     }
 
     @Test
@@ -109,7 +110,7 @@ public class SijoitteluBusinessServiceImplTest {
 
         Mockito.when(daoMock.loadValintatulos(HAKUKOHDE_OID, VALINTATAPAJONO_OID, HAKEMUS_OID)).thenReturn(getValintatulos(null));
 
-        sijoitteluBusinessService.vaihdaHakemuksenTila(HAKU_OID, HAKUKOHDE_OID, VALINTATAPAJONO_OID, HAKEMUS_OID, ValintatuloksenTila.ILMOITETTU, SELITE);
+        sijoitteluBusinessService.vaihdaHakemuksenTila(HAKU_OID, HAKUKOHDE_OID, VALINTATAPAJONO_OID, HAKEMUS_OID, ValintatuloksenTila.ILMOITETTU, SELITE, IlmoittautumisTila.EI_TEHTY);
     }
 
     @Test
@@ -124,7 +125,7 @@ public class SijoitteluBusinessServiceImplTest {
 
         Mockito.when(daoMock.loadValintatulos(HAKUKOHDE_OID, VALINTATAPAJONO_OID, HAKEMUS_OID)).thenReturn(getValintatulos(ValintatuloksenTila.ILMOITETTU));
 
-        sijoitteluBusinessService.vaihdaHakemuksenTila(HAKU_OID, HAKUKOHDE_OID, VALINTATAPAJONO_OID, HAKEMUS_OID, ValintatuloksenTila.PERUNUT, SELITE);
+        sijoitteluBusinessService.vaihdaHakemuksenTila(HAKU_OID, HAKUKOHDE_OID, VALINTATAPAJONO_OID, HAKEMUS_OID, ValintatuloksenTila.PERUNUT, SELITE, IlmoittautumisTila.EI_TEHTY);
     }
 
     @Test
@@ -136,7 +137,7 @@ public class SijoitteluBusinessServiceImplTest {
 
         Mockito.when(daoMock.loadValintatulos(HAKUKOHDE_OID, VALINTATAPAJONO_OID, HAKEMUS_OID)).thenReturn(getValintatulos(null));
 
-        sijoitteluBusinessService.vaihdaHakemuksenTila(HAKU_OID, HAKUKOHDE_OID, VALINTATAPAJONO_OID, HAKEMUS_OID, ValintatuloksenTila.PERUNUT, SELITE);
+        sijoitteluBusinessService.vaihdaHakemuksenTila(HAKU_OID, HAKUKOHDE_OID, VALINTATAPAJONO_OID, HAKEMUS_OID, ValintatuloksenTila.PERUNUT, SELITE, IlmoittautumisTila.EI_TEHTY);
     }
 
     @Test
@@ -148,7 +149,7 @@ public class SijoitteluBusinessServiceImplTest {
 
         Mockito.when(daoMock.loadValintatulos(HAKUKOHDE_OID, VALINTATAPAJONO_OID, HAKEMUS_OID_2)).thenReturn(getValintatulos(null));
 
-        sijoitteluBusinessService.vaihdaHakemuksenTila(HAKU_OID, HAKUKOHDE_OID, VALINTATAPAJONO_OID, HAKEMUS_OID_2, ValintatuloksenTila.VASTAANOTTANUT_LASNA, SELITE);
+        sijoitteluBusinessService.vaihdaHakemuksenTila(HAKU_OID, HAKUKOHDE_OID, VALINTATAPAJONO_OID, HAKEMUS_OID_2, ValintatuloksenTila.VASTAANOTTANUT_LASNA, SELITE, IlmoittautumisTila.EI_TEHTY);
     }
 
     private Valintatulos getValintatulos(ValintatuloksenTila tila) {

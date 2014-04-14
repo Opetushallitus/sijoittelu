@@ -219,7 +219,8 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
     }
 
     @Override
-    public void vaihdaHakemuksenTila(String hakuoid, String hakukohdeOid, String valintatapajonoOid, String hakemusOid, ValintatuloksenTila tila, String selite) {
+    public void vaihdaHakemuksenTila(String hakuoid, String hakukohdeOid, String valintatapajonoOid, String hakemusOid,
+                                     ValintatuloksenTila tila, String selite, IlmoittautumisTila ilmoittautumisTila) {
         if (StringUtils.isBlank(hakuoid) || StringUtils.isBlank(hakukohdeOid) || StringUtils.isBlank(valintatapajonoOid) || StringUtils.isBlank(hakemusOid)) {
             throw new RuntimeException("Invalid search params, fix exception later");
         }
@@ -290,6 +291,7 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
             v.setHakuOid(hakuoid);
         }
         v.setTila(tila);
+        v.setIlmoittautumisTila(ilmoittautumisTila);
 
         LOG.info("Asetetaan valintatuloksen tila - hakukohdeoid {}, valintatapajonooid {}, hakemusoid {}", new Object[]{hakukohdeOid, valintatapajonoOid, hakemusOid});
         LOG.info("Valintatuloksen uusi tila {}", tila);

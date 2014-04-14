@@ -1,6 +1,7 @@
 package fi.vm.sade.sijoittelu.laskenta.service.business;
 
 import fi.vm.sade.service.valintatiedot.schema.HakuTyyppi;
+import fi.vm.sade.sijoittelu.domain.IlmoittautumisTila;
 import fi.vm.sade.sijoittelu.domain.ValintatuloksenTila;
 import fi.vm.sade.sijoittelu.domain.Valintatulos;
 
@@ -19,7 +20,8 @@ public interface SijoitteluBusinessService {
 
     List<Valintatulos> haeHakemuksenTila(String hakemusOid);
 
-    void vaihdaHakemuksenTila(String hakuoid, String hakukohdeOid, String valintatapajonoOid, String hakemusOid, ValintatuloksenTila tila, String selite);
+    void vaihdaHakemuksenTila(String hakuoid, String hakukohdeOid, String valintatapajonoOid, String hakemusOid,
+                              ValintatuloksenTila tila, String selite, IlmoittautumisTila ilmoittautumisTila);
 
     List<Valintatulos> haeHakemustenTilat(String hakukohdeOid, String valintatapajonoOid);
 }
