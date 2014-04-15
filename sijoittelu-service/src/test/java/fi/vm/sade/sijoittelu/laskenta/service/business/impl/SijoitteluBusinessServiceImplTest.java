@@ -163,4 +163,96 @@ public class SijoitteluBusinessServiceImplTest {
         valintatulos.setTila(tila);
         return valintatulos;
     }
+
+
+    @Test
+    public void testVaihdaIlmoittautumisTilaLasnaKokoLukuvuosi() throws Exception {
+        Sijoittelu sijoittelu = testDataGenerator.generateTestData();
+
+        Mockito.when(daoMock.loadSijoittelu(HAKU_OID)).thenReturn(sijoittelu);
+        Mockito.when(daoMock.getHakukohdeForSijoitteluajo(TestDataGenerator.SIJOITTELU_AJO_ID_2, HAKUKOHDE_OID)).thenReturn(testDataGenerator.createHakukohdes(1).get(0));
+        Mockito.doThrow(new NotAuthorizedException()).when(authorizer).checkOrganisationAccess(ROOT_ORG_OID, SijoitteluRole.CRUD_ROLE);
+
+        Mockito.when(daoMock.loadValintatulos(HAKUKOHDE_OID, VALINTATAPAJONO_OID, HAKEMUS_OID)).thenReturn(getValintatulos(ValintatuloksenTila.ILMOITETTU));
+
+        sijoitteluBusinessService.vaihdaHakemuksenTila(HAKU_OID, HAKUKOHDE_OID, VALINTATAPAJONO_OID, HAKEMUS_OID, ValintatuloksenTila.VASTAANOTTANUT_LASNA, SELITE, IlmoittautumisTila.LASNA_KOKO_LUKUVUOSI);
+    }
+
+    @Test
+    public void testVaihdaIlmoittautumisTilaPoissaKokoLukuvuosi() throws Exception {
+        Sijoittelu sijoittelu = testDataGenerator.generateTestData();
+
+        Mockito.when(daoMock.loadSijoittelu(HAKU_OID)).thenReturn(sijoittelu);
+        Mockito.when(daoMock.getHakukohdeForSijoitteluajo(TestDataGenerator.SIJOITTELU_AJO_ID_2, HAKUKOHDE_OID)).thenReturn(testDataGenerator.createHakukohdes(1).get(0));
+        Mockito.doThrow(new NotAuthorizedException()).when(authorizer).checkOrganisationAccess(ROOT_ORG_OID, SijoitteluRole.CRUD_ROLE);
+
+        Mockito.when(daoMock.loadValintatulos(HAKUKOHDE_OID, VALINTATAPAJONO_OID, HAKEMUS_OID)).thenReturn(getValintatulos(ValintatuloksenTila.ILMOITETTU));
+
+        sijoitteluBusinessService.vaihdaHakemuksenTila(HAKU_OID, HAKUKOHDE_OID, VALINTATAPAJONO_OID, HAKEMUS_OID, ValintatuloksenTila.VASTAANOTTANUT_LASNA, SELITE, IlmoittautumisTila.POISSA_KOKO_LUKUVUOSI);
+    }
+
+    @Test
+    public void testVaihdaIlmoittautumisTilaEiIlmoittautunut() throws Exception {
+        Sijoittelu sijoittelu = testDataGenerator.generateTestData();
+
+        Mockito.when(daoMock.loadSijoittelu(HAKU_OID)).thenReturn(sijoittelu);
+        Mockito.when(daoMock.getHakukohdeForSijoitteluajo(TestDataGenerator.SIJOITTELU_AJO_ID_2, HAKUKOHDE_OID)).thenReturn(testDataGenerator.createHakukohdes(1).get(0));
+        Mockito.doThrow(new NotAuthorizedException()).when(authorizer).checkOrganisationAccess(ROOT_ORG_OID, SijoitteluRole.CRUD_ROLE);
+
+        Mockito.when(daoMock.loadValintatulos(HAKUKOHDE_OID, VALINTATAPAJONO_OID, HAKEMUS_OID)).thenReturn(getValintatulos(ValintatuloksenTila.ILMOITETTU));
+
+        sijoitteluBusinessService.vaihdaHakemuksenTila(HAKU_OID, HAKUKOHDE_OID, VALINTATAPAJONO_OID, HAKEMUS_OID, ValintatuloksenTila.VASTAANOTTANUT_LASNA, SELITE, IlmoittautumisTila.EI_ILMOITTAUTUNUT);
+    }
+
+    @Test
+    public void testVaihdaIlmoittautumisTilaLasnaSyksy() throws Exception {
+        Sijoittelu sijoittelu = testDataGenerator.generateTestData();
+
+        Mockito.when(daoMock.loadSijoittelu(HAKU_OID)).thenReturn(sijoittelu);
+        Mockito.when(daoMock.getHakukohdeForSijoitteluajo(TestDataGenerator.SIJOITTELU_AJO_ID_2, HAKUKOHDE_OID)).thenReturn(testDataGenerator.createHakukohdes(1).get(0));
+        Mockito.doThrow(new NotAuthorizedException()).when(authorizer).checkOrganisationAccess(ROOT_ORG_OID, SijoitteluRole.CRUD_ROLE);
+
+        Mockito.when(daoMock.loadValintatulos(HAKUKOHDE_OID, VALINTATAPAJONO_OID, HAKEMUS_OID)).thenReturn(getValintatulos(ValintatuloksenTila.ILMOITETTU));
+
+        sijoitteluBusinessService.vaihdaHakemuksenTila(HAKU_OID, HAKUKOHDE_OID, VALINTATAPAJONO_OID, HAKEMUS_OID, ValintatuloksenTila.VASTAANOTTANUT_LASNA, SELITE, IlmoittautumisTila.LASNA_SYKSY);
+    }
+
+    @Test
+    public void testVaihdaIlmoittautumisTilaPoissaSyksy() throws Exception {
+        Sijoittelu sijoittelu = testDataGenerator.generateTestData();
+
+        Mockito.when(daoMock.loadSijoittelu(HAKU_OID)).thenReturn(sijoittelu);
+        Mockito.when(daoMock.getHakukohdeForSijoitteluajo(TestDataGenerator.SIJOITTELU_AJO_ID_2, HAKUKOHDE_OID)).thenReturn(testDataGenerator.createHakukohdes(1).get(0));
+        Mockito.doThrow(new NotAuthorizedException()).when(authorizer).checkOrganisationAccess(ROOT_ORG_OID, SijoitteluRole.CRUD_ROLE);
+
+        Mockito.when(daoMock.loadValintatulos(HAKUKOHDE_OID, VALINTATAPAJONO_OID, HAKEMUS_OID)).thenReturn(getValintatulos(ValintatuloksenTila.ILMOITETTU));
+
+        sijoitteluBusinessService.vaihdaHakemuksenTila(HAKU_OID, HAKUKOHDE_OID, VALINTATAPAJONO_OID, HAKEMUS_OID, ValintatuloksenTila.VASTAANOTTANUT_LASNA, SELITE, IlmoittautumisTila.POISSA_SYKSY);
+    }
+
+    @Test
+    public void testVaihdaIlmoittautumisTilaLasna() throws Exception {
+        Sijoittelu sijoittelu = testDataGenerator.generateTestData();
+
+        Mockito.when(daoMock.loadSijoittelu(HAKU_OID)).thenReturn(sijoittelu);
+        Mockito.when(daoMock.getHakukohdeForSijoitteluajo(TestDataGenerator.SIJOITTELU_AJO_ID_2, HAKUKOHDE_OID)).thenReturn(testDataGenerator.createHakukohdes(1).get(0));
+        Mockito.doThrow(new NotAuthorizedException()).when(authorizer).checkOrganisationAccess(ROOT_ORG_OID, SijoitteluRole.CRUD_ROLE);
+
+        Mockito.when(daoMock.loadValintatulos(HAKUKOHDE_OID, VALINTATAPAJONO_OID, HAKEMUS_OID)).thenReturn(getValintatulos(ValintatuloksenTila.ILMOITETTU));
+
+        sijoitteluBusinessService.vaihdaHakemuksenTila(HAKU_OID, HAKUKOHDE_OID, VALINTATAPAJONO_OID, HAKEMUS_OID, ValintatuloksenTila.VASTAANOTTANUT_LASNA, SELITE, IlmoittautumisTila.LASNA);
+    }
+
+    @Test
+    public void testVaihdaIlmoittautumisTilaPoissa() throws Exception {
+        Sijoittelu sijoittelu = testDataGenerator.generateTestData();
+
+        Mockito.when(daoMock.loadSijoittelu(HAKU_OID)).thenReturn(sijoittelu);
+        Mockito.when(daoMock.getHakukohdeForSijoitteluajo(TestDataGenerator.SIJOITTELU_AJO_ID_2, HAKUKOHDE_OID)).thenReturn(testDataGenerator.createHakukohdes(1).get(0));
+        Mockito.doThrow(new NotAuthorizedException()).when(authorizer).checkOrganisationAccess(ROOT_ORG_OID, SijoitteluRole.CRUD_ROLE);
+
+        Mockito.when(daoMock.loadValintatulos(HAKUKOHDE_OID, VALINTATAPAJONO_OID, HAKEMUS_OID)).thenReturn(getValintatulos(ValintatuloksenTila.ILMOITETTU));
+
+        sijoitteluBusinessService.vaihdaHakemuksenTila(HAKU_OID, HAKUKOHDE_OID, VALINTATAPAJONO_OID, HAKEMUS_OID, ValintatuloksenTila.VASTAANOTTANUT_LASNA, SELITE, IlmoittautumisTila.POISSA);
+    }
 }
