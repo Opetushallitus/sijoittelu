@@ -76,8 +76,6 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
     @Override
     public void sijoittele(HakuTyyppi sijoitteluTyyppi) {
 
-
-
         String hakuOid = sijoitteluTyyppi.getHakuOid();
         Sijoittelu sijoittelu = getOrCreateSijoittelu(hakuOid);
         SijoitteluAjo viimeisinSijoitteluajo = sijoittelu.getLatestSijoitteluajo();
@@ -98,6 +96,14 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
         sijoitteluAlgorithm.start();
         uusiSijoitteluajo.setEndMils(System.currentTimeMillis());
 
+
+        processOldApplications(olemassaolevatHakukohteet, kaikkiHakukohteet);
+
+
+        dao.persistSijoittelu(sijoittelu);
+    }
+
+    private void processOldApplications(final List<Hakukohde> olemassaolevatHakukohteet, final List<Hakukohde> kaikkiHakukohteet) {
         // wanhat hakemukset
         Map<String, Hakemus> hakemusHashMap = new HashMap<String, Hakemus>();
         for (Hakukohde hakukohde : olemassaolevatHakukohteet) {
@@ -115,7 +121,7 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
                     Hakemus edellinen = hakemusHashMap.get(hakukohde.getOid()+valintatapajono.getOid()+hakemus.getHakemusOid());
                     if(edellinen != null
                             && edellinen.getTilaHistoria() != null
-                            && edellinen.getTilaHistoria().size() > 0) {
+                            && !edellinen.getTilaHistoria().isEmpty()) {
                         hakemus.setTilaHistoria(edellinen.getTilaHistoria());
 
                         if(hakemus.getTila() != edellinen.getTila()) {
@@ -136,9 +142,7 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
 
             dao.persistHakukohde(hakukohde);
         }
-        dao.persistSijoittelu(sijoittelu);
     }
-
 
 
     //nykyisellaan vain korvaa hakukohteet, mietittava toiminta tarkemmin
@@ -195,7 +199,7 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
 
     @Override
     public Valintatulos haeHakemuksenTila(String hakuoid, String hakukohdeOid, String valintatapajonoOid, String hakemusOid) {
-        if (StringUtils.isBlank(hakukohdeOid) || StringUtils.isBlank(hakukohdeOid) || StringUtils.isBlank(hakemusOid)) {
+        if (StringUtils.isBlank(hakukohdeOid) || StringUtils.isBlank(hakemusOid)) {
             throw new RuntimeException("Invalid search params, fix exception later");
         }
         return dao.loadValintatulos(hakukohdeOid, valintatapajonoOid, hakemusOid);
@@ -203,7 +207,7 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
 
     @Override
     public List<Valintatulos> haeHakemustenTilat(String hakukohdeOid, String valintatapajonoOid) {
-        if (StringUtils.isBlank(hakukohdeOid) || StringUtils.isBlank(hakukohdeOid)) {
+        if (StringUtils.isBlank(hakukohdeOid)) {
             throw new RuntimeException("Invalid search params, fix exception later");
         }
 
@@ -243,16 +247,7 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
             throw new ValintatapajonoaEiLoytynytException("Valintatapajonoa ei löytynyt.");
         }
 
-        Hakemus hakemus = null;
-        for (Hakemus h : valintatapajono.getHakemukset()) {
-            if (hakemusOid.equals(h.getHakemusOid())) {
-                hakemus = h;
-            }
-        }
-
-        if(hakemus == null) {
-            throw new HakemustaEiLoytynytException("Hakemusta ei löytynyt.");
-        }
+        Hakemus hakemus = getHakemus(hakemusOid, valintatapajono);
 
         // Oph-admin voi muokata aina
         // organisaatio updater voi muokata, jos hyväksytty
@@ -260,15 +255,7 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
         String tarjoajaOid = hakukohde.getTarjoajaOid();
         authorizer.checkOrganisationAccess(tarjoajaOid, SijoitteluRole.UPDATE_ROLE, SijoitteluRole.CRUD_ROLE);
 
-        boolean ophAdmin = false;
-        try {
-            authorizer.checkOrganisationAccess(rootOrgOid, SijoitteluRole.CRUD_ROLE);
-            ophAdmin = true;
-        } catch (NotAuthorizedException nae) {
-            if (hakemus.getTila() != HakemuksenTila.HYVAKSYTTY) {
-                throw new HakemusEiOleHyvaksyttyException("sijoittelun hakemus ei ole hyvaksytty tilassa tai harkinnanvarainen");
-            }
-        }
+        boolean ophAdmin = checkIfOphAdmin(hakemus);
 
         Valintatulos v = dao.loadValintatulos(hakukohdeOid, valintatapajonoOid, hakemusOid);
 
@@ -309,6 +296,33 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
         v.getLogEntries().add(logEntry);
 
         dao.createOrUpdateValintatulos(v);
+    }
+
+    private boolean checkIfOphAdmin(final Hakemus hakemus) {
+        boolean ophAdmin = false;
+        try {
+            authorizer.checkOrganisationAccess(rootOrgOid, SijoitteluRole.CRUD_ROLE);
+            ophAdmin = true;
+        } catch (NotAuthorizedException nae) {
+            if (hakemus.getTila() != HakemuksenTila.HYVAKSYTTY) {
+                throw new HakemusEiOleHyvaksyttyException("sijoittelun hakemus ei ole hyvaksytty tilassa tai harkinnanvarainen");
+            }
+        }
+        return ophAdmin;
+    }
+
+    private Hakemus getHakemus(final String hakemusOid, final Valintatapajono valintatapajono) {
+        Hakemus hakemus = null;
+        for (Hakemus h : valintatapajono.getHakemukset()) {
+            if (hakemusOid.equals(h.getHakemusOid())) {
+                hakemus = h;
+            }
+        }
+
+        if(hakemus == null) {
+            throw new HakemustaEiLoytynytException("Hakemusta ei löytynyt.");
+        }
+        return hakemus;
     }
 
 
