@@ -363,10 +363,10 @@ public class SijoitteluAlgorithmImpl implements SijoitteluAlgorithm {
     private boolean saannotSallii(HakemusWrapper hakemusWrapper) {
         Hakemus hakemus = hakemusWrapper.getHakemus();
 
-        boolean hakemuksenTila = hakemus.getTila() != HakemuksenTila.HYLATTY && hakemus.getTila() != HakemuksenTila.PERUUTETTU && hakemus.getTila() != HakemuksenTila.PERUNUT ;
+        boolean hakemuksenTila = hakemus.getTila() != HakemuksenTila.HYLATTY && hakemus.getTila() != HakemuksenTila.PERUUTETTU && hakemus.getTila() != HakemuksenTila.PERUNUT && hakemus.getTila() != HakemuksenTila.PERUUTETTU ;
 
         boolean hakijaAloistuspaikkojenSisallaTaiVarasijataytto = true;
-        if(hakemusWrapper.getValintatapajono().getValintatapajono().getEiVarasijatayttoa() != null && hakemusWrapper.getValintatapajono().getValintatapajono().getEiVarasijatayttoa() ==true ) {
+        if(hakemusWrapper.getValintatapajono().getValintatapajono().getEiVarasijatayttoa() != null && hakemusWrapper.getValintatapajono().getValintatapajono().getEiVarasijatayttoa() ) {
             hakijaAloistuspaikkojenSisallaTaiVarasijataytto  = hakijaAloistuspaikkojenSisalla(hakemusWrapper);
         }
 
