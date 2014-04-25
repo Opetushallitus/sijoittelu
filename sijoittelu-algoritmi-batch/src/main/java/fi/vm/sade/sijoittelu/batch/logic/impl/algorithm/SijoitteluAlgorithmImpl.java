@@ -98,7 +98,8 @@ public class SijoitteluAlgorithmImpl implements SijoitteluAlgorithm {
                 if (eiKorvattavissaOlevatHyvaksytytHakemukset.contains(hk)) {
                     // ei voida tehdä mitaan, tila on jo poistettu. ignoretetaan
                 } else if (valituksiHaluavatHakemukset.contains(hk)) {
-                    if (valintatapajono.getValintatapajono().getKaikkiEhdonTayttavatHyvaksytaan()) {
+                    if (valintatapajono.getValintatapajono().getKaikkiEhdonTayttavatHyvaksytaan() != null
+                            && valintatapajono.getValintatapajono().getKaikkiEhdonTayttavatHyvaksytaan()) {
                         hyvaksyttavaksi.add(hk);
                     } else if (tasaSijaTilanne && !tasasijaTilanneRatkaistu) {
                         if (saanto == Tasasijasaanto.ALITAYTTO) {
