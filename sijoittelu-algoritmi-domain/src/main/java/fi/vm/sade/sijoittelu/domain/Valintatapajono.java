@@ -25,6 +25,8 @@ public class Valintatapajono implements Serializable {
 
     private Boolean eiVarasijatayttoa;
 
+    private Boolean kaikkiEhdonTayttavatHyvaksytaan;
+
     //@Embedded
     //private List<Saanto> saannot = new ArrayList<Saanto>();
 
@@ -106,5 +108,13 @@ public class Valintatapajono implements Serializable {
 
     public void setEiVarasijatayttoa(Boolean eiVarasijatayttoa) {
         this.eiVarasijatayttoa = eiVarasijatayttoa;
+    }
+
+    public Boolean getKaikkiEhdonTayttavatHyvaksytaan() {
+        return kaikkiEhdonTayttavatHyvaksytaan;
+    }
+
+    public void setKaikkiEhdonTayttavatHyvaksytaan(Boolean kaikkiEhdonTayttavatHyvaksytaan) {
+        this.kaikkiEhdonTayttavatHyvaksytaan = kaikkiEhdonTayttavatHyvaksytaan;
     }
 }

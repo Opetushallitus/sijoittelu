@@ -45,6 +45,12 @@ public class DomainConverter {
                         valintatapajono.setEiVarasijatayttoa(false);
                     }
 
+                    if(valintatapajonoTyyppi.isKaikkiEhdonTayttavatHyvaksytaan() != null && valintatapajonoTyyppi.isKaikkiEhdonTayttavatHyvaksytaan()) {
+                        valintatapajono.setKaikkiEhdonTayttavatHyvaksytaan(true);
+                    }     else {
+                        valintatapajono.setKaikkiEhdonTayttavatHyvaksytaan(false);
+                    }
+
                     hakukohde.getValintatapajonot().add(valintatapajono);
 
                     for (HakijaTyyppi hakijaTyyppi : valintatapajonoTyyppi.getHakija()) {

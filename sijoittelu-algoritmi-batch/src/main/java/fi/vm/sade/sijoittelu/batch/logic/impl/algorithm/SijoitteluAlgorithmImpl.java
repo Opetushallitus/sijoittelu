@@ -98,7 +98,9 @@ public class SijoitteluAlgorithmImpl implements SijoitteluAlgorithm {
                 if (eiKorvattavissaOlevatHyvaksytytHakemukset.contains(hk)) {
                     // ei voida tehdä mitaan, tila on jo poistettu. ignoretetaan
                 } else if (valituksiHaluavatHakemukset.contains(hk)) {
-                    if (tasaSijaTilanne && !tasasijaTilanneRatkaistu) {
+                    if (valintatapajono.getValintatapajono().getKaikkiEhdonTayttavatHyvaksytaan()) {
+                        hyvaksyttavaksi.add(hk);
+                    } else if (tasaSijaTilanne && !tasasijaTilanneRatkaistu) {
                         if (saanto == Tasasijasaanto.ALITAYTTO) {
                             varalle.add(hk);
                         } else if (saanto == Tasasijasaanto.YLITAYTTO) {
@@ -363,10 +365,11 @@ public class SijoitteluAlgorithmImpl implements SijoitteluAlgorithm {
     private boolean saannotSallii(HakemusWrapper hakemusWrapper) {
         Hakemus hakemus = hakemusWrapper.getHakemus();
 
-        boolean hakemuksenTila = hakemus.getTila() != HakemuksenTila.HYLATTY && hakemus.getTila() != HakemuksenTila.PERUUTETTU && hakemus.getTila() != HakemuksenTila.PERUNUT && hakemus.getTila() != HakemuksenTila.PERUUTETTU ;
+        boolean hakemuksenTila = hakemus.getTila() != HakemuksenTila.HYLATTY && hakemus.getTila() != HakemuksenTila.PERUUTETTU && hakemus.getTila() != HakemuksenTila.PERUNUT;
 
         boolean hakijaAloistuspaikkojenSisallaTaiVarasijataytto = true;
-        if(hakemusWrapper.getValintatapajono().getValintatapajono().getEiVarasijatayttoa() != null && hakemusWrapper.getValintatapajono().getValintatapajono().getEiVarasijatayttoa() ) {
+        if(hakemusWrapper.getValintatapajono().getValintatapajono().getEiVarasijatayttoa() != null && hakemusWrapper.getValintatapajono().getValintatapajono().getEiVarasijatayttoa()
+                && !hakemusWrapper.getValintatapajono().getValintatapajono().getKaikkiEhdonTayttavatHyvaksytaan()) {
             hakijaAloistuspaikkojenSisallaTaiVarasijataytto  = hakijaAloistuspaikkojenSisalla(hakemusWrapper);
         }
 
