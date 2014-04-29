@@ -51,6 +51,12 @@ public class DomainConverter {
                         valintatapajono.setKaikkiEhdonTayttavatHyvaksytaan(false);
                     }
 
+                    if(valintatapajonoTyyppi.isPoissaOlevaTaytto() != null && valintatapajonoTyyppi.isPoissaOlevaTaytto()) {
+                        valintatapajono.setPoissaOlevaTaytto(true);
+                    }     else {
+                        valintatapajono.setPoissaOlevaTaytto(false);
+                    }
+
                     hakukohde.getValintatapajonot().add(valintatapajono);
 
                     for (HakijaTyyppi hakijaTyyppi : valintatapajonoTyyppi.getHakija()) {

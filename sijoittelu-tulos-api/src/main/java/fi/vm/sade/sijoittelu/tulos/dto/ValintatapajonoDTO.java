@@ -41,6 +41,9 @@ public class ValintatapajonoDTO implements Serializable {
     private Boolean kaikkiEhdonTayttavatHyvaksytaan;
 
     @JsonView(JsonViews.Hakukohde.class)
+    private Boolean poissaOlevaTaytto;
+
+    @JsonView(JsonViews.Hakukohde.class)
     private List<HakemusDTO> hakemukset = new ArrayList<HakemusDTO>();
 
     @JsonView(JsonViews.Hakukohde.class)
@@ -154,5 +157,13 @@ public class ValintatapajonoDTO implements Serializable {
 
     public void setKaikkiEhdonTayttavatHyvaksytaan(Boolean kaikkiEhdonTayttavatHyvaksytaan) {
         this.kaikkiEhdonTayttavatHyvaksytaan = kaikkiEhdonTayttavatHyvaksytaan;
+    }
+
+    public Boolean getPoissaOlevaTaytto() {
+        return poissaOlevaTaytto;
+    }
+
+    public void setPoissaOlevaTaytto(Boolean poissaOlevaTaytto) {
+        this.poissaOlevaTaytto = poissaOlevaTaytto;
     }
 }
