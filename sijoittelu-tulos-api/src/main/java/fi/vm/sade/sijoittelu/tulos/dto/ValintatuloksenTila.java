@@ -13,5 +13,6 @@ public enum ValintatuloksenTila {
     VASTAANOTTANUT_POISSAOLEVA,    // Hakija ottanut paikan vastaan ja ilmoittautunut poissaolevaksi
     EI_VASTAANOTETTU_MAARA_AIKANA, // Hakija ei ole ilmoittanut paikkaa vastaanotetuksi maaraaikana ja on nain ollen hylatty
     PERUNUT,                       // Hakija ei ota paikkaa vastaan
-    PERUUTETTU                    // Hakijan tila on peruutettu
+    PERUUTETTU,                    // Hakijan tila on peruutettu
+    EHDOLLISESTI_VASTAANOTTANUT    // Ehdollisesti vastaanottanut
 }
