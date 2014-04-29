@@ -39,6 +39,8 @@ public class Hakemus implements Serializable {
 
     private HakemuksenTila tila;
 
+    private IlmoittautumisTila ilmoittautumisTila;
+
     private List<TilaHistoria> tilaHistoria = new ArrayList<TilaHistoria>();
 
     private boolean hyvaksyttyHarkinnanvaraisesti = false;
@@ -155,5 +157,13 @@ public class Hakemus implements Serializable {
 
     public void setTilanKuvaukset(Map<String, String> tilanKuvaukset) {
         this.tilanKuvaukset = tilanKuvaukset;
+    }
+
+    public IlmoittautumisTila getIlmoittautumisTila() {
+        return ilmoittautumisTila;
+    }
+
+    public void setIlmoittautumisTila(IlmoittautumisTila ilmoittautumisTila) {
+        this.ilmoittautumisTila = ilmoittautumisTila;
     }
 }

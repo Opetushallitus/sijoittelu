@@ -8,5 +8,5 @@ public enum IlmoittautumisTila {
     LASNA_SYKSY,                        // Läsnä syksy, poissa kevät
     POISSA_SYKSY,                       // Poissa syksy, läsnä kevät
     LASNA,                              // Läsnä, keväällä alkava koulutus
-    POISSA                              // Poissa, keväällä alkava koulutus
+    POISSA;                              // Poissa, keväällä alkava koulutus
 }

@@ -5,6 +5,7 @@ import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.presijoitteluprocessor.P
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.*;
 import fi.vm.sade.sijoittelu.domain.HakemuksenTila;
 import fi.vm.sade.sijoittelu.domain.Hakemus;
+import fi.vm.sade.sijoittelu.domain.IlmoittautumisTila;
 import fi.vm.sade.sijoittelu.domain.Tasasijasaanto;
 
 import java.util.ArrayList;
@@ -279,8 +280,20 @@ public class SijoitteluAlgorithmImpl implements SijoitteluAlgorithm {
 
     private ArrayList<HakemusWrapper> eiKorvattavissaOlevatHyvaksytytHakemukset(ValintatapajonoWrapper valintatapajono) {
         ArrayList<HakemusWrapper> eiKorvattavissaOlevatHyvaksytytHakemukset = new ArrayList<HakemusWrapper>();
+        boolean taytetaankoPoissaOlevat = false;
+        if(valintatapajono.getValintatapajono().getPoissaOlevaTaytto() != null && valintatapajono.getValintatapajono().getPoissaOlevaTaytto()) {
+            taytetaankoPoissaOlevat = true;
+        }
         for (HakemusWrapper h : valintatapajono.getHakemukset()) {
-            if (h.getHakemus().getTila() == HakemuksenTila.HYVAKSYTTY) {
+
+            boolean korvattavissa = false;
+            IlmoittautumisTila tila = h.getHakemus().getIlmoittautumisTila();
+
+            if(tila != null && (tila.equals(IlmoittautumisTila.POISSA_SYKSY) || tila.equals(IlmoittautumisTila.POISSA_KOKO_LUKUVUOSI) || tila.equals(IlmoittautumisTila.POISSA)) && taytetaankoPoissaOlevat) {
+               korvattavissa = true;
+            }
+
+            if (h.getHakemus().getTila() == HakemuksenTila.HYVAKSYTTY && !korvattavissa) {
                 if (!voidaanKorvata(h)) {
                     eiKorvattavissaOlevatHyvaksytytHakemukset.add(h);
                 }
