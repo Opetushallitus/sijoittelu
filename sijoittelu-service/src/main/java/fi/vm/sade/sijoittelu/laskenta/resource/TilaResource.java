@@ -17,7 +17,6 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import fi.vm.sade.sijoittelu.domain.IlmoittautumisTila;
 import org.codehaus.jackson.map.annotate.JsonView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,6 +24,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
 
+import com.wordnik.swagger.annotations.Api;
+import com.wordnik.swagger.annotations.ApiOperation;
+
+import fi.vm.sade.sijoittelu.domain.IlmoittautumisTila;
 import fi.vm.sade.sijoittelu.domain.JsonViews;
 import fi.vm.sade.sijoittelu.domain.ValintatuloksenTila;
 import fi.vm.sade.sijoittelu.domain.Valintatulos;
@@ -37,6 +40,7 @@ import fi.vm.sade.sijoittelu.laskenta.service.business.SijoitteluBusinessService
 @Path("tila")
 @Component
 @PreAuthorize("isAuthenticated()")
+@Api(value = "/tila", description = "Resurssi sijoittelun tilojen käsittelyyn")
 public class TilaResource {
 
 	private final static Logger LOGGER = LoggerFactory
@@ -50,6 +54,7 @@ public class TilaResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("{hakemusOid}")
 	@PreAuthorize(READ_UPDATE_CRUD)
+	@ApiOperation(value = "Hakemuksen valintatulosten haku")
 	public List<Valintatulos> hakemus(@PathParam("hakemusOid") String hakemusOid) {
 		List<Valintatulos> v = sijoitteluBusinessService
 				.haeHakemuksenTila(hakemusOid);
@@ -64,6 +69,7 @@ public class TilaResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("{hakemusOid}/{hakuOid}/{hakukohdeOid}/{valintatapajonoOid}/")
 	@PreAuthorize(READ_UPDATE_CRUD)
+	@ApiOperation(value = "Hakemuksen valintatulosten haku tietyssä hakukohteessa ja valintatapajonossa")
 	public Valintatulos hakemus(@PathParam("hakuOid") String hakuOid,
 			@PathParam("hakukohdeOid") String hakukohdeOid,
 			@PathParam("valintatapajonoOid") String valintatapajonoOid,
@@ -80,6 +86,7 @@ public class TilaResource {
 	@JsonView(JsonViews.MonenHakemuksenTila.class)
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/hakukohde/{hakukohdeOid}/{valintatapajonoOid}/")
+	@ApiOperation(value = "Valintatulosten haku hakukohteelle ja valintatapajonolle")
 	@PreAuthorize(READ_UPDATE_CRUD)
 	public List<Valintatulos> haku(
 			@PathParam("hakukohdeOid") String hakukohdeOid,
@@ -97,6 +104,7 @@ public class TilaResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("haku/{hakuOid}/hakukohde/{hakukohdeOid}")
 	@PreAuthorize(UPDATE_CRUD)
+	@ApiOperation(value = "Valintatulosten tuonti hakukohteelle")
 	public Response muutaHakemustenTilaa(@PathParam("hakuOid") String hakuOid,
 			@PathParam("hakukohdeOid") String hakukohdeOid,
 			List<Valintatulos> valintatulokset,
@@ -105,7 +113,8 @@ public class TilaResource {
 		try {
 			for (Valintatulos v : valintatulokset) {
 				ValintatuloksenTila tila = v.getTila();
-                IlmoittautumisTila ilmoittautumisTila = v.getIlmoittautumisTila();
+				IlmoittautumisTila ilmoittautumisTila = v
+						.getIlmoittautumisTila();
 				sijoitteluBusinessService.vaihdaHakemuksenTila(hakuOid,
 						hakukohdeOid, v.getValintatapajonoOid(),
 						v.getHakemusOid(), tila, selite, ilmoittautumisTila);
