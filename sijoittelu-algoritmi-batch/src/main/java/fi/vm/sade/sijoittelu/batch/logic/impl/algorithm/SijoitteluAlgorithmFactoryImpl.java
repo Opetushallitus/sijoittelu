@@ -84,7 +84,7 @@ public class SijoitteluAlgorithmFactoryImpl implements SijoitteluAlgorithmFactor
 
                     if(valintatulos != null && valintatulos.getTila() != null)  {
                         ValintatuloksenTila tila =  valintatulos.getTila();
-                        if(tila == ValintatuloksenTila.ILMOITETTU || tila == ValintatuloksenTila.VASTAANOTTANUT_LASNA || tila == ValintatuloksenTila.VASTAANOTTANUT_POISSAOLEVA)  {
+                        if(tila == ValintatuloksenTila.ILMOITETTU || tila == ValintatuloksenTila.VASTAANOTTANUT)  {
                             hakemus.setTila(HakemuksenTila.HYVAKSYTTY);
                             hakemus.setIlmoittautumisTila(valintatulos.getIlmoittautumisTila());
                         } else if(tila == ValintatuloksenTila.PERUNUT) {

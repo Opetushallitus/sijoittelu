@@ -116,7 +116,7 @@ public class RaportointiServiceImpl implements RaportointiService {
                 if(valintatapajono.getTila() == HakemuksenTila.HYVAKSYTTY) {
                     isHyvaksytty = true;
                 }
-                if(valintatapajono.getVastaanottotieto() == ValintatuloksenTila.VASTAANOTTANUT_LASNA || valintatapajono.getVastaanottotieto() ==ValintatuloksenTila.VASTAANOTTANUT_POISSAOLEVA) {
+                if(valintatapajono.getVastaanottotieto() == ValintatuloksenTila.VASTAANOTTANUT) {
                     isVastaanottanut = true;
                 }
             }
