@@ -411,7 +411,9 @@ public class SijoitteluAlgorithmImpl implements SijoitteluAlgorithm {
 
         int i = 0;
         for(HakemusWrapper h : hakemukset )  {
-            if(h.getHakemus().getTila() != HakemuksenTila.HYLATTY || h.getHakemus().getTila() != HakemuksenTila.PERUUTETTU) {
+            if(h.getHakemus().getTila() != HakemuksenTila.PERUNUT
+                    || h.getHakemus().getTila() != HakemuksenTila.PERUUTETTU
+                    || h.getHakemus().getTila() != HakemuksenTila.PERUUNTUNUT) {
                 i++;
             }
             if(h == hakemusWrapper && i <= aloituspaikat) { //vertaa instanssia
