@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
 
 import com.google.code.morphia.Datastore;
@@ -23,6 +24,7 @@ import fi.vm.sade.sijoittelu.tulos.dao.DAO;
 @Repository
 public class DAOImpl implements DAO {
 
+	@Qualifier("datastore")
 	@Autowired
 	private Datastore morphiaDS;
 
