@@ -10,7 +10,12 @@
 
     <context:annotation-config/>
     <context:component-scan base-package="fi.vm.sade.sijoittelu"/>
-
+	<context:component-scan base-package="fi.vm.sade.valintalaskenta.tulos.ctrl"/>
+    <context:component-scan base-package="fi.vm.sade.valintalaskenta.tulos.dao"/>
+    <context:component-scan base-package="fi.vm.sade.valintalaskenta.tulos.service.impl"/>
+    <context:component-scan base-package="fi.vm.sade.valintalaskenta.tulos.resource.impl"/>
+    <context:component-scan base-package="fi.vm.sade.valintalaskenta.tulos.service.impl.converters"/>
+    
     <context:property-placeholder
             location="classpath:sijoittelu-service.properties, file:///${user.home:''}/oph-configuration/common.properties, file:///${user.home:''}/oph-configuration/valinta.properties, file:///${user.home:''}/oph-configuration/sijoittelu-service.properties,  file:///${user.home:''}/oph-configuration/override.properties"
             ignore-resource-not-found="true"
@@ -47,11 +52,7 @@
         <constructor-arg type="com.mongodb.Mongo" ref="mongo2" />
         <constructor-arg type="java.lang.String" value="${valintalaskenta-laskenta-service.mongodb.dbname}" />
     </bean>
-	<context:component-scan base-package="fi.vm.sade.valintalaskenta.tulos.ctrl"/>
-    <context:component-scan base-package="fi.vm.sade.valintalaskenta.tulos.dao"/>
-    <context:component-scan base-package="fi.vm.sade.valintalaskenta.tulos.service.impl"/>
-    <context:component-scan base-package="fi.vm.sade.valintalaskenta.tulos.resource.impl"/>
-    <context:component-scan base-package="fi.vm.sade.valintalaskenta.tulos.service.impl.converters"/>
+	
     <bean id="conversionService" class="org.springframework.context.support.ConversionServiceFactoryBean">
         <property name="converters">
             <list>
