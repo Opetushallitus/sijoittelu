@@ -31,6 +31,12 @@
 	</dependency>
         <!-- internal -->
         <dependency>
+			<groupId>fi.vm.sade.valintaperusteet</groupId>
+			<artifactId>valintalaskenta-tulos-service</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		
+        <dependency>
             <groupId>fi.vm.sade.sijoittelu</groupId>
             <artifactId>sijoittelu-tulos-service</artifactId>
             <version>${project.version}</version>
