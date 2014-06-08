@@ -47,7 +47,8 @@
         <constructor-arg type="com.mongodb.Mongo" ref="mongo2" />
         <constructor-arg type="java.lang.String" value="${valintalaskenta-laskenta-service.mongodb.dbname}" />
     </bean>
-	<context:component-scan base-package="fi.vm.sade.valintalaskenta.tulos.ctrl"/>
+
+    <context:component-scan base-package="fi.vm.sade.valintalaskenta.tulos.ctrl"/>
     <context:component-scan base-package="fi.vm.sade.valintalaskenta.tulos.dao"/>
     <context:component-scan base-package="fi.vm.sade.valintalaskenta.tulos.service.impl"/>
     <context:component-scan base-package="fi.vm.sade.valintalaskenta.tulos.resource.impl"/>

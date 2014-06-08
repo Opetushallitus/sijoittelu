@@ -22,6 +22,30 @@
         <constructor-arg type="String" value="sijoittelu"/>
     </bean>
 
+    <bean id="mongodFactory2" class="de.flapdoodle.embed.mongo.tests.MongodForTestsFactory" destroy-method="shutdown"/>
+    <bean id="mongo2" class="com.mongodb.MongoClient" factory-bean="mongodFactory2" factory-method="newMongo"/>
+
+    <bean id="morphia2" class="com.google.code.morphia.Morphia" />
+    <bean id="datastore2" factory-bean="morphia2" factory-method="createDatastore">
+        <constructor-arg type="com.mongodb.Mongo" ref="mongo2" />
+        <constructor-arg type="java.lang.String" value="test" />
+    </bean>
+
+    <context:component-scan base-package="fi.vm.sade.valintalaskenta.tulos.ctrl"/>
+    <context:component-scan base-package="fi.vm.sade.valintalaskenta.tulos.dao"/>
+    <context:component-scan base-package="fi.vm.sade.valintalaskenta.tulos.service.impl"/>
+    <context:component-scan base-package="fi.vm.sade.valintalaskenta.tulos.resource.impl"/>
+    <context:component-scan base-package="fi.vm.sade.valintalaskenta.tulos.service.impl.converters"/>
+
+    <bean id="conversionService" class="org.springframework.context.support.ConversionServiceFactoryBean">
+        <property name="converters">
+            <list>
+
+            </list>
+        </property>
+    </bean>
+    <bean id="modelMapper" class="fi.vm.sade.valintalaskenta.tulos.mapping.ValintalaskentaModelMapper"/>
+
 </beans>
 
 
