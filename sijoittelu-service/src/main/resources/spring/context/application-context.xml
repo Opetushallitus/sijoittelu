@@ -34,6 +34,6 @@
     <import resource="context/application-context-ws.xml" />
     <import resource="context/application-context-mongo.xml" />
 
-	<import resource="application-context-tulos.xml" /> <!-- tulee tulos projektilta jarrissa -->
+	<import resource="context/application-context-tulos.xml" /> <!-- tulee tulos projektilta jarrissa -->
 
 </beans>
