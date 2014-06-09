@@ -17,6 +17,7 @@ import fi.vm.sade.sijoittelu.domain.Sijoittelu;
 import fi.vm.sade.sijoittelu.domain.SijoitteluAjo;
 import fi.vm.sade.sijoittelu.domain.Valintatulos;
 import fi.vm.sade.sijoittelu.tulos.dao.DAO;
+import fi.vm.sade.sijoittelu.tulos.dao.SijoitteluCacheDao;
 
 /**
  * User: tommiha Date: 10/15/12 Time: 2:44 PM
@@ -27,6 +28,8 @@ public class DAOImpl implements DAO {
 	@Qualifier("datastore")
 	@Autowired
 	private Datastore morphiaDS;
+	@Autowired
+	private SijoitteluCacheDao sijoitteluCacheDao;
 
 	@Override
 	public List<Sijoittelu> getSijoittelu() {
@@ -36,22 +39,23 @@ public class DAOImpl implements DAO {
 
 	@Override
 	public Sijoittelu getSijoitteluByHakuOid(String hakuOid) {
-		Query<Sijoittelu> query = morphiaDS.createQuery(Sijoittelu.class);
-		query.field("hakuOid").equal(hakuOid);
-		return query.get();
+		// Query<Sijoittelu> query = morphiaDS.createQuery(Sijoittelu.class);
+		// query.field("hakuOid").equal(hakuOid);
+		// return query.get();
+		return sijoitteluCacheDao.getSijoitteluByHakuOid(hakuOid);
 	}
 
 	@Override
 	public SijoitteluAjo getSijoitteluajo(Long sijoitteluajoId) {
-		Query<Sijoittelu> query = morphiaDS.createQuery(Sijoittelu.class);
-		query.field("sijoitteluajot.sijoitteluajoId").equal(sijoitteluajoId);
-		Sijoittelu a = query.get();
-		for (SijoitteluAjo sa : a.getSijoitteluajot()) {
-			if (sijoitteluajoId.equals(sa.getSijoitteluajoId())) {
-				return sa;
-			}
-		}
-		return null;
+		// Query<Sijoittelu> query = morphiaDS.createQuery(Sijoittelu.class);
+		// query.field("sijoitteluajot.sijoitteluajoId").equal(sijoitteluajoId);
+		// Sijoittelu a = query.get();
+		// for (SijoitteluAjo sa : a.getSijoitteluajot()) {
+		// if (sijoitteluajoId.equals(sa.getSijoitteluajoId())) {
+		// return sa;
+		// }
+		// }
+		return sijoitteluCacheDao.getSijoitteluajo(sijoitteluajoId);
 	}
 
 	@Override
@@ -76,14 +80,15 @@ public class DAOImpl implements DAO {
 	@Override
 	// TODO REFACTOR
 	public SijoitteluAjo getLatestSijoitteluajo(String hakuOid) {
-		Query<Sijoittelu> query = morphiaDS.createQuery(Sijoittelu.class);
-		query.field("hakuOid").equal(hakuOid);
-		Sijoittelu a = query.get();
-		SijoitteluAjo ajo = null;
-		if (a != null) {
-			ajo = a.getLatestSijoitteluajo();
-		}
-		return ajo;
+		// Query<Sijoittelu> query = morphiaDS.createQuery(Sijoittelu.class);
+		// query.field("hakuOid").equal(hakuOid);
+		// Sijoittelu a = query.get();
+		// SijoitteluAjo ajo = null;
+		// if (a != null) {
+		// ajo = a.getLatestSijoitteluajo();
+		// }
+		// return ajo;
+		return sijoitteluCacheDao.getLatestSijoitteluajo(hakuOid);
 	}
 
 	@Override

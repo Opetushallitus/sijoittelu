@@ -1,10 +1,10 @@
 package fi.vm.sade.sijoittelu.laskenta.dao;
 
+import java.util.List;
+
 import fi.vm.sade.sijoittelu.domain.Hakukohde;
 import fi.vm.sade.sijoittelu.domain.Sijoittelu;
 import fi.vm.sade.sijoittelu.domain.Valintatulos;
-
-import java.util.List;
 
 /**
  * 
@@ -13,23 +13,26 @@ import java.util.List;
  */
 public interface Dao {
 
-    void persistSijoittelu(Sijoittelu sijoittelu);
+	void persistSijoittelu(Sijoittelu sijoittelu);
 
-    Sijoittelu loadSijoittelu(String hakuOid);
+	Sijoittelu getSijoitteluByHakuOid(String hakuOid);
 
-    Valintatulos loadValintatulos(String hakukohdeOid, String valintatapajonoOid, String hakemusOid);
+	Valintatulos loadValintatulos(String hakukohdeOid,
+			String valintatapajonoOid, String hakemusOid);
 
-    void createOrUpdateValintatulos(Valintatulos tulos);
+	void createOrUpdateValintatulos(Valintatulos tulos);
 
-    void persistHakukohde(Hakukohde hakukohde);
+	void persistHakukohde(Hakukohde hakukohde);
 
-    Hakukohde getHakukohdeForSijoitteluajo(Long ajoId, String hakukohdeOid);
+	Hakukohde getHakukohdeForSijoitteluajo(Long ajoId, String hakukohdeOid);
 
-    List<Valintatulos> loadValintatulokset(String hakuOid);
+	List<Valintatulos> loadValintatulokset(String hakuOid);
 
-    List<Hakukohde> getHakukohdeForSijoitteluajo(Long sijoitteluajoId);
+	List<Hakukohde> getHakukohdeForSijoitteluajo(Long sijoitteluajoId);
 
-    List<Valintatulos> loadValintatulos(String oid);
+	List<Valintatulos> loadValintatulos(String oid);
 
-    List<Valintatulos> loadValintatulokset(String hakukohdeOid, String valintatapajonoOid);
+	List<Valintatulos> loadValintatulokset(String hakukohdeOid,
+			String valintatapajonoOid);
+
 }
