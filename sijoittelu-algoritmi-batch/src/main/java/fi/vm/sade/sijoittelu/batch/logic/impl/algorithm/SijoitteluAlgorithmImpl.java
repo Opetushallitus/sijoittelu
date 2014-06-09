@@ -410,13 +410,13 @@ public class SijoitteluAlgorithmImpl implements SijoitteluAlgorithm {
         List<HakemusWrapper> hakemukset = valintatapajono.getHakemukset();
 
         int i = 0;
-        System.out.println("hakukohde oid: " + valintatapajono.getHakukohdeWrapper().getHakukohde().getOid());
+
         for(HakemusWrapper h : hakemukset )  {
 
             if(h.getHakemus().getTila() != HakemuksenTila.HYLATTY) {
                 i++;
             }
-            if(h == hakemusWrapper && i < aloituspaikat) { //vertaa instanssia
+            if(h == hakemusWrapper && i <= aloituspaikat) { //vertaa instanssia
                 return true;
             }  else if(i>aloituspaikat)   {
                 return false;
