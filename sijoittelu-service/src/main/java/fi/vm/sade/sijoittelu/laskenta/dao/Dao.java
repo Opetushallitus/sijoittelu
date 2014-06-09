@@ -28,6 +28,8 @@ public interface Dao {
 
 	List<Valintatulos> loadValintatulokset(String hakuOid);
 
+	List<Valintatulos> loadValintatuloksetForHakukohde(String hakukohdeOid);
+
 	List<Hakukohde> getHakukohdeForSijoitteluajo(Long sijoitteluajoId);
 
 	List<Valintatulos> loadValintatulos(String oid);
