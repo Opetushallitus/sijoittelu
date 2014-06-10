@@ -2,6 +2,7 @@ package fi.vm.sade.sijoittelu.tulos.resource;
 
 import static fi.vm.sade.sijoittelu.tulos.roles.SijoitteluRole.READ_UPDATE_CRUD;
 
+import java.util.Arrays;
 import java.util.List;
 
 import javax.ws.rs.PathParam;
@@ -98,9 +99,16 @@ public class SijoitteluResourceImpl implements SijoitteluResource {
 			String sijoitteluajoId, Boolean hyvaksytyt,
 			Boolean ilmanHyvaksyntaa, Boolean vastaanottaneet,
 			List<String> hakukohdeOid, Integer count, Integer index) {
-		SijoitteluAjo ajo = getSijoitteluAjo(sijoitteluajoId, hakuOid);
-		return raportointiService.hakemukset(ajo, hyvaksytyt, ilmanHyvaksyntaa,
-				vastaanottaneet, hakukohdeOid, count, index);
+		try {
+			SijoitteluAjo ajo = getSijoitteluAjo(sijoitteluajoId, hakuOid);
+			return raportointiService.hakemukset(ajo, hyvaksytyt,
+					ilmanHyvaksyntaa, vastaanottaneet, hakukohdeOid, count,
+					index);
+		} catch (Exception e) {
+			LOGGER.error("Sijoittelun hakemuksia ei saatu! {}", e.getMessage(),
+					Arrays.toString(e.getStackTrace()));
+			throw new RuntimeException(e);
+		}
 	}
 
 	@Override
