@@ -42,7 +42,7 @@ public class SijoitteluResource {
 	@Path("{hakuOid}")
 	@PreAuthorize(CRUD)
 	@ApiOperation(value = "Hakemuksen valintatulosten haku")
-	public HakuTyyppi sijoittele(@PathParam("hakuOid") String hakuOid) {
+	public String sijoittele(@PathParam("hakuOid") String hakuOid) {
 
         LOGGER.error("Valintatietoja valmistetaan haulle {}!", hakuOid);
         List<HakukohdeDTO> a = tulosService
@@ -75,7 +75,7 @@ public class SijoitteluResource {
             LOGGER.error("Sijoittelu epäonnistui syystä {}!\r\n{}",
                     e.getMessage(), Arrays.toString(e.getStackTrace()));
         }
-        return haku;
+        return "true";
 	}
 
 
