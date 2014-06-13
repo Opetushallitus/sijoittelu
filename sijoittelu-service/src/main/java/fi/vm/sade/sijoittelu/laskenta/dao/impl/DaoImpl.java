@@ -38,8 +38,7 @@ public class DaoImpl implements Dao, SijoitteluCacheDao {
 	private Datastore morphiaDS;
 
 	private final Cache<String, Sijoittelu> sijoitteluPerHaku = CacheBuilder
-			.newBuilder().softValues().expireAfterWrite(12, TimeUnit.HOURS)
-			.build();
+			.newBuilder().expireAfterWrite(12, TimeUnit.HOURS).build();
 
 	/**
 	 * CACHED
