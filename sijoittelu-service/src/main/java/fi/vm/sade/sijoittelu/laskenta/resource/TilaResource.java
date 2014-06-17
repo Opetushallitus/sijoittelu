@@ -108,7 +108,7 @@ public class TilaResource {
 	public List<Valintatulos> hakukohteelle(
 			@PathParam("hakukohdeOid") String hakukohdeOid) {
 		List<Valintatulos> v = sijoitteluBusinessService
-				.haeHakemustenTilat(hakukohdeOid);
+				.haeHakukohteenTilat(hakukohdeOid);
 		if (v == null) {
 			v = new ArrayList<Valintatulos>();
 		}

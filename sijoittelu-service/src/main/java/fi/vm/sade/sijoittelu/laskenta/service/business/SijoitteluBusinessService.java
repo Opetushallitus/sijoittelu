@@ -29,5 +29,5 @@ public interface SijoitteluBusinessService {
 	List<Valintatulos> haeHakemustenTilat(String hakukohdeOid,
 			String valintatapajonoOid);
 
-	List<Valintatulos> haeHakemustenTilat(String hakukohdeOid);
+	List<Valintatulos> haeHakukohteenTilat(String hakukohdeOid);
 }

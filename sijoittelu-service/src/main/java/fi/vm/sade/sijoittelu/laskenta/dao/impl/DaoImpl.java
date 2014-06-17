@@ -144,13 +144,16 @@ public class DaoImpl implements Dao, SijoitteluCacheDao {
 	public List<Valintatulos> loadValintatulokset(String hakukohdeOid,
 			String valintatapajonoOid) {
 		if (StringUtils.isBlank(hakukohdeOid)
-				|| StringUtils.isBlank(hakukohdeOid)) {
+				|| StringUtils.isBlank(valintatapajonoOid)) {
 			throw new RuntimeException(
 					"Invalid search params, fix exception later");
 		}
 		Query<Valintatulos> q = morphiaDS.createQuery(Valintatulos.class);
-		q.criteria("hakukohdeOid").equal(hakukohdeOid);
-		q.criteria("valintatapajonoOid").equal(valintatapajonoOid);
+		q.and(
+		//
+		q.criteria("hakukohdeOid").equal(hakukohdeOid),
+		//
+				q.criteria("valintatapajonoOid").equal(valintatapajonoOid));
 
 		return q.asList();
 	}
@@ -158,13 +161,12 @@ public class DaoImpl implements Dao, SijoitteluCacheDao {
 	@Override
 	public List<Valintatulos> loadValintatuloksetForHakukohde(
 			String hakukohdeOid) {
-		if (StringUtils.isBlank(hakukohdeOid)
-				|| StringUtils.isBlank(hakukohdeOid)) {
+		if (StringUtils.isBlank(hakukohdeOid)) {
 			throw new RuntimeException(
 					"Invalid search params, fix exception later");
 		}
 		Query<Valintatulos> q = morphiaDS.createQuery(Valintatulos.class);
-		q.criteria("hakukohdeOid").equal(hakukohdeOid);
+		q.or(q.criteria("hakukohdeOid").equal(hakukohdeOid));
 		return q.asList();
 	}
 
