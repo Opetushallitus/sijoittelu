@@ -191,8 +191,37 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
 									// dokumentteina
 			kaikkiHakukohteet.put(hakukohde.getOid(), hakukohde);
 		}
-		// ylikirjoita uusilla kohteilla kylmasti
+		// vanhat tasasijajonosijat talteen
 		for (Hakukohde hakukohde : uudetHakukohteet) {
+
+            if(kaikkiHakukohteet.containsKey(hakukohde.getOid())) {
+                Map<String, Integer> hakemusHashMap = new HashMap<String, Integer>();
+                for (Valintatapajono valintatapajono : kaikkiHakukohteet.get(hakukohde.getOid())
+                        .getValintatapajonot()) {
+                    for (Hakemus hakemus : valintatapajono.getHakemukset()) {
+                        if(hakemus.getTasasijaJonosija() != null) {
+                            hakemusHashMap.put(valintatapajono.getOid()
+                                        + hakemus.getHakemusOid(), hakemus.getTasasijaJonosija());
+                        }
+                    }
+                }
+
+                for (Valintatapajono valintatapajono : hakukohde
+                        .getValintatapajonot()) {
+                    for (Hakemus hakemus : valintatapajono.getHakemukset()) {
+                        Integer vanhaTasasijaJonosija = hakemusHashMap.get(valintatapajono.getOid()
+                                + hakemus.getHakemusOid());
+                        if (vanhaTasasijaJonosija != null) {
+                            hakemus.setTasasijaJonosija(vanhaTasasijaJonosija);
+
+                        }
+
+                    }
+                }
+            }
+
+
+
 			kaikkiHakukohteet.put(hakukohde.getOid(), hakukohde);
 		}
 

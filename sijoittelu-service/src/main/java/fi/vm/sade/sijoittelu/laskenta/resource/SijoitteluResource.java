@@ -59,7 +59,6 @@ public class SijoitteluResource {
             ht.setTarjoajaOid(v.getTarjoajaoid());
             haku.getHakukohteet().add(ht);
 
-            LOGGER.error("Konvertoidaan Valinnanvaiheet {}!", hakuOid);
             for (ValinnanvaiheDTO valinnanvaiheDTO : v.getValinnanvaihe()) {
                 ht.getValinnanvaihe().add(
                         createValinnanvaiheTyyppi(valinnanvaiheDTO));
