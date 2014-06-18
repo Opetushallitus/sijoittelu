@@ -77,30 +77,31 @@ public class SijoitteluBusinessServiceImplTest {
 				SELITE, IlmoittautumisTila.EI_TEHTY);
 	}
 
-	@Test(expected = ValintatulosOnJoVastaanotettuException.class)
-	public void testVaihdaVahvistettuIlmoitetuksi() throws Exception {
-
-		Sijoittelu sijoittelu = testDataGenerator.generateTestData();
-
-		Mockito.when(daoMock.getSijoitteluByHakuOid(HAKU_OID)).thenReturn(
-				sijoittelu);
-		Mockito.when(
-				daoMock.getHakukohdeForSijoitteluajo(
-						TestDataGenerator.SIJOITTELU_AJO_ID_2, HAKUKOHDE_OID))
-				.thenReturn(testDataGenerator.createHakukohdes(1).get(0));
-		Mockito.doThrow(new NotAuthorizedException())
-				.when(authorizer)
-				.checkOrganisationAccess(ROOT_ORG_OID, SijoitteluRole.CRUD_ROLE);
-
-		Mockito.when(
-				daoMock.loadValintatulos(HAKUKOHDE_OID, VALINTATAPAJONO_OID,
-						HAKEMUS_OID)).thenReturn(
-				getValintatulos(ValintatuloksenTila.PERUNUT));
-
-		sijoitteluBusinessService.vaihdaHakemuksenTila(HAKU_OID, HAKUKOHDE_OID,
-				VALINTATAPAJONO_OID, HAKEMUS_OID, ValintatuloksenTila.PERUNUT,
-				SELITE, IlmoittautumisTila.EI_TEHTY);
-	}
+    // Toiminnallisuus poistettu käytöstä
+//	@Test(expected = ValintatulosOnJoVastaanotettuException.class)
+//	public void testVaihdaVahvistettuIlmoitetuksi() throws Exception {
+//
+//		Sijoittelu sijoittelu = testDataGenerator.generateTestData();
+//
+//		Mockito.when(daoMock.getSijoitteluByHakuOid(HAKU_OID)).thenReturn(
+//				sijoittelu);
+//		Mockito.when(
+//				daoMock.getHakukohdeForSijoitteluajo(
+//						TestDataGenerator.SIJOITTELU_AJO_ID_2, HAKUKOHDE_OID))
+//				.thenReturn(testDataGenerator.createHakukohdes(1).get(0));
+//		Mockito.doThrow(new NotAuthorizedException())
+//				.when(authorizer)
+//				.checkOrganisationAccess(ROOT_ORG_OID, SijoitteluRole.CRUD_ROLE);
+//
+//		Mockito.when(
+//				daoMock.loadValintatulos(HAKUKOHDE_OID, VALINTATAPAJONO_OID,
+//						HAKEMUS_OID)).thenReturn(
+//				getValintatulos(ValintatuloksenTila.PERUNUT));
+//
+//		sijoitteluBusinessService.vaihdaHakemuksenTila(HAKU_OID, HAKUKOHDE_OID,
+//				VALINTATAPAJONO_OID, HAKEMUS_OID, ValintatuloksenTila.PERUNUT,
+//				SELITE, IlmoittautumisTila.EI_TEHTY);
+//	}
 
 	@Test(expected = HakemusEiOleHyvaksyttyException.class)
 	public void testVaihdaHyvaksymattomanHakemuksenTilaIlmoitetuksi()
