@@ -332,11 +332,13 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
 				throw new ValintatulostaEiOleIlmoitettuException(
 						"Valintatulosta ei ole ilmoitettu");
 			}
-			if ((v != null && v.getTila() != null)
-					&& v.getTila() != ValintatuloksenTila.ILMOITETTU) {
-				throw new ValintatulosOnJoVastaanotettuException(
-						"Valintatulos on jo vastaanotettu");
-			}
+
+            // Otetaan toistaiseksi pois, koska ilmoittatumistilaa ei voi tällä toteutuksella muuttaa
+//			if ((v != null && v.getTila() != null)
+//					&& v.getTila() != ValintatuloksenTila.ILMOITETTU) {
+//				throw new ValintatulosOnJoVastaanotettuException(
+//						"Valintatulos on jo vastaanotettu");
+//			}
 		}
 
 		if (v == null) {
