@@ -11,6 +11,7 @@ import fi.vm.sade.sijoittelu.domain.Valintatulos;
 import fi.vm.sade.sijoittelu.tulos.dto.HakemuksenTila;
 import fi.vm.sade.sijoittelu.tulos.dto.HakemusDTO;
 import fi.vm.sade.sijoittelu.tulos.dto.HakukohdeDTO;
+import fi.vm.sade.sijoittelu.tulos.dto.IlmoittautumisTila;
 import fi.vm.sade.sijoittelu.tulos.dto.PistetietoDTO;
 import fi.vm.sade.sijoittelu.tulos.dto.ValintatapajonoDTO;
 import fi.vm.sade.sijoittelu.tulos.dto.ValintatuloksenTila;
@@ -121,6 +122,13 @@ public class RaportointiConverterImpl implements RaportointiConverter {
 												.convert(
 														ValintatuloksenTila.class,
 														valintatulos.getTila()));
+								valintatapajonoDTO
+										.setIlmoittautumisTila(EnumConverter
+												.convert(
+														IlmoittautumisTila.class,
+														valintatulos
+																.getIlmoittautumisTila()));
+
 							}
 						}
 					}
