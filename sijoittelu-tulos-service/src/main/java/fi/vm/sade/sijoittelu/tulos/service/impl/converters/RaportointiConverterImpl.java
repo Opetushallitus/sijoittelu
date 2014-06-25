@@ -7,6 +7,8 @@ import java.util.Map;
 
 import org.springframework.stereotype.Component;
 
+import com.google.common.collect.Maps;
+
 import fi.vm.sade.sijoittelu.domain.Valintatulos;
 import fi.vm.sade.sijoittelu.tulos.dto.HakemuksenTila;
 import fi.vm.sade.sijoittelu.tulos.dto.HakemusDTO;
@@ -93,18 +95,40 @@ public class RaportointiConverterImpl implements RaportointiConverter {
 		return new ArrayList<HakijaDTO>(hakijat.values());
 	}
 
+	private Map<String, HakukohdeDTO> mapHakukohteet(
+			List<HakukohdeDTO> hakukohteet) {
+		Map<String, HakukohdeDTO> tmp = Maps.newHashMap();
+		for (HakukohdeDTO h : hakukohteet) {
+			tmp.put(h.getOid(), h);
+		}
+		return tmp;
+	}
+
+	private ValintatapajonoDTO getValintatapajono(HakukohdeDTO hakukohde,
+			String jonoOid) {
+		for (ValintatapajonoDTO j : hakukohde.getValintatapajonot()) {
+			if (jonoOid.equals(j.getOid())) {
+				return j;
+			}
+		}
+		return null;
+	}
+
 	@Override
 	public List<HakijaDTO> convert(List<HakukohdeDTO> hakukohteet,
 			List<Valintatulos> valintatulokset) {
 		// convert hakijat
 		List<HakijaDTO> hakijat = convert(hakukohteet);
 		// apply valintatulos
+		Map<String, HakukohdeDTO> hakukohteetMap = mapHakukohteet(hakukohteet);
 		Map<String, Valintatulos> valintatulosMap = mapValintatulokset(valintatulokset);
 		for (HakijaDTO hakija : hakijat) {
 			Valintatulos valintatulos = valintatulosMap.get(hakija
 					.getHakemusOid());
 			if (valintatulos != null) {
 				for (HakutoiveDTO hakutoiveDTO : hakija.getHakutoiveet()) {
+					HakukohdeDTO hakukohde = hakukohteetMap.get(hakutoiveDTO
+							.getHakukohdeOid());
 					for (HakutoiveenValintatapajonoDTO valintatapajonoDTO : hakutoiveDTO
 							.getHakutoiveenValintatapajonot()) {
 						if (valintatulos.getValintatapajonoOid().equals(
@@ -112,16 +136,34 @@ public class RaportointiConverterImpl implements RaportointiConverter {
 							// (hakemus.tila == 'HYVAKSYTTY' ||
 							// (jono.eiVarasijatayttoa && hakemus.tila ==
 							// 'VARALLA'))
+
 							if (HakemuksenTila.HYVAKSYTTY
 									.equals(valintatapajonoDTO.getTila())
-									|| HakemuksenTila.VARALLA
+									|| (!Boolean.TRUE
+											.equals(getValintatapajono(
+													hakukohde,
+													valintatapajonoDTO
+															.getValintatapajonoOid())
+													.getEiVarasijatayttoa()) && HakemuksenTila.VARALLA
 											.equals(valintatapajonoDTO
-													.getTila())) {
+													.getTila()))) {
+
 								valintatapajonoDTO
 										.setVastaanottotieto(EnumConverter
 												.convert(
 														ValintatuloksenTila.class,
 														valintatulos.getTila()));
+
+							}
+
+							// "hakemus.muokattuVastaanottoTila ==
+							// 'VASTAANOTTANUT' ||
+							// hakemus.muokattuVastaanottoTila ==
+							// 'EHDOLLISESTI_VASTAANOTTANUT'"
+							if (ValintatuloksenTila.VASTAANOTTANUT
+									.equals(valintatulos.getTila())
+									|| ValintatuloksenTila.EHDOLLISESTI_VASTAANOTTANUT
+											.equals(valintatulos.getTila())) {
 								valintatapajonoDTO
 										.setIlmoittautumisTila(EnumConverter
 												.convert(
