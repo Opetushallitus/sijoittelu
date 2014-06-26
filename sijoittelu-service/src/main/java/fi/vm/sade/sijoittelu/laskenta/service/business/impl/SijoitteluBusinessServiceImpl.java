@@ -7,6 +7,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import fi.vm.sade.sijoittelu.laskenta.mapping.SijoitteluModelMapper;
+import fi.vm.sade.valintalaskenta.domain.dto.valintatieto.HakuDTO;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -60,6 +62,9 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
 
 	@Autowired
 	private Authorizer authorizer;
+
+    @Autowired
+    private SijoitteluModelMapper modelMapper;
 
 	@Value("${root.organisaatio.oid}")
 	private String rootOrgOid;
@@ -131,6 +136,45 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
 
 		dao.persistSijoittelu(sijoittelu);
 	}
+
+    /**
+     * verioi sijoittelun ja tuo uudet kohteet
+     *
+     * @param sijoitteluTyyppi
+     */
+    @Override
+    public void sijoittele(HakuDTO sijoitteluTyyppi) {
+
+        String hakuOid = sijoitteluTyyppi.getHakuOid();
+        Sijoittelu sijoittelu = getOrCreateSijoittelu(hakuOid);
+        SijoitteluAjo viimeisinSijoitteluajo = sijoittelu
+                .getLatestSijoitteluajo();
+
+        List<Hakukohde> uudetHakukohteet = modelMapper.mapList(sijoitteluTyyppi
+                .getHakukohteet(), Hakukohde.class);
+        List<Hakukohde> olemassaolevatHakukohteet = Collections
+                .<Hakukohde> emptyList();
+        if (viimeisinSijoitteluajo != null) {
+            olemassaolevatHakukohteet = dao
+                    .getHakukohdeForSijoitteluajo(viimeisinSijoitteluajo
+                            .getSijoitteluajoId());
+        }
+        SijoitteluAjo uusiSijoitteluajo = createSijoitteluAjo(sijoittelu);
+        List<Hakukohde> kaikkiHakukohteet = merge(uusiSijoitteluajo,
+                olemassaolevatHakukohteet, uudetHakukohteet);
+
+        List<Valintatulos> valintatulokset = dao.loadValintatulokset(hakuOid);
+        SijoitteluAlgorithm sijoitteluAlgorithm = algorithmFactory
+                .constructAlgorithm(kaikkiHakukohteet, valintatulokset);
+
+        uusiSijoitteluajo.setStartMils(System.currentTimeMillis());
+        sijoitteluAlgorithm.start();
+        uusiSijoitteluajo.setEndMils(System.currentTimeMillis());
+
+        processOldApplications(olemassaolevatHakukohteet, kaikkiHakukohteet);
+
+        dao.persistSijoittelu(sijoittelu);
+    }
 
 	private void processOldApplications(
 			final List<Hakukohde> olemassaolevatHakukohteet,

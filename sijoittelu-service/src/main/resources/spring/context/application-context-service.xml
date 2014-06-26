@@ -7,6 +7,8 @@
 
 	<ctx:annotation-config />
 
+
+
     <!--
 	<ctx:component-scan base-package="fi.vm.sade.valintalaskenta.laskenta.service.impl.conversion"/>
     <bean id="conversionService" class="org.springframework.context.support.ConversionServiceFactoryBean">

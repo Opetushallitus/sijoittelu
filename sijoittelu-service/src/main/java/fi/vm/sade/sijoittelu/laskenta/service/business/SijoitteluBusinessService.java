@@ -6,6 +6,7 @@ import fi.vm.sade.service.valintatiedot.schema.HakuTyyppi;
 import fi.vm.sade.sijoittelu.domain.IlmoittautumisTila;
 import fi.vm.sade.sijoittelu.domain.ValintatuloksenTila;
 import fi.vm.sade.sijoittelu.domain.Valintatulos;
+import fi.vm.sade.valintalaskenta.domain.dto.valintatieto.HakuDTO;
 
 /**
  * 
@@ -15,6 +16,8 @@ import fi.vm.sade.sijoittelu.domain.Valintatulos;
 public interface SijoitteluBusinessService {
 
 	void sijoittele(HakuTyyppi sijoitteluTyyppi);
+
+    void sijoittele(HakuDTO sijoitteluTyyppi);
 
 	Valintatulos haeHakemuksenTila(String hakuoid, String hakukohdeOid,
 			String valintatapajonoOid, String hakemusOid);
