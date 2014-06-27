@@ -4,12 +4,12 @@ import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 
+import fi.vm.sade.sijoittelu.tulos.dto.IlmoittautumisTila;
+import fi.vm.sade.sijoittelu.tulos.dto.ValintatuloksenTila;
 import org.codehaus.jackson.map.annotate.JsonView;
 
 import fi.vm.sade.sijoittelu.tulos.dto.HakemuksenTila;
-import fi.vm.sade.sijoittelu.tulos.dto.IlmoittautumisTila;
 import fi.vm.sade.sijoittelu.tulos.dto.JsonViews;
-import fi.vm.sade.sijoittelu.tulos.dto.ValintatuloksenTila;
 
 /**
  * Created with IntelliJ IDEA. User: kkammone Date: 18.9.2013 Time: 14:11 To
