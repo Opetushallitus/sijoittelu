@@ -137,24 +137,11 @@ public class RaportointiConverterImpl implements RaportointiConverter {
 							// (jono.eiVarasijatayttoa && hakemus.tila ==
 							// 'VARALLA'))
 
-							if (HakemuksenTila.HYVAKSYTTY
-									.equals(valintatapajonoDTO.getTila())
-									|| (!Boolean.TRUE
-											.equals(getValintatapajono(
-													hakukohde,
-													valintatapajonoDTO
-															.getValintatapajonoOid())
-													.getEiVarasijatayttoa()) && HakemuksenTila.VARALLA
-											.equals(valintatapajonoDTO
-													.getTila()))) {
-
-								valintatapajonoDTO
-										.setVastaanottotieto(EnumConverter
-												.convert(
-														ValintatuloksenTila.class,
-														valintatulos.getTila()));
-
-							}
+                            valintatapajonoDTO
+                                    .setVastaanottotieto(EnumConverter
+                                            .convert(
+                                                    ValintatuloksenTila.class,
+                                                    valintatulos.getTila()));
 
 							// "hakemus.muokattuVastaanottoTila ==
 							// 'VASTAANOTTANUT' ||
