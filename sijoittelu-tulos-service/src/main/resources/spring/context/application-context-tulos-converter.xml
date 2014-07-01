@@ -5,18 +5,4 @@
         http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
     ">
 
-    <!-- Conversion service -->
-    <bean id="conversionService" class="fi.vm.sade.generic.service.conversion.SadeConversionServiceFactoryBean">
-        <property name="converters">
-            <list>
-                <!--
-                <bean class="fi.vm.sade.sijoittelu.tulos.converter.HakemusToHakijaTyyppiConverter" />
-                <bean class="fi.vm.sade.sijoittelu.tulos.converter.HakukohdeToHakukohdeTyyppiConverter" />
-                <bean class="fi.vm.sade.sijoittelu.tulos.converter.HakuToHakuTyyppiConverter" />
-                <bean class="fi.vm.sade.sijoittelu.tulos.converter.SijoitteluajoToSijoitteluajoTyyppiConverter" />
-                <bean class="fi.vm.sade.sijoittelu.tulos.converter.ValintatapajonoToValintatapajonoTyyppiConverter" />
-                -->
-            </list>
-        </property>
-    </bean>
 </beans>
