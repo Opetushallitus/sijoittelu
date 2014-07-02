@@ -133,9 +133,6 @@ public class RaportointiConverterImpl implements RaportointiConverter {
 							.getHakutoiveenValintatapajonot()) {
 						if (valintatulos.getValintatapajonoOid().equals(
 								valintatapajonoDTO.getValintatapajonoOid())) {
-							// (hakemus.tila == 'HYVAKSYTTY' ||
-							// (jono.eiVarasijatayttoa && hakemus.tila ==
-							// 'VARALLA'))
 
                             valintatapajonoDTO
                                     .setVastaanottotieto(EnumConverter
@@ -148,9 +145,9 @@ public class RaportointiConverterImpl implements RaportointiConverter {
 							// hakemus.muokattuVastaanottoTila ==
 							// 'EHDOLLISESTI_VASTAANOTTANUT'"
 							if (ValintatuloksenTila.VASTAANOTTANUT
-									.equals(valintatulos.getTila())
+									.equals(valintatapajonoDTO.getVastaanottotieto())
 									|| ValintatuloksenTila.EHDOLLISESTI_VASTAANOTTANUT
-											.equals(valintatulos.getTila())) {
+											.equals(valintatapajonoDTO.getVastaanottotieto())) {
 								valintatapajonoDTO
 										.setIlmoittautumisTila(EnumConverter
 												.convert(
