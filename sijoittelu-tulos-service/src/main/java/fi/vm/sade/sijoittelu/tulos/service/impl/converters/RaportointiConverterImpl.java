@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.google.common.collect.Lists;
 import org.springframework.stereotype.Component;
 
 import com.google.common.collect.Maps;
@@ -116,47 +117,55 @@ public class RaportointiConverterImpl implements RaportointiConverter {
 
 	@Override
 	public List<HakijaDTO> convert(List<HakukohdeDTO> hakukohteet,
-			List<Valintatulos> valintatulokset) {
+			List<Valintatulos> kaikkienValintatulokset) {
 		// convert hakijat
 		List<HakijaDTO> hakijat = convert(hakukohteet);
 		// apply valintatulos
 		Map<String, HakukohdeDTO> hakukohteetMap = mapHakukohteet(hakukohteet);
-		Map<String, Valintatulos> valintatulosMap = mapValintatulokset(valintatulokset);
+        Map<String, List<Valintatulos>> valintatulosMap = mapValintatulokset(kaikkienValintatulokset);
 		for (HakijaDTO hakija : hakijat) {
-			Valintatulos valintatulos = valintatulosMap.get(hakija
+            List<Valintatulos> valintatulokset = valintatulosMap.get(hakija
 					.getHakemusOid());
-			if (valintatulos != null) {
+			if (valintatulokset != null && !valintatulokset.isEmpty()) {
 				for (HakutoiveDTO hakutoiveDTO : hakija.getHakutoiveet()) {
 					HakukohdeDTO hakukohde = hakukohteetMap.get(hakutoiveDTO
 							.getHakukohdeOid());
 					for (HakutoiveenValintatapajonoDTO valintatapajonoDTO : hakutoiveDTO
 							.getHakutoiveenValintatapajonot()) {
-						if (valintatulos.getValintatapajonoOid().equals(
-								valintatapajonoDTO.getValintatapajonoOid())) {
+                        if (valintatapajonoDTO == null) {
+                            continue;
+                        }
+                        for (Valintatulos valintatulos : valintatulokset) {
+                            if (valintatulos == null) {
+                                continue;
+                            }
+                            if (valintatulos.getValintatapajonoOid().equals(
+                                    valintatapajonoDTO.getValintatapajonoOid())) {
 
-                            valintatapajonoDTO
-                                    .setVastaanottotieto(EnumConverter
-                                            .convert(
-                                                    ValintatuloksenTila.class,
-                                                    valintatulos.getTila()));
+                                valintatapajonoDTO
+                                        .setVastaanottotieto(EnumConverter
+                                                .convert(
+                                                        ValintatuloksenTila.class,
+                                                        valintatulos.getTila()));
 
-							// "hakemus.muokattuVastaanottoTila ==
-							// 'VASTAANOTTANUT' ||
-							// hakemus.muokattuVastaanottoTila ==
-							// 'EHDOLLISESTI_VASTAANOTTANUT'"
-							if (ValintatuloksenTila.VASTAANOTTANUT
-									.equals(valintatapajonoDTO.getVastaanottotieto())
-									|| ValintatuloksenTila.EHDOLLISESTI_VASTAANOTTANUT
-											.equals(valintatapajonoDTO.getVastaanottotieto())) {
-								valintatapajonoDTO
-										.setIlmoittautumisTila(EnumConverter
-												.convert(
-														IlmoittautumisTila.class,
-														valintatulos
-																.getIlmoittautumisTila()));
+                                // "hakemus.muokattuVastaanottoTila ==
+                                // 'VASTAANOTTANUT' ||
+                                // hakemus.muokattuVastaanottoTila ==
+                                // 'EHDOLLISESTI_VASTAANOTTANUT'"
+                                if (ValintatuloksenTila.VASTAANOTTANUT
+                                        .equals(valintatapajonoDTO.getVastaanottotieto())
+                                        || ValintatuloksenTila.EHDOLLISESTI_VASTAANOTTANUT
+                                                .equals(valintatapajonoDTO.getVastaanottotieto())) {
+                                    valintatapajonoDTO
+                                            .setIlmoittautumisTila(EnumConverter
+                                                    .convert(
+                                                            IlmoittautumisTila.class,
+                                                            valintatulos
+                                                                    .getIlmoittautumisTila()));
 
-							}
-						}
+                                }
+                            }
+                        }
 					}
 				}
 			}
@@ -164,11 +173,17 @@ public class RaportointiConverterImpl implements RaportointiConverter {
 		return hakijat;
 	}
 
-	private Map<String, Valintatulos> mapValintatulokset(
+	private Map<String, List<Valintatulos>> mapValintatulokset(
 			List<Valintatulos> valintatulokset) {
-		Map<String, Valintatulos> map = new HashMap<String, Valintatulos>();
+        Map<String, List<Valintatulos>> map = new HashMap<String, List<Valintatulos>>();
 		for (Valintatulos valintatulos : valintatulokset) {
-			map.put(valintatulos.getHakemusOid(), valintatulos);
+            if (map.containsKey(valintatulos.getHakemusOid())) {
+                map.get(valintatulos.getHakemusOid()).add(valintatulos);
+            } else {
+                List<Valintatulos> v = Lists.newArrayListWithExpectedSize(2);
+                v.add(valintatulos);
+                map.put(valintatulos.getHakemusOid(), v);
+            }
 		}
 		return map;
 	}
@@ -224,8 +239,8 @@ public class RaportointiConverterImpl implements RaportointiConverter {
 			hakijaRaportointiDTO.setEtunimi(hakemus.getEtunimi());
 			hakijaRaportointiDTO.setSukunimi(hakemus.getSukunimi());
 			hakijaRaportointiDTO.setHakemusOid(hakemus.getHakemusOid());
-		}
-		hakijat.put(hakemus.getHakemusOid(), hakijaRaportointiDTO);
+            hakijat.put(hakemus.getHakemusOid(), hakijaRaportointiDTO);
+        }
 		return hakijaRaportointiDTO;
 	}
 
