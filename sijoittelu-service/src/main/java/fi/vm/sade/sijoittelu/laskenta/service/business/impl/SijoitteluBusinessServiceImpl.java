@@ -6,6 +6,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 import fi.vm.sade.sijoittelu.laskenta.mapping.SijoitteluModelMapper;
 import fi.vm.sade.valintalaskenta.domain.dto.valintatieto.HakuDTO;
@@ -150,8 +152,8 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
         SijoitteluAjo viimeisinSijoitteluajo = sijoittelu
                 .getLatestSijoitteluajo();
 
-        List<Hakukohde> uudetHakukohteet = modelMapper.mapList(sijoitteluTyyppi
-                .getHakukohteet(), Hakukohde.class);
+        List<Hakukohde> uudetHakukohteet =
+        sijoitteluTyyppi.getHakukohteet().parallelStream().map(DomainConverter::convertToHakukohdeRest).collect(Collectors.toList());
         List<Hakukohde> olemassaolevatHakukohteet = Collections
                 .<Hakukohde> emptyList();
         if (viimeisinSijoitteluajo != null) {
@@ -228,46 +230,35 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
 	private List<Hakukohde> merge(SijoitteluAjo uusiSijoitteluajo,
 			List<Hakukohde> olemassaolevatHakukohteet,
 			List<Hakukohde> uudetHakukohteet) {
-		Map<String, Hakukohde> kaikkiHakukohteet = new HashMap<String, Hakukohde>();
+		Map<String, Hakukohde> kaikkiHakukohteet = new ConcurrentHashMap<String, Hakukohde>();
 		for (Hakukohde hakukohde : olemassaolevatHakukohteet) {
 			hakukohde.setId(null); // poista id vanhoilta hakukohteilta, niin
 									// etta ne voidaan peristoida uusina
 									// dokumentteina
 			kaikkiHakukohteet.put(hakukohde.getOid(), hakukohde);
 		}
+
 		// vanhat tasasijajonosijat talteen
-		for (Hakukohde hakukohde : uudetHakukohteet) {
+        uudetHakukohteet.parallelStream().filter(hakukohde -> kaikkiHakukohteet.containsKey(hakukohde.getOid())).forEach(hakukohde -> {
+            Map<String, Integer> hakemusHashMap = new ConcurrentHashMap<>();
+            kaikkiHakukohteet.get(hakukohde.getOid()).getValintatapajonot().parallelStream().forEach(valintatapajono ->
+                valintatapajono.getHakemukset().parallelStream().filter(hakemus -> hakemus.getTasasijaJonosija() != null).forEach(h ->
+                        hakemusHashMap.put(valintatapajono.getOid() + h.getHakemusOid(), h.getTasasijaJonosija())
+                )
+            );
 
-            if(kaikkiHakukohteet.containsKey(hakukohde.getOid())) {
-                Map<String, Integer> hakemusHashMap = new HashMap<String, Integer>();
-                for (Valintatapajono valintatapajono : kaikkiHakukohteet.get(hakukohde.getOid())
-                        .getValintatapajonot()) {
-                    for (Hakemus hakemus : valintatapajono.getHakemukset()) {
-                        if(hakemus.getTasasijaJonosija() != null) {
-                            hakemusHashMap.put(valintatapajono.getOid()
-                                        + hakemus.getHakemusOid(), hakemus.getTasasijaJonosija());
-                        }
-                    }
-                }
+            hakukohde.getValintatapajonot().parallelStream().forEach(valintatapajono ->
+                    valintatapajono.getHakemukset().parallelStream()
+                            .filter(hakemus -> hakemusHashMap.get(valintatapajono.getOid() + hakemus.getHakemusOid()) != null)
+                            .forEach(hakemus -> {
+                                hakemus.setTasasijaJonosija(hakemusHashMap.get(valintatapajono.getOid() + hakemus.getHakemusOid()));
+                })
+            );
+            
+            kaikkiHakukohteet.put(hakukohde.getOid(), hakukohde);
 
-                for (Valintatapajono valintatapajono : hakukohde
-                        .getValintatapajonot()) {
-                    for (Hakemus hakemus : valintatapajono.getHakemukset()) {
-                        Integer vanhaTasasijaJonosija = hakemusHashMap.get(valintatapajono.getOid()
-                                + hakemus.getHakemusOid());
-                        if (vanhaTasasijaJonosija != null) {
-                            hakemus.setTasasijaJonosija(vanhaTasasijaJonosija);
+        });
 
-                        }
-
-                    }
-                }
-            }
-
-
-
-			kaikkiHakukohteet.put(hakukohde.getOid(), hakukohde);
-		}
 
 		for (Hakukohde hakukohde : kaikkiHakukohteet.values()) {
 			HakukohdeItem hki = new HakukohdeItem();
@@ -277,7 +268,7 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
 					.setSijoitteluajoId(uusiSijoitteluajo.getSijoitteluajoId());
 		}
 
-		return new ArrayList<Hakukohde>(kaikkiHakukohteet.values());
+		return new ArrayList<>(kaikkiHakukohteet.values());
 	}
 
 	private List<Hakukohde> convertHakukohteet(

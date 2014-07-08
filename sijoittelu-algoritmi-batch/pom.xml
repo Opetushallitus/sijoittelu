@@ -26,6 +26,11 @@
             <artifactId>sijoittelu-algoritmi-domain</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>fi.vm.sade.valintaperusteet</groupId>
+            <artifactId>valintalaskenta-laskenta-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
 
         <!-- Spring -->
         <dependency>

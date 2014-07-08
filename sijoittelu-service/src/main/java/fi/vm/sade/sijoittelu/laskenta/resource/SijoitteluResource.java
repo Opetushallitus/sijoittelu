@@ -9,7 +9,9 @@ import fi.vm.sade.service.valintaperusteet.schema.TasasijasaantoTyyppi;
 import fi.vm.sade.service.valintatiedot.schema.*;
 import fi.vm.sade.sijoittelu.laskenta.service.business.SijoitteluBusinessService;
 import fi.vm.sade.valintalaskenta.domain.dto.*;
+import fi.vm.sade.valintalaskenta.domain.dto.valintatieto.HakuDTO;
 import fi.vm.sade.valintalaskenta.tulos.service.ValintalaskentaTulosService;
+import fi.vm.sade.valintalaskenta.tulos.service.impl.ValintatietoServiceRest;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,7 +27,7 @@ import static fi.vm.sade.sijoittelu.laskenta.roles.SijoitteluRole.CRUD;
 
 @Path("sijoittele")
 @Component
-@PreAuthorize("isAuthenticated()")
+//@PreAuthorize("isAuthenticated()")
 @Api(value = "/tila", description = "Resurssi sijoitteluun")
 public class SijoitteluResource {
 
@@ -38,41 +40,43 @@ public class SijoitteluResource {
     @Autowired
     private ValintalaskentaTulosService tulosService;
 
+    @Autowired
+    private ValintatietoServiceRest valintatietoServiceRest;
+
 	@GET
 	@Path("{hakuOid}")
-	@PreAuthorize(CRUD)
+//	@PreAuthorize(CRUD)
 	@ApiOperation(value = "Hakemuksen valintatulosten haku")
 	public String sijoittele(@PathParam("hakuOid") String hakuOid) {
 
         LOGGER.error("Valintatietoja valmistetaan haulle {}!", hakuOid);
-        List<HakukohdeDTO> a = tulosService
-                .haeLasketutValinnanvaiheetHaulle(hakuOid);
+
+        HakuDTO haku = valintatietoServiceRest.haeValintatiedot(hakuOid);
         LOGGER.error("Valintatiedot haettu serviceltä {}!", hakuOid);
 
-        HakuTyyppi haku = new HakuTyyppi();
-        haku.setHakuOid(hakuOid);
-
-        LOGGER.error("Konvertoidaan hakutyypeiksi {}!", hakuOid);
-        for (HakukohdeDTO v : a) {
-            HakukohdeTyyppi ht = new HakukohdeTyyppi();
-            ht.setOid(v.getOid());
-            ht.setTarjoajaOid(v.getTarjoajaoid());
-            haku.getHakukohteet().add(ht);
-
-            for (ValinnanvaiheDTO valinnanvaiheDTO : v.getValinnanvaihe()) {
-                ht.getValinnanvaihe().add(
-                        createValinnanvaiheTyyppi(valinnanvaiheDTO));
-
-            }
-        }
-        LOGGER.error("Palautetaan valintatiedot {} hakukohteella!", haku
-                .getHakukohteet().size());
+//        LOGGER.error("Konvertoidaan hakutyypeiksi {}!", hakuOid);
+//        for (HakukohdeDTO v : a) {
+//            HakukohdeTyyppi ht = new HakukohdeTyyppi();
+//            ht.setOid(v.getOid());
+//            ht.setTarjoajaOid(v.getTarjoajaoid());
+//            haku.getHakukohteet().add(ht);
+//
+//            for (ValinnanvaiheDTO valinnanvaiheDTO : v.getValinnanvaihe()) {
+//                ht.getValinnanvaihe().add(
+//                        createValinnanvaiheTyyppi(valinnanvaiheDTO));
+//
+//            }
+//        }
+//        LOGGER.error("Palautetaan valintatiedot {} hakukohteella!", haku
+//                .getHakukohteet().size());
         try {
             sijoitteluBusinessService.sijoittele(haku);
             LOGGER.error("Sijoittelu suoritettu onnistuneesti!");
         } catch (Exception e) {
+            e.printStackTrace();
             LOGGER.error("Sijoittelu epäonnistui syystä {}!\r\n{}",
                     e.getMessage(), Arrays.toString(e.getStackTrace()));
+            return "false";
         }
         return "true";
 	}
