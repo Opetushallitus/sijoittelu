@@ -13,7 +13,4 @@
     <import resource="classpath:META-INF/cxf/cxf-extension-jaxws.xml" />
     <import resource="classpath:META-INF/cxf/cxf-servlet.xml" />
 
-    <bean id="sijoitteluServiceImpl" class="fi.vm.sade.sijoittelu.laskenta.service.impl.SijoitteluServiceImpl" />
-    <jaxws:endpoint id="sijoitteluService" address="/sijoitteluService" implementor="#sijoitteluServiceImpl"/>
-
 </beans>
