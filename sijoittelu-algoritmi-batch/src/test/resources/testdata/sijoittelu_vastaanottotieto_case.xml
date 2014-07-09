@@ -1,41 +1,212 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<tns:sijoittele xmlns:tns="http://sijoittelu.service.sade.vm.fi/types" hakuoid="abc">
+{
+        "hakuOid": "abc",
+        "hakukohteet": [
+        {
+        "oid": "1.2.246.562.11.00000000007",
+        "valinnanvaihe": [
+        {
+        "valinnanvaihe": 1,
+        "valintatapajonot": [
+        {
+        "aloituspaikat": 1,
+        "hakija": [
+        {
+        "hakemusOid": "1.2.246.562.24.00000000004",
+        "jonosija": 1,
+        "pisteet": "0",
+        "prioriteetti": 1,
+        "tila": "HYVAKSYTTAVISSA"
+        },
+        {
+        "hakemusOid": "1.2.246.562.24.00000000003",
+        "jonosija": 2,
+        "pisteet": "0",
+        "prioriteetti": 1,
+        "tila": "HYVAKSYTTAVISSA"
+        },
+        {
+        "hakemusOid": "1.2.246.562.24.00000000001",
+        "jonosija": 3,
+        "pisteet": "0",
+        "prioriteetti": 1,
+        "tila": "HYVAKSYTTAVISSA"
+        },
+        {
+        "hakemusOid": "1.2.246.562.24.00000000006",
+        "jonosija": 4,
+        "pisteet": "0",
+        "prioriteetti": 2,
+        "tila": "HYVAKSYTTAVISSA"
+        }
+        ],
+        "prioriteetti": 1,
+        "siirretaanSijoitteluun": true,
+        "tasasijasaanto": "ARVONTA",
+        "valintatapajonooid": "tkk_jono_1"
+        },
+        {
+        "aloituspaikat": 1,
+        "hakija": [
+        {
+        "hakemusOid": "1.2.246.562.24.00000000004",
+        "jonosija": 1,
+        "pisteet": "0",
+        "prioriteetti": 1,
+        "tila": "HYVAKSYTTAVISSA"
+        },
+        {
+        "hakemusOid": "1.2.246.562.24.00000000003",
+        "jonosija": 2,
+        "pisteet": "0",
+        "prioriteetti": 1,
+        "tila": "HYVAKSYTTAVISSA"
+        },
+        {
+        "hakemusOid": "1.2.246.562.24.00000000001",
+        "jonosija": 3,
+        "pisteet": "0",
+        "prioriteetti": 1,
+        "tila": "HYVAKSYTTAVISSA"
+        },
+        {
+        "hakemusOid": "1.2.246.562.24.00000000006",
+        "jonosija": 4,
+        "pisteet": "0",
+        "prioriteetti": 2,
+        "tila": "HYVAKSYTTAVISSA"
+        }
+        ],
+        "prioriteetti": 2,
+        "siirretaanSijoitteluun": true,
+        "tasasijasaanto": "ARVONTA",
+        "valintatapajonooid": "tkk_jono_2"
+        }
+        ]
+        }
+        ]
+        },
+        {
+        "oid": "1.2.246.562.11.00000000008",
+        "valinnanvaihe": [
+        {
+        "valinnanvaihe": 1,
+        "valintatapajonot": [
+        {
+        "aloituspaikat": 1,
+        "hakija": [
+        {
+        "hakemusOid": "1.2.246.562.24.00000000003",
+        "jonosija": 1,
+        "pisteet": "0",
+        "prioriteetti": 2,
+        "tila": "HYVAKSYTTAVISSA"
+        },
+        {
+        "hakemusOid": "1.2.246.562.24.00000000003",
+        "jonosija": 2,
+        "pisteet": "0",
+        "prioriteetti": 3,
+        "tila": "HYVAKSYTTAVISSA"
+        },
+        {
+        "hakemusOid": "1.2.246.562.24.00000000002",
+        "jonosija": 3,
+        "pisteet": "0",
+        "prioriteetti": 1,
+        "tila": "HYVAKSYTTAVISSA"
+        },
+        {
+        "hakemusOid": "1.2.246.562.24.00000000001",
+        "jonosija": 4,
+        "pisteet": "0",
+        "prioriteetti": 2,
+        "tila": "HYVAKSYTTAVISSA"
+        }
+        ],
+        "prioriteetti": 1,
+        "siirretaanSijoitteluun": true,
+        "tasasijasaanto": "ARVONTA",
+        "valintatapajonooid": "esimerkkikoulu_jono_1"
+        }
+        ]
+        }
+        ]
+        },
+        {
+        "oid": "1.2.246.562.11.00000000009",
+        "valinnanvaihe": [
+        {
+        "valinnanvaihe": 1,
+        "valintatapajonot": [
+        {
+        "aloituspaikat": 2,
+        "hakija": [
+        {
+        "hakemusOid": "1.2.246.562.24.00000000005",
+        "jonosija": 1,
+        "pisteet": "0",
+        "prioriteetti": 3,
+        "tila": "HYVAKSYTTAVISSA"
+        },
+        {
+        "hakemusOid": "1.2.246.562.24.00000000006",
+        "jonosija": 2,
+        "pisteet": "0",
+        "prioriteetti": 3,
+        "tila": "HYVAKSYTTAVISSA"
+        }
+        ],
+        "prioriteetti": 1,
+        "siirretaanSijoitteluun": true,
+        "tasasijasaanto": "ARVONTA",
+        "valintatapajonooid": "opisto_jono_1"
+        }
+        ]
+        }
+        ]
+        }
+        ]
+        }
 
-    <hakukohteet oid="1.2.246.562.11.00000000007">
-        <valinnanvaihe valinnanvaihe="1">
-            <valintatapajono oid="tkk_jono_1" prioriteetti="1" aloituspaikat="1" tasasijasaanto="ARVONTA" siirretaanSijoitteluun="true">
-                <hakija jonosija="1" hakemusOid="1.2.246.562.24.00000000004" prioriteetti="1" pisteet="0" tila="HYVAKSYTTAVISSA"/>
-                <hakija jonosija="2" hakemusOid="1.2.246.562.24.00000000003" prioriteetti="1" pisteet="0" tila="HYVAKSYTTAVISSA"/>
-                <hakija jonosija="3" hakemusOid="1.2.246.562.24.00000000001" prioriteetti="1" pisteet="0" tila="HYVAKSYTTAVISSA" />
-                <hakija jonosija="4" hakemusOid="1.2.246.562.24.00000000006" prioriteetti="2" pisteet="0" tila="HYVAKSYTTAVISSA"/>
-            </valintatapajono>
-            <valintatapajono oid="tkk_jono_2" prioriteetti="2" aloituspaikat="1" tasasijasaanto="ARVONTA" siirretaanSijoitteluun="true">
-                <hakija jonosija="1" hakemusOid="1.2.246.562.24.00000000004" prioriteetti="1" pisteet="0" tila="HYVAKSYTTAVISSA"/>
-                <hakija jonosija="2" hakemusOid="1.2.246.562.24.00000000003" prioriteetti="1" pisteet="0" tila="HYVAKSYTTAVISSA"/>
-                <hakija jonosija="3" hakemusOid="1.2.246.562.24.00000000001" prioriteetti="1" pisteet="0" tila="HYVAKSYTTAVISSA"/>
-                <hakija jonosija="4" hakemusOid="1.2.246.562.24.00000000006" prioriteetti="2" pisteet="0" tila="HYVAKSYTTAVISSA"/>
-            </valintatapajono>
-        </valinnanvaihe>
-    </hakukohteet>
-    <hakukohteet oid="1.2.246.562.11.00000000008">
-        <valinnanvaihe valinnanvaihe="1">
-            <valintatapajono oid="esimerkkikoulu_jono_1" prioriteetti="1" aloituspaikat="1" tasasijasaanto="ARVONTA" siirretaanSijoitteluun="true">
-                <hakija jonosija="1" hakemusOid="1.2.246.562.24.00000000003" prioriteetti="2" pisteet="0" tila="HYVAKSYTTAVISSA"/>
-                <hakija jonosija="2" hakemusOid="1.2.246.562.24.00000000004" prioriteetti="3" pisteet="0" tila="HYVAKSYTTAVISSA"/>
-                <hakija jonosija="3" hakemusOid="1.2.246.562.24.00000000002" prioriteetti="1" pisteet="0" tila="HYVAKSYTTAVISSA"/>
-                <hakija jonosija="4" hakemusOid="1.2.246.562.24.00000000001" prioriteetti="2" pisteet="0" tila="HYVAKSYTTAVISSA"/>
-            </valintatapajono>
-        </valinnanvaihe>
-    </hakukohteet>
-    <hakukohteet oid="1.2.246.562.11.00000000009">
-        <hakukohdeNimi>Opisto</hakukohdeNimi>
-        <valinnanvaihe valinnanvaihe="1">
-            <valintatapajono oid="opisto_jono_1" prioriteetti="1" aloituspaikat="2" tasasijasaanto="ARVONTA" siirretaanSijoitteluun="true">
-                <hakija jonosija="1" hakemusOid="1.2.246.562.24.00000000005" prioriteetti="3" pisteet="0" tila="HYVAKSYTTAVISSA"/>
-                <hakija jonosija="2" hakemusOid="1.2.246.562.24.00000000006" prioriteetti="3" pisteet="0" tila="HYVAKSYTTAVISSA"/>
-            </valintatapajono>
-        </valinnanvaihe>
-    </hakukohteet>
 
-</tns:sijoittele>
+        <!--<?xml version="1.0" encoding="UTF-8"?>-->
+<!--<tns:sijoittele xmlns:tns="http://sijoittelu.service.sade.vm.fi/types" hakuOid="abc">-->
+
+    <!--<hakukohteet oid="1.2.246.562.11.00000000007">-->
+        <!--<valinnanvaihe valinnanvaihe="1">-->
+            <!--<valintatapajono oid="tkk_jono_1" prioriteetti="1" aloituspaikat="1" tasasijasaanto="ARVONTA" siirretaanSijoitteluun="true">-->
+                <!--<hakija jonosija="1" hakemusOid="1.2.246.562.24.00000000004" prioriteetti="1" pisteet="0" tila="HYVAKSYTTAVISSA"/>-->
+                <!--<hakija jonosija="2" hakemusOid="1.2.246.562.24.00000000003" prioriteetti="1" pisteet="0" tila="HYVAKSYTTAVISSA"/>-->
+                <!--<hakija jonosija="3" hakemusOid="1.2.246.562.24.00000000001" prioriteetti="1" pisteet="0" tila="HYVAKSYTTAVISSA" />-->
+                <!--<hakija jonosija="4" hakemusOid="1.2.246.562.24.00000000006" prioriteetti="2" pisteet="0" tila="HYVAKSYTTAVISSA"/>-->
+            <!--</valintatapajono>-->
+            <!--<valintatapajono oid="tkk_jono_2" prioriteetti="2" aloituspaikat="1" tasasijasaanto="ARVONTA" siirretaanSijoitteluun="true">-->
+                <!--<hakija jonosija="1" hakemusOid="1.2.246.562.24.00000000004" prioriteetti="1" pisteet="0" tila="HYVAKSYTTAVISSA"/>-->
+                <!--<hakija jonosija="2" hakemusOid="1.2.246.562.24.00000000003" prioriteetti="1" pisteet="0" tila="HYVAKSYTTAVISSA"/>-->
+                <!--<hakija jonosija="3" hakemusOid="1.2.246.562.24.00000000001" prioriteetti="1" pisteet="0" tila="HYVAKSYTTAVISSA"/>-->
+                <!--<hakija jonosija="4" hakemusOid="1.2.246.562.24.00000000006" prioriteetti="2" pisteet="0" tila="HYVAKSYTTAVISSA"/>-->
+            <!--</valintatapajono>-->
+        <!--</valinnanvaihe>-->
+    <!--</hakukohteet>-->
+    <!--<hakukohteet oid="1.2.246.562.11.00000000008">-->
+        <!--<valinnanvaihe valinnanvaihe="1">-->
+            <!--<valintatapajono oid="esimerkkikoulu_jono_1" prioriteetti="1" aloituspaikat="1" tasasijasaanto="ARVONTA" siirretaanSijoitteluun="true">-->
+                <!--<hakija jonosija="1" hakemusOid="1.2.246.562.24.00000000003" prioriteetti="2" pisteet="0" tila="HYVAKSYTTAVISSA"/>-->
+                <!--<hakija jonosija="2" hakemusOid="1.2.246.562.24.00000000004" prioriteetti="3" pisteet="0" tila="HYVAKSYTTAVISSA"/>-->
+                <!--<hakija jonosija="3" hakemusOid="1.2.246.562.24.00000000002" prioriteetti="1" pisteet="0" tila="HYVAKSYTTAVISSA"/>-->
+                <!--<hakija jonosija="4" hakemusOid="1.2.246.562.24.00000000001" prioriteetti="2" pisteet="0" tila="HYVAKSYTTAVISSA"/>-->
+            <!--</valintatapajono>-->
+        <!--</valinnanvaihe>-->
+    <!--</hakukohteet>-->
+    <!--<hakukohteet oid="1.2.246.562.11.00000000009">-->
+        <!--<hakukohdeNimi>Opisto</hakukohdeNimi>-->
+        <!--<valinnanvaihe valinnanvaihe="1">-->
+            <!--<valintatapajono oid="opisto_jono_1" prioriteetti="1" aloituspaikat="2" tasasijasaanto="ARVONTA" siirretaanSijoitteluun="true">-->
+                <!--<hakija jonosija="1" hakemusOid="1.2.246.562.24.00000000005" prioriteetti="3" pisteet="0" tila="HYVAKSYTTAVISSA"/>-->
+                <!--<hakija jonosija="2" hakemusOid="1.2.246.562.24.00000000006" prioriteetti="3" pisteet="0" tila="HYVAKSYTTAVISSA"/>-->
+            <!--</valintatapajono>-->
+        <!--</valinnanvaihe>-->
+    <!--</hakukohteet>-->
+
+<!--</tns:sijoittele>-->
 

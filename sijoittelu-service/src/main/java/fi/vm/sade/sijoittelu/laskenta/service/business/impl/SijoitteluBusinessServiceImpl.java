@@ -21,8 +21,6 @@ import org.springframework.stereotype.Service;
 import fi.vm.sade.authentication.business.service.Authorizer;
 import fi.vm.sade.generic.service.exception.NotAuthorizedException;
 import fi.vm.sade.security.service.authz.util.AuthorizationUtil;
-import fi.vm.sade.service.valintatiedot.schema.HakuTyyppi;
-import fi.vm.sade.service.valintatiedot.schema.HakukohdeTyyppi;
 import fi.vm.sade.sijoittelu.batch.logic.impl.DomainConverter;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoitteluAlgorithm;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoitteluAlgorithmFactory;
@@ -100,53 +98,14 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
 		}
 	}
 
-	/**
-	 * verioi sijoittelun ja tuo uudet kohteet
-	 * 
-	 * @param sijoitteluTyyppi
-	 */
-	@Override
-	public void sijoittele(HakuTyyppi sijoitteluTyyppi) {
-
-		String hakuOid = sijoitteluTyyppi.getHakuOid();
-		Sijoittelu sijoittelu = getOrCreateSijoittelu(hakuOid);
-		SijoitteluAjo viimeisinSijoitteluajo = sijoittelu
-				.getLatestSijoitteluajo();
-
-		List<Hakukohde> uudetHakukohteet = convertHakukohteet(sijoitteluTyyppi
-				.getHakukohteet());
-		List<Hakukohde> olemassaolevatHakukohteet = Collections
-				.<Hakukohde> emptyList();
-		if (viimeisinSijoitteluajo != null) {
-			olemassaolevatHakukohteet = dao
-					.getHakukohdeForSijoitteluajo(viimeisinSijoitteluajo
-							.getSijoitteluajoId());
-		}
-		SijoitteluAjo uusiSijoitteluajo = createSijoitteluAjo(sijoittelu);
-		List<Hakukohde> kaikkiHakukohteet = merge(uusiSijoitteluajo,
-				olemassaolevatHakukohteet, uudetHakukohteet);
-
-		List<Valintatulos> valintatulokset = dao.loadValintatulokset(hakuOid);
-		SijoitteluAlgorithm sijoitteluAlgorithm = algorithmFactory
-				.constructAlgorithm(kaikkiHakukohteet, valintatulokset);
-
-		uusiSijoitteluajo.setStartMils(System.currentTimeMillis());
-		sijoitteluAlgorithm.start();
-		uusiSijoitteluajo.setEndMils(System.currentTimeMillis());
-
-		processOldApplications(olemassaolevatHakukohteet, kaikkiHakukohteet);
-
-		dao.persistSijoittelu(sijoittelu);
-	}
-
     /**
-     * verioi sijoittelun ja tuo uudet kohteet
+     * versioi sijoittelun ja tuo uudet kohteet
      *
      * @param sijoitteluTyyppi
      */
     @Override
     public void sijoittele(HakuDTO sijoitteluTyyppi) {
-
+        long startTime = System.currentTimeMillis();
         String hakuOid = sijoitteluTyyppi.getHakuOid();
         Sijoittelu sijoittelu = getOrCreateSijoittelu(hakuOid);
         SijoitteluAjo viimeisinSijoitteluajo = sijoittelu
@@ -169,7 +128,7 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
         SijoitteluAlgorithm sijoitteluAlgorithm = algorithmFactory
                 .constructAlgorithm(kaikkiHakukohteet, valintatulokset);
 
-        uusiSijoitteluajo.setStartMils(System.currentTimeMillis());
+        uusiSijoitteluajo.setStartMils(startTime);
         sijoitteluAlgorithm.start();
         uusiSijoitteluajo.setEndMils(System.currentTimeMillis());
 
@@ -271,15 +230,6 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
 		return new ArrayList<>(kaikkiHakukohteet.values());
 	}
 
-	private List<Hakukohde> convertHakukohteet(
-			List<HakukohdeTyyppi> sisaantulevatHakukohteet) {
-		List<Hakukohde> hakukohdes = new ArrayList<Hakukohde>();
-		for (HakukohdeTyyppi hkt : sisaantulevatHakukohteet) {
-			Hakukohde hakukohde = DomainConverter.convertToHakukohde(hkt);
-			hakukohdes.add(hakukohde);
-		}
-		return hakukohdes;
-	}
 
 	private SijoitteluAjo createSijoitteluAjo(Sijoittelu sijoittelu) {
 		SijoitteluAjo sijoitteluAjo = new SijoitteluAjo();

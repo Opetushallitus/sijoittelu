@@ -1,6 +1,5 @@
 package fi.vm.sade.sijoittelu.batch.logic.impl.algorithm;
 
-import fi.vm.sade.service.valintatiedot.schema.*;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.HakemusWrapper;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.HakukohdeWrapper;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.SijoitteluajoWrapper;
@@ -9,6 +8,11 @@ import fi.vm.sade.sijoittelu.domain.HakemuksenTila;
 import fi.vm.sade.sijoittelu.domain.Hakemus;
 import fi.vm.sade.sijoittelu.domain.Hakukohde;
 import fi.vm.sade.sijoittelu.domain.Valintatapajono;
+import fi.vm.sade.valintalaskenta.domain.dto.HakijaDTO;
+import fi.vm.sade.valintalaskenta.domain.dto.HakukohdeDTO;
+import fi.vm.sade.valintalaskenta.domain.dto.valintatieto.HakuDTO;
+import fi.vm.sade.valintalaskenta.domain.dto.valintatieto.ValintatietoValinnanvaiheDTO;
+import fi.vm.sade.valintalaskenta.domain.dto.valintatieto.ValintatietoValintatapajonoDTO;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -73,7 +77,7 @@ public final class PrintHelper {
         return sb.toString();
     }
 
-    public final static String tulostaSijoittelu(HakuTyyppi s) {
+    public final static String tulostaSijoittelu(HakuDTO s) {
 
         StringBuilder sb = new StringBuilder();
 
@@ -81,13 +85,13 @@ public final class PrintHelper {
         sb.append("Haku: " + s.getHakuOid() + "\n");
         sb.append("===================================================\n");
 
-        for (HakukohdeTyyppi hki : s.getHakukohteet()) {
+        for (HakukohdeDTO hki : s.getHakukohteet()) {
             sb.append("HAKUKOHDE: [" + hki.getOid() + "]\n");
-            for(ValinnanvaiheTyyppi v : hki.getValinnanvaihe()){
+            for(ValintatietoValinnanvaiheDTO v : hki.getValinnanvaihe()){
 
-                for (ValintatapajonoTyyppi jono : v.getValintatapajono()) {
+                for (ValintatietoValintatapajonoDTO jono : v.getValintatapajonot()) {
                     sb.append("  JONO [" + jono.getOid() + "], prioriteetti [" + jono.getPrioriteetti() + "] aloituspaikat [" + jono.getAloituspaikat() + "], tasasijasaanto [" + jono.getTasasijasaanto() + "]\n");
-                    for (HakijaTyyppi hakemus : jono.getHakija()) {
+                    for (HakijaDTO hakemus : jono.getHakija()) {
                         sb.append("          " + hakemus.getJonosija() + "." + "  " + hakemus.getOid() + " " + hakemus.getHakemusOid() + " "  + hakemus.getTila() + " hakijan prijo:" + hakemus.getPrioriteetti() + "\n");
                     }
                 }

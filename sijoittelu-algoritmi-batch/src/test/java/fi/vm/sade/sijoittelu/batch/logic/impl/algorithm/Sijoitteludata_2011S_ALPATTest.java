@@ -1,10 +1,11 @@
 package fi.vm.sade.sijoittelu.batch.logic.impl.algorithm;
 
 import de.flapdoodle.embed.process.collections.Collections;
-import fi.vm.sade.service.valintatiedot.schema.HakuTyyppi;
 import fi.vm.sade.sijoittelu.batch.logic.impl.DomainConverter;
 import fi.vm.sade.sijoittelu.domain.Hakukohde;
 import fi.vm.sade.sijoittelu.domain.Valintatulos;
+import fi.vm.sade.valintalaskenta.domain.dto.HakukohdeDTO;
+import fi.vm.sade.valintalaskenta.domain.dto.valintatieto.HakuDTO;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -23,11 +24,11 @@ public class Sijoitteludata_2011S_ALPATTest {
 
 	@Test   	@Ignore
 	public void testSijoittele() throws IOException {
-		HakuTyyppi t = TestHelper.xmlToObjects("testdata/sijoitteludata_2011S_ALPAT.xml");
+		HakuDTO t = TestHelper.xmlToObjects("testdata/sijoitteludata_2011S_ALPAT.xml");
 
         List<Hakukohde> hakukohteet = new ArrayList<Hakukohde>() ;
-        for(fi.vm.sade.service.valintatiedot.schema.HakukohdeTyyppi hkt : t.getHakukohteet()) {
-            Hakukohde hakukohde = DomainConverter.convertToHakukohde(hkt);
+        for(HakukohdeDTO hkt : t.getHakukohteet()) {
+            Hakukohde hakukohde = DomainConverter.convertToHakukohdeRest(hkt);
             hakukohteet.add(hakukohde);
         }
         System.out.println("algoritmi ennen");
@@ -68,7 +69,7 @@ public class Sijoitteludata_2011S_ALPATTest {
 	@Ignore
 	public void testToXml() throws IOException {
 
-		HakuTyyppi sijoitteleTyyppi = new HakuTyyppi();
+        HakuDTO sijoitteleTyyppi = new HakuDTO();
 
 		DomainBuilder builder = new DomainBuilder(sijoitteleTyyppi);
 

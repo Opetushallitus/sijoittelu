@@ -1,23 +1,28 @@
 package fi.vm.sade.sijoittelu.batch.logic.impl.algorithm;
 
+import fi.vm.sade.valintalaskenta.domain.dto.HakijaDTO;
+import fi.vm.sade.valintalaskenta.domain.dto.HakukohdeDTO;
+import fi.vm.sade.valintalaskenta.domain.dto.JarjestyskriteerituloksenTilaDTO;
+import fi.vm.sade.valintalaskenta.domain.dto.valintakoe.Tasasijasaanto;
+import fi.vm.sade.valintalaskenta.domain.dto.valintatieto.HakuDTO;
+import fi.vm.sade.valintalaskenta.domain.dto.valintatieto.ValintatietoValinnanvaiheDTO;
+import fi.vm.sade.valintalaskenta.domain.dto.valintatieto.ValintatietoValintatapajonoDTO;
 
-
-import fi.vm.sade.service.valintaperusteet.schema.TasasijasaantoTyyppi;
-import fi.vm.sade.service.valintatiedot.schema.*;
+import java.math.BigDecimal;
 
 public class DomainBuilder {
 
-	HakuTyyppi sijoitteleTyyppi;
+    HakuDTO sijoitteleTyyppi;
 
-	public DomainBuilder(HakuTyyppi sijoitteleTyyppi) {
+	public DomainBuilder(HakuDTO sijoitteleTyyppi) {
 		this.sijoitteleTyyppi = sijoitteleTyyppi;
 	}
 
 	public void addRow(String hakijanro, int prioriteetti, String linjannimi, String hakukohdeId, int aloituspaikat, float pisteet, String tila) {
 
 		// etsi tai luo hakukohde
-		HakukohdeTyyppi hakukohdeTyyppi = null;
-		for (HakukohdeTyyppi hkt : sijoitteleTyyppi.getHakukohteet()) {
+		HakukohdeDTO hakukohdeTyyppi = null;
+		for (HakukohdeDTO hkt : sijoitteleTyyppi.getHakukohteet()) {
 			// System.out.println("WTF: " + hkt + " " + hakukohdeId + "# " +
 			// hkt.getOid());
 			if (hkt.getOid().equals(hakukohdeId)) {
@@ -26,10 +31,10 @@ public class DomainBuilder {
 			}
 		}
 		if (hakukohdeTyyppi == null) {
-			hakukohdeTyyppi = new HakukohdeTyyppi();
+			hakukohdeTyyppi = new HakukohdeDTO();
 			hakukohdeTyyppi.setOid(hakukohdeId);
-            ValinnanvaiheTyyppi v= new ValinnanvaiheTyyppi();
-			ValintatapajonoTyyppi valintatapajonotyyppi = new ValintatapajonoTyyppi();
+            ValintatietoValinnanvaiheDTO v= new ValintatietoValinnanvaiheDTO();
+			ValintatietoValintatapajonoDTO valintatapajonotyyppi = new ValintatietoValintatapajonoDTO();
 			valintatapajonotyyppi.setAloituspaikat(20);
 			valintatapajonotyyppi.setOid(hakukohdeId + "_jono1");
 			valintatapajonotyyppi.setPrioriteetti(1);
@@ -40,22 +45,22 @@ public class DomainBuilder {
 			// saantoTyyppi.setNimi("ARVONTA");
 			// saantoTyyppi.setTyyppi("TASASIJA");
 			// valintatapajonotyyppi.getSaanto().add(saantoTyyppi);
-			valintatapajonotyyppi.setTasasijasaanto(TasasijasaantoTyyppi.ARVONTA);
+			valintatapajonotyyppi.setTasasijasaanto(Tasasijasaanto.ARVONTA);
 
             hakukohdeTyyppi.getValinnanvaihe().add(v);
-            v.getValintatapajono().add(valintatapajonotyyppi);
+            v.getValintatapajonot().add(valintatapajonotyyppi);
 			sijoitteleTyyppi.getHakukohteet().add(hakukohdeTyyppi);
 		}
 
 		// lisää ensimmäiseen valintatapajonoon
-		ValintatapajonoTyyppi valintatapajonoTyyppi = hakukohdeTyyppi.getValinnanvaihe().get(0).getValintatapajono().get(0);
+        ValintatietoValintatapajonoDTO valintatapajonoTyyppi = hakukohdeTyyppi.getValinnanvaihe().get(0).getValintatapajonot().get(0);
 
-        HakijaTyyppi hakijatyyppi = new HakijaTyyppi();
+        HakijaDTO hakijatyyppi = new HakijaDTO();
 		hakijatyyppi.setJonosija(-((int) pisteet));
-		hakijatyyppi.setPisteet("" + pisteet);
+		hakijatyyppi.setPisteet(new BigDecimal(pisteet));
 		hakijatyyppi.setPrioriteetti(prioriteetti);
 		hakijatyyppi.setOid(hakijanro);
-        hakijatyyppi.setTila(HakemusTilaTyyppi.HYVAKSYTTAVISSA);
+        hakijatyyppi.setTila(JarjestyskriteerituloksenTilaDTO.HYVAKSYTTAVISSA);
 
 
 		valintatapajonoTyyppi.getHakija().add(hakijatyyppi);

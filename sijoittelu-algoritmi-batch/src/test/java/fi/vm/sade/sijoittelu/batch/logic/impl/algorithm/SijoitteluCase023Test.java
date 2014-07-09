@@ -1,16 +1,16 @@
 package fi.vm.sade.sijoittelu.batch.logic.impl.algorithm;
 
 import de.flapdoodle.embed.process.collections.Collections;
-import fi.vm.sade.service.valintatiedot.schema.HakuTyyppi;
 import fi.vm.sade.sijoittelu.batch.logic.impl.DomainConverter;
 import fi.vm.sade.sijoittelu.domain.Hakukohde;
 import fi.vm.sade.sijoittelu.domain.Valintatulos;
+import fi.vm.sade.valintalaskenta.domain.dto.valintatieto.HakuDTO;
 import org.junit.Test;
 
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * 
@@ -27,14 +27,10 @@ public class SijoitteluCase023Test {
     @Test
     public void testSijoittelu() throws IOException {
         // tee sijoittelu
-        HakuTyyppi t = TestHelper.xmlToObjects("testdata/sijoittelu_case_023.xml");
+        HakuDTO t = TestHelper.xmlToObjects("testdata/sijoittelu_case_023.xml");
 
 
-        List<Hakukohde> hakukohteet = new ArrayList<Hakukohde>() ;
-        for(fi.vm.sade.service.valintatiedot.schema.HakukohdeTyyppi hkt :t.getHakukohteet()) {
-            Hakukohde hakukohde = DomainConverter.convertToHakukohde(hkt);
-            hakukohteet.add(hakukohde);
-        }
+        List<Hakukohde> hakukohteet = t.getHakukohteet().parallelStream().map(DomainConverter::convertToHakukohdeRest).collect(Collectors.toList());
 
         SijoitteluAlgorithmFactoryImpl h = new SijoitteluAlgorithmFactoryImpl();
         SijoitteluAlgorithm s = h.constructAlgorithm(hakukohteet, Collections.<Valintatulos>newArrayList());

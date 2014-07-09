@@ -1,16 +1,17 @@
 package fi.vm.sade.sijoittelu.batch.logic.impl.algorithm;
 
-import fi.vm.sade.service.valintatiedot.schema.HakuTyyppi;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import fi.vm.sade.sijoittelu.domain.HakemuksenTila;
 import fi.vm.sade.sijoittelu.domain.Hakemus;
 import fi.vm.sade.sijoittelu.domain.Valintatapajono;
+import fi.vm.sade.valintalaskenta.domain.dto.valintatieto.HakuDTO;
 import junit.framework.Assert;
+import org.codehaus.jackson.map.DeserializationConfig;
 
 import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBElement;
 import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
-import java.io.InputStream;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -26,28 +27,29 @@ public final class TestHelper {
     private TestHelper() {
     }
 
-    public static HakuTyyppi xmlToObjects(String filename) {
+    public static HakuDTO xmlToObjects(String filename) {
         try {
-            InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream(filename);
-            JAXBContext jc = JAXBContext.newInstance("fi.vm.sade.service.sijoittelu.types");
-            Unmarshaller u = jc.createUnmarshaller();
-            Object o = ((JAXBElement) u.unmarshal(is)).getValue();
-            HakuTyyppi t = (HakuTyyppi) o;
-            return t;
+            ObjectMapper xmlMapper = new ObjectMapper();
+            xmlMapper.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
+            xmlMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+            HakuDTO dto = xmlMapper.readValue(Thread.currentThread().getContextClassLoader().getResourceAsStream(filename), HakuDTO.class);
+            return dto;
         } catch (Exception e) {
             e.printStackTrace();
             throw new RuntimeException(e);
         }
     }
 
-    public static String objectsToXml(HakuTyyppi sijoitteluTyyppi) {
+    public static String objectsToXml(HakuDTO sijoitteluTyyppi) {
         try {
-            JAXBContext jc = JAXBContext.newInstance("fi.vm.sade.service.sijoittelu.types");
-            Marshaller m = jc.createMarshaller();
-            m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-            StringWriter sw = new StringWriter();
-            m.marshal(sijoitteluTyyppi, sw);
-            return sw.toString();
+//            JAXBContext jc = JAXBContext.newInstance("fi.vm.sade.service.sijoittelu.types");
+//            Marshaller m = jc.createMarshaller();
+//            m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+//            StringWriter sw = new StringWriter();
+//            m.marshal(sijoitteluTyyppi, sw);
+            ObjectMapper xmlMapper = new XmlMapper();
+            String xml = xmlMapper.writeValueAsString(sijoitteluTyyppi);
+            return xml;
         } catch (Exception e) {
             e.printStackTrace();
             throw new RuntimeException(e);
