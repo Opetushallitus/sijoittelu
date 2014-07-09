@@ -10,6 +10,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 import fi.vm.sade.sijoittelu.laskenta.mapping.SijoitteluModelMapper;
+import fi.vm.sade.sijoittelu.laskenta.service.exception.*;
 import fi.vm.sade.valintalaskenta.domain.dto.valintatieto.HakuDTO;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -38,11 +39,6 @@ import fi.vm.sade.sijoittelu.domain.ValintatuloksenTila;
 import fi.vm.sade.sijoittelu.domain.Valintatulos;
 import fi.vm.sade.sijoittelu.laskenta.dao.Dao;
 import fi.vm.sade.sijoittelu.laskenta.service.business.SijoitteluBusinessService;
-import fi.vm.sade.sijoittelu.laskenta.service.exception.HakemusEiOleHyvaksyttyException;
-import fi.vm.sade.sijoittelu.laskenta.service.exception.HakemustaEiLoytynytException;
-import fi.vm.sade.sijoittelu.laskenta.service.exception.ValintatapajonoaEiLoytynytException;
-import fi.vm.sade.sijoittelu.laskenta.service.exception.ValintatulosOnJoVastaanotettuException;
-import fi.vm.sade.sijoittelu.laskenta.service.exception.ValintatulostaEiOleIlmoitettuException;
 import fi.vm.sade.sijoittelu.tulos.roles.SijoitteluRole;
 
 /**
@@ -346,6 +342,11 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
 				throw new ValintatulostaEiOleIlmoitettuException(
 						"Valintatulosta ei ole ilmoitettu");
 			}
+
+            if (tila == ValintatuloksenTila.PERUUTETTU) {
+                throw new TilanTallennukseenEiOikeuksiaException(
+                        "Oikeudet eivät riitä Peruutettutilan tallennukseen");
+            }
 
             // Otetaan toistaiseksi pois, koska ilmoittatumistilaa ei voi tällä toteutuksella muuttaa
 //			if ((v != null && v.getTila() != null)
