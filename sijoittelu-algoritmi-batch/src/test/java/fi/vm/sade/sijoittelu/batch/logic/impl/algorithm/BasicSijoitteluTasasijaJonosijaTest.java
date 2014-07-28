@@ -6,13 +6,11 @@ import fi.vm.sade.sijoittelu.domain.Hakemus;
 import fi.vm.sade.sijoittelu.domain.Hakukohde;
 import fi.vm.sade.sijoittelu.domain.Valintatapajono;
 import fi.vm.sade.sijoittelu.domain.Valintatulos;
-import fi.vm.sade.valintalaskenta.domain.dto.HakukohdeDTO;
 import fi.vm.sade.valintalaskenta.domain.dto.valintatieto.HakuDTO;
 import junit.framework.Assert;
 import org.junit.Test;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -35,7 +33,7 @@ public class BasicSijoitteluTasasijaJonosijaTest {
         HakuDTO t = TestHelper.xmlToObjects("testdata/sijoittelu_basic_tasasija_jonosija_case.xml");
 
 
-        List<Hakukohde> hakukohteet = t.getHakukohteet().parallelStream().map(DomainConverter::convertToHakukohdeRest).collect(Collectors.toList());
+        List<Hakukohde> hakukohteet = t.getHakukohteet().parallelStream().map(DomainConverter::convertToHakukohde).collect(Collectors.toList());
 
         SijoitteluAlgorithmFactoryImpl h = new SijoitteluAlgorithmFactoryImpl();
         SijoitteluAlgorithm s = h.constructAlgorithm(hakukohteet, Collections.<Valintatulos>newArrayList());

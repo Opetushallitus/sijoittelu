@@ -5,17 +5,14 @@ import com.wordnik.swagger.annotations.ApiOperation;
 import fi.vm.sade.sijoittelu.laskenta.service.business.SijoitteluBusinessService;
 import fi.vm.sade.valintalaskenta.domain.dto.valintatieto.HakuDTO;
 import fi.vm.sade.valintalaskenta.tulos.service.ValintalaskentaTulosService;
-import fi.vm.sade.valintalaskenta.tulos.service.impl.ValintatietoServiceRest;
+import fi.vm.sade.valintalaskenta.tulos.service.impl.ValintatietoService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
 
 import javax.ws.rs.*;
 import java.util.*;
-
-import static fi.vm.sade.sijoittelu.laskenta.roles.SijoitteluRole.CRUD;
 
 @Path("sijoittele")
 @Component
@@ -33,7 +30,7 @@ public class SijoitteluResource {
     private ValintalaskentaTulosService tulosService;
 
     @Autowired
-    private ValintatietoServiceRest valintatietoServiceRest;
+    private ValintatietoService valintatietoService;
 
 	@GET
 	@Path("{hakuOid}")
@@ -43,7 +40,7 @@ public class SijoitteluResource {
 
         LOGGER.error("Valintatietoja valmistetaan haulle {}!", hakuOid);
 
-        HakuDTO haku = valintatietoServiceRest.haeValintatiedot(hakuOid);
+        HakuDTO haku = valintatietoService.haeValintatiedot(hakuOid);
         LOGGER.error("Valintatiedot haettu serviceltä {}!", hakuOid);
 
 //        LOGGER.error("Konvertoidaan hakutyypeiksi {}!", hakuOid);

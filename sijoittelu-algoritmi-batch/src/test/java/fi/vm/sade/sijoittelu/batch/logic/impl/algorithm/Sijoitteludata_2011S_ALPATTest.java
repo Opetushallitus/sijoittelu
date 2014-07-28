@@ -28,7 +28,7 @@ public class Sijoitteludata_2011S_ALPATTest {
 
         List<Hakukohde> hakukohteet = new ArrayList<Hakukohde>() ;
         for(HakukohdeDTO hkt : t.getHakukohteet()) {
-            Hakukohde hakukohde = DomainConverter.convertToHakukohdeRest(hkt);
+            Hakukohde hakukohde = DomainConverter.convertToHakukohde(hkt);
             hakukohteet.add(hakukohde);
         }
         System.out.println("algoritmi ennen");

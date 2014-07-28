@@ -36,7 +36,7 @@ public class Sijoitteludata_2011K_ALPATTest {
 		// tee sijoittelu
 		HakuDTO t = csvToDomain("testdata/sijoitteludata_2011K_ALPAT.csv");
 
-        List<Hakukohde> hakukohteet = t.getHakukohteet().parallelStream().map(DomainConverter::convertToHakukohdeRest).collect(Collectors.toList());
+        List<Hakukohde> hakukohteet = t.getHakukohteet().parallelStream().map(DomainConverter::convertToHakukohde).collect(Collectors.toList());
 
         SijoitteluAlgorithmFactoryImpl h = new SijoitteluAlgorithmFactoryImpl();
         SijoitteluAlgorithm sa = h.constructAlgorithm(hakukohteet, Collections.<Valintatulos>newArrayList());

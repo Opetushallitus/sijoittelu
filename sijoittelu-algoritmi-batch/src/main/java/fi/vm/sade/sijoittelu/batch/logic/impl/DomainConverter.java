@@ -17,16 +17,16 @@ import java.util.stream.Collectors;
  */
 public class DomainConverter {
 
-    public static Hakukohde convertToHakukohdeRest(HakukohdeDTO hakukohdeTyyppi) {
+    public static Hakukohde convertToHakukohde(HakukohdeDTO hakukohdeTyyppi) {
         Hakukohde hakukohde = new Hakukohde();
         hakukohde.setOid(hakukohdeTyyppi.getOid());
         hakukohde.setTarjoajaOid(hakukohdeTyyppi.getTarjoajaoid());
-        addValintatapaJonosRest(hakukohdeTyyppi, hakukohde);
-        addHakijaRyhmasRest(hakukohdeTyyppi, hakukohde);
+        addValintatapaJonos(hakukohdeTyyppi, hakukohde);
+        addHakijaRyhmas(hakukohdeTyyppi, hakukohde);
         return hakukohde;
     }
 
-    private static void addValintatapaJonosRest(HakukohdeDTO hakukohdeTyyppi, Hakukohde hakukohde) {
+    private static void addValintatapaJonos(HakukohdeDTO hakukohdeTyyppi, Hakukohde hakukohde) {
         hakukohdeTyyppi.getValinnanvaihe().stream().forEach(
                 vaihe -> convertJono(vaihe.getValintatapajonot().stream().filter(
                         ValintatietoValintatapajonoDTO::isSiirretaanSijoitteluun).collect(Collectors.toList()), hakukohde));
@@ -64,13 +64,13 @@ public class DomainConverter {
 
             hakukohde.getValintatapajonot().add(valintatapajono);
 
-            valintatapajonoTyyppi.getHakija().stream().forEach(hakija -> addHakemusRest(hakija, valintatapajono));
+            valintatapajonoTyyppi.getHakija().stream().forEach(hakija -> addHakemus(hakija, valintatapajono));
 
         });
 
     }
 
-    private static void addHakijaRyhmasRest(HakukohdeDTO hakukohdeTyyppi, Hakukohde hakukohde) {
+    private static void addHakijaRyhmas(HakukohdeDTO hakukohdeTyyppi, Hakukohde hakukohde) {
         for (HakijaryhmaDTO h : hakukohdeTyyppi.getHakijaryhma()) {
             Hakijaryhma hakijaryhma = new Hakijaryhma();
             hakijaryhma.setPaikat(h.getPaikat());
@@ -84,7 +84,7 @@ public class DomainConverter {
         }
     }
 
-    private static void addHakemusRest(HakijaDTO hakijaTyyppi, Valintatapajono valintatapajono) {
+    private static void addHakemus(HakijaDTO hakijaTyyppi, Valintatapajono valintatapajono) {
         Hakemus hakemus = new Hakemus();
         hakemus.setHakijaOid(hakijaTyyppi.getOid());
         hakemus.setHakemusOid(hakijaTyyppi.getHakemusOid());
@@ -98,7 +98,7 @@ public class DomainConverter {
             hakemus.setPisteet(hakijaTyyppi.getPisteet());
         }
 
-        applyPistetiedotRest(hakemus, hakijaTyyppi.getSyotettyArvo()) ;
+        applyPistetiedot(hakemus, hakijaTyyppi.getSyotettyArvo()) ;
 
         if(hakijaTyyppi.getTila() == JarjestyskriteerituloksenTilaDTO.HYVAKSYTTY_HARKINNANVARAISESTI)     {
             hakemus.setTila(HakemuksenTila.VARALLA);
@@ -114,7 +114,7 @@ public class DomainConverter {
         valintatapajono.getHakemukset().add(hakemus);
     }
 
-    private static void applyPistetiedotRest(Hakemus hakemus, List<SyotettyArvoDTO> arvot) {
+    private static void applyPistetiedot(Hakemus hakemus, List<SyotettyArvoDTO> arvot) {
         arvot.stream().forEach(arvo -> {
             Pistetieto pistetieto = new Pistetieto();
             pistetieto.setArvo(arvo.getArvo());

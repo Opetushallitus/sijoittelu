@@ -108,7 +108,7 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
                 .getLatestSijoitteluajo();
 
         List<Hakukohde> uudetHakukohteet =
-        sijoitteluTyyppi.getHakukohteet().parallelStream().map(DomainConverter::convertToHakukohdeRest).collect(Collectors.toList());
+        sijoitteluTyyppi.getHakukohteet().parallelStream().map(DomainConverter::convertToHakukohde).collect(Collectors.toList());
         List<Hakukohde> olemassaolevatHakukohteet = Collections
                 .<Hakukohde> emptyList();
         if (viimeisinSijoitteluajo != null) {

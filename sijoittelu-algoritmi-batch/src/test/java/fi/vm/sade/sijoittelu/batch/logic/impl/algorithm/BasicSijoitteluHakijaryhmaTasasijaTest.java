@@ -4,7 +4,6 @@ import de.flapdoodle.embed.process.collections.Collections;
 import fi.vm.sade.sijoittelu.batch.logic.impl.DomainConverter;
 import fi.vm.sade.sijoittelu.domain.Hakukohde;
 import fi.vm.sade.sijoittelu.domain.Valintatulos;
-import fi.vm.sade.valintalaskenta.domain.dto.HakukohdeDTO;
 import fi.vm.sade.valintalaskenta.domain.dto.valintatieto.HakuDTO;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -12,7 +11,6 @@ import org.slf4j.LoggerFactory;
 
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -39,7 +37,7 @@ public class BasicSijoitteluHakijaryhmaTasasijaTest {
         // tee sijoittelu
         HakuDTO t = TestHelper.xmlToObjects("testdata/sijoittelu_basic_hakijaryhma_tasasija_case.xml");
 
-        List<Hakukohde> hakukohteet = t.getHakukohteet().parallelStream().map(DomainConverter::convertToHakukohdeRest).collect(Collectors.toList());
+        List<Hakukohde> hakukohteet = t.getHakukohteet().parallelStream().map(DomainConverter::convertToHakukohde).collect(Collectors.toList());
 
         SijoitteluAlgorithmFactoryImpl h = new SijoitteluAlgorithmFactoryImpl();
         SijoitteluAlgorithm s = h.constructAlgorithm(hakukohteet, Collections.<Valintatulos>newArrayList());

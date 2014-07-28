@@ -32,7 +32,7 @@ public class VastaanottotietoTest {
         HakuDTO t = TestHelper.xmlToObjects("testdata/sijoittelu_vastaanottotieto_case.xml");
 
 
-        List<Hakukohde> hakukohteet = t.getHakukohteet().parallelStream().map(DomainConverter::convertToHakukohdeRest).collect(Collectors.toList());
+        List<Hakukohde> hakukohteet = t.getHakukohteet().parallelStream().map(DomainConverter::convertToHakukohde).collect(Collectors.toList());
 
         ArrayList<Valintatulos> valintatuloses = new ArrayList<Valintatulos>();
         Valintatulos valintatulos = new Valintatulos();

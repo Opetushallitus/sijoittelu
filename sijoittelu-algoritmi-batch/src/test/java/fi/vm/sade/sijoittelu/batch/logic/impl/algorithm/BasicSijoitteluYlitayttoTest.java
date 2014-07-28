@@ -33,7 +33,7 @@ public class BasicSijoitteluYlitayttoTest {
 
         List<Hakukohde> hakukohteet = new ArrayList<Hakukohde>() ;
         for(HakukohdeDTO hkt :t.getHakukohteet()) {
-            Hakukohde hakukohde = DomainConverter.convertToHakukohdeRest(hkt);
+            Hakukohde hakukohde = DomainConverter.convertToHakukohde(hkt);
             hakukohteet.add(hakukohde);
         }
 

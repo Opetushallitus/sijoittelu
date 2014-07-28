@@ -31,7 +31,7 @@ public class BasicSijoitteluTasasijaTest {
         HakuDTO t = TestHelper.xmlToObjects("testdata/sijoittelu_basic_tasasija_case.xml");
 
 
-        List<Hakukohde> hakukohteet = t.getHakukohteet().parallelStream().map(DomainConverter::convertToHakukohdeRest).collect(Collectors.toList());
+        List<Hakukohde> hakukohteet = t.getHakukohteet().parallelStream().map(DomainConverter::convertToHakukohde).collect(Collectors.toList());
 
         SijoitteluAlgorithmFactoryImpl h = new SijoitteluAlgorithmFactoryImpl();
         SijoitteluAlgorithm s = h.constructAlgorithm(hakukohteet, Collections.<Valintatulos>newArrayList());

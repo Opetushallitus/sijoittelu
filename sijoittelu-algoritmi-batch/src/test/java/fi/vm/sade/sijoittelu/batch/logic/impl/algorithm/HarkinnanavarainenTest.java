@@ -32,7 +32,7 @@ public class HarkinnanavarainenTest {
         HakuDTO t = TestHelper.xmlToObjects("testdata/sijoittelu_harkinnanvarainen.xml");
 
 
-        List<Hakukohde> hakukohteet = t.getHakukohteet().parallelStream().map(DomainConverter::convertToHakukohdeRest).collect(Collectors.toList());
+        List<Hakukohde> hakukohteet = t.getHakukohteet().parallelStream().map(DomainConverter::convertToHakukohde).collect(Collectors.toList());
 
         SijoitteluAlgorithmFactoryImpl h = new SijoitteluAlgorithmFactoryImpl();
         SijoitteluAlgorithm s = h.constructAlgorithm(hakukohteet, Collections.<Valintatulos>newArrayList());
