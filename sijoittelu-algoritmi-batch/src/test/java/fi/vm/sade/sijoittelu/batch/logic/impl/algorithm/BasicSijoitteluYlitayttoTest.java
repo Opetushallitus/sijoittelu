@@ -1,10 +1,11 @@
 package fi.vm.sade.sijoittelu.batch.logic.impl.algorithm;
 
 import de.flapdoodle.embed.process.collections.Collections;
-import fi.vm.sade.service.valintatiedot.schema.HakuTyyppi;
 import fi.vm.sade.sijoittelu.batch.logic.impl.DomainConverter;
 import fi.vm.sade.sijoittelu.domain.Hakukohde;
 import fi.vm.sade.sijoittelu.domain.Valintatulos;
+import fi.vm.sade.valintalaskenta.domain.dto.HakukohdeDTO;
+import fi.vm.sade.valintalaskenta.domain.dto.valintatieto.HakuDTO;
 import org.junit.Test;
 
 import java.io.FileWriter;
@@ -27,11 +28,11 @@ public class BasicSijoitteluYlitayttoTest {
 	@Test
 	public void testSijoittelu() throws IOException {
 		// tee sijoittelu
-		HakuTyyppi t = TestHelper.xmlToObjects("testdata/sijoittelu_basic_ylitaytto_case.xml");
+		HakuDTO t = TestHelper.xmlToObjects("testdata/sijoittelu_basic_ylitaytto_case.xml");
 
 
         List<Hakukohde> hakukohteet = new ArrayList<Hakukohde>() ;
-        for(fi.vm.sade.service.valintatiedot.schema.HakukohdeTyyppi hkt :t.getHakukohteet()) {
+        for(HakukohdeDTO hkt :t.getHakukohteet()) {
             Hakukohde hakukohde = DomainConverter.convertToHakukohde(hkt);
             hakukohteet.add(hakukohde);
         }

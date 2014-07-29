@@ -1,17 +1,17 @@
 package fi.vm.sade.sijoittelu.batch.logic.impl.algorithm;
 
 import de.flapdoodle.embed.process.collections.Collections;
-import fi.vm.sade.service.valintatiedot.schema.HakuTyyppi;
 import fi.vm.sade.sijoittelu.batch.logic.impl.DomainConverter;
 import fi.vm.sade.sijoittelu.domain.Hakukohde;
 import fi.vm.sade.sijoittelu.domain.Valintatulos;
+import fi.vm.sade.valintalaskenta.domain.dto.valintatieto.HakuDTO;
 import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.*;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
+import java.util.stream.Collectors;
 
 
 /**
@@ -34,13 +34,9 @@ public class Sijoitteludata_2011K_ALPATTest {
 	@Test     	@Ignore
 	public void testSijoittele() throws IOException {
 		// tee sijoittelu
-		HakuTyyppi t = csvToDomain("testdata/sijoitteludata_2011K_ALPAT.csv");
-		DomainConverter f = new DomainConverter();
-        List<Hakukohde> hakukohteet = new ArrayList<Hakukohde>() ;
-        for(fi.vm.sade.service.valintatiedot.schema.HakukohdeTyyppi hkt : t.getHakukohteet()) {
-            Hakukohde hakukohde = DomainConverter.convertToHakukohde(hkt);
-            hakukohteet.add(hakukohde);
-        }
+		HakuDTO t = csvToDomain("testdata/sijoitteludata_2011K_ALPAT.csv");
+
+        List<Hakukohde> hakukohteet = t.getHakukohteet().parallelStream().map(DomainConverter::convertToHakukohde).collect(Collectors.toList());
 
         SijoitteluAlgorithmFactoryImpl h = new SijoitteluAlgorithmFactoryImpl();
         SijoitteluAlgorithm sa = h.constructAlgorithm(hakukohteet, Collections.<Valintatulos>newArrayList());
@@ -68,13 +64,13 @@ public class Sijoitteludata_2011K_ALPATTest {
 	 * @param filename
 	 * @return
 	 */
-	private HakuTyyppi csvToDomain(String filename) {
+	private HakuDTO csvToDomain(String filename) {
 		try {
 			InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream(filename);
 			InputStreamReader r = new InputStreamReader(is);
 			BufferedReader br = new BufferedReader(r);
 
-            HakuTyyppi sijoitteleTyyppi = new HakuTyyppi();
+            HakuDTO sijoitteleTyyppi = new HakuDTO();
 			DomainBuilder builder = new DomainBuilder(sijoitteleTyyppi);
 
 			String strLine = br.readLine();// first line, always headers and
@@ -113,7 +109,7 @@ public class Sijoitteludata_2011K_ALPATTest {
 	@Test
     @Ignore
 	public void testToXml() throws IOException {
-		HakuTyyppi st = this.csvToDomain("testdata/sijoitteludata_2011K_ALPAT.csv");
+        HakuDTO st = this.csvToDomain("testdata/sijoitteludata_2011K_ALPAT.csv");
 		String s = TestHelper.objectsToXml(st);
 		FileWriter fstream = new FileWriter("src/test/resources/testdata/sijoitteludata_2011K_ALPAT.xml");
 		fstream.write(s);

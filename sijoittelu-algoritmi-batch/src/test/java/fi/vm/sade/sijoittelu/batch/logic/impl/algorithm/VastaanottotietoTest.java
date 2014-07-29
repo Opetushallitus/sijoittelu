@@ -1,19 +1,17 @@
 package fi.vm.sade.sijoittelu.batch.logic.impl.algorithm;
 
-import de.flapdoodle.embed.process.collections.Collections;
-import fi.vm.sade.service.valintatiedot.schema.HakemusTilaTyyppi;
-import fi.vm.sade.service.valintatiedot.schema.HakuTyyppi;
 import fi.vm.sade.sijoittelu.batch.logic.impl.DomainConverter;
 import fi.vm.sade.sijoittelu.domain.HakemuksenTila;
 import fi.vm.sade.sijoittelu.domain.Hakukohde;
 import fi.vm.sade.sijoittelu.domain.ValintatuloksenTila;
 import fi.vm.sade.sijoittelu.domain.Valintatulos;
+import fi.vm.sade.valintalaskenta.domain.dto.valintatieto.HakuDTO;
 import org.junit.Test;
 
-import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 /**
@@ -31,14 +29,10 @@ public class VastaanottotietoTest {
     @Test
     public void testVastaanottotilaPeruutettu() throws IOException {
         // tee sijoittelu
-        HakuTyyppi t = TestHelper.xmlToObjects("testdata/sijoittelu_vastaanottotieto_case.xml");
+        HakuDTO t = TestHelper.xmlToObjects("testdata/sijoittelu_vastaanottotieto_case.xml");
 
 
-        List<Hakukohde> hakukohteet = new ArrayList<Hakukohde>() ;
-        for(fi.vm.sade.service.valintatiedot.schema.HakukohdeTyyppi hkt :t.getHakukohteet()) {
-            Hakukohde hakukohde = DomainConverter.convertToHakukohde(hkt);
-            hakukohteet.add(hakukohde);
-        }
+        List<Hakukohde> hakukohteet = t.getHakukohteet().parallelStream().map(DomainConverter::convertToHakukohde).collect(Collectors.toList());
 
         ArrayList<Valintatulos> valintatuloses = new ArrayList<Valintatulos>();
         Valintatulos valintatulos = new Valintatulos();

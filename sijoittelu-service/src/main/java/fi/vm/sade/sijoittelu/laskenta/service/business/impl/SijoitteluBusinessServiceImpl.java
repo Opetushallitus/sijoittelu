@@ -6,7 +6,12 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
+import fi.vm.sade.sijoittelu.laskenta.mapping.SijoitteluModelMapper;
+import fi.vm.sade.sijoittelu.laskenta.service.exception.*;
+import fi.vm.sade.valintalaskenta.domain.dto.valintatieto.HakuDTO;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,8 +22,6 @@ import org.springframework.stereotype.Service;
 import fi.vm.sade.authentication.business.service.Authorizer;
 import fi.vm.sade.generic.service.exception.NotAuthorizedException;
 import fi.vm.sade.security.service.authz.util.AuthorizationUtil;
-import fi.vm.sade.service.valintatiedot.schema.HakuTyyppi;
-import fi.vm.sade.service.valintatiedot.schema.HakukohdeTyyppi;
 import fi.vm.sade.sijoittelu.batch.logic.impl.DomainConverter;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoitteluAlgorithm;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoitteluAlgorithmFactory;
@@ -36,11 +39,6 @@ import fi.vm.sade.sijoittelu.domain.ValintatuloksenTila;
 import fi.vm.sade.sijoittelu.domain.Valintatulos;
 import fi.vm.sade.sijoittelu.laskenta.dao.Dao;
 import fi.vm.sade.sijoittelu.laskenta.service.business.SijoitteluBusinessService;
-import fi.vm.sade.sijoittelu.laskenta.service.exception.HakemusEiOleHyvaksyttyException;
-import fi.vm.sade.sijoittelu.laskenta.service.exception.HakemustaEiLoytynytException;
-import fi.vm.sade.sijoittelu.laskenta.service.exception.ValintatapajonoaEiLoytynytException;
-import fi.vm.sade.sijoittelu.laskenta.service.exception.ValintatulosOnJoVastaanotettuException;
-import fi.vm.sade.sijoittelu.laskenta.service.exception.ValintatulostaEiOleIlmoitettuException;
 import fi.vm.sade.sijoittelu.tulos.roles.SijoitteluRole;
 
 /**
@@ -60,6 +58,9 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
 
 	@Autowired
 	private Authorizer authorizer;
+
+    @Autowired
+    private SijoitteluModelMapper modelMapper;
 
 	@Value("${root.organisaatio.oid}")
 	private String rootOrgOid;
@@ -93,44 +94,44 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
 		}
 	}
 
-	/**
-	 * verioi sijoittelun ja tuo uudet kohteet
-	 * 
-	 * @param sijoitteluTyyppi
-	 */
-	@Override
-	public void sijoittele(HakuTyyppi sijoitteluTyyppi) {
+    /**
+     * versioi sijoittelun ja tuo uudet kohteet
+     *
+     * @param sijoitteluTyyppi
+     */
+    @Override
+    public void sijoittele(HakuDTO sijoitteluTyyppi) {
+        long startTime = System.currentTimeMillis();
+        String hakuOid = sijoitteluTyyppi.getHakuOid();
+        Sijoittelu sijoittelu = getOrCreateSijoittelu(hakuOid);
+        SijoitteluAjo viimeisinSijoitteluajo = sijoittelu
+                .getLatestSijoitteluajo();
 
-		String hakuOid = sijoitteluTyyppi.getHakuOid();
-		Sijoittelu sijoittelu = getOrCreateSijoittelu(hakuOid);
-		SijoitteluAjo viimeisinSijoitteluajo = sijoittelu
-				.getLatestSijoitteluajo();
+        List<Hakukohde> uudetHakukohteet =
+        sijoitteluTyyppi.getHakukohteet().parallelStream().map(DomainConverter::convertToHakukohde).collect(Collectors.toList());
+        List<Hakukohde> olemassaolevatHakukohteet = Collections
+                .<Hakukohde> emptyList();
+        if (viimeisinSijoitteluajo != null) {
+            olemassaolevatHakukohteet = dao
+                    .getHakukohdeForSijoitteluajo(viimeisinSijoitteluajo
+                            .getSijoitteluajoId());
+        }
+        SijoitteluAjo uusiSijoitteluajo = createSijoitteluAjo(sijoittelu);
+        List<Hakukohde> kaikkiHakukohteet = merge(uusiSijoitteluajo,
+                olemassaolevatHakukohteet, uudetHakukohteet);
 
-		List<Hakukohde> uudetHakukohteet = convertHakukohteet(sijoitteluTyyppi
-				.getHakukohteet());
-		List<Hakukohde> olemassaolevatHakukohteet = Collections
-				.<Hakukohde> emptyList();
-		if (viimeisinSijoitteluajo != null) {
-			olemassaolevatHakukohteet = dao
-					.getHakukohdeForSijoitteluajo(viimeisinSijoitteluajo
-							.getSijoitteluajoId());
-		}
-		SijoitteluAjo uusiSijoitteluajo = createSijoitteluAjo(sijoittelu);
-		List<Hakukohde> kaikkiHakukohteet = merge(uusiSijoitteluajo,
-				olemassaolevatHakukohteet, uudetHakukohteet);
+        List<Valintatulos> valintatulokset = dao.loadValintatulokset(hakuOid);
+        SijoitteluAlgorithm sijoitteluAlgorithm = algorithmFactory
+                .constructAlgorithm(kaikkiHakukohteet, valintatulokset);
 
-		List<Valintatulos> valintatulokset = dao.loadValintatulokset(hakuOid);
-		SijoitteluAlgorithm sijoitteluAlgorithm = algorithmFactory
-				.constructAlgorithm(kaikkiHakukohteet, valintatulokset);
+        uusiSijoitteluajo.setStartMils(startTime);
+        sijoitteluAlgorithm.start();
+        uusiSijoitteluajo.setEndMils(System.currentTimeMillis());
 
-		uusiSijoitteluajo.setStartMils(System.currentTimeMillis());
-		sijoitteluAlgorithm.start();
-		uusiSijoitteluajo.setEndMils(System.currentTimeMillis());
+        processOldApplications(olemassaolevatHakukohteet, kaikkiHakukohteet);
 
-		processOldApplications(olemassaolevatHakukohteet, kaikkiHakukohteet);
-
-		dao.persistSijoittelu(sijoittelu);
-	}
+        dao.persistSijoittelu(sijoittelu);
+    }
 
 	private void processOldApplications(
 			final List<Hakukohde> olemassaolevatHakukohteet,
@@ -184,46 +185,35 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
 	private List<Hakukohde> merge(SijoitteluAjo uusiSijoitteluajo,
 			List<Hakukohde> olemassaolevatHakukohteet,
 			List<Hakukohde> uudetHakukohteet) {
-		Map<String, Hakukohde> kaikkiHakukohteet = new HashMap<String, Hakukohde>();
+		Map<String, Hakukohde> kaikkiHakukohteet = new ConcurrentHashMap<String, Hakukohde>();
 		for (Hakukohde hakukohde : olemassaolevatHakukohteet) {
 			hakukohde.setId(null); // poista id vanhoilta hakukohteilta, niin
 									// etta ne voidaan peristoida uusina
 									// dokumentteina
 			kaikkiHakukohteet.put(hakukohde.getOid(), hakukohde);
 		}
+
 		// vanhat tasasijajonosijat talteen
-		for (Hakukohde hakukohde : uudetHakukohteet) {
+        uudetHakukohteet.parallelStream().filter(hakukohde -> kaikkiHakukohteet.containsKey(hakukohde.getOid())).forEach(hakukohde -> {
+            Map<String, Integer> hakemusHashMap = new ConcurrentHashMap<>();
+            kaikkiHakukohteet.get(hakukohde.getOid()).getValintatapajonot().parallelStream().forEach(valintatapajono ->
+                valintatapajono.getHakemukset().parallelStream().filter(hakemus -> hakemus.getTasasijaJonosija() != null).forEach(h ->
+                        hakemusHashMap.put(valintatapajono.getOid() + h.getHakemusOid(), h.getTasasijaJonosija())
+                )
+            );
 
-            if(kaikkiHakukohteet.containsKey(hakukohde.getOid())) {
-                Map<String, Integer> hakemusHashMap = new HashMap<String, Integer>();
-                for (Valintatapajono valintatapajono : kaikkiHakukohteet.get(hakukohde.getOid())
-                        .getValintatapajonot()) {
-                    for (Hakemus hakemus : valintatapajono.getHakemukset()) {
-                        if(hakemus.getTasasijaJonosija() != null) {
-                            hakemusHashMap.put(valintatapajono.getOid()
-                                        + hakemus.getHakemusOid(), hakemus.getTasasijaJonosija());
-                        }
-                    }
-                }
+            hakukohde.getValintatapajonot().parallelStream().forEach(valintatapajono ->
+                    valintatapajono.getHakemukset().parallelStream()
+                            .filter(hakemus -> hakemusHashMap.get(valintatapajono.getOid() + hakemus.getHakemusOid()) != null)
+                            .forEach(hakemus -> {
+                                hakemus.setTasasijaJonosija(hakemusHashMap.get(valintatapajono.getOid() + hakemus.getHakemusOid()));
+                })
+            );
+            
+            kaikkiHakukohteet.put(hakukohde.getOid(), hakukohde);
 
-                for (Valintatapajono valintatapajono : hakukohde
-                        .getValintatapajonot()) {
-                    for (Hakemus hakemus : valintatapajono.getHakemukset()) {
-                        Integer vanhaTasasijaJonosija = hakemusHashMap.get(valintatapajono.getOid()
-                                + hakemus.getHakemusOid());
-                        if (vanhaTasasijaJonosija != null) {
-                            hakemus.setTasasijaJonosija(vanhaTasasijaJonosija);
+        });
 
-                        }
-
-                    }
-                }
-            }
-
-
-
-			kaikkiHakukohteet.put(hakukohde.getOid(), hakukohde);
-		}
 
 		for (Hakukohde hakukohde : kaikkiHakukohteet.values()) {
 			HakukohdeItem hki = new HakukohdeItem();
@@ -233,18 +223,9 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
 					.setSijoitteluajoId(uusiSijoitteluajo.getSijoitteluajoId());
 		}
 
-		return new ArrayList<Hakukohde>(kaikkiHakukohteet.values());
+		return new ArrayList<>(kaikkiHakukohteet.values());
 	}
 
-	private List<Hakukohde> convertHakukohteet(
-			List<HakukohdeTyyppi> sisaantulevatHakukohteet) {
-		List<Hakukohde> hakukohdes = new ArrayList<Hakukohde>();
-		for (HakukohdeTyyppi hkt : sisaantulevatHakukohteet) {
-			Hakukohde hakukohde = DomainConverter.convertToHakukohde(hkt);
-			hakukohdes.add(hakukohde);
-		}
-		return hakukohdes;
-	}
 
 	private SijoitteluAjo createSijoitteluAjo(Sijoittelu sijoittelu) {
 		SijoitteluAjo sijoitteluAjo = new SijoitteluAjo();
@@ -361,6 +342,11 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
 				throw new ValintatulostaEiOleIlmoitettuException(
 						"Valintatulosta ei ole ilmoitettu");
 			}
+
+            if (tila == ValintatuloksenTila.PERUUTETTU) {
+                throw new TilanTallennukseenEiOikeuksiaException(
+                        "Oikeudet eivät riitä Peruutettutilan tallennukseen");
+            }
 
             // Otetaan toistaiseksi pois, koska ilmoittatumistilaa ei voi tällä toteutuksella muuttaa
 //			if ((v != null && v.getTila() != null)

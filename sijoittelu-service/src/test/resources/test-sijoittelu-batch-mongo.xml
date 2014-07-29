@@ -11,8 +11,6 @@
     <context:component-scan base-package="fi.vm.sade.sijoittelu.batch"/>
     <context:component-scan base-package="fi.vm.sade.security"/>
 
-    <bean id="sijoitteluServiceImpl" class="fi.vm.sade.sijoittelu.laskenta.service.impl.SijoitteluServiceImpl"/>
-
     <bean id="mongodFactory" class="de.flapdoodle.embed.mongo.tests.MongodForTestsFactory" destroy-method="shutdown"/>
     <bean id="mongo" class="com.mongodb.MongoClient" factory-bean="mongodFactory" factory-method="newMongo"/>
 
@@ -31,20 +29,14 @@
         <constructor-arg type="java.lang.String" value="test" />
     </bean>
 
-    <context:component-scan base-package="fi.vm.sade.valintalaskenta.tulos.ctrl"/>
     <context:component-scan base-package="fi.vm.sade.valintalaskenta.tulos.dao"/>
     <context:component-scan base-package="fi.vm.sade.valintalaskenta.tulos.service.impl"/>
     <context:component-scan base-package="fi.vm.sade.valintalaskenta.tulos.resource.impl"/>
     <context:component-scan base-package="fi.vm.sade.valintalaskenta.tulos.service.impl.converters"/>
 
-    <bean id="conversionService" class="org.springframework.context.support.ConversionServiceFactoryBean">
-        <property name="converters">
-            <list>
-
-            </list>
-        </property>
-    </bean>
     <bean id="modelMapper" class="fi.vm.sade.valintalaskenta.tulos.mapping.ValintalaskentaModelMapper"/>
+
+    <bean id="sijoitteluModelMapper" class="fi.vm.sade.sijoittelu.laskenta.mapping.SijoitteluModelMapper"/>
 
 </beans>
 

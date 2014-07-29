@@ -1,5 +1,7 @@
 package fi.vm.sade.sijoittelu.batch.logic.impl;
 
+import fi.vm.sade.sijoittelu.laskenta.service.business.SijoitteluBusinessService;
+import fi.vm.sade.valintalaskenta.domain.dto.valintatieto.HakuDTO;
 import junit.framework.Assert;
 
 import org.junit.Test;
@@ -9,8 +11,6 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import fi.vm.sade.service.sijoittelu.SijoitteluService;
-import fi.vm.sade.service.valintatiedot.schema.HakuTyyppi;
 import fi.vm.sade.sijoittelu.domain.Sijoittelu;
 import fi.vm.sade.sijoittelu.laskenta.dao.Dao;
 
@@ -26,12 +26,12 @@ public class MorphiaIntegrationTest {
 	private Dao dao;
 
 	@Autowired
-	private SijoitteluService sijoitteluService;
+	private SijoitteluBusinessService sijoitteluService;
 
 	@Test
 	public void testSijoitteluService() {
 
-		HakuTyyppi st = new HakuTyyppi();
+		HakuDTO st = new HakuDTO();
 
 		st.setHakuOid("testihakuoidi");
 

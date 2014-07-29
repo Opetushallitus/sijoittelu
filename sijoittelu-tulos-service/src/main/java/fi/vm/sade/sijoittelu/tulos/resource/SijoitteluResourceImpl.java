@@ -55,6 +55,9 @@ public class SijoitteluResourceImpl implements SijoitteluResource {
 	public SijoitteluajoDTO getSijoitteluajo(String hakuOid,
 			String sijoitteluajoId) {
 		SijoitteluAjo ajo = getSijoitteluAjo(sijoitteluajoId, hakuOid);
+        if(ajo == null) {
+            return new SijoitteluajoDTO();
+        }
 		return sijoitteluTulosService.getSijoitteluajo(ajo);
 	}
 
@@ -70,10 +73,7 @@ public class SijoitteluResourceImpl implements SijoitteluResource {
 			return Response.ok().entity(hakukohdeBySijoitteluajo).build();
 		} else {
 			return Response
-					.status(Response.Status.BAD_REQUEST)
-					.entity(new ErrorDTO("Haulta (" + hakuOid
-							+ ") ei löytynyt SijoitteluAjoa ("
-							+ sijoitteluajoId + ").")).build();
+					.ok().entity(new HakukohdeDTO()).build();
 		}
 	}
 
@@ -87,8 +87,7 @@ public class SijoitteluResourceImpl implements SijoitteluResource {
 			return sijoitteluTulosService.getHakukohdeBySijoitteluajo(ajo,
 					hakukohdeOid);
 		} else {
-			throw new RuntimeException("Haulta (" + hakuOid
-					+ ") ei löytynyt SijoitteluAjoa (" + sijoitteluajoId + ").");
+            return new HakukohdeDTO();
 		}
 	}
 
@@ -101,13 +100,20 @@ public class SijoitteluResourceImpl implements SijoitteluResource {
 			List<String> hakukohdeOid, Integer count, Integer index) {
 		try {
 			SijoitteluAjo ajo = getSijoitteluAjo(sijoitteluajoId, hakuOid);
+            if(ajo == null) {
+                HakijaPaginationObject vastaus = new HakijaPaginationObject();
+                vastaus.setTotalCount(0);
+                return vastaus;
+            }
 			return raportointiService.hakemukset(ajo, hyvaksytyt,
 					ilmanHyvaksyntaa, vastaanottaneet, hakukohdeOid, count,
 					index);
 		} catch (Exception e) {
 			LOGGER.error("Sijoittelun hakemuksia ei saatu! {}", e.getMessage(),
 					Arrays.toString(e.getStackTrace()));
-			throw new RuntimeException(e);
+            HakijaPaginationObject vastaus = new HakijaPaginationObject();
+            vastaus.setTotalCount(0);
+            return vastaus;
 		}
 	}
 
