@@ -42,7 +42,13 @@ public class DomainConverter {
             valintatapajono.setNimi(valintatapajonoTyyppi.getNimi());
             valintatapajono.setPrioriteetti(valintatapajonoTyyppi.getPrioriteetti());
             valintatapajono.setAloituspaikat(valintatapajonoTyyppi.getAloituspaikat());
-            valintatapajono.setTasasijasaanto(Tasasijasaanto.valueOf(valintatapajonoTyyppi.getTasasijasaanto().toString()));
+
+            try {
+                valintatapajono.setTasasijasaanto(Tasasijasaanto.valueOf(valintatapajonoTyyppi.getTasasijasaanto().toString()));
+            } catch(Exception e) {
+                System.out.println("Valintatapajonon tasasijasääntöä ei tunnistettu: " + valintatapajonoTyyppi.getTasasijasaanto());
+                valintatapajono.setTasasijasaanto(Tasasijasaanto.ARVONTA);
+            }
 
             if (valintatapajonoTyyppi.getEiVarasijatayttoa() != null && valintatapajonoTyyppi.getEiVarasijatayttoa()) {
                 valintatapajono.setEiVarasijatayttoa(true);
