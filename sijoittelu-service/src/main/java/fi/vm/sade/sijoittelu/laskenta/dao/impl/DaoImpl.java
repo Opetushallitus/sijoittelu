@@ -24,6 +24,8 @@ import fi.vm.sade.sijoittelu.domain.Valintatulos;
 import fi.vm.sade.sijoittelu.laskenta.dao.Dao;
 import fi.vm.sade.sijoittelu.tulos.dao.SijoitteluCacheDao;
 
+import javax.annotation.PostConstruct;
+
 /**
  * 
  * @author Kari Kammonen
@@ -39,6 +41,12 @@ public class DaoImpl implements Dao, SijoitteluCacheDao {
 
 	private final Cache<String, Sijoittelu> sijoitteluPerHaku = CacheBuilder
 			.newBuilder().expireAfterWrite(12, TimeUnit.HOURS).build();
+
+    @PostConstruct
+    public void ensureIndexes() {
+        morphiaDS.ensureIndexes(Hakukohde.class);
+        morphiaDS.ensureIndexes(Valintatulos.class);
+    }
 
 	/**
 	 * CACHED

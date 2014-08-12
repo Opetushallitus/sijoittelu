@@ -1,8 +1,6 @@
 package fi.vm.sade.sijoittelu.domain;
 
-import com.google.code.morphia.annotations.Embedded;
-import com.google.code.morphia.annotations.Entity;
-import com.google.code.morphia.annotations.Id;
+import com.google.code.morphia.annotations.*;
 import org.bson.types.ObjectId;
 
 import java.io.Serializable;
@@ -15,6 +13,10 @@ import java.util.List;
  * 
  */
 @Entity("Hakukohde")
+@Indexes( {
+        @Index("oid, sijoitteluajoId"),
+        @Index("sijoitteluajoId")}
+)
 public class Hakukohde implements Serializable {
 
     @Id
