@@ -28,8 +28,8 @@ public class DomainConverter {
 
     private static void addValintatapaJonos(HakukohdeDTO hakukohdeTyyppi, Hakukohde hakukohde) {
         hakukohdeTyyppi.getValinnanvaihe().stream().forEach(
-                vaihe -> convertJono(vaihe.getValintatapajonot().stream().filter(
-                        ValintatietoValintatapajonoDTO::isSiirretaanSijoitteluun).collect(Collectors.toList()), hakukohde));
+                vaihe -> convertJono(vaihe.getValintatapajonot().stream().filter(jono ->
+                        jono.isSiirretaanSijoitteluun() && (jono.getValmisSijoiteltavaksi() == null || jono.getValmisSijoiteltavaksi())).collect(Collectors.toList()), hakukohde));
 
 
     }
