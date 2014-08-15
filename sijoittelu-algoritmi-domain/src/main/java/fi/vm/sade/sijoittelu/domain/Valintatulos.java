@@ -1,6 +1,6 @@
 package fi.vm.sade.sijoittelu.domain;
 
-import com.google.code.morphia.annotations.*;
+import org.mongodb.morphia.annotations.*;
 import org.bson.types.ObjectId;
 import org.codehaus.jackson.map.annotate.JsonView;
 

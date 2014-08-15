@@ -1,6 +1,6 @@
 /*package fi.vm.sade.sijoittelu.it;
 
-import com.google.code.morphia.Datastore;
+import org.mongodb.morphia.Datastore;
 import fi.vm.sade.sijoittelu.domain.Hakukohde;
 import fi.vm.sade.sijoittelu.domain.JsonViews;
 import fi.vm.sade.sijoittelu.domain.SijoitteluAjo;

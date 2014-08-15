@@ -1,7 +1,7 @@
 package fi.vm.sade.sijoittelu.util;
 
-import com.google.code.morphia.Datastore;
-import com.google.code.morphia.query.Query;
+import org.mongodb.morphia.Datastore;
+import org.mongodb.morphia.query.Query;
 import fi.vm.sade.sijoittelu.domain.*;
 
 import java.util.ArrayList;

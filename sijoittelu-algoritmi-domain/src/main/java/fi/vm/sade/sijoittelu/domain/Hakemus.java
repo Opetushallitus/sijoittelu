@@ -1,7 +1,7 @@
 package fi.vm.sade.sijoittelu.domain;
 
-import com.google.code.morphia.annotations.Converters;
-import com.google.code.morphia.annotations.Embedded;
+import org.mongodb.morphia.annotations.Converters;
+import org.mongodb.morphia.annotations.Embedded;
 import fi.vm.sade.sijoittelu.domain.converter.BigDecimalConverter;
 
 import java.io.Serializable;
