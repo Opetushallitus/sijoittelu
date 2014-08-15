@@ -1,6 +1,6 @@
 package fi.vm.sade.sijoittelu.domain;
 
-import com.google.code.morphia.annotations.Embedded;
+import org.mongodb.morphia.annotations.Embedded;
 
 import java.io.Serializable;
 import java.util.ArrayList;

@@ -1,6 +1,6 @@
 package fi.vm.sade.sijoittelu.util;
 
-import com.google.code.morphia.Datastore;
+import org.mongodb.morphia.Datastore;
 import org.springframework.test.context.TestContext;
 import org.springframework.test.context.support.AbstractTestExecutionListener;
 

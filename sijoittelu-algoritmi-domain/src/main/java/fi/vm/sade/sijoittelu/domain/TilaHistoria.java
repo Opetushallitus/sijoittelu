@@ -8,8 +8,8 @@ package fi.vm.sade.sijoittelu.domain;
  * To change this template use File | Settings | File Templates.
  */
 
-import com.google.code.morphia.annotations.Embedded;
-import com.google.code.morphia.annotations.Id;
+import org.mongodb.morphia.annotations.Embedded;
+import org.mongodb.morphia.annotations.Id;
 import org.bson.types.ObjectId;
 import org.codehaus.jackson.map.annotate.JsonView;
 
