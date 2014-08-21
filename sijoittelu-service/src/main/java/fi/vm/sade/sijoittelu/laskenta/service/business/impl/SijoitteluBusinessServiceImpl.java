@@ -137,48 +137,88 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
 			final List<Hakukohde> olemassaolevatHakukohteet,
 			final List<Hakukohde> kaikkiHakukohteet) {
 		// wanhat hakemukset
-		Map<String, Hakemus> hakemusHashMap = new HashMap<String, Hakemus>();
-		for (Hakukohde hakukohde : olemassaolevatHakukohteet) {
-			for (Valintatapajono valintatapajono : hakukohde
-					.getValintatapajonot()) {
-				for (Hakemus hakemus : valintatapajono.getHakemukset()) {
-					hakemusHashMap.put(
-							hakukohde.getOid() + valintatapajono.getOid()
-									+ hakemus.getHakemusOid(), hakemus);
-				}
-			}
-		}
+		Map<String, Hakemus> hakemusHashMap = new ConcurrentHashMap<String, Hakemus>();
+//		for (Hakukohde hakukohde : olemassaolevatHakukohteet) {
+//			for (Valintatapajono valintatapajono : hakukohde
+//					.getValintatapajonot()) {
+//				for (Hakemus hakemus : valintatapajono.getHakemukset()) {
+//					hakemusHashMap.put(
+//							hakukohde.getOid() + valintatapajono.getOid()
+//									+ hakemus.getHakemusOid(), hakemus);
+//				}
+//			}
+//		}
 
-		for (Hakukohde hakukohde : kaikkiHakukohteet) {
-			for (Valintatapajono valintatapajono : hakukohde
-					.getValintatapajonot()) {
-				for (Hakemus hakemus : valintatapajono.getHakemukset()) {
-					Hakemus edellinen = hakemusHashMap.get(hakukohde.getOid()
-							+ valintatapajono.getOid()
-							+ hakemus.getHakemusOid());
-					if (edellinen != null
-							&& edellinen.getTilaHistoria() != null
-							&& !edellinen.getTilaHistoria().isEmpty()) {
-						hakemus.setTilaHistoria(edellinen.getTilaHistoria());
+        olemassaolevatHakukohteet.parallelStream().forEach(hakukohde ->
+            hakukohde.getValintatapajonot().parallelStream().forEach(valintatapajono ->
+                valintatapajono.getHakemukset().parallelStream().forEach(hakemus ->
+                    hakemusHashMap.put(
+                            hakukohde.getOid() + valintatapajono.getOid()
+                                    + hakemus.getHakemusOid(), hakemus)
+                )
+            )
+        );
 
-						if (hakemus.getTila() != edellinen.getTila()) {
-							TilaHistoria th = new TilaHistoria();
-							th.setLuotu(new Date());
-							th.setTila(hakemus.getTila());
-							hakemus.getTilaHistoria().add(th);
-						}
-					} else {
-						TilaHistoria th = new TilaHistoria();
-						th.setLuotu(new Date());
-						th.setTila(hakemus.getTila());
-						hakemus.getTilaHistoria().add(th);
-					}
+//		for (Hakukohde hakukohde : kaikkiHakukohteet) {
+//			for (Valintatapajono valintatapajono : hakukohde
+//					.getValintatapajonot()) {
+//				for (Hakemus hakemus : valintatapajono.getHakemukset()) {
+//					Hakemus edellinen = hakemusHashMap.get(hakukohde.getOid()
+//							+ valintatapajono.getOid()
+//							+ hakemus.getHakemusOid());
+//					if (edellinen != null
+//							&& edellinen.getTilaHistoria() != null
+//							&& !edellinen.getTilaHistoria().isEmpty()) {
+//						hakemus.setTilaHistoria(edellinen.getTilaHistoria());
+//
+//						if (hakemus.getTila() != edellinen.getTila()) {
+//							TilaHistoria th = new TilaHistoria();
+//							th.setLuotu(new Date());
+//							th.setTila(hakemus.getTila());
+//							hakemus.getTilaHistoria().add(th);
+//						}
+//					} else {
+//						TilaHistoria th = new TilaHistoria();
+//						th.setLuotu(new Date());
+//						th.setTila(hakemus.getTila());
+//						hakemus.getTilaHistoria().add(th);
+//					}
+//
+//				}
+//			}
+//
+//			dao.persistHakukohde(hakukohde);
+//		}
 
-				}
-			}
+        kaikkiHakukohteet.parallelStream().forEach(hakukohde -> {
+            hakukohde.getValintatapajonot().parallelStream().forEach(valintatapajono ->
+                valintatapajono.getHakemukset().parallelStream().forEach(hakemus -> {
+                    Hakemus edellinen = hakemusHashMap.get(hakukohde.getOid()
+                        + valintatapajono.getOid()
+                        + hakemus.getHakemusOid());
+                    if (edellinen != null
+                            && edellinen.getTilaHistoria() != null
+                            && !edellinen.getTilaHistoria().isEmpty()) {
+                        hakemus.setTilaHistoria(edellinen.getTilaHistoria());
 
-			dao.persistHakukohde(hakukohde);
-		}
+                        if (hakemus.getTila() != edellinen.getTila()) {
+                            TilaHistoria th = new TilaHistoria();
+                            th.setLuotu(new Date());
+                            th.setTila(hakemus.getTila());
+                            hakemus.getTilaHistoria().add(th);
+                        }
+                    } else {
+                        TilaHistoria th = new TilaHistoria();
+                        th.setLuotu(new Date());
+                        th.setTila(hakemus.getTila());
+                        hakemus.getTilaHistoria().add(th);
+                    }
+                }
+                )
+            );
+            dao.persistHakukohde(hakukohde);
+            }
+        );
 	}
 
 	// nykyisellaan vain korvaa hakukohteet, mietittava toiminta tarkemmin
@@ -186,12 +226,19 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
 			List<Hakukohde> olemassaolevatHakukohteet,
 			List<Hakukohde> uudetHakukohteet) {
 		Map<String, Hakukohde> kaikkiHakukohteet = new ConcurrentHashMap<String, Hakukohde>();
-		for (Hakukohde hakukohde : olemassaolevatHakukohteet) {
-			hakukohde.setId(null); // poista id vanhoilta hakukohteilta, niin
-									// etta ne voidaan peristoida uusina
-									// dokumentteina
-			kaikkiHakukohteet.put(hakukohde.getOid(), hakukohde);
-		}
+//		for (Hakukohde hakukohde : olemassaolevatHakukohteet) {
+//			hakukohde.setId(null); // poista id vanhoilta hakukohteilta, niin
+//									// etta ne voidaan peristoida uusina
+//									// dokumentteina
+//			kaikkiHakukohteet.put(hakukohde.getOid(), hakukohde);
+//		}
+
+        olemassaolevatHakukohteet.parallelStream().forEach(hakukohde -> {
+            hakukohde.setId(null); // poista id vanhoilta hakukohteilta, niin
+            // etta ne voidaan peristoida uusina
+            // dokumentteina
+            kaikkiHakukohteet.put(hakukohde.getOid(), hakukohde);
+        });
 
 		// vanhat tasasijajonosijat talteen
         uudetHakukohteet.parallelStream().filter(hakukohde -> kaikkiHakukohteet.containsKey(hakukohde.getOid())).forEach(hakukohde -> {
@@ -215,13 +262,21 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
         });
 
 
-		for (Hakukohde hakukohde : kaikkiHakukohteet.values()) {
-			HakukohdeItem hki = new HakukohdeItem();
-			hki.setOid(hakukohde.getOid());
-			uusiSijoitteluajo.getHakukohteet().add(hki);
-			hakukohde
-					.setSijoitteluajoId(uusiSijoitteluajo.getSijoitteluajoId());
-		}
+//		for (Hakukohde hakukohde : kaikkiHakukohteet.values()) {
+//			HakukohdeItem hki = new HakukohdeItem();
+//			hki.setOid(hakukohde.getOid());
+//			uusiSijoitteluajo.getHakukohteet().add(hki);
+//			hakukohde
+//					.setSijoitteluajoId(uusiSijoitteluajo.getSijoitteluajoId());
+//		}
+
+        kaikkiHakukohteet.values().parallelStream().forEach(hakukohde -> {
+            HakukohdeItem hki = new HakukohdeItem();
+            hki.setOid(hakukohde.getOid());
+            uusiSijoitteluajo.getHakukohteet().add(hki);
+            hakukohde.setSijoitteluajoId(uusiSijoitteluajo.getSijoitteluajoId());
+            }
+        );
 
 		return new ArrayList<>(kaikkiHakukohteet.values());
 	}
