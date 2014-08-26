@@ -216,6 +216,7 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
                 }
                 )
             );
+            System.out.println("Persistoidaan hakukohde: " + hakukohde.getOid());
             dao.persistHakukohde(hakukohde);
             }
         );
