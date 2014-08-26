@@ -194,8 +194,8 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
             hakukohde.getValintatapajonot().parallelStream().forEach(valintatapajono ->
                 valintatapajono.getHakemukset().parallelStream().forEach(hakemus -> {
                     Hakemus edellinen = hakemusHashMap.get(hakukohde.getOid()
-                        + valintatapajono.getOid()
-                        + hakemus.getHakemusOid());
+                            + valintatapajono.getOid()
+                            + hakemus.getHakemusOid());
                     if (edellinen != null
                             && edellinen.getTilaHistoria() != null
                             && !edellinen.getTilaHistoria().isEmpty()) {
@@ -216,7 +216,6 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
                 }
                 )
             );
-            System.out.println("Persistoidaan hakukohde: " + hakukohde.getOid());
             dao.persistHakukohde(hakukohde);
             }
         );
@@ -226,7 +225,7 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
 	private List<Hakukohde> merge(SijoitteluAjo uusiSijoitteluajo,
 			List<Hakukohde> olemassaolevatHakukohteet,
 			List<Hakukohde> uudetHakukohteet) {
-		Map<String, Hakukohde> kaikkiHakukohteet = new ConcurrentHashMap<String, Hakukohde>();
+		Map<String, Hakukohde> kaikkiHakukohteet = new ConcurrentHashMap<>();
 //		for (Hakukohde hakukohde : olemassaolevatHakukohteet) {
 //			hakukohde.setId(null); // poista id vanhoilta hakukohteilta, niin
 //									// etta ne voidaan peristoida uusina
@@ -242,21 +241,23 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
         });
 
 		// vanhat tasasijajonosijat talteen
-        uudetHakukohteet.parallelStream().filter(hakukohde -> kaikkiHakukohteet.containsKey(hakukohde.getOid())).forEach(hakukohde -> {
+        uudetHakukohteet.parallelStream().forEach(hakukohde -> {
             Map<String, Integer> hakemusHashMap = new ConcurrentHashMap<>();
-            kaikkiHakukohteet.get(hakukohde.getOid()).getValintatapajonot().parallelStream().forEach(valintatapajono ->
-                valintatapajono.getHakemukset().parallelStream().filter(hakemus -> hakemus.getTasasijaJonosija() != null).forEach(h ->
-                        hakemusHashMap.put(valintatapajono.getOid() + h.getHakemusOid(), h.getTasasijaJonosija())
-                )
-            );
+            if(kaikkiHakukohteet.containsKey(hakukohde.getOid())) {
+                kaikkiHakukohteet.get(hakukohde.getOid()).getValintatapajonot().parallelStream().forEach(valintatapajono ->
+                    valintatapajono.getHakemukset().parallelStream().filter(hakemus -> hakemus.getTasasijaJonosija() != null).forEach(h ->
+                            hakemusHashMap.put(valintatapajono.getOid() + h.getHakemusOid(), h.getTasasijaJonosija())
+                    )
+                );
 
-            hakukohde.getValintatapajonot().parallelStream().forEach(valintatapajono ->
-                    valintatapajono.getHakemukset().parallelStream()
-                            .filter(hakemus -> hakemusHashMap.get(valintatapajono.getOid() + hakemus.getHakemusOid()) != null)
-                            .forEach(hakemus -> {
-                                hakemus.setTasasijaJonosija(hakemusHashMap.get(valintatapajono.getOid() + hakemus.getHakemusOid()));
-                })
-            );
+                hakukohde.getValintatapajonot().parallelStream().forEach(valintatapajono ->
+                        valintatapajono.getHakemukset().parallelStream()
+                                .filter(hakemus -> hakemusHashMap.get(valintatapajono.getOid() + hakemus.getHakemusOid()) != null)
+                                .forEach(hakemus -> {
+                                    hakemus.setTasasijaJonosija(hakemusHashMap.get(valintatapajono.getOid() + hakemus.getHakemusOid()));
+                                })
+                );
+            }
             
             kaikkiHakukohteet.put(hakukohde.getOid(), hakukohde);
 
@@ -278,7 +279,6 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
             hakukohde.setSijoitteluajoId(uusiSijoitteluajo.getSijoitteluajoId());
             }
         );
-
 		return new ArrayList<>(kaikkiHakukohteet.values());
 	}
 
