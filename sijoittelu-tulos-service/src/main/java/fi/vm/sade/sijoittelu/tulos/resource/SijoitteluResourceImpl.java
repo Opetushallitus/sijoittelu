@@ -8,6 +8,9 @@ import java.util.List;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.core.Response;
 
+import com.wordnik.swagger.annotations.ApiParam;
+import fi.vm.sade.sijoittelu.tulos.dto.raportointi.HakemusYhteenvetoDTO;
+import fi.vm.sade.sijoittelu.tulos.service.YhteenvetoService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -131,7 +134,13 @@ public class SijoitteluResourceImpl implements SijoitteluResource {
 		return raportointiService.hakemus(ajo, hakemusOid);
 	}
 
-	private SijoitteluAjo getSijoitteluAjo(String sijoitteluajoId,
+    @Override
+    public HakemusYhteenvetoDTO hakemusYhteenveto(@ApiParam(value = "Haun tunniste", required = true) String hakuOid, @ApiParam(value = "Sijoitteluajon tunniste tai 'latest' avainsana", required = true) String sijoitteluajoId, @ApiParam(value = "Hakemuksen tunniste", required = true) String hakemusOid) {
+        HakijaDTO hakemus = hakemus(hakuOid, sijoitteluajoId, hakemusOid);
+        return YhteenvetoService.yhteenveto(hakemus);
+    }
+
+    private SijoitteluAjo getSijoitteluAjo(String sijoitteluajoId,
 			String hakuOid) {
 		if (LATEST.equals(sijoitteluajoId)) {
 			return raportointiService.latestSijoitteluAjoForHaku(hakuOid);
@@ -140,5 +149,4 @@ public class SijoitteluResourceImpl implements SijoitteluResource {
 					.parseLong(sijoitteluajoId));
 		}
 	}
-
 }

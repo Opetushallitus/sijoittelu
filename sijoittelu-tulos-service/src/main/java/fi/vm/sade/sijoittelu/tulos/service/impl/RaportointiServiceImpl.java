@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import fi.vm.sade.sijoittelu.tulos.dao.SijoitteluCacheDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -36,6 +37,9 @@ public class RaportointiServiceImpl implements RaportointiService {
 	@Autowired
 	private DAO dao;
 
+    @Autowired
+    private SijoitteluCacheDao sijoitteluCacheDao;
+
 	@Autowired
 	private RaportointiConverter raportointiConverter;
 
@@ -44,12 +48,12 @@ public class RaportointiServiceImpl implements RaportointiService {
 
 	@Override
 	public SijoitteluAjo getSijoitteluAjo(Long SijoitteluajoId) {
-		return dao.getSijoitteluajo(SijoitteluajoId);
+		return sijoitteluCacheDao.getSijoitteluajo(SijoitteluajoId);
 	}
 
 	@Override
 	public SijoitteluAjo latestSijoitteluAjoForHaku(String hakuOid) {
-		return dao.getLatestSijoitteluajo(hakuOid);
+		return sijoitteluCacheDao.getLatestSijoitteluajo(hakuOid);
 	}
 
 	@Override
