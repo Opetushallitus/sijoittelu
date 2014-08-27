@@ -2,28 +2,20 @@ package fi.vm.sade.sijoittelu.laskenta.dao.impl;
 
 import java.util.List;
 
+import javax.annotation.PostConstruct;
+
 import org.apache.commons.lang.StringUtils;
+import org.mongodb.morphia.Datastore;
+import org.mongodb.morphia.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
 
-import org.mongodb.morphia.Datastore;
-import org.mongodb.morphia.query.Query;
-
-import fi.vm.sade.sijoittelu.domain.Hakukohde;
 import fi.vm.sade.sijoittelu.domain.Valintatulos;
-import fi.vm.sade.sijoittelu.laskenta.dao.HakukohdeDao;
 import fi.vm.sade.sijoittelu.laskenta.dao.ValintatulosDao;
 
-import javax.annotation.PostConstruct;
-
-/**
- * 
- * @author Kari Kammonen
- * 
- */
 @Repository
-public class ValintatulosDaoImpl implements ValintatulosDao, HakukohdeDao {
+public class ValintatulosDaoImpl implements ValintatulosDao {
 
 	@Qualifier("datastore")
 	@Autowired
@@ -31,14 +23,8 @@ public class ValintatulosDaoImpl implements ValintatulosDao, HakukohdeDao {
 
     @PostConstruct
     public void ensureIndexes() {
-        morphiaDS.ensureIndexes(Hakukohde.class);
         morphiaDS.ensureIndexes(Valintatulos.class);
     }
-
-	@Override
-	public void persistHakukohde(Hakukohde hakukohde) {
-		morphiaDS.save(hakukohde);
-	}
 
 	@Override
 	public List<Valintatulos> loadValintatulos(String hakemusOid) {
@@ -105,22 +91,6 @@ public class ValintatulosDaoImpl implements ValintatulosDao, HakukohdeDao {
 		}
 		Query<Valintatulos> q = morphiaDS.createQuery(Valintatulos.class);
 		q.criteria("hakuOid").equal(hakuOid);
-		return q.asList();
-	}
-
-	@Override
-	public Hakukohde getHakukohdeForSijoitteluajo(Long sijoitteluajoId,
-			String hakukohdeOid) {
-		Query<Hakukohde> q = morphiaDS.createQuery(Hakukohde.class);
-		q.criteria("sijoitteluajoId").equal(sijoitteluajoId);
-		q.criteria("oid").equal(hakukohdeOid);
-		return q.get();
-	}
-
-	@Override
-	public List<Hakukohde> getHakukohdeForSijoitteluajo(Long sijoitteluajoId) {
-		Query<Hakukohde> q = morphiaDS.createQuery(Hakukohde.class);
-		q.criteria("sijoitteluajoId").equal(sijoitteluajoId);
 		return q.asList();
 	}
 
