@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 
 import fi.vm.sade.sijoittelu.laskenta.mapping.SijoitteluModelMapper;
 import fi.vm.sade.sijoittelu.laskenta.service.exception.*;
+import fi.vm.sade.sijoittelu.tulos.dao.SijoitteluCacheDao;
 import fi.vm.sade.valintalaskenta.domain.dto.valintatieto.HakuDTO;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -56,6 +57,9 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
 	@Autowired
 	private Dao dao;
 
+    @Autowired
+    private SijoitteluCacheDao sijoitteluDao;
+
 	@Autowired
 	private Authorizer authorizer;
 
@@ -88,7 +92,7 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
 		viimeisinSijoitteluajo.setEndMils(System.currentTimeMillis());
 
 		// and after
-		dao.persistSijoittelu(sijoittelu);
+        sijoitteluDao.persistSijoittelu(sijoittelu);
 		for (Hakukohde hakukohde : hakukohteet) {
 			dao.persistHakukohde(hakukohde);
 		}
@@ -130,7 +134,7 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
 
         processOldApplications(olemassaolevatHakukohteet, kaikkiHakukohteet);
 
-        dao.persistSijoittelu(sijoittelu);
+        sijoitteluDao.persistSijoittelu(sijoittelu);
     }
 
 	private void processOldApplications(
@@ -295,7 +299,7 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
 	}
 
 	private Sijoittelu getOrCreateSijoittelu(String hakuoid) {
-		Sijoittelu sijoittelu = dao.getSijoitteluByHakuOid(hakuoid);
+		Sijoittelu sijoittelu = sijoitteluDao.getSijoitteluByHakuOid(hakuoid);
 		if (sijoittelu == null) {
 			sijoittelu = new Sijoittelu();
 			sijoittelu.setCreated(new Date());
@@ -359,7 +363,7 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
 					"Invalid search params, fix exception later");
 		}
 
-		Sijoittelu sijoittelu = dao.getSijoitteluByHakuOid(hakuoid);
+		Sijoittelu sijoittelu = sijoitteluDao.getSijoitteluByHakuOid(hakuoid);
 		SijoitteluAjo ajo = sijoittelu.getLatestSijoitteluajo();
 		Long ajoId = ajo.getSijoitteluajoId();
 

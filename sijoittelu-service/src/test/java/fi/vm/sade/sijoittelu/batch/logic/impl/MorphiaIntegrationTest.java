@@ -1,6 +1,7 @@
 package fi.vm.sade.sijoittelu.batch.logic.impl;
 
 import fi.vm.sade.sijoittelu.laskenta.service.business.SijoitteluBusinessService;
+import fi.vm.sade.sijoittelu.tulos.dao.SijoitteluCacheDao;
 import fi.vm.sade.valintalaskenta.domain.dto.valintatieto.HakuDTO;
 import junit.framework.Assert;
 
@@ -25,6 +26,9 @@ public class MorphiaIntegrationTest {
 	@Autowired
 	private Dao dao;
 
+    @Autowired
+    private SijoitteluCacheDao sijoitteluDao;
+
 	@Autowired
 	private SijoitteluBusinessService sijoitteluService;
 
@@ -36,7 +40,7 @@ public class MorphiaIntegrationTest {
 		st.setHakuOid("testihakuoidi");
 
 		sijoitteluService.sijoittele(st);
-		Sijoittelu sijoittelu = dao.getSijoitteluByHakuOid("testihakuoidi");
+		Sijoittelu sijoittelu = sijoitteluDao.getSijoitteluByHakuOid("testihakuoidi");
 		Assert.assertNotNull(sijoittelu);
 		Assert.assertEquals(sijoittelu.getHakuOid(), "testihakuoidi");
 	}

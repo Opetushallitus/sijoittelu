@@ -1,5 +1,6 @@
 package fi.vm.sade.sijoittelu.laskenta.service.business.impl;
 
+import fi.vm.sade.sijoittelu.tulos.dao.SijoitteluCacheDao;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -32,7 +33,8 @@ public class SijoitteluBusinessServiceImplTest {
 	final String ROOT_ORG_OID = "rootOrgOid";
 
 	private SijoitteluBusinessServiceImpl sijoitteluBusinessService;
-	private Dao daoMock;
+    private Dao daoMock;
+    private SijoitteluCacheDao sijoitteluDao;
 	private Authorizer authorizer;
 	private TestDataGenerator testDataGenerator;
 
@@ -41,13 +43,13 @@ public class SijoitteluBusinessServiceImplTest {
 		sijoitteluBusinessService = new SijoitteluBusinessServiceImpl();
 
 		daoMock = Mockito.mock(Dao.class);
+        sijoitteluDao = Mockito.mock(SijoitteluCacheDao.class);
 		authorizer = Mockito.mock(Authorizer.class);
 
-		ReflectionTestUtils.setField(sijoitteluBusinessService, "dao", daoMock);
-		ReflectionTestUtils.setField(sijoitteluBusinessService, "authorizer",
-				authorizer);
-		ReflectionTestUtils.setField(sijoitteluBusinessService, ROOT_ORG_OID,
-				ROOT_ORG_OID);
+        ReflectionTestUtils.setField(sijoitteluBusinessService, "dao", daoMock);
+        ReflectionTestUtils.setField(sijoitteluBusinessService, "sijoitteluDao", sijoitteluDao);
+		ReflectionTestUtils.setField(sijoitteluBusinessService, "authorizer", authorizer);
+		ReflectionTestUtils.setField(sijoitteluBusinessService, ROOT_ORG_OID, ROOT_ORG_OID);
 
 		testDataGenerator = new TestDataGenerator();
 
@@ -58,7 +60,7 @@ public class SijoitteluBusinessServiceImplTest {
 
 		Sijoittelu sijoittelu = testDataGenerator.generateTestData();
 
-		Mockito.when(daoMock.getSijoitteluByHakuOid(HAKU_OID)).thenReturn(
+		Mockito.when(sijoitteluDao.getSijoitteluByHakuOid(HAKU_OID)).thenReturn(
 				sijoittelu);
 		Mockito.when(
 				daoMock.getHakukohdeForSijoitteluajo(
@@ -83,7 +85,7 @@ public class SijoitteluBusinessServiceImplTest {
 //
 //		Sijoittelu sijoittelu = testDataGenerator.generateTestData();
 //
-//		Mockito.when(daoMock.getSijoitteluByHakuOid(HAKU_OID)).thenReturn(
+//		Mockito.when(sijoitteluDao.getSijoitteluByHakuOid(HAKU_OID)).thenReturn(
 //				sijoittelu);
 //		Mockito.when(
 //				daoMock.getHakukohdeForSijoitteluajo(
@@ -109,7 +111,7 @@ public class SijoitteluBusinessServiceImplTest {
 
 		Sijoittelu sijoittelu = testDataGenerator.generateTestData();
 
-		Mockito.when(daoMock.getSijoitteluByHakuOid(HAKU_OID)).thenReturn(
+		Mockito.when(sijoitteluDao.getSijoitteluByHakuOid(HAKU_OID)).thenReturn(
 				sijoittelu);
 		Mockito.when(
 				daoMock.getHakukohdeForSijoitteluajo(
@@ -134,7 +136,7 @@ public class SijoitteluBusinessServiceImplTest {
 
 		Sijoittelu sijoittelu = testDataGenerator.generateTestData();
 
-		Mockito.when(daoMock.getSijoitteluByHakuOid(HAKU_OID)).thenReturn(
+		Mockito.when(sijoitteluDao.getSijoitteluByHakuOid(HAKU_OID)).thenReturn(
 				sijoittelu);
 		Mockito.when(
 				daoMock.getHakukohdeForSijoitteluajo(
@@ -159,7 +161,7 @@ public class SijoitteluBusinessServiceImplTest {
 
 		Sijoittelu sijoittelu = testDataGenerator.generateTestData();
 
-		Mockito.when(daoMock.getSijoitteluByHakuOid(HAKU_OID)).thenReturn(
+		Mockito.when(sijoitteluDao.getSijoitteluByHakuOid(HAKU_OID)).thenReturn(
 				sijoittelu);
 		Mockito.when(
 				daoMock.getHakukohdeForSijoitteluajo(
@@ -183,7 +185,7 @@ public class SijoitteluBusinessServiceImplTest {
 	public void testOphVaihdaTilaPeruuntuneeksiSuoraan() throws Exception {
 		Sijoittelu sijoittelu = testDataGenerator.generateTestData();
 
-		Mockito.when(daoMock.getSijoitteluByHakuOid(HAKU_OID)).thenReturn(
+		Mockito.when(sijoitteluDao.getSijoitteluByHakuOid(HAKU_OID)).thenReturn(
 				sijoittelu);
 		Mockito.when(
 				daoMock.getHakukohdeForSijoitteluajo(
@@ -203,7 +205,7 @@ public class SijoitteluBusinessServiceImplTest {
 	public void testOphVaihdaVarallaOlevanTila() throws Exception {
 		Sijoittelu sijoittelu = testDataGenerator.generateTestData();
 
-		Mockito.when(daoMock.getSijoitteluByHakuOid(HAKU_OID)).thenReturn(
+		Mockito.when(sijoitteluDao.getSijoitteluByHakuOid(HAKU_OID)).thenReturn(
 				sijoittelu);
 		Mockito.when(
 				daoMock.getHakukohdeForSijoitteluajo(
@@ -237,7 +239,7 @@ public class SijoitteluBusinessServiceImplTest {
 			throws Exception {
 		Sijoittelu sijoittelu = testDataGenerator.generateTestData();
 
-		Mockito.when(daoMock.getSijoitteluByHakuOid(HAKU_OID)).thenReturn(
+		Mockito.when(sijoitteluDao.getSijoitteluByHakuOid(HAKU_OID)).thenReturn(
 				sijoittelu);
 		Mockito.when(
 				daoMock.getHakukohdeForSijoitteluajo(
@@ -263,7 +265,7 @@ public class SijoitteluBusinessServiceImplTest {
 			throws Exception {
 		Sijoittelu sijoittelu = testDataGenerator.generateTestData();
 
-		Mockito.when(daoMock.getSijoitteluByHakuOid(HAKU_OID)).thenReturn(
+		Mockito.when(sijoitteluDao.getSijoitteluByHakuOid(HAKU_OID)).thenReturn(
 				sijoittelu);
 		Mockito.when(
 				daoMock.getHakukohdeForSijoitteluajo(
@@ -288,7 +290,7 @@ public class SijoitteluBusinessServiceImplTest {
 	public void testVaihdaIlmoittautumisTilaEiIlmoittautunut() throws Exception {
 		Sijoittelu sijoittelu = testDataGenerator.generateTestData();
 
-		Mockito.when(daoMock.getSijoitteluByHakuOid(HAKU_OID)).thenReturn(
+		Mockito.when(sijoitteluDao.getSijoitteluByHakuOid(HAKU_OID)).thenReturn(
 				sijoittelu);
 		Mockito.when(
 				daoMock.getHakukohdeForSijoitteluajo(
@@ -313,7 +315,7 @@ public class SijoitteluBusinessServiceImplTest {
 	public void testVaihdaIlmoittautumisTilaLasnaSyksy() throws Exception {
 		Sijoittelu sijoittelu = testDataGenerator.generateTestData();
 
-		Mockito.when(daoMock.getSijoitteluByHakuOid(HAKU_OID)).thenReturn(
+		Mockito.when(sijoitteluDao.getSijoitteluByHakuOid(HAKU_OID)).thenReturn(
 				sijoittelu);
 		Mockito.when(
 				daoMock.getHakukohdeForSijoitteluajo(
@@ -338,7 +340,7 @@ public class SijoitteluBusinessServiceImplTest {
 	public void testVaihdaIlmoittautumisTilaPoissaSyksy() throws Exception {
 		Sijoittelu sijoittelu = testDataGenerator.generateTestData();
 
-		Mockito.when(daoMock.getSijoitteluByHakuOid(HAKU_OID)).thenReturn(
+		Mockito.when(sijoitteluDao.getSijoitteluByHakuOid(HAKU_OID)).thenReturn(
 				sijoittelu);
 		Mockito.when(
 				daoMock.getHakukohdeForSijoitteluajo(
@@ -363,7 +365,7 @@ public class SijoitteluBusinessServiceImplTest {
 	public void testVaihdaIlmoittautumisTilaLasna() throws Exception {
 		Sijoittelu sijoittelu = testDataGenerator.generateTestData();
 
-		Mockito.when(daoMock.getSijoitteluByHakuOid(HAKU_OID)).thenReturn(
+		Mockito.when(sijoitteluDao.getSijoitteluByHakuOid(HAKU_OID)).thenReturn(
 				sijoittelu);
 		Mockito.when(
 				daoMock.getHakukohdeForSijoitteluajo(
@@ -388,7 +390,7 @@ public class SijoitteluBusinessServiceImplTest {
 	public void testVaihdaIlmoittautumisTilaPoissa() throws Exception {
 		Sijoittelu sijoittelu = testDataGenerator.generateTestData();
 
-		Mockito.when(daoMock.getSijoitteluByHakuOid(HAKU_OID)).thenReturn(
+		Mockito.when(sijoitteluDao.getSijoitteluByHakuOid(HAKU_OID)).thenReturn(
 				sijoittelu);
 		Mockito.when(
 				daoMock.getHakukohdeForSijoitteluajo(

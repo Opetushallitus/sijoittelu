@@ -13,10 +13,6 @@ import fi.vm.sade.sijoittelu.domain.Valintatulos;
  */
 public interface Dao {
 
-	void persistSijoittelu(Sijoittelu sijoittelu);
-
-	Sijoittelu getSijoitteluByHakuOid(String hakuOid);
-
 	Valintatulos loadValintatulos(String hakukohdeOid,
 			String valintatapajonoOid, String hakemusOid);
 
