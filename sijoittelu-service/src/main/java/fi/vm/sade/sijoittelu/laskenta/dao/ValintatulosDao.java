@@ -11,26 +11,18 @@ import fi.vm.sade.sijoittelu.domain.Valintatulos;
  * @author Kari Kammonen
  * 
  */
-public interface Dao {
-
+public interface ValintatulosDao {
 	Valintatulos loadValintatulos(String hakukohdeOid,
 			String valintatapajonoOid, String hakemusOid);
 
 	void createOrUpdateValintatulos(Valintatulos tulos);
 
-	void persistHakukohde(Hakukohde hakukohde);
-
-	Hakukohde getHakukohdeForSijoitteluajo(Long ajoId, String hakukohdeOid);
-
 	List<Valintatulos> loadValintatulokset(String hakuOid);
 
 	List<Valintatulos> loadValintatuloksetForHakukohde(String hakukohdeOid);
-
-	List<Hakukohde> getHakukohdeForSijoitteluajo(Long sijoitteluajoId);
 
 	List<Valintatulos> loadValintatulos(String oid);
 
 	List<Valintatulos> loadValintatulokset(String hakukohdeOid,
 			String valintatapajonoOid);
-
 }

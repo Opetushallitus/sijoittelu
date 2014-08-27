@@ -1,28 +1,19 @@
 package fi.vm.sade.sijoittelu.laskenta.dao.impl;
 
-import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.Callable;
-import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
 
 import org.mongodb.morphia.Datastore;
 import org.mongodb.morphia.query.Query;
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
 
 import fi.vm.sade.sijoittelu.domain.Hakukohde;
-import fi.vm.sade.sijoittelu.domain.Sijoittelu;
-import fi.vm.sade.sijoittelu.domain.SijoitteluAjo;
 import fi.vm.sade.sijoittelu.domain.Valintatulos;
-import fi.vm.sade.sijoittelu.laskenta.dao.Dao;
-import fi.vm.sade.sijoittelu.tulos.dao.SijoitteluCacheDao;
+import fi.vm.sade.sijoittelu.laskenta.dao.HakukohdeDao;
+import fi.vm.sade.sijoittelu.laskenta.dao.ValintatulosDao;
 
 import javax.annotation.PostConstruct;
 
@@ -32,7 +23,7 @@ import javax.annotation.PostConstruct;
  * 
  */
 @Repository
-public class DaoImpl implements Dao {
+public class ValintatulosDaoImpl implements ValintatulosDao, HakukohdeDao {
 
 	@Qualifier("datastore")
 	@Autowired

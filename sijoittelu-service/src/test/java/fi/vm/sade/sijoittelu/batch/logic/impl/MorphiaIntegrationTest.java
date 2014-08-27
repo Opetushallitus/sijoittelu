@@ -13,7 +13,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import fi.vm.sade.sijoittelu.domain.Sijoittelu;
-import fi.vm.sade.sijoittelu.laskenta.dao.Dao;
+import fi.vm.sade.sijoittelu.laskenta.dao.ValintatulosDao;
 
 /**
  * @author Kari Kammonen
@@ -24,7 +24,7 @@ import fi.vm.sade.sijoittelu.laskenta.dao.Dao;
 public class MorphiaIntegrationTest {
 
 	@Autowired
-	private Dao dao;
+	private ValintatulosDao valintatulosDao;
 
     @Autowired
     private SijoitteluCacheDao sijoitteluDao;
