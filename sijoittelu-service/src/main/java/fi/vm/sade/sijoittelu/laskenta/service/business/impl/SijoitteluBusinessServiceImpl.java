@@ -8,10 +8,11 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
-import fi.vm.sade.sijoittelu.laskenta.dao.HakukohdeDao;
+import fi.vm.sade.sijoittelu.tulos.dao.HakukohdeDao;
 import fi.vm.sade.sijoittelu.laskenta.mapping.SijoitteluModelMapper;
 import fi.vm.sade.sijoittelu.laskenta.service.exception.*;
 import fi.vm.sade.sijoittelu.tulos.dao.SijoitteluCacheDao;
+import fi.vm.sade.sijoittelu.tulos.dao.ValintatulosDao;
 import fi.vm.sade.valintalaskenta.domain.dto.valintatieto.HakuDTO;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -38,7 +39,6 @@ import fi.vm.sade.sijoittelu.domain.TilaHistoria;
 import fi.vm.sade.sijoittelu.domain.Valintatapajono;
 import fi.vm.sade.sijoittelu.domain.ValintatuloksenTila;
 import fi.vm.sade.sijoittelu.domain.Valintatulos;
-import fi.vm.sade.sijoittelu.laskenta.dao.ValintatulosDao;
 import fi.vm.sade.sijoittelu.laskenta.service.business.SijoitteluBusinessService;
 import fi.vm.sade.sijoittelu.tulos.roles.SijoitteluRole;
 

@@ -1,4 +1,4 @@
-package fi.vm.sade.sijoittelu.laskenta.dao.impl;
+package fi.vm.sade.sijoittelu.tulos.dao.impl;
 
 import java.util.List;
 
@@ -11,8 +11,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
 
 import fi.vm.sade.sijoittelu.domain.Hakukohde;
-import fi.vm.sade.sijoittelu.domain.Valintatulos;
-import fi.vm.sade.sijoittelu.laskenta.dao.HakukohdeDao;
+import fi.vm.sade.sijoittelu.tulos.dao.HakukohdeDao;
 
 @Repository
 public class HakukohdeDaoImpl implements HakukohdeDao {
@@ -45,4 +44,13 @@ public class HakukohdeDaoImpl implements HakukohdeDao {
         return q.asList();
     }
 
+    @Override
+    public List<Hakukohde> haeHakukohteetJoihinHakemusOsallistuu(
+        Long sijoitteluajoId, String hakemusOid) {
+        Query<Hakukohde> query = morphiaDS.createQuery(Hakukohde.class);
+        query.field("sijoitteluajoId").equal(sijoitteluajoId);
+        query.field("valintatapajonot.hakemukset.hakemusOid").equal(hakemusOid);
+        List<Hakukohde> list = query.asList();
+        return list;
+    }
 }

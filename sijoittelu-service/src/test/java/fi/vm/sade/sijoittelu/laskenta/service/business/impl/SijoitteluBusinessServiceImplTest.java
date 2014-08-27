@@ -1,6 +1,6 @@
 package fi.vm.sade.sijoittelu.laskenta.service.business.impl;
 
-import fi.vm.sade.sijoittelu.laskenta.dao.HakukohdeDao;
+import fi.vm.sade.sijoittelu.tulos.dao.HakukohdeDao;
 import fi.vm.sade.sijoittelu.tulos.dao.SijoitteluCacheDao;
 import org.junit.Before;
 import org.junit.Test;
@@ -13,9 +13,9 @@ import fi.vm.sade.sijoittelu.domain.IlmoittautumisTila;
 import fi.vm.sade.sijoittelu.domain.Sijoittelu;
 import fi.vm.sade.sijoittelu.domain.ValintatuloksenTila;
 import fi.vm.sade.sijoittelu.domain.Valintatulos;
-import fi.vm.sade.sijoittelu.laskenta.dao.ValintatulosDao;
 import fi.vm.sade.sijoittelu.laskenta.service.exception.HakemusEiOleHyvaksyttyException;
 import fi.vm.sade.sijoittelu.laskenta.service.exception.ValintatulostaEiOleIlmoitettuException;
+import fi.vm.sade.sijoittelu.tulos.dao.ValintatulosDao;
 import fi.vm.sade.sijoittelu.tulos.roles.SijoitteluRole;
 
 /**

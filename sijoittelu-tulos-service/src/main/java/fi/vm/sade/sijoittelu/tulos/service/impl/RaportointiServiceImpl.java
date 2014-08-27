@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import fi.vm.sade.sijoittelu.tulos.dao.HakukohdeDao;
 import fi.vm.sade.sijoittelu.tulos.dao.SijoitteluCacheDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -11,7 +12,7 @@ import org.springframework.stereotype.Service;
 import fi.vm.sade.sijoittelu.domain.Hakukohde;
 import fi.vm.sade.sijoittelu.domain.SijoitteluAjo;
 import fi.vm.sade.sijoittelu.domain.Valintatulos;
-import fi.vm.sade.sijoittelu.tulos.dao.DAO;
+import fi.vm.sade.sijoittelu.tulos.dao.ValintatulosDao;
 import fi.vm.sade.sijoittelu.tulos.dto.HakemuksenTila;
 import fi.vm.sade.sijoittelu.tulos.dto.HakukohdeDTO;
 import fi.vm.sade.sijoittelu.tulos.dto.ValintatuloksenTila;
@@ -35,7 +36,10 @@ import fi.vm.sade.sijoittelu.tulos.service.impl.converters.SijoitteluTulosConver
 public class RaportointiServiceImpl implements RaportointiService {
 
 	@Autowired
-	private DAO dao;
+	private ValintatulosDao valintatulosDao;
+
+    @Autowired
+    private HakukohdeDao hakukohdeDao;
 
     @Autowired
     private SijoitteluCacheDao sijoitteluCacheDao;
@@ -58,10 +62,10 @@ public class RaportointiServiceImpl implements RaportointiService {
 
 	@Override
 	public HakijaDTO hakemus(SijoitteluAjo sijoitteluAjo, String hakemusOid) {
-		List<Hakukohde> hakukohteetJoihinHakemusOsallistuu = dao
+		List<Hakukohde> hakukohteetJoihinHakemusOsallistuu = hakukohdeDao
 				.haeHakukohteetJoihinHakemusOsallistuu(
 						sijoitteluAjo.getSijoitteluajoId(), hakemusOid);
-		List<Valintatulos> valintatulokset = dao
+		List<Valintatulos> valintatulokset = valintatulosDao
 				.loadValintatuloksetForHakemus(hakemusOid);
 		List<HakukohdeDTO> hakukohdeDTOs = sijoitteluTulosConverter
 				.convert(hakukohteetJoihinHakemusOsallistuu);
@@ -90,10 +94,9 @@ public class RaportointiServiceImpl implements RaportointiService {
 			Boolean vastaanottaneet, List<String> hakukohdeOid, Integer count,
 			Integer index) {
 
-		List<Valintatulos> valintatulokset = dao.loadValintatulokset(ajo
+		List<Valintatulos> valintatulokset = valintatulosDao.loadValintatulokset(ajo
 				.getHakuOid());
-		List<Hakukohde> hakukohteet = dao.getHakukohteetForSijoitteluajo(ajo
-				.getSijoitteluajoId());
+		List<Hakukohde> hakukohteet = hakukohdeDao.getHakukohdeForSijoitteluajo(ajo.getSijoitteluajoId());
 		List<HakukohdeDTO> hakukohdeDTOs = sijoitteluTulosConverter
 				.convert(hakukohteet);
 		List<HakijaDTO> hakijat = raportointiConverter.convert(hakukohdeDTOs,

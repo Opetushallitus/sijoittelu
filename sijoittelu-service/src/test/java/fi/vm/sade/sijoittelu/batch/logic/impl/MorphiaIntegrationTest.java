@@ -2,6 +2,7 @@ package fi.vm.sade.sijoittelu.batch.logic.impl;
 
 import fi.vm.sade.sijoittelu.laskenta.service.business.SijoitteluBusinessService;
 import fi.vm.sade.sijoittelu.tulos.dao.SijoitteluCacheDao;
+import fi.vm.sade.sijoittelu.tulos.dao.ValintatulosDao;
 import fi.vm.sade.valintalaskenta.domain.dto.valintatieto.HakuDTO;
 import junit.framework.Assert;
 
@@ -13,7 +14,6 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import fi.vm.sade.sijoittelu.domain.Sijoittelu;
-import fi.vm.sade.sijoittelu.laskenta.dao.ValintatulosDao;
 
 /**
  * @author Kari Kammonen

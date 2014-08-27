@@ -1,4 +1,4 @@
-package fi.vm.sade.sijoittelu.laskenta.dao;
+package fi.vm.sade.sijoittelu.tulos.dao;
 
 import java.util.List;
 
@@ -12,4 +12,5 @@ public interface HakukohdeDao {
 
     Hakukohde getHakukohdeForSijoitteluajo(Long ajoId, String hakukohdeOid);
 
+    List<Hakukohde> haeHakukohteetJoihinHakemusOsallistuu(Long sijoitteluajoId, String hakemusOid);
 }
