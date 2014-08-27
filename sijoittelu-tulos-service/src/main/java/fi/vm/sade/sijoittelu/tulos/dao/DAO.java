@@ -25,9 +25,4 @@ public interface DAO {
 	List<Valintatulos> loadValintatulokset(String hakuOid);
 
 	List<Valintatulos> loadValintatuloksetForHakemus(String hakemusOid);
-
-	List<String> hakukohteet(Long sijoitteluajoId,
-			List<String> vastaanottotieto, List<String> tila,
-			List<String> hakukohdeOid, Integer count, Integer index);
-
 }

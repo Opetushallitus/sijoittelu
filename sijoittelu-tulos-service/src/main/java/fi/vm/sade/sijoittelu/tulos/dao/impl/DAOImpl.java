@@ -78,46 +78,4 @@ public class DAOImpl implements DAO {
 		q.criteria("hakemusOid").equal(hakemusOid);
 		return q.asList();
 	}
-
-	/**
-	 * This right here is some fucked up shit, but mongoDB & domain
-	 * 
-	 * @param sijoitteluajoId
-	 * @param vastaanottotieto
-	 * @param tila
-	 * @param hakukohdeOid
-	 * @param count
-	 * @param index
-	 * @return
-	 */
-	@Override
-	public List<String> hakukohteet(Long sijoitteluajoId,
-			List<String> vastaanottotieto, List<String> tila,
-			List<String> hakukohdeOid, Integer count, Integer index) {
-
-		Query query = morphiaDS.createQuery(Hakukohde.class);
-		query.field("sijoitteluajoId").equal(sijoitteluajoId);
-
-		if (tila != null && tila.size() > 0) {
-			query.field("valintatapajonot.hakemukset.tila").in(tila);
-		}
-		if (hakukohdeOid != null && hakukohdeOid.size() > 0) {
-			query.field("oid").in(hakukohdeOid);
-		}
-
-		query.retrievedFields(true, "valintatapajonot.hakemukset.hakemusOid");
-		LinkedHashSet<String> set = new LinkedHashSet<String>();
-		set.addAll(query.asList());
-		ArrayList<String> list = new ArrayList<String>();
-		list.addAll(set);
-
-		if (count != null && index != null) {
-			return list.subList(index, index + count);
-		} else if (count != null) {
-			return list.subList(0, count);
-		}
-		return list;
-
-	}
-
 }
