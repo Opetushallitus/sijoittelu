@@ -5,7 +5,7 @@ import fi.vm.sade.sijoittelu.domain.Sijoittelu;
 import fi.vm.sade.sijoittelu.domain.SijoitteluAjo;
 import fi.vm.sade.sijoittelu.tulos.dao.ValintatulosDao;
 import fi.vm.sade.sijoittelu.tulos.dao.HakukohdeDao;
-import fi.vm.sade.sijoittelu.tulos.dao.SijoitteluCacheDao;
+import fi.vm.sade.sijoittelu.tulos.dao.SijoitteluDao;
 import fi.vm.sade.sijoittelu.tulos.dto.*;
 import fi.vm.sade.sijoittelu.tulos.service.SijoitteluTulosService;
 import fi.vm.sade.sijoittelu.tulos.service.impl.converters.SijoitteluTulosConverter;
@@ -29,7 +29,7 @@ public class SijoitteluTulosServiceImpl implements SijoitteluTulosService {
     private HakukohdeDao hakukohdeDao;
 
     @Autowired
-    private SijoitteluCacheDao sijoitteluCacheDao;
+    private SijoitteluDao sijoitteluDao;
 
     @Autowired
     private SijoitteluTulosConverter sijoitteluTulosConverter;
@@ -55,7 +55,7 @@ public class SijoitteluTulosServiceImpl implements SijoitteluTulosService {
 
     @Override
     public SijoitteluDTO getSijoitteluByHakuOid(String hakuOid) {
-        Sijoittelu s = sijoitteluCacheDao.getSijoitteluByHakuOid(hakuOid);
+        Sijoittelu s = sijoitteluDao.getSijoitteluByHakuOid(hakuOid);
         if (s == null) {
             return null;
         }

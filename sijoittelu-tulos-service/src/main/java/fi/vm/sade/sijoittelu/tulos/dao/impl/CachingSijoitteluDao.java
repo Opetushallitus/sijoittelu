@@ -4,7 +4,8 @@ import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import fi.vm.sade.sijoittelu.domain.Sijoittelu;
 import fi.vm.sade.sijoittelu.domain.SijoitteluAjo;
-import fi.vm.sade.sijoittelu.tulos.dao.SijoitteluCacheDao;
+import fi.vm.sade.sijoittelu.tulos.dao.SijoitteluDao;
+
 import org.mongodb.morphia.Datastore;
 import org.mongodb.morphia.query.Query;
 import org.slf4j.Logger;
@@ -18,9 +19,9 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 
 @Repository
-public class SijoitteluCacheDaoImpl implements SijoitteluCacheDao {
+public class CachingSijoitteluDao implements SijoitteluDao {
 
-    private final Logger LOG = LoggerFactory.getLogger(SijoitteluCacheDaoImpl.class);
+    private final Logger LOG = LoggerFactory.getLogger(CachingSijoitteluDao.class);
 
     @Qualifier("datastore")
     @Autowired

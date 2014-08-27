@@ -5,13 +5,13 @@ import java.util.Collections;
 import java.util.List;
 
 import fi.vm.sade.sijoittelu.tulos.dao.HakukohdeDao;
-import fi.vm.sade.sijoittelu.tulos.dao.SijoitteluCacheDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import fi.vm.sade.sijoittelu.domain.Hakukohde;
 import fi.vm.sade.sijoittelu.domain.SijoitteluAjo;
 import fi.vm.sade.sijoittelu.domain.Valintatulos;
+import fi.vm.sade.sijoittelu.tulos.dao.SijoitteluDao;
 import fi.vm.sade.sijoittelu.tulos.dao.ValintatulosDao;
 import fi.vm.sade.sijoittelu.tulos.dto.HakemuksenTila;
 import fi.vm.sade.sijoittelu.tulos.dto.HakukohdeDTO;
@@ -42,7 +42,7 @@ public class RaportointiServiceImpl implements RaportointiService {
     private HakukohdeDao hakukohdeDao;
 
     @Autowired
-    private SijoitteluCacheDao sijoitteluCacheDao;
+    private SijoitteluDao sijoitteluDao;
 
 	@Autowired
 	private RaportointiConverter raportointiConverter;
@@ -52,12 +52,12 @@ public class RaportointiServiceImpl implements RaportointiService {
 
 	@Override
 	public SijoitteluAjo getSijoitteluAjo(Long SijoitteluajoId) {
-		return sijoitteluCacheDao.getSijoitteluajo(SijoitteluajoId);
+		return sijoitteluDao.getSijoitteluajo(SijoitteluajoId);
 	}
 
 	@Override
 	public SijoitteluAjo latestSijoitteluAjoForHaku(String hakuOid) {
-		return sijoitteluCacheDao.getLatestSijoitteluajo(hakuOid);
+		return sijoitteluDao.getLatestSijoitteluajo(hakuOid);
 	}
 
 	@Override

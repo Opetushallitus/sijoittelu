@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
 import fi.vm.sade.sijoittelu.tulos.dao.HakukohdeDao;
 import fi.vm.sade.sijoittelu.laskenta.mapping.SijoitteluModelMapper;
 import fi.vm.sade.sijoittelu.laskenta.service.exception.*;
-import fi.vm.sade.sijoittelu.tulos.dao.SijoitteluCacheDao;
+import fi.vm.sade.sijoittelu.tulos.dao.SijoitteluDao;
 import fi.vm.sade.sijoittelu.tulos.dao.ValintatulosDao;
 import fi.vm.sade.valintalaskenta.domain.dto.valintatieto.HakuDTO;
 import org.apache.commons.lang.StringUtils;
@@ -62,7 +62,7 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
 
 
     @Autowired
-    private SijoitteluCacheDao sijoitteluDao;
+    private SijoitteluDao sijoitteluDao;
 
 	@Autowired
 	private Authorizer authorizer;
