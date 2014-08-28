@@ -1,10 +1,6 @@
 package fi.vm.sade.sijoittelu.laskenta.service.business.impl;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
@@ -234,12 +230,6 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
 			List<Hakukohde> olemassaolevatHakukohteet,
 			List<Hakukohde> uudetHakukohteet) {
 		Map<String, Hakukohde> kaikkiHakukohteet = new ConcurrentHashMap<>();
-//		for (Hakukohde hakukohde : olemassaolevatHakukohteet) {
-//			hakukohde.setId(null); // poista id vanhoilta hakukohteilta, niin
-//									// etta ne voidaan peristoida uusina
-//									// dokumentteina
-//			kaikkiHakukohteet.put(hakukohde.getOid(), hakukohde);
-//		}
 
         olemassaolevatHakukohteet.parallelStream().forEach(hakukohde -> {
             hakukohde.setId(null); // poista id vanhoilta hakukohteilta, niin
@@ -272,15 +262,7 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
         });
 
 
-//		for (Hakukohde hakukohde : kaikkiHakukohteet.values()) {
-//			HakukohdeItem hki = new HakukohdeItem();
-//			hki.setOid(hakukohde.getOid());
-//			uusiSijoitteluajo.getHakukohteet().add(hki);
-//			hakukohde
-//					.setSijoitteluajoId(uusiSijoitteluajo.getSijoitteluajoId());
-//		}
-
-        kaikkiHakukohteet.values().parallelStream().forEach(hakukohde -> {
+        kaikkiHakukohteet.values().forEach(hakukohde -> {
             HakukohdeItem hki = new HakukohdeItem();
             hki.setOid(hakukohde.getOid());
             uusiSijoitteluajo.getHakukohteet().add(hki);
@@ -303,14 +285,19 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
 	}
 
 	private Sijoittelu getOrCreateSijoittelu(String hakuoid) {
-		Sijoittelu sijoittelu = sijoitteluDao.getSijoitteluByHakuOid(hakuoid);
-		if (sijoittelu == null) {
-			sijoittelu = new Sijoittelu();
+		Optional<Sijoittelu> sijoitteluOpt = sijoitteluDao.getSijoitteluByHakuOid(hakuoid);
+
+        if (sijoitteluOpt.isPresent()) {
+            return sijoitteluOpt.get();
+        }
+		else {
+			Sijoittelu sijoittelu = new Sijoittelu();
 			sijoittelu.setCreated(new Date());
 			sijoittelu.setSijoitteluId(System.currentTimeMillis());
 			sijoittelu.setHakuOid(hakuoid);
+            return sijoittelu;
 		}
-		return sijoittelu;
+
 	}
 
 	@Override
@@ -367,7 +354,14 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
 					"Invalid search params, fix exception later");
 		}
 
-		Sijoittelu sijoittelu = sijoitteluDao.getSijoitteluByHakuOid(hakuoid);
+		Optional<Sijoittelu> sijoitteluOpt = sijoitteluDao.getSijoitteluByHakuOid(hakuoid);
+
+        if(!sijoitteluOpt.isPresent()) {
+            throw new RuntimeException(
+                    "Sijoittelua ei löytynyt haulle: " + hakuoid);
+        }
+
+        Sijoittelu sijoittelu = sijoitteluOpt.get();
 		SijoitteluAjo ajo = sijoittelu.getLatestSijoitteluajo();
 		Long ajoId = ajo.getSijoitteluajoId();
 

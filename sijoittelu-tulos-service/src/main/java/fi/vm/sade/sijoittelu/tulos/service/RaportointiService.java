@@ -5,6 +5,7 @@ import fi.vm.sade.sijoittelu.tulos.dto.raportointi.HakijaDTO;
 import fi.vm.sade.sijoittelu.tulos.dto.raportointi.HakijaPaginationObject;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Created with IntelliJ IDEA.
@@ -16,9 +17,9 @@ import java.util.List;
 public interface RaportointiService {
 
 
-    SijoitteluAjo getSijoitteluAjo(Long SijoitteluajoId);
+    Optional<SijoitteluAjo> getSijoitteluAjo(Long SijoitteluajoId);
 
-    SijoitteluAjo latestSijoitteluAjoForHaku(String hakuOid);
+    Optional<SijoitteluAjo> latestSijoitteluAjoForHaku(String hakuOid);
 
     HakijaDTO hakemus(SijoitteluAjo sijoitteluAjo, String hakemusOid);
 

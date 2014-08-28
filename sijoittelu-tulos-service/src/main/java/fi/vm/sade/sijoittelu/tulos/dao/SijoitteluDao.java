@@ -3,12 +3,14 @@ package fi.vm.sade.sijoittelu.tulos.dao;
 import fi.vm.sade.sijoittelu.domain.Sijoittelu;
 import fi.vm.sade.sijoittelu.domain.SijoitteluAjo;
 
+import java.util.Optional;
+
 public interface SijoitteluDao {
 	void persistSijoittelu(Sijoittelu sijoittelu);
 
-	Sijoittelu getSijoitteluByHakuOid(String hakuOid);
+	Optional<Sijoittelu> getSijoitteluByHakuOid(String hakuOid);
 
-	SijoitteluAjo getSijoitteluajo(Long sijoitteluajoId);
+	Optional<SijoitteluAjo> getSijoitteluajo(Long sijoitteluajoId);
 
-	SijoitteluAjo getLatestSijoitteluajo(String hakuOid);
+    Optional<SijoitteluAjo> getLatestSijoitteluajo(String hakuOid);
 }

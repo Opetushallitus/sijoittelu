@@ -2,6 +2,7 @@ package fi.vm.sade.sijoittelu.tulos.dao.impl;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import fi.vm.sade.sijoittelu.domain.Hakukohde;
 import fi.vm.sade.sijoittelu.domain.Sijoittelu;
 import fi.vm.sade.sijoittelu.domain.SijoitteluAjo;
 import fi.vm.sade.sijoittelu.tulos.dao.SijoitteluDao;
@@ -15,6 +16,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
 
 import java.util.Arrays;
+import java.util.Optional;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 
@@ -34,61 +36,58 @@ public class CachingSijoitteluDao implements SijoitteluDao {
      * CACHED
      */
     @Override
-    public SijoitteluAjo getLatestSijoitteluajo(String hakuOid) {
-        Sijoittelu s = getSijoitteluByHakuOid(hakuOid);
-        if (s == null) {
-            return null;
-        }
-        return s.getLatestSijoitteluajo();
+    public Optional<SijoitteluAjo> getLatestSijoitteluajo(String hakuOid) {
+        Optional<Sijoittelu> sijoittelu = getSijoitteluByHakuOid(hakuOid);
+        return sijoittelu.map(s -> Optional.ofNullable(s.getLatestSijoitteluajo())).orElse(Optional.empty());
+
     }
 
     /**
      * CACHED
      */
     @Override
-    public SijoitteluAjo getSijoitteluajo(Long sijoitteluajoId) {
+    public Optional<SijoitteluAjo> getSijoitteluajo(Long sijoitteluajoId) {
         if (sijoitteluajoId == null) {
-            return null;
+            return Optional.empty();
         }
+
         for (Sijoittelu s : sijoitteluPerHaku.asMap().values()) {
-            for (SijoitteluAjo a : s.getSijoitteluajot()) {
-                if (sijoitteluajoId.equals(a.getSijoitteluajoId())) {
-                    return a;
-                }
+            Optional<SijoitteluAjo> a = s.getSijoitteluajot().parallelStream().filter(ajo -> sijoitteluajoId.equals(ajo.getSijoitteluajoId())).findFirst();
+            if(a.isPresent()) {
+                return a;
             }
         }
-        Query<Sijoittelu> query = morphiaDS.createQuery(Sijoittelu.class);
-        query.field("sijoitteluajot.sijoitteluajoId").equal(sijoitteluajoId);
-        Sijoittelu a = query.get();
-        sijoitteluPerHaku.put(a.getHakuOid(), a);
-        for (SijoitteluAjo sa : a.getSijoitteluajot()) {
-            if (sijoitteluajoId.equals(sa.getSijoitteluajoId())) {
+
+        Optional<Sijoittelu> a = Optional.ofNullable(morphiaDS.find(Sijoittelu.class)
+                .field("sijoitteluajot.sijoitteluajoId").equal(sijoitteluajoId).get()
+        );
+
+        a.ifPresent(s -> sijoitteluPerHaku.put(s.getHakuOid(), s));
+
+        if(a.isPresent()) {
+            Optional<SijoitteluAjo> sa = a.get().getSijoitteluajot().parallelStream().filter(ajo -> sijoitteluajoId.equals(ajo.getSijoitteluajoId())).findFirst();
+            if(sa.isPresent()) {
                 return sa;
             }
         }
-        return null;
+
+        return Optional.empty();
     }
 
     /**
      * CACHED
      */
     @Override
-    public Sijoittelu getSijoitteluByHakuOid(final String hakuOid) {
+    public Optional<Sijoittelu> getSijoitteluByHakuOid(final String hakuOid) {
         try {
-            return sijoitteluPerHaku.get(hakuOid, new Callable<Sijoittelu>() {
-                @Override
-                public Sijoittelu call() throws Exception {
-                    Query<Sijoittelu> query = morphiaDS
-                            .createQuery(Sijoittelu.class);
-                    query.field("hakuOid").equal(hakuOid);
-                    return query.get();
-                }
-            });
+            return Optional.ofNullable(sijoitteluPerHaku.get(hakuOid, () ->
+                    morphiaDS.find(Sijoittelu.class).field("hakuOid").equal(hakuOid).get()));
         } catch (Exception e) {
             LOG.error("Ei saatu sijoittelua haulle {}: {}", hakuOid,
                     Arrays.asList(e.getStackTrace()));
+            return Optional.empty();
         }
-        return null;
+
     }
 
     @Override

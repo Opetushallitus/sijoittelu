@@ -4,6 +4,7 @@ import static fi.vm.sade.sijoittelu.tulos.roles.SijoitteluRole.READ_UPDATE_CRUD;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import javax.ws.rs.PathParam;
 import javax.ws.rs.core.Response;
@@ -57,11 +58,8 @@ public class SijoitteluResourceImpl implements SijoitteluResource {
 	@ApiOperation(value = "xxxx2", httpMethod = "GET")
 	public SijoitteluajoDTO getSijoitteluajo(String hakuOid,
 			String sijoitteluajoId) {
-		SijoitteluAjo ajo = getSijoitteluAjo(sijoitteluajoId, hakuOid);
-        if(ajo == null) {
-            return new SijoitteluajoDTO();
-        }
-		return sijoitteluTulosService.getSijoitteluajo(ajo);
+        Optional<SijoitteluAjo> ajo = getSijoitteluAjo(sijoitteluajoId, hakuOid);
+        return ajo.map(sijoitteluTulosService::getSijoitteluajo).orElse(new SijoitteluajoDTO());
 	}
 
 	@Override
@@ -69,15 +67,13 @@ public class SijoitteluResourceImpl implements SijoitteluResource {
 	@ApiOperation(value = "xxxx3", httpMethod = "GET")
 	public Response getHakukohdeBySijoitteluajo(String hakuOid,
 			String sijoitteluajoId, String hakukohdeOid) {
-		SijoitteluAjo ajo = getSijoitteluAjo(sijoitteluajoId, hakuOid);
-		if (ajo != null) {
-			HakukohdeDTO hakukohdeBySijoitteluajo = sijoitteluTulosService
-					.getHakukohdeBySijoitteluajo(ajo, hakukohdeOid);
-			return Response.ok().entity(hakukohdeBySijoitteluajo).build();
-		} else {
-			return Response
-					.ok().entity(new HakukohdeDTO()).build();
-		}
+        Optional<SijoitteluAjo> sijoitteluAjo = getSijoitteluAjo(sijoitteluajoId, hakuOid);
+        return sijoitteluAjo.map(ajo -> {
+            HakukohdeDTO hakukohdeBySijoitteluajo = sijoitteluTulosService
+                    .getHakukohdeBySijoitteluajo(ajo, hakukohdeOid);
+            return Response.ok().entity(hakukohdeBySijoitteluajo).build();
+        }).orElse(Response.ok().entity(new HakukohdeDTO()).build());
+
 	}
 
 	@Override
@@ -85,14 +81,10 @@ public class SijoitteluResourceImpl implements SijoitteluResource {
 	@ApiOperation(value = "xxxx3", httpMethod = "GET")
 	public HakukohdeDTO getHakukohdeBySijoitteluajoPlainDTO(String hakuOid,
 			String sijoitteluajoId, String hakukohdeOid) {
-		SijoitteluAjo ajo = getSijoitteluAjo(sijoitteluajoId, hakuOid);
-		if (ajo != null) {
-			return sijoitteluTulosService.getHakukohdeBySijoitteluajo(ajo,
-					hakukohdeOid);
-		} else {
-            return new HakukohdeDTO();
-		}
+        Optional<SijoitteluAjo> ajo = getSijoitteluAjo(sijoitteluajoId, hakuOid);
+        return ajo.map(a -> sijoitteluTulosService.getHakukohdeBySijoitteluajo(a,hakukohdeOid)).orElse(new HakukohdeDTO());
 	}
+
 
 	@Override
 	@PreAuthorize(READ_UPDATE_CRUD)
@@ -102,15 +94,18 @@ public class SijoitteluResourceImpl implements SijoitteluResource {
 			Boolean ilmanHyvaksyntaa, Boolean vastaanottaneet,
 			List<String> hakukohdeOid, Integer count, Integer index) {
 		try {
-			SijoitteluAjo ajo = getSijoitteluAjo(sijoitteluajoId, hakuOid);
-            if(ajo == null) {
+            Optional<SijoitteluAjo> sijoitteluAjo = getSijoitteluAjo(sijoitteluajoId, hakuOid);
+
+            return sijoitteluAjo.map(ajo ->
+                raportointiService.hakemukset(ajo, hyvaksytyt,
+                        ilmanHyvaksyntaa, vastaanottaneet, hakukohdeOid, count,
+                        index)
+            ).orElseGet(() -> {
                 HakijaPaginationObject vastaus = new HakijaPaginationObject();
                 vastaus.setTotalCount(0);
                 return vastaus;
-            }
-			return raportointiService.hakemukset(ajo, hyvaksytyt,
-					ilmanHyvaksyntaa, vastaanottaneet, hakukohdeOid, count,
-					index);
+            });
+
 		} catch (Exception e) {
 			LOGGER.error("Sijoittelun hakemuksia ei saatu! {}", e.getMessage(),
 					Arrays.toString(e.getStackTrace()));
@@ -127,11 +122,9 @@ public class SijoitteluResourceImpl implements SijoitteluResource {
 			@PathParam("sijoitteluajoId") String sijoitteluajoId,
 			@PathParam("hakemusOid") String hakemusOid) {
 
-		SijoitteluAjo ajo = getSijoitteluAjo(sijoitteluajoId, hakuOid);
-		if (ajo == null) {
-			return new HakijaDTO();
-		}
-		return raportointiService.hakemus(ajo, hakemusOid);
+        Optional<SijoitteluAjo> ajo = getSijoitteluAjo(sijoitteluajoId, hakuOid);
+        return ajo.map(a -> raportointiService.hakemus(a, hakemusOid)).orElse(new HakijaDTO());
+
 	}
 
     @Override
@@ -140,7 +133,7 @@ public class SijoitteluResourceImpl implements SijoitteluResource {
         return YhteenvetoService.yhteenveto(hakemus);
     }
 
-    private SijoitteluAjo getSijoitteluAjo(String sijoitteluajoId,
+    private Optional<SijoitteluAjo> getSijoitteluAjo(String sijoitteluajoId,
 			String hakuOid) {
 		if (LATEST.equals(sijoitteluajoId)) {
 			return raportointiService.latestSijoitteluAjoForHaku(hakuOid);
