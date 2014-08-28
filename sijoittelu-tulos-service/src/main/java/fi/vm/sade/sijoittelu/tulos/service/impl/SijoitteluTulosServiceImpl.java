@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Created with IntelliJ IDEA. User: kkammone Date: 5.9.2013 Time: 14:24 To
@@ -40,8 +41,7 @@ public class SijoitteluTulosServiceImpl implements SijoitteluTulosService {
         if (a == null) {
             return null;
         }
-        HakukohdeDTO b = sijoitteluTulosConverter.convert(a);
-        return b;
+        return sijoitteluTulosConverter.convert(a);
     }
 
     @Override
@@ -49,17 +49,15 @@ public class SijoitteluTulosServiceImpl implements SijoitteluTulosService {
         if (sijoitteluAjo == null) {
             return null;
         }
-        SijoitteluajoDTO b = sijoitteluTulosConverter.convert(sijoitteluAjo);
-        return b;
+        return sijoitteluTulosConverter.convert(sijoitteluAjo);
     }
 
     @Override
     public SijoitteluDTO getSijoitteluByHakuOid(String hakuOid) {
-        Sijoittelu s = sijoitteluCacheDao.getSijoitteluByHakuOid(hakuOid);
-        if (s == null) {
-            return null;
-        }
-        return sijoitteluTulosConverter.convert(s);
+        Optional<Sijoittelu> s = sijoitteluCacheDao.getSijoitteluByHakuOid(hakuOid);
+
+        return s.map(sijoittelu -> sijoitteluTulosConverter.convert(sijoittelu)).orElse(new SijoitteluDTO());
+
     }
 
 

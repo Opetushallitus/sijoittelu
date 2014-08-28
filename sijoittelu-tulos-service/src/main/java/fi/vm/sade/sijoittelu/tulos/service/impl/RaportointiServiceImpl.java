@@ -3,6 +3,7 @@ package fi.vm.sade.sijoittelu.tulos.service.impl;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import fi.vm.sade.sijoittelu.tulos.dao.HakukohdeDao;
 import fi.vm.sade.sijoittelu.tulos.dao.SijoitteluCacheDao;
@@ -51,12 +52,12 @@ public class RaportointiServiceImpl implements RaportointiService {
 	private SijoitteluTulosConverter sijoitteluTulosConverter;
 
 	@Override
-	public SijoitteluAjo getSijoitteluAjo(Long SijoitteluajoId) {
+	public Optional<SijoitteluAjo> getSijoitteluAjo(Long SijoitteluajoId) {
 		return sijoitteluCacheDao.getSijoitteluajo(SijoitteluajoId);
 	}
 
 	@Override
-	public SijoitteluAjo latestSijoitteluAjoForHaku(String hakuOid) {
+	public Optional<SijoitteluAjo> latestSijoitteluAjoForHaku(String hakuOid) {
 		return sijoitteluCacheDao.getLatestSijoitteluajo(hakuOid);
 	}
 

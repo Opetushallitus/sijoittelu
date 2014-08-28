@@ -40,9 +40,10 @@ public class MorphiaIntegrationTest {
 		st.setHakuOid("testihakuoidi");
 
 		sijoitteluService.sijoittele(st);
-		Sijoittelu sijoittelu = sijoitteluDao.getSijoitteluByHakuOid("testihakuoidi");
+		Sijoittelu sijoittelu = sijoitteluDao.getSijoitteluByHakuOid("testihakuoidi").get();
 		Assert.assertNotNull(sijoittelu);
 		Assert.assertEquals(sijoittelu.getHakuOid(), "testihakuoidi");
+
 	}
 
 }

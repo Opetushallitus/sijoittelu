@@ -18,6 +18,8 @@ import fi.vm.sade.sijoittelu.laskenta.service.exception.ValintatulostaEiOleIlmoi
 import fi.vm.sade.sijoittelu.tulos.dao.ValintatulosDao;
 import fi.vm.sade.sijoittelu.tulos.roles.SijoitteluRole;
 
+import java.util.Optional;
+
 /**
  * Created with IntelliJ IDEA. User: jukais Date: 3.9.2013 Time: 10.50 To change
  * this template use File | Settings | File Templates.
@@ -64,7 +66,7 @@ public class SijoitteluBusinessServiceImplTest {
 		Sijoittelu sijoittelu = testDataGenerator.generateTestData();
 
 		Mockito.when(sijoitteluDao.getSijoitteluByHakuOid(HAKU_OID)).thenReturn(
-				sijoittelu);
+                Optional.of(sijoittelu));
 		Mockito.when(
 				hakukohdeDao.getHakukohdeForSijoitteluajo(
 						TestDataGenerator.SIJOITTELU_AJO_ID_2, HAKUKOHDE_OID))
@@ -115,7 +117,7 @@ public class SijoitteluBusinessServiceImplTest {
 		Sijoittelu sijoittelu = testDataGenerator.generateTestData();
 
 		Mockito.when(sijoitteluDao.getSijoitteluByHakuOid(HAKU_OID)).thenReturn(
-				sijoittelu);
+                Optional.of(sijoittelu));
 		Mockito.when(
 				hakukohdeDao.getHakukohdeForSijoitteluajo(
 						TestDataGenerator.SIJOITTELU_AJO_ID_2, HAKUKOHDE_OID))
@@ -140,7 +142,7 @@ public class SijoitteluBusinessServiceImplTest {
 		Sijoittelu sijoittelu = testDataGenerator.generateTestData();
 
 		Mockito.when(sijoitteluDao.getSijoitteluByHakuOid(HAKU_OID)).thenReturn(
-				sijoittelu);
+                Optional.of(sijoittelu));
 		Mockito.when(
 				hakukohdeDao.getHakukohdeForSijoitteluajo(
 						TestDataGenerator.SIJOITTELU_AJO_ID_2, HAKUKOHDE_OID))
@@ -165,7 +167,7 @@ public class SijoitteluBusinessServiceImplTest {
 		Sijoittelu sijoittelu = testDataGenerator.generateTestData();
 
 		Mockito.when(sijoitteluDao.getSijoitteluByHakuOid(HAKU_OID)).thenReturn(
-				sijoittelu);
+                Optional.of(sijoittelu));
 		Mockito.when(
 				hakukohdeDao.getHakukohdeForSijoitteluajo(
 						TestDataGenerator.SIJOITTELU_AJO_ID_2, HAKUKOHDE_OID))
@@ -189,7 +191,7 @@ public class SijoitteluBusinessServiceImplTest {
 		Sijoittelu sijoittelu = testDataGenerator.generateTestData();
 
 		Mockito.when(sijoitteluDao.getSijoitteluByHakuOid(HAKU_OID)).thenReturn(
-				sijoittelu);
+                Optional.of(sijoittelu));
 		Mockito.when(
 				hakukohdeDao.getHakukohdeForSijoitteluajo(
 						TestDataGenerator.SIJOITTELU_AJO_ID_2, HAKUKOHDE_OID))
@@ -209,7 +211,7 @@ public class SijoitteluBusinessServiceImplTest {
 		Sijoittelu sijoittelu = testDataGenerator.generateTestData();
 
 		Mockito.when(sijoitteluDao.getSijoitteluByHakuOid(HAKU_OID)).thenReturn(
-				sijoittelu);
+                Optional.of(sijoittelu));
 		Mockito.when(
 				hakukohdeDao.getHakukohdeForSijoitteluajo(
 						TestDataGenerator.SIJOITTELU_AJO_ID_2, HAKUKOHDE_OID))
@@ -243,7 +245,7 @@ public class SijoitteluBusinessServiceImplTest {
 		Sijoittelu sijoittelu = testDataGenerator.generateTestData();
 
 		Mockito.when(sijoitteluDao.getSijoitteluByHakuOid(HAKU_OID)).thenReturn(
-				sijoittelu);
+                Optional.of(sijoittelu));
 		Mockito.when(
 				hakukohdeDao.getHakukohdeForSijoitteluajo(
 						TestDataGenerator.SIJOITTELU_AJO_ID_2, HAKUKOHDE_OID))
@@ -269,7 +271,7 @@ public class SijoitteluBusinessServiceImplTest {
 		Sijoittelu sijoittelu = testDataGenerator.generateTestData();
 
 		Mockito.when(sijoitteluDao.getSijoitteluByHakuOid(HAKU_OID)).thenReturn(
-				sijoittelu);
+                Optional.of(sijoittelu));
 		Mockito.when(
 				hakukohdeDao.getHakukohdeForSijoitteluajo(
 						TestDataGenerator.SIJOITTELU_AJO_ID_2, HAKUKOHDE_OID))
@@ -294,7 +296,7 @@ public class SijoitteluBusinessServiceImplTest {
 		Sijoittelu sijoittelu = testDataGenerator.generateTestData();
 
 		Mockito.when(sijoitteluDao.getSijoitteluByHakuOid(HAKU_OID)).thenReturn(
-				sijoittelu);
+                Optional.of(sijoittelu));
 		Mockito.when(
 				hakukohdeDao.getHakukohdeForSijoitteluajo(
 						TestDataGenerator.SIJOITTELU_AJO_ID_2, HAKUKOHDE_OID))
@@ -319,7 +321,7 @@ public class SijoitteluBusinessServiceImplTest {
 		Sijoittelu sijoittelu = testDataGenerator.generateTestData();
 
 		Mockito.when(sijoitteluDao.getSijoitteluByHakuOid(HAKU_OID)).thenReturn(
-				sijoittelu);
+                Optional.of(sijoittelu));
 		Mockito.when(
 				hakukohdeDao.getHakukohdeForSijoitteluajo(
 						TestDataGenerator.SIJOITTELU_AJO_ID_2, HAKUKOHDE_OID))
@@ -344,7 +346,7 @@ public class SijoitteluBusinessServiceImplTest {
 		Sijoittelu sijoittelu = testDataGenerator.generateTestData();
 
 		Mockito.when(sijoitteluDao.getSijoitteluByHakuOid(HAKU_OID)).thenReturn(
-				sijoittelu);
+                Optional.of(sijoittelu));
 		Mockito.when(
 				hakukohdeDao.getHakukohdeForSijoitteluajo(
 						TestDataGenerator.SIJOITTELU_AJO_ID_2, HAKUKOHDE_OID))
@@ -369,7 +371,7 @@ public class SijoitteluBusinessServiceImplTest {
 		Sijoittelu sijoittelu = testDataGenerator.generateTestData();
 
 		Mockito.when(sijoitteluDao.getSijoitteluByHakuOid(HAKU_OID)).thenReturn(
-				sijoittelu);
+                Optional.of(sijoittelu));
 		Mockito.when(
 				hakukohdeDao.getHakukohdeForSijoitteluajo(
 						TestDataGenerator.SIJOITTELU_AJO_ID_2, HAKUKOHDE_OID))
@@ -394,7 +396,7 @@ public class SijoitteluBusinessServiceImplTest {
 		Sijoittelu sijoittelu = testDataGenerator.generateTestData();
 
 		Mockito.when(sijoitteluDao.getSijoitteluByHakuOid(HAKU_OID)).thenReturn(
-				sijoittelu);
+                Optional.of(sijoittelu));
 		Mockito.when(
 				hakukohdeDao.getHakukohdeForSijoitteluajo(
 						TestDataGenerator.SIJOITTELU_AJO_ID_2, HAKUKOHDE_OID))
