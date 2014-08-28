@@ -7,8 +7,13 @@ import akka.routing.RoundRobinRouter;
 import akka.util.Timeout;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
+import fi.vm.sade.service.valintaperusteet.dto.ValintatapajonoDTO;
+import fi.vm.sade.service.valintaperusteet.resource.ValintaperusteetResource;
 import fi.vm.sade.sijoittelu.laskenta.service.business.SijoitteluBusinessService;
+import fi.vm.sade.sijoittelu.laskenta.util.EnumConverter;
+import fi.vm.sade.valintalaskenta.domain.dto.valintakoe.Tasasijasaanto;
 import fi.vm.sade.valintalaskenta.domain.dto.valintatieto.HakuDTO;
+import fi.vm.sade.valintalaskenta.domain.dto.valintatieto.ValintatietoValintatapajonoDTO;
 import fi.vm.sade.valintalaskenta.tulos.service.ValintalaskentaTulosService;
 import fi.vm.sade.valintalaskenta.tulos.service.impl.ValintatietoService;
 import org.slf4j.Logger;
@@ -24,6 +29,7 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.ws.rs.*;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static fi.vm.sade.sijoittelu.laskenta.actors.creators.SpringExtension.SpringExtProvider;
 
@@ -47,6 +53,9 @@ public class SijoitteluResource {
 
     @Autowired
     private ApplicationContext applicationContext;
+
+    @Autowired
+    private ValintaperusteetResource valintaperusteetResource;
 
     private ActorSystem actorSystem;
 
@@ -76,7 +85,38 @@ public class SijoitteluResource {
         LOGGER.error("Valintatietoja valmistetaan haulle {}!", hakuOid);
 
         HakuDTO haku = valintatietoService.haeValintatiedot(hakuOid);
+
         LOGGER.error("Valintatiedot haettu serviceltä {}!", hakuOid);
+
+        LOGGER.error("Asetetaan valintaperusteet {}!", hakuOid);
+
+        haku.getHakukohteet().forEach(hakukohde -> {
+            Map<String, ValintatapajonoDTO> jonot =
+                    valintaperusteetResource.haeValintatapajonotSijoittelulle(hakukohde.getOid()).parallelStream()
+                            .collect(Collectors.toMap(ValintatapajonoDTO::getOid, jono -> jono));
+            hakukohde.getValinnanvaihe().forEach(vaihe -> {
+                List<ValintatietoValintatapajonoDTO> konvertoidut = new ArrayList<>();
+                vaihe.getValintatapajonot().forEach(jono -> {
+                    if(jonot.containsKey(jono.getOid())) {
+                        ValintatapajonoDTO perusteJono = jonot.get(jono.getOid());
+                        jono.setAloituspaikat(perusteJono.getAloituspaikat());
+                        jono.setEiVarasijatayttoa(perusteJono.getEiVarasijatayttoa());
+                        jono.setPoissaOlevaTaytto(perusteJono.getPoissaOlevaTaytto());
+                        jono.setTasasijasaanto(EnumConverter.convert(Tasasijasaanto.class,
+                                perusteJono.getTasapistesaanto()));
+                        // DTO:sta PUUTTUU VIELÄ KAMAA!!!
+                        konvertoidut.add(jono);
+                        jonot.remove(jono.getOid());
+                    }
+                });
+                vaihe.setValintatapajonot(konvertoidut);
+            });
+            if(!jonot.isEmpty()) {
+                hakukohde.setKaikkiJonotSijoiteltu(false);
+            }
+        });
+
+        LOGGER.error("Valintaperusteet asetettu {}!", hakuOid);
 
         Timeout timeout = new Timeout(Duration.create(60, "minutes"));
 
