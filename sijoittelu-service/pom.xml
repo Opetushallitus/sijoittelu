@@ -127,6 +127,12 @@
             <artifactId>akka-slf4j_2.10</artifactId>
             <version>2.3.5</version>
         </dependency>
+        <dependency>
+            <groupId>de.flapdoodle.embed</groupId>
+            <artifactId>de.flapdoodle.embed.mongo</artifactId>
+            <version>${flapdoodle.embed.mongo.version}</version>
+            <scope>compile</scope>
+        </dependency>
 
         <!-- Tests -->
         <dependency>
@@ -142,12 +148,6 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-test</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>de.flapdoodle.embed</groupId>
-            <artifactId>de.flapdoodle.embed.mongo</artifactId>
-            <version>${flapdoodle.embed.mongo.version}</version>
             <scope>test</scope>
         </dependency>
 
@@ -281,6 +281,11 @@
                 <groupId>org.eclipse.jetty</groupId>
                 <artifactId>jetty-maven-plugin</artifactId>
                 <version>9.2.1.v20140609</version>
+              <configuration>
+                <httpConnector>
+                  <port>8180</port>
+                </httpConnector>
+              </configuration>
             </plugin>
         </plugins>
     </build>

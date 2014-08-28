@@ -1,7 +1,7 @@
 package fi.vm.sade.sijoittelu.batch.logic.impl;
 
 import fi.vm.sade.sijoittelu.laskenta.service.business.SijoitteluBusinessService;
-import fi.vm.sade.sijoittelu.tulos.dao.SijoitteluCacheDao;
+import fi.vm.sade.sijoittelu.tulos.dao.SijoitteluDao;
 import fi.vm.sade.sijoittelu.tulos.dao.ValintatulosDao;
 import fi.vm.sade.valintalaskenta.domain.dto.valintatieto.HakuDTO;
 import junit.framework.Assert;
@@ -27,7 +27,7 @@ public class MorphiaIntegrationTest {
 	private ValintatulosDao valintatulosDao;
 
     @Autowired
-    private SijoitteluCacheDao sijoitteluDao;
+    private SijoitteluDao sijoitteluDao;
 
 	@Autowired
 	private SijoitteluBusinessService sijoitteluService;

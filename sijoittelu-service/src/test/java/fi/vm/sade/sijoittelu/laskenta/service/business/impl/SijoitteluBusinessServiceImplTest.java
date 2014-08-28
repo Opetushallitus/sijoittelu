@@ -1,7 +1,7 @@
 package fi.vm.sade.sijoittelu.laskenta.service.business.impl;
 
 import fi.vm.sade.sijoittelu.tulos.dao.HakukohdeDao;
-import fi.vm.sade.sijoittelu.tulos.dao.SijoitteluCacheDao;
+import fi.vm.sade.sijoittelu.tulos.dao.SijoitteluDao;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -37,7 +37,7 @@ public class SijoitteluBusinessServiceImplTest {
 	private SijoitteluBusinessServiceImpl sijoitteluBusinessService;
     private ValintatulosDao valintatulosDaoMock;
     private HakukohdeDao hakukohdeDao;
-    private SijoitteluCacheDao sijoitteluDao;
+    private SijoitteluDao sijoitteluDao;
 	private Authorizer authorizer;
 	private TestDataGenerator testDataGenerator;
 
@@ -46,7 +46,7 @@ public class SijoitteluBusinessServiceImplTest {
 		sijoitteluBusinessService = new SijoitteluBusinessServiceImpl();
 
 		valintatulosDaoMock = Mockito.mock(ValintatulosDao.class);
-        sijoitteluDao = Mockito.mock(SijoitteluCacheDao.class);
+        sijoitteluDao = Mockito.mock(SijoitteluDao.class);
         hakukohdeDao = Mockito.mock(HakukohdeDao.class);
 		authorizer = Mockito.mock(Authorizer.class);
 

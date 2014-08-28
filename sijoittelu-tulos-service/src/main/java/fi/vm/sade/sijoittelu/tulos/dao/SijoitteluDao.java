@@ -5,8 +5,7 @@ import fi.vm.sade.sijoittelu.domain.SijoitteluAjo;
 
 import java.util.Optional;
 
-public interface SijoitteluCacheDao {
-
+public interface SijoitteluDao {
 	void persistSijoittelu(Sijoittelu sijoittelu);
 
 	Optional<Sijoittelu> getSijoitteluByHakuOid(String hakuOid);
