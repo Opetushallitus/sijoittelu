@@ -18,7 +18,7 @@
             <constructor-arg type="com.mongodb.MongoClientURI" ref="mongoUri"/>
         </bean>
     </beans>
-    <beans profile="embedded">
+    <beans profile="it">
         <bean id="mongodFactory" class="de.flapdoodle.embed.mongo.tests.MongodForTestsFactory" destroy-method="shutdown"/>
         <bean id="mongo" class="com.mongodb.MongoClient" factory-bean="mongodFactory" factory-method="newMongo"/>
     </beans>
