@@ -11,6 +11,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 
+import fi.vm.sade.sijoittelu.tulos.dto.raportointi.HakemusYhteenvetoDTO;
 import org.codehaus.jackson.map.annotate.JsonView;
 
 import com.wordnik.swagger.annotations.Api;
@@ -98,4 +99,11 @@ public interface SijoitteluResource {
 			@ApiParam(value = "Sijoitteluajon tunniste tai 'latest' avainsana", required = true) @PathParam("sijoitteluajoId") String sijoitteluajoId,
 			@ApiParam(value = "Hakemuksen tunniste", required = true) @PathParam("hakemusOid") String hakemusOid);
 
+    @GET
+    @Produces(APPLICATION_JSON)
+    @Path("/{hakuOid}/sijoitteluajo/{sijoitteluajoId}/hakemus/yhteenveto/{hakemusOid}")
+    HakemusYhteenvetoDTO hakemusYhteenveto(
+            @ApiParam(value = "Haun tunniste", required = true) @PathParam("hakuOid") String hakuOid,
+            @ApiParam(value = "Sijoitteluajon tunniste tai 'latest' avainsana", required = true) @PathParam("sijoitteluajoId") String sijoitteluajoId,
+            @ApiParam(value = "Hakemuksen tunniste", required = true) @PathParam("hakemusOid") String hakemusOid);
 }

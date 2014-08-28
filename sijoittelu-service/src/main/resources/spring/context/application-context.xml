@@ -9,8 +9,8 @@
          http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
 
     <context:annotation-config/>
-    <context:component-scan base-package="fi.vm.sade.sijoittelu"/>
-    <context:component-scan base-package="fi.vm.sade.sijoittelu.laskenta.resource"/>
+    <context:component-scan base-package="fi.vm.sade.sijoittelu.laskenta"/>
+    <context:component-scan base-package="fi.vm.sade.sijoittelu.batch"/>
     <context:component-scan base-package="fi.vm.sade.valintalaskenta.tulos.dao"/>
     <context:component-scan base-package="fi.vm.sade.valintalaskenta.tulos.service.impl"/>
     <context:component-scan base-package="fi.vm.sade.valintalaskenta.tulos.resource.impl"/>
@@ -54,7 +54,7 @@
     <import resource="application-context-service.xml" />
     <import resource="application-context-ws.xml" />
     <import resource="application-context-mongo.xml" />
-	<import resource="application-context-tulos.xml" /> <!-- tulee tulos projektilta jarrissa -->
+    <import resource="application-context-tulos.xml" /> <!-- tulee tulos projektilta jarrissa -->
 
 	<bean id="mongoUri2" class="com.mongodb.MongoClientURI">
         <constructor-arg type="java.lang.String" value="${valintalaskenta-laskenta-service.mongodb.uri}" />

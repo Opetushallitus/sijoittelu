@@ -1,6 +1,8 @@
 package fi.vm.sade.sijoittelu.batch.logic.impl;
 
 import fi.vm.sade.sijoittelu.laskenta.service.business.SijoitteluBusinessService;
+import fi.vm.sade.sijoittelu.tulos.dao.SijoitteluDao;
+import fi.vm.sade.sijoittelu.tulos.dao.ValintatulosDao;
 import fi.vm.sade.valintalaskenta.domain.dto.valintatieto.HakuDTO;
 import junit.framework.Assert;
 
@@ -12,7 +14,6 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import fi.vm.sade.sijoittelu.domain.Sijoittelu;
-import fi.vm.sade.sijoittelu.laskenta.dao.Dao;
 
 /**
  * @author Kari Kammonen
@@ -23,7 +24,10 @@ import fi.vm.sade.sijoittelu.laskenta.dao.Dao;
 public class MorphiaIntegrationTest {
 
 	@Autowired
-	private Dao dao;
+	private ValintatulosDao valintatulosDao;
+
+    @Autowired
+    private SijoitteluDao sijoitteluDao;
 
 	@Autowired
 	private SijoitteluBusinessService sijoitteluService;
@@ -36,7 +40,7 @@ public class MorphiaIntegrationTest {
 		st.setHakuOid("testihakuoidi");
 
 		sijoitteluService.sijoittele(st);
-		Sijoittelu sijoittelu = dao.getSijoitteluByHakuOid("testihakuoidi");
+		Sijoittelu sijoittelu = sijoitteluDao.getSijoitteluByHakuOid("testihakuoidi");
 		Assert.assertNotNull(sijoittelu);
 		Assert.assertEquals(sijoittelu.getHakuOid(), "testihakuoidi");
 	}

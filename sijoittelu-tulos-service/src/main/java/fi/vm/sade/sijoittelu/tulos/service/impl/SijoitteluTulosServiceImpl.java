@@ -3,7 +3,9 @@ package fi.vm.sade.sijoittelu.tulos.service.impl;
 import fi.vm.sade.sijoittelu.domain.Hakukohde;
 import fi.vm.sade.sijoittelu.domain.Sijoittelu;
 import fi.vm.sade.sijoittelu.domain.SijoitteluAjo;
-import fi.vm.sade.sijoittelu.tulos.dao.DAO;
+import fi.vm.sade.sijoittelu.tulos.dao.ValintatulosDao;
+import fi.vm.sade.sijoittelu.tulos.dao.HakukohdeDao;
+import fi.vm.sade.sijoittelu.tulos.dao.SijoitteluDao;
 import fi.vm.sade.sijoittelu.tulos.dto.*;
 import fi.vm.sade.sijoittelu.tulos.service.SijoitteluTulosService;
 import fi.vm.sade.sijoittelu.tulos.service.impl.converters.SijoitteluTulosConverter;
@@ -21,25 +23,20 @@ import java.util.List;
 public class SijoitteluTulosServiceImpl implements SijoitteluTulosService {
 
     @Autowired
-    private DAO dao;
+    private ValintatulosDao valintatulosDao;
+
+    @Autowired
+    private HakukohdeDao hakukohdeDao;
+
+    @Autowired
+    private SijoitteluDao sijoitteluDao;
 
     @Autowired
     private SijoitteluTulosConverter sijoitteluTulosConverter;
 
-    /*
-    @Override
-    public List<HakemusDTO> haeHakukohteetJoihinHakemusOsallistuu(SijoitteluAjo sijoitteluAjo, String hakemusOid) {
-        List<Hakukohde> b = dao.haeHakukohteetJoihinHakemusOsallistuu( sijoitteluAjo.getSijoitteluajoId(), hakemusOid);
-        if (b == null) {
-            return null;
-        }
-        List<HakukohdeDTO> a = sijoitteluTulosConverter.convert(b);
-        return getDtos(a, hakemusOid);
-    }
-      */
     @Override
     public HakukohdeDTO getHakukohdeBySijoitteluajo(SijoitteluAjo sijoitteluAjo, String hakukohdeOid) {
-        Hakukohde a = dao.getHakukohdeBySijoitteluajo(sijoitteluAjo.getSijoitteluajoId(), hakukohdeOid);
+        Hakukohde a = hakukohdeDao.getHakukohdeForSijoitteluajo(sijoitteluAjo.getSijoitteluajoId(), hakukohdeOid);
         if (a == null) {
             return null;
         }
@@ -58,7 +55,7 @@ public class SijoitteluTulosServiceImpl implements SijoitteluTulosService {
 
     @Override
     public SijoitteluDTO getSijoitteluByHakuOid(String hakuOid) {
-        Sijoittelu s = dao.getSijoitteluByHakuOid(hakuOid);
+        Sijoittelu s = sijoitteluDao.getSijoitteluByHakuOid(hakuOid);
         if (s == null) {
             return null;
         }

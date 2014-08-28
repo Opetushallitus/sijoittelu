@@ -9,7 +9,8 @@ import fi.vm.sade.sijoittelu.domain.HakemuksenTila;
 import fi.vm.sade.sijoittelu.domain.Hakemus;
 import fi.vm.sade.sijoittelu.domain.Hakukohde;
 import fi.vm.sade.sijoittelu.domain.Valintatapajono;
-import fi.vm.sade.sijoittelu.laskenta.dao.Dao;
+import fi.vm.sade.sijoittelu.tulos.dao.HakukohdeDao;
+import fi.vm.sade.sijoittelu.tulos.dao.ValintatulosDao;
 import junit.framework.Assert;
 import org.junit.Rule;
 import org.junit.Test;
@@ -38,7 +39,10 @@ public class SijoitteluTest {
     private static final Logger LOG = LoggerFactory.getLogger(SijoitteluTest.class);
 
     @Autowired
-    private Dao dao;
+    private ValintatulosDao valintatulosDao;
+
+    @Autowired
+    private HakukohdeDao hakukohdeDao;
 
     @Autowired
     private ApplicationContext applicationContext;
@@ -52,7 +56,7 @@ public class SijoitteluTest {
     @Test
     @UsingDataSet(locations = "sijoittelutestidata.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
     public void syksy2013Test() {
-        List<Hakukohde> hakukohteet = dao.getHakukohdeForSijoitteluajo(1383916417363L);
+        List<Hakukohde> hakukohteet = hakukohdeDao.getHakukohdeForSijoitteluajo(1383916417363L);
         Map<String, List<Hakemus>> hakemusMapByHakemusOid = new HashMap<String, List<Hakemus>>();
 
         for (Hakukohde hk : hakukohteet) {
@@ -87,7 +91,7 @@ public class SijoitteluTest {
     @Test
     @UsingDataSet(locations = "sijoittelutestidata.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
     public void syksy2013HarkinnanvaraisestiHyvaksytytTest() {
-        List<Hakukohde> hakukohteet = dao.getHakukohdeForSijoitteluajo(1383916417363L);
+        List<Hakukohde> hakukohteet = hakukohdeDao.getHakukohdeForSijoitteluajo(1383916417363L);
         Map<String, List<Hakemus>> hakemusMapByHakemusOid = new HashMap<String, List<Hakemus>>();
 
         for (Hakukohde hk : hakukohteet) {

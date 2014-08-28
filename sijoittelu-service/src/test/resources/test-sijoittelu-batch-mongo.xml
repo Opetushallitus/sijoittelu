@@ -7,6 +7,7 @@
 
 
     <context:annotation-config/>
+    <context:component-scan base-package="fi.vm.sade.sijoittelu.tulos"/>
     <context:component-scan base-package="fi.vm.sade.sijoittelu.laskenta"/>
     <context:component-scan base-package="fi.vm.sade.sijoittelu.batch"/>
     <context:component-scan base-package="fi.vm.sade.security"/>
@@ -20,12 +21,10 @@
         <constructor-arg type="String" value="sijoittelu"/>
     </bean>
 
-    <bean id="mongodFactory2" class="de.flapdoodle.embed.mongo.tests.MongodForTestsFactory" destroy-method="shutdown"/>
-    <bean id="mongo2" class="com.mongodb.MongoClient" factory-bean="mongodFactory2" factory-method="newMongo"/>
 
     <bean id="morphia2" class="org.mongodb.morphia.Morphia" />
     <bean id="datastore2" factory-bean="morphia2" factory-method="createDatastore">
-        <constructor-arg type="com.mongodb.MongoClient" ref="mongo2" />
+        <constructor-arg type="com.mongodb.MongoClient" ref="mongo" />
         <constructor-arg type="java.lang.String" value="test" />
     </bean>
 

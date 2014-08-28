@@ -3,14 +3,16 @@ package fi.vm.sade.sijoittelu.laskenta.service.business.impl;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
+import fi.vm.sade.sijoittelu.tulos.dao.HakukohdeDao;
 import fi.vm.sade.sijoittelu.laskenta.mapping.SijoitteluModelMapper;
 import fi.vm.sade.sijoittelu.laskenta.service.exception.*;
+import fi.vm.sade.sijoittelu.tulos.dao.SijoitteluDao;
+import fi.vm.sade.sijoittelu.tulos.dao.ValintatulosDao;
 import fi.vm.sade.valintalaskenta.domain.dto.valintatieto.HakuDTO;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -37,7 +39,6 @@ import fi.vm.sade.sijoittelu.domain.TilaHistoria;
 import fi.vm.sade.sijoittelu.domain.Valintatapajono;
 import fi.vm.sade.sijoittelu.domain.ValintatuloksenTila;
 import fi.vm.sade.sijoittelu.domain.Valintatulos;
-import fi.vm.sade.sijoittelu.laskenta.dao.Dao;
 import fi.vm.sade.sijoittelu.laskenta.service.business.SijoitteluBusinessService;
 import fi.vm.sade.sijoittelu.tulos.roles.SijoitteluRole;
 
@@ -54,7 +55,14 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
 	private SijoitteluAlgorithmFactory algorithmFactory;
 
 	@Autowired
-	private Dao dao;
+	private ValintatulosDao valintatulosDao;
+
+    @Autowired
+    private HakukohdeDao hakukohdeDao;
+
+
+    @Autowired
+    private SijoitteluDao sijoitteluDao;
 
 	@Autowired
 	private Authorizer authorizer;
@@ -76,10 +84,10 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
 		Sijoittelu sijoittelu = getOrCreateSijoittelu(hakuOid);
 		SijoitteluAjo viimeisinSijoitteluajo = sijoittelu
 				.getLatestSijoitteluajo();
-		List<Hakukohde> hakukohteet = dao
+		List<Hakukohde> hakukohteet = hakukohdeDao
 				.getHakukohdeForSijoitteluajo(viimeisinSijoitteluajo
 						.getSijoitteluajoId());
-		List<Valintatulos> valintatulokset = dao.loadValintatulokset(hakuOid);
+		List<Valintatulos> valintatulokset = valintatulosDao.loadValintatulokset(hakuOid);
 		SijoitteluAlgorithm sijoitteluAlgorithm = algorithmFactory
 				.constructAlgorithm(hakukohteet, valintatulokset);
 
@@ -88,9 +96,9 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
 		viimeisinSijoitteluajo.setEndMils(System.currentTimeMillis());
 
 		// and after
-		dao.persistSijoittelu(sijoittelu);
+        sijoitteluDao.persistSijoittelu(sijoittelu);
 		for (Hakukohde hakukohde : hakukohteet) {
-			dao.persistHakukohde(hakukohde);
+            hakukohdeDao.persistHakukohde(hakukohde);
 		}
 	}
 
@@ -112,7 +120,7 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
         List<Hakukohde> olemassaolevatHakukohteet = Collections
                 .<Hakukohde> emptyList();
         if (viimeisinSijoitteluajo != null) {
-            olemassaolevatHakukohteet = dao
+            olemassaolevatHakukohteet = hakukohdeDao
                     .getHakukohdeForSijoitteluajo(viimeisinSijoitteluajo
                             .getSijoitteluajoId());
         }
@@ -120,7 +128,7 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
         List<Hakukohde> kaikkiHakukohteet = merge(uusiSijoitteluajo,
                 olemassaolevatHakukohteet, uudetHakukohteet);
 
-        List<Valintatulos> valintatulokset = dao.loadValintatulokset(hakuOid);
+        List<Valintatulos> valintatulokset = valintatulosDao.loadValintatulokset(hakuOid);
         SijoitteluAlgorithm sijoitteluAlgorithm = algorithmFactory
                 .constructAlgorithm(kaikkiHakukohteet, valintatulokset);
 
@@ -130,7 +138,7 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
 
         processOldApplications(olemassaolevatHakukohteet, kaikkiHakukohteet);
 
-        dao.persistSijoittelu(sijoittelu);
+        sijoitteluDao.persistSijoittelu(sijoittelu);
     }
 
 	private void processOldApplications(
@@ -194,8 +202,8 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
             hakukohde.getValintatapajonot().parallelStream().forEach(valintatapajono ->
                 valintatapajono.getHakemukset().parallelStream().forEach(hakemus -> {
                     Hakemus edellinen = hakemusHashMap.get(hakukohde.getOid()
-                        + valintatapajono.getOid()
-                        + hakemus.getHakemusOid());
+                            + valintatapajono.getOid()
+                            + hakemus.getHakemusOid());
                     if (edellinen != null
                             && edellinen.getTilaHistoria() != null
                             && !edellinen.getTilaHistoria().isEmpty()) {
@@ -216,7 +224,7 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
                 }
                 )
             );
-            dao.persistHakukohde(hakukohde);
+                hakukohdeDao.persistHakukohde(hakukohde);
             }
         );
 	}
@@ -225,7 +233,7 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
 	private List<Hakukohde> merge(SijoitteluAjo uusiSijoitteluajo,
 			List<Hakukohde> olemassaolevatHakukohteet,
 			List<Hakukohde> uudetHakukohteet) {
-		Map<String, Hakukohde> kaikkiHakukohteet = new ConcurrentHashMap<String, Hakukohde>();
+		Map<String, Hakukohde> kaikkiHakukohteet = new ConcurrentHashMap<>();
 //		for (Hakukohde hakukohde : olemassaolevatHakukohteet) {
 //			hakukohde.setId(null); // poista id vanhoilta hakukohteilta, niin
 //									// etta ne voidaan peristoida uusina
@@ -241,21 +249,23 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
         });
 
 		// vanhat tasasijajonosijat talteen
-        uudetHakukohteet.parallelStream().filter(hakukohde -> kaikkiHakukohteet.containsKey(hakukohde.getOid())).forEach(hakukohde -> {
+        uudetHakukohteet.parallelStream().forEach(hakukohde -> {
             Map<String, Integer> hakemusHashMap = new ConcurrentHashMap<>();
-            kaikkiHakukohteet.get(hakukohde.getOid()).getValintatapajonot().parallelStream().forEach(valintatapajono ->
-                valintatapajono.getHakemukset().parallelStream().filter(hakemus -> hakemus.getTasasijaJonosija() != null).forEach(h ->
-                        hakemusHashMap.put(valintatapajono.getOid() + h.getHakemusOid(), h.getTasasijaJonosija())
-                )
-            );
+            if(kaikkiHakukohteet.containsKey(hakukohde.getOid())) {
+                kaikkiHakukohteet.get(hakukohde.getOid()).getValintatapajonot().parallelStream().forEach(valintatapajono ->
+                    valintatapajono.getHakemukset().parallelStream().filter(hakemus -> hakemus.getTasasijaJonosija() != null).forEach(h ->
+                            hakemusHashMap.put(valintatapajono.getOid() + h.getHakemusOid(), h.getTasasijaJonosija())
+                    )
+                );
 
-            hakukohde.getValintatapajonot().parallelStream().forEach(valintatapajono ->
-                    valintatapajono.getHakemukset().parallelStream()
-                            .filter(hakemus -> hakemusHashMap.get(valintatapajono.getOid() + hakemus.getHakemusOid()) != null)
-                            .forEach(hakemus -> {
-                                hakemus.setTasasijaJonosija(hakemusHashMap.get(valintatapajono.getOid() + hakemus.getHakemusOid()));
-                })
-            );
+                hakukohde.getValintatapajonot().parallelStream().forEach(valintatapajono ->
+                        valintatapajono.getHakemukset().parallelStream()
+                                .filter(hakemus -> hakemusHashMap.get(valintatapajono.getOid() + hakemus.getHakemusOid()) != null)
+                                .forEach(hakemus -> {
+                                    hakemus.setTasasijaJonosija(hakemusHashMap.get(valintatapajono.getOid() + hakemus.getHakemusOid()));
+                                })
+                );
+            }
             
             kaikkiHakukohteet.put(hakukohde.getOid(), hakukohde);
 
@@ -277,7 +287,6 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
             hakukohde.setSijoitteluajoId(uusiSijoitteluajo.getSijoitteluajoId());
             }
         );
-
 		return new ArrayList<>(kaikkiHakukohteet.values());
 	}
 
@@ -294,7 +303,7 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
 	}
 
 	private Sijoittelu getOrCreateSijoittelu(String hakuoid) {
-		Sijoittelu sijoittelu = dao.getSijoitteluByHakuOid(hakuoid);
+		Sijoittelu sijoittelu = sijoitteluDao.getSijoitteluByHakuOid(hakuoid);
 		if (sijoittelu == null) {
 			sijoittelu = new Sijoittelu();
 			sijoittelu.setCreated(new Date());
@@ -312,7 +321,7 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
 			throw new RuntimeException(
 					"Invalid search params, fix exception later");
 		}
-		return dao.loadValintatulos(hakukohdeOid, valintatapajonoOid,
+		return valintatulosDao.loadValintatulos(hakukohdeOid, valintatapajonoOid,
 				hakemusOid);
 	}
 
@@ -324,7 +333,7 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
 					"Invalid search params, fix exception later");
 		}
 
-		return dao.loadValintatulokset(hakukohdeOid, valintatapajonoOid);
+		return valintatulosDao.loadValintatulokset(hakukohdeOid, valintatapajonoOid);
 	}
 
 	@Override
@@ -334,7 +343,7 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
 					"Invalid search params, fix exception later");
 		}
 
-		return dao.loadValintatuloksetForHakukohde(hakukohdeOid);
+		return valintatulosDao.loadValintatuloksetForHakukohde(hakukohdeOid);
 	}
 
 	@Override
@@ -343,7 +352,7 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
 			throw new RuntimeException(
 					"Invalid search params, fix exception later");
 		}
-		return dao.loadValintatulos(hakemusOid);
+		return valintatulosDao.loadValintatulos(hakemusOid);
 	}
 
 	@Override
@@ -358,11 +367,11 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
 					"Invalid search params, fix exception later");
 		}
 
-		Sijoittelu sijoittelu = dao.getSijoitteluByHakuOid(hakuoid);
+		Sijoittelu sijoittelu = sijoitteluDao.getSijoitteluByHakuOid(hakuoid);
 		SijoitteluAjo ajo = sijoittelu.getLatestSijoitteluajo();
 		Long ajoId = ajo.getSijoitteluajoId();
 
-		Hakukohde hakukohde = dao.getHakukohdeForSijoitteluajo(ajoId,
+		Hakukohde hakukohde = hakukohdeDao.getHakukohdeForSijoitteluajo(ajoId,
 				hakukohdeOid);
 		Valintatapajono valintatapajono = null;
 		for (Valintatapajono v : hakukohde.getValintatapajonot()) {
@@ -388,7 +397,7 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
 
 		boolean ophAdmin = checkIfOphAdmin(hakemus);
 
-		Valintatulos v = dao.loadValintatulos(hakukohdeOid, valintatapajonoOid,
+		Valintatulos v = valintatulosDao.loadValintatulos(hakukohdeOid, valintatapajonoOid,
 				hakemusOid);
 
 		if (!ophAdmin) {
@@ -440,7 +449,7 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
 
 		v.getLogEntries().add(logEntry);
 
-		dao.createOrUpdateValintatulos(v);
+		valintatulosDao.createOrUpdateValintatulos(v);
 	}
 
 	private boolean checkIfOphAdmin(final Hakemus hakemus) {
