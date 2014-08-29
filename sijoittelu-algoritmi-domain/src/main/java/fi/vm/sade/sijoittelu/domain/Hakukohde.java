@@ -30,6 +30,8 @@ public class Hakukohde implements Serializable {
 
     private String tarjoajaOid;
 
+    private boolean kaikkiJonotSijoiteltu = true;
+
     @Embedded
     private List<Valintatapajono> valintatapajonot = new ArrayList<Valintatapajono>();
     
@@ -103,5 +105,13 @@ public class Hakukohde implements Serializable {
                 ", valintatapajonot=" + valintatapajonot +
                 ", hakijaryhmat=" + hakijaryhmat +
                 '}';
+    }
+
+    public boolean isKaikkiJonotSijoiteltu() {
+        return kaikkiJonotSijoiteltu;
+    }
+
+    public void setKaikkiJonotSijoiteltu(boolean kaikkiJonotSijoiteltu) {
+        this.kaikkiJonotSijoiteltu = kaikkiJonotSijoiteltu;
     }
 }

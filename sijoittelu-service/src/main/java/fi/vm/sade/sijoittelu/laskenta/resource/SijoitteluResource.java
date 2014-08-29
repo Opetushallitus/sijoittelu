@@ -20,6 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
 import scala.concurrent.Await;
 import scala.concurrent.Future;
@@ -32,10 +33,11 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static fi.vm.sade.sijoittelu.laskenta.actors.creators.SpringExtension.SpringExtProvider;
+import static fi.vm.sade.valintalaskenta.tulos.roles.ValintojenToteuttaminenRole.CRUD;
 
 @Path("sijoittele")
 @Component
-//@PreAuthorize("isAuthenticated()")
+@PreAuthorize("isAuthenticated()")
 @Api(value = "/tila", description = "Resurssi sijoitteluun")
 public class SijoitteluResource {
 
@@ -78,7 +80,7 @@ public class SijoitteluResource {
 
 	@GET
 	@Path("{hakuOid}")
-//	@PreAuthorize(CRUD)
+	@PreAuthorize(CRUD)
 	@ApiOperation(value = "Hakemuksen valintatulosten haku")
 	public String sijoittele(@PathParam("hakuOid") String hakuOid) {
 
@@ -97,14 +99,18 @@ public class SijoitteluResource {
             hakukohde.getValinnanvaihe().forEach(vaihe -> {
                 List<ValintatietoValintatapajonoDTO> konvertoidut = new ArrayList<>();
                 vaihe.getValintatapajonot().forEach(jono -> {
-                    if(jonot.containsKey(jono.getOid())) {
+                    if(jonot.containsKey(jono.getOid()) && jono.getValmisSijoiteltavaksi()) {
                         ValintatapajonoDTO perusteJono = jonot.get(jono.getOid());
                         jono.setAloituspaikat(perusteJono.getAloituspaikat());
                         jono.setEiVarasijatayttoa(perusteJono.getEiVarasijatayttoa());
                         jono.setPoissaOlevaTaytto(perusteJono.getPoissaOlevaTaytto());
                         jono.setTasasijasaanto(EnumConverter.convert(Tasasijasaanto.class,
                                 perusteJono.getTasapistesaanto()));
-                        // DTO:sta PUUTTUU VIELÄ KAMAA!!!
+                        jono.setTayttojono(perusteJono.getTayttojono());
+                        jono.setVarasijat(perusteJono.getVarasijat());
+                        jono.setVarasijaTayttoPaivat(perusteJono.getVarasijaTayttoPaivat());
+                        jono.setVarasijojaKaytetaanAlkaen(perusteJono.getVarasijojaKaytetaanAlkaen());
+                        jono.setVarasijojaTaytetaanAsti(perusteJono.getVarasijojaTaytetaanAsti());
                         konvertoidut.add(jono);
                         jonot.remove(jono.getOid());
                     }
@@ -129,6 +135,7 @@ public class SijoitteluResource {
             LOGGER.error("############### Sijoittelu valmis ###############");
             return String.valueOf(onnistui);
         } catch (Exception e) {
+            e.printStackTrace();
             return "false";
         }
 
