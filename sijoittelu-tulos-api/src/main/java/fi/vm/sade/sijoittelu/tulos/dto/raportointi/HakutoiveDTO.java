@@ -8,8 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created with IntelliJ IDEA. User: kkammone Date: 17.9.2013 Time: 9:47 To
- * change this template use File | Settings | File Templates.
+ *  Hakemukseen liittyvän hakutoiveen tila sijoittelussa, hakujonoittain.
  */
 public class HakutoiveDTO implements Comparable<HakutoiveDTO> {
 

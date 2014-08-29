@@ -3,7 +3,7 @@ package fi.vm.sade.sijoittelu.tulos.dto.raportointi;
 import java.util.List;
 
 /**
- * @author blomqvie
+ *  Hakemuksen sijoittelutilan yhteenveto. Ei hakujonokohtaista tietoa, vaan yhteenveto hakutoiveittain
  */
 public class HakemusYhteenvetoDTO {
 

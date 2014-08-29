@@ -8,8 +8,7 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 /**
- * Created with IntelliJ IDEA. User: kkammone Date: 16.9.2013 Time: 14:45 To
- * change this template use File | Settings | File Templates.
+ *  Hakemuksen tilaa sijoittelussa, sisältäen kunkin hakutoiveen osalta hakujonokohtaisen tilan.
  */
 public class HakijaDTO {
 
