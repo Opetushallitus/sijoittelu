@@ -28,6 +28,8 @@ public class HakutoiveDTO implements Comparable<HakutoiveDTO> {
     @JsonView(JsonViews.Hakija.class)
     private List<HakutoiveenValintatapajonoDTO> hakutoiveenValintatapajonot = new ArrayList<HakutoiveenValintatapajonoDTO>();
 
+    private boolean kaikkiJonotSijoiteltu = true;
+
     @Override
     public int compareTo(HakutoiveDTO o) {
         if (hakutoive == null) {
@@ -74,5 +76,13 @@ public class HakutoiveDTO implements Comparable<HakutoiveDTO> {
 
     public void setPistetiedot(List<PistetietoDTO> pistetiedot) {
         this.pistetiedot = pistetiedot;
+    }
+
+    public boolean isKaikkiJonotSijoiteltu() {
+        return kaikkiJonotSijoiteltu;
+    }
+
+    public void setKaikkiJonotSijoiteltu(boolean kaikkiJonotSijoiteltu) {
+        this.kaikkiJonotSijoiteltu = kaikkiJonotSijoiteltu;
     }
 }

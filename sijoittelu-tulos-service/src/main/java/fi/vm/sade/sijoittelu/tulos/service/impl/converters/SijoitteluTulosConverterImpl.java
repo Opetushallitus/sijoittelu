@@ -46,6 +46,7 @@ public class SijoitteluTulosConverterImpl implements SijoitteluTulosConverter {
 		dto.setTarjoajaOid(hakukohde.getTarjoajaOid());
 		dto.setTila(EnumConverter.convert(HakukohdeTila.class,
 				hakukohde.getTila()));
+        dto.setKaikkiJonotSijoiteltu(hakukohde.isKaikkiJonotSijoiteltu());
 		for (Valintatapajono valintatapajono : hakukohde.getValintatapajonot()) {
 			dto.getValintatapajonot().add(convert(valintatapajono, hakukohde));
 		}
@@ -67,6 +68,11 @@ public class SijoitteluTulosConverterImpl implements SijoitteluTulosConverter {
 				valintatapajono.getTasasijasaanto()));
 		dto.setTila(EnumConverter.convert(ValintatapajonoTila.class,
 				valintatapajono.getTila()));
+        dto.setTayttojono(valintatapajono.getTayttojono());
+        dto.setVarasijat(valintatapajono.getVarasijat());
+        dto.setVarasijaTayttoPaivat(valintatapajono.getVarasijaTayttoPaivat());
+        dto.setVarasijojaKaytetaanAlkaen(valintatapajono.getVarasijojaKaytetaanAlkaen());
+        dto.setVarasijojaTaytetaanAsti(valintatapajono.getVarasijojaTaytetaanAsti());
 		for (Hakemus hakemus : valintatapajono.getHakemukset()) {
 			dto.getHakemukset().add(
 					convert(hakemus, valintatapajono, hakukohde));
