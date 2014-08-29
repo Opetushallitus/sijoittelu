@@ -27,7 +27,7 @@ public class DataImportService {
     @PostConstruct
     public void importData() throws IOException {
         DB db = mongo.getDB(dbname);
-        DBObject base = readJson("fi/vm/sade/sijoittelu/tulos/resource/sijoittelu-base-mockdata.json");
+        DBObject base = readJson("fi/vm/sade/sijoittelu/tulos/resource/sijoittelu-basedata.json");
         insertData(db, base);
         DBObject tulokset = readJson("fi/vm/sade/sijoittelu/tulos/resources/sijoittelu-tulos-mockdata.json");
         insertData(db, tulokset);
