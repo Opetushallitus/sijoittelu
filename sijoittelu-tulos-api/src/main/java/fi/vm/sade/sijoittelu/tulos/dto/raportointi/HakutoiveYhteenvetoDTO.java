@@ -4,6 +4,9 @@ import fi.vm.sade.sijoittelu.tulos.dto.HakemuksenTila;
 import fi.vm.sade.sijoittelu.tulos.dto.IlmoittautumisTila;
 import fi.vm.sade.sijoittelu.tulos.dto.ValintatuloksenTila;
 
+/**
+ *  Hakemuksen hakutoiveen sijoittelutilan yhteenveto (hakujonokohtaiset tiedot koostettu yhteen)
+ */
 public class HakutoiveYhteenvetoDTO {
 
     public final String hakukohdeOid;

@@ -12,8 +12,7 @@ import fi.vm.sade.sijoittelu.tulos.dto.HakemuksenTila;
 import fi.vm.sade.sijoittelu.tulos.dto.JsonViews;
 
 /**
- * Created with IntelliJ IDEA. User: kkammone Date: 18.9.2013 Time: 14:11 To
- * change this template use File | Settings | File Templates.
+ *  Hakemukseen liittyvän hakumuksen sijoittelutila yksittäisessä valintatapajonossa
  */
 public class HakutoiveenValintatapajonoDTO {
 
