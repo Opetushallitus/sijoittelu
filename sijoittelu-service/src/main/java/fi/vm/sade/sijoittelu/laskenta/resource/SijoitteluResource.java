@@ -47,36 +47,38 @@ public class SijoitteluResource {
 	@Autowired
 	private SijoitteluBusinessService sijoitteluBusinessService;
 
-    @Autowired
-    private ValintalaskentaTulosService tulosService;
+	@Autowired
+	private ValintalaskentaTulosService tulosService;
 
-    @Autowired
-    private ValintatietoService valintatietoService;
+	@Autowired
+	private ValintatietoService valintatietoService;
 
-    @Autowired
-    private ApplicationContext applicationContext;
+	@Autowired
+	private ApplicationContext applicationContext;
 
-    @Autowired
-    private ValintaperusteetResource valintaperusteetResource;
+	@Autowired
+	private ValintaperusteetResource valintaperusteetResource;
 
-    private ActorSystem actorSystem;
+	private ActorSystem actorSystem;
 
-    private ActorRef master;
+	private ActorRef master;
 
-    @PostConstruct
-    public void initActorSystem() {
-        actorSystem = ActorSystem.create("SijoitteluActorSystem");
-        SpringExtProvider.get(actorSystem).initialize(applicationContext);
+	@PostConstruct
+	public void initActorSystem() {
+		actorSystem = ActorSystem.create("SijoitteluActorSystem");
+		SpringExtProvider.get(actorSystem).initialize(applicationContext);
 
-        master = actorSystem.actorOf(
-                SpringExtProvider.get(actorSystem).props("SijoitteluActor").withRouter(new RoundRobinRouter(1)), "SijoitteluRouter");
-    }
+		master = actorSystem.actorOf(
+				SpringExtProvider.get(actorSystem).props("SijoitteluActor")
+						.withRouter(new RoundRobinRouter(1)),
+				"SijoitteluRouter");
+	}
 
-    @PreDestroy
-    public void tearDownActorSystem() {
-        actorSystem.shutdown();
-        actorSystem.awaitTermination();
-    }
+	@PreDestroy
+	public void tearDownActorSystem() {
+		actorSystem.shutdown();
+		actorSystem.awaitTermination();
+	}
 
 	@GET
 	@Path("{hakuOid}")
@@ -84,13 +86,13 @@ public class SijoitteluResource {
 	@ApiOperation(value = "Hakemuksen valintatulosten haku")
 	public String sijoittele(@PathParam("hakuOid") String hakuOid) {
 
-        LOGGER.error("Valintatietoja valmistetaan haulle {}!", hakuOid);
+		LOGGER.error("Valintatietoja valmistetaan haulle {}!", hakuOid);
 
-        HakuDTO haku = valintatietoService.haeValintatiedot(hakuOid);
+		HakuDTO haku = valintatietoService.haeValintatiedot(hakuOid);
 
-        LOGGER.error("Valintatiedot haettu serviceltä {}!", hakuOid);
+		LOGGER.error("Valintatiedot haettu serviceltä {}!", hakuOid);
 
-        LOGGER.error("Asetetaan valintaperusteet {}!", hakuOid);
+		LOGGER.error("Asetetaan valintaperusteet {}!", hakuOid);
 
         haku.getHakukohteet().forEach(hakukohde -> {
             Map<String, ValintatapajonoDTO> jonot =
@@ -122,12 +124,11 @@ public class SijoitteluResource {
             }
         });
 
-        LOGGER.error("Valintaperusteet asetettu {}!", hakuOid);
+		LOGGER.error("Valintaperusteet asetettu {}!", hakuOid);
 
-        Timeout timeout = new Timeout(Duration.create(60, "minutes"));
+		Timeout timeout = new Timeout(Duration.create(60, "minutes"));
 
-        Future<Object> future = Patterns
-                .ask(master, haku, timeout);
+		Future<Object> future = Patterns.ask(master, haku, timeout);
 
         try {
             LOGGER.error("############### Odotellaan sijoittelun valmistumista ###############");
@@ -139,16 +140,16 @@ public class SijoitteluResource {
             return "false";
         }
 
-//        try {
-//            sijoitteluBusinessService.sijoittele(haku);
-//            LOGGER.error("Sijoittelu suoritettu onnistuneesti!");
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//            LOGGER.error("Sijoittelu epäonnistui syystä {}!\r\n{}",
-//                    e.getMessage(), Arrays.toString(e.getStackTrace()));
-//            return "false";
-//        }
-//        return "true";
+		// try {
+		// sijoitteluBusinessService.sijoittele(haku);
+		// LOGGER.error("Sijoittelu suoritettu onnistuneesti!");
+		// } catch (Exception e) {
+		// e.printStackTrace();
+		// LOGGER.error("Sijoittelu epäonnistui syystä {}!\r\n{}",
+		// e.getMessage(), Arrays.toString(e.getStackTrace()));
+		// return "false";
+		// }
+		// return "true";
 	}
 
 }
