@@ -6,9 +6,7 @@ import com.lordofthejars.nosqlunit.annotation.UsingDataSet;
 import com.lordofthejars.nosqlunit.core.LoadStrategyEnum;
 import com.lordofthejars.nosqlunit.mongodb.MongoDbRule;
 import fi.vm.sade.sijoittelu.tulos.dto.HakemuksenTila;
-import fi.vm.sade.sijoittelu.tulos.dto.raportointi.HakemusYhteenvetoDTO;
-import fi.vm.sade.sijoittelu.tulos.dto.raportointi.HakijaDTO;
-import fi.vm.sade.sijoittelu.tulos.dto.raportointi.HakutoiveYhteenvetoDTO;
+import fi.vm.sade.sijoittelu.tulos.dto.raportointi.*;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -50,36 +48,42 @@ public class SijoitteluResourceTest {
 
     @Test
     @UsingDataSet(locations = {"sijoittelu-basedata.json", "sijoittelu-tulos-mockdata.json"}, loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
-    public void yhteenveto() throws JsonProcessingException {
-        String expectedResponse = "{\"hakemusOid\":\"1.2.246.562.11.00000441369\",\"hakutoiveet\":[{\"hakukohdeOid\":\"1.2.246.562.5.72607738902\",\"tarjoajaOid\":\"1.2.246.562.10.591352080610\",\"tila\":\"HYVAKSYTTY\",\"vastaanottotieto\":\"ILMOITETTU\",\"ilmoittautumisTila\":null,\"jonosija\":1,\"varasijanNumero\":null,\"kaikkiJonotSijoiteltu\":true}]}";
+    public void hyvaksytty() throws JsonProcessingException {
+        String expectedResponse = "{\"hakemusOid\":\"1.2.246.562.11.00000441369\",\"hakutoiveet\":[{\"hakukohdeOid\":\"1.2.246.562.5.72607738902\",\"tarjoajaOid\":\"1.2.246.562.10.591352080610\",\"valintatila\":\"HYVAKSYTTY\",\"vastaanottotila\":\"ILMOITETTU\",\"ilmoittautumistila\":null,\"vastaanotettavuustila\":\"VASTAANOTETTAVISSA_SITOVASTI\",\"jonosija\":null,\"varasijanumero\":1}]}";
         HakemusYhteenvetoDTO yhteenveto = getYhteenveto();
         assertEquals(expectedResponse, objectMapper.writeValueAsString(yhteenveto));
+        checkHakutoiveState(yhteenveto.hakutoiveet.get(0), YhteenvedonTila.HYVAKSYTTY, Vastaanotettavuustila.VASTAANOTETTAVISSA_SITOVASTI);
     }
 
     @Test
     @UsingDataSet(locations = {"sijoittelu-basedata.json", "hylatty-jonoja-kesken.json"}, loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
-    public void hakutoiveHylattyJaKesken() {
+    public void hakutoiveHylattyKunSijoitteluKesken() {
         HakutoiveYhteenvetoDTO hakuToive = getHakuToive();
-        checkHakutoiveState(hakuToive, HakemuksenTila.HYLATTY, false);
+        checkHakutoiveState(hakuToive, YhteenvedonTila.KESKEN, Vastaanotettavuustila.EI_VASTAANOTETTAVISSA);
     }
 
     @Test
     @UsingDataSet(locations = {"sijoittelu-basedata.json", "hylatty-jonot-valmiit.json"}, loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
-    public void hakutoiveHylattyJaValmis() {
+    public void hakutoiveHylattyKunSijoitteluValmis() {
         HakutoiveYhteenvetoDTO hakuToive = getHakuToive();
-        checkHakutoiveState(hakuToive, HakemuksenTila.HYLATTY, true);
+        checkHakutoiveState(hakuToive, YhteenvedonTila.HYLATTY, Vastaanotettavuustila.EI_VASTAANOTETTAVISSA);
     }
 
     @Test
     @UsingDataSet(locations = {"sijoittelu-basedata.json", "varalla-jonot-valmiit.json"}, loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
-    public void hakutoiveVarallaJaValmis() {
+    public void hakutoiveVarallaKunSijoitteluValmis() {
         HakutoiveYhteenvetoDTO hakuToive = getHakuToive();
-        checkHakutoiveState(hakuToive, HakemuksenTila.VARALLA, true);
+        checkHakutoiveState(hakuToive, YhteenvedonTila.VARALLA, Vastaanotettavuustila.EI_VASTAANOTETTAVISSA);
     }
 
-    private void checkHakutoiveState(HakutoiveYhteenvetoDTO hakuToive, HakemuksenTila expectedTila, boolean expectedJonotila) {
-        assertEquals(expectedTila, hakuToive.tila);
-        assertEquals(expectedJonotila, hakuToive.kaikkiJonotSijoiteltu);
+    @Test
+    public void hakutoivePeruuntunutKunSijoitteluValmis() {
+
+    }
+
+    private void checkHakutoiveState(HakutoiveYhteenvetoDTO hakuToive, YhteenvedonTila expectedTila, Vastaanotettavuustila vastaanotettavuustila) {
+        assertEquals(expectedTila, hakuToive.valintatila);
+        assertEquals(vastaanotettavuustila, hakuToive.vastaanotettavuustila);
     }
 
     private HakutoiveYhteenvetoDTO getHakuToive() {

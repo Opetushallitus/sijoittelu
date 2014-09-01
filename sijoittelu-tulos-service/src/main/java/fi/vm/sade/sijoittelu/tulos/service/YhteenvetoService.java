@@ -1,72 +1,63 @@
 package fi.vm.sade.sijoittelu.tulos.service;
 
-import fi.vm.sade.sijoittelu.tulos.dto.HakemuksenTila;
 import fi.vm.sade.sijoittelu.tulos.dto.raportointi.*;
 
+import java.util.Arrays;
 import java.util.Optional;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import static fi.vm.sade.sijoittelu.tulos.dto.HakemuksenTila.*;
+import static fi.vm.sade.sijoittelu.tulos.dto.raportointi.Vastaanotettavuustila.*;
+import static fi.vm.sade.sijoittelu.tulos.dto.raportointi.YhteenvedonTila.KESKEN;
+import static fi.vm.sade.sijoittelu.tulos.dto.raportointi.YhteenvedonTila.fromHakemuksenTila;
 
 public class YhteenvetoService {
 
     public static HakemusYhteenvetoDTO yhteenveto(HakijaDTO hakija) {
         return new HakemusYhteenvetoDTO(hakija.getHakemusOid(), hakija.getHakutoiveet().stream().map(hakutoive -> {
 
-            HakutoiveenValintatapajonoDTO jono;
-            Optional<HakutoiveenValintatapajonoDTO> hyvaksytty = hyvaksytty(hakutoive);
-            if (hyvaksytty.isPresent()) {
-                /*
-                if ylempia hakutoiveita
-                     if varasijasääntö lauennut -> hyväksytty, vastaanotto + ehdollinen vastaanotto
-                     else
-                        if ylempiä hakutoiveita joita ei (kokonaisuudessaan) siirretty sijoitteluun -> kesken
-                        else if ylempiä, joissa varalla -> hyväksytty, ei paikan vastaanottoa
-                        else hyväksytty -> paikan vastaanotto
-                else
-                -> hyväksytty, paikan vastaanotto
-                */
-                jono = hyvaksytty.get();
+            HakutoiveenValintatapajonoDTO jono = getFirst(hakutoive).get();
+            YhteenvedonTila valintatila = fromHakemuksenTila(jono.getTila());
+            Vastaanotettavuustila vastaanotettavuustila = EI_VASTAANOTETTAVISSA;
+
+            if (Arrays.asList(HYVAKSYTTY, HARKINNANVARAISESTI_HYVAKSYTTY).contains(jono.getTila())) {
+                vastaanotettavuustila = VASTAANOTETTAVISSA_SITOVASTI;
+                if (hakutoive.getHakutoive() > 1) {
+                    // TODO varasijasääntöjen aikaparametri
+                    if (false) {
+
+                    } else {
+                        Stream<HakutoiveDTO> ylemmatToiveet = ylemmatHakutoiveet(hakija, hakutoive.getHakutoive());
+                        boolean ylempiaHakutoiveitaSijoittelematta = ylemmatToiveet.filter(toive -> !toive.isKaikkiJonotSijoiteltu()).count() > 0;
+                        if (ylempiaHakutoiveitaSijoittelematta) {
+                            valintatila = KESKEN;
+                            vastaanotettavuustila = EI_VASTAANOTETTAVISSA;
+                        } else {
+                            boolean ylempiaHakutoiveitaVaralla = ylemmatToiveet.filter(toive -> getFirst(toive).get().getTila().equals(VARALLA)).count() > 0;
+                            if (ylempiaHakutoiveitaVaralla) {
+                                vastaanotettavuustila = EI_VASTAANOTETTAVISSA;
+                            }
+                        }
+                    }
+                }
             } else {
                 if (!hakutoive.isKaikkiJonotSijoiteltu()) {
-                    jono = hakutoive.getHakutoiveenValintatapajonot().get(0);
-                } else {
-                    Optional<HakutoiveenValintatapajonoDTO> varalla = varalla(hakutoive);
-                    Optional<HakutoiveenValintatapajonoDTO> hylatty = hylatty(hakutoive);
-                    if (varalla.isPresent()) {
-                        jono = varalla.get();
-                    } else { //if (hylatty.isPresent()) {
-                        jono = hylatty.get();
-                    }
-                    // TODO muut tilat?
-                    //else {
-                    //}
+                    valintatila = KESKEN;
                 }
             }
-            return new HakutoiveYhteenvetoDTO(hakutoive.getHakukohdeOid(), hakutoive.getTarjoajaOid(), jono.getTila(), jono.getVastaanottotieto(), jono.getIlmoittautumisTila(), jono.getJonosija(), jono.getVarasijanNumero(), hakutoive.isKaikkiJonotSijoiteltu());
+            return new HakutoiveYhteenvetoDTO(hakutoive.getHakukohdeOid(), hakutoive.getTarjoajaOid(), valintatila, jono.getVastaanottotieto(), jono.getIlmoittautumisTila(), vastaanotettavuustila, jono.getVarasijanNumero(), jono.getJonosija());
         }).collect(Collectors.toList()));
     }
 
-    private static Optional<HakutoiveenValintatapajonoDTO> hylatty(HakutoiveDTO hakutoive) {
-        return sisaltaaJononTilassa(hakutoive, HakemuksenTila.HYLATTY);
+    private static Stream<HakutoiveDTO> ylemmatHakutoiveet(HakijaDTO hakija, Integer prioriteettiRaja) {
+        return hakija.getHakutoiveet().stream().filter(t -> t.getHakutoive() < prioriteettiRaja);
     }
 
-    private static Optional<HakutoiveenValintatapajonoDTO> hyvaksytty(HakutoiveDTO hakutoive) {
-        return sisaltaaJononTilassa(hakutoive, HakemuksenTila.HYVAKSYTTY);
-    }
-
-    private static Optional<HakutoiveenValintatapajonoDTO> varalla(HakutoiveDTO hakutoive) {
-        return sisaltaaJononTilassa(hakutoive, HakemuksenTila.VARALLA);
-    }
-
-    private static Optional<HakutoiveenValintatapajonoDTO> sisaltaaJononTilassa(HakutoiveDTO hakutoive, HakemuksenTila tila) {
-        return getFirst(hakutoive, jono -> jono.getTila().equals(tila));
-    }
-
-    private static Optional<HakutoiveenValintatapajonoDTO> getFirst(HakutoiveDTO hakutoive, Predicate<HakutoiveenValintatapajonoDTO> predicate) {
-        // TODO sort by priority?
+    private static Optional<HakutoiveenValintatapajonoDTO> getFirst(HakutoiveDTO hakutoive) {
         return hakutoive.getHakutoiveenValintatapajonot()
                 .stream()
-                .filter(predicate)
+                .sorted((jono1, jono2) -> fromHakemuksenTila(jono1.getTila()).compareTo(fromHakemuksenTila(jono2.getTila())))
                 .findFirst();
     }
 }
