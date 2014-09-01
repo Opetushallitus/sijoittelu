@@ -56,6 +56,22 @@ public class SijoitteluResourceTest {
     }
 
     @Test
+    @UsingDataSet(locations = {"sijoittelu-basedata.json", "hyvaksytty-ylempi-sijoittelematon.json"}, loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
+    public void hyvaksyttyYlempiSijoittelematon() throws JsonProcessingException {
+        HakemusYhteenvetoDTO yhteenveto = getYhteenveto();
+        checkHakutoiveState(yhteenveto.hakutoiveet.get(0), YhteenvedonTila.KESKEN, Vastaanotettavuustila.EI_VASTAANOTETTAVISSA);
+        checkHakutoiveState(yhteenveto.hakutoiveet.get(1), YhteenvedonTila.KESKEN, Vastaanotettavuustila.EI_VASTAANOTETTAVISSA);
+    }
+
+    @Test
+    @UsingDataSet(locations = {"sijoittelu-basedata.json", "hyvaksytty-ylempi-sijoiteltu.json"}, loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
+    public void hyvaksyttyYlemmatSijoiteltu() throws JsonProcessingException {
+        HakemusYhteenvetoDTO yhteenveto = getYhteenveto();
+        checkHakutoiveState(yhteenveto.hakutoiveet.get(0), YhteenvedonTila.HYLATTY, Vastaanotettavuustila.EI_VASTAANOTETTAVISSA);
+        checkHakutoiveState(yhteenveto.hakutoiveet.get(1), YhteenvedonTila.HYVAKSYTTY, Vastaanotettavuustila.VASTAANOTETTAVISSA_SITOVASTI);
+    }
+
+    @Test
     @UsingDataSet(locations = {"sijoittelu-basedata.json", "hylatty-jonoja-kesken.json"}, loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
     public void hakutoiveHylattyKunSijoitteluKesken() {
         HakutoiveYhteenvetoDTO hakuToive = getHakuToive();
@@ -74,6 +90,7 @@ public class SijoitteluResourceTest {
     public void hakutoiveVarallaKunSijoitteluValmis() {
         HakutoiveYhteenvetoDTO hakuToive = getHakuToive();
         checkHakutoiveState(hakuToive, YhteenvedonTila.VARALLA, Vastaanotettavuustila.EI_VASTAANOTETTAVISSA);
+        assertEquals(new Integer(1), hakuToive.varasijanumero);
     }
 
     @Test

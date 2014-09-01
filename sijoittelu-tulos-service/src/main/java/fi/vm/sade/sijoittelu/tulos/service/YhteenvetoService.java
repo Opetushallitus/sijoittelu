@@ -28,13 +28,12 @@ public class YhteenvetoService {
                     if (false) {
 
                     } else {
-                        Stream<HakutoiveDTO> ylemmatToiveet = ylemmatHakutoiveet(hakija, hakutoive.getHakutoive());
-                        boolean ylempiaHakutoiveitaSijoittelematta = ylemmatToiveet.filter(toive -> !toive.isKaikkiJonotSijoiteltu()).count() > 0;
+                        boolean ylempiaHakutoiveitaSijoittelematta = ylemmatHakutoiveet(hakija, hakutoive.getHakutoive()).filter(toive -> !toive.isKaikkiJonotSijoiteltu()).count() > 0;
                         if (ylempiaHakutoiveitaSijoittelematta) {
                             valintatila = KESKEN;
                             vastaanotettavuustila = EI_VASTAANOTETTAVISSA;
                         } else {
-                            boolean ylempiaHakutoiveitaVaralla = ylemmatToiveet.filter(toive -> getFirst(toive).get().getTila().equals(VARALLA)).count() > 0;
+                            boolean ylempiaHakutoiveitaVaralla = ylemmatHakutoiveet(hakija, hakutoive.getHakutoive()).filter(toive -> getFirst(toive).get().getTila().equals(VARALLA)).count() > 0;
                             if (ylempiaHakutoiveitaVaralla) {
                                 vastaanotettavuustila = EI_VASTAANOTETTAVISSA;
                             }
