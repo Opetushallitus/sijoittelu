@@ -21,6 +21,7 @@ public class DomainConverter {
         Hakukohde hakukohde = new Hakukohde();
         hakukohde.setOid(hakukohdeTyyppi.getOid());
         hakukohde.setTarjoajaOid(hakukohdeTyyppi.getTarjoajaoid());
+        hakukohde.setKaikkiJonotSijoiteltu(hakukohdeTyyppi.isKaikkiJonotSijoiteltu());
         addValintatapaJonos(hakukohdeTyyppi, hakukohde);
         addHakijaRyhmas(hakukohdeTyyppi, hakukohde);
         return hakukohde;
@@ -67,6 +68,12 @@ public class DomainConverter {
             } else {
                 valintatapajono.setPoissaOlevaTaytto(false);
             }
+
+            valintatapajono.setTayttojono(valintatapajonoTyyppi.getTayttojono());
+            valintatapajono.setVarasijat(valintatapajonoTyyppi.getVarasijat());
+            valintatapajono.setVarasijaTayttoPaivat(valintatapajonoTyyppi.getVarasijaTayttoPaivat());
+            valintatapajono.setVarasijojaKaytetaanAlkaen(valintatapajonoTyyppi.getVarasijojaKaytetaanAlkaen());
+            valintatapajono.setVarasijojaTaytetaanAsti(valintatapajonoTyyppi.getVarasijojaTaytetaanAsti());
 
             hakukohde.getValintatapajonot().add(valintatapajono);
 

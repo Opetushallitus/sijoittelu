@@ -3,19 +3,17 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:context="http://www.springframework.org/schema/context"
        xmlns:util="http://www.springframework.org/schema/util"
+       xmlns:jaxrs-client="http://cxf.apache.org/jaxrs-client" xmlns:jaxrs="http://cxf.apache.org/jaxrs"
+       xmlns:http="http://cxf.apache.org/transports/http/configuration"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
-
+         http://cxf.apache.org/jaxrs http://cxf.apache.org/schemas/jaxrs.xsd
+         http://cxf.apache.org/jaxrs-client http://cxf.apache.org/schemas/jaxrs-client.xsd
+         http://cxf.apache.org/transports/http/configuration http://cxf.apache.org/schemas/configuration/http-conf.xsd
          http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd
          http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
 
     <context:annotation-config/>
-    <context:component-scan base-package="fi.vm.sade.sijoittelu.laskenta"/>
-    <context:component-scan base-package="fi.vm.sade.sijoittelu.batch"/>
-    <context:component-scan base-package="fi.vm.sade.valintalaskenta.tulos.dao"/>
-    <context:component-scan base-package="fi.vm.sade.valintalaskenta.tulos.service.impl"/>
-    <context:component-scan base-package="fi.vm.sade.valintalaskenta.tulos.resource.impl"/>
-    <context:component-scan base-package="fi.vm.sade.valintalaskenta.tulos.service.impl.converters"/>
-    
+
     <context:property-placeholder
             location="classpath:sijoittelu-service.properties, file:///${user.home:''}/oph-configuration/common.properties, file:///${user.home:''}/oph-configuration/valinta.properties, file:///${user.home:''}/oph-configuration/sijoittelu-service.properties,  file:///${user.home:''}/oph-configuration/override.properties"
             ignore-resource-not-found="true"
@@ -33,6 +31,48 @@
     </bean>
 
     <import resource="file:///${user.home:''}/oph-configuration/security-context-backend.xml"/>
+
+
+    <http:conduit name="*.http-conduit">
+        <!-- AllowChunking="false" Nginx fails without this -->
+        <http:client Connection="Keep-Alive" ConnectionTimeout="0"
+                     ReceiveTimeout="0" AllowChunking="false" />
+    </http:conduit>
+
+    <bean id="jacksonMapper" class="org.codehaus.jackson.map.ObjectMapper" />
+
+    <jaxrs-client:client id="ValintaperusteetLaskentaRestClient"
+                         address="${valintalaskentakoostepalvelu.valintaperusteet.rest.url}"
+                         serviceClass="fi.vm.sade.service.valintaperusteet.resource.ValintaperusteetResource"
+                         inheritHeaders="true">
+        <jaxrs-client:outInterceptors>
+            <bean
+                    class="fi.vm.sade.authentication.cas.CasApplicationAsAUserInterceptor">
+                <property name="webCasUrl" value="${web.url.cas}" />
+                <property name="targetService"
+                          value="${cas.service.valintaperusteet-service}/j_spring_cas_security_check" />
+                <property name="appClientUsername"
+                          value="${valintalaskentakoostepalvelu.app.username.to.valintatieto}" />
+                <property name="appClientPassword"
+                          value="${valintalaskentakoostepalvelu.app.password.to.valintatieto}" />
+            </bean>
+        </jaxrs-client:outInterceptors>
+        <jaxrs-client:providers>
+            <bean class="org.codehaus.jackson.jaxrs.JacksonJsonProvider" />
+            <bean class="fi.vm.sade.sijoittelu.tulos.resource.ObjectMapperProvider" />
+        </jaxrs-client:providers>
+    </jaxrs-client:client>
+
+    <context:component-scan base-package="fi.vm.sade.sijoittelu.laskenta"/>
+    <context:component-scan base-package="fi.vm.sade.sijoittelu.batch"/>
+    <context:component-scan base-package="fi.vm.sade.valintalaskenta.tulos.dao"/>
+    <context:component-scan base-package="fi.vm.sade.valintalaskenta.tulos.service.impl"/>
+    <context:component-scan base-package="fi.vm.sade.valintalaskenta.tulos.resource.impl"/>
+    <context:component-scan base-package="fi.vm.sade.valintalaskenta.tulos.service.impl.converters"/>
+    
+
+
+
 
     <bean id="swaggerResourceJSON" class="com.wordnik.swagger.jaxrs.listing.ApiListingResourceJSON"/>
 

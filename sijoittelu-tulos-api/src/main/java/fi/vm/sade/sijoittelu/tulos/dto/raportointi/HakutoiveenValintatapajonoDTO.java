@@ -1,6 +1,7 @@
 package fi.vm.sade.sijoittelu.tulos.dto.raportointi;
 
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -12,8 +13,7 @@ import fi.vm.sade.sijoittelu.tulos.dto.HakemuksenTila;
 import fi.vm.sade.sijoittelu.tulos.dto.JsonViews;
 
 /**
- * Created with IntelliJ IDEA. User: kkammone Date: 18.9.2013 Time: 14:11 To
- * change this template use File | Settings | File Templates.
+ *  Hakemukseen liittyvän hakumuksen sijoittelutila yksittäisessä valintatapajonossa
  */
 public class HakutoiveenValintatapajonoDTO {
 
@@ -67,6 +67,16 @@ public class HakutoiveenValintatapajonoDTO {
 
 	@JsonView(JsonViews.Hakija.class)
 	private Integer varalla;
+
+    private Integer varasijat = 0;
+
+    private Integer varasijaTayttoPaivat = 0;
+
+    private Date varasijojaKaytetaanAlkaen;
+
+    private Date varasijojaTaytetaanAsti;
+
+    private String tayttojono;
 
 	public IlmoittautumisTila getIlmoittautumisTila() {
 		return ilmoittautumisTila;
@@ -206,4 +216,44 @@ public class HakutoiveenValintatapajonoDTO {
 	public void setTilanKuvaukset(Map<String, String> tilanKuvaukset) {
 		this.tilanKuvaukset = tilanKuvaukset;
 	}
+
+    public Integer getVarasijat() {
+        return varasijat;
+    }
+
+    public void setVarasijat(Integer varasijat) {
+        this.varasijat = varasijat;
+    }
+
+    public Integer getVarasijaTayttoPaivat() {
+        return varasijaTayttoPaivat;
+    }
+
+    public void setVarasijaTayttoPaivat(Integer varasijaTayttoPaivat) {
+        this.varasijaTayttoPaivat = varasijaTayttoPaivat;
+    }
+
+    public Date getVarasijojaKaytetaanAlkaen() {
+        return varasijojaKaytetaanAlkaen;
+    }
+
+    public void setVarasijojaKaytetaanAlkaen(Date varasijojaKaytetaanAlkaen) {
+        this.varasijojaKaytetaanAlkaen = varasijojaKaytetaanAlkaen;
+    }
+
+    public Date getVarasijojaTaytetaanAsti() {
+        return varasijojaTaytetaanAsti;
+    }
+
+    public void setVarasijojaTaytetaanAsti(Date varasijojaTaytetaanAsti) {
+        this.varasijojaTaytetaanAsti = varasijojaTaytetaanAsti;
+    }
+
+    public String getTayttojono() {
+        return tayttojono;
+    }
+
+    public void setTayttojono(String tayttojono) {
+        this.tayttojono = tayttojono;
+    }
 }

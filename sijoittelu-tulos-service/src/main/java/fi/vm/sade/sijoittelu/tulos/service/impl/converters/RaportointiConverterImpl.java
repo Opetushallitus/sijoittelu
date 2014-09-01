@@ -39,7 +39,7 @@ public class RaportointiConverterImpl implements RaportointiConverter {
 					HakijaDTO hakijaRaportointiDTO = getOrCreateHakijaRaportointiDTO(
 							hakijat, hakemusDTO);
 					HakutoiveDTO raportointiHakutoiveDTO = getOrCreateHakutoive(
-							hakijaRaportointiDTO, hakemusDTO);
+							hakijaRaportointiDTO, hakemusDTO, hakukohde);
 					HakutoiveenValintatapajonoDTO hakutoiveenValintatapajonoDTO = new HakutoiveenValintatapajonoDTO();
 					raportointiHakutoiveDTO.getHakutoiveenValintatapajonot()
 							.add(hakutoiveenValintatapajonoDTO);
@@ -57,6 +57,11 @@ public class RaportointiConverterImpl implements RaportointiConverter {
 							.getHakeneet());
 					hakutoiveenValintatapajonoDTO
 							.setValintatapajonoOid(valintatapajono.getOid());
+                    hakutoiveenValintatapajonoDTO.setTayttojono(valintatapajono.getTayttojono());
+                    hakutoiveenValintatapajonoDTO.setVarasijat(valintatapajono.getVarasijat());
+                    hakutoiveenValintatapajonoDTO.setVarasijaTayttoPaivat(valintatapajono.getVarasijaTayttoPaivat());
+                    hakutoiveenValintatapajonoDTO.setVarasijojaKaytetaanAlkaen(valintatapajono.getVarasijojaKaytetaanAlkaen());
+                    hakutoiveenValintatapajonoDTO.setVarasijojaTaytetaanAsti(valintatapajono.getVarasijojaTaytetaanAsti());
 					hakutoiveenValintatapajonoDTO
 							.setValintatapajonoNimi(valintatapajono.getNimi());
 
@@ -213,7 +218,7 @@ public class RaportointiConverterImpl implements RaportointiConverter {
 	}
 
 	private HakutoiveDTO getOrCreateHakutoive(HakijaDTO hakijaDTO,
-			HakemusDTO hakemusDTO) {
+			HakemusDTO hakemusDTO, HakukohdeDTO hakukohde) {
 		HakutoiveDTO hakutoiveDTO = null;
 		for (HakutoiveDTO hd : hakijaDTO.getHakutoiveet()) {
 			if (hd.getHakukohdeOid().equals(hakemusDTO.getHakukohdeOid())) {
@@ -224,6 +229,7 @@ public class RaportointiConverterImpl implements RaportointiConverter {
 			hakutoiveDTO = new HakutoiveDTO();
 			hakutoiveDTO.setTarjoajaOid(hakemusDTO.getTarjoajaOid());
 			hakutoiveDTO.setHakukohdeOid(hakemusDTO.getHakukohdeOid());
+            hakutoiveDTO.setKaikkiJonotSijoiteltu(hakukohde.isKaikkiJonotSijoiteltu());
 			hakutoiveDTO.setHakutoive(hakemusDTO.getPrioriteetti());
 			hakijaDTO.getHakutoiveet().add(hakutoiveDTO);
 		}

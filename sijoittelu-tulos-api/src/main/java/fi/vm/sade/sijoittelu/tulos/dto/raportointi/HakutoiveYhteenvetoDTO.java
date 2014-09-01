@@ -4,6 +4,9 @@ import fi.vm.sade.sijoittelu.tulos.dto.HakemuksenTila;
 import fi.vm.sade.sijoittelu.tulos.dto.IlmoittautumisTila;
 import fi.vm.sade.sijoittelu.tulos.dto.ValintatuloksenTila;
 
+/**
+ *  Hakemuksen hakutoiveen sijoittelutilan yhteenveto (hakujonokohtaiset tiedot koostettu yhteen)
+ */
 public class HakutoiveYhteenvetoDTO {
 
     public final String hakukohdeOid;
@@ -13,8 +16,9 @@ public class HakutoiveYhteenvetoDTO {
     public final IlmoittautumisTila ilmoittautumisTila;
     public final Integer jonosija;
     public final Integer varasijanNumero;
+    public final boolean kaikkiJonotSijoiteltu;
 
-    public HakutoiveYhteenvetoDTO(String hakukohdeOid, String tarjoajaOid, HakemuksenTila tila, ValintatuloksenTila vastaanottotieto, IlmoittautumisTila ilmoittautumisTila, Integer jonosija, Integer varasijanNumero) {
+    public HakutoiveYhteenvetoDTO(String hakukohdeOid, String tarjoajaOid, HakemuksenTila tila, ValintatuloksenTila vastaanottotieto, IlmoittautumisTila ilmoittautumisTila, Integer jonosija, Integer varasijanNumero, boolean kaikkiJonotSijoiteltu) {
         this.hakukohdeOid = hakukohdeOid;
         this.tarjoajaOid = tarjoajaOid;
         this.tila = tila;
@@ -22,5 +26,6 @@ public class HakutoiveYhteenvetoDTO {
         this.ilmoittautumisTila = ilmoittautumisTila;
         this.jonosija = jonosija;
         this.varasijanNumero = varasijanNumero;
+        this.kaikkiJonotSijoiteltu = kaikkiJonotSijoiteltu;
     }
 }

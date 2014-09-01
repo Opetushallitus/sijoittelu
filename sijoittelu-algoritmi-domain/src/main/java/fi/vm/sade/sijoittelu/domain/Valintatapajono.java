@@ -4,6 +4,7 @@ import org.mongodb.morphia.annotations.Embedded;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Date;
 
 /**
  * @author Kari Kammonen
@@ -28,6 +29,16 @@ public class Valintatapajono implements Serializable {
     private Boolean kaikkiEhdonTayttavatHyvaksytaan;
 
     private Boolean poissaOlevaTaytto;
+
+    private Integer varasijat = 0;
+
+    private Integer varasijaTayttoPaivat = 0;
+
+    private Date varasijojaKaytetaanAlkaen;
+
+    private Date varasijojaTaytetaanAsti;
+
+    private String tayttojono;
 
     //@Embedded
     //private List<Saanto> saannot = new ArrayList<Saanto>();
@@ -126,5 +137,45 @@ public class Valintatapajono implements Serializable {
 
     public void setPoissaOlevaTaytto(Boolean poissaOlevaTaytto) {
         this.poissaOlevaTaytto = poissaOlevaTaytto;
+    }
+
+    public Integer getVarasijat() {
+        return varasijat;
+    }
+
+    public void setVarasijat(Integer varasijat) {
+        this.varasijat = varasijat;
+    }
+
+    public Integer getVarasijaTayttoPaivat() {
+        return varasijaTayttoPaivat;
+    }
+
+    public void setVarasijaTayttoPaivat(Integer varasijaTayttoPaivat) {
+        this.varasijaTayttoPaivat = varasijaTayttoPaivat;
+    }
+
+    public Date getVarasijojaKaytetaanAlkaen() {
+        return varasijojaKaytetaanAlkaen;
+    }
+
+    public void setVarasijojaKaytetaanAlkaen(Date varasijojaKaytetaanAlkaen) {
+        this.varasijojaKaytetaanAlkaen = varasijojaKaytetaanAlkaen;
+    }
+
+    public Date getVarasijojaTaytetaanAsti() {
+        return varasijojaTaytetaanAsti;
+    }
+
+    public String getTayttojono() {
+        return tayttojono;
+    }
+
+    public void setTayttojono(String tayttojono) {
+        this.tayttojono = tayttojono;
+    }
+
+    public void setVarasijojaTaytetaanAsti(Date varasijojaTaytetaanAsti) {
+        this.varasijojaTaytetaanAsti = varasijojaTaytetaanAsti;
     }
 }

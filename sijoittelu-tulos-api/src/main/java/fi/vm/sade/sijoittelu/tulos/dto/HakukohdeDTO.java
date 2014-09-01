@@ -27,6 +27,8 @@ public class HakukohdeDTO implements Serializable {
     @JsonView(JsonViews.Hakukohde.class)
     private List<ValintatapajonoDTO> valintatapajonot = new ArrayList<ValintatapajonoDTO>();
 
+    private boolean kaikkiJonotSijoiteltu = true;
+
     // do not include jsut yet
     // private List<Hakijaryhma> hakijaryhmat = new ArrayList<Hakijaryhma>();
 
@@ -70,4 +72,11 @@ public class HakukohdeDTO implements Serializable {
         this.valintatapajonot = valintatapajonot;
     }
 
+    public boolean isKaikkiJonotSijoiteltu() {
+        return kaikkiJonotSijoiteltu;
+    }
+
+    public void setKaikkiJonotSijoiteltu(boolean kaikkiJonotSijoiteltu) {
+        this.kaikkiJonotSijoiteltu = kaikkiJonotSijoiteltu;
+    }
 }
