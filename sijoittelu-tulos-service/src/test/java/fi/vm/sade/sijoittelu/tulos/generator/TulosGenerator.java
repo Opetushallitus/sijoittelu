@@ -1,6 +1,7 @@
 package fi.vm.sade.sijoittelu.tulos.generator;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 import java.util.function.IntFunction;
@@ -41,7 +42,10 @@ public class TulosGenerator {
     }
 
     public static List<Valintatulos> createTulokset(final List<Hakukohde> hakukohteet, int hakemuksia) {
-        return IntStream.range(0, hakemuksia).boxed().flatMap(x -> addHakemus(hakukohteet)).collect(Collectors.toList());
+        return IntStream.range(0, hakemuksia).boxed().flatMap(x -> {
+            Collections.shuffle(hakukohteet);
+            return addHakemus(hakukohteet.stream().limit(5));
+        }).collect(Collectors.toList());
     }
 
     public static List<Hakukohde> createHakukohteet(final int count) {
@@ -57,10 +61,10 @@ public class TulosGenerator {
         return hakukohde;
     }
 
-    static private Stream<Valintatulos> addHakemus(List<Hakukohde> hakukohteet) {
+    static private Stream<Valintatulos> addHakemus(Stream<Hakukohde> hakukohteet) {
         String oid = generateOid();
         Counter counter = new Counter();
-        return hakukohteet.stream().flatMap((hakukohde) -> hakukohde.getValintatapajonot().stream().map(jono -> {
+        return hakukohteet.flatMap((hakukohde) -> hakukohde.getValintatapajonot().stream().map(jono -> {
                 Hakemus hakemus = getTemplate("Hakemus", Hakemus.class);
                 hakemus.setHakemusOid(oid);
                 hakemus.setHakijaOid(oid);

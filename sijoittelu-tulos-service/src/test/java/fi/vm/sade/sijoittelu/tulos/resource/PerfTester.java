@@ -5,6 +5,10 @@ import static org.junit.Assert.assertEquals;
 
 import java.util.List;
 
+import org.databene.contiperf.PerfTest;
+import org.databene.contiperf.Required;
+import org.databene.contiperf.junit.ContiPerfRule;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -34,15 +38,29 @@ public class PerfTester {
 
     @Autowired
     @Qualifier("datastore")
-
     Datastore morphiaDs;
 
     @Test
     public void perfTest() {
-        final List<Valintatulos> tulokset = TulosGenerator.generateTestData(10, 10, morphiaDs);
-        final Valintatulos valintatulos = tulokset.get(0);
-        final HakemusYhteenvetoDTO yhteenveto = sijoitteluResource.hakemusYhteenveto(valintatulos.getHakuOid(), "latest", valintatulos.getHakemusOid());
-        System.out.println(yhteenveto);
-        assertEquals(10, yhteenveto.hakutoiveet.size());
+        final int hakukohteita = 50;
+        final int hakemuksia = 1000;
+        final int kutsuja = 10;
+        final List<Valintatulos> tulokset = TulosGenerator.generateTestData(hakukohteita, hakemuksia, morphiaDs);
+        Valintatulos valintatulos = tulokset.get(0);
+
+        long started = System.currentTimeMillis();
+
+        for (int i = 0 ; i < kutsuja; i++) {
+            final HakemusYhteenvetoDTO yhteenveto = sijoitteluResource.hakemusYhteenveto(valintatulos.getHakuOid(), "latest", valintatulos.getHakemusOid());
+            assertEquals(5, yhteenveto.hakutoiveet.size());
+        }
+
+        long elapsed = System.currentTimeMillis() - started;
+
+        long msPerCall = elapsed / kutsuja;
+
+        System.out.println("Hakukohteita " + hakukohteita + ", hakemuksia " + hakemuksia);
+        System.out.println("Yhteensä " + kutsuja + "kutsua, keskimääräinen suoritusaika " + msPerCall + " ms");
+
     }
 }
