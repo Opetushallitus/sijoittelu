@@ -27,26 +27,11 @@ public class DataImportService {
     @PostConstruct
     public void importData() throws IOException {
         DB db = mongo.getDB(dbname);
-        DBObject base = readJson("fi/vm/sade/sijoittelu/tulos/resource/sijoittelu-basedata.json");
-        insertData(db, base);
-        DBObject tulokset = readJson("fi/vm/sade/sijoittelu/tulos/resources/sijoittelu-tulos-mockdata.json");
-        insertData(db, tulokset);
+        DBObject base = MongoMockData.readJson("fi/vm/sade/sijoittelu/tulos/resource/sijoittelu-basedata.json");
+        MongoMockData.insertData(db, base);
+        DBObject tulokset = MongoMockData.readJson("fi/vm/sade/sijoittelu/tulos/resources/sijoittelu-tulos-mockdata.json");
+        MongoMockData.insertData(db, tulokset);
     }
 
-    private void insertData(DB db, DBObject data) {
-        for (String collection : data.keySet()) {
-            BasicDBList collectionData = (BasicDBList) data.get(collection);
-            DBCollection c = db.getCollection(collection);
-            for (Object dataObject : collectionData) {
-                c.insert((DBObject) dataObject);
-            }
-        }
-    }
 
-    private DBObject readJson(String path) throws IOException {
-        Resource r = new ClassPathResource(path);
-        StringWriter w = new StringWriter();
-        IOUtils.copy(r.getInputStream(), w);
-        return (DBObject) JSON.parse(w.toString());
-    }
 }
