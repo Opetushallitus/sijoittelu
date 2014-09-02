@@ -20,6 +20,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.lordofthejars.nosqlunit.mongodb.MongoDbRule;
+import com.mongodb.Mongo;
 
 import fi.vm.sade.sijoittelu.domain.Valintatulos;
 import fi.vm.sade.sijoittelu.tulos.dto.raportointi.HakemusYhteenvetoDTO;
@@ -37,15 +38,15 @@ public class PerfTester {
     SijoitteluResource sijoitteluResource;
 
     @Autowired
-    @Qualifier("datastore")
-    Datastore morphiaDs;
+    @Qualifier("mongo")
+    Mongo mongo;
 
     @Test
     public void perfTest() {
         final int hakukohteita = 50;
-        final int hakemuksia = 1000;
+        final int hakemuksia = 10000;
         final int kutsuja = 10;
-        final List<Valintatulos> tulokset = TulosGenerator.generateTestData(hakukohteita, hakemuksia, morphiaDs);
+        final List<Valintatulos> tulokset = TulosGenerator.generateTestData(hakukohteita, hakemuksia, mongo.getDB("sijoittelu"));
         Valintatulos valintatulos = tulokset.get(0);
 
         long started = System.currentTimeMillis();

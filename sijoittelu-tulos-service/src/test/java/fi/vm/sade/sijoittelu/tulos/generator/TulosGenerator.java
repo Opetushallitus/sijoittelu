@@ -1,6 +1,7 @@
 package fi.vm.sade.sijoittelu.tulos.generator;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
@@ -13,7 +14,9 @@ import org.mongodb.morphia.Datastore;
 import org.mongodb.morphia.mapping.Mapper;
 import org.mongodb.morphia.mapping.cache.DefaultEntityCache;
 
+import com.mongodb.DB;
 import com.mongodb.DBObject;
+import com.mongodb.Mongo;
 
 import fi.vm.sade.sijoittelu.domain.HakemuksenTila;
 import fi.vm.sade.sijoittelu.domain.Hakemus;
@@ -31,14 +34,21 @@ public class TulosGenerator {
         List<Valintatulos> tulokset = createTulokset(hakukohteet, 10);
     }
 
-    public static List<Valintatulos> generateTestData(int hakukohteita, int hakemuksia, Datastore morphiaDS) {
+    public static List<Valintatulos> generateTestData(int hakukohteita, int hakemuksia, DB db) {
         final List<Hakukohde> hakukohteet = createHakukohteet(hakukohteita);
         final List<Valintatulos> tulokset = createTulokset(hakukohteet, hakemuksia);
         final Sijoittelu sijoittelu = getTemplate("Sijoittelu", Sijoittelu.class);
-        morphiaDS.save(sijoittelu);
-        morphiaDS.save(hakukohteet);
-        morphiaDS.save(tulokset);
+        saveAll("Sijoittelu", Arrays.asList(sijoittelu), db);
+        saveAll("Hakukohde", hakukohteet, db);
+        saveAll("Valintatulos", tulokset, db);
         return tulokset;
+    }
+
+    private static <T> void saveAll(String collection, List<T> objects, DB db) {
+        final List<DBObject> dbObjects = objects.stream().map(object -> {
+            return new Mapper().toDBObject(object);
+        }).collect(Collectors.toList());
+        db.getCollection(collection).insert(dbObjects);
     }
 
     public static List<Valintatulos> createTulokset(final List<Hakukohde> hakukohteet, int hakemuksia) {
@@ -65,14 +75,14 @@ public class TulosGenerator {
         String oid = generateOid();
         Counter counter = new Counter();
         return hakukohteet.flatMap((hakukohde) -> hakukohde.getValintatapajonot().stream().map(jono -> {
-                Hakemus hakemus = getTemplate("Hakemus", Hakemus.class);
-                hakemus.setHakemusOid(oid);
-                hakemus.setHakijaOid(oid);
-                hakemus.setPrioriteetti(counter.next());
-                hakemus.setTila(HakemuksenTila.values()[Math.abs(new Random().nextInt()) % HakemuksenTila.values().length]);
-                jono.getHakemukset().add(hakemus);
-                return createValintatulos(hakukohde, jono, hakemus);
-            }));
+            Hakemus hakemus = getTemplate("Hakemus", Hakemus.class);
+            hakemus.setHakemusOid(oid);
+            hakemus.setHakijaOid(oid);
+            hakemus.setPrioriteetti(counter.next());
+            hakemus.setTila(HakemuksenTila.values()[Math.abs(new Random().nextInt()) % HakemuksenTila.values().length]);
+            jono.getHakemukset().add(hakemus);
+            return createValintatulos(hakukohde, jono, hakemus);
+        }));
     }
 
     static private Valintatulos createValintatulos(final Hakukohde hakukohde, final Valintatapajono jono, final Hakemus hakemus) {
