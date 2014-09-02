@@ -11,10 +11,7 @@ import fi.vm.sade.sijoittelu.tulos.dto.comparator.HakemusDTOComparator;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -208,22 +205,27 @@ public class SijoitteluTulosConverterImpl implements SijoitteluTulosConverter {
 	 * @param v
 	 */
 	private void applyAlinHyvaksyttyPistemaara(ValintatapajonoDTO v) {
-		BigDecimal alinHyvaksyttyPistemaara = null;
-		for (HakemusDTO hakemusDTO : v.getHakemukset()) {
-			if (hakemusDTO.getTila().equals(HakemuksenTila.HYVAKSYTTY)
-					&& !hakemusDTO.isHyvaksyttyHarkinnanvaraisesti()) {
-				BigDecimal pisteet = hakemusDTO.getPisteet();
-				if (pisteet != null) {
-					if (alinHyvaksyttyPistemaara == null) {
-						alinHyvaksyttyPistemaara = pisteet;
-					} else {
-						alinHyvaksyttyPistemaara = alinHyvaksyttyPistemaara
-								.min(pisteet);
-					}
-				}
-			}
-		}
-		v.setAlinHyvaksyttyPistemaara(alinHyvaksyttyPistemaara);
+//		BigDecimal alinHyvaksyttyPistemaara = null;
+//		for (HakemusDTO hakemusDTO : v.getHakemukset()) {
+//			if (hakemusDTO.getTila().equals(HakemuksenTila.HYVAKSYTTY)
+//					&& !hakemusDTO.isHyvaksyttyHarkinnanvaraisesti()) {
+//				BigDecimal pisteet = hakemusDTO.getPisteet();
+//				if (pisteet != null) {
+//					if (alinHyvaksyttyPistemaara == null) {
+//						alinHyvaksyttyPistemaara = pisteet;
+//					} else {
+//						alinHyvaksyttyPistemaara = alinHyvaksyttyPistemaara
+//								.min(pisteet);
+//					}
+//				}
+//			}
+//		}
+        Optional<BigDecimal> alinHyvaksyttyPistemaara = v.getHakemukset().parallelStream()
+                .filter(h -> h.getTila() == HakemuksenTila.HYVAKSYTTY && !h.isHyvaksyttyHarkinnanvaraisesti())
+                .filter(h -> h.getPisteet() != null)
+                .map(HakemusDTO::getPisteet)
+                .min(BigDecimal::compareTo);
+		v.setAlinHyvaksyttyPistemaara(alinHyvaksyttyPistemaara.orElse(null));
 	}
 
 	/**
