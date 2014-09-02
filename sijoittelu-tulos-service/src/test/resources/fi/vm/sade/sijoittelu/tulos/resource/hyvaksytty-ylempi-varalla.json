@@ -28,7 +28,7 @@
                 "etunimi": "Kuka muu",
                 "sukunimi": "Muka",
                 "prioriteetti": 1,
-                "jonosija": 5,
+                "jonosija": 1,
                 "pisteet": "4",
                 "tasasijaJonosija": 1,
                 "tila": "VARALLA",
@@ -48,9 +48,9 @@
                 "etunimi": "Joku",
                 "sukunimi": "Toinen",
                 "prioriteetti": 1,
-                "jonosija": 5,
+                "jonosija": 1,
                 "pisteet": "4",
-                "tasasijaJonosija": 1,
+                "tasasijaJonosija": 2,
                 "tila": "VARALLA",
                 "tilaHistoria": [
                   {
@@ -68,9 +68,9 @@
                 "etunimi": "Teppo",
                 "sukunimi": "Testaaja",
                 "prioriteetti": 1,
-                "jonosija": 5,
+                "jonosija": 1,
                 "pisteet": "4",
-                "tasasijaJonosija": 1,
+                "tasasijaJonosija": 3,
                 "tila": "VARALLA",
                 "tilaHistoria": [
                   {
@@ -100,7 +100,7 @@
                 "etunimi": "Joku",
                 "sukunimi": "Muu",
                 "prioriteetti": 1,
-                "jonosija": 4,
+                "jonosija": 1,
                 "pisteet": "4",
                 "tasasijaJonosija": 1,
                 "tila": "VARALLA",
@@ -120,9 +120,9 @@
                 "etunimi": "Teppo",
                 "sukunimi": "Testaaja",
                 "prioriteetti": 1,
-                "jonosija": 4,
+                "jonosija": 1,
                 "pisteet": "4",
-                "tasasijaJonosija": 1,
+                "tasasijaJonosija": 2,
                 "tila": "VARALLA",
                 "tilaHistoria": [
                   {
