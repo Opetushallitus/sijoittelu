@@ -56,7 +56,15 @@ public class YhteenvetoService {
     private static Optional<HakutoiveenValintatapajonoDTO> getFirst(HakutoiveDTO hakutoive) {
         return hakutoive.getHakutoiveenValintatapajonot()
                 .stream()
-                .sorted((jono1, jono2) -> fromHakemuksenTila(jono1.getTila()).compareTo(fromHakemuksenTila(jono2.getTila())))
+                .sorted((jono1, jono2) -> {
+                        final YhteenvedonTila tila1 = fromHakemuksenTila(jono1.getTila());
+                        final YhteenvedonTila tila2 = fromHakemuksenTila(jono2.getTila());
+                        if (tila1 == YhteenvedonTila.VARALLA && tila2 == YhteenvedonTila.VARALLA) {
+                            return jono1.getVarasijanNumero() - jono2.getVarasijanNumero();
+                        }
+                        return tila1.compareTo(tila2);
+                }
+                )
                 .findFirst();
     }
 }

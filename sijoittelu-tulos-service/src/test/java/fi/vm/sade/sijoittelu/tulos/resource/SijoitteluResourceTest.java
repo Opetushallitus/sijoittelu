@@ -80,6 +80,14 @@ public class SijoitteluResourceTest {
     }
 
     @Test
+    @UsingDataSet(locations = {"sijoittelu-basedata.json", "hyvaksytty-ylempi-varalla.json"}, loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
+    public void varallaKäytetäänParastaVarasijaa() throws JsonProcessingException {
+        HakemusYhteenvetoDTO yhteenveto = getYhteenveto();
+        assertEquals(new Integer(2), yhteenveto.hakutoiveet.get(0).varasijanumero);
+    }
+
+
+    @Test
     @UsingDataSet(locations = {"sijoittelu-basedata.json", "hylatty-jonoja-kesken.json"}, loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
     public void hakutoiveHylattyKunSijoitteluKesken() {
         HakutoiveYhteenvetoDTO hakuToive = getHakuToive();
