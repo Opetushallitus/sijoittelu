@@ -1,18 +1,70 @@
 package fi.vm.sade.sijoittelu.tulos.service;
 
-import fi.vm.sade.sijoittelu.tulos.dto.raportointi.HakemusYhteenvetoDTO;
-import fi.vm.sade.sijoittelu.tulos.dto.raportointi.HakijaDTO;
-import fi.vm.sade.sijoittelu.tulos.dto.raportointi.HakutoiveYhteenvetoDTO;
-import fi.vm.sade.sijoittelu.tulos.dto.raportointi.HakutoiveenValintatapajonoDTO;
+import fi.vm.sade.sijoittelu.tulos.dto.raportointi.*;
 
+import java.util.Arrays;
+import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import static fi.vm.sade.sijoittelu.tulos.dto.HakemuksenTila.*;
+import static fi.vm.sade.sijoittelu.tulos.dto.raportointi.Vastaanotettavuustila.*;
+import static fi.vm.sade.sijoittelu.tulos.dto.raportointi.YhteenvedonTila.KESKEN;
+import static fi.vm.sade.sijoittelu.tulos.dto.raportointi.YhteenvedonTila.fromHakemuksenTila;
 
 public class YhteenvetoService {
 
     public static HakemusYhteenvetoDTO yhteenveto(HakijaDTO hakija) {
-       return new HakemusYhteenvetoDTO(hakija.getHakemusOid(), hakija.getHakutoiveet().stream().map(hakutoive -> {
-            HakutoiveenValintatapajonoDTO first = hakutoive.getHakutoiveenValintatapajonot().get(0);
-            return new HakutoiveYhteenvetoDTO(hakutoive.getHakukohdeOid(), hakutoive.getTarjoajaOid(), first.getTila(), first.getVastaanottotieto(), first.getIlmoittautumisTila(), first.getJonosija(), first.getVarasijanNumero());
+        return new HakemusYhteenvetoDTO(hakija.getHakemusOid(), hakija.getHakutoiveet().stream().map(hakutoive -> {
+
+            HakutoiveenValintatapajonoDTO jono = getFirst(hakutoive).get();
+            YhteenvedonTila valintatila = fromHakemuksenTila(jono.getTila());
+            Vastaanotettavuustila vastaanotettavuustila = EI_VASTAANOTETTAVISSA;
+
+            if (Arrays.asList(HYVAKSYTTY, HARKINNANVARAISESTI_HYVAKSYTTY).contains(jono.getTila())) {
+                vastaanotettavuustila = VASTAANOTETTAVISSA_SITOVASTI;
+                if (hakutoive.getHakutoive() > 1) {
+                    // TODO varasijasääntöjen aikaparametri
+                    if (false) {
+
+                    } else {
+                        boolean ylempiaHakutoiveitaSijoittelematta = ylemmatHakutoiveet(hakija, hakutoive.getHakutoive()).filter(toive -> !toive.isKaikkiJonotSijoiteltu()).count() > 0;
+                        if (ylempiaHakutoiveitaSijoittelematta) {
+                            valintatila = KESKEN;
+                            vastaanotettavuustila = EI_VASTAANOTETTAVISSA;
+                        } else {
+                            boolean ylempiaHakutoiveitaVaralla = ylemmatHakutoiveet(hakija, hakutoive.getHakutoive()).filter(toive -> getFirst(toive).get().getTila().equals(VARALLA)).count() > 0;
+                            if (ylempiaHakutoiveitaVaralla) {
+                                vastaanotettavuustila = EI_VASTAANOTETTAVISSA;
+                            }
+                        }
+                    }
+                }
+            } else {
+                if (!hakutoive.isKaikkiJonotSijoiteltu()) {
+                    valintatila = KESKEN;
+                }
+            }
+            return new HakutoiveYhteenvetoDTO(hakutoive.getHakukohdeOid(), hakutoive.getTarjoajaOid(), valintatila, jono.getVastaanottotieto(), jono.getIlmoittautumisTila(), vastaanotettavuustila, jono.getJonosija(), jono.getVarasijanNumero());
         }).collect(Collectors.toList()));
+    }
+
+    private static Stream<HakutoiveDTO> ylemmatHakutoiveet(HakijaDTO hakija, Integer prioriteettiRaja) {
+        return hakija.getHakutoiveet().stream().filter(t -> t.getHakutoive() < prioriteettiRaja);
+    }
+
+    private static Optional<HakutoiveenValintatapajonoDTO> getFirst(HakutoiveDTO hakutoive) {
+        return hakutoive.getHakutoiveenValintatapajonot()
+                .stream()
+                .sorted((jono1, jono2) -> {
+                        final YhteenvedonTila tila1 = fromHakemuksenTila(jono1.getTila());
+                        final YhteenvedonTila tila2 = fromHakemuksenTila(jono2.getTila());
+                        if (tila1 == YhteenvedonTila.VARALLA && tila2 == YhteenvedonTila.VARALLA) {
+                            return jono1.getVarasijanNumero() - jono2.getVarasijanNumero();
+                        }
+                        return tila1.compareTo(tila2);
+                }
+                )
+                .findFirst();
     }
 }

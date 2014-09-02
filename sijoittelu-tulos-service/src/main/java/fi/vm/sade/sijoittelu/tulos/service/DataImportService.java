@@ -27,7 +27,13 @@ public class DataImportService {
     @PostConstruct
     public void importData() throws IOException {
         DB db = mongo.getDB(dbname);
-        DBObject data = readJson();
+        DBObject base = readJson("fi/vm/sade/sijoittelu/tulos/resource/sijoittelu-basedata.json");
+        insertData(db, base);
+        DBObject tulokset = readJson("fi/vm/sade/sijoittelu/tulos/resources/sijoittelu-tulos-mockdata.json");
+        insertData(db, tulokset);
+    }
+
+    private void insertData(DB db, DBObject data) {
         for (String collection : data.keySet()) {
             BasicDBList collectionData = (BasicDBList) data.get(collection);
             DBCollection c = db.getCollection(collection);
@@ -37,8 +43,8 @@ public class DataImportService {
         }
     }
 
-    private DBObject readJson() throws IOException {
-        Resource r = new ClassPathResource("fi/vm/sade/sijoittelu/tulos/resource/sijoittelu-tulos-mockdata.json");
+    private DBObject readJson(String path) throws IOException {
+        Resource r = new ClassPathResource(path);
         StringWriter w = new StringWriter();
         IOUtils.copy(r.getInputStream(), w);
         return (DBObject) JSON.parse(w.toString());
