@@ -45,7 +45,7 @@ public class YhteenvetoService {
                     valintatila = KESKEN;
                 }
             }
-            return new HakutoiveYhteenvetoDTO(hakutoive.getHakukohdeOid(), hakutoive.getTarjoajaOid(), valintatila, jono.getVastaanottotieto(), jono.getIlmoittautumisTila(), vastaanotettavuustila, jono.getVarasijanNumero(), jono.getJonosija());
+            return new HakutoiveYhteenvetoDTO(hakutoive.getHakukohdeOid(), hakutoive.getTarjoajaOid(), valintatila, jono.getVastaanottotieto(), jono.getIlmoittautumisTila(), vastaanotettavuustila, jono.getJonosija(), jono.getVarasijanNumero());
         }).collect(Collectors.toList()));
     }
 

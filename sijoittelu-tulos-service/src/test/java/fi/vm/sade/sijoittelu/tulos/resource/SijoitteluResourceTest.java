@@ -49,7 +49,7 @@ public class SijoitteluResourceTest {
     @Test
     @UsingDataSet(locations = {"sijoittelu-basedata.json", "sijoittelu-tulos-mockdata.json"}, loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
     public void hyvaksytty() throws JsonProcessingException {
-        String expectedResponse = "{\"hakemusOid\":\"1.2.246.562.11.00000441369\",\"hakutoiveet\":[{\"hakukohdeOid\":\"1.2.246.562.5.72607738902\",\"tarjoajaOid\":\"1.2.246.562.10.591352080610\",\"valintatila\":\"HYVAKSYTTY\",\"vastaanottotila\":\"ILMOITETTU\",\"ilmoittautumistila\":null,\"vastaanotettavuustila\":\"VASTAANOTETTAVISSA_SITOVASTI\",\"jonosija\":null,\"varasijanumero\":1}]}";
+        String expectedResponse = "{\"hakemusOid\":\"1.2.246.562.11.00000441369\",\"hakutoiveet\":[{\"hakukohdeOid\":\"1.2.246.562.5.72607738902\",\"tarjoajaOid\":\"1.2.246.562.10.591352080610\",\"valintatila\":\"HYVAKSYTTY\",\"vastaanottotila\":\"ILMOITETTU\",\"ilmoittautumistila\":null,\"vastaanotettavuustila\":\"VASTAANOTETTAVISSA_SITOVASTI\",\"jonosija\":1,\"varasijanumero\":null}]}";
         HakemusYhteenvetoDTO yhteenveto = getYhteenveto();
         assertEquals(expectedResponse, objectMapper.writeValueAsString(yhteenveto));
         checkHakutoiveState(yhteenveto.hakutoiveet.get(0), YhteenvedonTila.HYVAKSYTTY, Vastaanotettavuustila.VASTAANOTETTAVISSA_SITOVASTI);
