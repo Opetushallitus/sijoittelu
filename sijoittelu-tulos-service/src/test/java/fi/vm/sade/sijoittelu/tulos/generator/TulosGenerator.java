@@ -1,6 +1,5 @@
 package fi.vm.sade.sijoittelu.tulos.generator;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -10,13 +9,10 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-import org.mongodb.morphia.Datastore;
 import org.mongodb.morphia.mapping.Mapper;
-import org.mongodb.morphia.mapping.cache.DefaultEntityCache;
 
 import com.mongodb.DB;
 import com.mongodb.DBObject;
-import com.mongodb.Mongo;
 
 import fi.vm.sade.sijoittelu.domain.HakemuksenTila;
 import fi.vm.sade.sijoittelu.domain.Hakemus;
@@ -24,10 +20,9 @@ import fi.vm.sade.sijoittelu.domain.Hakukohde;
 import fi.vm.sade.sijoittelu.domain.Sijoittelu;
 import fi.vm.sade.sijoittelu.domain.Valintatapajono;
 import fi.vm.sade.sijoittelu.domain.Valintatulos;
-import fi.vm.sade.sijoittelu.tulos.service.MongoMockData;
 
 public class TulosGenerator {
-    final static DBObject templateData = MongoMockData.readJson("fi/vm/sade/sijoittelu/tulos/generator/generator-templates.json");
+    final static ObjectTemplate template = new ObjectTemplate("fi/vm/sade/sijoittelu/tulos/generator/generator-templates.json");
 
     public final static void main(String... args) {
         List<Hakukohde> hakukohteet = createHakukohteet(10);
@@ -37,7 +32,7 @@ public class TulosGenerator {
     public static List<Valintatulos> generateTestData(int hakukohteita, int hakemuksia, DB db) {
         final List<Hakukohde> hakukohteet = createHakukohteet(hakukohteita);
         final List<Valintatulos> tulokset = createTulokset(hakukohteet, hakemuksia);
-        final Sijoittelu sijoittelu = getTemplate("Sijoittelu", Sijoittelu.class);
+        final Sijoittelu sijoittelu = template.getTemplate("Sijoittelu", Sijoittelu.class);
         saveAll("Sijoittelu", Arrays.asList(sijoittelu), db);
         saveAll("Hakukohde", hakukohteet, db);
         saveAll("Valintatulos", tulokset, db);
@@ -64,7 +59,7 @@ public class TulosGenerator {
 
     // tyhjä hakukohde
     static Hakukohde createHakukohde() {
-        final Hakukohde hakukohde = getTemplate("Hakukohde", Hakukohde.class);
+        final Hakukohde hakukohde = template.getTemplate("Hakukohde", Hakukohde.class);
         hakukohde.setValintatapajonot(createValintatapaJonot(3));
         hakukohde.setId(null);
         hakukohde.setOid(generateOid());
@@ -75,7 +70,7 @@ public class TulosGenerator {
         String oid = generateOid();
         Counter counter = new Counter();
         return hakukohteet.flatMap((hakukohde) -> hakukohde.getValintatapajonot().stream().map(jono -> {
-            Hakemus hakemus = getTemplate("Hakemus", Hakemus.class);
+            Hakemus hakemus = template.getTemplate("Hakemus", Hakemus.class);
             hakemus.setHakemusOid(oid);
             hakemus.setHakijaOid(oid);
             hakemus.setPrioriteetti(counter.next());
@@ -86,7 +81,7 @@ public class TulosGenerator {
     }
 
     static private Valintatulos createValintatulos(final Hakukohde hakukohde, final Valintatapajono jono, final Hakemus hakemus) {
-        Valintatulos valintatulos = getTemplate("Valintatulos", Valintatulos.class);
+        Valintatulos valintatulos = template.getTemplate("Valintatulos", Valintatulos.class);
         valintatulos.setHakemusOid(hakemus.getHakemusOid());
         valintatulos.setHakijaOid(hakemus.getHakijaOid());
         valintatulos.setHakukohdeOid(hakukohde.getOid());
@@ -105,18 +100,13 @@ public class TulosGenerator {
     }
 
     static private Valintatapajono createValintatapaJono() {
-        final Valintatapajono valintatapajono = getTemplate("Valintatapajono", Valintatapajono.class);
+        final Valintatapajono valintatapajono = template.getTemplate("Valintatapajono", Valintatapajono.class);
         valintatapajono.setOid(generateOid());
         return valintatapajono;
     }
 
     static private <T> List<T> generate(int count, IntFunction<T> f) {
         return IntStream.range(0, count).mapToObj(f).collect(Collectors.toList());
-    }
-
-    static private <T> T getTemplate(String collection, Class<T> clazz) {
-        final DBObject mongoObject = MongoMockData.collectionElements(templateData, collection).get(0);
-        return new Mapper().fromDBObject(clazz, mongoObject, new DefaultEntityCache());
     }
 
     static class Counter {
