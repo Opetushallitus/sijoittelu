@@ -15,7 +15,7 @@ import java.util.List;
  * @author Kari Kammonen
  */
 @Entity("Sijoittelu")
-public class Sijoittelu implements Serializable {
+public class Sijoittelu implements Serializable, Cloneable {
 
     @SuppressWarnings("unused")
     @Id
@@ -103,5 +103,10 @@ public class Sijoittelu implements Serializable {
 
     public void setValintatulokset(List<Valintatulos> valintatulokset) {
         this.valintatulokset = valintatulokset;
+    }
+
+    @Override
+    public Sijoittelu clone() throws CloneNotSupportedException {
+        return (Sijoittelu) super.clone();
     }
 }

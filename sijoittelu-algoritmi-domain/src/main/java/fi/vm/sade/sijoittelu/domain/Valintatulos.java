@@ -21,7 +21,7 @@ import java.util.List;
         @Index("hakukohdeOid, valintatapajonoOid"),
         @Index("hakukohdeOid")
 })
-public class Valintatulos {
+public class Valintatulos implements Cloneable{
 
     @SuppressWarnings("unused")
     @Id
@@ -134,5 +134,10 @@ public class Valintatulos {
 
     public void setIlmoittautumisTila(final IlmoittautumisTila ilmoittautumisTila) {
         this.ilmoittautumisTila = ilmoittautumisTila;
+    }
+
+    @Override
+    public Valintatulos clone() throws CloneNotSupportedException {
+        return (Valintatulos) super.clone();
     }
 }
