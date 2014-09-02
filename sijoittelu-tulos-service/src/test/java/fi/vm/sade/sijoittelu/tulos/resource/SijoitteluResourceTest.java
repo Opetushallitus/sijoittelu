@@ -101,11 +101,6 @@ public class SijoitteluResourceTest {
         checkHakutoiveState(hakuToive, YhteenvedonTila.HYLATTY, Vastaanotettavuustila.EI_VASTAANOTETTAVISSA);
     }
 
-    @Test
-    public void hakutoivePeruuntunutKunSijoitteluValmis() {
-
-    }
-
     private void checkHakutoiveState(HakutoiveYhteenvetoDTO hakuToive, YhteenvedonTila expectedTila, Vastaanotettavuustila vastaanotettavuustila) {
         assertEquals(expectedTila, hakuToive.valintatila);
         assertEquals(vastaanotettavuustila, hakuToive.vastaanotettavuustila);
