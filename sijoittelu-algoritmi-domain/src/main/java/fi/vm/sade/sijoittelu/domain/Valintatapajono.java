@@ -15,7 +15,7 @@ import java.util.Date;
  */
 @Embedded
 @Converters(BigDecimalConverter.class)
-public class Valintatapajono implements Serializable, Cloneable {
+public class Valintatapajono implements Serializable {
 
     private Tasasijasaanto tasasijasaanto;
 
@@ -189,11 +189,6 @@ public class Valintatapajono implements Serializable, Cloneable {
 
     public void setVarasijojaTaytetaanAsti(Date varasijojaTaytetaanAsti) {
         this.varasijojaTaytetaanAsti = varasijojaTaytetaanAsti;
-    }
-
-    @Override
-    public Valintatapajono clone() throws CloneNotSupportedException {
-        return (Valintatapajono) super.clone();
     }
 
     public Integer getHyvaksytty() {

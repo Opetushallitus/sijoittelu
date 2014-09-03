@@ -1,8 +1,10 @@
 package fi.vm.sade.sijoittelu.tulos.generator;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.lang3.SerializationUtils;
 import org.mongodb.morphia.mapping.Mapper;
 import org.mongodb.morphia.mapping.cache.DefaultEntityCache;
 
@@ -18,13 +20,13 @@ public class ObjectTemplate {
         templateData = MongoMockData.readJson(datafile);
     }
 
-    public <T extends Cloneable> T getTemplate(String collection, Class<T> clazz) {
+    public <T extends Serializable> T getTemplate(String collection, Class<T> clazz) {
         T result = (T) templates.get(clazz);
         if (result == null) {
             final DBObject mongoObject = MongoMockData.collectionElements(templateData, collection).get(0);
             result = new Mapper().fromDBObject(clazz, mongoObject, new DefaultEntityCache());
             templates.put(clazz, result);
         }
-        return result;
+        return SerializationUtils.clone(result);
     }
 }

@@ -17,7 +17,7 @@ import java.util.List;
         @Index("oid, sijoitteluajoId"),
         @Index("sijoitteluajoId")}
 )
-public class Hakukohde implements Serializable, Cloneable {
+public class Hakukohde implements Serializable {
 
     @Id
     private ObjectId id;
@@ -113,10 +113,5 @@ public class Hakukohde implements Serializable, Cloneable {
 
     public void setKaikkiJonotSijoiteltu(boolean kaikkiJonotSijoiteltu) {
         this.kaikkiJonotSijoiteltu = kaikkiJonotSijoiteltu;
-    }
-
-    @Override
-    public Hakukohde clone() throws CloneNotSupportedException {
-        return (Hakukohde) super.clone();
     }
 }

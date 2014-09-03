@@ -13,10 +13,11 @@ import org.mongodb.morphia.annotations.Id;
 import org.bson.types.ObjectId;
 import org.codehaus.jackson.map.annotate.JsonView;
 
+import java.io.Serializable;
 import java.util.Date;
 
 @Embedded("LogEntry")
-public class LogEntry {
+public class LogEntry implements Serializable {
     @Id
     private ObjectId id;
 
