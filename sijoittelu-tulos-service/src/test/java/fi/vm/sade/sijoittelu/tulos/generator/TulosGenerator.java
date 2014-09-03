@@ -13,6 +13,7 @@ import org.mongodb.morphia.mapping.Mapper;
 
 import com.mongodb.DB;
 import com.mongodb.DBObject;
+import com.mongodb.util.JSON;
 
 import fi.vm.sade.sijoittelu.domain.HakemuksenTila;
 import fi.vm.sade.sijoittelu.domain.Hakemus;
@@ -40,8 +41,9 @@ public class TulosGenerator {
     }
 
     private static <T> void saveAll(String collection, List<T> objects, DB db) {
+        final Mapper mapper = new Mapper();
         final List<DBObject> dbObjects = objects.stream().map(object -> {
-            return new Mapper().toDBObject(object);
+            return mapper.toDBObject(object);
         }).collect(Collectors.toList());
         db.getCollection(collection).insert(dbObjects);
     }

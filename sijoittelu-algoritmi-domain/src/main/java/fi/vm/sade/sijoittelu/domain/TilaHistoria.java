@@ -13,10 +13,11 @@ import org.mongodb.morphia.annotations.Id;
 import org.bson.types.ObjectId;
 import org.codehaus.jackson.map.annotate.JsonView;
 
+import java.io.Serializable;
 import java.util.Date;
 
 @Embedded("TilaHistoria")
-public class TilaHistoria {
+public class TilaHistoria implements Serializable {
     @JsonView({JsonViews.Tila.class, JsonViews.MonenHakemuksenTila.class})
     private Date luotu;
     @JsonView({JsonViews.Tila.class, JsonViews.MonenHakemuksenTila.class})

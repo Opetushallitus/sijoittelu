@@ -4,6 +4,7 @@ import org.mongodb.morphia.annotations.*;
 import org.bson.types.ObjectId;
 import org.codehaus.jackson.map.annotate.JsonView;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,7 +22,7 @@ import java.util.List;
         @Index("hakukohdeOid, valintatapajonoOid"),
         @Index("hakukohdeOid")
 })
-public class Valintatulos {
+public class Valintatulos implements Serializable {
 
     @SuppressWarnings("unused")
     @Id
