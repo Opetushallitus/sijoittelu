@@ -3,6 +3,7 @@ package fi.vm.sade.sijoittelu.domain;
 import org.mongodb.morphia.annotations.Converters;
 import org.mongodb.morphia.annotations.Embedded;
 import fi.vm.sade.sijoittelu.domain.converter.BigDecimalConverter;
+import org.mongodb.morphia.annotations.Indexed;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -19,6 +20,7 @@ public class Hakemus implements Serializable {
 
     private String hakijaOid;
 
+    @Indexed
     private String hakemusOid;
 
     private String etunimi;

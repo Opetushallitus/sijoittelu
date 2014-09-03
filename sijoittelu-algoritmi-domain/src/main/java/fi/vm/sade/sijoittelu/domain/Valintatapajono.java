@@ -1,6 +1,7 @@
 package fi.vm.sade.sijoittelu.domain;
 
 import org.mongodb.morphia.annotations.Embedded;
+import org.mongodb.morphia.annotations.Indexed;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -16,6 +17,7 @@ public class Valintatapajono implements Serializable {
 
     private ValintatapajonoTila tila;
 
+    @Indexed
     private String oid;
 
     private String nimi;
