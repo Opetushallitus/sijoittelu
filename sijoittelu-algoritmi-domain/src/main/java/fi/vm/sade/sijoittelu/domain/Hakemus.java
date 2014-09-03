@@ -16,7 +16,7 @@ import java.util.*;
  */
 @Embedded
 @Converters(BigDecimalConverter.class)
-public class Hakemus implements Serializable, Cloneable {
+public class Hakemus implements Serializable {
 
     private String hakijaOid;
 
@@ -167,10 +167,5 @@ public class Hakemus implements Serializable, Cloneable {
 
     public void setIlmoittautumisTila(IlmoittautumisTila ilmoittautumisTila) {
         this.ilmoittautumisTila = ilmoittautumisTila;
-    }
-
-    @Override
-    public Hakemus clone() throws CloneNotSupportedException {
-        return (Hakemus) super.clone();
     }
 }

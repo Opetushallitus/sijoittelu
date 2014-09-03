@@ -11,7 +11,7 @@ import java.util.Date;
  * @author Kari Kammonen
  */
 @Embedded
-public class Valintatapajono implements Serializable, Cloneable {
+public class Valintatapajono implements Serializable {
 
     private Tasasijasaanto tasasijasaanto;
 
@@ -179,10 +179,5 @@ public class Valintatapajono implements Serializable, Cloneable {
 
     public void setVarasijojaTaytetaanAsti(Date varasijojaTaytetaanAsti) {
         this.varasijojaTaytetaanAsti = varasijojaTaytetaanAsti;
-    }
-
-    @Override
-    public Valintatapajono clone() throws CloneNotSupportedException {
-        return (Valintatapajono) super.clone();
     }
 }
