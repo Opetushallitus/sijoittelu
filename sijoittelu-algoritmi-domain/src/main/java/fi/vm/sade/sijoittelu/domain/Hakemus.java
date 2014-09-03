@@ -51,6 +51,8 @@ public class Hakemus implements Serializable, Cloneable {
 
     private Map<String,String> tilanKuvaukset = new HashMap<String,String>();
 
+    private Integer varasijanNumero;
+
     public int getPrioriteetti() {
         return prioriteetti;
     }
@@ -172,5 +174,13 @@ public class Hakemus implements Serializable, Cloneable {
     @Override
     public Hakemus clone() throws CloneNotSupportedException {
         return (Hakemus) super.clone();
+    }
+
+    public Integer getVarasijanNumero() {
+        return varasijanNumero;
+    }
+
+    public void setVarasijanNumero(Integer varasijanNumero) {
+        this.varasijanNumero = varasijanNumero;
     }
 }
