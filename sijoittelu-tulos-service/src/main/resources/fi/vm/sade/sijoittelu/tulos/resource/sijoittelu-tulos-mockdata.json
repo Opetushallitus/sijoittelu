@@ -20,6 +20,9 @@
                     "eiVarasijatayttoa": false,
                     "kaikkiEhdonTayttavatHyvaksytaan": false,
                     "poissaOlevaTaytto": false,
+                    "hyvaksytty": 1,
+                    "varalla": 0,
+                    "alinHyvaksyttyPistemaara": 4,
                     "hakemukset": [
                         {
                             "hakijaOid": "1.2.246.562.24.14229104472",
