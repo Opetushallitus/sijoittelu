@@ -20,7 +20,8 @@ import java.util.List;
 @Indexes({
         @Index("hakukohdeOid, valintatapajonoOid, hakemusOid"),
         @Index("hakukohdeOid, valintatapajonoOid"),
-        @Index("hakukohdeOid")
+        @Index("hakukohdeOid"),
+        @Index("hakemusOid")
 })
 public class Valintatulos implements Serializable {
 
