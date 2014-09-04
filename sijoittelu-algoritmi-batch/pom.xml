@@ -100,7 +100,7 @@
         <dependency>
             <groupId>com.fasterxml.jackson.dataformat</groupId>
             <artifactId>jackson-dataformat-xml</artifactId>
-            <version>2.4.0</version>
+            <version>${fasterxml.jackson.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
