@@ -10,7 +10,7 @@
                 "$numberLong": "1409055160621"
             },
             "created": {
-                "$date": "2014-08-26T15:12:40.621+0300"
+                "$date": "2014-08-26T15:12:40.621Z"
             },
             "sijoittele": true,
             "sijoitteluajot": [
