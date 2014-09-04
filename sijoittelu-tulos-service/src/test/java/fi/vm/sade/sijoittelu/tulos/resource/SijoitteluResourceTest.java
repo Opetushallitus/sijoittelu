@@ -5,8 +5,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lordofthejars.nosqlunit.annotation.UsingDataSet;
 import com.lordofthejars.nosqlunit.core.LoadStrategyEnum;
 import com.lordofthejars.nosqlunit.mongodb.MongoDbRule;
+import com.mongodb.DBObject;
+
 import fi.vm.sade.sijoittelu.tulos.dto.HakemuksenTila;
 import fi.vm.sade.sijoittelu.tulos.dto.raportointi.*;
+import fi.vm.sade.sijoittelu.tulos.service.MongoMockData;
+
+import org.joda.time.DateTimeUtils;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -17,6 +22,9 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import static com.lordofthejars.nosqlunit.mongodb.MongoDbRule.MongoDbRuleBuilder.newMongoDbRule;
 import static org.junit.Assert.assertEquals;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"classpath:test-context.xml"})
@@ -86,6 +94,19 @@ public class SijoitteluResourceTest {
         assertEquals(new Integer(2), yhteenveto.hakutoiveet.get(0).varasijanumero);
     }
 
+
+    @Test
+    @UsingDataSet(locations = {"sijoittelu-basedata.json", "hyvaksytty-ylempi-varalla.json"}, loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
+    public void hyvaksyttyYlempiVarallaAikaparametriLauennut() throws JsonProcessingException, ParseException {
+        DateTimeUtils.setCurrentMillisFixed(new SimpleDateFormat("d.M.yyyy").parse("15.8.2014").getTime());
+        try {
+            HakemusYhteenvetoDTO yhteenveto = getYhteenveto();
+            checkHakutoiveState(yhteenveto.hakutoiveet.get(0), YhteenvedonTila.VARALLA, Vastaanotettavuustila.EI_VASTAANOTETTAVISSA);
+            checkHakutoiveState(yhteenveto.hakutoiveet.get(1), YhteenvedonTila.HYVAKSYTTY, Vastaanotettavuustila.VASTAANOTETTAVISSA_EHDOLLISESTI);
+        } finally {
+            DateTimeUtils.setCurrentMillisSystem();
+        }
+    }
 
     @Test
     @UsingDataSet(locations = {"sijoittelu-basedata.json", "hylatty-jonoja-kesken.json"}, loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
