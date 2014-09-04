@@ -1,5 +1,6 @@
 package fi.vm.sade.sijoittelu.laskenta.service.business.impl;
 
+import java.math.BigDecimal;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
@@ -142,16 +143,6 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
 			final List<Hakukohde> kaikkiHakukohteet) {
 		// wanhat hakemukset
 		Map<String, Hakemus> hakemusHashMap = new ConcurrentHashMap<String, Hakemus>();
-//		for (Hakukohde hakukohde : olemassaolevatHakukohteet) {
-//			for (Valintatapajono valintatapajono : hakukohde
-//					.getValintatapajonot()) {
-//				for (Hakemus hakemus : valintatapajono.getHakemukset()) {
-//					hakemusHashMap.put(
-//							hakukohde.getOid() + valintatapajono.getOid()
-//									+ hakemus.getHakemusOid(), hakemus);
-//				}
-//			}
-//		}
 
         olemassaolevatHakukohteet.parallelStream().forEach(hakukohde ->
             hakukohde.getValintatapajonot().parallelStream().forEach(valintatapajono ->
@@ -163,39 +154,11 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
             )
         );
 
-//		for (Hakukohde hakukohde : kaikkiHakukohteet) {
-//			for (Valintatapajono valintatapajono : hakukohde
-//					.getValintatapajonot()) {
-//				for (Hakemus hakemus : valintatapajono.getHakemukset()) {
-//					Hakemus edellinen = hakemusHashMap.get(hakukohde.getOid()
-//							+ valintatapajono.getOid()
-//							+ hakemus.getHakemusOid());
-//					if (edellinen != null
-//							&& edellinen.getTilaHistoria() != null
-//							&& !edellinen.getTilaHistoria().isEmpty()) {
-//						hakemus.setTilaHistoria(edellinen.getTilaHistoria());
-//
-//						if (hakemus.getTila() != edellinen.getTila()) {
-//							TilaHistoria th = new TilaHistoria();
-//							th.setLuotu(new Date());
-//							th.setTila(hakemus.getTila());
-//							hakemus.getTilaHistoria().add(th);
-//						}
-//					} else {
-//						TilaHistoria th = new TilaHistoria();
-//						th.setLuotu(new Date());
-//						th.setTila(hakemus.getTila());
-//						hakemus.getTilaHistoria().add(th);
-//					}
-//
-//				}
-//			}
-//
-//			dao.persistHakukohde(hakukohde);
-//		}
-
         kaikkiHakukohteet.parallelStream().forEach(hakukohde -> {
-            hakukohde.getValintatapajonot().parallelStream().forEach(valintatapajono ->
+            hakukohde.getValintatapajonot().parallelStream().forEach(valintatapajono -> {
+                valintatapajono.setAlinHyvaksyttyPistemaara(alinHyvaksyttyPistemaara(valintatapajono.getHakemukset()).orElse(null));
+                valintatapajono.setHyvaksytty(getMaara(valintatapajono.getHakemukset(), HakemuksenTila.HYVAKSYTTY));
+                valintatapajono.setVaralla(getMaara(valintatapajono.getHakemukset(), HakemuksenTila.VARALLA));
                 valintatapajono.getHakemukset().parallelStream().forEach(hakemus -> {
                     Hakemus edellinen = hakemusHashMap.get(hakukohde.getOid()
                             + valintatapajono.getOid()
@@ -217,13 +180,35 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
                         th.setTila(hakemus.getTila());
                         hakemus.getTilaHistoria().add(th);
                     }
+                    if (hakemus.getTila() == HakemuksenTila.VARALLA) {
+                        hakemus.setVarasijanNumero((hakemus.getJonosija() - valintatapajono.getHyvaksytty() + hakemus.getTasasijaJonosija() - 1));
+                    }
                 }
-                )
+                );
+            }
             );
-                hakukohdeDao.persistHakukohde(hakukohde);
+            hakukohdeDao.persistHakukohde(hakukohde);
             }
         );
 	}
+
+    private int getMaara(List<Hakemus> hakemukset, HakemuksenTila tila) {
+        Integer maara = hakemukset.parallelStream().filter(h -> h.getTila() == tila)
+                .reduce(0,
+                        (sum, b) -> sum + 1,
+                        Integer::sum);
+
+        return maara;
+    }
+
+    private Optional<BigDecimal> alinHyvaksyttyPistemaara(List<Hakemus> hakemukset) {
+
+        return hakemukset.parallelStream()
+                .filter(h -> h.getTila() == HakemuksenTila.HYVAKSYTTY && !h.isHyvaksyttyHarkinnanvaraisesti())
+                .filter(h -> h.getPisteet() != null)
+                .map(Hakemus::getPisteet)
+                .min(BigDecimal::compareTo);
+    }
 
 	// nykyisellaan vain korvaa hakukohteet, mietittava toiminta tarkemmin
 	private List<Hakukohde> merge(SijoitteluAjo uusiSijoitteluajo,

@@ -1,8 +1,12 @@
 package fi.vm.sade.sijoittelu.domain;
 
+import fi.vm.sade.sijoittelu.domain.converter.BigDecimalConverter;
+import org.mongodb.morphia.annotations.Converters;
 import org.mongodb.morphia.annotations.Embedded;
+import org.mongodb.morphia.annotations.Indexed;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -10,12 +14,14 @@ import java.util.Date;
  * @author Kari Kammonen
  */
 @Embedded
-public class Valintatapajono implements Serializable, Cloneable {
+@Converters(BigDecimalConverter.class)
+public class Valintatapajono implements Serializable {
 
     private Tasasijasaanto tasasijasaanto;
 
     private ValintatapajonoTila tila;
 
+    @Indexed
     private String oid;
 
     private String nimi;
@@ -39,6 +45,12 @@ public class Valintatapajono implements Serializable, Cloneable {
     private Date varasijojaTaytetaanAsti;
 
     private String tayttojono;
+
+    private Integer hyvaksytty;
+
+    private Integer varalla;
+
+    private BigDecimal alinHyvaksyttyPistemaara;
 
     //@Embedded
     //private List<Saanto> saannot = new ArrayList<Saanto>();
@@ -179,8 +191,27 @@ public class Valintatapajono implements Serializable, Cloneable {
         this.varasijojaTaytetaanAsti = varasijojaTaytetaanAsti;
     }
 
-    @Override
-    public Valintatapajono clone() throws CloneNotSupportedException {
-        return (Valintatapajono) super.clone();
+    public Integer getHyvaksytty() {
+        return hyvaksytty;
+    }
+
+    public void setHyvaksytty(Integer hyvaksytty) {
+        this.hyvaksytty = hyvaksytty;
+    }
+
+    public Integer getVaralla() {
+        return varalla;
+    }
+
+    public void setVaralla(Integer varalla) {
+        this.varalla = varalla;
+    }
+
+    public BigDecimal getAlinHyvaksyttyPistemaara() {
+        return alinHyvaksyttyPistemaara;
+    }
+
+    public void setAlinHyvaksyttyPistemaara(BigDecimal alinHyvaksyttyPistemaara) {
+        this.alinHyvaksyttyPistemaara = alinHyvaksyttyPistemaara;
     }
 }

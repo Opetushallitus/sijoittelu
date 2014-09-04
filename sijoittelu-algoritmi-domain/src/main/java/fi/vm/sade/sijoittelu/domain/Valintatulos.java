@@ -4,6 +4,7 @@ import org.mongodb.morphia.annotations.*;
 import org.bson.types.ObjectId;
 import org.codehaus.jackson.map.annotate.JsonView;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,9 +20,10 @@ import java.util.List;
 @Indexes({
         @Index("hakukohdeOid, valintatapajonoOid, hakemusOid"),
         @Index("hakukohdeOid, valintatapajonoOid"),
-        @Index("hakukohdeOid")
+        @Index("hakukohdeOid"),
+        @Index("hakemusOid")
 })
-public class Valintatulos implements Cloneable{
+public class Valintatulos implements Serializable {
 
     @SuppressWarnings("unused")
     @Id
@@ -134,10 +136,5 @@ public class Valintatulos implements Cloneable{
 
     public void setIlmoittautumisTila(final IlmoittautumisTila ilmoittautumisTila) {
         this.ilmoittautumisTila = ilmoittautumisTila;
-    }
-
-    @Override
-    public Valintatulos clone() throws CloneNotSupportedException {
-        return (Valintatulos) super.clone();
     }
 }

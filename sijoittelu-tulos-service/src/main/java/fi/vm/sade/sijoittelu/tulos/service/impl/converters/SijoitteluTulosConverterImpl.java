@@ -74,6 +74,9 @@ public class SijoitteluTulosConverterImpl implements SijoitteluTulosConverter {
 			dto.getHakemukset().add(
 					convert(hakemus, valintatapajono, hakukohde));
 		}
+        dto.setAlinHyvaksyttyPistemaara(valintatapajono.getAlinHyvaksyttyPistemaara());
+        dto.setHyvaksytty(valintatapajono.getHyvaksytty());
+        dto.setVaralla(valintatapajono.getVaralla());
 		sortHakemukset(dto);
 		return dto;
 	}
@@ -104,6 +107,7 @@ public class SijoitteluTulosConverterImpl implements SijoitteluTulosConverter {
 		if (valintatapajono != null) {
 			dto.setValintatapajonoOid(valintatapajono.getOid());
 		}
+        dto.setVarasijanNumero(ha.getVarasijanNumero());
 		applyPistetiedot(dto, ha.getPistetiedot());
 
 		return dto;
@@ -171,13 +175,13 @@ public class SijoitteluTulosConverterImpl implements SijoitteluTulosConverter {
 	public void sortHakemukset(ValintatapajonoDTO valintatapajonoDTO) {
 		Collections.sort(valintatapajonoDTO.getHakemukset(),
 				hakemusDTOComparator);
-		applyAlinHyvaksyttyPistemaara(valintatapajonoDTO);
+//		applyAlinHyvaksyttyPistemaara(valintatapajonoDTO);
 		valintatapajonoDTO.setHakeneet(getCount(valintatapajonoDTO));
-		valintatapajonoDTO.setHyvaksytty(getMaara(valintatapajonoDTO,
-				HakemuksenTila.HYVAKSYTTY));
-		valintatapajonoDTO.setVaralla(getMaara(valintatapajonoDTO,
-				HakemuksenTila.VARALLA));
-        applyVarasijaJonosija(valintatapajonoDTO);
+//		valintatapajonoDTO.setHyvaksytty(getMaara(valintatapajonoDTO,
+//				HakemuksenTila.HYVAKSYTTY));
+//		valintatapajonoDTO.setVaralla(getMaara(valintatapajonoDTO,
+//				HakemuksenTila.VARALLA));
+//        applyVarasijaJonosija(valintatapajonoDTO);
 	}
 
 	private int getCount(ValintatapajonoDTO dto) {
@@ -189,12 +193,7 @@ public class SijoitteluTulosConverterImpl implements SijoitteluTulosConverter {
                 .reduce(0,
                         (sum, b) -> sum + 1,
                         Integer::sum);
-//		int maara = 0;
-//		for (HakemusDTO hakemusDTO : dto.getHakemukset()) {
-//			if (hakemusDTO.getTila() == tila) {
-//				maara++;
-//			}
-//		}
+
 		return maara;
 	}
 
@@ -205,21 +204,7 @@ public class SijoitteluTulosConverterImpl implements SijoitteluTulosConverter {
 	 * @param v
 	 */
 	private void applyAlinHyvaksyttyPistemaara(ValintatapajonoDTO v) {
-//		BigDecimal alinHyvaksyttyPistemaara = null;
-//		for (HakemusDTO hakemusDTO : v.getHakemukset()) {
-//			if (hakemusDTO.getTila().equals(HakemuksenTila.HYVAKSYTTY)
-//					&& !hakemusDTO.isHyvaksyttyHarkinnanvaraisesti()) {
-//				BigDecimal pisteet = hakemusDTO.getPisteet();
-//				if (pisteet != null) {
-//					if (alinHyvaksyttyPistemaara == null) {
-//						alinHyvaksyttyPistemaara = pisteet;
-//					} else {
-//						alinHyvaksyttyPistemaara = alinHyvaksyttyPistemaara
-//								.min(pisteet);
-//					}
-//				}
-//			}
-//		}
+
         Optional<BigDecimal> alinHyvaksyttyPistemaara = v.getHakemukset().parallelStream()
                 .filter(h -> h.getTila() == HakemuksenTila.HYVAKSYTTY && !h.isHyvaksyttyHarkinnanvaraisesti())
                 .filter(h -> h.getPisteet() != null)
@@ -238,13 +223,7 @@ public class SijoitteluTulosConverterImpl implements SijoitteluTulosConverter {
         Integer hyvaksytyt = v.getHyvaksytty();
         hakemukset.parallelStream().filter(dto -> dto.getTila() == HakemuksenTila.VARALLA)
                 .forEach(dto -> dto.setVarasijanNumero((dto.getJonosija() - hyvaksytyt + dto.getTasasijaJonosija() - 1)));
-//		int paikka = 0;
-//		for (HakemusDTO hakemusDTO : hakemukset) {
-//			if (hakemusDTO.getTila() == HakemuksenTila.VARALLA) {
-//				paikka++;
-//				hakemusDTO.setVarasijanNumero(paikka);
-//			}
-//		}
+
 	}
 
 }

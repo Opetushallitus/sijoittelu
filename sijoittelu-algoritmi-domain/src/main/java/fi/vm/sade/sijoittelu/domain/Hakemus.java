@@ -3,6 +3,7 @@ package fi.vm.sade.sijoittelu.domain;
 import org.mongodb.morphia.annotations.Converters;
 import org.mongodb.morphia.annotations.Embedded;
 import fi.vm.sade.sijoittelu.domain.converter.BigDecimalConverter;
+import org.mongodb.morphia.annotations.Indexed;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -15,10 +16,11 @@ import java.util.*;
  */
 @Embedded
 @Converters(BigDecimalConverter.class)
-public class Hakemus implements Serializable, Cloneable {
+public class Hakemus implements Serializable {
 
     private String hakijaOid;
 
+    @Indexed
     private String hakemusOid;
 
     private String etunimi;
@@ -48,6 +50,8 @@ public class Hakemus implements Serializable, Cloneable {
     private List<Pistetieto> pistetiedot = new ArrayList<Pistetieto>();
 
     private Map<String,String> tilanKuvaukset = new HashMap<String,String>();
+
+    private Integer varasijanNumero;
 
     public int getPrioriteetti() {
         return prioriteetti;
@@ -167,8 +171,11 @@ public class Hakemus implements Serializable, Cloneable {
         this.ilmoittautumisTila = ilmoittautumisTila;
     }
 
-    @Override
-    public Hakemus clone() throws CloneNotSupportedException {
-        return (Hakemus) super.clone();
+    public Integer getVarasijanNumero() {
+        return varasijanNumero;
+    }
+
+    public void setVarasijanNumero(Integer varasijanNumero) {
+        this.varasijanNumero = varasijanNumero;
     }
 }

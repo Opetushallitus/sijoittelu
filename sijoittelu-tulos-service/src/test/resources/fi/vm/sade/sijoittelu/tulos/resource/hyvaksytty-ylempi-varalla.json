@@ -21,6 +21,8 @@
             "eiVarasijatayttoa": false,
             "kaikkiEhdonTayttavatHyvaksytaan": false,
             "poissaOlevaTaytto": false,
+            "hyvaksytty": 0,
+            "varalla": 3,
             "hakemukset": [
               {
                 "hakijaOid": "1.2.246.562.24.14229104472",
@@ -32,6 +34,7 @@
                 "pisteet": "4",
                 "tasasijaJonosija": 1,
                 "tila": "VARALLA",
+                "varasijanNumero": 1,
                 "tilaHistoria": [
                   {
                     "luotu": {
@@ -52,6 +55,7 @@
                 "pisteet": "4",
                 "tasasijaJonosija": 2,
                 "tila": "VARALLA",
+                "varasijanNumero": 2,
                 "tilaHistoria": [
                   {
                     "luotu": {
@@ -72,6 +76,7 @@
                 "pisteet": "4",
                 "tasasijaJonosija": 3,
                 "tila": "VARALLA",
+                "varasijanNumero": 3,
                 "tilaHistoria": [
                   {
                     "luotu": {
@@ -93,6 +98,8 @@
             "eiVarasijatayttoa": false,
             "kaikkiEhdonTayttavatHyvaksytaan": false,
             "poissaOlevaTaytto": false,
+            "hyvaksytty": 0,
+            "varalla": 2,
             "hakemukset": [
               {
                 "hakijaOid": "1.2.246.562.24.14229104472",
@@ -104,6 +111,7 @@
                 "pisteet": "4",
                 "tasasijaJonosija": 1,
                 "tila": "VARALLA",
+                "varasijanNumero": 1,
                 "tilaHistoria": [
                   {
                     "luotu": {
@@ -124,6 +132,7 @@
                 "pisteet": "4",
                 "tasasijaJonosija": 2,
                 "tila": "VARALLA",
+                "varasijanNumero": 2,
                 "tilaHistoria": [
                   {
                     "luotu": {
@@ -159,6 +168,9 @@
             "eiVarasijatayttoa": false,
             "kaikkiEhdonTayttavatHyvaksytaan": false,
             "poissaOlevaTaytto": false,
+            "hyvaksytty": 1,
+            "varalla": 0,
+            "alinHyvaksyttyPistemaara": 4,
             "hakemukset": [
               {
                 "hakijaOid": "1.2.246.562.24.14229104472",

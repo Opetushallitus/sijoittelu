@@ -10,6 +10,7 @@
       "pisteet": "4",
       "tasasijaJonosija": 1,
       "tila": "HYVAKSYTTY",
+      "varasijanNumero": 2,
       "tilaHistoria": [
         {
           "luotu": {
@@ -31,6 +32,9 @@
       "eiVarasijatayttoa": false,
       "kaikkiEhdonTayttavatHyvaksytaan": false,
       "poissaOlevaTaytto": false,
+      "hyvaksytty" : 10,
+      "varalla" : 5,
+      "alinHyvaksyttyPistemaara" : 5,
       "hakemukset": [
       ]
     }

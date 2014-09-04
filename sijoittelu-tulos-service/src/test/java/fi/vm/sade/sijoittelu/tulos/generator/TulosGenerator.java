@@ -13,6 +13,7 @@ import org.mongodb.morphia.mapping.Mapper;
 
 import com.mongodb.DB;
 import com.mongodb.DBObject;
+import com.mongodb.util.JSON;
 
 import fi.vm.sade.sijoittelu.domain.HakemuksenTila;
 import fi.vm.sade.sijoittelu.domain.Hakemus;
@@ -22,6 +23,10 @@ import fi.vm.sade.sijoittelu.domain.Valintatapajono;
 import fi.vm.sade.sijoittelu.domain.Valintatulos;
 
 public class TulosGenerator {
+    private static final Random random = new Random();
+    public static OidGen hakemusOids = new OidGen("1.2.246.260.10");
+    final static OidGen hakukohdeOids = new OidGen("1.2.246.261.10");
+    final static OidGen valintatapajonoOids = new OidGen("1.2.246.262.10");
     final static ObjectTemplate template = new ObjectTemplate("fi/vm/sade/sijoittelu/tulos/generator/generator-templates.json");
 
     public final static void main(String... args) {
@@ -40,8 +45,9 @@ public class TulosGenerator {
     }
 
     private static <T> void saveAll(String collection, List<T> objects, DB db) {
+        final Mapper mapper = new Mapper();
         final List<DBObject> dbObjects = objects.stream().map(object -> {
-            return new Mapper().toDBObject(object);
+            return mapper.toDBObject(object);
         }).collect(Collectors.toList());
         db.getCollection(collection).insert(dbObjects);
     }
@@ -62,12 +68,12 @@ public class TulosGenerator {
         final Hakukohde hakukohde = template.getTemplate("Hakukohde", Hakukohde.class);
         hakukohde.setValintatapajonot(createValintatapaJonot(3));
         hakukohde.setId(null);
-        hakukohde.setOid(generateOid());
+        hakukohde.setOid(hakukohdeOids.nextOid());
         return hakukohde;
     }
 
     static private Stream<Valintatulos> addHakemus(Stream<Hakukohde> hakukohteet) {
-        String oid = generateOid();
+        String oid = hakemusOids.nextOid();
         Counter counter = new Counter();
         return hakukohteet.flatMap((hakukohde) -> hakukohde.getValintatapajonot().stream().map(jono -> {
             Hakemus hakemus = template.getTemplate("Hakemus", Hakemus.class);
@@ -90,18 +96,13 @@ public class TulosGenerator {
         return valintatulos;
     }
 
-    static int counter = 0;
-    static private String generateOid() {
-        return "1.2.246.262.10" + (++counter);
-    }
-
     static private List<Valintatapajono> createValintatapaJonot(final int count) {
        return generate(count, (x) -> createValintatapaJono());
     }
 
     static private Valintatapajono createValintatapaJono() {
         final Valintatapajono valintatapajono = template.getTemplate("Valintatapajono", Valintatapajono.class);
-        valintatapajono.setOid(generateOid());
+        valintatapajono.setOid(valintatapajonoOids.nextOid());
         return valintatapajono;
     }
 
@@ -113,6 +114,25 @@ public class TulosGenerator {
         int count = 0;
         public int next() {
             return ++count;
+        }
+    }
+
+    public static class OidGen {
+        private final String prefix;
+        int counter = 0;
+        public OidGen(String prefix) {
+            this.prefix = prefix;
+        }
+        public String nextOid() {
+            return getOid(++counter);
+        }
+
+        private String getOid(final int num) {
+            return prefix + "." + (num);
+        }
+
+        public String randomOid(int count) {
+            return getOid(random.nextInt(count) + 1);
         }
     }
 }
