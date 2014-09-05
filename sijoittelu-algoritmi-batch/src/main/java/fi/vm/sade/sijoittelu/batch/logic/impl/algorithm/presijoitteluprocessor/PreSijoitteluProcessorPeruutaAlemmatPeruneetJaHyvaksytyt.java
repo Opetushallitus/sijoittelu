@@ -27,6 +27,9 @@ public class PreSijoitteluProcessorPeruutaAlemmatPeruneetJaHyvaksytyt implements
                     Integer parasHyvaksyttyHakutoive = parasHyvaksyttyTaiPeruttuHakutoive(henkiloWrapper);
                     if(parasHyvaksyttyHakutoive != null) {
                         if(hakemusWrapper.isTilaVoidaanVaihtaa() && hakemusWrapper.getHakemus().getTila() == HakemuksenTila.VARALLA && hakemusWrapper.getHakemus().getPrioriteetti() >= parasHyvaksyttyHakutoive) {
+                            hakemusWrapper.getHakemus().getTilanKuvaukset().put("FI","Peruuntunut, hyväksytty ylemmälle hakutoiveelle");
+                            hakemusWrapper.getHakemus().getTilanKuvaukset().put("SV","Peruuntunut, hyväksytty ylemmälle hakutoiveelle");
+                            hakemusWrapper.getHakemus().getTilanKuvaukset().put("EN","Peruuntunut, hyväksytty ylemmälle hakutoiveelle");
                             hakemusWrapper.getHakemus().setTila(HakemuksenTila.PERUUNTUNUT);
                         }
                     }
