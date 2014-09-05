@@ -29,7 +29,7 @@ public class DataImportService {
         DB db = mongo.getDB(dbname);
         DBObject base = MongoMockData.readJson("fi/vm/sade/sijoittelu/tulos/resource/sijoittelu-basedata.json");
         MongoMockData.insertData(db, base);
-        DBObject tulokset = MongoMockData.readJson("fi/vm/sade/sijoittelu/tulos/resources/sijoittelu-tulos-mockdata.json");
+        DBObject tulokset = MongoMockData.readJson("fi/vm/sade/sijoittelu/tulos/resource/sijoittelu-tulos-mockdata.json");
         MongoMockData.insertData(db, tulokset);
     }
 

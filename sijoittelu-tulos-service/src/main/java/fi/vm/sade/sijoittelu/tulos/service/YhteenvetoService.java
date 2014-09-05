@@ -12,6 +12,8 @@ import static fi.vm.sade.sijoittelu.tulos.dto.raportointi.Vastaanotettavuustila.
 import static fi.vm.sade.sijoittelu.tulos.dto.raportointi.YhteenvedonTila.KESKEN;
 import static fi.vm.sade.sijoittelu.tulos.dto.raportointi.YhteenvedonTila.fromHakemuksenTila;
 
+import org.joda.time.LocalDate;
+
 public class YhteenvetoService {
 
     public static HakemusYhteenvetoDTO yhteenveto(HakijaDTO hakija) {
@@ -24,9 +26,8 @@ public class YhteenvetoService {
             if (Arrays.asList(HYVAKSYTTY, HARKINNANVARAISESTI_HYVAKSYTTY).contains(jono.getTila())) {
                 vastaanotettavuustila = VASTAANOTETTAVISSA_SITOVASTI;
                 if (hakutoive.getHakutoive() > 1) {
-                    // TODO varasijasääntöjen aikaparametri
-                    if (false) {
-
+                    if (aikaparametriLauennut(jono)) {
+                      vastaanotettavuustila = VASTAANOTETTAVISSA_EHDOLLISESTI;
                     } else {
                         boolean ylempiaHakutoiveitaSijoittelematta = ylemmatHakutoiveet(hakija, hakutoive.getHakutoive()).filter(toive -> !toive.isKaikkiJonotSijoiteltu()).count() > 0;
                         if (ylempiaHakutoiveitaSijoittelematta) {
@@ -47,6 +48,16 @@ public class YhteenvetoService {
             }
             return new HakutoiveYhteenvetoDTO(hakutoive.getHakukohdeOid(), hakutoive.getTarjoajaOid(), valintatila, jono.getVastaanottotieto(), jono.getIlmoittautumisTila(), vastaanotettavuustila, jono.getJonosija(), jono.getVarasijanNumero());
         }).collect(Collectors.toList()));
+    }
+
+    private static boolean aikaparametriLauennut(final HakutoiveenValintatapajonoDTO jono) {
+        if (jono.getVarasijojaKaytetaanAlkaen() == null || jono.getVarasijojaTaytetaanAsti() == null) {
+            return false;
+        }
+        final LocalDate alkaen = new LocalDate(jono.getVarasijojaKaytetaanAlkaen());
+        final LocalDate asti = new LocalDate(jono.getVarasijojaTaytetaanAsti());
+        final LocalDate today = new LocalDate();
+        return !today.isBefore(alkaen) && !today.isAfter(asti);
     }
 
     private static Stream<HakutoiveDTO> ylemmatHakutoiveet(HakijaDTO hakija, Integer prioriteettiRaja) {

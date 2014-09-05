@@ -23,6 +23,12 @@
                     "hyvaksytty": 1,
                     "varalla": 0,
                     "alinHyvaksyttyPistemaara": 4,
+                    "varasijojaKaytetaanAlkaen": {
+                      "$date": "2014-08-26T16:05:23.943Z"
+                    },
+                    "varasijojaTaytetaanAsti": {
+                      "$date": "2014-08-26T16:05:23.943Z"
+                    },
                     "hakemukset": [
                         {
                             "hakijaOid": "1.2.246.562.24.14229104472",
@@ -37,7 +43,7 @@
                             "tilaHistoria": [
                                 {
                                     "luotu": {
-                                        "$date": "2014-08-26T15:12:40.623+0300"
+                                        "$date": "2014-08-26T15:12:40.623Z"
                                     },
                                     "tila": "HYVAKSYTTY"
                                 }
@@ -66,7 +72,7 @@
             "logEntries": [
                 {
                     "luotu": {
-                        "$date": "2014-08-26T16:05:23.943+0300"
+                        "$date": "2014-08-26T16:05:23.943Z"
                     },
                     "muokkaaja": "1.2.246.562.24.00000000001",
                     "muutos": "ILMOITETTU",
