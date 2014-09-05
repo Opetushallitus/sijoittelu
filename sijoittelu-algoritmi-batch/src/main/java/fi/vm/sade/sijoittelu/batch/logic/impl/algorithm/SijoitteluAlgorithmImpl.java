@@ -1,5 +1,6 @@
 package fi.vm.sade.sijoittelu.batch.logic.impl.algorithm;
 
+import fi.vm.sade.service.valintaperusteet.dto.model.Kieli;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.postsijoitteluprocessor.PostSijoitteluProcessor;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.presijoitteluprocessor.PreSijoitteluProcessor;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.*;
@@ -361,11 +362,17 @@ public class SijoitteluAlgorithmImpl implements SijoitteluAlgorithm {
                     if(h.isTilaVoidaanVaihtaa()) {
                         if (h.getHakemus().getTila() == HakemuksenTila.HYVAKSYTTY) {
                             h.getHakemus().setTila(HakemuksenTila.PERUUNTUNUT);
+                            h.getHakemus().getTilanKuvaukset().put("FI","Peruuntunut, hyväksytty ylemmälle hakutoiveelle");
+                            h.getHakemus().getTilanKuvaukset().put("SV","Peruuntunut, hyväksytty ylemmälle hakutoiveelle");
+                            h.getHakemus().getTilanKuvaukset().put("EN","Peruuntunut, hyväksytty ylemmälle hakutoiveelle");
                             uudelleenSijoiteltavatHakukohteet.add(h);
                         } else {
                             if (h.getHakemus().getTila() != HakemuksenTila.HYLATTY
                                     && h.getHakemus().getTila() != HakemuksenTila.PERUUTETTU
                                     && h.getHakemus().getTila() != HakemuksenTila.PERUNUT) {
+                                h.getHakemus().getTilanKuvaukset().put("FI","Peruuntunut, hyväksytty ylemmälle hakutoiveelle");
+                                h.getHakemus().getTilanKuvaukset().put("SV","Peruuntunut, hyväksytty ylemmälle hakutoiveelle");
+                                h.getHakemus().getTilanKuvaukset().put("EN","Peruuntunut, hyväksytty ylemmälle hakutoiveelle");
                                 h.getHakemus().setTila(HakemuksenTila.PERUUNTUNUT);
                             }
                         }
