@@ -158,6 +158,9 @@ public class SijoitteluAlgorithmImpl implements SijoitteluAlgorithm {
                 ValintatapajonoWrapper v = paras.getValintatapajono();
                 HakemusWrapper huonoin = haeHuonoinValittuEiVajaaseenRyhmaanKuuluva(v);
                 muuttuneetHakemukset.addAll(hyvaksyHakemus(paras));
+                paras.getHakemus().getTilanKuvaukset().put("FI","Varasijalta hyväksytty");
+                paras.getHakemus().getTilanKuvaukset().put("SV","Varasijalta hyväksytty");
+                paras.getHakemus().getTilanKuvaukset().put("EN","Varasijalta hyväksytty");
                 muuttuneetHakemukset.add(paras);
                 if (huonoin != null) {
                     muuttuneetHakemukset.addAll(asetaVaralleHakemus(huonoin));
@@ -370,9 +373,9 @@ public class SijoitteluAlgorithmImpl implements SijoitteluAlgorithm {
                             if (h.getHakemus().getTila() != HakemuksenTila.HYLATTY
                                     && h.getHakemus().getTila() != HakemuksenTila.PERUUTETTU
                                     && h.getHakemus().getTila() != HakemuksenTila.PERUNUT) {
-                                h.getHakemus().getTilanKuvaukset().put("FI","Peruuntunut, hyväksytty ylemmälle hakutoiveelle");
-                                h.getHakemus().getTilanKuvaukset().put("SV","Peruuntunut, hyväksytty ylemmälle hakutoiveelle");
-                                h.getHakemus().getTilanKuvaukset().put("EN","Peruuntunut, hyväksytty ylemmälle hakutoiveelle");
+                                h.getHakemus().getTilanKuvaukset().put("FI","Peruuntunut, aloituspaikat täynnä");
+                                h.getHakemus().getTilanKuvaukset().put("SV","Peruuntunut, aloituspaikat täynnä");
+                                h.getHakemus().getTilanKuvaukset().put("EN","Peruuntunut, aloituspaikat täynnä");
                                 h.getHakemus().setTila(HakemuksenTila.PERUUNTUNUT);
                             }
                         }

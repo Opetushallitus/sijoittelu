@@ -85,6 +85,12 @@ public class SijoitteluAlgorithmFactoryImpl implements SijoitteluAlgorithmFactor
                     if(valintatulos != null && valintatulos.getTila() != null)  {
                         ValintatuloksenTila tila =  valintatulos.getTila();
                         if(tila == ValintatuloksenTila.ILMOITETTU || tila == ValintatuloksenTila.VASTAANOTTANUT)  {
+                            if (hakemus.getTila() == HakemuksenTila.VARALLA) {
+                                hakemus.getTilanKuvaukset().put("FI","Varasijalta hyväksytty");
+                                hakemus.getTilanKuvaukset().put("SV","Varasijalta hyväksytty");
+                                hakemus.getTilanKuvaukset().put("EN","Varasijalta hyväksytty");
+                            }
+
                             hakemus.setTila(HakemuksenTila.HYVAKSYTTY);
                             hakemus.setIlmoittautumisTila(valintatulos.getIlmoittautumisTila());
                         } else if(tila == ValintatuloksenTila.PERUNUT) {
@@ -120,13 +126,12 @@ public class SijoitteluAlgorithmFactoryImpl implements SijoitteluAlgorithmFactor
         HenkiloWrapper henkiloWrapper = null;
 
         if(hakemus.getHakemusOid() != null && !hakemus.getHakemusOid().isEmpty()) {
-            henkiloWrapper =   hakemusOidMap.get(hakemus.getHakemusOid());
+            henkiloWrapper = hakemusOidMap.get(hakemus.getHakemusOid());
         }
 
         if(henkiloWrapper == null) {
             henkiloWrapper = new HenkiloWrapper();
             henkiloWrapper.setHakemusOid(hakemus.getHakemusOid());
-            //  henkiloWrapper.setHakijaOid(hakemus.getHakijaOid());
             if(hakemus.getHakemusOid() != null && !hakemus.getHakemusOid().isEmpty()) {
                 hakemusOidMap.put(hakemus.getHakemusOid(), henkiloWrapper);
             }
