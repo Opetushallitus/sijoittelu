@@ -5,11 +5,13 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
+import fi.vm.sade.sijoittelu.domain.comparator.HakemusComparator;
 import fi.vm.sade.sijoittelu.tulos.dao.HakukohdeDao;
 import fi.vm.sade.sijoittelu.laskenta.mapping.SijoitteluModelMapper;
 import fi.vm.sade.sijoittelu.laskenta.service.exception.*;
 import fi.vm.sade.sijoittelu.tulos.dao.SijoitteluDao;
 import fi.vm.sade.sijoittelu.tulos.dao.ValintatulosDao;
+import fi.vm.sade.sijoittelu.tulos.dto.comparator.HakemusDTOComparator;
 import fi.vm.sade.valintalaskenta.domain.dto.valintatieto.HakuDTO;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -47,6 +49,8 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
 
 	private static final Logger LOG = LoggerFactory
 			.getLogger(SijoitteluBusinessServiceImpl.class);
+
+    private HakemusComparator hakemusComparator = new HakemusComparator();
 
 	@Autowired
 	private SijoitteluAlgorithmFactory algorithmFactory;
@@ -159,7 +163,10 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
                 valintatapajono.setAlinHyvaksyttyPistemaara(alinHyvaksyttyPistemaara(valintatapajono.getHakemukset()).orElse(null));
                 valintatapajono.setHyvaksytty(getMaara(valintatapajono.getHakemukset(), HakemuksenTila.HYVAKSYTTY));
                 valintatapajono.setVaralla(getMaara(valintatapajono.getHakemukset(), HakemuksenTila.VARALLA));
-                valintatapajono.getHakemukset().parallelStream().forEach(hakemus -> {
+                Collections.sort(valintatapajono.getHakemukset(),
+                        hakemusComparator);
+                int varasija = 0;
+                for(Hakemus hakemus: valintatapajono.getHakemukset()) {
                     Hakemus edellinen = hakemusHashMap.get(hakukohde.getOid()
                             + valintatapajono.getOid()
                             + hakemus.getHakemusOid());
@@ -181,10 +188,10 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
                         hakemus.getTilaHistoria().add(th);
                     }
                     if (hakemus.getTila() == HakemuksenTila.VARALLA) {
-                        hakemus.setVarasijanNumero((hakemus.getJonosija() - valintatapajono.getHyvaksytty() + hakemus.getTasasijaJonosija() - 1));
+                        varasija++;
+                        hakemus.setVarasijanNumero(varasija);
                     }
                 }
-                );
             }
             );
             hakukohdeDao.persistHakukohde(hakukohde);
