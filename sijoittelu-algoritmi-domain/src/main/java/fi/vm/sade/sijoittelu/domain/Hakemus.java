@@ -53,7 +53,7 @@ public class Hakemus implements Serializable {
 
     private Integer varasijanNumero;
 
-    public int getPrioriteetti() {
+    public Integer getPrioriteetti() {
         return prioriteetti;
     }
 
@@ -61,7 +61,7 @@ public class Hakemus implements Serializable {
         this.prioriteetti = prioriteetti;
     }
 
-    public int getJonosija() {
+    public Integer getJonosija() {
         return jonosija;
     }
 

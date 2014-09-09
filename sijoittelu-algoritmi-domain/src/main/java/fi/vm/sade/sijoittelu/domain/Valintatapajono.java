@@ -82,7 +82,7 @@ public class Valintatapajono implements Serializable {
         this.nimi = nimi;
     }
 
-    public int getPrioriteetti() {
+    public Integer getPrioriteetti() {
         return prioriteetti;
     }
 
@@ -90,7 +90,7 @@ public class Valintatapajono implements Serializable {
         this.prioriteetti = prioriteetti;
     }
 
-    public int getAloituspaikat() {
+    public Integer getAloituspaikat() {
         return aloituspaikat;
     }
 
