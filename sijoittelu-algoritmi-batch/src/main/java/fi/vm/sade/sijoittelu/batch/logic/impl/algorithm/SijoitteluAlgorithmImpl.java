@@ -160,7 +160,7 @@ public class SijoitteluAlgorithmImpl implements SijoitteluAlgorithm {
                 muuttuneetHakemukset.addAll(hyvaksyHakemus(paras));
                 paras.getHakemus().getTilanKuvaukset().put("FI","Varasijalta hyväksytty");
                 paras.getHakemus().getTilanKuvaukset().put("SV","Godkänd från reservplats");
-                paras.getHakemus().getTilanKuvaukset().put("EN","Varasijalta hyväksytty");
+                paras.getHakemus().getTilanKuvaukset().put("EN","Accepted from a reserve place");
                 muuttuneetHakemukset.add(paras);
                 if (huonoin != null) {
                     muuttuneetHakemukset.addAll(asetaVaralleHakemus(huonoin));
@@ -367,7 +367,7 @@ public class SijoitteluAlgorithmImpl implements SijoitteluAlgorithm {
                             h.getHakemus().setTila(HakemuksenTila.PERUUNTUNUT);
                             h.getHakemus().getTilanKuvaukset().put("FI","Peruuntunut, hyväksytty ylemmälle hakutoiveelle");
                             h.getHakemus().getTilanKuvaukset().put("SV","Annullerad, godkänt till ansökningsmål med högre prioritet");
-                            h.getHakemus().getTilanKuvaukset().put("EN","Peruuntunut, hyväksytty ylemmälle hakutoiveelle");
+                            h.getHakemus().getTilanKuvaukset().put("EN","Cancelled, accepted for a study place with higher priority");
                             uudelleenSijoiteltavatHakukohteet.add(h);
                         } else {
                             if (h.getHakemus().getTila() != HakemuksenTila.HYLATTY
@@ -375,7 +375,7 @@ public class SijoitteluAlgorithmImpl implements SijoitteluAlgorithm {
                                     && h.getHakemus().getTila() != HakemuksenTila.PERUNUT) {
                                 h.getHakemus().getTilanKuvaukset().put("FI","Peruuntunut, aloituspaikat täynnä");
                                 h.getHakemus().getTilanKuvaukset().put("SV","Annullerad, nybörjarplatser fyllda");
-                                h.getHakemus().getTilanKuvaukset().put("EN","Peruuntunut, aloituspaikat täynnä");
+                                h.getHakemus().getTilanKuvaukset().put("EN","Cancelled, study places are filled");
                                 h.getHakemus().setTila(HakemuksenTila.PERUUNTUNUT);
                             }
                         }
