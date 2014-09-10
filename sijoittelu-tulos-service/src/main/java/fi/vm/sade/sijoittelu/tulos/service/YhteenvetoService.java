@@ -10,7 +10,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static fi.vm.sade.sijoittelu.tulos.dto.HakemuksenTila.*;
-import static fi.vm.sade.sijoittelu.tulos.dto.ValintatuloksenTila.EI_ILMOITETTU;
 import static fi.vm.sade.sijoittelu.tulos.dto.raportointi.Vastaanotettavuustila.*;
 import static fi.vm.sade.sijoittelu.tulos.dto.raportointi.YhteenvedonTila.KESKEN;
 import static fi.vm.sade.sijoittelu.tulos.dto.raportointi.YhteenvedonTila.fromHakemuksenTila;
@@ -49,7 +48,7 @@ public class YhteenvetoService {
                     valintatila = KESKEN;
                 }
             }
-            return new HakutoiveYhteenvetoDTO(hakutoive.getHakukohdeOid(), hakutoive.getTarjoajaOid(), valintatila, ifNull(jono.getVastaanottotieto(), EI_ILMOITETTU), ifNull(jono.getIlmoittautumisTila(), IlmoittautumisTila.EI_TEHTY), vastaanotettavuustila, jono.getJonosija(), jono.getVarasijanNumero());
+            return new HakutoiveYhteenvetoDTO(hakutoive.getHakukohdeOid(), hakutoive.getTarjoajaOid(), valintatila, ifNull(jono.getVastaanottotieto(), ValintatuloksenTila.KESKEN), ifNull(jono.getIlmoittautumisTila(), IlmoittautumisTila.EI_TEHTY), vastaanotettavuustila, jono.getJonosija(), jono.getVarasijanNumero());
         }).collect(Collectors.toList()));
     }
 

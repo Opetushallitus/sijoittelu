@@ -43,7 +43,7 @@ public class SijoitteluResourceYhteenvetoTest extends SijoitteluResourceTest {
     @UsingDataSet(locations = {"sijoittelu-basedata.json", "hyvaksytty-ilmoittamaton.json"}, loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
     public void hyvaksyttyIlmoittamaton() throws JsonProcessingException {
         HakemusYhteenvetoDTO yhteenveto = getYhteenveto();
-        checkHakutoiveState(yhteenveto.hakutoiveet.get(0), YhteenvedonTila.HYVAKSYTTY, ValintatuloksenTila.EI_ILMOITETTU, Vastaanotettavuustila.VASTAANOTETTAVISSA_SITOVASTI);
+        checkHakutoiveState(yhteenveto.hakutoiveet.get(0), YhteenvedonTila.HYVAKSYTTY, ValintatuloksenTila.KESKEN, Vastaanotettavuustila.VASTAANOTETTAVISSA_SITOVASTI);
     }
 
     @Test

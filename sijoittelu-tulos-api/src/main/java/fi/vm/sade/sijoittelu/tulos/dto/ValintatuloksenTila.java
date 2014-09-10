@@ -8,7 +8,6 @@ package fi.vm.sade.sijoittelu.tulos.dto;
  * To change this template use File | Settings | File Templates.
  */
 public enum ValintatuloksenTila {
-    EI_ILMOITETTU,                 // Hakijalle ei ilmoitettu
     ILMOITETTU,                    // Hakijalle on ilmoitettu, sijoittelun tulos ei voi muuttaa paikkaa peruuntuneeksi
     VASTAANOTTANUT,
     VASTAANOTTANUT_LASNA,          // Hakija ottanut paikan vastaan ja on lasna
