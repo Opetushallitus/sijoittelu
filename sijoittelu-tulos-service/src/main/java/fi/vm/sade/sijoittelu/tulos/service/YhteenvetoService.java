@@ -11,8 +11,8 @@ import java.util.stream.Stream;
 
 import static fi.vm.sade.sijoittelu.tulos.dto.HakemuksenTila.*;
 import static fi.vm.sade.sijoittelu.tulos.dto.raportointi.Vastaanotettavuustila.*;
-import static fi.vm.sade.sijoittelu.tulos.dto.raportointi.YhteenvedonTila.KESKEN;
-import static fi.vm.sade.sijoittelu.tulos.dto.raportointi.YhteenvedonTila.fromHakemuksenTila;
+import static fi.vm.sade.sijoittelu.tulos.dto.raportointi.YhteenvedonValintaTila.KESKEN;
+import static fi.vm.sade.sijoittelu.tulos.dto.raportointi.YhteenvedonValintaTila.fromHakemuksenTila;
 
 import org.joda.time.LocalDate;
 
@@ -22,7 +22,7 @@ public class YhteenvetoService {
         return new HakemusYhteenvetoDTO(hakija.getHakemusOid(), hakija.getHakutoiveet().stream().map(hakutoive -> {
 
             HakutoiveenValintatapajonoDTO jono = getFirst(hakutoive).get();
-            YhteenvedonTila valintatila = ifNull(fromHakemuksenTila(jono.getTila()), YhteenvedonTila.KESKEN);
+            YhteenvedonValintaTila valintatila = ifNull(fromHakemuksenTila(jono.getTila()), YhteenvedonValintaTila.KESKEN);
             Vastaanotettavuustila vastaanotettavuustila = EI_VASTAANOTETTAVISSA;
 
             if (Arrays.asList(HYVAKSYTTY, HARKINNANVARAISESTI_HYVAKSYTTY).contains(jono.getTila())) {
@@ -48,8 +48,24 @@ public class YhteenvetoService {
                     valintatila = KESKEN;
                 }
             }
-            return new HakutoiveYhteenvetoDTO(hakutoive.getHakukohdeOid(), hakutoive.getTarjoajaOid(), valintatila, ifNull(jono.getVastaanottotieto(), ValintatuloksenTila.KESKEN), ifNull(jono.getIlmoittautumisTila(), IlmoittautumisTila.EI_TEHTY), vastaanotettavuustila, jono.getJonosija(), jono.getVarasijanNumero());
+            final boolean julkaistavissa = jono.getVastaanottotieto() != ValintatuloksenTila.KESKEN;
+            return new HakutoiveYhteenvetoDTO(hakutoive.getHakukohdeOid(), hakutoive.getTarjoajaOid(), valintatila, convertVastaanottotila(ifNull(jono.getVastaanottotieto(), ValintatuloksenTila.KESKEN)), ifNull(jono.getIlmoittautumisTila(), IlmoittautumisTila.EI_TEHTY), vastaanotettavuustila, jono.getJonosija(), jono.getVarasijanNumero(), julkaistavissa);
         }).collect(Collectors.toList()));
+    }
+
+    private static YhteenvedonVastaanottotila convertVastaanottotila(final ValintatuloksenTila valintatuloksenTila) {
+        switch (valintatuloksenTila) {
+            case ILMOITETTU:
+            case KESKEN: return YhteenvedonVastaanottotila.KESKEN;
+            case PERUNUT: return YhteenvedonVastaanottotila.PERUNUT;
+            case PERUUTETTU: return YhteenvedonVastaanottotila.PERUUTETTU;
+            case EI_VASTAANOTETTU_MAARA_AIKANA: return YhteenvedonVastaanottotila.EI_VASTAANOTETTU_MAARA_AIKANA;
+            case EHDOLLISESTI_VASTAANOTTANUT: return YhteenvedonVastaanottotila.EHDOLLISESTI_VASTAANOTTANUT;
+            case VASTAANOTTANUT_LASNA:
+            case VASTAANOTTANUT_POISSAOLEVA:
+            case VASTAANOTTANUT: return YhteenvedonVastaanottotila.VASTAANOTTANUT;
+            default: throw new IllegalArgumentException("Unknown state: " + valintatuloksenTila);
+        }
     }
 
     private static <T> T ifNull(final T value, final T defaultValue) {
@@ -75,9 +91,9 @@ public class YhteenvetoService {
         return hakutoive.getHakutoiveenValintatapajonot()
                 .stream()
                 .sorted((jono1, jono2) -> {
-                        final YhteenvedonTila tila1 = fromHakemuksenTila(jono1.getTila());
-                        final YhteenvedonTila tila2 = fromHakemuksenTila(jono2.getTila());
-                        if (tila1 == YhteenvedonTila.VARALLA && tila2 == YhteenvedonTila.VARALLA) {
+                        final YhteenvedonValintaTila tila1 = fromHakemuksenTila(jono1.getTila());
+                        final YhteenvedonValintaTila tila2 = fromHakemuksenTila(jono2.getTila());
+                        if (tila1 == YhteenvedonValintaTila.VARALLA && tila2 == YhteenvedonValintaTila.VARALLA) {
                             return jono1.getVarasijanNumero() - jono2.getVarasijanNumero();
                         }
                         return tila1.compareTo(tila2);
