@@ -1,5 +1,7 @@
 package fi.vm.sade.sijoittelu.tulos.service;
 
+import fi.vm.sade.sijoittelu.tulos.dto.IlmoittautumisTila;
+import fi.vm.sade.sijoittelu.tulos.dto.ValintatuloksenTila;
 import fi.vm.sade.sijoittelu.tulos.dto.raportointi.*;
 
 import java.util.Arrays;
@@ -8,6 +10,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static fi.vm.sade.sijoittelu.tulos.dto.HakemuksenTila.*;
+import static fi.vm.sade.sijoittelu.tulos.dto.ValintatuloksenTila.EI_ILMOITETTU;
 import static fi.vm.sade.sijoittelu.tulos.dto.raportointi.Vastaanotettavuustila.*;
 import static fi.vm.sade.sijoittelu.tulos.dto.raportointi.YhteenvedonTila.KESKEN;
 import static fi.vm.sade.sijoittelu.tulos.dto.raportointi.YhteenvedonTila.fromHakemuksenTila;
@@ -20,7 +23,7 @@ public class YhteenvetoService {
         return new HakemusYhteenvetoDTO(hakija.getHakemusOid(), hakija.getHakutoiveet().stream().map(hakutoive -> {
 
             HakutoiveenValintatapajonoDTO jono = getFirst(hakutoive).get();
-            YhteenvedonTila valintatila = fromHakemuksenTila(jono.getTila());
+            YhteenvedonTila valintatila = ifNull(fromHakemuksenTila(jono.getTila()), YhteenvedonTila.KESKEN);
             Vastaanotettavuustila vastaanotettavuustila = EI_VASTAANOTETTAVISSA;
 
             if (Arrays.asList(HYVAKSYTTY, HARKINNANVARAISESTI_HYVAKSYTTY).contains(jono.getTila())) {
@@ -46,8 +49,13 @@ public class YhteenvetoService {
                     valintatila = KESKEN;
                 }
             }
-            return new HakutoiveYhteenvetoDTO(hakutoive.getHakukohdeOid(), hakutoive.getTarjoajaOid(), valintatila, jono.getVastaanottotieto(), jono.getIlmoittautumisTila(), vastaanotettavuustila, jono.getJonosija(), jono.getVarasijanNumero());
+            return new HakutoiveYhteenvetoDTO(hakutoive.getHakukohdeOid(), hakutoive.getTarjoajaOid(), valintatila, ifNull(jono.getVastaanottotieto(), EI_ILMOITETTU), ifNull(jono.getIlmoittautumisTila(), IlmoittautumisTila.EI_TEHTY), vastaanotettavuustila, jono.getJonosija(), jono.getVarasijanNumero());
         }).collect(Collectors.toList()));
+    }
+
+    private static <T> T ifNull(final T value, final T defaultValue) {
+        if (value == null) return defaultValue;
+        return value;
     }
 
     private static boolean aikaparametriLauennut(final HakutoiveenValintatapajonoDTO jono) {
