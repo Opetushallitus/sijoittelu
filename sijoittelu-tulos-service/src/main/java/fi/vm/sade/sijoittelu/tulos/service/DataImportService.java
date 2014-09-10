@@ -14,6 +14,8 @@ import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.io.StringWriter;
 
+import fi.vm.sade.sijoittelu.tulos.testfixtures.FixtureImporter;
+
 @Service
 @Profile("it")
 public class DataImportService {
@@ -26,11 +28,7 @@ public class DataImportService {
 
     @PostConstruct
     public void importData() throws IOException {
-        DB db = mongo.getDB(dbname);
-        DBObject base = MongoMockData.readJson("fi/vm/sade/sijoittelu/tulos/resource/sijoittelu-basedata.json");
-        MongoMockData.insertData(db, base);
-        DBObject tulokset = MongoMockData.readJson("fi/vm/sade/sijoittelu/tulos/resource/sijoittelu-tulos-mockdata.json");
-        MongoMockData.insertData(db, tulokset);
+        FixtureImporter.importFixtures(mongo.getDB(dbname));
     }
 
 

@@ -10,7 +10,7 @@ import org.mongodb.morphia.mapping.cache.DefaultEntityCache;
 
 import com.mongodb.DBObject;
 
-import fi.vm.sade.sijoittelu.tulos.service.MongoMockData;
+import fi.vm.sade.sijoittelu.tulos.testfixtures.MongoMockData;
 
 public class ObjectTemplate {
     private final DBObject templateData;

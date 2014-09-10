@@ -87,8 +87,8 @@ public class SijoitteluAlgorithmFactoryImpl implements SijoitteluAlgorithmFactor
                         if(tila == ValintatuloksenTila.ILMOITETTU || tila == ValintatuloksenTila.VASTAANOTTANUT)  {
                             if (hakemus.getTila() == HakemuksenTila.VARALLA) {
                                 hakemus.getTilanKuvaukset().put("FI","Varasijalta hyväksytty");
-                                hakemus.getTilanKuvaukset().put("SV","Varasijalta hyväksytty");
-                                hakemus.getTilanKuvaukset().put("EN","Varasijalta hyväksytty");
+                                hakemus.getTilanKuvaukset().put("SV","Godkänd från reservplats");
+                                hakemus.getTilanKuvaukset().put("EN","Accepted from a reserve place");
                             }
 
                             hakemus.setTila(HakemuksenTila.HYVAKSYTTY);
@@ -98,8 +98,8 @@ public class SijoitteluAlgorithmFactoryImpl implements SijoitteluAlgorithmFactor
                         } else if(tila == ValintatuloksenTila.EI_VASTAANOTETTU_MAARA_AIKANA) {
                             hakemus.setTila(HakemuksenTila.PERUNUT);
                             hakemus.getTilanKuvaukset().put("FI","Peruuntunut, ei vastaanottanut määräaikana");
-                            hakemus.getTilanKuvaukset().put("SV","Peruuntunut, ei vastaanottanut määräaikana");
-                            hakemus.getTilanKuvaukset().put("EN","Peruuntunut, ei vastaanottanut määräaikana");
+                            hakemus.getTilanKuvaukset().put("SV","Annullerad, har inte tagit emot platsen inom utsatt tid");
+                            hakemus.getTilanKuvaukset().put("EN","Cancelled, has not confirmed the study place within the deadline");
                         } else if(tila == ValintatuloksenTila.PERUUTETTU) {
                             hakemus.setTila(HakemuksenTila.PERUUTETTU);
                         }
