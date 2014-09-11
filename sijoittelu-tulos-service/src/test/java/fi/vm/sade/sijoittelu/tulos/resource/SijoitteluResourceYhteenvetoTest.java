@@ -5,7 +5,9 @@ import static org.junit.Assert.assertFalse;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 
+import org.joda.time.DateTime;
 import org.joda.time.DateTimeUtils;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,7 +36,7 @@ public class SijoitteluResourceYhteenvetoTest extends SijoitteluResourceTest {
     @Test
     @UsingDataSet(locations = {"sijoittelu-basedata.json", "sijoittelu-tulos-mockdata.json"}, loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
     public void hyvaksytty() throws JsonProcessingException {
-        String expectedResponse = "{\"hakemusOid\":\"1.2.246.562.11.00000441369\",\"hakutoiveet\":[{\"hakukohdeOid\":\"1.2.246.562.5.72607738902\",\"tarjoajaOid\":\"1.2.246.562.10.591352080610\",\"valintatila\":\"HYVAKSYTTY\",\"vastaanottotila\":\"KESKEN\",\"ilmoittautumistila\":\"EI_TEHTY\",\"vastaanotettavuustila\":\"VASTAANOTETTAVISSA_SITOVASTI\",\"jonosija\":1,\"varasijanumero\":null,\"julkaistavissa\":true}]}";
+        String expectedResponse = "{\"hakemusOid\":\"1.2.246.562.11.00000441369\",\"hakutoiveet\":[{\"hakukohdeOid\":\"1.2.246.562.5.72607738902\",\"tarjoajaOid\":\"1.2.246.562.10.591352080610\",\"valintatila\":\"HYVAKSYTTY\",\"vastaanottotila\":\"KESKEN\",\"ilmoittautumistila\":\"EI_TEHTY\",\"vastaanotettavuustila\":\"VASTAANOTETTAVISSA_SITOVASTI\",\"jonosija\":1,\"varasijojaKaytetaanAlkaen\":1409069123943,\"varasijojaTaytetaanAsti\":1409069123943,\"varasijanumero\":null,\"julkaistavissa\":true}]}";
         HakemusYhteenvetoDTO yhteenveto = getYhteenveto();
         assertEquals(expectedResponse, objectMapper.writeValueAsString(yhteenveto));
         checkHakutoiveState(yhteenveto.hakutoiveet.get(0), YhteenvedonValintaTila.HYVAKSYTTY, YhteenvedonVastaanottotila.KESKEN, Vastaanotettavuustila.VASTAANOTETTAVISSA_SITOVASTI, true);
@@ -107,6 +109,13 @@ public class SijoitteluResourceYhteenvetoTest extends SijoitteluResourceTest {
         assertEquals(new Integer(2), yhteenveto.hakutoiveet.get(0).varasijanumero);
     }
 
+    @Test
+    @UsingDataSet(locations = {"sijoittelu-basedata.json", "hyvaksytty-ylempi-varalla.json"}, loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
+    public void varasijojenKasittelypaivamaaratNaytetaan() throws JsonProcessingException {
+        HakemusYhteenvetoDTO yhteenveto = getYhteenveto();
+        assertEquals(new DateTime("2014-08-01T16:00:00.000Z").toDate(), yhteenveto.hakutoiveet.get(1).varasijojaKaytetaanAlkaen);
+        assertEquals(new DateTime("2014-08-31T16:00:00.000Z").toDate(), yhteenveto.hakutoiveet.get(1).varasijojaTaytetaanAsti);
+    }
 
     @Test
     @UsingDataSet(locations = {"sijoittelu-basedata.json", "hyvaksytty-ylempi-varalla.json"}, loadStrategy = LoadStrategyEnum.CLEAN_INSERT)

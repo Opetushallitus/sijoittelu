@@ -67,7 +67,7 @@ public class YhteenvetoService {
             }
 
             final boolean julkaistavissa = jono.getVastaanottotieto() != ValintatuloksenTila.KESKEN;
-            return new HakutoiveYhteenvetoDTO(hakutoive.getHakukohdeOid(), hakutoive.getTarjoajaOid(), valintatila, vastaanottotila, ifNull(jono.getIlmoittautumisTila(), IlmoittautumisTila.EI_TEHTY), vastaanotettavuustila, jono.getJonosija(), jono.getVarasijanNumero(), julkaistavissa);
+            return new HakutoiveYhteenvetoDTO(hakutoive.getHakukohdeOid(), hakutoive.getTarjoajaOid(), valintatila, vastaanottotila, ifNull(jono.getIlmoittautumisTila(), IlmoittautumisTila.EI_TEHTY), vastaanotettavuustila, jono.getJonosija(), jono.getVarasijojaKaytetaanAlkaen(), jono.getVarasijojaTaytetaanAsti(), jono.getVarasijanNumero(), julkaistavissa);
         }).collect(Collectors.toList()));
     }
 
