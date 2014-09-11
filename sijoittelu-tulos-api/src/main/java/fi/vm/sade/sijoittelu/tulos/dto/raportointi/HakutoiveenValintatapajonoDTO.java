@@ -42,10 +42,10 @@ public class HakutoiveenValintatapajonoDTO {
 	private Map<String, String> tilanKuvaukset = new HashMap<String, String>();
 
 	@JsonView(JsonViews.Hakija.class)
-	private ValintatuloksenTila vastaanottotieto;
+	private ValintatuloksenTila vastaanottotieto = ValintatuloksenTila.KESKEN;
 
 	@JsonView(JsonViews.Hakija.class)
-	private IlmoittautumisTila ilmoittautumisTila;
+	private IlmoittautumisTila ilmoittautumisTila = IlmoittautumisTila.EI_TEHTY;
 
 	@JsonView(JsonViews.Hakija.class)
 	private boolean hyvaksyttyHarkinnanvaraisesti = false;

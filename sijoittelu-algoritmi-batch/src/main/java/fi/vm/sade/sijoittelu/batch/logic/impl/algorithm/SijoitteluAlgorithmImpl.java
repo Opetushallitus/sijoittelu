@@ -1,5 +1,6 @@
 package fi.vm.sade.sijoittelu.batch.logic.impl.algorithm;
 
+import fi.vm.sade.service.valintaperusteet.dto.model.Kieli;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.postsijoitteluprocessor.PostSijoitteluProcessor;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.presijoitteluprocessor.PreSijoitteluProcessor;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.*;
@@ -157,6 +158,9 @@ public class SijoitteluAlgorithmImpl implements SijoitteluAlgorithm {
                 ValintatapajonoWrapper v = paras.getValintatapajono();
                 HakemusWrapper huonoin = haeHuonoinValittuEiVajaaseenRyhmaanKuuluva(v);
                 muuttuneetHakemukset.addAll(hyvaksyHakemus(paras));
+                paras.getHakemus().getTilanKuvaukset().put("FI","Varasijalta hyväksytty");
+                paras.getHakemus().getTilanKuvaukset().put("SV","Godkänd från reservplats");
+                paras.getHakemus().getTilanKuvaukset().put("EN","Accepted from a reserve place");
                 muuttuneetHakemukset.add(paras);
                 if (huonoin != null) {
                     muuttuneetHakemukset.addAll(asetaVaralleHakemus(huonoin));
@@ -361,11 +365,17 @@ public class SijoitteluAlgorithmImpl implements SijoitteluAlgorithm {
                     if(h.isTilaVoidaanVaihtaa()) {
                         if (h.getHakemus().getTila() == HakemuksenTila.HYVAKSYTTY) {
                             h.getHakemus().setTila(HakemuksenTila.PERUUNTUNUT);
+                            h.getHakemus().getTilanKuvaukset().put("FI","Peruuntunut, hyväksytty ylemmälle hakutoiveelle");
+                            h.getHakemus().getTilanKuvaukset().put("SV","Annullerad, godkänt till ansökningsmål med högre prioritet");
+                            h.getHakemus().getTilanKuvaukset().put("EN","Cancelled, accepted for a study place with higher priority");
                             uudelleenSijoiteltavatHakukohteet.add(h);
                         } else {
                             if (h.getHakemus().getTila() != HakemuksenTila.HYLATTY
                                     && h.getHakemus().getTila() != HakemuksenTila.PERUUTETTU
                                     && h.getHakemus().getTila() != HakemuksenTila.PERUNUT) {
+                                h.getHakemus().getTilanKuvaukset().put("FI","Peruuntunut, aloituspaikat täynnä");
+                                h.getHakemus().getTilanKuvaukset().put("SV","Annullerad, nybörjarplatser fyllda");
+                                h.getHakemus().getTilanKuvaukset().put("EN","Cancelled, study places are filled");
                                 h.getHakemus().setTila(HakemuksenTila.PERUUNTUNUT);
                             }
                         }

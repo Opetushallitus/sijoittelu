@@ -85,12 +85,21 @@ public class SijoitteluAlgorithmFactoryImpl implements SijoitteluAlgorithmFactor
                     if(valintatulos != null && valintatulos.getTila() != null)  {
                         ValintatuloksenTila tila =  valintatulos.getTila();
                         if(tila == ValintatuloksenTila.ILMOITETTU || tila == ValintatuloksenTila.VASTAANOTTANUT)  {
+                            if (hakemus.getTila() == HakemuksenTila.VARALLA) {
+                                hakemus.getTilanKuvaukset().put("FI","Varasijalta hyväksytty");
+                                hakemus.getTilanKuvaukset().put("SV","Godkänd från reservplats");
+                                hakemus.getTilanKuvaukset().put("EN","Accepted from a reserve place");
+                            }
+
                             hakemus.setTila(HakemuksenTila.HYVAKSYTTY);
                             hakemus.setIlmoittautumisTila(valintatulos.getIlmoittautumisTila());
                         } else if(tila == ValintatuloksenTila.PERUNUT) {
                             hakemus.setTila(HakemuksenTila.PERUNUT);
                         } else if(tila == ValintatuloksenTila.EI_VASTAANOTETTU_MAARA_AIKANA) {
                             hakemus.setTila(HakemuksenTila.PERUNUT);
+                            hakemus.getTilanKuvaukset().put("FI","Peruuntunut, ei vastaanottanut määräaikana");
+                            hakemus.getTilanKuvaukset().put("SV","Annullerad, har inte tagit emot platsen inom utsatt tid");
+                            hakemus.getTilanKuvaukset().put("EN","Cancelled, has not confirmed the study place within the deadline");
                         } else if(tila == ValintatuloksenTila.PERUUTETTU) {
                             hakemus.setTila(HakemuksenTila.PERUUTETTU);
                         }
@@ -117,13 +126,12 @@ public class SijoitteluAlgorithmFactoryImpl implements SijoitteluAlgorithmFactor
         HenkiloWrapper henkiloWrapper = null;
 
         if(hakemus.getHakemusOid() != null && !hakemus.getHakemusOid().isEmpty()) {
-            henkiloWrapper =   hakemusOidMap.get(hakemus.getHakemusOid());
+            henkiloWrapper = hakemusOidMap.get(hakemus.getHakemusOid());
         }
 
         if(henkiloWrapper == null) {
             henkiloWrapper = new HenkiloWrapper();
             henkiloWrapper.setHakemusOid(hakemus.getHakemusOid());
-            //  henkiloWrapper.setHakijaOid(hakemus.getHakijaOid());
             if(hakemus.getHakemusOid() != null && !hakemus.getHakemusOid().isEmpty()) {
                 hakemusOidMap.put(hakemus.getHakemusOid(), henkiloWrapper);
             }

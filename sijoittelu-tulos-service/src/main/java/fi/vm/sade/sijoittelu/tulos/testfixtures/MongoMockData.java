@@ -1,4 +1,4 @@
-package fi.vm.sade.sijoittelu.tulos.service;
+package fi.vm.sade.sijoittelu.tulos.testfixtures;
 
 import java.io.IOException;
 import java.io.StringWriter;

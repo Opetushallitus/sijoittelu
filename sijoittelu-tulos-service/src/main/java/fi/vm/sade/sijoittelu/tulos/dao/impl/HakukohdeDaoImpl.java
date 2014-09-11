@@ -7,6 +7,7 @@ import java.util.stream.StreamSupport;
 
 import javax.annotation.PostConstruct;
 
+import fi.vm.sade.sijoittelu.tulos.dao.util.MongoMapReduceUtil;
 import org.mongodb.morphia.Datastore;
 import org.mongodb.morphia.MapreduceType;
 import org.mongodb.morphia.mapping.Mapper;
@@ -61,7 +62,7 @@ public class HakukohdeDaoImpl implements HakukohdeDao {
     public List<Hakukohde> haeHakukohteetJoihinHakemusOsallistuu(Long sijoitteluajoId, String hakemusOid) {
         final BasicDBObject query = new BasicDBObject("sijoitteluajoId", sijoitteluajoId).append("valintatapajonot.hakemukset.hakemusOid", hakemusOid);
 
-        String map = "function () { function shallowClone(obj) { var copy; if (null == obj || 'object' != typeof obj || obj instanceof ObjectId || obj instanceof NumberLong || obj instanceof Date) return obj; if (obj instanceof Array) { copy = []; for (var i = 0, len = obj.length; i < len; i++) { copy[i] = obj[i]; } return copy; } if (obj instanceof Object) { copy = {}; for (var attr in obj) { if (obj.hasOwnProperty(attr)) copy[attr] = obj[attr]; } return copy; } throw new Error('Unable to copy obj'); } var copy = shallowClone(this); copy.valintatapajonot = copy.valintatapajonot.map(function(jono) { jono = shallowClone(jono); jono.hakemukset = jono.hakemukset.filter(function (hakemus) { return hakemus.hakemusOid == '"+hakemusOid+"' }); return jono }); emit(this.oid, copy) }\n";
+        String map = MongoMapReduceUtil.shallowCloneJs + " copy.valintatapajonot = copy.valintatapajonot.map(function(jono) { jono = shallowClone(jono); jono.hakemukset = jono.hakemukset.filter(function (hakemus) { return hakemus.hakemusOid == '"+hakemusOid+"' }); return jono }); emit(this.oid, copy) }\n";
 
         String reduce = "function(key, values) { return values[0] }";
 
@@ -75,8 +76,8 @@ public class HakukohdeDaoImpl implements HakukohdeDao {
             query);
         MapReduceOutput out = collection.mapReduce(cmd);
 
-        return StreamSupport.stream(out.results().spliterator(), false).map(dbObject -> {
-            return new Mapper().fromDBObject(Hakukohde.class, (DBObject) dbObject.get("value"), new DefaultEntityCache());
-        }).collect(Collectors.toList());
+        return StreamSupport.stream(out.results().spliterator(), false)
+                .map(dbObject -> new Mapper().fromDBObject(Hakukohde.class, (DBObject) dbObject.get("value"), new DefaultEntityCache()))
+                .collect(Collectors.toList());
     }
 }
