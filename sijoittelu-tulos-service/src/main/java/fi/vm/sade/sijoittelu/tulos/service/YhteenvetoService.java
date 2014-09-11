@@ -1,5 +1,6 @@
 package fi.vm.sade.sijoittelu.tulos.service;
 
+import fi.vm.sade.sijoittelu.tulos.dto.HakemuksenTila;
 import fi.vm.sade.sijoittelu.tulos.dto.IlmoittautumisTila;
 import fi.vm.sade.sijoittelu.tulos.dto.ValintatuloksenTila;
 import fi.vm.sade.sijoittelu.tulos.dto.raportointi.*;
@@ -9,9 +10,10 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static fi.vm.sade.sijoittelu.tulos.dto.HakemuksenTila.*;
 import static fi.vm.sade.sijoittelu.tulos.dto.raportointi.Vastaanotettavuustila.*;
+import static fi.vm.sade.sijoittelu.tulos.dto.raportointi.YhteenvedonValintaTila.HYVAKSYTTY;
 import static fi.vm.sade.sijoittelu.tulos.dto.raportointi.YhteenvedonValintaTila.KESKEN;
+import static fi.vm.sade.sijoittelu.tulos.dto.raportointi.YhteenvedonValintaTila.PERUNUT;
 import static fi.vm.sade.sijoittelu.tulos.dto.raportointi.YhteenvedonValintaTila.fromHakemuksenTila;
 
 import org.joda.time.LocalDate;
@@ -20,23 +22,22 @@ public class YhteenvetoService {
 
     public static HakemusYhteenvetoDTO yhteenveto(HakijaDTO hakija) {
         return new HakemusYhteenvetoDTO(hakija.getHakemusOid(), hakija.getHakutoiveet().stream().map(hakutoive -> {
-
             HakutoiveenValintatapajonoDTO jono = getFirst(hakutoive).get();
             YhteenvedonValintaTila valintatila = ifNull(fromHakemuksenTila(jono.getTila()), YhteenvedonValintaTila.KESKEN);
             Vastaanotettavuustila vastaanotettavuustila = EI_VASTAANOTETTAVISSA;
-
-            if (Arrays.asList(HYVAKSYTTY, HARKINNANVARAISESTI_HYVAKSYTTY).contains(jono.getTila())) {
+            // Valintatila
+            if (Arrays.asList(HakemuksenTila.HYVAKSYTTY, HakemuksenTila.HARKINNANVARAISESTI_HYVAKSYTTY).contains(jono.getTila())) {
                 vastaanotettavuustila = VASTAANOTETTAVISSA_SITOVASTI;
                 if (hakutoive.getHakutoive() > 1) {
                     if (aikaparametriLauennut(jono)) {
-                      vastaanotettavuustila = VASTAANOTETTAVISSA_EHDOLLISESTI;
+                        vastaanotettavuustila = VASTAANOTETTAVISSA_EHDOLLISESTI;
                     } else {
                         boolean ylempiaHakutoiveitaSijoittelematta = ylemmatHakutoiveet(hakija, hakutoive.getHakutoive()).filter(toive -> !toive.isKaikkiJonotSijoiteltu()).count() > 0;
                         if (ylempiaHakutoiveitaSijoittelematta) {
                             valintatila = KESKEN;
                             vastaanotettavuustila = EI_VASTAANOTETTAVISSA;
                         } else {
-                            boolean ylempiaHakutoiveitaVaralla = ylemmatHakutoiveet(hakija, hakutoive.getHakutoive()).filter(toive -> getFirst(toive).get().getTila().equals(VARALLA)).count() > 0;
+                            boolean ylempiaHakutoiveitaVaralla = ylemmatHakutoiveet(hakija, hakutoive.getHakutoive()).filter(toive -> getFirst(toive).get().getTila().equals(HakemuksenTila.VARALLA)).count() > 0;
                             if (ylempiaHakutoiveitaVaralla) {
                                 vastaanotettavuustila = EI_VASTAANOTETTAVISSA;
                             }
@@ -48,8 +49,25 @@ public class YhteenvetoService {
                     valintatila = KESKEN;
                 }
             }
+
+            final YhteenvedonVastaanottotila vastaanottotila = convertVastaanottotila(ifNull(jono.getVastaanottotieto(), ValintatuloksenTila.KESKEN));
+
+            // Vastaanottotilan vaikutus valintatilaan
+            if (Arrays.asList(YhteenvedonVastaanottotila.EHDOLLISESTI_VASTAANOTTANUT, YhteenvedonVastaanottotila.VASTAANOTTANUT).contains(vastaanottotila)) {
+                valintatila = HYVAKSYTTY;
+            } else if (Arrays.asList(YhteenvedonVastaanottotila.PERUNUT).contains(vastaanottotila)) {
+                valintatila = PERUNUT;
+            } else if (ValintatuloksenTila.ILMOITETTU == jono.getVastaanottotieto()) {
+                valintatila = HYVAKSYTTY;
+            } else if (Arrays.asList(YhteenvedonVastaanottotila.PERUUTETTU).contains(vastaanottotila)) {
+                valintatila = YhteenvedonValintaTila.PERUUTETTU;
+            }
+            if (vastaanottotila != YhteenvedonVastaanottotila.KESKEN) {
+                vastaanotettavuustila = EI_VASTAANOTETTAVISSA;
+            }
+
             final boolean julkaistavissa = jono.getVastaanottotieto() != ValintatuloksenTila.KESKEN;
-            return new HakutoiveYhteenvetoDTO(hakutoive.getHakukohdeOid(), hakutoive.getTarjoajaOid(), valintatila, convertVastaanottotila(ifNull(jono.getVastaanottotieto(), ValintatuloksenTila.KESKEN)), ifNull(jono.getIlmoittautumisTila(), IlmoittautumisTila.EI_TEHTY), vastaanotettavuustila, jono.getJonosija(), jono.getVarasijanNumero(), julkaistavissa);
+            return new HakutoiveYhteenvetoDTO(hakutoive.getHakukohdeOid(), hakutoive.getTarjoajaOid(), valintatila, vastaanottotila, ifNull(jono.getIlmoittautumisTila(), IlmoittautumisTila.EI_TEHTY), vastaanotettavuustila, jono.getJonosija(), jono.getVarasijanNumero(), julkaistavissa);
         }).collect(Collectors.toList()));
     }
 
