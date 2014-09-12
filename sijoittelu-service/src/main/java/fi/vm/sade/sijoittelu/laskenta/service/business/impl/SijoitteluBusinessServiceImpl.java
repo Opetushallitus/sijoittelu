@@ -343,7 +343,7 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
 				|| StringUtils.isBlank(valintatapajonoOid)
 				|| StringUtils.isBlank(hakemusOid)) {
 			throw new RuntimeException(
-					"Invalid search params, fix exception later");
+					"Osa parametreista puuttuu. hakuoid: " + hakuoid + " - hakukohdeoid: " + hakukohdeOid + " - valintatapajonoOid: " + valintatapajonoOid + " - hakemusOid: " + hakemusOid);
 		}
 
 		Optional<Sijoittelu> sijoitteluOpt = sijoitteluDao.getSijoitteluByHakuOid(hakuoid);
@@ -378,6 +378,11 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
 		// organisaatio updater voi muokata, jos hyväksytty
 
 		String tarjoajaOid = hakukohde.getTarjoajaOid();
+
+        if(tarjoajaOid == null || StringUtils.isBlank(tarjoajaOid)) {
+            throw new RuntimeException("Hakukohteelle " + hakukohdeOid + " ei löytynyt tarjoajaOidia sijoitteluajosta: " + ajoId);
+        }
+
 		authorizer.checkOrganisationAccess(tarjoajaOid,
 				SijoitteluRole.UPDATE_ROLE, SijoitteluRole.CRUD_ROLE);
 
