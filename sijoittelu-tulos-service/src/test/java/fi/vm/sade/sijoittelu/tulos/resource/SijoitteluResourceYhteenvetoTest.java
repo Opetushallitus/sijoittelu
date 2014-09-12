@@ -31,8 +31,6 @@ public class SijoitteluResourceYhteenvetoTest extends SijoitteluResourceTest {
     @Autowired
     SijoitteluResource sijoitteluResource;
 
-    ObjectMapper objectMapper = new ObjectMapper();
-
     @Test
     @UsingDataSet(locations = {"sijoittelu-basedata.json", "sijoittelu-tulos-mockdata.json"}, loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
     public void hyvaksytty() throws JsonProcessingException {

@@ -94,6 +94,7 @@ public class TestDataGenerator {
 
         for (int i = 0; i < 3; ++i) {
             Hakukohde hakukohde = new Hakukohde();
+            hakukohde.setTarjoajaOid("1.2.3.4");
 
             if (sijoitteluajoNumber == 1) {
                 hakukohde.setTila(HakukohdeTila.SIJOITELTU);
