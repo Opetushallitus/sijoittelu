@@ -84,6 +84,8 @@ public class VastaanottoServiceTest {
 
     // TODO: eri virhekeissien testaus (esim. aiemmin vastaanotettu)
 
+    // TODO: logEntries-testit ja toteutus
+
     private HakemusYhteenvetoDTO getYhteenveto() {
         return sijoitteluResource.hakemusYhteenveto(hakuOid, "latest", hakemusOid);
     }
