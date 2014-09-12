@@ -19,12 +19,6 @@ public abstract class SijoitteluResourceTest {
     @Rule
     public MongoDbRule mongoDbRule = newMongoDbRule().defaultSpringMongoDb("sijoittelu");
 
-    @Autowired
-    ApplicationContext applicationContext;
-
-    @Autowired
-    SijoitteluResource sijoitteluResource;
-
     ObjectMapper objectMapper = new ObjectMapper();
 
     String hakuOid = "1.2.246.562.5.2013080813081926341928";
