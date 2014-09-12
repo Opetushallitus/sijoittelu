@@ -5,14 +5,11 @@ import java.io.StringWriter;
 import java.util.Arrays;
 import java.util.List;
 
+import com.mongodb.*;
 import org.apache.commons.io.IOUtils;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 
-import com.mongodb.BasicDBList;
-import com.mongodb.DB;
-import com.mongodb.DBCollection;
-import com.mongodb.DBObject;
 import com.mongodb.util.JSON;
 
 public class MongoMockData {
@@ -26,7 +23,9 @@ public class MongoMockData {
             BasicDBList collectionData = (BasicDBList) data.get(collection);
             DBCollection c = db.getCollection(collection);
             for (Object dataObject : collectionData) {
-                c.insert((DBObject) dataObject);
+                DBObject dbObject = (DBObject) dataObject;
+                final Object id = dbObject.get("_id");
+                c.update(new BasicDBObject("_id", id), dbObject, true, false);
             }
         }
     }
