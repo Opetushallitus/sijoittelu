@@ -101,7 +101,7 @@ public class SijoitteluResource {
             hakukohde.getValinnanvaihe().forEach(vaihe -> {
                 List<ValintatietoValintatapajonoDTO> konvertoidut = new ArrayList<>();
                 vaihe.getValintatapajonot().forEach(jono -> {
-                    if(jonot.containsKey(jono.getOid()) && jono.getValmisSijoiteltavaksi()) {
+                    if(jonot.containsKey(jono.getOid()) && jono.getValmisSijoiteltavaksi() && jono.getAktiivinen()) {
                         ValintatapajonoDTO perusteJono = jonot.get(jono.getOid());
                         jono.setAloituspaikat(perusteJono.getAloituspaikat());
                         jono.setEiVarasijatayttoa(perusteJono.getEiVarasijatayttoa());
@@ -113,6 +113,7 @@ public class SijoitteluResource {
                         jono.setVarasijaTayttoPaivat(perusteJono.getVarasijaTayttoPaivat());
                         jono.setVarasijojaKaytetaanAlkaen(perusteJono.getVarasijojaKaytetaanAlkaen());
                         jono.setVarasijojaTaytetaanAsti(perusteJono.getVarasijojaTaytetaanAsti());
+                        jono.setAktiivinen(perusteJono.getAktiivinen());
                         konvertoidut.add(jono);
                         jonot.remove(jono.getOid());
                     }
