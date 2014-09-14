@@ -11,6 +11,8 @@ import java.util.TreeSet;
  *  Hakemuksen tilaa sijoittelussa, sisältäen kunkin hakutoiveen osalta hakujonokohtaisen tilan.
  */
 public class HakijaDTO {
+    @JsonView(JsonViews.Hakija.class)
+    private String hakijaOid;
 
     @JsonView(JsonViews.Hakija.class)
     private String hakemusOid;
@@ -54,5 +56,13 @@ public class HakijaDTO {
 
     public void setHakutoiveet(SortedSet<HakutoiveDTO> hakutoiveet) {
         this.hakutoiveet = hakutoiveet;
+    }
+
+    public String getHakijaOid() {
+        return hakijaOid;
+    }
+
+    public void setHakijaOid(final String hakijaOid) {
+        this.hakijaOid = hakijaOid;
     }
 }

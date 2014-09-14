@@ -162,7 +162,8 @@ public class TilaResource {
     public Response muutaSijoittelunTilaa(@PathParam("hakuOid") String hakuOid,
                                          @PathParam("hakukohdeOid") String hakukohdeOid,
                                          @PathParam("hakemusOid") String hakemusOid,
-                                         boolean hyvaksy) {
+                                         boolean hyvaksy,
+                                         @QueryParam("tarjoajaOid") String tarjoajaOid) {
 
         try {
 
@@ -201,6 +202,7 @@ public class TilaResource {
                 hakukohde.setKaikkiJonotSijoiteltu(true);
                 hakukohde.setOid(hakukohdeOid);
                 hakukohde.setSijoitteluajoId(ajo.getSijoitteluajoId());
+                hakukohde.setTarjoajaOid(tarjoajaOid);
 
                 Valintatapajono jono = new Valintatapajono();
                 jono.setHyvaksytty(0);
@@ -215,6 +217,11 @@ public class TilaResource {
             }
 
             Hakukohde kohde = hakukohdeDao.getHakukohdeForSijoitteluajo(ajo.getSijoitteluajoId(), hakukohdeOid);
+
+            if(kohde.getTarjoajaOid() == null) {
+                kohde.setTarjoajaOid(tarjoajaOid);
+                hakukohdeDao.persistHakukohde(kohde);
+            }
 
             Valintatapajono jono = kohde.getValintatapajonot().get(0);
 

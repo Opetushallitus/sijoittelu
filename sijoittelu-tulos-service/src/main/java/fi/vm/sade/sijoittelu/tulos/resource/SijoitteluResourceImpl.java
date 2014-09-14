@@ -124,7 +124,6 @@ public class SijoitteluResourceImpl implements SijoitteluResource {
 
         Optional<SijoitteluAjo> ajo = getSijoitteluAjo(sijoitteluajoId, hakuOid);
         return ajo.map(a -> raportointiService.hakemus(a, hakemusOid)).orElse(new HakijaDTO());
-
 	}
 
     @Override

@@ -244,6 +244,7 @@ public class RaportointiConverterImpl implements RaportointiConverter {
 			hakijaRaportointiDTO = new HakijaDTO();
 			hakijaRaportointiDTO.setEtunimi(hakemus.getEtunimi());
 			hakijaRaportointiDTO.setSukunimi(hakemus.getSukunimi());
+            hakijaRaportointiDTO.setHakijaOid(hakemus.getHakijaOid());
 			hakijaRaportointiDTO.setHakemusOid(hakemus.getHakemusOid());
             hakijat.put(hakemus.getHakemusOid(), hakijaRaportointiDTO);
         }

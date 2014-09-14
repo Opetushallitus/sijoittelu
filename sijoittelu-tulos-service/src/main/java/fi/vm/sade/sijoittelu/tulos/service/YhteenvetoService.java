@@ -6,6 +6,7 @@ import fi.vm.sade.sijoittelu.tulos.dto.ValintatuloksenTila;
 import fi.vm.sade.sijoittelu.tulos.dto.raportointi.*;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -19,9 +20,8 @@ import static fi.vm.sade.sijoittelu.tulos.dto.raportointi.YhteenvedonValintaTila
 import org.joda.time.LocalDate;
 
 public class YhteenvetoService {
-
-    public static HakemusYhteenvetoDTO yhteenveto(HakijaDTO hakija) {
-        return new HakemusYhteenvetoDTO(hakija.getHakemusOid(), hakija.getHakutoiveet().stream().map(hakutoive -> {
+    public static List<HakutoiveenYhteenveto> hakutoiveidenYhteenveto(HakijaDTO hakija) {
+        return hakija.getHakutoiveet().stream().map(hakutoive -> {
             HakutoiveenValintatapajonoDTO jono = getFirst(hakutoive).get();
             YhteenvedonValintaTila valintatila = ifNull(fromHakemuksenTila(jono.getTila()), YhteenvedonValintaTila.KESKEN);
             Vastaanotettavuustila vastaanotettavuustila = EI_VASTAANOTETTAVISSA;
@@ -67,7 +67,14 @@ public class YhteenvetoService {
             }
 
             final boolean julkaistavissa = jono.getVastaanottotieto() != ValintatuloksenTila.KESKEN;
-            return new HakutoiveYhteenvetoDTO(hakutoive.getHakukohdeOid(), hakutoive.getTarjoajaOid(), valintatila, vastaanottotila, ifNull(jono.getIlmoittautumisTila(), IlmoittautumisTila.EI_TEHTY), vastaanotettavuustila, jono.getJonosija(), jono.getVarasijojaKaytetaanAlkaen(), jono.getVarasijojaTaytetaanAsti(), jono.getVarasijanNumero(), julkaistavissa);
+
+            return new HakutoiveenYhteenveto(hakutoive, jono, valintatila, vastaanottotila, vastaanotettavuustila, julkaistavissa);
+        }).collect(Collectors.toList());
+    }
+
+    public static HakemusYhteenvetoDTO yhteenveto(HakijaDTO hakija) {
+        return new HakemusYhteenvetoDTO(hakija.getHakemusOid(), hakutoiveidenYhteenveto(hakija).stream().map(hakutoiveenYhteenveto -> {
+            return new HakutoiveYhteenvetoDTO(hakutoiveenYhteenveto.hakutoive.getHakukohdeOid(), hakutoiveenYhteenveto.hakutoive.getTarjoajaOid(), hakutoiveenYhteenveto.valintatila, hakutoiveenYhteenveto.vastaanottotila, ifNull(hakutoiveenYhteenveto.valintatapajono.getIlmoittautumisTila(), IlmoittautumisTila.EI_TEHTY), hakutoiveenYhteenveto.vastaanotettavuustila, hakutoiveenYhteenveto.valintatapajono.getJonosija(), hakutoiveenYhteenveto.valintatapajono.getVarasijojaKaytetaanAlkaen(), hakutoiveenYhteenveto.valintatapajono.getVarasijojaTaytetaanAsti(), hakutoiveenYhteenveto.valintatapajono.getVarasijanNumero(), hakutoiveenYhteenveto.julkaistavissa);
         }).collect(Collectors.toList()));
     }
 
