@@ -2,12 +2,14 @@ package fi.vm.sade.sijoittelu.laskenta.service.vastaanotto;
 
 import static com.lordofthejars.nosqlunit.mongodb.MongoDbRule.MongoDbRuleBuilder.newMongoDbRule;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.List;
 
 import org.joda.time.DateTimeUtils;
-import org.junit.Ignore;
+import org.joda.time.LocalDate;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -21,10 +23,11 @@ import com.lordofthejars.nosqlunit.annotation.UsingDataSet;
 import com.lordofthejars.nosqlunit.core.LoadStrategyEnum;
 import com.lordofthejars.nosqlunit.mongodb.MongoDbRule;
 
+import fi.vm.sade.sijoittelu.domain.LogEntry;
 import fi.vm.sade.sijoittelu.domain.ValintatuloksenTila;
+import fi.vm.sade.sijoittelu.domain.Valintatulos;
+import fi.vm.sade.sijoittelu.tulos.dao.ValintatulosDao;
 import fi.vm.sade.sijoittelu.tulos.dto.raportointi.HakemusYhteenvetoDTO;
-import fi.vm.sade.sijoittelu.tulos.dto.raportointi.Vastaanotettavuustila;
-import fi.vm.sade.sijoittelu.tulos.dto.raportointi.YhteenvedonValintaTila;
 import fi.vm.sade.sijoittelu.tulos.dto.raportointi.YhteenvedonVastaanottotila;
 import fi.vm.sade.sijoittelu.tulos.resource.SijoitteluResource;
 
@@ -35,6 +38,7 @@ public class VastaanottoServiceTest {
 
     @Autowired VastaanottoService vastaanottoService;
     @Autowired SijoitteluResource sijoitteluResource;
+    @Autowired ValintatulosDao valintatulosDao;
 
     @Rule
     public MongoDbRule mongoDbRule = newMongoDbRule().defaultSpringMongoDb("sijoittelu");
@@ -42,33 +46,49 @@ public class VastaanottoServiceTest {
     final String hakuOid = "1.2.246.562.5.2013080813081926341928";
     final String hakukohdeOid = "1.2.246.562.5.72607738903";
     final String hakemusOid = "1.2.246.562.11.00000441369";
+    final String muokkaaja = "Teppo Testi";
+    final String selite = "Testimuokkaus";
 
     @Test(expected = IllegalArgumentException.class)
     @UsingDataSet(locations = {"/fi/vm/sade/sijoittelu/tulos/resource/sijoittelu-basedata.json", "/fi/vm/sade/sijoittelu/tulos/resource/hyvaksytty-ei-valintatulosta.json"}, loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
-    public void uusiValintatulosVääräTila() {
+    public void uusiValintatulosVastaanotaVäärälläArvolla() {
         assertEquals(YhteenvedonVastaanottotila.KESKEN, getYhteenveto().hakutoiveet.get(0).vastaanottotila);
-        vastaanottoService.vastaanota(hakuOid, hakemusOid, hakukohdeOid, ValintatuloksenTila.EI_VASTAANOTETTU_MAARA_AIKANA);
+        vastaanottoService.vastaanota(hakuOid, hakemusOid, hakukohdeOid, ValintatuloksenTila.EI_VASTAANOTETTU_MAARA_AIKANA, muokkaaja, selite); // <- EI_VASTAANOTETTU_MAARA_AIKANA ei ole hyväksytty arvo
     }
 
     @Test
     @UsingDataSet(locations = {"/fi/vm/sade/sijoittelu/tulos/resource/sijoittelu-basedata.json", "/fi/vm/sade/sijoittelu/tulos/resource/hyvaksytty-ei-valintatulosta.json"}, loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
     public void uusiValintatulosVastaanota() {
         assertEquals(YhteenvedonVastaanottotila.KESKEN, getYhteenveto().hakutoiveet.get(0).vastaanottotila);
-        vastaanottoService.vastaanota(hakuOid, hakemusOid, hakukohdeOid, ValintatuloksenTila.VASTAANOTTANUT);
+        vastaanottoService.vastaanota(hakuOid, hakemusOid, hakukohdeOid, ValintatuloksenTila.VASTAANOTTANUT, muokkaaja, selite);
         assertEquals(YhteenvedonVastaanottotila.VASTAANOTTANUT, getYhteenveto().hakutoiveet.get(0).vastaanottotila);
     }
 
     @Test
     @UsingDataSet(locations = {"/fi/vm/sade/sijoittelu/tulos/resource/sijoittelu-basedata.json", "/fi/vm/sade/sijoittelu/tulos/resource/hyvaksytty-ei-valintatulosta.json"}, loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
+    public void valintaTuloksenMuutoslogi() {
+        vastaanottoService.vastaanota(hakuOid, hakemusOid, hakukohdeOid, ValintatuloksenTila.VASTAANOTTANUT, muokkaaja, selite);
+        Valintatulos valintatulos = valintatulosDao.loadValintatulos(hakukohdeOid, "14090336922663576781797489829887", hakemusOid);
+        final List<LogEntry> logEntries = valintatulos.getLogEntries();
+        assertEquals(1, logEntries.size());
+        final LogEntry logEntry = logEntries.get(0);
+        assertEquals("VASTAANOTTANUT", logEntry.getMuutos());
+        assertEquals(selite, logEntry.getSelite());
+        assertEquals(muokkaaja, logEntry.getMuokkaaja());
+        assertEquals(new LocalDate(), new LocalDate(logEntry.getLuotu()));
+    }
+
+    @Test
+    @UsingDataSet(locations = {"/fi/vm/sade/sijoittelu/tulos/resource/sijoittelu-basedata.json", "/fi/vm/sade/sijoittelu/tulos/resource/hyvaksytty-ei-valintatulosta.json"}, loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
     public void uusiValintatulosPeru() {
-        vastaanottoService.vastaanota(hakuOid, hakemusOid, hakukohdeOid, ValintatuloksenTila.PERUNUT);
+        vastaanottoService.vastaanota(hakuOid, hakemusOid, hakukohdeOid, ValintatuloksenTila.PERUNUT, muokkaaja, selite);
         assertEquals(YhteenvedonVastaanottotila.PERUNUT, getYhteenveto().hakutoiveet.get(0).vastaanottotila);
     }
 
     @Test(expected = IllegalArgumentException.class)
     @UsingDataSet(locations = {"/fi/vm/sade/sijoittelu/tulos/resource/sijoittelu-basedata.json", "/fi/vm/sade/sijoittelu/tulos/resource/hyvaksytty-ylempi-varalla.json"}, loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
     public void vastaanotaEhdollisestiKunAikaparametriEiLauennut() throws JsonProcessingException, ParseException {
-        vastaanottoService.vastaanota(hakuOid, hakemusOid, hakukohdeOid, ValintatuloksenTila.EHDOLLISESTI_VASTAANOTTANUT);
+        vastaanottoService.vastaanota(hakuOid, hakemusOid, hakukohdeOid, ValintatuloksenTila.EHDOLLISESTI_VASTAANOTTANUT, muokkaaja, selite);
     }
 
     @Test
@@ -76,15 +96,29 @@ public class VastaanottoServiceTest {
     public void vastaanotaEhdollisestiKunAikaparametriLauennut() throws JsonProcessingException, ParseException {
         DateTimeUtils.setCurrentMillisFixed(new SimpleDateFormat("d.M.yyyy").parse("15.8.2014").getTime());
         try {
-            vastaanottoService.vastaanota(hakuOid, hakemusOid, hakukohdeOid, ValintatuloksenTila.EHDOLLISESTI_VASTAANOTTANUT);
+            vastaanottoService.vastaanota(hakuOid, hakemusOid, hakukohdeOid, ValintatuloksenTila.EHDOLLISESTI_VASTAANOTTANUT, muokkaaja, selite);
         } finally {
             DateTimeUtils.setCurrentMillisSystem();
         }
     }
 
-    // TODO: eri virhekeissien testaus (esim. aiemmin vastaanotettu)
+    @Test(expected = IllegalArgumentException.class)
+    @UsingDataSet(locations = {"/fi/vm/sade/sijoittelu/tulos/resource/sijoittelu-basedata.json", "/fi/vm/sade/sijoittelu/tulos/resource/hyvaksytty-vastaanottanut.json"}, loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
+    public void vastaanotaAiemminVastaanotettu() throws JsonProcessingException, ParseException {
+        vastaanottoService.vastaanota(hakuOid, hakemusOid, hakukohdeOid, ValintatuloksenTila.VASTAANOTTANUT, muokkaaja, selite);
+    }
 
-    // TODO: logEntries-testit ja toteutus
+    @Test(expected = IllegalArgumentException.class)
+    @UsingDataSet(locations = {"/fi/vm/sade/sijoittelu/tulos/resource/sijoittelu-basedata.json", "/fi/vm/sade/sijoittelu/tulos/resource/hyvaksytty-ei-valintatulosta.json"}, loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
+    public void hakemustaEiLöydy() {
+        vastaanottoService.vastaanota(hakuOid, hakemusOid + 1, hakukohdeOid, ValintatuloksenTila.VASTAANOTTANUT, muokkaaja, selite);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    @UsingDataSet(locations = {"/fi/vm/sade/sijoittelu/tulos/resource/sijoittelu-basedata.json", "/fi/vm/sade/sijoittelu/tulos/resource/hyvaksytty-ei-valintatulosta.json"}, loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
+    public void hakukohdettaEiLöydy() {
+        vastaanottoService.vastaanota(hakuOid, hakemusOid, hakukohdeOid + 1, ValintatuloksenTila.VASTAANOTTANUT, muokkaaja, selite);
+    }
 
     private HakemusYhteenvetoDTO getYhteenveto() {
         return sijoitteluResource.hakemusYhteenveto(hakuOid, "latest", hakemusOid);
