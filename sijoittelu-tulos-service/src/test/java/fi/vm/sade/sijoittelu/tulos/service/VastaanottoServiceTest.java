@@ -121,6 +121,13 @@ public class VastaanottoServiceTest {
         vastaanottoService.vastaanota(hakuOid, hakemusOid, hakukohdeOid + 1, ValintatuloksenTila.VASTAANOTTANUT, muokkaaja, selite);
     }
 
+    @Test
+    @UsingDataSet(locations = {"/fi/vm/sade/sijoittelu/tulos/resource/sijoittelu-basedata.json", "/fi/vm/sade/sijoittelu/tulos/resource/hyvaksytty-ilmoitettu.json"}, loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
+    public void vastaanotaIlmoitettu() {
+        vastaanottoService.vastaanota(hakuOid, hakemusOid, hakukohdeOid, ValintatuloksenTila.VASTAANOTTANUT, muokkaaja, selite);
+        assertEquals(YhteenvedonVastaanottotila.VASTAANOTTANUT, getYhteenveto().hakutoiveet.get(0).vastaanottotila);
+    }
+
     private HakemusYhteenvetoDTO getYhteenveto() {
         return sijoitteluResource.hakemusYhteenveto(hakuOid, "latest", hakemusOid);
     }

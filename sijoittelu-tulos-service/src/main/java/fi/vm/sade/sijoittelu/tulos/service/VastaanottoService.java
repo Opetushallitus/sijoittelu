@@ -15,7 +15,6 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import fi.vm.sade.security.service.authz.util.AuthorizationUtil;
 import fi.vm.sade.sijoittelu.domain.IlmoittautumisTila;
 import fi.vm.sade.sijoittelu.domain.LogEntry;
 import fi.vm.sade.sijoittelu.domain.SijoitteluAjo;
@@ -23,9 +22,6 @@ import fi.vm.sade.sijoittelu.domain.ValintatuloksenTila;
 import fi.vm.sade.sijoittelu.domain.Valintatulos;
 import fi.vm.sade.sijoittelu.tulos.dao.ValintatulosDao;
 import fi.vm.sade.sijoittelu.tulos.dto.raportointi.HakijaDTO;
-import fi.vm.sade.sijoittelu.tulos.service.HakutoiveenYhteenveto;
-import fi.vm.sade.sijoittelu.tulos.service.RaportointiService;
-import fi.vm.sade.sijoittelu.tulos.service.YhteenvetoService;
 
 @Service
 public class VastaanottoService {
@@ -75,12 +71,15 @@ public class VastaanottoService {
         Valintatulos valintatulos = dao.loadValintatulos(perustiedot.hakukohdeOid, perustiedot.valintatapajonoOid, perustiedot.hakemusOid);
         if (valintatulos == null) {
             valintatulos = perustiedot.createValintatulos(tila);
-        } else if (valintatulos.getTila() != ILMOITETTU) {
-            if (valintatulos.getTila() != EHDOLLISESTI_VASTAANOTTANUT) {
-                throw new IllegalArgumentException("Vastaanotto ei mahdollista tilassa " + valintatulos.getTila());
-            } else if (!Arrays.asList(VASTAANOTTANUT, PERUNUT).contains(tila)) {
-                throw new IllegalArgumentException("Tilasta " + valintatulos.getTila() + " ei mahdollista siirtyä tilaan " + tila);
+        } else {
+            if (valintatulos.getTila() != ILMOITETTU) {
+                if (valintatulos.getTila() != EHDOLLISESTI_VASTAANOTTANUT) {
+                    throw new IllegalArgumentException("Vastaanotto ei mahdollista tilassa " + valintatulos.getTila());
+                } else if (!Arrays.asList(VASTAANOTTANUT, PERUNUT).contains(tila)) {
+                    throw new IllegalArgumentException("Tilasta " + valintatulos.getTila() + " ei mahdollista siirtyä tilaan " + tila);
+                }
             }
+            valintatulos.setTila(tila);
         }
         addLogEntry(valintatulos, muokkaaja, selite);
         dao.createOrUpdateValintatulos(valintatulos);
