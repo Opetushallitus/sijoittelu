@@ -1,4 +1,4 @@
-package fi.vm.sade.sijoittelu.laskenta.service.vastaanotto;
+package fi.vm.sade.sijoittelu.tulos.service;
 
 import static com.lordofthejars.nosqlunit.mongodb.MongoDbRule.MongoDbRuleBuilder.newMongoDbRule;
 import static org.junit.Assert.assertEquals;
@@ -30,9 +30,10 @@ import fi.vm.sade.sijoittelu.tulos.dao.ValintatulosDao;
 import fi.vm.sade.sijoittelu.tulos.dto.raportointi.HakemusYhteenvetoDTO;
 import fi.vm.sade.sijoittelu.tulos.dto.raportointi.YhteenvedonVastaanottotila;
 import fi.vm.sade.sijoittelu.tulos.resource.SijoitteluResource;
+import fi.vm.sade.sijoittelu.tulos.service.VastaanottoService;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"classpath:vastaanotto-service-test-context.xml"})
+@ContextConfiguration(locations = {"classpath:test-context.xml"})
 public class VastaanottoServiceTest {
     @Autowired ApplicationContext applicationContext;
 

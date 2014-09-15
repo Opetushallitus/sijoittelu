@@ -1,4 +1,4 @@
-package fi.vm.sade.sijoittelu.laskenta.service.vastaanotto;
+package fi.vm.sade.sijoittelu.tulos.service;
 
 import static fi.vm.sade.sijoittelu.domain.ValintatuloksenTila.EHDOLLISESTI_VASTAANOTTANUT;
 import static fi.vm.sade.sijoittelu.domain.ValintatuloksenTila.ILMOITETTU;
