@@ -45,9 +45,9 @@ public class VastaanottoServiceTest {
 
     @Test(expected = IllegalArgumentException.class)
     @UsingDataSet(locations = {"/fi/vm/sade/sijoittelu/tulos/resource/sijoittelu-basedata.json", "/fi/vm/sade/sijoittelu/tulos/resource/hyvaksytty-ei-valintatulosta.json"}, loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
-    public void uusiValintatulosVääräTila() {
+    public void uusiValintatulosVastaanotaVäärälläArvolla() {
         assertEquals(YhteenvedonVastaanottotila.KESKEN, getYhteenveto().hakutoiveet.get(0).vastaanottotila);
-        vastaanottoService.vastaanota(hakuOid, hakemusOid, hakukohdeOid, ValintatuloksenTila.EI_VASTAANOTETTU_MAARA_AIKANA);
+        vastaanottoService.vastaanota(hakuOid, hakemusOid, hakukohdeOid, ValintatuloksenTila.EI_VASTAANOTETTU_MAARA_AIKANA); // <- EI_VASTAANOTETTU_MAARA_AIKANA ei ole hyväksytty arvo
     }
 
     @Test
@@ -82,7 +82,23 @@ public class VastaanottoServiceTest {
         }
     }
 
-    // TODO: eri virhekeissien testaus (esim. aiemmin vastaanotettu)
+    @Test(expected = IllegalArgumentException.class)
+    @UsingDataSet(locations = {"/fi/vm/sade/sijoittelu/tulos/resource/sijoittelu-basedata.json", "/fi/vm/sade/sijoittelu/tulos/resource/hyvaksytty-vastaanottanut.json"}, loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
+    public void vastaanotaAiemminVastaanotettu() throws JsonProcessingException, ParseException {
+        vastaanottoService.vastaanota(hakuOid, hakemusOid, hakukohdeOid, ValintatuloksenTila.VASTAANOTTANUT);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    @UsingDataSet(locations = {"/fi/vm/sade/sijoittelu/tulos/resource/sijoittelu-basedata.json", "/fi/vm/sade/sijoittelu/tulos/resource/hyvaksytty-ei-valintatulosta.json"}, loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
+    public void hakemustaEiLöydy() {
+        vastaanottoService.vastaanota(hakuOid, hakemusOid + 1, hakukohdeOid, ValintatuloksenTila.VASTAANOTTANUT);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    @UsingDataSet(locations = {"/fi/vm/sade/sijoittelu/tulos/resource/sijoittelu-basedata.json", "/fi/vm/sade/sijoittelu/tulos/resource/hyvaksytty-ei-valintatulosta.json"}, loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
+    public void hakukohdettaEiLöydy() {
+        vastaanottoService.vastaanota(hakuOid, hakemusOid, hakukohdeOid + 1, ValintatuloksenTila.VASTAANOTTANUT);
+    }
 
     // TODO: logEntries-testit ja toteutus
 
