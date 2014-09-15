@@ -8,13 +8,16 @@ import static fi.vm.sade.sijoittelu.tulos.dto.raportointi.Vastaanotettavuustila.
 import static fi.vm.sade.sijoittelu.tulos.dto.raportointi.Vastaanotettavuustila.VASTAANOTETTAVISSA_SITOVASTI;
 
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import fi.vm.sade.security.service.authz.util.AuthorizationUtil;
 import fi.vm.sade.sijoittelu.domain.IlmoittautumisTila;
+import fi.vm.sade.sijoittelu.domain.LogEntry;
 import fi.vm.sade.sijoittelu.domain.SijoitteluAjo;
 import fi.vm.sade.sijoittelu.domain.ValintatuloksenTila;
 import fi.vm.sade.sijoittelu.domain.Valintatulos;
@@ -35,7 +38,7 @@ public class VastaanottoService {
         this.raportointiService = raportointiService;
     }
 
-    public void vastaanota(String hakuOid, String hakemusOid, String hakukohdeOid, ValintatuloksenTila tila) {
+    public void vastaanota(String hakuOid, String hakemusOid, String hakukohdeOid, ValintatuloksenTila tila, String muokkaaja, String selite) {
         final Optional<SijoitteluAjo> sijoitteluAjo = raportointiService.latestSijoitteluAjoForHaku(hakuOid);
         if (!sijoitteluAjo.isPresent()) {
             throw new IllegalArgumentException("Sijoitteluajoa ei löydy");
@@ -52,8 +55,8 @@ public class VastaanottoService {
         }
 
         tarkistaVastaanotettavuus(hakutoive.get(), tila);
-
-        vastaanota(new ValintatulosPerustiedot(hakuOid, hakukohdeOid, hakutoive.get().valintatapajono.getValintatapajonoOid(), hakemusOid, hakemus.getHakijaOid(), hakutoive.get().hakutoive.getHakutoive()), tila);
+        final ValintatulosPerustiedot tiedot = new ValintatulosPerustiedot(hakuOid, hakukohdeOid, hakutoive.get().valintatapajono.getValintatapajonoOid(), hakemusOid, hakemus.getHakijaOid(), hakutoive.get().hakutoive.getHakutoive());
+        vastaanota(tiedot, tila, muokkaaja, selite);
     }
 
     private void tarkistaVastaanotettavuus(HakutoiveenYhteenveto hakutoive, final ValintatuloksenTila tila) {
@@ -68,7 +71,7 @@ public class VastaanottoService {
         }
     }
 
-    private void vastaanota(ValintatulosPerustiedot perustiedot, ValintatuloksenTila tila) {
+    private void vastaanota(ValintatulosPerustiedot perustiedot, ValintatuloksenTila tila, final String muokkaaja, final String selite) {
         Valintatulos valintatulos = dao.loadValintatulos(perustiedot.hakukohdeOid, perustiedot.valintatapajonoOid, perustiedot.hakemusOid);
         if (valintatulos == null) {
             valintatulos = perustiedot.createValintatulos(tila);
@@ -79,7 +82,17 @@ public class VastaanottoService {
                 throw new IllegalArgumentException("Tilasta " + valintatulos.getTila() + " ei mahdollista siirtyä tilaan " + tila);
             }
         }
+        addLogEntry(valintatulos, muokkaaja, selite);
         dao.createOrUpdateValintatulos(valintatulos);
+    }
+
+    private void addLogEntry(final Valintatulos valintatulos, final String muokkaaja, final String selite) {
+        LogEntry logEntry = new LogEntry();
+        logEntry.setLuotu(new Date());
+        logEntry.setMuokkaaja(muokkaaja);
+        logEntry.setSelite(selite);
+        logEntry.setMuutos(valintatulos.getTila().name());
+        valintatulos.getLogEntries().add(logEntry);
     }
 
     private static class ValintatulosPerustiedot {
