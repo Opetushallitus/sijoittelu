@@ -72,13 +72,6 @@ public class VastaanottoService {
         if (valintatulos == null) {
             valintatulos = perustiedot.createValintatulos(tila);
         } else {
-            if (valintatulos.getTila() != ILMOITETTU) {
-                if (valintatulos.getTila() != EHDOLLISESTI_VASTAANOTTANUT) {
-                    throw new IllegalArgumentException("Vastaanotto ei mahdollista tilassa " + valintatulos.getTila());
-                } else if (!Arrays.asList(VASTAANOTTANUT, PERUNUT).contains(tila)) {
-                    throw new IllegalArgumentException("Tilasta " + valintatulos.getTila() + " ei mahdollista siirtyä tilaan " + tila);
-                }
-            }
             valintatulos.setTila(tila);
         }
         addLogEntry(valintatulos, muokkaaja, selite);
