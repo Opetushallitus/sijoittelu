@@ -13,6 +13,8 @@ public enum HakemuksenTila {
 
     PERUUNTUNUT, // Hakija on tullut valituksi parempaan paikkaan (korkeampi hakutoive)
 
+    VARASIJALTA_HYVAKSYTTY, //Hakija voi ottaa paikan vastaan (alunperin varasijalla)
+
     HYVAKSYTTY, //Hakija voi ottaa paikan vastaan
 
     PERUNUT, //Hakija ei ole vastaanottanut paikkaa. Hakija ei voi tulla enää valituksi matalamman prioriteetin kohteissa
