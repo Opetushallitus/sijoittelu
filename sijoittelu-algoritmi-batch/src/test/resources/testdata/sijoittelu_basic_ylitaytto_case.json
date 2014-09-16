@@ -1,0 +1,146 @@
+{
+    "hakuOid": "666",
+    "hakukohteet": [
+        {
+            "oid": "1.2.246.562.11.00000000001",
+            "valinnanvaihe": [
+                {
+                    "valinnanvaihe": 1,
+                    "valintatapajonot": [
+                        {
+                            "aloituspaikat": 2,
+                            "hakija": [
+                                {
+                                    "hakemusOid": "1.2.246.562.24.00000000001",
+                                    "jonosija": 1,
+                                    "pisteet": "0",
+                                    "prioriteetti": 1,
+                                    "tila": "HYVAKSYTTAVISSA"
+                                },
+                                {
+                                    "hakemusOid": "1.2.246.562.24.00000000002",
+                                    "jonosija": 2,
+                                    "pisteet": "0",
+                                    "prioriteetti": 1,
+                                    "tila": "HYVAKSYTTAVISSA"
+                                },
+                                {
+                                    "hakemusOid": "1.2.246.562.24.00000000003",
+                                    "jonosija": 3,
+                                    "pisteet": "0",
+                                    "prioriteetti": 1,
+                                    "tila": "HYVAKSYTTAVISSA"
+                                },
+                                {
+                                    "hakemusOid": "1.2.246.562.24.00000000004",
+                                    "jonosija": 4,
+                                    "pisteet": "0",
+                                    "prioriteetti": 1,
+                                    "tila": "HYVAKSYTTAVISSA"
+                                },
+                                {
+                                    "hakemusOid": "1.2.246.562.24.00000000005",
+                                    "jonosija": 5,
+                                    "pisteet": "0",
+                                    "prioriteetti": 1,
+                                    "tila": "HYVAKSYTTAVISSA"
+                                },
+                                {
+                                    "hakemusOid": "1.2.246.562.24.00000000006",
+                                    "jonosija": 6,
+                                    "pisteet": "0",
+                                    "prioriteetti": 1,
+                                    "tila": "HYVAKSYTTAVISSA"
+                                },
+                                {
+                                    "hakemusOid": "1.2.246.562.24.00000000007",
+                                    "jonosija": 7,
+                                    "pisteet": "0",
+                                    "prioriteetti": 1,
+                                    "tila": "HYVAKSYTTAVISSA"
+                                },
+                                {
+                                    "hakemusOid": "1.2.246.562.24.00000000008",
+                                    "jonosija": 8,
+                                    "pisteet": "0",
+                                    "prioriteetti": 1,
+                                    "tila": "HYVAKSYTTAVISSA"
+                                }
+                            ],
+                            "prioriteetti": 1,
+                            "siirretaanSijoitteluun": true,
+                            "tasasijasaanto": "YLITAYTTO",
+                            "valintatapajonooid": "laakkis_jono_1"
+                        },
+                        {
+                            "aloituspaikat": 4,
+                            "hakija": [
+                                {
+                                    "hakemusOid": "1.2.246.562.24.00000000001",
+                                    "jonosija": 1,
+                                    "pisteet": "0",
+                                    "prioriteetti": 1,
+                                    "tila": "HYVAKSYTTAVISSA"
+                                },
+                                {
+                                    "hakemusOid": "1.2.246.562.24.00000000002",
+                                    "jonosija": 2,
+                                    "pisteet": "0",
+                                    "prioriteetti": 1,
+                                    "tila": "HYVAKSYTTAVISSA"
+                                },
+                                {
+                                    "hakemusOid": "1.2.246.562.24.00000000003",
+                                    "jonosija": 3,
+                                    "pisteet": "0",
+                                    "prioriteetti": 1,
+                                    "tila": "HYVAKSYTTAVISSA"
+                                },
+                                {
+                                    "hakemusOid": "1.2.246.562.24.00000000004",
+                                    "jonosija": 4,
+                                    "pisteet": "0",
+                                    "prioriteetti": 1,
+                                    "tila": "HYVAKSYTTAVISSA"
+                                },
+                                {
+                                    "hakemusOid": "1.2.246.562.24.00000000005",
+                                    "jonosija": 5,
+                                    "pisteet": "0",
+                                    "prioriteetti": 1,
+                                    "tila": "HYVAKSYTTAVISSA"
+                                },
+                                {
+                                    "hakemusOid": "1.2.246.562.24.00000000006",
+                                    "jonosija": 6,
+                                    "pisteet": "0",
+                                    "prioriteetti": 1,
+                                    "tila": "HYVAKSYTTAVISSA"
+                                },
+                                {
+                                    "hakemusOid": "1.2.246.562.24.00000000007",
+                                    "jonosija": 7,
+                                    "pisteet": "0",
+                                    "prioriteetti": 1,
+                                    "tila": "HYVAKSYTTAVISSA"
+                                },
+                                {
+                                    "hakemusOid": "1.2.246.562.24.00000000008",
+                                    "jonosija": 8,
+                                    "pisteet": "0",
+                                    "prioriteetti": 1,
+                                    "tila": "HYVAKSYTTAVISSA"
+                                }
+                            ],
+                            "prioriteetti": 2,
+                            "siirretaanSijoitteluun": true,
+                            "tasasijasaanto": "YLITAYTTO",
+                            "valintatapajonooid": "laakkis_jono_2"
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
+

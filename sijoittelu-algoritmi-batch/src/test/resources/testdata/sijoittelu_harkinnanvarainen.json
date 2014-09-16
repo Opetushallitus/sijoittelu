@@ -1,0 +1,194 @@
+{
+    "hakuOid": "666",
+    "hakukohteet": [
+        {
+            "oid": "1.2.246.562.11.00000000007",
+            "valinnanvaihe": [
+                {
+                    "valinnanvaihe": 1,
+                    "valintatapajonot": [
+                        {
+                            "aloituspaikat": 1,
+                            "hakija": [
+                                {
+                                    "hakemusOid": "1.2.246.562.24.00000000001",
+                                    "jonosija": 4,
+                                    "pisteet": "0",
+                                    "prioriteetti": 1,
+                                    "tila": "HYVAKSYTTAVISSA"
+                                },
+                                {
+                                    "hakemusOid": "1.2.246.562.24.00000000002",
+                                    "jonosija": 3,
+                                    "pisteet": "0",
+                                    "prioriteetti": 1,
+                                    "tila": "HYVAKSYTTAVISSA"
+                                },
+                                {
+                                    "hakemusOid": "1.2.246.562.24.00000000003",
+                                    "jonosija": 2,
+                                    "pisteet": "0",
+                                    "prioriteetti": 1,
+                                    "tila": "HYVAKSYTTAVISSA"
+                                },
+                                {
+                                    "hakemusOid": "1.2.246.562.24.00000000004",
+                                    "jonosija": 1,
+                                    "pisteet": "0",
+                                    "prioriteetti": 1,
+                                    "tila": "HYVAKSYTTY_HARKINNANVARAISESTI"
+                                }
+                            ],
+                            "prioriteetti": 1,
+                            "siirretaanSijoitteluun": true,
+                            "tasasijasaanto": "ARVONTA",
+                            "valintatapajonooid": "tkk_jono_1"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "oid": "1.2.246.562.11.00000000008",
+            "valinnanvaihe": [
+                {
+                    "valinnanvaihe": 1,
+                    "valintatapajonot": [
+                        {
+                            "aloituspaikat": 1,
+                            "hakija": [
+                                {
+                                    "hakemusOid": "1.2.246.562.24.00000000001",
+                                    "jonosija": 4,
+                                    "pisteet": "0",
+                                    "prioriteetti": 2,
+                                    "tila": "HYVAKSYTTAVISSA"
+                                },
+                                {
+                                    "hakemusOid": "1.2.246.562.24.00000000002",
+                                    "jonosija": 3,
+                                    "pisteet": "0",
+                                    "prioriteetti": 2,
+                                    "tila": "HYVAKSYTTAVISSA"
+                                },
+                                {
+                                    "hakemusOid": "1.2.246.562.24.00000000003",
+                                    "jonosija": 2,
+                                    "pisteet": "0",
+                                    "prioriteetti": 2,
+                                    "tila": "HYVAKSYTTAVISSA"
+                                },
+                                {
+                                    "hakemusOid": "1.2.246.562.24.00000000004",
+                                    "jonosija": 1,
+                                    "pisteet": "0",
+                                    "prioriteetti": 2,
+                                    "tila": "HYVAKSYTTY_HARKINNANVARAISESTI"
+                                }
+                            ],
+                            "prioriteetti": 1,
+                            "siirretaanSijoitteluun": true,
+                            "tasasijasaanto": "ARVONTA",
+                            "valintatapajonooid": "esimerkkikoulu_jono_1"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "oid": "1.2.246.562.11.00000000009",
+            "valinnanvaihe": [
+                {
+                    "valinnanvaihe": 1,
+                    "valintatapajonot": [
+                        {
+                            "aloituspaikat": 1,
+                            "hakija": [
+                                {
+                                    "hakemusOid": "1.2.246.562.24.00000000001",
+                                    "jonosija": 4,
+                                    "pisteet": "0",
+                                    "prioriteetti": 3,
+                                    "tila": "HYVAKSYTTAVISSA"
+                                },
+                                {
+                                    "hakemusOid": "1.2.246.562.24.00000000002",
+                                    "jonosija": 3,
+                                    "pisteet": "0",
+                                    "prioriteetti": 3,
+                                    "tila": "HYVAKSYTTAVISSA"
+                                },
+                                {
+                                    "hakemusOid": "1.2.246.562.24.00000000003",
+                                    "jonosija": 2,
+                                    "pisteet": "0",
+                                    "prioriteetti": 3,
+                                    "tila": "HYVAKSYTTAVISSA"
+                                },
+                                {
+                                    "hakemusOid": "1.2.246.562.24.00000000004",
+                                    "jonosija": 1,
+                                    "pisteet": "0",
+                                    "prioriteetti": 3,
+                                    "tila": "HYLATTY"
+                                }
+                            ],
+                            "prioriteetti": 1,
+                            "siirretaanSijoitteluun": true,
+                            "tasasijasaanto": "ARVONTA",
+                            "valintatapajonooid": "helia_jono_1"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "oid": "1.2.246.562.11.00000000010",
+            "valinnanvaihe": [
+                {
+                    "valinnanvaihe": 1,
+                    "valintatapajonot": [
+                        {
+                            "aloituspaikat": 1,
+                            "hakija": [
+                                {
+                                    "hakemusOid": "1.2.246.562.24.00000000001",
+                                    "jonosija": 4,
+                                    "pisteet": "0",
+                                    "prioriteetti": 4,
+                                    "tila": "HYVAKSYTTAVISSA"
+                                },
+                                {
+                                    "hakemusOid": "1.2.246.562.24.00000000002",
+                                    "jonosija": 3,
+                                    "pisteet": "0",
+                                    "prioriteetti": 4,
+                                    "tila": "HYVAKSYTTAVISSA"
+                                },
+                                {
+                                    "hakemusOid": "1.2.246.562.24.00000000003",
+                                    "jonosija": 2,
+                                    "pisteet": "0",
+                                    "prioriteetti": 4,
+                                    "tila": "HYVAKSYTTAVISSA"
+                                },
+                                {
+                                    "hakemusOid": "1.2.246.562.24.00000000004",
+                                    "jonosija": 1,
+                                    "pisteet": "0",
+                                    "prioriteetti": 4,
+                                    "tila": "HYVAKSYTTY_HARKINNANVARAISESTI"
+                                }
+                            ],
+                            "prioriteetti": 1,
+                            "siirretaanSijoitteluun": true,
+                            "tasasijasaanto": "ARVONTA",
+                            "valintatapajonooid": "haaga_jono_1"
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
+
