@@ -27,7 +27,7 @@ public class SijoitteluCase023Test {
     @Test
     public void testSijoittelu() throws IOException {
         // tee sijoittelu
-        HakuDTO t = TestHelper.xmlToObjects("testdata/sijoittelu_case_023.xml");
+        HakuDTO t = TestHelper.xmlToObjects("testdata/sijoittelu_case_023.json");
 
 
         List<Hakukohde> hakukohteet = t.getHakukohteet().parallelStream().map(DomainConverter::convertToHakukohde).collect(Collectors.toList());

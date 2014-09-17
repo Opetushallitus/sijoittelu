@@ -31,7 +31,7 @@ public class BasicSijoitteluHakijaryhmaTest {
 	@Test
 	public void testSijoittelu() throws IOException {
 		// tee sijoittelu
-        HakuDTO t = TestHelper.xmlToObjects("testdata/sijoittelu_basic_hakijaryhma_case.xml");
+        HakuDTO t = TestHelper.xmlToObjects("testdata/sijoittelu_basic_hakijaryhma_case.json");
 
 
         List<Hakukohde> hakukohteet = t.getHakukohteet().parallelStream().map(DomainConverter::convertToHakukohde).collect(Collectors.toList());
