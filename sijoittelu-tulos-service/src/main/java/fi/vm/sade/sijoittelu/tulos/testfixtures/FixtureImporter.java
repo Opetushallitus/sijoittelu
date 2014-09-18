@@ -7,7 +7,7 @@ public class FixtureImporter {
     public static void importFixtures(final DB db) {
         DBObject base = MongoMockData.readJson("fi/vm/sade/sijoittelu/tulos/resource/sijoittelu-basedata.json");
         MongoMockData.insertData(db, base);
-        DBObject tulokset = MongoMockData.readJson("fi/vm/sade/sijoittelu/tulos/resource/sijoittelu-tulos-mockdata.json");
+        DBObject tulokset = MongoMockData.readJson("fi/vm/sade/sijoittelu/tulos/resource/hyvaksytty-ilmoitettu.json");
         MongoMockData.insertData(db, tulokset);
     }
 }

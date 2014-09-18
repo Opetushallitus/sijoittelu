@@ -32,7 +32,7 @@ public class SijoitteluResourceYhteenvetoTest extends SijoitteluResourceTest {
     SijoitteluResource sijoitteluResource;
 
     @Test
-    @UsingDataSet(locations = {"sijoittelu-basedata.json", "sijoittelu-tulos-mockdata.json"}, loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
+    @UsingDataSet(locations = {"sijoittelu-basedata.json", "hyvaksytty-ilmoitettu.json"}, loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
     public void hyvaksytty() throws JsonProcessingException {
         String expectedResponse = "{\"hakemusOid\":\"1.2.246.562.11.00000441369\",\"hakutoiveet\":[{\"hakukohdeOid\":\"1.2.246.562.5.72607738902\",\"tarjoajaOid\":\"1.2.246.562.10.591352080610\",\"valintatila\":\"HYVAKSYTTY\",\"vastaanottotila\":\"KESKEN\",\"ilmoittautumistila\":\"EI_TEHTY\",\"vastaanotettavuustila\":\"VASTAANOTETTAVISSA_SITOVASTI\",\"jonosija\":1,\"varasijojaKaytetaanAlkaen\":1409069123943,\"varasijojaTaytetaanAsti\":1409069123943,\"varasijanumero\":null,\"julkaistavissa\":true}]}";
         HakemusYhteenvetoDTO yhteenveto = getYhteenveto();

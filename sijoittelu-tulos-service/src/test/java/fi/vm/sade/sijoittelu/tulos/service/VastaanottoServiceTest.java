@@ -30,7 +30,6 @@ import fi.vm.sade.sijoittelu.tulos.dao.ValintatulosDao;
 import fi.vm.sade.sijoittelu.tulos.dto.raportointi.HakemusYhteenvetoDTO;
 import fi.vm.sade.sijoittelu.tulos.dto.raportointi.YhteenvedonVastaanottotila;
 import fi.vm.sade.sijoittelu.tulos.resource.SijoitteluResource;
-import fi.vm.sade.sijoittelu.tulos.service.VastaanottoService;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"classpath:test-context.xml"})
@@ -124,7 +123,7 @@ public class VastaanottoServiceTest {
     @Test
     @UsingDataSet(locations = {"/fi/vm/sade/sijoittelu/tulos/resource/sijoittelu-basedata.json", "/fi/vm/sade/sijoittelu/tulos/resource/hyvaksytty-ilmoitettu.json"}, loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
     public void vastaanotaIlmoitettu() {
-        vastaanottoService.vastaanota(hakuOid, hakemusOid, hakukohdeOid, ValintatuloksenTila.VASTAANOTTANUT, muokkaaja, selite);
+        vastaanottoService.vastaanota(hakuOid, hakemusOid, "1.2.246.562.5.72607738902", ValintatuloksenTila.VASTAANOTTANUT, muokkaaja, selite);
         assertEquals(YhteenvedonVastaanottotila.VASTAANOTTANUT, getYhteenveto().hakutoiveet.get(0).vastaanottotila);
     }
 
