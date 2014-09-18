@@ -23,6 +23,6 @@ public class DataImportService {
 
     @PostConstruct
     public void importData() throws IOException {
-        FixtureImporter.importFixtures(mongo.getDB(dbname), "hyvaksytty-ilmoitettu.json");
+        FixtureImporter.importFixture(mongo.getDB(dbname), "hyvaksytty-ilmoitettu.json");
     }
 }
