@@ -29,7 +29,7 @@ public class VastaanottotietoTest {
     @Test
     public void testVastaanottotilaPeruutettu() throws IOException {
         // tee sijoittelu
-        HakuDTO t = TestHelper.xmlToObjects("testdata/sijoittelu_vastaanottotieto_case.xml");
+        HakuDTO t = TestHelper.xmlToObjects("testdata/sijoittelu_vastaanottotieto_case.json");
 
 
         List<Hakukohde> hakukohteet = t.getHakukohteet().parallelStream().map(DomainConverter::convertToHakukohde).collect(Collectors.toList());

@@ -89,12 +89,12 @@ public class DomainConverter {
     private static void addHakijaRyhmas(HakukohdeDTO hakukohdeTyyppi, Hakukohde hakukohde) {
         for (HakijaryhmaDTO h : hakukohdeTyyppi.getHakijaryhma()) {
             Hakijaryhma hakijaryhma = new Hakijaryhma();
-            hakijaryhma.setPaikat(h.getPaikat());
+            hakijaryhma.setPaikat(h.getKiintio());
             hakijaryhma.setNimi(h.getNimi());
-            hakijaryhma.setOid(h.getOid());
+            hakijaryhma.setOid(h.getHakijaryhmaOid());
             hakijaryhma.setPrioriteetti(h.getPrioriteetti());
-            for (String s : h.getHakijaOids()) {
-                hakijaryhma.getHakemusOid().add(s);
+            for (JonosijaDTO jonosija : h.getJonosijat()) {
+                hakijaryhma.getHakemusOid().add(jonosija.getHakemusOid());
             }
             hakukohde.getHakijaryhmat().add(hakijaryhma);
         }

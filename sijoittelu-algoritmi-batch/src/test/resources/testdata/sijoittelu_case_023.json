@@ -1,0 +1,386 @@
+{
+    "hakuOid": "0023",
+    "hakukohteet": [
+        {
+            "oid": "Laakkis_oid_1",
+            "valinnanvaihe": [
+                {
+                    "valinnanvaihe": 1,
+                    "valintatapajonot": [
+                        {
+                            "aloituspaikat": 2,
+                            "hakija": [
+                                {
+                                    "hakemusOid": "Alaakkis_1_Ateku_oid_12",
+                                    "jonosija": 1,
+                                    "pisteet": "0",
+                                    "prioriteetti": 1,
+                                    "tila": "HYVAKSYTTAVISSA"
+                                },
+                                {
+                                    "hakemusOid": "Blaakkis_1_Bteku_oid_12",
+                                    "jonosija": 1,
+                                    "pisteet": "0",
+                                    "prioriteetti": 1,
+                                    "tila": "HYVAKSYTTAVISSA"
+                                },
+                                {
+                                    "hakemusOid": "Claakkis_1_Cteku_oid_12",
+                                    "jonosija": 1,
+                                    "pisteet": "1",
+                                    "prioriteetti": 1,
+                                    "tila": "HYVAKSYTTAVISSA"
+                                },
+                                {
+                                    "hakemusOid": "Dlaakkis_1_Dteku_oid_12",
+                                    "jonosija": 1,
+                                    "pisteet": "1",
+                                    "prioriteetti": 1,
+                                    "tila": "HYVAKSYTTAVISSA"
+                                },
+                                {
+                                    "hakemusOid": "Okoodariopisto_1_Olaakkis_oid_41",
+                                    "jonosija": 1,
+                                    "pisteet": "0",
+                                    "prioriteetti": 2,
+                                    "tila": "HYVAKSYTTAVISSA"
+                                },
+                                {
+                                    "hakemusOid": "Pkoodariopisto_2_Plaakkis_oid_41",
+                                    "jonosija": 1,
+                                    "pisteet": "0",
+                                    "prioriteetti": 2,
+                                    "tila": "HYVAKSYTTAVISSA"
+                                },
+                                {
+                                    "hakemusOid": "Qkoodariopisto_3_Qlaakkis_oid_41",
+                                    "jonosija": 1,
+                                    "pisteet": "1",
+                                    "prioriteetti": 2,
+                                    "tila": "HYVAKSYTTAVISSA"
+                                },
+                                {
+                                    "hakemusOid": "Rkoodariopisto_4_Rlaakkis_oid_41",
+                                    "jonosija": 1,
+                                    "pisteet": "1",
+                                    "prioriteetti": 2,
+                                    "tila": "HYVAKSYTTAVISSA"
+                                }
+                            ],
+                            "prioriteetti": 1,
+                            "siirretaanSijoitteluun": true,
+                            "tasasijasaanto": "ARVONTA",
+                            "valintatapajonooid": "laakkis_jono_1"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "oid": "Teku_oid_2",
+            "valinnanvaihe": [
+                {
+                    "valinnanvaihe": 1,
+                    "valintatapajonot": [
+                        {
+                            "aloituspaikat": 2,
+                            "hakija": [
+                                {
+                                    "hakemusOid": "Eteku_1_Etestiopisto_oid_23",
+                                    "jonosija": 1,
+                                    "pisteet": "0",
+                                    "prioriteetti": 1,
+                                    "tila": "HYVAKSYTTAVISSA"
+                                },
+                                {
+                                    "hakemusOid": "Fteku_2_Ftestiopisto_oid_23",
+                                    "jonosija": 1,
+                                    "pisteet": "0",
+                                    "prioriteetti": 1,
+                                    "tila": "HYVAKSYTTAVISSA"
+                                },
+                                {
+                                    "hakemusOid": "Gteku_3_Gtestiopisto_oid_23",
+                                    "jonosija": 1,
+                                    "pisteet": "1",
+                                    "prioriteetti": 1,
+                                    "tila": "HYVAKSYTTAVISSA"
+                                },
+                                {
+                                    "hakemusOid": "Hteku_4_Htestiopisto_oid_23",
+                                    "jonosija": 1,
+                                    "pisteet": "1",
+                                    "prioriteetti": 1,
+                                    "tila": "HYVAKSYTTAVISSA"
+                                },
+                                {
+                                    "hakemusOid": "Alaakkis_1_Ateku_oid_12",
+                                    "jonosija": 1,
+                                    "pisteet": "0",
+                                    "prioriteetti": 2,
+                                    "tila": "HYVAKSYTTAVISSA"
+                                },
+                                {
+                                    "hakemusOid": "Blaakkis_2_Bteku_oid_12",
+                                    "jonosija": 1,
+                                    "pisteet": "0",
+                                    "prioriteetti": 2,
+                                    "tila": "HYVAKSYTTAVISSA"
+                                },
+                                {
+                                    "hakemusOid": "Claakkis_3_Cteku_oid_12",
+                                    "jonosija": 1,
+                                    "pisteet": "1",
+                                    "prioriteetti": 2,
+                                    "tila": "HYVAKSYTTAVISSA"
+                                },
+                                {
+                                    "hakemusOid": "Dlaakkis_4_Dteku_oid_12",
+                                    "jonosija": 1,
+                                    "pisteet": "1",
+                                    "prioriteetti": 2,
+                                    "tila": "HYVAKSYTTAVISSA"
+                                }
+                            ],
+                            "prioriteetti": 1,
+                            "siirretaanSijoitteluun": true,
+                            "tasasijasaanto": "ARVONTA",
+                            "valintatapajonooid": "teku_jono_2"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "oid": "Testiopisto_oid_3",
+            "valinnanvaihe": [
+                {
+                    "valinnanvaihe": 1,
+                    "valintatapajonot": [
+                        {
+                            "aloituspaikat": 2,
+                            "hakija": [
+                                {
+                                    "hakemusOid": "Ktestiopisto_1_Kkoodariopisto_oid_34",
+                                    "jonosija": 1,
+                                    "pisteet": "0",
+                                    "prioriteetti": 1,
+                                    "tila": "HYVAKSYTTAVISSA"
+                                },
+                                {
+                                    "hakemusOid": "Ltestiopisto_2_Lkoodariopisto_oid_34",
+                                    "jonosija": 1,
+                                    "pisteet": "0",
+                                    "prioriteetti": 1,
+                                    "tila": "HYVAKSYTTAVISSA"
+                                },
+                                {
+                                    "hakemusOid": "Mtestiopisto_3_Mkoodariopisto_oid_34",
+                                    "jonosija": 1,
+                                    "pisteet": "1",
+                                    "prioriteetti": 1,
+                                    "tila": "HYVAKSYTTAVISSA"
+                                },
+                                {
+                                    "hakemusOid": "Ntestiopisto_4_Nkoodariopisto_oid_34",
+                                    "jonosija": 1,
+                                    "pisteet": "1",
+                                    "prioriteetti": 1,
+                                    "tila": "HYVAKSYTTAVISSA"
+                                },
+                                {
+                                    "hakemusOid": "Eteku_1_Etestiopisto_oid_23",
+                                    "jonosija": 1,
+                                    "pisteet": "0",
+                                    "prioriteetti": 2,
+                                    "tila": "HYVAKSYTTAVISSA"
+                                },
+                                {
+                                    "hakemusOid": "Fteku_2_Ftestiopisto_oid_23",
+                                    "jonosija": 1,
+                                    "pisteet": "0",
+                                    "prioriteetti": 2,
+                                    "tila": "HYVAKSYTTAVISSA"
+                                },
+                                {
+                                    "hakemusOid": "Gteku_3_Gtestiopisto_oid_23",
+                                    "jonosija": 1,
+                                    "pisteet": "1",
+                                    "prioriteetti": 2,
+                                    "tila": "HYVAKSYTTAVISSA"
+                                },
+                                {
+                                    "hakemusOid": "Hteku_4_Htestiopisto_oid_23",
+                                    "jonosija": 1,
+                                    "pisteet": "1",
+                                    "prioriteetti": 2,
+                                    "tila": "HYVAKSYTTAVISSA"
+                                }
+                            ],
+                            "prioriteetti": 1,
+                            "siirretaanSijoitteluun": true,
+                            "tasasijasaanto": "ARVONTA",
+                            "valintatapajonooid": "oid"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "oid": "Koodariopisto_oid_4",
+            "valinnanvaihe": [
+                {
+                    "valinnanvaihe": 1,
+                    "valintatapajonot": [
+                        {
+                            "aloituspaikat": 2,
+                            "hakija": [
+                                {
+                                    "hakemusOid": "Okoodariopisto_1_Olaakkis_oid_41",
+                                    "jonosija": 1,
+                                    "pisteet": "0",
+                                    "prioriteetti": 1,
+                                    "tila": "HYVAKSYTTAVISSA"
+                                },
+                                {
+                                    "hakemusOid": "Pkoodariopisto_2_Plaakkis_oid_41",
+                                    "jonosija": 1,
+                                    "pisteet": "0",
+                                    "prioriteetti": 1,
+                                    "tila": "HYVAKSYTTAVISSA"
+                                },
+                                {
+                                    "hakemusOid": "Qkoodariopisto_3_Qlaakkis_oid_41",
+                                    "jonosija": 1,
+                                    "pisteet": "1",
+                                    "prioriteetti": 1,
+                                    "tila": "HYVAKSYTTAVISSA"
+                                },
+                                {
+                                    "hakemusOid": "Rkoodariopisto_4_Rlaakkis_oid_41",
+                                    "jonosija": 1,
+                                    "pisteet": "1",
+                                    "prioriteetti": 1,
+                                    "tila": "HYVAKSYTTAVISSA"
+                                },
+                                {
+                                    "hakemusOid": "Ktestiopisto_1_Kkoodariopisto_oid_34",
+                                    "jonosija": 1,
+                                    "pisteet": "0",
+                                    "prioriteetti": 2,
+                                    "tila": "HYVAKSYTTAVISSA"
+                                },
+                                {
+                                    "hakemusOid": "Ltestiopisto_2_Lkoodariopisto_oid_34",
+                                    "jonosija": 1,
+                                    "pisteet": "0",
+                                    "prioriteetti": 2,
+                                    "tila": "HYVAKSYTTAVISSA"
+                                },
+                                {
+                                    "hakemusOid": "Mtestiopisto_3_Mkoodariopisto_oid_34",
+                                    "jonosija": 1,
+                                    "pisteet": "1",
+                                    "prioriteetti": 2,
+                                    "tila": "HYVAKSYTTAVISSA"
+                                },
+                                {
+                                    "hakemusOid": "Ntestiopisto_4_Nkoodariopisto_oid_34",
+                                    "jonosija": 1,
+                                    "pisteet": "1",
+                                    "prioriteetti": 2,
+                                    "tila": "HYVAKSYTTAVISSA"
+                                }
+                            ],
+                            "prioriteetti": 1,
+                            "siirretaanSijoitteluun": true,
+                            "tasasijasaanto": "ARVONTA",
+                            "valintatapajonooid": "oid"
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
+
+
+//Yleiskuvaus testitapauksesta:
+//
+//Toissijainen haku toteutettu
+//
+//16 tasapisteistä oppilasta hakee ensisijaisesti 4-hakukohteeseen ja toissijaisesti 4-hakukohteeseen.
+//Puolet oppilaista hyväksytään, koska kaksi oppilasta per hakukohde hyväksytään. Hakukohteet jakautuneet
+//tasaisesti eri hakukohteiden kesken siten että jokaiseen hakukohteeseen 4 ensisijaista ja 4 toissijaista hakijaa.
+//Toissijaista hakukohdetta ei pitäisi tarvita sijoittelussa, koska ensitiaiset saavat arvonnalla opintopaikan.
+//
+//	Hakijat (oid):
+//
+//	Alaakkis_1_Ateku_oid_12
+//	Blaakkis_2_Bteku_oid_12
+//	Claakkis_3_Cteku_oid_12
+//	Dlaakkis_4_Dteku_oid_12
+//	Eteku_1_Etestiopisto_oid_23
+//	Fteku_2_Ftestiopisto_oid_23
+//	Gteku_3_Gtestiopisto_oid_23
+//	Hteku_4_Htestiopisto_oid_23
+//	Ktestiopisto_1_Kkoodariopisto34
+//	Ltestiopisto_2_Lkoodariopisto_oid_34
+//	Mtestiopisto_3_Mkoodariopisto_oid_34
+//	Ntestiopisto_4_Nkoodariopisto_oid_34
+//	Okoodariopisto_1_Olaakkis_oid_41
+//	Pkoodariopisto_2_Plaakkis_oid_41
+//	Qkoodariopisto_3_Qlaakkis_oid_41
+//	Rkoodariopisto_4_Rlaakkis_oid_41
+//
+//
+//        Hakukohteet:
+//
+//	Laakkis_oid_1
+//	Teku_oid_2
+//	Testiopisto_oid_3
+//	Koodariopisto_oid_4
+//
+//
+//
+//
+//	Hakijat jarjestyksessa (suluissa jonossa paikkojen määrä, nimen kohalla prioriteetti, tahdella olevat valittu):
+//
+//		Laakkis_1 (2): Laakkis_oid_1
+//			jono(1)
+//				Alaakkis_1		Alaakkis_1_Ateku_oid_12
+//				Blaakkis_2		Blaakkis_2_Bteku_oid_12
+//				Claakkis_3		Claakkis_3_Cteku_oid_12
+//				Dlaakkis_4		Dlaakkis_4_Dteku_oid_12
+//
+//
+//		Teku_2 (2):
+//			jono(1)
+//				Eteku_1			Eteku_1_Etestiopisto_oid_23
+//				Fteku_2			Fteku_2_Ftestiopisto_oid_23
+//				Gteku_3			Gteku_3_Gtestiopisto_oid_23
+//				Hteku_4			Hteku_4_Htestiopisto_oid_23
+//
+//
+//
+//		Testiopisto_3 (2):
+//			jono(1)
+//
+//				Ktestiopisto_1		Ktestiopisto_1_Kkoodariopisto_oid_34
+//				Ltestiopisto_2		Ltestiopisto_2_Lkoodariopisto_oid_34
+//				Mtestiopisto_3		Mtestiopisto_3_Mkoodariopisto_oid_34
+//				Ntestiopisto_4		Ntestiopisto_4_Nkoodariopisto_oid_34
+//
+//
+//
+//
+//		Koodariopisto_4 (2):
+//			jono(1)
+//
+//
+//				Okoodariopisto_1	Okoodariopisto_1_Olaakkis_oid_41
+//				Pkoodariopisto_2	Pkoodariopisto_2_Plaakkis_oid_41
+//				Qkoodariopisto_3	Qkoodariopisto_3_Qlaakkis_oid_41
+//				Rkoodariopisto_4	Rkoodariopisto_4_Rlaakkis_oid_41
+
+

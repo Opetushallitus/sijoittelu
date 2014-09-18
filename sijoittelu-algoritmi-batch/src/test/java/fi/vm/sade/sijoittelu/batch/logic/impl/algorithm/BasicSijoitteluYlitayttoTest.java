@@ -28,7 +28,7 @@ public class BasicSijoitteluYlitayttoTest {
 	@Test
 	public void testSijoittelu() throws IOException {
 		// tee sijoittelu
-		HakuDTO t = TestHelper.xmlToObjects("testdata/sijoittelu_basic_ylitaytto_case.xml");
+		HakuDTO t = TestHelper.xmlToObjects("testdata/sijoittelu_basic_ylitaytto_case.json");
 
 
         List<Hakukohde> hakukohteet = new ArrayList<Hakukohde>() ;
