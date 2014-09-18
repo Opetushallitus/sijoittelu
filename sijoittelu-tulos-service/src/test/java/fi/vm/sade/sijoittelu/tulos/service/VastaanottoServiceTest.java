@@ -29,6 +29,7 @@ import fi.vm.sade.sijoittelu.domain.ValintatuloksenTila;
 import fi.vm.sade.sijoittelu.domain.Valintatulos;
 import fi.vm.sade.sijoittelu.tulos.dao.ValintatulosDao;
 import fi.vm.sade.sijoittelu.tulos.dto.raportointi.HakemusYhteenvetoDTO;
+import fi.vm.sade.sijoittelu.tulos.dto.raportointi.Vastaanotettavuustila;
 import fi.vm.sade.sijoittelu.tulos.dto.raportointi.YhteenvedonValintaTila;
 import fi.vm.sade.sijoittelu.tulos.dto.raportointi.YhteenvedonVastaanottotila;
 import fi.vm.sade.sijoittelu.tulos.resource.SijoitteluResource;
@@ -113,6 +114,11 @@ public class VastaanottoServiceTest {
         vastaanottoService.vastaanota(hakuOid, hakemusOid, hakukohdeOid, ValintatuloksenTila.VASTAANOTTANUT, muokkaaja, selite);
         final HakemusYhteenvetoDTO yhteenveto = getYhteenveto();
         assertEquals(YhteenvedonValintaTila.PERUUNTUNUT, yhteenveto.hakutoiveet.get(0).valintatila);
+        assertEquals(YhteenvedonValintaTila.HYVAKSYTTY, yhteenveto.hakutoiveet.get(1).valintatila);
+        assertEquals(YhteenvedonVastaanottotila.KESKEN, yhteenveto.hakutoiveet.get(0).vastaanottotila);
+        assertEquals(YhteenvedonVastaanottotila.VASTAANOTTANUT, yhteenveto.hakutoiveet.get(1).vastaanottotila);
+        assertEquals(Vastaanotettavuustila.EI_VASTAANOTETTAVISSA, yhteenveto.hakutoiveet.get(0).vastaanotettavuustila);
+        assertEquals(Vastaanotettavuustila.EI_VASTAANOTETTAVISSA, yhteenveto.hakutoiveet.get(1).vastaanotettavuustila);
     }
 
     private void useFixedDate(final String date) throws ParseException {

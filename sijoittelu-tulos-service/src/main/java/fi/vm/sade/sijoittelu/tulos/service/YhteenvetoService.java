@@ -15,6 +15,7 @@ import static fi.vm.sade.sijoittelu.tulos.dto.raportointi.Vastaanotettavuustila.
 import static fi.vm.sade.sijoittelu.tulos.dto.raportointi.YhteenvedonValintaTila.HYVAKSYTTY;
 import static fi.vm.sade.sijoittelu.tulos.dto.raportointi.YhteenvedonValintaTila.KESKEN;
 import static fi.vm.sade.sijoittelu.tulos.dto.raportointi.YhteenvedonValintaTila.PERUNUT;
+import static fi.vm.sade.sijoittelu.tulos.dto.raportointi.YhteenvedonValintaTila.PERUUNTUNUT;
 import static fi.vm.sade.sijoittelu.tulos.dto.raportointi.YhteenvedonValintaTila.fromHakemuksenTila;
 
 import org.joda.time.LocalDate;
@@ -45,7 +46,10 @@ public class YhteenvetoService {
                     }
                 }
             } else {
-                if (!hakutoive.isKaikkiJonotSijoiteltu()) {
+                if (alempiVastaanotettu(hakija, hakutoive.getHakutoive())) {
+                    vastaanotettavuustila = EI_VASTAANOTETTAVISSA;
+                    valintatila = PERUUNTUNUT;
+                } else if (!hakutoive.isKaikkiJonotSijoiteltu()) {
                     valintatila = KESKEN;
                 }
             }
@@ -70,6 +74,12 @@ public class YhteenvetoService {
 
             return new HakutoiveenYhteenveto(hakutoive, jono, valintatila, vastaanottotila, vastaanotettavuustila, julkaistavissa);
         }).collect(Collectors.toList());
+    }
+
+    private static boolean alempiVastaanotettu(final HakijaDTO hakija, final Integer hakutoive) {
+        return hakija.getHakutoiveet().stream().skip(hakutoive).anyMatch(h ->
+            getFirst(h).get().getVastaanottotieto() == ValintatuloksenTila.VASTAANOTTANUT
+        );
     }
 
     public static HakemusYhteenvetoDTO yhteenveto(HakijaDTO hakija) {
