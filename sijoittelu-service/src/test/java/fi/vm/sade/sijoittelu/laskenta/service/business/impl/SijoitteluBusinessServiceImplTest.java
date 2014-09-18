@@ -81,7 +81,7 @@ public class SijoitteluBusinessServiceImplTest {
 
 		sijoitteluBusinessService.vaihdaHakemuksenTila(HAKU_OID, HAKUKOHDE_OID,
 				VALINTATAPAJONO_OID, HAKEMUS_OID, ValintatuloksenTila.PERUNUT,
-				SELITE, IlmoittautumisTila.EI_TEHTY);
+				SELITE, IlmoittautumisTila.EI_TEHTY, false);
 	}
 
     // Toiminnallisuus poistettu käytöstä
@@ -133,7 +133,7 @@ public class SijoitteluBusinessServiceImplTest {
 		sijoitteluBusinessService.vaihdaHakemuksenTila(HAKU_OID, HAKUKOHDE_OID,
 				VALINTATAPAJONO_OID, HAKEMUS_OID_2,
 				ValintatuloksenTila.ILMOITETTU, SELITE,
-				IlmoittautumisTila.EI_TEHTY);
+				IlmoittautumisTila.EI_TEHTY, false);
 	}
 
 	@Test
@@ -158,7 +158,7 @@ public class SijoitteluBusinessServiceImplTest {
 		sijoitteluBusinessService.vaihdaHakemuksenTila(HAKU_OID, HAKUKOHDE_OID,
 				VALINTATAPAJONO_OID, HAKEMUS_OID,
 				ValintatuloksenTila.ILMOITETTU, SELITE,
-				IlmoittautumisTila.EI_TEHTY);
+				IlmoittautumisTila.EI_TEHTY, false);
 	}
 
 	@Test
@@ -183,7 +183,7 @@ public class SijoitteluBusinessServiceImplTest {
 
 		sijoitteluBusinessService.vaihdaHakemuksenTila(HAKU_OID, HAKUKOHDE_OID,
 				VALINTATAPAJONO_OID, HAKEMUS_OID, ValintatuloksenTila.PERUNUT,
-				SELITE, IlmoittautumisTila.EI_TEHTY);
+				SELITE, IlmoittautumisTila.EI_TEHTY, false);
 	}
 
 	@Test
@@ -203,7 +203,7 @@ public class SijoitteluBusinessServiceImplTest {
 
 		sijoitteluBusinessService.vaihdaHakemuksenTila(HAKU_OID, HAKUKOHDE_OID,
 				VALINTATAPAJONO_OID, HAKEMUS_OID, ValintatuloksenTila.PERUNUT,
-				SELITE, IlmoittautumisTila.EI_TEHTY);
+				SELITE, IlmoittautumisTila.EI_TEHTY, false);
 	}
 
 	@Test
@@ -224,7 +224,7 @@ public class SijoitteluBusinessServiceImplTest {
 		sijoitteluBusinessService.vaihdaHakemuksenTila(HAKU_OID, HAKUKOHDE_OID,
 				VALINTATAPAJONO_OID, HAKEMUS_OID_2,
 				ValintatuloksenTila.VASTAANOTTANUT, SELITE,
-				IlmoittautumisTila.EI_TEHTY);
+				IlmoittautumisTila.EI_TEHTY, false);
 	}
 
 	private Valintatulos getValintatulos(ValintatuloksenTila tila) {
@@ -262,7 +262,7 @@ public class SijoitteluBusinessServiceImplTest {
 		sijoitteluBusinessService.vaihdaHakemuksenTila(HAKU_OID, HAKUKOHDE_OID,
 				VALINTATAPAJONO_OID, HAKEMUS_OID,
 				ValintatuloksenTila.VASTAANOTTANUT, SELITE,
-				IlmoittautumisTila.LASNA_KOKO_LUKUVUOSI);
+				IlmoittautumisTila.LASNA_KOKO_LUKUVUOSI, false);
 	}
 
 	@Test
@@ -288,7 +288,7 @@ public class SijoitteluBusinessServiceImplTest {
 		sijoitteluBusinessService.vaihdaHakemuksenTila(HAKU_OID, HAKUKOHDE_OID,
 				VALINTATAPAJONO_OID, HAKEMUS_OID,
 				ValintatuloksenTila.VASTAANOTTANUT, SELITE,
-				IlmoittautumisTila.POISSA_KOKO_LUKUVUOSI);
+				IlmoittautumisTila.POISSA_KOKO_LUKUVUOSI, false);
 	}
 
 	@Test
@@ -313,7 +313,7 @@ public class SijoitteluBusinessServiceImplTest {
 		sijoitteluBusinessService.vaihdaHakemuksenTila(HAKU_OID, HAKUKOHDE_OID,
 				VALINTATAPAJONO_OID, HAKEMUS_OID,
 				ValintatuloksenTila.VASTAANOTTANUT, SELITE,
-				IlmoittautumisTila.EI_ILMOITTAUTUNUT);
+				IlmoittautumisTila.EI_ILMOITTAUTUNUT, false);
 	}
 
 	@Test
@@ -338,7 +338,7 @@ public class SijoitteluBusinessServiceImplTest {
 		sijoitteluBusinessService.vaihdaHakemuksenTila(HAKU_OID, HAKUKOHDE_OID,
 				VALINTATAPAJONO_OID, HAKEMUS_OID,
 				ValintatuloksenTila.VASTAANOTTANUT, SELITE,
-				IlmoittautumisTila.LASNA_SYKSY);
+				IlmoittautumisTila.LASNA_SYKSY, false);
 	}
 
 	@Test
@@ -363,7 +363,7 @@ public class SijoitteluBusinessServiceImplTest {
 		sijoitteluBusinessService.vaihdaHakemuksenTila(HAKU_OID, HAKUKOHDE_OID,
 				VALINTATAPAJONO_OID, HAKEMUS_OID,
 				ValintatuloksenTila.VASTAANOTTANUT, SELITE,
-				IlmoittautumisTila.POISSA_SYKSY);
+				IlmoittautumisTila.POISSA_SYKSY, false);
 	}
 
 	@Test
@@ -388,7 +388,7 @@ public class SijoitteluBusinessServiceImplTest {
 		sijoitteluBusinessService.vaihdaHakemuksenTila(HAKU_OID, HAKUKOHDE_OID,
 				VALINTATAPAJONO_OID, HAKEMUS_OID,
 				ValintatuloksenTila.VASTAANOTTANUT, SELITE,
-				IlmoittautumisTila.LASNA);
+				IlmoittautumisTila.LASNA, false);
 	}
 
 	@Test
@@ -413,6 +413,6 @@ public class SijoitteluBusinessServiceImplTest {
 		sijoitteluBusinessService.vaihdaHakemuksenTila(HAKU_OID, HAKUKOHDE_OID,
 				VALINTATAPAJONO_OID, HAKEMUS_OID,
 				ValintatuloksenTila.VASTAANOTTANUT, SELITE,
-				IlmoittautumisTila.POISSA);
+				IlmoittautumisTila.POISSA, false);
 	}
 }
