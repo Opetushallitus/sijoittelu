@@ -5,7 +5,6 @@ import static org.junit.Assert.assertFalse;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
 
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeUtils;
@@ -14,15 +13,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lordofthejars.nosqlunit.annotation.UsingDataSet;
 import com.lordofthejars.nosqlunit.core.LoadStrategyEnum;
 
-import fi.vm.sade.sijoittelu.tulos.dto.raportointi.HakemusYhteenvetoDTO;
-import fi.vm.sade.sijoittelu.tulos.dto.raportointi.HakutoiveYhteenvetoDTO;
-import fi.vm.sade.sijoittelu.tulos.dto.raportointi.Vastaanotettavuustila;
-import fi.vm.sade.sijoittelu.tulos.dto.raportointi.YhteenvedonValintaTila;
-import fi.vm.sade.sijoittelu.tulos.dto.raportointi.YhteenvedonVastaanottotila;
+import fi.vm.sade.sijoittelu.tulos.dto.raportointi.*;
 
 public class SijoitteluResourceYhteenvetoTest extends SijoitteluResourceTest {
     @Autowired
@@ -34,7 +28,7 @@ public class SijoitteluResourceYhteenvetoTest extends SijoitteluResourceTest {
     @Test
     @UsingDataSet(locations = {"sijoittelu-basedata.json", "hyvaksytty-ilmoitettu.json"}, loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
     public void hyvaksyttyValintatulosIlmoitettuLegacy() throws JsonProcessingException {
-        String expectedResponse = "{\"hakemusOid\":\"1.2.246.562.11.00000441369\",\"hakutoiveet\":[{\"hakukohdeOid\":\"1.2.246.562.5.72607738902\",\"tarjoajaOid\":\"1.2.246.562.10.591352080610\",\"valintatila\":\"HYVAKSYTTY\",\"vastaanottotila\":\"KESKEN\",\"ilmoittautumistila\":\"EI_TEHTY\",\"vastaanotettavuustila\":\"VASTAANOTETTAVISSA_SITOVASTI\",\"jonosija\":1,\"varasijojaKaytetaanAlkaen\":1409069123943,\"varasijojaTaytetaanAsti\":1409069123943,\"varasijanumero\":null,\"julkaistavissa\":true}]}";
+        String expectedResponse = "{\"hakemusOid\":\"1.2.246.562.11.00000441369\",\"hakutoiveet\":[{\"hakukohdeOid\":\"1.2.246.562.5.72607738902\",\"tarjoajaOid\":\"1.2.246.562.10.591352080610\",\"valintatila\":\"HYVAKSYTTY\",\"vastaanottotila\":\"KESKEN\",\"ilmoittautumistila\":\"EI_TEHTY\",\"vastaanotettavuustila\":\"VASTAANOTETTAVISSA_SITOVASTI\",\"viimeisinVastaanottotilanMuutos\":null,\"jonosija\":1,\"varasijojaKaytetaanAlkaen\":1409069123943,\"varasijojaTaytetaanAsti\":1409069123943,\"varasijanumero\":null,\"julkaistavissa\":true}]}";
         HakemusYhteenvetoDTO yhteenveto = getYhteenveto();
         assertEquals(expectedResponse, objectMapper.writeValueAsString(yhteenveto));
         checkHakutoiveState(yhteenveto.hakutoiveet.get(0), YhteenvedonValintaTila.HYVAKSYTTY, YhteenvedonVastaanottotila.KESKEN, Vastaanotettavuustila.VASTAANOTETTAVISSA_SITOVASTI, true);
