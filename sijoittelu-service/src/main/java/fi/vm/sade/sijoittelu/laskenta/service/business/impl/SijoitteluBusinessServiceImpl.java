@@ -338,7 +338,7 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
 	public void vaihdaHakemuksenTila(String hakuoid, String hakukohdeOid,
 			String valintatapajonoOid, String hakemusOid,
 			ValintatuloksenTila tila, String selite,
-			IlmoittautumisTila ilmoittautumisTila, Boolean julkaistavissa) {
+			IlmoittautumisTila ilmoittautumisTila, boolean julkaistavissa) {
 		if (StringUtils.isBlank(hakuoid) || StringUtils.isBlank(hakukohdeOid)
 				|| StringUtils.isBlank(valintatapajonoOid)
 				|| StringUtils.isBlank(hakemusOid)) {

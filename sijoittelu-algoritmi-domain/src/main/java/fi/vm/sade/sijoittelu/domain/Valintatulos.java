@@ -40,10 +40,10 @@ public class Valintatulos implements Serializable {
     private String hakukohdeOid;
 
     @JsonView(JsonViews.MonenHakemuksenTila.class)
-    private Boolean julkaistavissa;
+    private boolean julkaistavissa;
 
     @JsonView(JsonViews.MonenHakemuksenTila.class)
-    private Boolean hyvaksyttyVarasijalta;
+    private boolean hyvaksyttyVarasijalta;
 
     @JsonView(JsonViews.MonenHakemuksenTila.class)
     private String hakijaOid;
@@ -144,19 +144,19 @@ public class Valintatulos implements Serializable {
         this.ilmoittautumisTila = ilmoittautumisTila;
     }
 
-    public Boolean getJulkaistavissa() {
+    public boolean getJulkaistavissa() {
         return julkaistavissa;
     }
 
-    public void setJulkaistavissa(Boolean julkaistavissa) {
+    public void setJulkaistavissa(boolean julkaistavissa) {
         this.julkaistavissa = julkaistavissa;
     }
 
-    public Boolean getHyvaksyttyVarasijalta() {
+    public boolean getHyvaksyttyVarasijalta() {
         return hyvaksyttyVarasijalta;
     }
 
-    public void setHyvaksyttyVarasijalta(Boolean hyvaksyttyVarasijalta) {
+    public void setHyvaksyttyVarasijalta(boolean hyvaksyttyVarasijalta) {
         this.hyvaksyttyVarasijalta = hyvaksyttyVarasijalta;
     }
 }
