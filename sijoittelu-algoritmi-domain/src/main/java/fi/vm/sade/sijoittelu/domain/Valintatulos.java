@@ -55,10 +55,10 @@ public class Valintatulos implements Serializable {
     private int hakutoive;
 
     @JsonView({JsonViews.Tila.class, JsonViews.MonenHakemuksenTila.class})
-    private ValintatuloksenTila tila;
+    private ValintatuloksenTila tila = ValintatuloksenTila.KESKEN;
 
     @JsonView({JsonViews.Tila.class, JsonViews.MonenHakemuksenTila.class})
-    private IlmoittautumisTila ilmoittautumisTila;
+    private IlmoittautumisTila ilmoittautumisTila = IlmoittautumisTila.EI_TEHTY;
 
     @Embedded
     @JsonView({JsonViews.Tila.class, JsonViews.MonenHakemuksenTila.class})
