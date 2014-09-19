@@ -110,8 +110,8 @@ public class SijoitteluResourceYhteenvetoTest extends SijoitteluResourceTest {
     @UsingDataSet(locations = {"sijoittelu-basedata.json", "hyvaksytty-ylempi-varalla.json"}, loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
     public void hyvaksyttyYlempiVaralla() throws JsonProcessingException {
         HakemusYhteenvetoDTO yhteenveto = getYhteenveto();
-        checkHakutoiveState(yhteenveto.hakutoiveet.get(0), YhteenvedonValintaTila.VARALLA, YhteenvedonVastaanottotila.KESKEN, Vastaanotettavuustila.EI_VASTAANOTETTAVISSA, false);
-        checkHakutoiveState(yhteenveto.hakutoiveet.get(1), YhteenvedonValintaTila.HYVAKSYTTY, YhteenvedonVastaanottotila.KESKEN, Vastaanotettavuustila.EI_VASTAANOTETTAVISSA, false);
+        checkHakutoiveState(yhteenveto.hakutoiveet.get(0), YhteenvedonValintaTila.VARALLA, YhteenvedonVastaanottotila.KESKEN, Vastaanotettavuustila.EI_VASTAANOTETTAVISSA, true);
+        checkHakutoiveState(yhteenveto.hakutoiveet.get(1), YhteenvedonValintaTila.HYVAKSYTTY, YhteenvedonVastaanottotila.KESKEN, Vastaanotettavuustila.EI_VASTAANOTETTAVISSA, true);
     }
 
     @Test
@@ -135,8 +135,8 @@ public class SijoitteluResourceYhteenvetoTest extends SijoitteluResourceTest {
         DateTimeUtils.setCurrentMillisFixed(new SimpleDateFormat("d.M.yyyy").parse("15.8.2014").getTime());
         try {
             HakemusYhteenvetoDTO yhteenveto = getYhteenveto();
-            checkHakutoiveState(yhteenveto.hakutoiveet.get(0), YhteenvedonValintaTila.VARALLA, YhteenvedonVastaanottotila.KESKEN, Vastaanotettavuustila.EI_VASTAANOTETTAVISSA, false);
-            checkHakutoiveState(yhteenveto.hakutoiveet.get(1), YhteenvedonValintaTila.HYVAKSYTTY, YhteenvedonVastaanottotila.KESKEN, Vastaanotettavuustila.VASTAANOTETTAVISSA_EHDOLLISESTI, false);
+            checkHakutoiveState(yhteenveto.hakutoiveet.get(0), YhteenvedonValintaTila.VARALLA, YhteenvedonVastaanottotila.KESKEN, Vastaanotettavuustila.EI_VASTAANOTETTAVISSA, true);
+            checkHakutoiveState(yhteenveto.hakutoiveet.get(1), YhteenvedonValintaTila.HYVAKSYTTY, YhteenvedonVastaanottotila.KESKEN, Vastaanotettavuustila.VASTAANOTETTAVISSA_EHDOLLISESTI, true);
         } finally {
             DateTimeUtils.setCurrentMillisSystem();
         }
