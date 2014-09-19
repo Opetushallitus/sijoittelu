@@ -392,11 +392,12 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
 				hakemusOid);
 
 		if (!ophAdmin) {
-			if ((v == null || v.getTila() == null)
-					&& tila != ValintatuloksenTila.ILMOITETTU) {
-				throw new ValintatulostaEiOleIlmoitettuException(
-						"Valintatulosta ei ole ilmoitettu");
-			}
+            // Ilmoitettu tila on poistettu käytöstä
+//			if ((v == null || v.getTila() == null)
+//					&& tila != ValintatuloksenTila.ILMOITETTU) {
+//				throw new ValintatulostaEiOleIlmoitettuException(
+//						"Valintatulosta ei ole ilmoitettu");
+//			}
 
             if (tila == ValintatuloksenTila.PERUUTETTU) {
                 throw new TilanTallennukseenEiOikeuksiaException(
