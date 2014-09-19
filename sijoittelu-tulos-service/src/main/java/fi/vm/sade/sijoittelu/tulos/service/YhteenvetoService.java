@@ -16,6 +16,7 @@ import static fi.vm.sade.sijoittelu.tulos.dto.raportointi.YhteenvedonValintaTila
 import static fi.vm.sade.sijoittelu.tulos.dto.raportointi.YhteenvedonValintaTila.KESKEN;
 import static fi.vm.sade.sijoittelu.tulos.dto.raportointi.YhteenvedonValintaTila.PERUNUT;
 import static fi.vm.sade.sijoittelu.tulos.dto.raportointi.YhteenvedonValintaTila.PERUUNTUNUT;
+import static fi.vm.sade.sijoittelu.tulos.dto.raportointi.YhteenvedonValintaTila.VARALLA;
 import static fi.vm.sade.sijoittelu.tulos.dto.raportointi.YhteenvedonValintaTila.fromHakemuksenTila;
 
 import org.joda.time.LocalDate;
@@ -25,6 +26,9 @@ public class YhteenvetoService {
         return hakija.getHakutoiveet().stream().map(hakutoive -> {
             HakutoiveenValintatapajonoDTO jono = getFirst(hakutoive).get();
             YhteenvedonValintaTila valintatila = ifNull(fromHakemuksenTila(jono.getTila()), YhteenvedonValintaTila.KESKEN);
+            if (valintatila == VARALLA && jono.isHyvaksyttyVarasijalta()) {
+                valintatila = HYVAKSYTTY;
+            }
             Vastaanotettavuustila vastaanotettavuustila = EI_VASTAANOTETTAVISSA;
             // Valintatila
             if (Arrays.asList(HakemuksenTila.HYVAKSYTTY, HakemuksenTila.HARKINNANVARAISESTI_HYVAKSYTTY).contains(jono.getTila())) {
@@ -70,7 +74,7 @@ public class YhteenvetoService {
                 vastaanotettavuustila = EI_VASTAANOTETTAVISSA;
             }
 
-            final boolean julkaistavissa = jono.getVastaanottotieto() != ValintatuloksenTila.KESKEN;
+            final boolean julkaistavissa = jono.getVastaanottotieto() != ValintatuloksenTila.KESKEN || jono.isJulkaistavissa();
 
             return new HakutoiveenYhteenveto(hakutoive, jono, valintatila, vastaanottotila, vastaanotettavuustila, julkaistavissa);
         }).collect(Collectors.toList());

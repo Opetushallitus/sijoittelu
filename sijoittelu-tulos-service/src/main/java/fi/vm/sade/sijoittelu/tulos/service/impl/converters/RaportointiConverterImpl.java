@@ -152,6 +152,8 @@ public class RaportointiConverterImpl implements RaportointiConverter {
                                                 .convert(
                                                         ValintatuloksenTila.class,
                                                         valintatulos.getTila()));
+                                valintatapajonoDTO.setJulkaistavissa(valintatulos.getJulkaistavissa());
+                                valintatapajonoDTO.setHyvaksyttyVarasijalta(valintatulos.getHyvaksyttyVarasijalta());
 
                                 // "hakemus.muokattuVastaanottoTila ==
                                 // 'VASTAANOTTANUT' ||

@@ -77,8 +77,10 @@ public class HakutoiveenValintatapajonoDTO {
     private Date varasijojaTaytetaanAsti;
 
     private String tayttojono;
+    private boolean julkaistavissa;
+    private boolean hyvaksyttyVarasijalta;
 
-	public IlmoittautumisTila getIlmoittautumisTila() {
+    public IlmoittautumisTila getIlmoittautumisTila() {
 		return ilmoittautumisTila;
 	}
 
@@ -255,5 +257,21 @@ public class HakutoiveenValintatapajonoDTO {
 
     public void setTayttojono(String tayttojono) {
         this.tayttojono = tayttojono;
+    }
+
+    public void setJulkaistavissa(final boolean julkaistavissa) {
+        this.julkaistavissa = julkaistavissa;
+    }
+
+    public boolean isJulkaistavissa() {
+        return julkaistavissa;
+    }
+
+    public void setHyvaksyttyVarasijalta(final boolean hyvaksyttyVarasijalta) {
+        this.hyvaksyttyVarasijalta = hyvaksyttyVarasijalta;
+    }
+
+    public boolean isHyvaksyttyVarasijalta() {
+        return hyvaksyttyVarasijalta;
     }
 }
