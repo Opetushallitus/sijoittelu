@@ -47,7 +47,7 @@ public class VastaanottoServiceTest {
     public MongoDbRule mongoDbRule = newMongoDbRule().defaultSpringMongoDb("sijoittelu");
 
     final String hakuOid = "1.2.246.562.5.2013080813081926341928";
-    final String hakukohdeOid = "1.2.246.562.5.72607738903";
+    final String hakukohdeOid = "1.2.246.562.5.16303028779";
     final String hakemusOid = "1.2.246.562.11.00000441369";
     final String muokkaaja = "Teppo Testi";
     final String selite = "Testimuokkaus";
