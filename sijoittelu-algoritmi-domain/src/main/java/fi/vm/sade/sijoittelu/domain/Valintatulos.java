@@ -40,6 +40,12 @@ public class Valintatulos implements Serializable {
     private String hakukohdeOid;
 
     @JsonView(JsonViews.MonenHakemuksenTila.class)
+    private boolean julkaistavissa;
+
+    @JsonView(JsonViews.MonenHakemuksenTila.class)
+    private boolean hyvaksyttyVarasijalta;
+
+    @JsonView(JsonViews.MonenHakemuksenTila.class)
     private String hakijaOid;
 
     @JsonView(JsonViews.MonenHakemuksenTila.class)
@@ -49,10 +55,10 @@ public class Valintatulos implements Serializable {
     private int hakutoive;
 
     @JsonView({JsonViews.Tila.class, JsonViews.MonenHakemuksenTila.class})
-    private ValintatuloksenTila tila;
+    private ValintatuloksenTila tila = ValintatuloksenTila.KESKEN;
 
     @JsonView({JsonViews.Tila.class, JsonViews.MonenHakemuksenTila.class})
-    private IlmoittautumisTila ilmoittautumisTila;
+    private IlmoittautumisTila ilmoittautumisTila = IlmoittautumisTila.EI_TEHTY;
 
     @Embedded
     @JsonView({JsonViews.Tila.class, JsonViews.MonenHakemuksenTila.class})
@@ -136,5 +142,21 @@ public class Valintatulos implements Serializable {
 
     public void setIlmoittautumisTila(final IlmoittautumisTila ilmoittautumisTila) {
         this.ilmoittautumisTila = ilmoittautumisTila;
+    }
+
+    public boolean getJulkaistavissa() {
+        return julkaistavissa;
+    }
+
+    public void setJulkaistavissa(boolean julkaistavissa) {
+        this.julkaistavissa = julkaistavissa;
+    }
+
+    public boolean getHyvaksyttyVarasijalta() {
+        return hyvaksyttyVarasijalta;
+    }
+
+    public void setHyvaksyttyVarasijalta(boolean hyvaksyttyVarasijalta) {
+        this.hyvaksyttyVarasijalta = hyvaksyttyVarasijalta;
     }
 }

@@ -5,7 +5,6 @@ import static org.junit.Assert.assertFalse;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
 
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeUtils;
@@ -14,15 +13,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lordofthejars.nosqlunit.annotation.UsingDataSet;
 import com.lordofthejars.nosqlunit.core.LoadStrategyEnum;
 
-import fi.vm.sade.sijoittelu.tulos.dto.raportointi.HakemusYhteenvetoDTO;
-import fi.vm.sade.sijoittelu.tulos.dto.raportointi.HakutoiveYhteenvetoDTO;
-import fi.vm.sade.sijoittelu.tulos.dto.raportointi.Vastaanotettavuustila;
-import fi.vm.sade.sijoittelu.tulos.dto.raportointi.YhteenvedonValintaTila;
-import fi.vm.sade.sijoittelu.tulos.dto.raportointi.YhteenvedonVastaanottotila;
+import fi.vm.sade.sijoittelu.tulos.dto.raportointi.*;
 
 public class SijoitteluResourceYhteenvetoTest extends SijoitteluResourceTest {
     @Autowired
@@ -33,10 +27,24 @@ public class SijoitteluResourceYhteenvetoTest extends SijoitteluResourceTest {
 
     @Test
     @UsingDataSet(locations = {"sijoittelu-basedata.json", "hyvaksytty-ilmoitettu.json"}, loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
-    public void hyvaksytty() throws JsonProcessingException {
-        String expectedResponse = "{\"hakemusOid\":\"1.2.246.562.11.00000441369\",\"hakutoiveet\":[{\"hakukohdeOid\":\"1.2.246.562.5.72607738902\",\"tarjoajaOid\":\"1.2.246.562.10.591352080610\",\"valintatila\":\"HYVAKSYTTY\",\"vastaanottotila\":\"KESKEN\",\"ilmoittautumistila\":\"EI_TEHTY\",\"vastaanotettavuustila\":\"VASTAANOTETTAVISSA_SITOVASTI\",\"jonosija\":1,\"varasijojaKaytetaanAlkaen\":1409069123943,\"varasijojaTaytetaanAsti\":1409069123943,\"varasijanumero\":null,\"julkaistavissa\":true}]}";
+    public void hyvaksyttyValintatulosIlmoitettuLegacy() throws JsonProcessingException {
+        String expectedResponse = "{\"hakemusOid\":\"1.2.246.562.11.00000441369\",\"hakutoiveet\":[{\"hakukohdeOid\":\"1.2.246.562.5.72607738902\",\"tarjoajaOid\":\"1.2.246.562.10.591352080610\",\"valintatila\":\"HYVAKSYTTY\",\"vastaanottotila\":\"KESKEN\",\"ilmoittautumistila\":\"EI_TEHTY\",\"vastaanotettavuustila\":\"VASTAANOTETTAVISSA_SITOVASTI\",\"viimeisinVastaanottotilanMuutos\":null,\"jonosija\":1,\"varasijojaKaytetaanAlkaen\":1409069123943,\"varasijojaTaytetaanAsti\":1409069123943,\"varasijanumero\":null,\"julkaistavissa\":true}]}";
         HakemusYhteenvetoDTO yhteenveto = getYhteenveto();
         assertEquals(expectedResponse, objectMapper.writeValueAsString(yhteenveto));
+        checkHakutoiveState(yhteenveto.hakutoiveet.get(0), YhteenvedonValintaTila.HYVAKSYTTY, YhteenvedonVastaanottotila.KESKEN, Vastaanotettavuustila.VASTAANOTETTAVISSA_SITOVASTI, true);
+    }
+
+    @Test
+    @UsingDataSet(locations = {"sijoittelu-basedata.json", "hyvaksytty-kesken.json"}, loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
+    public void hyvaksyttyValintatulosKesken() throws JsonProcessingException {
+        HakemusYhteenvetoDTO yhteenveto = getYhteenveto();
+        checkHakutoiveState(yhteenveto.hakutoiveet.get(0), YhteenvedonValintaTila.HYVAKSYTTY, YhteenvedonVastaanottotila.KESKEN, Vastaanotettavuustila.VASTAANOTETTAVISSA_SITOVASTI, false);
+    }
+
+    @Test
+    @UsingDataSet(locations = {"sijoittelu-basedata.json", "hyvaksytty-kesken-julkaistavissa.json"}, loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
+    public void hyvaksyttyValintatulosJulkaistavissa() throws JsonProcessingException {
+        HakemusYhteenvetoDTO yhteenveto = getYhteenveto();
         checkHakutoiveState(yhteenveto.hakutoiveet.get(0), YhteenvedonValintaTila.HYVAKSYTTY, YhteenvedonVastaanottotila.KESKEN, Vastaanotettavuustila.VASTAANOTETTAVISSA_SITOVASTI, true);
     }
 
@@ -96,8 +104,8 @@ public class SijoitteluResourceYhteenvetoTest extends SijoitteluResourceTest {
     @UsingDataSet(locations = {"sijoittelu-basedata.json", "hyvaksytty-ylempi-varalla.json"}, loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
     public void hyvaksyttyYlempiVaralla() throws JsonProcessingException {
         HakemusYhteenvetoDTO yhteenveto = getYhteenveto();
-        checkHakutoiveState(yhteenveto.hakutoiveet.get(0), YhteenvedonValintaTila.VARALLA, YhteenvedonVastaanottotila.KESKEN, Vastaanotettavuustila.EI_VASTAANOTETTAVISSA, false);
-        checkHakutoiveState(yhteenveto.hakutoiveet.get(1), YhteenvedonValintaTila.HYVAKSYTTY, YhteenvedonVastaanottotila.KESKEN, Vastaanotettavuustila.EI_VASTAANOTETTAVISSA, false);
+        checkHakutoiveState(yhteenveto.hakutoiveet.get(0), YhteenvedonValintaTila.VARALLA, YhteenvedonVastaanottotila.KESKEN, Vastaanotettavuustila.EI_VASTAANOTETTAVISSA, true);
+        checkHakutoiveState(yhteenveto.hakutoiveet.get(1), YhteenvedonValintaTila.HYVAKSYTTY, YhteenvedonVastaanottotila.KESKEN, Vastaanotettavuustila.EI_VASTAANOTETTAVISSA, true);
     }
 
     @Test
@@ -121,8 +129,8 @@ public class SijoitteluResourceYhteenvetoTest extends SijoitteluResourceTest {
         DateTimeUtils.setCurrentMillisFixed(new SimpleDateFormat("d.M.yyyy").parse("15.8.2014").getTime());
         try {
             HakemusYhteenvetoDTO yhteenveto = getYhteenveto();
-            checkHakutoiveState(yhteenveto.hakutoiveet.get(0), YhteenvedonValintaTila.VARALLA, YhteenvedonVastaanottotila.KESKEN, Vastaanotettavuustila.EI_VASTAANOTETTAVISSA, false);
-            checkHakutoiveState(yhteenveto.hakutoiveet.get(1), YhteenvedonValintaTila.HYVAKSYTTY, YhteenvedonVastaanottotila.KESKEN, Vastaanotettavuustila.VASTAANOTETTAVISSA_EHDOLLISESTI, false);
+            checkHakutoiveState(yhteenveto.hakutoiveet.get(0), YhteenvedonValintaTila.VARALLA, YhteenvedonVastaanottotila.KESKEN, Vastaanotettavuustila.EI_VASTAANOTETTAVISSA, true);
+            checkHakutoiveState(yhteenveto.hakutoiveet.get(1), YhteenvedonValintaTila.HYVAKSYTTY, YhteenvedonVastaanottotila.KESKEN, Vastaanotettavuustila.VASTAANOTETTAVISSA_EHDOLLISESTI, true);
         } finally {
             DateTimeUtils.setCurrentMillisSystem();
         }
@@ -130,11 +138,25 @@ public class SijoitteluResourceYhteenvetoTest extends SijoitteluResourceTest {
 
     @Test
     @UsingDataSet(locations = {"sijoittelu-basedata.json", "varalla-valintatulos-ilmoitettu.json"}, loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
-    public void varallaValintatulosIlmoitettu() throws JsonProcessingException {  // <- legacy-tila ILMOITETTU
+    public void varallaValintatulosIlmoitettuLegacy() throws JsonProcessingException {  // <- legacy-tila ILMOITETTU
         HakemusYhteenvetoDTO yhteenveto = getYhteenveto();
+        // Huom. YhteenvedonValintaTila.HYVAKSYTTY alla
         checkHakutoiveState(yhteenveto.hakutoiveet.get(0), YhteenvedonValintaTila.HYVAKSYTTY, YhteenvedonVastaanottotila.KESKEN, Vastaanotettavuustila.EI_VASTAANOTETTAVISSA, true);
     }
 
+    @Test
+    @UsingDataSet(locations = {"sijoittelu-basedata.json", "varalla-valintatulos-kesken.json"}, loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
+    public void varallaValintatulosKesken() throws JsonProcessingException {  // <- legacy-tila ILMOITETTU
+        HakemusYhteenvetoDTO yhteenveto = getYhteenveto();
+        checkHakutoiveState(yhteenveto.hakutoiveet.get(0), YhteenvedonValintaTila.VARALLA, YhteenvedonVastaanottotila.KESKEN, Vastaanotettavuustila.EI_VASTAANOTETTAVISSA, false);
+    }
+
+    @Test
+    @UsingDataSet(locations = {"sijoittelu-basedata.json", "varalla-valintatulos-hyvaksytty-varasijalta.json"}, loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
+    public void varallaValintatulosHyvaksyttyVarasijalta() throws JsonProcessingException {  // <- legacy-tila ILMOITETTU
+        HakemusYhteenvetoDTO yhteenveto = getYhteenveto();
+        checkHakutoiveState(yhteenveto.hakutoiveet.get(0), YhteenvedonValintaTila.HYVAKSYTTY, YhteenvedonVastaanottotila.KESKEN, Vastaanotettavuustila.EI_VASTAANOTETTAVISSA, false);
+    }
 
     @Test
     @UsingDataSet(locations = {"sijoittelu-basedata.json", "hylatty-jonoja-kesken.json"}, loadStrategy = LoadStrategyEnum.CLEAN_INSERT)

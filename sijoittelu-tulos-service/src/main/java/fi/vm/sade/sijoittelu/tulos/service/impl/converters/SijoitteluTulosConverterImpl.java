@@ -175,55 +175,12 @@ public class SijoitteluTulosConverterImpl implements SijoitteluTulosConverter {
 	public void sortHakemukset(ValintatapajonoDTO valintatapajonoDTO) {
 		Collections.sort(valintatapajonoDTO.getHakemukset(),
 				hakemusDTOComparator);
-//		applyAlinHyvaksyttyPistemaara(valintatapajonoDTO);
 		valintatapajonoDTO.setHakeneet(getCount(valintatapajonoDTO));
-//		valintatapajonoDTO.setHyvaksytty(getMaara(valintatapajonoDTO,
-//				HakemuksenTila.HYVAKSYTTY));
-//		valintatapajonoDTO.setVaralla(getMaara(valintatapajonoDTO,
-//				HakemuksenTila.VARALLA));
-//        applyVarasijaJonosija(valintatapajonoDTO);
+
 	}
 
 	private int getCount(ValintatapajonoDTO dto) {
 		return dto.getHakemukset().size();
-	}
-
-	private int getMaara(ValintatapajonoDTO dto, HakemuksenTila tila) {
-        Integer maara = dto.getHakemukset().parallelStream().filter(h -> h.getTila() == tila)
-                .reduce(0,
-                        (sum, b) -> sum + 1,
-                        Integer::sum);
-
-		return maara;
-	}
-
-	/**
-	 * Harkinnanvaraisesti hyvaksytyt eivat ole mukana alimman pistemaaran
-	 * laskemisessa.
-	 * 
-	 * @param v
-	 */
-	private void applyAlinHyvaksyttyPistemaara(ValintatapajonoDTO v) {
-
-        Optional<BigDecimal> alinHyvaksyttyPistemaara = v.getHakemukset().parallelStream()
-                .filter(h -> h.getTila() == HakemuksenTila.HYVAKSYTTY && !h.isHyvaksyttyHarkinnanvaraisesti())
-                .filter(h -> h.getPisteet() != null)
-                .map(HakemusDTO::getPisteet)
-                .min(BigDecimal::compareTo);
-		v.setAlinHyvaksyttyPistemaara(alinHyvaksyttyPistemaara.orElse(null));
-	}
-
-	/**
-	 * kutsu vasta sorttauksen jalkeen valintatapajonolle
-	 * 
-	 * @param v
-	 */
-	private void applyVarasijaJonosija(ValintatapajonoDTO v) {
-		List<HakemusDTO> hakemukset = v.getHakemukset();
-        Integer hyvaksytyt = v.getHyvaksytty();
-        hakemukset.parallelStream().filter(dto -> dto.getTila() == HakemuksenTila.VARALLA)
-                .forEach(dto -> dto.setVarasijanNumero((dto.getJonosija() - hyvaksytyt + dto.getTasasijaJonosija() - 1)));
-
 	}
 
 }

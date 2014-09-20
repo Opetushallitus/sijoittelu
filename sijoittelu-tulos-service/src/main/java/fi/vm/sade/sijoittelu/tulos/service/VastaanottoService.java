@@ -1,7 +1,6 @@
 package fi.vm.sade.sijoittelu.tulos.service;
 
 import static fi.vm.sade.sijoittelu.domain.ValintatuloksenTila.EHDOLLISESTI_VASTAANOTTANUT;
-import static fi.vm.sade.sijoittelu.domain.ValintatuloksenTila.ILMOITETTU;
 import static fi.vm.sade.sijoittelu.domain.ValintatuloksenTila.PERUNUT;
 import static fi.vm.sade.sijoittelu.domain.ValintatuloksenTila.VASTAANOTTANUT;
 import static fi.vm.sade.sijoittelu.tulos.dto.raportointi.Vastaanotettavuustila.VASTAANOTETTAVISSA_EHDOLLISESTI;
@@ -15,11 +14,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import fi.vm.sade.sijoittelu.domain.IlmoittautumisTila;
-import fi.vm.sade.sijoittelu.domain.LogEntry;
-import fi.vm.sade.sijoittelu.domain.SijoitteluAjo;
-import fi.vm.sade.sijoittelu.domain.ValintatuloksenTila;
-import fi.vm.sade.sijoittelu.domain.Valintatulos;
+import fi.vm.sade.sijoittelu.domain.*;
 import fi.vm.sade.sijoittelu.tulos.dao.ValintatulosDao;
 import fi.vm.sade.sijoittelu.tulos.dto.raportointi.HakijaDTO;
 
@@ -43,7 +38,7 @@ public class VastaanottoService {
         if (hakemus == null) {
             throw new IllegalArgumentException("Hakemusta ei löydy");
         }
-        final List<HakutoiveenYhteenveto> hakutoiveet = YhteenvetoService.hakutoiveidenYhteenveto(hakemus);
+        final List<HakutoiveenYhteenveto> hakutoiveet = YhteenvetoService.hakutoiveidenYhteenveto(hakemus, dao);
         final Optional<HakutoiveenYhteenveto> hakutoive = hakutoiveet.stream().filter(h -> h.hakutoive.getHakukohdeOid().equals(hakukohdeOid)).findFirst();
 
         if (!hakutoive.isPresent()) {

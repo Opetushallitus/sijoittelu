@@ -16,6 +16,8 @@ public enum HakemuksenTila {
 
 	HYVAKSYTTY, // Hakija voi ottaa paikan vastaan
 
+    VARASIJALTA_HYVAKSYTTY, //Hakija voi ottaa paikan vastaan (alunperin varasijalla)
+
 	HARKINNANVARAISESTI_HYVAKSYTTY,
 
 	PERUNUT, // Hakija ei ole vastaanottanut paikkaa. Hakija ei voi tulla enää

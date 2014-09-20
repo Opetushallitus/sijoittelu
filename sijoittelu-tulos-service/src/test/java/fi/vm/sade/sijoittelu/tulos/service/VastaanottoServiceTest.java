@@ -10,6 +10,7 @@ import java.util.List;
 
 import org.joda.time.DateTimeUtils;
 import org.joda.time.LocalDate;
+import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -28,6 +29,8 @@ import fi.vm.sade.sijoittelu.domain.ValintatuloksenTila;
 import fi.vm.sade.sijoittelu.domain.Valintatulos;
 import fi.vm.sade.sijoittelu.tulos.dao.ValintatulosDao;
 import fi.vm.sade.sijoittelu.tulos.dto.raportointi.HakemusYhteenvetoDTO;
+import fi.vm.sade.sijoittelu.tulos.dto.raportointi.Vastaanotettavuustila;
+import fi.vm.sade.sijoittelu.tulos.dto.raportointi.YhteenvedonValintaTila;
 import fi.vm.sade.sijoittelu.tulos.dto.raportointi.YhteenvedonVastaanottotila;
 import fi.vm.sade.sijoittelu.tulos.resource.SijoitteluResource;
 
@@ -44,7 +47,7 @@ public class VastaanottoServiceTest {
     public MongoDbRule mongoDbRule = newMongoDbRule().defaultSpringMongoDb("sijoittelu");
 
     final String hakuOid = "1.2.246.562.5.2013080813081926341928";
-    final String hakukohdeOid = "1.2.246.562.5.72607738903";
+    final String hakukohdeOid = "1.2.246.562.5.16303028779";
     final String hakemusOid = "1.2.246.562.11.00000441369";
     final String muokkaaja = "Teppo Testi";
     final String selite = "Testimuokkaus";
@@ -94,12 +97,37 @@ public class VastaanottoServiceTest {
     @Test
     @UsingDataSet(locations = {"/fi/vm/sade/sijoittelu/tulos/resource/sijoittelu-basedata.json", "/fi/vm/sade/sijoittelu/tulos/resource/hyvaksytty-ylempi-varalla.json"}, loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
     public void vastaanotaEhdollisestiKunAikaparametriLauennut() throws JsonProcessingException, ParseException {
-        DateTimeUtils.setCurrentMillisFixed(new SimpleDateFormat("d.M.yyyy").parse("15.8.2014").getTime());
-        try {
-            vastaanottoService.vastaanota(hakuOid, hakemusOid, hakukohdeOid, ValintatuloksenTila.EHDOLLISESTI_VASTAANOTTANUT, muokkaaja, selite);
-        } finally {
-            DateTimeUtils.setCurrentMillisSystem();
-        }
+        useFixedDate("15.8.2014");
+        assertEquals(YhteenvedonValintaTila.VARALLA, getYhteenveto().hakutoiveet.get(0).valintatila);
+        assertEquals(YhteenvedonValintaTila.HYVAKSYTTY, getYhteenveto().hakutoiveet.get(1).valintatila);
+        vastaanottoService.vastaanota(hakuOid, hakemusOid, hakukohdeOid, ValintatuloksenTila.EHDOLLISESTI_VASTAANOTTANUT, muokkaaja, selite);
+        assertEquals(YhteenvedonValintaTila.HYVAKSYTTY, getYhteenveto().hakutoiveet.get(1).valintatila);
+        assertEquals(YhteenvedonVastaanottotila.EHDOLLISESTI_VASTAANOTTANUT, getYhteenveto().hakutoiveet.get(1).vastaanottotila);
+        assertEquals(YhteenvedonVastaanottotila.KESKEN, getYhteenveto().hakutoiveet.get(0).vastaanottotila);
+        assertEquals(YhteenvedonValintaTila.VARALLA, getYhteenveto().hakutoiveet.get(0).valintatila);
+    }
+
+    @Test
+    @UsingDataSet(locations = {"/fi/vm/sade/sijoittelu/tulos/resource/sijoittelu-basedata.json", "/fi/vm/sade/sijoittelu/tulos/resource/hyvaksytty-ylempi-varalla.json"}, loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
+    public void vastaanotaSitovastiKunAikaparametriLauennut() throws JsonProcessingException, ParseException {
+        useFixedDate("15.8.2014");
+        vastaanottoService.vastaanota(hakuOid, hakemusOid, hakukohdeOid, ValintatuloksenTila.VASTAANOTTANUT, muokkaaja, selite);
+        final HakemusYhteenvetoDTO yhteenveto = getYhteenveto();
+        assertEquals(YhteenvedonValintaTila.PERUUNTUNUT, yhteenveto.hakutoiveet.get(0).valintatila);
+        assertEquals(YhteenvedonValintaTila.HYVAKSYTTY, yhteenveto.hakutoiveet.get(1).valintatila);
+        assertEquals(YhteenvedonVastaanottotila.KESKEN, yhteenveto.hakutoiveet.get(0).vastaanottotila);
+        assertEquals(YhteenvedonVastaanottotila.VASTAANOTTANUT, yhteenveto.hakutoiveet.get(1).vastaanottotila);
+        assertEquals(Vastaanotettavuustila.EI_VASTAANOTETTAVISSA, yhteenveto.hakutoiveet.get(0).vastaanotettavuustila);
+        assertEquals(Vastaanotettavuustila.EI_VASTAANOTETTAVISSA, yhteenveto.hakutoiveet.get(1).vastaanotettavuustila);
+    }
+
+    private void useFixedDate(final String date) throws ParseException {
+        DateTimeUtils.setCurrentMillisFixed(new SimpleDateFormat("d.M.yyyy").parse(date).getTime());
+    }
+
+    @After
+    public void resetTime() {
+        DateTimeUtils.setCurrentMillisSystem();
     }
 
     @Test(expected = IllegalArgumentException.class)

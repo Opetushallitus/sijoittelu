@@ -142,7 +142,7 @@ public class TilaResource {
 						.getIlmoittautumisTila();
 				sijoitteluBusinessService.vaihdaHakemuksenTila(hakuOid,
 						hakukohdeOid, v.getValintatapajonoOid(),
-						v.getHakemusOid(), tila, selite, ilmoittautumisTila);
+						v.getHakemusOid(), tila, selite, ilmoittautumisTila, v.getJulkaistavissa());
 			}
 			return Response.status(Response.Status.ACCEPTED).build();
 		} catch (Exception e) {

@@ -9,9 +9,6 @@ import java.util.Optional;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.core.Response;
 
-import com.wordnik.swagger.annotations.ApiParam;
-import fi.vm.sade.sijoittelu.tulos.dto.raportointi.HakemusYhteenvetoDTO;
-import fi.vm.sade.sijoittelu.tulos.service.YhteenvetoService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,16 +16,19 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
 
 import com.wordnik.swagger.annotations.ApiOperation;
+import com.wordnik.swagger.annotations.ApiParam;
 
 import fi.vm.sade.sijoittelu.domain.SijoitteluAjo;
-import fi.vm.sade.sijoittelu.tulos.dto.ErrorDTO;
+import fi.vm.sade.sijoittelu.tulos.dao.ValintatulosDao;
 import fi.vm.sade.sijoittelu.tulos.dto.HakukohdeDTO;
 import fi.vm.sade.sijoittelu.tulos.dto.SijoitteluDTO;
 import fi.vm.sade.sijoittelu.tulos.dto.SijoitteluajoDTO;
+import fi.vm.sade.sijoittelu.tulos.dto.raportointi.HakemusYhteenvetoDTO;
 import fi.vm.sade.sijoittelu.tulos.dto.raportointi.HakijaDTO;
 import fi.vm.sade.sijoittelu.tulos.dto.raportointi.HakijaPaginationObject;
 import fi.vm.sade.sijoittelu.tulos.service.RaportointiService;
 import fi.vm.sade.sijoittelu.tulos.service.SijoitteluTulosService;
+import fi.vm.sade.sijoittelu.tulos.service.YhteenvetoService;
 
 /**
  * User: wuoti Date: 26.4.2013 Time: 12.41
@@ -42,6 +42,9 @@ public class SijoitteluResourceImpl implements SijoitteluResource {
 
 	@Autowired
 	private SijoitteluTulosService sijoitteluTulosService;
+
+	@Autowired
+	private ValintatulosDao valintatulosDao;
 
 	@Autowired
 	private RaportointiService raportointiService;
@@ -129,7 +132,7 @@ public class SijoitteluResourceImpl implements SijoitteluResource {
     @Override
     public HakemusYhteenvetoDTO hakemusYhteenveto(@ApiParam(value = "Haun tunniste", required = true) String hakuOid, @ApiParam(value = "Sijoitteluajon tunniste tai 'latest' avainsana", required = true) String sijoitteluajoId, @ApiParam(value = "Hakemuksen tunniste", required = true) String hakemusOid) {
         HakijaDTO hakemus = hakemus(hakuOid, sijoitteluajoId, hakemusOid);
-        return YhteenvetoService.yhteenveto(hakemus);
+        return YhteenvetoService.yhteenveto(hakemus, valintatulosDao);
     }
 
     private Optional<SijoitteluAjo> getSijoitteluAjo(String sijoitteluajoId,

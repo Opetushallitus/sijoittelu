@@ -40,7 +40,7 @@ public class DomainConverter {
 
     private static void convertJono(List<ValintatietoValintatapajonoDTO> jonot, Hakukohde hakukohde) {
 
-        jonot.stream().forEach(valintatapajonoTyyppi -> {
+        jonot.forEach(valintatapajonoTyyppi -> {
             Valintatapajono valintatapajono = new Valintatapajono();
             valintatapajono.setOid(valintatapajonoTyyppi.getOid());
             valintatapajono.setNimi(valintatapajonoTyyppi.getNimi());
@@ -80,7 +80,7 @@ public class DomainConverter {
 
             hakukohde.getValintatapajonot().add(valintatapajono);
 
-            valintatapajonoTyyppi.getHakija().stream().forEach(hakija -> addHakemus(hakija, valintatapajono));
+            valintatapajonoTyyppi.getHakija().forEach(hakija -> addHakemus(hakija, valintatapajono));
 
         });
 
@@ -131,7 +131,7 @@ public class DomainConverter {
     }
 
     private static void applyPistetiedot(Hakemus hakemus, List<SyotettyArvoDTO> arvot) {
-        arvot.stream().forEach(arvo -> {
+        arvot.forEach(arvo -> {
             Pistetieto pistetieto = new Pistetieto();
             pistetieto.setArvo(arvo.getArvo());
             pistetieto.setLaskennallinenArvo(arvo.getLaskennallinenArvo());
