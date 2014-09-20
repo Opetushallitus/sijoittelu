@@ -461,7 +461,8 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
 					SijoitteluRole.CRUD_ROLE);
 			ophAdmin = true;
 		} catch (NotAuthorizedException nae) {
-			if (hakemus.getTila() != HakemuksenTila.HYVAKSYTTY && hakemus.getTila() != HakemuksenTila.VARASIJALTA_HYVAKSYTTY) {
+            List<HakemuksenTila> tilat = Arrays.asList(HakemuksenTila.HYVAKSYTTY, HakemuksenTila.VARASIJALTA_HYVAKSYTTY, HakemuksenTila.HYLATTY, HakemuksenTila.VARALLA);
+			if (tilat.indexOf(hakemus.getTila()) == -1) {
 				throw new HakemusEiOleHyvaksyttyException(
 						"sijoittelun hakemus ei ole hyvaksytty tilassa tai harkinnanvarainen");
 			}

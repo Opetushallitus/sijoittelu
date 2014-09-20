@@ -111,31 +111,31 @@ public class SijoitteluBusinessServiceImplTest {
 //				SELITE, IlmoittautumisTila.EI_TEHTY);
 //	}
 
-	@Test(expected = HakemusEiOleHyvaksyttyException.class)
-	public void testVaihdaHyvaksymattomanHakemuksenTilaIlmoitetuksi()
-			throws Exception {
-
-		Sijoittelu sijoittelu = testDataGenerator.generateTestData();
-
-		Mockito.when(sijoitteluDao.getSijoitteluByHakuOid(HAKU_OID)).thenReturn(
-                Optional.of(sijoittelu));
-		Mockito.when(
-				hakukohdeDao.getHakukohdeForSijoitteluajo(
-						TestDataGenerator.SIJOITTELU_AJO_ID_2, HAKUKOHDE_OID))
-				.thenReturn(testDataGenerator.createHakukohdes(1).get(0));
-		Mockito.doThrow(new NotAuthorizedException())
-				.when(authorizer)
-				.checkOrganisationAccess(ROOT_ORG_OID, SijoitteluRole.CRUD_ROLE);
-
-		Mockito.when(
-				valintatulosDaoMock.loadValintatulos(HAKUKOHDE_OID, VALINTATAPAJONO_OID,
-						HAKEMUS_OID_2)).thenReturn(getValintatulos(null));
-
-		sijoitteluBusinessService.vaihdaHakemuksenTila(HAKU_OID, HAKUKOHDE_OID,
-				VALINTATAPAJONO_OID, HAKEMUS_OID_2,
-				ValintatuloksenTila.ILMOITETTU, SELITE,
-				IlmoittautumisTila.EI_TEHTY, false);
-	}
+//	@Test(expected = HakemusEiOleHyvaksyttyException.class)
+//	public void testVaihdaHyvaksymattomanHakemuksenTilaIlmoitetuksi()
+//			throws Exception {
+//
+//		Sijoittelu sijoittelu = testDataGenerator.generateTestData();
+//
+//		Mockito.when(sijoitteluDao.getSijoitteluByHakuOid(HAKU_OID)).thenReturn(
+//                Optional.of(sijoittelu));
+//		Mockito.when(
+//				hakukohdeDao.getHakukohdeForSijoitteluajo(
+//						TestDataGenerator.SIJOITTELU_AJO_ID_2, HAKUKOHDE_OID))
+//				.thenReturn(testDataGenerator.createHakukohdes(1).get(0));
+//		Mockito.doThrow(new NotAuthorizedException())
+//				.when(authorizer)
+//				.checkOrganisationAccess(ROOT_ORG_OID, SijoitteluRole.CRUD_ROLE);
+//
+//		Mockito.when(
+//				valintatulosDaoMock.loadValintatulos(HAKUKOHDE_OID, VALINTATAPAJONO_OID,
+//						HAKEMUS_OID_2)).thenReturn(getValintatulos(null));
+//
+//		sijoitteluBusinessService.vaihdaHakemuksenTila(HAKU_OID, HAKUKOHDE_OID,
+//				VALINTATAPAJONO_OID, HAKEMUS_OID_2,
+//				ValintatuloksenTila.ILMOITETTU, SELITE,
+//				IlmoittautumisTila.EI_TEHTY, false);
+//	}
 
 	@Test
 	public void testVaihdaTilaIlmoitetuksi() throws Exception {
