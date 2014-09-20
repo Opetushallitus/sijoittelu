@@ -16,5 +16,6 @@ public enum ValintatuloksenTila {
     PERUNUT,                       // Hakija ei ota paikkaa vastaan
     PERUUTETTU,                    // Hakijan tila on peruutettu
     EHDOLLISESTI_VASTAANOTTANUT,    // Ehdollisesti vastaanottanut
+    VASTAANOTTANUT_SITOVASTI,       // Sitovasti vastaanottanut, kk-tila
     KESKEN
 }

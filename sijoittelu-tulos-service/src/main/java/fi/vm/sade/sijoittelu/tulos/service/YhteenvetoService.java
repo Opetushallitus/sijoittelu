@@ -35,7 +35,7 @@ public class YhteenvetoService {
             }
             Vastaanotettavuustila vastaanotettavuustila = EI_VASTAANOTETTAVISSA;
             // Valintatila
-            if (Arrays.asList(HakemuksenTila.HYVAKSYTTY, HakemuksenTila.HARKINNANVARAISESTI_HYVAKSYTTY).contains(jono.getTila())) {
+            if (Arrays.asList(HakemuksenTila.HYVAKSYTTY, HakemuksenTila.HARKINNANVARAISESTI_HYVAKSYTTY, HakemuksenTila.VARASIJALTA_HYVAKSYTTY).contains(jono.getTila())) {
                 vastaanotettavuustila = VASTAANOTETTAVISSA_SITOVASTI;
                 if (hakutoive.getHakutoive() > 1) {
                     if (aikaparametriLauennut(jono)) {

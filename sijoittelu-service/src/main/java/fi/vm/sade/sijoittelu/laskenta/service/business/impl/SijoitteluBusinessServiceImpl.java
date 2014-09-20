@@ -159,10 +159,10 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
         );
 
         kaikkiHakukohteet.parallelStream().forEach(hakukohde -> {
-            hakukohde.getValintatapajonot().parallelStream().forEach(valintatapajono -> {
+            hakukohde.getValintatapajonot().forEach(valintatapajono -> {
                 valintatapajono.setAlinHyvaksyttyPistemaara(alinHyvaksyttyPistemaara(valintatapajono.getHakemukset()).orElse(null));
-                valintatapajono.setHyvaksytty(getMaara(valintatapajono.getHakemukset(), HakemuksenTila.HYVAKSYTTY));
-                valintatapajono.setVaralla(getMaara(valintatapajono.getHakemukset(), HakemuksenTila.VARALLA));
+                valintatapajono.setHyvaksytty(getMaara(valintatapajono.getHakemukset(), Arrays.asList(HakemuksenTila.HYVAKSYTTY, HakemuksenTila.VARASIJALTA_HYVAKSYTTY)));
+                valintatapajono.setVaralla(getMaara(valintatapajono.getHakemukset(), Arrays.asList(HakemuksenTila.VARALLA)));
                 Collections.sort(valintatapajono.getHakemukset(),
                         hakemusComparator);
                 int varasija = 0;
@@ -199,19 +199,18 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
         );
 	}
 
-    private int getMaara(List<Hakemus> hakemukset, HakemuksenTila tila) {
-        Integer maara = hakemukset.parallelStream().filter(h -> h.getTila() == tila)
+    private int getMaara(List<Hakemus> hakemukset, List<HakemuksenTila> tilat) {
+
+        return hakemukset.parallelStream().filter(h -> tilat.indexOf(h.getTila()) != -1)
                 .reduce(0,
                         (sum, b) -> sum + 1,
                         Integer::sum);
-
-        return maara;
     }
 
     private Optional<BigDecimal> alinHyvaksyttyPistemaara(List<Hakemus> hakemukset) {
 
         return hakemukset.parallelStream()
-                .filter(h -> h.getTila() == HakemuksenTila.HYVAKSYTTY && !h.isHyvaksyttyHarkinnanvaraisesti())
+                .filter(h -> (h.getTila() == HakemuksenTila.HYVAKSYTTY || h.getTila() == HakemuksenTila.VARASIJALTA_HYVAKSYTTY) && !h.isHyvaksyttyHarkinnanvaraisesti())
                 .filter(h -> h.getPisteet() != null)
                 .map(Hakemus::getPisteet)
                 .min(BigDecimal::compareTo);
@@ -230,21 +229,31 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
             kaikkiHakukohteet.put(hakukohde.getOid(), hakukohde);
         });
 
-		// vanhat tasasijajonosijat talteen
+		// vanhat tasasijajonosijat ja edellisen sijoittelun tilat talteen
         uudetHakukohteet.parallelStream().forEach(hakukohde -> {
-            Map<String, Integer> hakemusHashMap = new ConcurrentHashMap<>();
+            Map<String, Integer> tasasijaHashMap = new ConcurrentHashMap<>();
+            Map<String, HakemuksenTila> tilaHashMap = new ConcurrentHashMap<>();
             if(kaikkiHakukohteet.containsKey(hakukohde.getOid())) {
                 kaikkiHakukohteet.get(hakukohde.getOid()).getValintatapajonot().parallelStream().forEach(valintatapajono ->
-                    valintatapajono.getHakemukset().parallelStream().filter(hakemus -> hakemus.getTasasijaJonosija() != null).forEach(h ->
-                            hakemusHashMap.put(valintatapajono.getOid() + h.getHakemusOid(), h.getTasasijaJonosija())
-                    )
+                    valintatapajono.getHakemukset().parallelStream().forEach(h -> {
+                        if (h.getTasasijaJonosija() != null) {
+                            tasasijaHashMap.put(valintatapajono.getOid() + h.getHakemusOid(), h.getTasasijaJonosija());
+                        }
+                        if (h.getTila() != null) {
+                            tilaHashMap.put(valintatapajono.getOid() + h.getHakemusOid(), h.getTila());
+                        }
+                    })
                 );
 
-                hakukohde.getValintatapajonot().parallelStream().forEach(valintatapajono ->
-                        valintatapajono.getHakemukset().parallelStream()
-                                .filter(hakemus -> hakemusHashMap.get(valintatapajono.getOid() + hakemus.getHakemusOid()) != null)
+                hakukohde.getValintatapajonot().forEach(valintatapajono ->
+                        valintatapajono.getHakemukset()
                                 .forEach(hakemus -> {
-                                    hakemus.setTasasijaJonosija(hakemusHashMap.get(valintatapajono.getOid() + hakemus.getHakemusOid()));
+                                    if(tasasijaHashMap.get(valintatapajono.getOid() + hakemus.getHakemusOid()) != null) {
+                                        hakemus.setTasasijaJonosija(tasasijaHashMap.get(valintatapajono.getOid() + hakemus.getHakemusOid()));
+                                    }
+                                    if(tilaHashMap.get(valintatapajono.getOid() + hakemus.getHakemusOid()) != null) {
+                                        hakemus.setEdellinenTila(tilaHashMap.get(valintatapajono.getOid() + hakemus.getHakemusOid()));
+                                    }
                                 })
                 );
             }
@@ -452,7 +461,7 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
 					SijoitteluRole.CRUD_ROLE);
 			ophAdmin = true;
 		} catch (NotAuthorizedException nae) {
-			if (hakemus.getTila() != HakemuksenTila.HYVAKSYTTY) {
+			if (hakemus.getTila() != HakemuksenTila.HYVAKSYTTY && hakemus.getTila() != HakemuksenTila.VARASIJALTA_HYVAKSYTTY) {
 				throw new HakemusEiOleHyvaksyttyException(
 						"sijoittelun hakemus ei ole hyvaksytty tilassa tai harkinnanvarainen");
 			}

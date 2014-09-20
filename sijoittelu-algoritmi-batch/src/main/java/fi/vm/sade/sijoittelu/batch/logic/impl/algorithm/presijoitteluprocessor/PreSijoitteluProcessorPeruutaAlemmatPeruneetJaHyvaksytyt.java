@@ -41,7 +41,9 @@ public class PreSijoitteluProcessorPeruutaAlemmatPeruneetJaHyvaksytyt implements
     private Integer parasHyvaksyttyTaiPeruttuHakutoive(HenkiloWrapper wrapper) {
         Integer parasHyvaksyttyHakutoive = null;
         for(HakemusWrapper hakemusWrapper :  wrapper.getHakemukset()) {
-            if(hakemusWrapper.getHakemus().getTila() == HakemuksenTila.HYVAKSYTTY || hakemusWrapper.getHakemus().getTila() == HakemuksenTila.PERUNUT) {
+            if(hakemusWrapper.getHakemus().getTila() == HakemuksenTila.HYVAKSYTTY
+                    || hakemusWrapper.getHakemus().getTila() == HakemuksenTila.PERUNUT
+                    || hakemusWrapper.getHakemus().getTila() == HakemuksenTila.VARASIJALTA_HYVAKSYTTY) {
                 if(parasHyvaksyttyHakutoive == null || parasHyvaksyttyHakutoive > hakemusWrapper.getHakemus().getPrioriteetti())  {
                     parasHyvaksyttyHakutoive = hakemusWrapper.getHakemus().getPrioriteetti();
                 }

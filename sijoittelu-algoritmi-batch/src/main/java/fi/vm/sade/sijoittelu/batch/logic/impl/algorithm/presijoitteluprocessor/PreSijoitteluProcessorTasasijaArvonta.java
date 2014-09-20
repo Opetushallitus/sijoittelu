@@ -7,6 +7,7 @@ import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.SijoitteluajoWr
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.ValintatapajonoWrapper;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * 
@@ -20,13 +21,10 @@ public class PreSijoitteluProcessorTasasijaArvonta implements PreSijoitteluProce
 
         for (HakukohdeWrapper hakukohde : sijoitteluajoWrapper.getHakukohteet()) {
             for (ValintatapajonoWrapper valintatapajono : hakukohde.getValintatapajonot()) {
-                Map<Integer, List<HakemusWrapper>> map = new HashMap<Integer, List<HakemusWrapper>>();
+                Map<Integer, List<HakemusWrapper>> map = new ConcurrentHashMap<>();
                 for (HakemusWrapper hakemus : valintatapajono.getHakemukset()) {
+                    map.putIfAbsent(hakemus.getHakemus().getJonosija(), new ArrayList<>());
                     List<HakemusWrapper> hakemukset = map.get(hakemus.getHakemus().getJonosija());
-                    if (hakemukset == null) {
-                        hakemukset = new ArrayList<HakemusWrapper>();
-                        map.put(hakemus.getHakemus().getJonosija(), hakemukset);
-                    }
                     hakemukset.add(hakemus);
                 }
                 for (List<HakemusWrapper> list : map.values()) {

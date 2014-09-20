@@ -41,6 +41,8 @@ public class Hakemus implements Serializable {
 
     private HakemuksenTila tila;
 
+    private HakemuksenTila edellinenTila;
+
     private IlmoittautumisTila ilmoittautumisTila;
 
     private List<TilaHistoria> tilaHistoria = new ArrayList<TilaHistoria>();
@@ -177,5 +179,13 @@ public class Hakemus implements Serializable {
 
     public void setVarasijanNumero(Integer varasijanNumero) {
         this.varasijanNumero = varasijanNumero;
+    }
+
+    public HakemuksenTila getEdellinenTila() {
+        return edellinenTila;
+    }
+
+    public void setEdellinenTila(HakemuksenTila edellinenTila) {
+        this.edellinenTila = edellinenTila;
     }
 }

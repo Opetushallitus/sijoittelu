@@ -137,7 +137,7 @@ public class RaportointiServiceImpl implements RaportointiService {
 			}
 			for (HakutoiveenValintatapajonoDTO valintatapajono : hakutoiveDTO
 					.getHakutoiveenValintatapajonot()) {
-				if (valintatapajono.getTila() == HakemuksenTila.HYVAKSYTTY) {
+				if (valintatapajono.getTila() == HakemuksenTila.HYVAKSYTTY || valintatapajono.getTila() == HakemuksenTila.VARASIJALTA_HYVAKSYTTY) {
 					isHyvaksytty = true;
 				}
 				if (valintatapajono.getVastaanottotieto() == ValintatuloksenTila.VASTAANOTTANUT) {
