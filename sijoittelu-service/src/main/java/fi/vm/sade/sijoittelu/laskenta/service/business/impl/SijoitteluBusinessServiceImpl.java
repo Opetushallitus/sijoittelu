@@ -461,11 +461,12 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
 					SijoitteluRole.CRUD_ROLE);
 			ophAdmin = true;
 		} catch (NotAuthorizedException nae) {
-            List<HakemuksenTila> tilat = Arrays.asList(HakemuksenTila.HYVAKSYTTY, HakemuksenTila.VARASIJALTA_HYVAKSYTTY, HakemuksenTila.HYLATTY, HakemuksenTila.VARALLA);
-			if (tilat.indexOf(hakemus.getTila()) == -1) {
-				throw new HakemusEiOleHyvaksyttyException(
-						"sijoittelun hakemus ei ole hyvaksytty tilassa tai harkinnanvarainen");
-			}
+            LOG.info("Ei ophadmin");
+//            List<HakemuksenTila> tilat = Arrays.asList(HakemuksenTila.HYVAKSYTTY, HakemuksenTila.VARASIJALTA_HYVAKSYTTY, HakemuksenTila.HYLATTY, HakemuksenTila.VARALLA);
+//			if (tilat.indexOf(hakemus.getTila()) == -1) {
+//				throw new HakemusEiOleHyvaksyttyException(
+//						"sijoittelun hakemus ei ole hyvaksytty tilassa tai harkinnanvarainen");
+//			}
 		}
 		return ophAdmin;
 	}
