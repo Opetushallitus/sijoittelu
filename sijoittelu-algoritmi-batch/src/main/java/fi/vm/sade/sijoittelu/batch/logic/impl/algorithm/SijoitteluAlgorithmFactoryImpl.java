@@ -89,7 +89,7 @@ public class SijoitteluAlgorithmFactoryImpl implements SijoitteluAlgorithmFactor
                     if (valintatulos != null && valintatulos.getTila() != null) {
                         ValintatuloksenTila tila = valintatulos.getTila();
                         if (hyvaksyttylista.indexOf(tila) != -1 ||
-                                (valintatulos.getJulkaistavissa() && hakemus.getEdellinenTila() == HakemuksenTila.HYVAKSYTTY)) {
+                                (valintatulos.getJulkaistavissa() && hakemus.getEdellinenTila() == HakemuksenTila.HYVAKSYTTY && varallalista.indexOf(tila) != -1)) {
                             if (hakemus.getEdellinenTila() == HakemuksenTila.VARALLA || hakemus.getEdellinenTila() == HakemuksenTila.VARASIJALTA_HYVAKSYTTY) {
                                 hakemus.setTilanKuvaukset(varasijamap);
                                 hakemus.setTila(HakemuksenTila.VARASIJALTA_HYVAKSYTTY);
