@@ -80,6 +80,8 @@ public class HakutoiveenValintatapajonoDTO {
     private boolean julkaistavissa;
     private boolean hyvaksyttyVarasijalta;
 
+    private Date vastaanottotilanViimeisinMuutos;
+
     public IlmoittautumisTila getIlmoittautumisTila() {
 		return ilmoittautumisTila;
 	}
@@ -273,5 +275,13 @@ public class HakutoiveenValintatapajonoDTO {
 
     public boolean isHyvaksyttyVarasijalta() {
         return hyvaksyttyVarasijalta;
+    }
+
+    public Date getVastaanottotilanViimeisinMuutos() {
+        return vastaanottotilanViimeisinMuutos;
+    }
+
+    public void setVastaanottotilanViimeisinMuutos(Date vastaanottotilanViimeisinMuutos) {
+        this.vastaanottotilanViimeisinMuutos = vastaanottotilanViimeisinMuutos;
     }
 }
