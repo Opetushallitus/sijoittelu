@@ -24,9 +24,6 @@ import java.util.Optional;
 public class SijoitteluTulosServiceImpl implements SijoitteluTulosService {
 
     @Autowired
-    private ValintatulosDao valintatulosDao;
-
-    @Autowired
     private HakukohdeDao hakukohdeDao;
 
     @Autowired
@@ -59,22 +56,4 @@ public class SijoitteluTulosServiceImpl implements SijoitteluTulosService {
         return s.map(sijoittelu -> sijoitteluTulosConverter.convert(sijoittelu)).orElse(new SijoitteluDTO());
 
     }
-
-
-
-
-    private List<HakemusDTO> getDtos(List<HakukohdeDTO> b, String hakemusOid) {
-        List<HakemusDTO> hakemukset = new ArrayList<HakemusDTO>();
-        for (HakukohdeDTO hakukohdeDTO : b) {
-            for (ValintatapajonoDTO vtdto : hakukohdeDTO.getValintatapajonot()) {
-                for (HakemusDTO hkdto : vtdto.getHakemukset()) {
-                    if (hakemusOid.equals(hkdto.getHakemusOid())) {
-                        hakemukset.add(hkdto);
-                    }
-                }
-            }
-        }
-        return hakemukset;
-    }
-
 }

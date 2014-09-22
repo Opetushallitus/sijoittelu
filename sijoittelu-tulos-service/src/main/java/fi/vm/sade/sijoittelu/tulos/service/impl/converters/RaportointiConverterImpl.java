@@ -1,9 +1,6 @@
 package fi.vm.sade.sijoittelu.tulos.service.impl.converters;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import com.google.common.collect.Lists;
 import org.springframework.stereotype.Component;
@@ -144,32 +141,15 @@ public class RaportointiConverterImpl implements RaportointiConverter {
                             if (valintatulos == null) {
                                 continue;
                             }
-                            if (valintatulos.getValintatapajonoOid().equals(
-                                    valintatapajonoDTO.getValintatapajonoOid())) {
+                            if (valintatulos.getValintatapajonoOid().equals(valintatapajonoDTO.getValintatapajonoOid())) {
 
-                                valintatapajonoDTO
-                                        .setVastaanottotieto(EnumConverter
-                                                .convert(
-                                                        ValintatuloksenTila.class,
-                                                        valintatulos.getTila()));
+                                valintatapajonoDTO.setVastaanottotieto(EnumConverter.convert(ValintatuloksenTila.class, valintatulos.getTila()));
                                 valintatapajonoDTO.setJulkaistavissa(valintatulos.getJulkaistavissa());
                                 valintatapajonoDTO.setHyvaksyttyVarasijalta(valintatulos.getHyvaksyttyVarasijalta());
+                                valintatapajonoDTO.setVastaanottotilanViimeisinMuutos(viimeisinVastaanottotilanMuutos(valintatulos));
 
-                                // "hakemus.muokattuVastaanottoTila ==
-                                // 'VASTAANOTTANUT' ||
-                                // hakemus.muokattuVastaanottoTila ==
-                                // 'EHDOLLISESTI_VASTAANOTTANUT'"
-                                if (ValintatuloksenTila.VASTAANOTTANUT
-                                        .equals(valintatapajonoDTO.getVastaanottotieto())
-                                        || ValintatuloksenTila.EHDOLLISESTI_VASTAANOTTANUT
-                                                .equals(valintatapajonoDTO.getVastaanottotieto())) {
-                                    valintatapajonoDTO
-                                            .setIlmoittautumisTila(EnumConverter
-                                                    .convert(
-                                                            IlmoittautumisTila.class,
-                                                            valintatulos
-                                                                    .getIlmoittautumisTila()));
-
+                                if (ValintatuloksenTila.VASTAANOTTANUT.equals(valintatapajonoDTO.getVastaanottotieto()) || ValintatuloksenTila.EHDOLLISESTI_VASTAANOTTANUT.equals(valintatapajonoDTO.getVastaanottotieto())) {
+                                    valintatapajonoDTO.setIlmoittautumisTila(EnumConverter.convert(IlmoittautumisTila.class, valintatulos.getIlmoittautumisTila()));
                                 }
                             }
                         }
@@ -180,7 +160,14 @@ public class RaportointiConverterImpl implements RaportointiConverter {
 		return hakijat;
 	}
 
-	private Map<String, List<Valintatulos>> mapValintatulokset(
+    private static Date viimeisinVastaanottotilanMuutos(Valintatulos valintatulos) {
+        if(valintatulos != null && !valintatulos.getLogEntries().isEmpty()) {
+            return valintatulos.getLogEntries().get(valintatulos.getLogEntries().size() - 1).getLuotu();
+        }
+        return null;
+    }
+
+    private Map<String, List<Valintatulos>> mapValintatulokset(
 			List<Valintatulos> valintatulokset) {
         Map<String, List<Valintatulos>> map = new HashMap<String, List<Valintatulos>>();
 		for (Valintatulos valintatulos : valintatulokset) {

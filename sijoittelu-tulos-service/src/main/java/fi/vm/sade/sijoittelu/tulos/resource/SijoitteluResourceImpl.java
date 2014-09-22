@@ -43,10 +43,7 @@ public class SijoitteluResourceImpl implements SijoitteluResource {
 	@Autowired
 	private SijoitteluTulosService sijoitteluTulosService;
 
-	@Autowired
-	private ValintatulosDao valintatulosDao;
-
-	@Autowired
+    @Autowired
 	private RaportointiService raportointiService;
 
 	@Override
@@ -132,7 +129,7 @@ public class SijoitteluResourceImpl implements SijoitteluResource {
     @Override
     public HakemusYhteenvetoDTO hakemusYhteenveto(@ApiParam(value = "Haun tunniste", required = true) String hakuOid, @ApiParam(value = "Sijoitteluajon tunniste tai 'latest' avainsana", required = true) String sijoitteluajoId, @ApiParam(value = "Hakemuksen tunniste", required = true) String hakemusOid) {
         HakijaDTO hakemus = hakemus(hakuOid, sijoitteluajoId, hakemusOid);
-        return YhteenvetoService.yhteenveto(hakemus, valintatulosDao);
+        return YhteenvetoService.yhteenveto(hakemus);
     }
 
     private Optional<SijoitteluAjo> getSijoitteluAjo(String sijoitteluajoId,
