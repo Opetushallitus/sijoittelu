@@ -4,7 +4,16 @@ import com.mongodb.DB;
 import com.mongodb.DBObject;
 
 public class FixtureImporter {
+
     public static void importFixture(final DB db, final String fixtureName) {
+        importFixture(db, fixtureName, false);
+    }
+
+    public static void importFixture(final DB db, final String fixtureName, boolean clear) {
+        if(clear) {
+            MongoMockData.clear(db);
+        }
+
         DBObject base = MongoMockData.readJson("fi/vm/sade/sijoittelu/tulos/resource/sijoittelu-basedata.json");
         MongoMockData.insertData(db, base);
         DBObject tulokset = MongoMockData.readJson("fi/vm/sade/sijoittelu/tulos/resource/"+ fixtureName);

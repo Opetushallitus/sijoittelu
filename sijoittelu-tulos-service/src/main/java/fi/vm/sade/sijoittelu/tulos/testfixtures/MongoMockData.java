@@ -13,6 +13,14 @@ import org.springframework.core.io.Resource;
 import com.mongodb.util.JSON;
 
 public class MongoMockData {
+
+    public static void clear(DB db) {
+        db.getCollection("Sijoittelu").remove(new BasicDBObject());
+        db.getCollection("Hakukohde").remove(new BasicDBObject());
+        db.getCollection("Valintatulos").remove(new BasicDBObject());
+    }
+
+
     public static List<DBObject> collectionElements(DBObject data, String collection) {
         final List objects = Arrays.asList(((BasicDBList) data.get(collection)).toArray());
         return (List<DBObject>) objects;
