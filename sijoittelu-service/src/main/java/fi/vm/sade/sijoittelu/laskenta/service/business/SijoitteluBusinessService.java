@@ -5,6 +5,7 @@ import java.util.List;
 import fi.vm.sade.sijoittelu.domain.IlmoittautumisTila;
 import fi.vm.sade.sijoittelu.domain.ValintatuloksenTila;
 import fi.vm.sade.sijoittelu.domain.Valintatulos;
+import fi.vm.sade.sijoittelu.tulos.dto.HakukohdeDTO;
 import fi.vm.sade.valintalaskenta.domain.dto.valintatieto.HakuDTO;
 
 /**
@@ -15,6 +16,8 @@ import fi.vm.sade.valintalaskenta.domain.dto.valintatieto.HakuDTO;
 public interface SijoitteluBusinessService {
 
     void sijoittele(HakuDTO sijoitteluTyyppi);
+
+    List<HakukohdeDTO> valisijoittele(HakuDTO sijoitteluTyyppi);
 
 	Valintatulos haeHakemuksenTila(String hakuoid, String hakukohdeOid,
 			String valintatapajonoOid, String hakemusOid);
