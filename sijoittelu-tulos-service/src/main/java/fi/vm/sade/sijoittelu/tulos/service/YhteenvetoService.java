@@ -5,6 +5,7 @@ import static fi.vm.sade.sijoittelu.tulos.dto.raportointi.Vastaanotettavuustila.
 import static fi.vm.sade.sijoittelu.tulos.dto.raportointi.Vastaanotettavuustila.VASTAANOTETTAVISSA_SITOVASTI;
 import static fi.vm.sade.sijoittelu.tulos.dto.raportointi.YhteenvedonValintaTila.*;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -33,6 +34,9 @@ public class YhteenvetoService {
             Vastaanotettavuustila vastaanotettavuustila = EI_VASTAANOTETTAVISSA;
             // Valintatila
             if (Arrays.asList(HakemuksenTila.HYVAKSYTTY, HakemuksenTila.HARKINNANVARAISESTI_HYVAKSYTTY, HakemuksenTila.VARASIJALTA_HYVAKSYTTY).contains(jono.getTila())) {
+                if (jono.isHyvaksyttyHarkinnanvaraisesti()) {
+                    valintatila = HARKINNANVARAISESTI_HYVAKSYTTY;
+                }
                 vastaanotettavuustila = VASTAANOTETTAVISSA_SITOVASTI;
                 if (hakutoive.getHakutoive() > 1) {
                     if (aikaparametriLauennut(jono)) {
