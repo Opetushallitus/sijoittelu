@@ -144,32 +144,14 @@ public class RaportointiConverterImpl implements RaportointiConverter {
                             if (valintatulos == null) {
                                 continue;
                             }
-                            if (valintatulos.getValintatapajonoOid().equals(
-                                    valintatapajonoDTO.getValintatapajonoOid())) {
+                            if (valintatulos.getValintatapajonoOid().equals(valintatapajonoDTO.getValintatapajonoOid())) {
 
-                                valintatapajonoDTO
-                                        .setVastaanottotieto(EnumConverter
-                                                .convert(
-                                                        ValintatuloksenTila.class,
-                                                        valintatulos.getTila()));
+                                valintatapajonoDTO.setVastaanottotieto(EnumConverter.convert(ValintatuloksenTila.class, valintatulos.getTila()));
                                 valintatapajonoDTO.setJulkaistavissa(valintatulos.getJulkaistavissa());
                                 valintatapajonoDTO.setHyvaksyttyVarasijalta(valintatulos.getHyvaksyttyVarasijalta());
 
-                                // "hakemus.muokattuVastaanottoTila ==
-                                // 'VASTAANOTTANUT' ||
-                                // hakemus.muokattuVastaanottoTila ==
-                                // 'EHDOLLISESTI_VASTAANOTTANUT'"
-                                if (ValintatuloksenTila.VASTAANOTTANUT
-                                        .equals(valintatapajonoDTO.getVastaanottotieto())
-                                        || ValintatuloksenTila.EHDOLLISESTI_VASTAANOTTANUT
-                                                .equals(valintatapajonoDTO.getVastaanottotieto())) {
-                                    valintatapajonoDTO
-                                            .setIlmoittautumisTila(EnumConverter
-                                                    .convert(
-                                                            IlmoittautumisTila.class,
-                                                            valintatulos
-                                                                    .getIlmoittautumisTila()));
-
+                                if (ValintatuloksenTila.VASTAANOTTANUT.equals(valintatapajonoDTO.getVastaanottotieto()) || ValintatuloksenTila.EHDOLLISESTI_VASTAANOTTANUT.equals(valintatapajonoDTO.getVastaanottotieto())) {
+                                    valintatapajonoDTO.setIlmoittautumisTila(EnumConverter.convert(IlmoittautumisTila.class, valintatulos.getIlmoittautumisTila()));
                                 }
                             }
                         }
