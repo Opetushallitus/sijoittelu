@@ -35,6 +35,13 @@ public class SijoitteluResourceYhteenvetoTest extends SijoitteluResourceTest {
     }
 
     @Test
+    @UsingDataSet(locations = {"sijoittelu-basedata.json", "hyvaksytty-varasijalta-julkaistavissa.json"}, loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
+    public void hyvaksyttyVarasijaltaValintatulosJulkaistavissa() throws JsonProcessingException {
+        HakemusYhteenvetoDTO yhteenveto = getYhteenveto();
+        checkHakutoiveState(yhteenveto.hakutoiveet.get(0), YhteenvedonValintaTila.VARASIJALTA_HYVAKSYTTY, YhteenvedonVastaanottotila.KESKEN, Vastaanotettavuustila.VASTAANOTETTAVISSA_SITOVASTI, true);
+    }
+
+    @Test
     @UsingDataSet(locations = {"sijoittelu-basedata.json", "hyvaksytty-kesken.json"}, loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
     public void hyvaksyttyValintatulosKesken() throws JsonProcessingException {
         HakemusYhteenvetoDTO yhteenveto = getYhteenveto();
@@ -109,6 +116,14 @@ public class SijoitteluResourceYhteenvetoTest extends SijoitteluResourceTest {
     }
 
     @Test
+    @UsingDataSet(locations = {"sijoittelu-basedata.json", "harkinnanvaraisesti-hyvaksytty.json"}, loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
+    public void hyvaksyttyHarkinnanvaraisesti() throws JsonProcessingException {
+        HakemusYhteenvetoDTO yhteenveto = getYhteenveto();
+        checkHakutoiveState(yhteenveto.hakutoiveet.get(0), YhteenvedonValintaTila.HARKINNANVARAISESTI_HYVAKSYTTY, YhteenvedonVastaanottotila.KESKEN, Vastaanotettavuustila.VASTAANOTETTAVISSA_SITOVASTI, true);
+    }
+
+
+    @Test
     @UsingDataSet(locations = {"sijoittelu-basedata.json", "hyvaksytty-ylempi-varalla.json"}, loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
     public void varallaKäytetäänParastaVarasijaa() throws JsonProcessingException {
         HakemusYhteenvetoDTO yhteenveto = getYhteenveto();
@@ -152,7 +167,7 @@ public class SijoitteluResourceYhteenvetoTest extends SijoitteluResourceTest {
     }
 
     @Test
-    @UsingDataSet(locations = {"sijoittelu-basedata.json", "varalla-valintatulos-hyvaksytty-varasijalta.json"}, loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
+    @UsingDataSet(locations = {"sijoittelu-basedata.json", "varalla-valintatulos-hyvaksytty-varasijalta-flag.json"}, loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
     public void varallaValintatulosHyvaksyttyVarasijalta() throws JsonProcessingException {  // <- legacy-tila ILMOITETTU
         HakemusYhteenvetoDTO yhteenveto = getYhteenveto();
         checkHakutoiveState(yhteenveto.hakutoiveet.get(0), YhteenvedonValintaTila.HYVAKSYTTY, YhteenvedonVastaanottotila.KESKEN, Vastaanotettavuustila.EI_VASTAANOTETTAVISSA, false);
@@ -171,6 +186,8 @@ public class SijoitteluResourceYhteenvetoTest extends SijoitteluResourceTest {
         HakutoiveYhteenvetoDTO hakuToive = getHakuToive();
         checkHakutoiveState(hakuToive, YhteenvedonValintaTila.HYLATTY, YhteenvedonVastaanottotila.KESKEN, Vastaanotettavuustila.EI_VASTAANOTETTAVISSA, false);
     }
+
+
 
     private void checkHakutoiveState(HakutoiveYhteenvetoDTO hakuToive, YhteenvedonValintaTila expectedTila, YhteenvedonVastaanottotila vastaanottoTila, Vastaanotettavuustila vastaanotettavuustila, final boolean julkaistavissa) {
         assertEquals(expectedTila, hakuToive.valintatila);

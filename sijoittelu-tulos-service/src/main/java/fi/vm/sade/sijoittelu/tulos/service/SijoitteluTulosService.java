@@ -11,8 +11,6 @@ import fi.vm.sade.sijoittelu.tulos.dto.SijoitteluajoDTO;
  */
 public interface SijoitteluTulosService {
 
-    //List<HakemusDTO> haeHakukohteetJoihinHakemusOsallistuu(SijoitteluAjo sijoitteluAjo, String hakemusOid);
-
     HakukohdeDTO getHakukohdeBySijoitteluajo(SijoitteluAjo sijoitteluAjo, String hakukohdeOid);
 
     SijoitteluajoDTO getSijoitteluajo(SijoitteluAjo sijoitteluAjo);

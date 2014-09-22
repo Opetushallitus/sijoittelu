@@ -38,7 +38,7 @@ public class VastaanottoService {
         if (hakemus == null) {
             throw new IllegalArgumentException("Hakemusta ei löydy");
         }
-        final List<HakutoiveenYhteenveto> hakutoiveet = YhteenvetoService.hakutoiveidenYhteenveto(hakemus, dao);
+        final List<HakutoiveenYhteenveto> hakutoiveet = YhteenvetoService.hakutoiveidenYhteenveto(hakemus);
         final Optional<HakutoiveenYhteenveto> hakutoive = hakutoiveet.stream().filter(h -> h.hakutoive.getHakukohdeOid().equals(hakukohdeOid)).findFirst();
 
         if (!hakutoive.isPresent()) {

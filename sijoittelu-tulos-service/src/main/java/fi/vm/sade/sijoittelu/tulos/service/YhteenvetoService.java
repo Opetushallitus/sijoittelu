@@ -5,6 +5,7 @@ import static fi.vm.sade.sijoittelu.tulos.dto.raportointi.Vastaanotettavuustila.
 import static fi.vm.sade.sijoittelu.tulos.dto.raportointi.Vastaanotettavuustila.VASTAANOTETTAVISSA_SITOVASTI;
 import static fi.vm.sade.sijoittelu.tulos.dto.raportointi.YhteenvedonValintaTila.*;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -15,9 +16,6 @@ import java.util.stream.Stream;
 import org.joda.time.LocalDate;
 import org.springframework.stereotype.Service;
 
-import fi.vm.sade.sijoittelu.domain.LogEntry;
-import fi.vm.sade.sijoittelu.domain.Valintatulos;
-import fi.vm.sade.sijoittelu.tulos.dao.ValintatulosDao;
 import fi.vm.sade.sijoittelu.tulos.dto.HakemuksenTila;
 import fi.vm.sade.sijoittelu.tulos.dto.IlmoittautumisTila;
 import fi.vm.sade.sijoittelu.tulos.dto.ValintatuloksenTila;
@@ -26,7 +24,7 @@ import fi.vm.sade.sijoittelu.tulos.dto.raportointi.*;
 @Service
 public class YhteenvetoService {
 
-    public static List<HakutoiveenYhteenveto> hakutoiveidenYhteenveto(HakijaDTO hakija, ValintatulosDao valintatulosDao) {
+    public static List<HakutoiveenYhteenveto> hakutoiveidenYhteenveto(HakijaDTO hakija) {
         return hakija.getHakutoiveet().stream().map(hakutoive -> {
             HakutoiveenValintatapajonoDTO jono = getFirst(hakutoive).get();
             YhteenvedonValintaTila valintatila = ifNull(fromHakemuksenTila(jono.getTila()), YhteenvedonValintaTila.KESKEN);
@@ -36,6 +34,9 @@ public class YhteenvetoService {
             Vastaanotettavuustila vastaanotettavuustila = EI_VASTAANOTETTAVISSA;
             // Valintatila
             if (Arrays.asList(HakemuksenTila.HYVAKSYTTY, HakemuksenTila.HARKINNANVARAISESTI_HYVAKSYTTY, HakemuksenTila.VARASIJALTA_HYVAKSYTTY).contains(jono.getTila())) {
+                if (jono.isHyvaksyttyHarkinnanvaraisesti()) {
+                    valintatila = HARKINNANVARAISESTI_HYVAKSYTTY;
+                }
                 vastaanotettavuustila = VASTAANOTETTAVISSA_SITOVASTI;
                 if (hakutoive.getHakutoive() > 1) {
                     if (aikaparametriLauennut(jono)) {
@@ -78,11 +79,10 @@ public class YhteenvetoService {
             Optional<Date> viimeisinVastaanottotilanMuutos = Optional.empty();
             if (vastaanottotila != YhteenvedonVastaanottotila.KESKEN) {
                 vastaanotettavuustila = EI_VASTAANOTETTAVISSA;
-                viimeisinVastaanottotilanMuutos = viimeisinVastaanottotilanMuutos(valintatulosDao.loadValintatulos(hakutoive.getHakukohdeOid(), jono.getValintatapajonoOid(), hakija.getHakemusOid()));
+                viimeisinVastaanottotilanMuutos = Optional.ofNullable(jono.getVastaanottotilanViimeisinMuutos());
             }
 
             final boolean julkaistavissa = jono.getVastaanottotieto() != ValintatuloksenTila.KESKEN || jono.isJulkaistavissa();
-
             return new HakutoiveenYhteenveto(hakutoive, jono, valintatila, vastaanottotila, vastaanotettavuustila, julkaistavissa, viimeisinVastaanottotilanMuutos);
         }).collect(Collectors.toList());
     }
@@ -93,8 +93,8 @@ public class YhteenvetoService {
         );
     }
 
-    public static HakemusYhteenvetoDTO yhteenveto(HakijaDTO hakija, ValintatulosDao valintatulosDao) {
-        return new HakemusYhteenvetoDTO(hakija.getHakemusOid(), hakutoiveidenYhteenveto(hakija, valintatulosDao).stream().map(hakutoiveenYhteenveto -> {
+    public static HakemusYhteenvetoDTO yhteenveto(HakijaDTO hakija) {
+        return new HakemusYhteenvetoDTO(hakija.getHakemusOid(), hakutoiveidenYhteenveto(hakija).stream().map(hakutoiveenYhteenveto -> {
             return new HakutoiveYhteenvetoDTO(
                     hakutoiveenYhteenveto.hakutoive.getHakukohdeOid(),
                     hakutoiveenYhteenveto.hakutoive.getTarjoajaOid(),
@@ -141,18 +141,6 @@ public class YhteenvetoService {
         final LocalDate asti = new LocalDate(jono.getVarasijojaTaytetaanAsti());
         final LocalDate today = new LocalDate();
         return !today.isBefore(alkaen) && !today.isAfter(asti);
-    }
-
-    private static Optional<Date> viimeisinVastaanottotilanMuutos(Valintatulos valintatulos) {
-        if(valintatulos == null) {
-            return Optional.empty();
-        }
-        List<LogEntry> logEntries = valintatulos.getLogEntries();
-        int entriesSize = logEntries.size();
-        if(entriesSize == 0) {
-            return Optional.empty();
-        }
-        return Optional.of(logEntries.get(entriesSize - 1).getLuotu());
     }
 
     private static Stream<HakutoiveDTO> ylemmatHakutoiveet(HakijaDTO hakija, Integer prioriteettiRaja) {

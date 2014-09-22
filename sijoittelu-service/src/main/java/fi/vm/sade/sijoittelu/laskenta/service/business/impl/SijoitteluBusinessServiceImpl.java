@@ -236,7 +236,7 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
 
     private int getMaara(List<Hakemus> hakemukset, List<HakemuksenTila> tilat) {
 
-        return hakemukset.parallelStream().filter(h -> tilat.indexOf(h.getTila()) != -1)
+        return (int) hakemukset.parallelStream().filter(h -> tilat.indexOf(h.getTila()) != -1)
                 .reduce(0,
                         (sum, b) -> sum + 1,
                         Integer::sum);
