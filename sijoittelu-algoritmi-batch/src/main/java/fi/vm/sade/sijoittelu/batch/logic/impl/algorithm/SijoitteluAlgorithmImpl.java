@@ -360,7 +360,7 @@ public class SijoitteluAlgorithmImpl implements SijoitteluAlgorithm {
     private HashSet<HakemusWrapper> hyvaksyHakemus(HakemusWrapper hakemus) {
         HashSet<HakemusWrapper> uudelleenSijoiteltavatHakukohteet = new HashSet<HakemusWrapper>();
         if(hakemus.isTilaVoidaanVaihtaa()) {
-            if(hakemus.getHakemus().getEdellinenTila() == HakemuksenTila.VARALLA) {
+            if(hakemus.getHakemus().getEdellinenTila() == HakemuksenTila.VARALLA || hakemus.getHakemus().getEdellinenTila() == HakemuksenTila.VARASIJALTA_HYVAKSYTTY) {
                 hakemus.getHakemus().setTila(HakemuksenTila.VARASIJALTA_HYVAKSYTTY);
                 hakemus.getHakemus().getTilanKuvaukset().put("FI", "Varasijalta hyväksytty");
                 hakemus.getHakemus().getTilanKuvaukset().put("SV", "Godkänd från reservplats");

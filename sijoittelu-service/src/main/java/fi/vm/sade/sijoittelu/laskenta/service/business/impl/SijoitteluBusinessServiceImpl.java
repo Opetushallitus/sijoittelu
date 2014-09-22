@@ -5,13 +5,17 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
+import fi.vm.sade.sijoittelu.domain.*;
 import fi.vm.sade.sijoittelu.domain.comparator.HakemusComparator;
 import fi.vm.sade.sijoittelu.tulos.dao.HakukohdeDao;
 import fi.vm.sade.sijoittelu.laskenta.mapping.SijoitteluModelMapper;
 import fi.vm.sade.sijoittelu.laskenta.service.exception.*;
 import fi.vm.sade.sijoittelu.tulos.dao.SijoitteluDao;
+import fi.vm.sade.sijoittelu.tulos.dao.ValiSijoitteluDao;
 import fi.vm.sade.sijoittelu.tulos.dao.ValintatulosDao;
+import fi.vm.sade.sijoittelu.tulos.dto.HakukohdeDTO;
 import fi.vm.sade.sijoittelu.tulos.dto.comparator.HakemusDTOComparator;
+import fi.vm.sade.sijoittelu.tulos.service.impl.converters.SijoitteluTulosConverter;
 import fi.vm.sade.valintalaskenta.domain.dto.valintatieto.HakuDTO;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -26,18 +30,6 @@ import fi.vm.sade.security.service.authz.util.AuthorizationUtil;
 import fi.vm.sade.sijoittelu.batch.logic.impl.DomainConverter;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoitteluAlgorithm;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoitteluAlgorithmFactory;
-import fi.vm.sade.sijoittelu.domain.HakemuksenTila;
-import fi.vm.sade.sijoittelu.domain.Hakemus;
-import fi.vm.sade.sijoittelu.domain.Hakukohde;
-import fi.vm.sade.sijoittelu.domain.HakukohdeItem;
-import fi.vm.sade.sijoittelu.domain.IlmoittautumisTila;
-import fi.vm.sade.sijoittelu.domain.LogEntry;
-import fi.vm.sade.sijoittelu.domain.Sijoittelu;
-import fi.vm.sade.sijoittelu.domain.SijoitteluAjo;
-import fi.vm.sade.sijoittelu.domain.TilaHistoria;
-import fi.vm.sade.sijoittelu.domain.Valintatapajono;
-import fi.vm.sade.sijoittelu.domain.ValintatuloksenTila;
-import fi.vm.sade.sijoittelu.domain.Valintatulos;
 import fi.vm.sade.sijoittelu.laskenta.service.business.SijoitteluBusinessService;
 import fi.vm.sade.sijoittelu.tulos.roles.SijoitteluRole;
 
@@ -65,11 +57,17 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
     @Autowired
     private SijoitteluDao sijoitteluDao;
 
+    @Autowired
+    private ValiSijoitteluDao valisijoitteluDao;
+
 	@Autowired
 	private Authorizer authorizer;
 
     @Autowired
     private SijoitteluModelMapper modelMapper;
+
+    @Autowired
+    private SijoitteluTulosConverter sijoitteluTulosConverter;
 
 	@Value("${root.organisaatio.oid}")
 	private String rootOrgOid;
@@ -140,13 +138,50 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
         processOldApplications(olemassaolevatHakukohteet, kaikkiHakukohteet);
 
         sijoitteluDao.persistSijoittelu(sijoittelu);
+
     }
 
-	private void processOldApplications(
+    @Override
+    public List<HakukohdeDTO> valisijoittele(HakuDTO sijoitteluTyyppi) {
+        long startTime = System.currentTimeMillis();
+        String hakuOid = sijoitteluTyyppi.getHakuOid();
+        ValiSijoittelu sijoittelu = getOrCreateValiSijoittelu(hakuOid);
+        SijoitteluAjo viimeisinSijoitteluajo = sijoittelu
+                .getLatestSijoitteluajo();
+
+        List<Hakukohde> uudetHakukohteet =
+                sijoitteluTyyppi.getHakukohteet().parallelStream().map(DomainConverter::convertToHakukohde).collect(Collectors.toList());
+        List<Hakukohde> olemassaolevatHakukohteet = Collections
+                .<Hakukohde> emptyList();
+        if (viimeisinSijoitteluajo != null) {
+            olemassaolevatHakukohteet = hakukohdeDao
+                    .getHakukohdeForSijoitteluajo(viimeisinSijoitteluajo
+                            .getSijoitteluajoId());
+        }
+        SijoitteluAjo uusiSijoitteluajo = createValiSijoitteluAjo(sijoittelu);
+        List<Hakukohde> kaikkiHakukohteet = merge(uusiSijoitteluajo,
+                olemassaolevatHakukohteet, uudetHakukohteet);
+
+        List<Valintatulos> valintatulokset = valintatulosDao.loadValintatulokset(hakuOid);
+        SijoitteluAlgorithm sijoitteluAlgorithm = algorithmFactory
+                .constructAlgorithm(kaikkiHakukohteet, valintatulokset);
+
+        uusiSijoitteluajo.setStartMils(startTime);
+        sijoitteluAlgorithm.start();
+        uusiSijoitteluajo.setEndMils(System.currentTimeMillis());
+
+        processOldApplications(olemassaolevatHakukohteet, kaikkiHakukohteet);
+
+        valisijoitteluDao.persistSijoittelu(sijoittelu);
+
+        return kaikkiHakukohteet.parallelStream().map(h -> sijoitteluTulosConverter.convert(h)).collect(Collectors.toList());
+    }
+
+    private void processOldApplications(
 			final List<Hakukohde> olemassaolevatHakukohteet,
 			final List<Hakukohde> kaikkiHakukohteet) {
 		// wanhat hakemukset
-		Map<String, Hakemus> hakemusHashMap = new ConcurrentHashMap<String, Hakemus>();
+		Map<String, Hakemus> hakemusHashMap = new ConcurrentHashMap<>();
 
         olemassaolevatHakukohteet.parallelStream().forEach(hakukohde ->
             hakukohde.getValintatapajonot().parallelStream().forEach(valintatapajono ->
@@ -285,6 +320,17 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
 		return sijoitteluAjo;
 	}
 
+    private SijoitteluAjo createValiSijoitteluAjo(ValiSijoittelu sijoittelu) {
+        SijoitteluAjo sijoitteluAjo = new SijoitteluAjo();
+        Long now = System.currentTimeMillis();
+        sijoitteluAjo.setSijoitteluajoId(now);
+        sijoitteluAjo.setHakuOid(sijoittelu.getHakuOid()); // silta varalta etta
+        // tehdaan omaksi
+        // entityksi
+        sijoittelu.getSijoitteluajot().add(sijoitteluAjo);
+        return sijoitteluAjo;
+    }
+
 	private Sijoittelu getOrCreateSijoittelu(String hakuoid) {
 		Optional<Sijoittelu> sijoitteluOpt = sijoitteluDao.getSijoitteluByHakuOid(hakuoid);
 
@@ -300,6 +346,22 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
 		}
 
 	}
+
+    private ValiSijoittelu getOrCreateValiSijoittelu(String hakuoid) {
+        Optional<ValiSijoittelu> sijoitteluOpt = valisijoitteluDao.getSijoitteluByHakuOid(hakuoid);
+
+        if (sijoitteluOpt.isPresent()) {
+            return sijoitteluOpt.get();
+        }
+        else {
+            ValiSijoittelu sijoittelu = new ValiSijoittelu();
+            sijoittelu.setCreated(new Date());
+            sijoittelu.setSijoitteluId(System.currentTimeMillis());
+            sijoittelu.setHakuOid(hakuoid);
+            return sijoittelu;
+        }
+
+    }
 
 	@Override
 	public Valintatulos haeHakemuksenTila(String hakuoid, String hakukohdeOid,
