@@ -116,6 +116,14 @@ public class SijoitteluResourceYhteenvetoTest extends SijoitteluResourceTest {
     }
 
     @Test
+    @UsingDataSet(locations = {"sijoittelu-basedata.json", "harkinnanvaraisesti-hyvaksytty.json"}, loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
+    public void hyvaksyttyHarkinnanvaraisesti() throws JsonProcessingException {
+        HakemusYhteenvetoDTO yhteenveto = getYhteenveto();
+        checkHakutoiveState(yhteenveto.hakutoiveet.get(0), YhteenvedonValintaTila.HARKINNANVARAISESTI_HYVAKSYTTY, YhteenvedonVastaanottotila.KESKEN, Vastaanotettavuustila.VASTAANOTETTAVISSA_SITOVASTI, true);
+    }
+
+
+    @Test
     @UsingDataSet(locations = {"sijoittelu-basedata.json", "hyvaksytty-ylempi-varalla.json"}, loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
     public void varallaKäytetäänParastaVarasijaa() throws JsonProcessingException {
         HakemusYhteenvetoDTO yhteenveto = getYhteenveto();
