@@ -26,7 +26,7 @@ public class CachingValiSijoitteluDao implements ValiSijoitteluDao {
 	private Datastore morphiaDS;
 
 	private final Cache<String, ValiSijoittelu> sijoitteluPerHaku = CacheBuilder
-			.newBuilder().expireAfterWrite(12, TimeUnit.HOURS).build();
+			.newBuilder().expireAfterWrite(10, TimeUnit.MINUTES).build();
 
 	/**
 	 * CACHED
