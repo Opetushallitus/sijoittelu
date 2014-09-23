@@ -65,12 +65,17 @@ public class YhteenvetoService {
             // Vastaanottotilan vaikutus valintatilaan
             if (Arrays.asList(YhteenvedonVastaanottotila.EHDOLLISESTI_VASTAANOTTANUT, YhteenvedonVastaanottotila.VASTAANOTTANUT).contains(vastaanottotila)) {
                 valintatila = HYVAKSYTTY;
-            } else if (Arrays.asList(YhteenvedonVastaanottotila.PERUNUT).contains(vastaanottotila)) {
+            } else if (YhteenvedonVastaanottotila.PERUNUT == vastaanottotila) {
                 valintatila = PERUNUT;
+                vastaanotettavuustila = EI_VASTAANOTETTAVISSA;
             } else if (ValintatuloksenTila.ILMOITETTU == jono.getVastaanottotieto()) {
                 valintatila = HYVAKSYTTY;
-            } else if (Arrays.asList(YhteenvedonVastaanottotila.PERUUTETTU).contains(vastaanottotila)) {
+            } else if (YhteenvedonVastaanottotila.PERUUTETTU == vastaanottotila) {
                 valintatila = YhteenvedonValintaTila.PERUUTETTU;
+                vastaanotettavuustila = EI_VASTAANOTETTAVISSA;
+            } else if (YhteenvedonVastaanottotila.EI_VASTAANOTETTU_MAARA_AIKANA == vastaanottotila) {
+                valintatila = YhteenvedonValintaTila.PERUUNTUNUT;
+                vastaanotettavuustila = EI_VASTAANOTETTAVISSA;
             }
 
             Optional<Date> viimeisinVastaanottotilanMuutos = Optional.empty();
