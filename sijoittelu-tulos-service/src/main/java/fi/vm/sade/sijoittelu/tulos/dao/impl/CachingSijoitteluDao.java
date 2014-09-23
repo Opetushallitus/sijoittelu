@@ -31,7 +31,7 @@ public class CachingSijoitteluDao implements SijoitteluDao {
 	private Datastore morphiaDS;
 
 	private final Cache<String, Sijoittelu> sijoitteluPerHaku = CacheBuilder
-			.newBuilder().expireAfterWrite(12, TimeUnit.HOURS).build();
+			.newBuilder().expireAfterWrite(10, TimeUnit.MINUTES).build();
 
 	/**
 	 * CACHED
