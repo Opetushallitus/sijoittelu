@@ -1,5 +1,7 @@
 package fi.vm.sade.sijoittelu.tulos.dto;
 
+import java.util.Arrays;
+
 /**
  * 
  * @author Kari Kammonen
@@ -25,4 +27,12 @@ public enum HakemuksenTila {
 
 	PERUUTETTU; // Virkailija on perunut paikan. Sama toiminnallisuuks kuil
 				// HYLATTY
+
+    public boolean isHyvaksytty() {
+        return Arrays.asList(HakemuksenTila.HYVAKSYTTY, HakemuksenTila.HARKINNANVARAISESTI_HYVAKSYTTY, HakemuksenTila.VARASIJALTA_HYVAKSYTTY).contains(this);
+    }
+
+    public boolean isHyvaksyttyOrVaralla() {
+        return isHyvaksytty() || (this == VARALLA);
+    }
 }

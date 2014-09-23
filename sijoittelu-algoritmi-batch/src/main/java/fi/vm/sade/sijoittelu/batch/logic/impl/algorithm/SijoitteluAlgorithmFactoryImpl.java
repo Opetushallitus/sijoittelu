@@ -80,7 +80,6 @@ public class SijoitteluAlgorithmFactoryImpl implements SijoitteluAlgorithmFactor
                     Valintatulos valintatulos = getValintatulos(hakukohde, valintatapajono, hakemus, valintatulokset);
 
                     List<ValintatuloksenTila> hyvaksyttylista = Arrays.asList(ValintatuloksenTila.ILMOITETTU, ValintatuloksenTila.VASTAANOTTANUT, ValintatuloksenTila.EHDOLLISESTI_VASTAANOTTANUT, ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI);
-                    List<ValintatuloksenTila> varallalista = Arrays.asList(ValintatuloksenTila.KESKEN, ValintatuloksenTila.ILMOITETTU, ValintatuloksenTila.VASTAANOTTANUT, ValintatuloksenTila.EHDOLLISESTI_VASTAANOTTANUT, ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI);
                     Map<String, String> varasijamap = new HashMap<>();
                     varasijamap.put("FI", "Varasijalta hyväksytty");
                     varasijamap.put("SV", "Godkänd från reservplats");
@@ -88,31 +87,42 @@ public class SijoitteluAlgorithmFactoryImpl implements SijoitteluAlgorithmFactor
 
                     if (valintatulos != null && valintatulos.getTila() != null) {
                         ValintatuloksenTila tila = valintatulos.getTila();
-                        if (hyvaksyttylista.indexOf(tila) != -1 ||
-                                (valintatulos.getJulkaistavissa() && (hakemus.getEdellinenTila() == HakemuksenTila.HYVAKSYTTY || hakemus.getEdellinenTila() == HakemuksenTila.VARASIJALTA_HYVAKSYTTY) && varallalista.indexOf(tila) != -1)) {
+                        boolean voidaanVaihtaa = true;
+                        if (tila == ValintatuloksenTila.PERUNUT) {
+                            hakemus.setTila(HakemuksenTila.PERUNUT);
+                            voidaanVaihtaa = false;
+                        } else if (tila == ValintatuloksenTila.EI_VASTAANOTETTU_MAARA_AIKANA) {
+                            hakemus.setTila(HakemuksenTila.PERUNUT);
+                            hakemus.getTilanKuvaukset().put("FI", "Peruuntunut, ei vastaanottanut määräaikana");
+                            hakemus.getTilanKuvaukset().put("SV", "Annullerad, har inte tagit emot platsen inom utsatt tid");
+                            hakemus.getTilanKuvaukset().put("EN", "Cancelled, has not confirmed the study place within the deadline");
+                            voidaanVaihtaa = false;
+                        } else if (tila == ValintatuloksenTila.PERUUTETTU) {
+                            hakemus.setTila(HakemuksenTila.PERUUTETTU);
+                        } else if (hyvaksyttylista.contains(tila)) {
                             if (hakemus.getEdellinenTila() == HakemuksenTila.VARALLA || hakemus.getEdellinenTila() == HakemuksenTila.VARASIJALTA_HYVAKSYTTY) {
                                 hakemus.setTilanKuvaukset(varasijamap);
                                 hakemus.setTila(HakemuksenTila.VARASIJALTA_HYVAKSYTTY);
                             } else {
                                 hakemus.setTila(HakemuksenTila.HYVAKSYTTY);
                             }
+                            voidaanVaihtaa = false;
                             hakemus.setIlmoittautumisTila(valintatulos.getIlmoittautumisTila());
-                        } else if ((hakemus.getEdellinenTila() == HakemuksenTila.VARALLA && valintatulos.getHyvaksyttyVarasijalta()) ||
-                                (hakemus.getEdellinenTila() == HakemuksenTila.VARASIJALTA_HYVAKSYTTY && valintatulos.getHyvaksyttyVarasijalta() && (varallalista.indexOf(tila) != -1))) {
+                        } else if (valintatulos.getJulkaistavissa() && (hakemus.getEdellinenTila() == HakemuksenTila.HYVAKSYTTY || hakemus.getEdellinenTila() == HakemuksenTila.VARASIJALTA_HYVAKSYTTY)) {
+                            if (hakemus.getEdellinenTila() == HakemuksenTila.VARASIJALTA_HYVAKSYTTY) {
+                                hakemus.setTilanKuvaukset(varasijamap);
+                                hakemus.setTila(HakemuksenTila.VARASIJALTA_HYVAKSYTTY);
+                            } else {
+                                hakemus.setTila(HakemuksenTila.HYVAKSYTTY);
+                            }
+                            voidaanVaihtaa = false;
+                            hakemus.setIlmoittautumisTila(valintatulos.getIlmoittautumisTila());
+                        } else if (valintatulos.getHyvaksyttyVarasijalta()) {
                             hakemus.setTilanKuvaukset(varasijamap);
                             hakemus.setTila(HakemuksenTila.VARASIJALTA_HYVAKSYTTY);
                             hakemus.setIlmoittautumisTila(valintatulos.getIlmoittautumisTila());
-                        } else if (tila == ValintatuloksenTila.PERUNUT) {
-                            hakemus.setTila(HakemuksenTila.PERUNUT);
-                        } else if (tila == ValintatuloksenTila.EI_VASTAANOTETTU_MAARA_AIKANA) {
-                            hakemus.setTila(HakemuksenTila.PERUNUT);
-                            hakemus.getTilanKuvaukset().put("FI", "Peruuntunut, ei vastaanottanut määräaikana");
-                            hakemus.getTilanKuvaukset().put("SV", "Annullerad, har inte tagit emot platsen inom utsatt tid");
-                            hakemus.getTilanKuvaukset().put("EN", "Cancelled, has not confirmed the study place within the deadline");
-                        } else if (tila == ValintatuloksenTila.PERUUTETTU) {
-                            hakemus.setTila(HakemuksenTila.PERUUTETTU);
                         }
-                        hakemusWrapper.setTilaVoidaanVaihtaa(false);
+                        hakemusWrapper.setTilaVoidaanVaihtaa(voidaanVaihtaa);
                         henkiloWrapper.getValintatulos().add(valintatulos);
                     }
                 });

@@ -187,7 +187,14 @@ public class SijoitteluResourceYhteenvetoTest extends SijoitteluResourceTest {
         checkHakutoiveState(hakuToive, YhteenvedonValintaTila.HYLATTY, YhteenvedonVastaanottotila.KESKEN, Vastaanotettavuustila.EI_VASTAANOTETTAVISSA, false);
     }
 
-
+    @Test
+    @UsingDataSet(locations = {"sijoittelu-basedata.json", "hyvaksytty-julkaisematon-hyvaksytty.json"}, loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
+    public void hyvaksyttyPlusJulkaisematonPlusHyvaksytty() {
+        HakemusYhteenvetoDTO yhteenveto = getYhteenveto();
+        checkHakutoiveState(yhteenveto.hakutoiveet.get(0), YhteenvedonValintaTila.HYVAKSYTTY, YhteenvedonVastaanottotila.KESKEN, Vastaanotettavuustila.VASTAANOTETTAVISSA_SITOVASTI, true);
+        checkHakutoiveState(yhteenveto.hakutoiveet.get(1), YhteenvedonValintaTila.HYVAKSYTTY, YhteenvedonVastaanottotila.KESKEN, Vastaanotettavuustila.VASTAANOTETTAVISSA_SITOVASTI, false);
+        checkHakutoiveState(yhteenveto.hakutoiveet.get(2), YhteenvedonValintaTila.HYVAKSYTTY, YhteenvedonVastaanottotila.KESKEN, Vastaanotettavuustila.VASTAANOTETTAVISSA_SITOVASTI, true);
+    }
 
     private void checkHakutoiveState(HakutoiveYhteenvetoDTO hakuToive, YhteenvedonValintaTila expectedTila, YhteenvedonVastaanottotila vastaanottoTila, Vastaanotettavuustila vastaanotettavuustila, final boolean julkaistavissa) {
         assertEquals(expectedTila, hakuToive.valintatila);

@@ -121,6 +121,34 @@ public class VastaanottoServiceTest {
         assertEquals(Vastaanotettavuustila.EI_VASTAANOTETTAVISSA, yhteenveto.hakutoiveet.get(1).vastaanotettavuustila);
     }
 
+    @Test
+    @UsingDataSet(locations = {"/fi/vm/sade/sijoittelu/tulos/resource/sijoittelu-basedata.json", "/fi/vm/sade/sijoittelu/tulos/resource/hyvaksytty-julkaisematon-hyvaksytty.json"}, loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
+    public void vastaanotaYlempiKunKaksiHyvaksyttya() {
+        vastaanottoService.vastaanota(hakuOid, hakemusOid, "1.2.246.562.5.72607738902", ValintatuloksenTila.VASTAANOTTANUT, muokkaaja, selite);
+        final HakemusYhteenvetoDTO yhteenveto = getYhteenveto();
+        assertEquals(YhteenvedonValintaTila.HYVAKSYTTY, yhteenveto.hakutoiveet.get(0).valintatila);
+        assertEquals(YhteenvedonValintaTila.PERUUNTUNUT, yhteenveto.hakutoiveet.get(1).valintatila);
+        assertEquals(YhteenvedonValintaTila.PERUUNTUNUT, yhteenveto.hakutoiveet.get(2).valintatila);
+
+        assertEquals(YhteenvedonVastaanottotila.VASTAANOTTANUT, yhteenveto.hakutoiveet.get(0).vastaanottotila);
+        assertEquals(YhteenvedonVastaanottotila.KESKEN, yhteenveto.hakutoiveet.get(1).vastaanottotila);
+        assertEquals(YhteenvedonVastaanottotila.KESKEN, yhteenveto.hakutoiveet.get(2).vastaanottotila);
+    }
+
+    @Test
+    @UsingDataSet(locations = {"/fi/vm/sade/sijoittelu/tulos/resource/sijoittelu-basedata.json", "/fi/vm/sade/sijoittelu/tulos/resource/hyvaksytty-julkaisematon-hyvaksytty.json"}, loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
+    public void vastaanotaAlempiKunKaksiHyvaksyttya() {
+        vastaanottoService.vastaanota(hakuOid, hakemusOid, "1.2.246.562.5.72607738904", ValintatuloksenTila.VASTAANOTTANUT, muokkaaja, selite);
+        final HakemusYhteenvetoDTO yhteenveto = getYhteenveto();
+        assertEquals(YhteenvedonValintaTila.PERUUNTUNUT, yhteenveto.hakutoiveet.get(0).valintatila);
+        assertEquals(YhteenvedonValintaTila.PERUUNTUNUT, yhteenveto.hakutoiveet.get(1).valintatila);
+        assertEquals(YhteenvedonValintaTila.HYVAKSYTTY, yhteenveto.hakutoiveet.get(2).valintatila);
+
+        assertEquals(YhteenvedonVastaanottotila.KESKEN, yhteenveto.hakutoiveet.get(0).vastaanottotila);
+        assertEquals(YhteenvedonVastaanottotila.KESKEN, yhteenveto.hakutoiveet.get(1).vastaanottotila);
+        assertEquals(YhteenvedonVastaanottotila.VASTAANOTTANUT, yhteenveto.hakutoiveet.get(2).vastaanottotila);
+    }
+
     private void useFixedDate(final String date) throws ParseException {
         DateTimeUtils.setCurrentMillisFixed(new SimpleDateFormat("d.M.yyyy").parse(date).getTime());
     }

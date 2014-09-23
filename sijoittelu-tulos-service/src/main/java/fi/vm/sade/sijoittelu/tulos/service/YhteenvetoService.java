@@ -5,7 +5,6 @@ import static fi.vm.sade.sijoittelu.tulos.dto.raportointi.Vastaanotettavuustila.
 import static fi.vm.sade.sijoittelu.tulos.dto.raportointi.Vastaanotettavuustila.VASTAANOTETTAVISSA_SITOVASTI;
 import static fi.vm.sade.sijoittelu.tulos.dto.raportointi.YhteenvedonValintaTila.*;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -33,7 +32,10 @@ public class YhteenvetoService {
             }
             Vastaanotettavuustila vastaanotettavuustila = EI_VASTAANOTETTAVISSA;
             // Valintatila
-            if (Arrays.asList(HakemuksenTila.HYVAKSYTTY, HakemuksenTila.HARKINNANVARAISESTI_HYVAKSYTTY, HakemuksenTila.VARASIJALTA_HYVAKSYTTY).contains(jono.getTila())) {
+            if (jono.getTila().isHyvaksyttyOrVaralla() && toinenHakutoiveVastaanotettu(hakija, hakutoive.getHakutoive())) {
+                vastaanotettavuustila = EI_VASTAANOTETTAVISSA;
+                valintatila = PERUUNTUNUT;
+            } else if (jono.getTila().isHyvaksytty()) {
                 if (jono.isHyvaksyttyHarkinnanvaraisesti()) {
                     valintatila = HARKINNANVARAISESTI_HYVAKSYTTY;
                 }
@@ -54,13 +56,8 @@ public class YhteenvetoService {
                         }
                     }
                 }
-            } else {
-                if (alempiVastaanotettu(hakija, hakutoive.getHakutoive())) {
-                    vastaanotettavuustila = EI_VASTAANOTETTAVISSA;
-                    valintatila = PERUUNTUNUT;
-                } else if (!hakutoive.isKaikkiJonotSijoiteltu()) {
-                    valintatila = KESKEN;
-                }
+            } else if (!hakutoive.isKaikkiJonotSijoiteltu()) {
+                valintatila = KESKEN;
             }
 
             final YhteenvedonVastaanottotila vastaanottotila = convertVastaanottotila(ifNull(jono.getVastaanottotieto(), ValintatuloksenTila.KESKEN));
@@ -87,9 +84,9 @@ public class YhteenvetoService {
         }).collect(Collectors.toList());
     }
 
-    private static boolean alempiVastaanotettu(final HakijaDTO hakija, final Integer hakutoive) {
-        return hakija.getHakutoiveet().stream().skip(hakutoive).anyMatch(h ->
-            getFirst(h).get().getVastaanottotieto() == ValintatuloksenTila.VASTAANOTTANUT
+    private static boolean toinenHakutoiveVastaanotettu(final HakijaDTO hakija, final Integer hakutoive) {
+        return hakija.getHakutoiveet().stream().anyMatch(h ->
+            !h.getHakutoive().equals(hakutoive) && getFirst(h).get().getVastaanottotieto() == ValintatuloksenTila.VASTAANOTTANUT
         );
     }
 
