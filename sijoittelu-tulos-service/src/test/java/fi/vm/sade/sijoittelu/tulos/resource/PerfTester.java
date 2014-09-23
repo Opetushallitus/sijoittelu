@@ -3,6 +3,7 @@ package fi.vm.sade.sijoittelu.tulos.resource;
 import static com.lordofthejars.nosqlunit.mongodb.MongoDbRule.MongoDbRuleBuilder.newMongoDbRule;
 import static org.junit.Assert.assertEquals;
 
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -34,6 +35,7 @@ public class PerfTester {
     Mongo mongo;
 
     @Test
+    @Ignore
     public void perfTestWithLocalMongo() {
         perfTest("1.2.246.562.5.2013080813081926341928");
     }
