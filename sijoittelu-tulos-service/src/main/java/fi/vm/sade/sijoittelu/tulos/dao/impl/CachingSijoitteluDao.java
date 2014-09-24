@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
@@ -103,7 +104,24 @@ public class CachingSijoitteluDao implements SijoitteluDao {
 
 	}
 
-	@Override
+    @Override
+    public Optional<Sijoittelu> getSijoitteluById(long id) {
+        try {
+            return Optional.ofNullable(morphiaDS.find(Sijoittelu.class).field("sijoitteluId")
+                    .equal(id).get());
+        } catch (Exception e) {
+            LOG.error("Ei saatu sijoittelua {}: {}", id,
+                    e.getMessage());
+            return Optional.empty();
+        }
+    }
+
+    @Override
+    public List<Sijoittelu> findAll() {
+        return morphiaDS.find(Sijoittelu.class).asList();
+    }
+
+    @Override
 	public void persistSijoittelu(Sijoittelu sijoittelu) {
 		morphiaDS.save(sijoittelu);
 		sijoitteluPerHaku.put(sijoittelu.getHakuOid(), sijoittelu);

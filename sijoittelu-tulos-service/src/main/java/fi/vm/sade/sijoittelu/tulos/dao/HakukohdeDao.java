@@ -10,6 +10,10 @@ public interface HakukohdeDao {
 
     void persistHakukohde(Hakukohde hakukohde);
 
+    List<Hakukohde> findAll();
+
+    void removeHakukohde(Hakukohde hakukohde);
+
     Hakukohde getHakukohdeForSijoitteluajo(Long ajoId, String hakukohdeOid);
 
     List<Hakukohde> haeHakukohteetJoihinHakemusOsallistuu(Long sijoitteluajoId, String hakemusOid);
