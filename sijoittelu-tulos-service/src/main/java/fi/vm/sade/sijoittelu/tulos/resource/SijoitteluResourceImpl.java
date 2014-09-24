@@ -23,12 +23,10 @@ import fi.vm.sade.sijoittelu.tulos.dao.ValintatulosDao;
 import fi.vm.sade.sijoittelu.tulos.dto.HakukohdeDTO;
 import fi.vm.sade.sijoittelu.tulos.dto.SijoitteluDTO;
 import fi.vm.sade.sijoittelu.tulos.dto.SijoitteluajoDTO;
-import fi.vm.sade.sijoittelu.tulos.dto.raportointi.HakemusYhteenvetoDTO;
 import fi.vm.sade.sijoittelu.tulos.dto.raportointi.HakijaDTO;
 import fi.vm.sade.sijoittelu.tulos.dto.raportointi.HakijaPaginationObject;
 import fi.vm.sade.sijoittelu.tulos.service.RaportointiService;
 import fi.vm.sade.sijoittelu.tulos.service.SijoitteluTulosService;
-import fi.vm.sade.sijoittelu.tulos.service.YhteenvetoService;
 
 /**
  * User: wuoti Date: 26.4.2013 Time: 12.41
@@ -125,12 +123,6 @@ public class SijoitteluResourceImpl implements SijoitteluResource {
         Optional<SijoitteluAjo> ajo = getSijoitteluAjo(sijoitteluajoId, hakuOid);
         return ajo.map(a -> raportointiService.hakemus(a, hakemusOid)).orElse(new HakijaDTO());
 	}
-
-    @Override
-    public HakemusYhteenvetoDTO hakemusYhteenveto(@ApiParam(value = "Haun tunniste", required = true) String hakuOid, @ApiParam(value = "Sijoitteluajon tunniste tai 'latest' avainsana", required = true) String sijoitteluajoId, @ApiParam(value = "Hakemuksen tunniste", required = true) String hakemusOid) {
-        HakijaDTO hakemus = hakemus(hakuOid, sijoitteluajoId, hakemusOid);
-        return YhteenvetoService.yhteenveto(hakemus);
-    }
 
     private Optional<SijoitteluAjo> getSijoitteluAjo(String sijoitteluajoId,
 			String hakuOid) {
