@@ -58,7 +58,6 @@ public class MorphiaIntegrationTest {
     @ComponentScan("fi.vm.sade.sijoittelu.laskenta.service.business.impl")
     static class someConfig {
 
-        // because @PropertySource doesnt work in annotation only land
         @Bean
         PropertyPlaceholderConfigurer propConfig() {
             PropertyPlaceholderConfigurer ppc =  new PropertyPlaceholderConfigurer();

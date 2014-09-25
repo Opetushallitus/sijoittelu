@@ -473,12 +473,11 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
             throw new RuntimeException("Hakukohteelle " + hakukohdeOid + " ei löytynyt tarjoajaOidia sijoitteluajosta: " + ajoId);
         }
 
-//		authorizer.checkOrganisationAccess(tarjoajaOid,
-//				SijoitteluRole.UPDATE_ROLE, SijoitteluRole.CRUD_ROLE);
-//
-//		boolean ophAdmin = checkIfOphAdmin(hakemus);
+		authorizer.checkOrganisationAccess(tarjoajaOid,
+				SijoitteluRole.UPDATE_ROLE, SijoitteluRole.CRUD_ROLE);
 
-        boolean ophAdmin = true;
+		boolean ophAdmin = checkIfOphAdmin(hakemus);
+
 
 		Valintatulos v = valintatulosDao.loadValintatulos(hakukohdeOid, valintatapajonoOid,
 				hakemusOid);
