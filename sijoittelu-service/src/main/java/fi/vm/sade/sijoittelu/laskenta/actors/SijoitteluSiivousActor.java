@@ -11,6 +11,7 @@ import fi.vm.sade.sijoittelu.domain.Hakukohde;
 import fi.vm.sade.sijoittelu.domain.Sijoittelu;
 import fi.vm.sade.sijoittelu.domain.SijoitteluAjo;
 import fi.vm.sade.sijoittelu.laskenta.actors.messages.PoistaHaamuHakukohteet;
+import fi.vm.sade.sijoittelu.laskenta.actors.messages.PoistaHakukohteet;
 import fi.vm.sade.sijoittelu.laskenta.actors.messages.PoistaVanhatAjotSijoittelulta;
 import fi.vm.sade.sijoittelu.laskenta.service.business.SijoitteluBusinessService;
 import fi.vm.sade.sijoittelu.tulos.dao.HakukohdeDao;
@@ -46,30 +47,32 @@ public class SijoitteluSiivousActor extends AbstractActor {
                     sijoittelu.getSijoitteluId(), sijoittelu.getAjojenMaaraMax());
             Optional<Sijoittelu> sijoitteluOpt = sijoitteluDao.getSijoitteluById(sijoittelu.getSijoitteluId());
             sijoitteluOpt.ifPresent(s -> {
-                Set<SijoitteluAjo> saastettavat = s.getSijoitteluajot().stream()
-                        .sorted((a1, a2) -> -(a1.getEndMils().compareTo(a2.getEndMils())))
-                        .limit(sijoittelu.getAjojenMaaraMax())
-                        .sorted((a1, a2) -> a1.getEndMils().compareTo(a2.getEndMils()))
-                        .collect(Collectors.toSet());
-                Set<SijoitteluAjo> poistettavat = s.getSijoitteluajot().stream()
-                        .sorted((a1, a2) -> a1.getEndMils().compareTo(a2.getEndMils()))
-                        .limit(s.getSijoitteluajot().size() - sijoittelu.getAjojenMaaraMax())
-                        .collect(Collectors.toSet());
+                if(s.getSijoitteluajot().size() > sijoittelu.getAjojenMaaraMax()) {
+                    Set<SijoitteluAjo> saastettavat = s.getSijoitteluajot().stream()
+                            .sorted((a1, a2) -> -(a1.getEndMils().compareTo(a2.getEndMils())))
+                            .limit(sijoittelu.getAjojenMaaraMax())
+                            .sorted((a1, a2) -> a1.getEndMils().compareTo(a2.getEndMils()))
+                            .collect(Collectors.toSet());
+                    Set<SijoitteluAjo> poistettavat = s.getSijoitteluajot().stream()
+                            .sorted((a1, a2) -> a1.getEndMils().compareTo(a2.getEndMils()))
+                            .limit(s.getSijoitteluajot().size() - sijoittelu.getAjojenMaaraMax())
+                            .collect(Collectors.toSet());
 
-                Set<SijoitteluAjo> common = new HashSet<>();
-                common.addAll(saastettavat);
-                common.retainAll(poistettavat);
-                if(common.size() > 0) {
-                    log.error("Säästettävissä ja poistettavissa ajoissa on yhtäläisyyksiä kpl: {}", common.size());
-                }
-                if (!saastettavat.isEmpty() && common.size() == 0) {
-                    s.getSijoitteluajot().clear();
-                    s.getSijoitteluajot().addAll(saastettavat);
-                    sijoitteluDao.persistSijoittelu(s);
-                    poistettavat.stream().forEach(a -> {
-                        List<Hakukohde> kohde = hakukohdeDao.getHakukohdeForSijoitteluajo(a.getSijoitteluajoId());
-                        kohde.stream().forEach(hakukohdeDao::removeHakukohde);
-                    });
+                    Set<SijoitteluAjo> common = new HashSet<>();
+                    common.addAll(saastettavat);
+                    common.retainAll(poistettavat);
+                    if(common.size() > 0) {
+                        log.error("Säästettävissä ja poistettavissa ajoissa on yhtäläisyyksiä kpl: {}", common.size());
+                    }
+                    if (!saastettavat.isEmpty() && common.size() == 0) {
+                        s.getSijoitteluajot().clear();
+                        s.getSijoitteluajot().addAll(saastettavat);
+                        sijoitteluDao.persistSijoittelu(s);
+                        poistettavat.stream().forEach(a -> {
+                            List<Hakukohde> kohde = hakukohdeDao.getHakukohdeForSijoitteluajo(a.getSijoitteluajoId());
+                            kohde.stream().forEach(hakukohdeDao::removeHakukohde);
+                        });
+                    }
                 }
             });
             self().tell(PoisonPill.getInstance(), ActorRef.noSender());
@@ -84,6 +87,20 @@ public class SijoitteluSiivousActor extends AbstractActor {
             List<Hakukohde> kohteet = hakukohdeDao.findAll();
             kohteet.stream().filter(h -> !ajot.contains(h.getSijoitteluajoId())).forEach(hakukohdeDao::removeHakukohde);
             self().tell(PoisonPill.getInstance(), ActorRef.noSender());
+        }).match(PoistaHakukohteet.class, p -> {
+            log.info("Poistetaan hakukohteet pieleen menneeltä sijoittelulta");
+            sijoitteluDao.clearCacheForHaku(p.getSijoittelu().getHakuOid());
+
+            Optional<SijoitteluAjo> ajo = sijoitteluDao.getSijoitteluajo(p.getAjoId());
+
+            if(ajo.isPresent()) {
+                log.error("Yritettiin poistaa ajon {} hakukohteita, vaikka ajo löytyi kannasta!", p.getAjoId());
+            } else {
+                List<Hakukohde> kohteet = hakukohdeDao.getHakukohdeForSijoitteluajo(p.getAjoId());
+                kohteet.stream().forEach(hakukohdeDao::removeHakukohde);
+                self().tell(PoisonPill.getInstance(), ActorRef.noSender());
+            }
+
         }).build());
     }
 

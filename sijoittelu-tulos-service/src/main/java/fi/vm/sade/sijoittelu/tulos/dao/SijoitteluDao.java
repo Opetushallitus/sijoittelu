@@ -13,6 +13,8 @@ public interface SijoitteluDao {
 
     Optional<Sijoittelu> getSijoitteluById(long id);
 
+    void clearCacheForHaku(String hakuoid);
+
     List<Sijoittelu> findAll();
 
 	Optional<SijoitteluAjo> getSijoitteluajo(Long sijoitteluajoId);

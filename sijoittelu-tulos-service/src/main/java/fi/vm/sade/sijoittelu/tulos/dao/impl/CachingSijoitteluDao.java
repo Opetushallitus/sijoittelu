@@ -117,6 +117,11 @@ public class CachingSijoitteluDao implements SijoitteluDao {
     }
 
     @Override
+    public void clearCacheForHaku(String hakuoid) {
+        sijoitteluPerHaku.invalidate(hakuoid);
+    }
+
+    @Override
     public List<Sijoittelu> findAll() {
         return morphiaDS.find(Sijoittelu.class).asList();
     }

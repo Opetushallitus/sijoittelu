@@ -9,6 +9,7 @@ import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 import fi.vm.sade.service.valintaperusteet.dto.ValintatapajonoDTO;
 import fi.vm.sade.service.valintaperusteet.resource.ValintaperusteetResource;
+import fi.vm.sade.sijoittelu.laskenta.service.business.ActorService;
 import fi.vm.sade.sijoittelu.laskenta.service.business.SijoitteluBusinessService;
 import fi.vm.sade.sijoittelu.laskenta.util.EnumConverter;
 import fi.vm.sade.valintalaskenta.domain.dto.valintakoe.Tasasijasaanto;
@@ -19,6 +20,7 @@ import fi.vm.sade.valintalaskenta.tulos.service.impl.ValintatietoService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
@@ -59,26 +61,8 @@ public class SijoitteluResource {
 	@Autowired
 	private ValintaperusteetResource valintaperusteetResource;
 
-	private ActorSystem actorSystem;
-
-	private ActorRef master;
-
-	@PostConstruct
-	public void initActorSystem() {
-		actorSystem = ActorSystem.create("SijoitteluActorSystem");
-		SpringExtProvider.get(actorSystem).initialize(applicationContext);
-
-		master = actorSystem.actorOf(
-				SpringExtProvider.get(actorSystem).props("SijoitteluActor")
-						.withRouter(new RoundRobinRouter(1)),
-				"SijoitteluRouter");
-	}
-
-	@PreDestroy
-	public void tearDownActorSystem() {
-		actorSystem.shutdown();
-		actorSystem.awaitTermination();
-	}
+    @Autowired
+    private ActorService actorService;
 
 	@GET
 	@Path("{hakuOid}")
@@ -129,7 +113,7 @@ public class SijoitteluResource {
 
 		Timeout timeout = new Timeout(Duration.create(60, "minutes"));
 
-		Future<Object> future = Patterns.ask(master, haku, timeout);
+		Future<Object> future = Patterns.ask(actorService.getSijoitteluActor(), haku, timeout);
 
         try {
             LOGGER.error("############### Odotellaan sijoittelun valmistumista ###############");
@@ -137,6 +121,7 @@ public class SijoitteluResource {
             LOGGER.error("############### Sijoittelu valmis ###############");
             return String.valueOf(onnistui);
         } catch (Exception e) {
+            LOGGER.error("############### Sijoittelu epäonnistui ###############");
             e.printStackTrace();
             return "false";
         }
