@@ -75,7 +75,7 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
 	@Value("${root.organisaatio.oid}")
 	private String rootOrgOid;
 
-    @Value("${sijoittelu.maxAjojenMaara}")
+    @Value("${sijoittelu.maxAjojenMaara:75}")
     private int maxAjoMaara;
 
     @Autowired
