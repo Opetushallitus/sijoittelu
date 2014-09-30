@@ -92,7 +92,7 @@ public class SijoitteluAlgorithmFactoryImpl implements SijoitteluAlgorithmFactor
                             hakemus.setTila(HakemuksenTila.PERUNUT);
                             voidaanVaihtaa = false;
                         } else if (tila == ValintatuloksenTila.EI_VASTAANOTETTU_MAARA_AIKANA) {
-                            hakemus.setTila(HakemuksenTila.PERUUNTUNUT);
+                            hakemus.setTila(HakemuksenTila.PERUNUT);
                             hakemus.getTilanKuvaukset().put("FI", "Peruuntunut, ei vastaanottanut määräaikana");
                             hakemus.getTilanKuvaukset().put("SV", "Annullerad, har inte tagit emot platsen inom utsatt tid");
                             hakemus.getTilanKuvaukset().put("EN", "Cancelled, has not confirmed the study place within the deadline");

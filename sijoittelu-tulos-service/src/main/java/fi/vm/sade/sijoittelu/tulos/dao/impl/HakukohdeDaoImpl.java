@@ -44,6 +44,16 @@ public class HakukohdeDaoImpl implements HakukohdeDao {
     }
 
     @Override
+    public List<Hakukohde> findAll() {
+        return morphiaDS.find(Hakukohde.class).asList();
+    }
+
+    @Override
+    public void removeHakukohde(Hakukohde hakukohde) {
+        morphiaDS.delete(hakukohde);
+    }
+
+    @Override
     public Hakukohde getHakukohdeForSijoitteluajo(Long sijoitteluajoId, String hakukohdeOid) {
         Query<Hakukohde> q = morphiaDS.createQuery(Hakukohde.class);
         q.criteria("sijoitteluajoId").equal(sijoitteluajoId);
