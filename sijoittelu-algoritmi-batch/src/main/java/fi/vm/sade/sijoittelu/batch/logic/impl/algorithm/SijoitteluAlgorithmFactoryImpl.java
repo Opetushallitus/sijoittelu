@@ -121,6 +121,7 @@ public class SijoitteluAlgorithmFactoryImpl implements SijoitteluAlgorithmFactor
                             hakemus.setTilanKuvaukset(varasijamap);
                             hakemus.setTila(HakemuksenTila.VARASIJALTA_HYVAKSYTTY);
                             hakemus.setIlmoittautumisTila(valintatulos.getIlmoittautumisTila());
+                            voidaanVaihtaa = false;
                         }
                         hakemusWrapper.setTilaVoidaanVaihtaa(voidaanVaihtaa);
                         henkiloWrapper.getValintatulos().add(valintatulos);
