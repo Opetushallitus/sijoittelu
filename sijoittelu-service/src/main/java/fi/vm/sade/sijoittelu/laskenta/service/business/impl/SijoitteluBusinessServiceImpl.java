@@ -428,7 +428,7 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
 	public void vaihdaHakemuksenTila(String hakuoid, String hakukohdeOid,
 			String valintatapajonoOid, String hakemusOid,
 			ValintatuloksenTila tila, String selite,
-			IlmoittautumisTila ilmoittautumisTila, boolean julkaistavissa) {
+			IlmoittautumisTila ilmoittautumisTila, boolean julkaistavissa, boolean hyvaksyttyVarasijalta) {
 		if (StringUtils.isBlank(hakuoid) || StringUtils.isBlank(hakukohdeOid)
 				|| StringUtils.isBlank(valintatapajonoOid)
 				|| StringUtils.isBlank(hakemusOid)) {
@@ -515,6 +515,7 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
 		v.setTila(tila);
 		v.setIlmoittautumisTila(ilmoittautumisTila);
         v.setJulkaistavissa(julkaistavissa);
+        v.setHyvaksyttyVarasijalta(hyvaksyttyVarasijalta);
 
 		LOG.info(
 				"Asetetaan valintatuloksen tila - hakukohdeoid {}, valintatapajonooid {}, hakemusoid {}",

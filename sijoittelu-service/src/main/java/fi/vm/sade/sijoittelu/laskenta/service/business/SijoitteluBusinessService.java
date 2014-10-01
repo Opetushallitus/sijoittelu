@@ -27,7 +27,7 @@ public interface SijoitteluBusinessService {
 	void vaihdaHakemuksenTila(String hakuoid, String hakukohdeOid,
 			String valintatapajonoOid, String hakemusOid,
 			ValintatuloksenTila tila, String selite,
-			IlmoittautumisTila ilmoittautumisTila, boolean julkaistavissa);
+			IlmoittautumisTila ilmoittautumisTila, boolean julkaistavissa, boolean hyvaksyttyVarasijalta);
 
 	List<Valintatulos> haeHakemustenTilat(String hakukohdeOid,
 			String valintatapajonoOid);

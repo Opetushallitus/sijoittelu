@@ -97,36 +97,35 @@ public class CachingSijoitteluDao implements SijoitteluDao {
 					() -> morphiaDS.find(Sijoittelu.class).field("hakuOid")
 							.equal(hakuOid).get()));
 		} catch (Exception e) {
-			LOG.error("Ei saatu sijoittelua haulle {}: {}", hakuOid,
+			LOG.debug("Ei saatu sijoittelua haulle {}: {}", hakuOid,
 					e.getMessage());
 			return Optional.empty();
 		}
 
 	}
 
-    @Override
-    public Optional<Sijoittelu> getSijoitteluById(long id) {
-        try {
-            return Optional.ofNullable(morphiaDS.find(Sijoittelu.class).field("sijoitteluId")
-                    .equal(id).get());
-        } catch (Exception e) {
-            LOG.error("Ei saatu sijoittelua {}: {}", id,
-                    e.getMessage());
-            return Optional.empty();
-        }
-    }
+	@Override
+	public Optional<Sijoittelu> getSijoitteluById(long id) {
+		try {
+			return Optional.ofNullable(morphiaDS.find(Sijoittelu.class)
+					.field("sijoitteluId").equal(id).get());
+		} catch (Exception e) {
+			LOG.debug("Ei saatu sijoittelua {}: {}", id, e.getMessage());
+			return Optional.empty();
+		}
+	}
 
-    @Override
-    public void clearCacheForHaku(String hakuoid) {
-        sijoitteluPerHaku.invalidate(hakuoid);
-    }
+	@Override
+	public void clearCacheForHaku(String hakuoid) {
+		sijoitteluPerHaku.invalidate(hakuoid);
+	}
 
-    @Override
-    public List<Sijoittelu> findAll() {
-        return morphiaDS.find(Sijoittelu.class).asList();
-    }
+	@Override
+	public List<Sijoittelu> findAll() {
+		return morphiaDS.find(Sijoittelu.class).asList();
+	}
 
-    @Override
+	@Override
 	public void persistSijoittelu(Sijoittelu sijoittelu) {
 		morphiaDS.save(sijoittelu);
 		sijoitteluPerHaku.put(sijoittelu.getHakuOid(), sijoittelu);
