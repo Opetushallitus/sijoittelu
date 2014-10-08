@@ -2,6 +2,9 @@ package fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.presijoitteluprocessor;
 
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.*;
 import fi.vm.sade.sijoittelu.domain.HakemuksenTila;
+import fi.vm.sade.sijoittelu.domain.ValintatuloksenTila;
+
+import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.
@@ -20,25 +23,46 @@ public class PreSijoitteluProcessorPeruutaAlemmatPeruneetJaHyvaksytyt implements
 
     @Override
     public void process(SijoitteluajoWrapper sijoitteluajoWrapper) {
-        for(HakukohdeWrapper hakukohdeWrapper : sijoitteluajoWrapper.getHakukohteet()) {
-            for(ValintatapajonoWrapper valintatapajonoWrapper : hakukohdeWrapper.getValintatapajonot()) {
-                for(HakemusWrapper hakemusWrapper : valintatapajonoWrapper.getHakemukset()) {
+        for (HakukohdeWrapper hakukohdeWrapper : sijoitteluajoWrapper.getHakukohteet()) {
+            for (ValintatapajonoWrapper valintatapajonoWrapper : hakukohdeWrapper.getValintatapajonot()) {
+
+                boolean vastaanottanutSitovasti = isVastaanottanutSitovasti(valintatapajonoWrapper.getHakemukset());
+                for (HakemusWrapper hakemusWrapper : valintatapajonoWrapper.getHakemukset()) {
                     HenkiloWrapper henkiloWrapper = hakemusWrapper.getHenkilo();
                     Integer parasHyvaksyttyHakutoive = parasHyvaksyttyTaiPeruttuHakutoive(henkiloWrapper);
-                    if(parasHyvaksyttyHakutoive != null) {
-                        if (hakemusWrapper.isTilaVoidaanVaihtaa() &&
-                            hakemusWrapper.getHakemus().getTila() == HakemuksenTila.VARALLA &&
-                            hakemusWrapper.getHakemus().getPrioriteetti() >= parasHyvaksyttyHakutoive) {
 
-                            hakemusWrapper.getHakemus().getTilanKuvaukset().put("FI","Peruuntunut, hyväksytty ylemmälle hakutoiveelle");
-                            hakemusWrapper.getHakemus().getTilanKuvaukset().put("SV","Annullerad, godkänt till ansökningsmål med högre prioritet");
-                            hakemusWrapper.getHakemus().getTilanKuvaukset().put("EN","Cancelled, accepted for a study place with higher priority");
-                            hakemusWrapper.getHakemus().setTila(HakemuksenTila.PERUUNTUNUT);
+                    if (parasHyvaksyttyHakutoive != null && hakemusWrapper.isTilaVoidaanVaihtaa() &&
+                        hakemusWrapper.getHakemus().getTila() == HakemuksenTila.VARALLA &&
+                        hakemusWrapper.getHakemus().getPrioriteetti() >= parasHyvaksyttyHakutoive ||
+                        hakemusWrapper.isTilaVoidaanVaihtaa() && vastaanottanutSitovasti
+                    ) {
+                        if (vastaanottanutSitovasti) {
+                            hakemusWrapper.getHakemus().getTilanKuvaukset().put("FI", "Peruuntunut, ottanut vastaan toisen opiskelupaikan");
+                            hakemusWrapper.getHakemus().getTilanKuvaukset().put("SV", "Annullerad, ottanut vastaan toisen opiskelupaikan");
+                            hakemusWrapper.getHakemus().getTilanKuvaukset().put("EN", "Cancelled, ottanut vastaan toisen opiskelupaikan");
+                        } else {
+                            hakemusWrapper.getHakemus().getTilanKuvaukset().put("FI", "Peruuntunut, hyväksytty ylemmälle hakutoiveelle");
+                            hakemusWrapper.getHakemus().getTilanKuvaukset().put("SV", "Annullerad, godkänt till ansökningsmål med högre prioritet");
+                            hakemusWrapper.getHakemus().getTilanKuvaukset().put("EN", "Cancelled, accepted for a study place with higher priority");
                         }
+                        hakemusWrapper.getHakemus().setTila(HakemuksenTila.PERUUNTUNUT);
                     }
+
                 }
+
+
+
             }
         }
+    }
+
+    private boolean isVastaanottanutSitovasti(List<HakemusWrapper> hakemusWrapperit) {
+        for(HakemusWrapper hakemusWrapper :  hakemusWrapperit) {
+            if(hakemusWrapper.getHenkilo().getValintatulos().get(0).getTila() == ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private Integer parasHyvaksyttyTaiPeruttuHakutoive(HenkiloWrapper wrapper) {
