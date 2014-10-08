@@ -1,8 +1,7 @@
 package fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.presijoitteluprocessor;
 
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.*;
-import fi.vm.sade.sijoittelu.domain.HakemuksenTila;
-import fi.vm.sade.sijoittelu.domain.ValintatuloksenTila;
+import fi.vm.sade.sijoittelu.domain.*;
 
 import java.util.List;
 
@@ -26,7 +25,8 @@ public class PreSijoitteluProcessorPeruutaAlemmatPeruneetJaHyvaksytyt implements
         for (HakukohdeWrapper hakukohdeWrapper : sijoitteluajoWrapper.getHakukohteet()) {
             for (ValintatapajonoWrapper valintatapajonoWrapper : hakukohdeWrapper.getValintatapajonot()) {
 
-                boolean vastaanottanutSitovasti = isVastaanottanutSitovasti(valintatapajonoWrapper.getHakemukset());
+                boolean vastaanottanutSitovasti = isVastaanottanutSitovasti(valintatapajonoWrapper.getHakemukset(), hakukohdeWrapper.getHakukohde(),
+                        valintatapajonoWrapper.getValintatapajono());
                 for (HakemusWrapper hakemusWrapper : valintatapajonoWrapper.getHakemukset()) {
                     HenkiloWrapper henkiloWrapper = hakemusWrapper.getHenkilo();
                     Integer parasHyvaksyttyHakutoive = parasHyvaksyttyTaiPeruttuHakutoive(henkiloWrapper);
@@ -56,13 +56,32 @@ public class PreSijoitteluProcessorPeruutaAlemmatPeruneetJaHyvaksytyt implements
         }
     }
 
-    private boolean isVastaanottanutSitovasti(List<HakemusWrapper> hakemusWrapperit) {
+
+
+    private boolean isVastaanottanutSitovasti(List<HakemusWrapper> hakemusWrapperit, Hakukohde hakukohde, Valintatapajono valintatapajono) {
+
         for(HakemusWrapper hakemusWrapper :  hakemusWrapperit) {
-            if(hakemusWrapper.getHenkilo().getValintatulos().get(0).getTila() == ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI) {
-                return true;
+            Valintatulos valintatulos = getValintatulos(hakukohde,valintatapajono,hakemusWrapper.getHakemus(),hakemusWrapper.getHenkilo().getValintatulos());
+            if (valintatulos != null) {
+                if (valintatulos.getTila() == ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI) {
+                    return true;
+                }
             }
         }
         return false;
+    }
+
+    private Valintatulos getValintatulos(Hakukohde hakukohde, Valintatapajono valintatapajono, Hakemus hakemus, List<Valintatulos> valintatulokset) {
+        if(valintatulokset != null) {
+            for(Valintatulos vt : valintatulokset) {
+                if(vt.getHakukohdeOid().equals(hakukohde.getOid()) && vt.getValintatapajonoOid().equals(valintatapajono.getOid()) ) {
+                    if( vt.getHakemusOid() != null && !vt.getHakemusOid().isEmpty() && vt.getHakemusOid().equals(hakemus.getHakemusOid()) ) {
+                        return vt;
+                    }
+                }
+            }
+        }
+        return null;
     }
 
     private Integer parasHyvaksyttyTaiPeruttuHakutoive(HenkiloWrapper wrapper) {
