@@ -2,10 +2,7 @@ package fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.presijoitteluprocessor;
 
 
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.*;
-import fi.vm.sade.sijoittelu.domain.HakemuksenTila;
-import fi.vm.sade.sijoittelu.domain.Hakemus;
-import fi.vm.sade.sijoittelu.domain.ValintatuloksenTila;
-import fi.vm.sade.sijoittelu.domain.Valintatulos;
+import fi.vm.sade.sijoittelu.domain.*;
 import junit.framework.Assert;
 import org.junit.Test;
 
@@ -16,7 +13,7 @@ import java.util.List;
 public class PreSijoitteluProcessorPeruutaAlemmatPeruneetJaHyvaksytytTest {
     @Test
     public void testProcess_HakemuksenTila_Varalla() {
-  /*      PreSijoitteluProcessorPeruutaAlemmatPeruneetJaHyvaksytyt pre
+        PreSijoitteluProcessorPeruutaAlemmatPeruneetJaHyvaksytyt pre
                 = new PreSijoitteluProcessorPeruutaAlemmatPeruneetJaHyvaksytyt();
         SijoitteluajoWrapper sijoitteluajoWrapper = generateSijoitteluajoWrapper();
 
@@ -27,6 +24,7 @@ public class PreSijoitteluProcessorPeruutaAlemmatPeruneetJaHyvaksytytTest {
         h.setPrioriteetti(1);
         h.setTila(HakemuksenTila.HYVAKSYTTY);
         hakemus.setHakemus(h);
+
         Hakemus h2 = new Hakemus();
         h2.setPrioriteetti(2);
         h2.setTila(HakemuksenTila.VARALLA);
@@ -50,9 +48,9 @@ public class PreSijoitteluProcessorPeruutaAlemmatPeruneetJaHyvaksytytTest {
         Assert.assertEquals(sijoitteluajoWrapper.getHakukohteet().get(0)
                 .getValintatapajonot().get(0).getHakemukset().get(0).getHakemus().getTila(), HakemuksenTila.HYVAKSYTTY);
         Assert.assertEquals(sijoitteluajoWrapper.getHakukohteet().get(0)
-                .getValintatapajonot().get(0).getHakemukset().get(1).getHakemus().getTila(), HakemuksenTila.PERUUNTUNUT);*/
+                .getValintatapajonot().get(0).getHakemukset().get(1).getHakemus().getTila(), HakemuksenTila.PERUUNTUNUT);
     }
-/*
+
     @Test
     public void testProcess_Prioriteetti_Alempi_Kuin_Varalla() {
         PreSijoitteluProcessorPeruutaAlemmatPeruneetJaHyvaksytyt pre
@@ -114,15 +112,21 @@ public class PreSijoitteluProcessorPeruutaAlemmatPeruneetJaHyvaksytytTest {
 
 
         HenkiloWrapper henkilo = generateHenkiloWrapper();
-        henkilo.getHakemukset().add(hakemus);
-        henkilo.getHakemukset().add(hakemus2);
-        hakemus.setHenkilo(henkilo);
+
+
         sijoitteluajoWrapper.getHakukohteet().get(0).getValintatapajonot().get(0).getHakemukset().add(hakemus);
         Valintatulos valintatulos = new Valintatulos();
         valintatulos.setHakemusOid("321");
+        valintatulos.setHakukohdeOid("123");
+        valintatulos.setValintatapajonoOid("123");
         valintatulos.setTila(ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI);
         henkilo.getValintatulos().add(valintatulos);
+        hakemus.setHenkilo(henkilo);
         hakemus2.setHenkilo(henkilo);
+
+        henkilo.getHakemukset().add(hakemus);
+        henkilo.getHakemukset().add(hakemus2);
+
         sijoitteluajoWrapper.getHakukohteet().get(0).getValintatapajonot().get(0).getHakemukset().add(hakemus2);
 
 
@@ -133,11 +137,15 @@ public class PreSijoitteluProcessorPeruutaAlemmatPeruneetJaHyvaksytytTest {
         Assert.assertEquals(sijoitteluajoWrapper.getHakukohteet().get(0)
                 .getValintatapajonot().get(0).getHakemukset().get(1).getHakemus().getTila(), HakemuksenTila.HYVAKSYTTY);
     }
-*/
+
     private List<ValintatapajonoWrapper> generateValintatapajonoWrapper() {
         List<ValintatapajonoWrapper> valintatapajonot = new ArrayList<>();
 
         ValintatapajonoWrapper valintatapajono = new ValintatapajonoWrapper();
+        Valintatapajono valintatapajono1 = new Valintatapajono();
+        valintatapajono1.setOid("123");
+        valintatapajono.setValintatapajono(valintatapajono1);
+
         List<HakemusWrapper> hakemukset = generateHakemusWrapper();
         valintatapajono.setHakemukset(hakemukset);
 
@@ -149,7 +157,10 @@ public class PreSijoitteluProcessorPeruutaAlemmatPeruneetJaHyvaksytytTest {
         List<HakukohdeWrapper> hakukohteet = new ArrayList<>();
 
         HakukohdeWrapper hakukohde1 = new HakukohdeWrapper();
+        Hakukohde hakukohde = new Hakukohde();
+        hakukohde.setOid("123");
 
+        hakukohde1.setHakukohde(hakukohde);
         List<ValintatapajonoWrapper> valintatapajonoWrapper = generateValintatapajonoWrapper();
         hakukohde1.setValintatapajonot(valintatapajonoWrapper);
 
@@ -160,6 +171,7 @@ public class PreSijoitteluProcessorPeruutaAlemmatPeruneetJaHyvaksytytTest {
 
     private List<HakemusWrapper> generateHakemusWrapper() {
         List<HakemusWrapper> hakemukset = new ArrayList<>();
+
         return hakemukset;
     }
 

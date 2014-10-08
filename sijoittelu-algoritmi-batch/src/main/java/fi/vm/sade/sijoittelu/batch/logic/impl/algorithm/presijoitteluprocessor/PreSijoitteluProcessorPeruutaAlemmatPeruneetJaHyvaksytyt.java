@@ -74,7 +74,8 @@ public class PreSijoitteluProcessorPeruutaAlemmatPeruneetJaHyvaksytyt implements
     private Valintatulos getValintatulos(Hakukohde hakukohde, Valintatapajono valintatapajono, Hakemus hakemus, List<Valintatulos> valintatulokset) {
         if(valintatulokset != null) {
             for(Valintatulos vt : valintatulokset) {
-                if(vt.getHakukohdeOid().equals(hakukohde.getOid()) && vt.getValintatapajonoOid().equals(valintatapajono.getOid()) ) {
+                if(vt.getHakukohdeOid().equals(hakukohde.getOid()) &&
+                        vt.getValintatapajonoOid().equals(valintatapajono.getOid()) ) {
                     if( vt.getHakemusOid() != null && !vt.getHakemusOid().isEmpty() && vt.getHakemusOid().equals(hakemus.getHakemusOid()) ) {
                         return vt;
                     }
