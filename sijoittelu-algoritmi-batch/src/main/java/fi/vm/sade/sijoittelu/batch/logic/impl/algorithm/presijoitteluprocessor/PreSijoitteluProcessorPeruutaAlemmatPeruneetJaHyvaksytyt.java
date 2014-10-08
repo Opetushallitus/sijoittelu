@@ -36,10 +36,15 @@ public class PreSijoitteluProcessorPeruutaAlemmatPeruneetJaHyvaksytyt implements
                         hakemusWrapper.getHakemus().getPrioriteetti() >= parasHyvaksyttyHakutoive ||
                         hakemusWrapper.isTilaVoidaanVaihtaa() && vastaanottanutSitovasti
                     ) {
-
-                        hakemusWrapper.getHakemus().getTilanKuvaukset().put("FI","Peruuntunut, hyväksytty ylemmälle hakutoiveelle");
-                        hakemusWrapper.getHakemus().getTilanKuvaukset().put("SV","Annullerad, godkänt till ansökningsmål med högre prioritet");
-                        hakemusWrapper.getHakemus().getTilanKuvaukset().put("EN","Cancelled, accepted for a study place with higher priority");
+                        if (vastaanottanutSitovasti) {
+                            hakemusWrapper.getHakemus().getTilanKuvaukset().put("FI", "Peruuntunut, ottanut vastaan toisen opiskelupaikan");
+                            hakemusWrapper.getHakemus().getTilanKuvaukset().put("SV", "Annullerad, ottanut vastaan toisen opiskelupaikan");
+                            hakemusWrapper.getHakemus().getTilanKuvaukset().put("EN", "Cancelled, ottanut vastaan toisen opiskelupaikan");
+                        } else {
+                            hakemusWrapper.getHakemus().getTilanKuvaukset().put("FI", "Peruuntunut, hyväksytty ylemmälle hakutoiveelle");
+                            hakemusWrapper.getHakemus().getTilanKuvaukset().put("SV", "Annullerad, godkänt till ansökningsmål med högre prioritet");
+                            hakemusWrapper.getHakemus().getTilanKuvaukset().put("EN", "Cancelled, accepted for a study place with higher priority");
+                        }
                         hakemusWrapper.getHakemus().setTila(HakemuksenTila.PERUUNTUNUT);
                     }
 
