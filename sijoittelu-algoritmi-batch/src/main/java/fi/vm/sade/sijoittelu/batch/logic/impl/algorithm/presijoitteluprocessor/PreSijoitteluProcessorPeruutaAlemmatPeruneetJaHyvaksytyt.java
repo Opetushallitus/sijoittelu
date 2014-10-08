@@ -26,7 +26,10 @@ public class PreSijoitteluProcessorPeruutaAlemmatPeruneetJaHyvaksytyt implements
                     HenkiloWrapper henkiloWrapper = hakemusWrapper.getHenkilo();
                     Integer parasHyvaksyttyHakutoive = parasHyvaksyttyTaiPeruttuHakutoive(henkiloWrapper);
                     if(parasHyvaksyttyHakutoive != null) {
-                        if(hakemusWrapper.isTilaVoidaanVaihtaa() && hakemusWrapper.getHakemus().getTila() == HakemuksenTila.VARALLA && hakemusWrapper.getHakemus().getPrioriteetti() >= parasHyvaksyttyHakutoive) {
+                        if (hakemusWrapper.isTilaVoidaanVaihtaa() &&
+                            hakemusWrapper.getHakemus().getTila() == HakemuksenTila.VARALLA &&
+                            hakemusWrapper.getHakemus().getPrioriteetti() >= parasHyvaksyttyHakutoive) {
+
                             hakemusWrapper.getHakemus().getTilanKuvaukset().put("FI","Peruuntunut, hyväksytty ylemmälle hakutoiveelle");
                             hakemusWrapper.getHakemus().getTilanKuvaukset().put("SV","Annullerad, godkänt till ansökningsmål med högre prioritet");
                             hakemusWrapper.getHakemus().getTilanKuvaukset().put("EN","Cancelled, accepted for a study place with higher priority");

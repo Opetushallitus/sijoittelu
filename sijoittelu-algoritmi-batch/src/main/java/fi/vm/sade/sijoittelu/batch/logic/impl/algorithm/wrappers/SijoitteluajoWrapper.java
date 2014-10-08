@@ -20,6 +20,10 @@ public class SijoitteluajoWrapper {
         return hakukohteet;
     }
 
+    public void setHakukohteet(List<HakukohdeWrapper> hakukohteet) {
+        this.hakukohteet = hakukohteet;
+    }
+
     public SijoitteluAjo getSijoitteluajo() {
         return sijoitteluajo;
     }
