@@ -90,7 +90,7 @@ public class ValiSijoitteluResource {
         haku.getHakukohteet().forEach(hakukohde -> {
             hakukohde.getValinnanvaihe().forEach(vaihe -> {
                 vaihe.getValintatapajonot().forEach(jono -> {
-                    jono.setTasasijasaanto(Tasasijasaanto.ALITAYTTO);
+                    jono.setTasasijasaanto(Tasasijasaanto.YLITAYTTO);
                     jono.setAktiivinen(true);
                     jono.setSiirretaanSijoitteluun(true);
                     jono.setValmisSijoiteltavaksi(true);
