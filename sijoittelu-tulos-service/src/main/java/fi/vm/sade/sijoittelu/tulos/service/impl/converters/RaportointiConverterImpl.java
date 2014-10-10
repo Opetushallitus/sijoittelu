@@ -2,20 +2,13 @@ package fi.vm.sade.sijoittelu.tulos.service.impl.converters;
 
 import java.util.*;
 
-import com.google.common.collect.Lists;
-
 import org.springframework.stereotype.Component;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 import fi.vm.sade.sijoittelu.domain.Valintatulos;
-import fi.vm.sade.sijoittelu.tulos.dto.HakemuksenTila;
-import fi.vm.sade.sijoittelu.tulos.dto.HakemusDTO;
-import fi.vm.sade.sijoittelu.tulos.dto.HakukohdeDTO;
-import fi.vm.sade.sijoittelu.tulos.dto.IlmoittautumisTila;
-import fi.vm.sade.sijoittelu.tulos.dto.PistetietoDTO;
-import fi.vm.sade.sijoittelu.tulos.dto.ValintatapajonoDTO;
-import fi.vm.sade.sijoittelu.tulos.dto.ValintatuloksenTila;
+import fi.vm.sade.sijoittelu.tulos.dto.*;
 import fi.vm.sade.sijoittelu.tulos.dto.raportointi.HakijaDTO;
 import fi.vm.sade.sijoittelu.tulos.dto.raportointi.HakutoiveDTO;
 import fi.vm.sade.sijoittelu.tulos.dto.raportointi.HakutoiveenValintatapajonoDTO;
@@ -107,7 +100,7 @@ public class RaportointiConverterImpl implements RaportointiConverter {
                                 valintatapajonoDTO.setVastaanottotieto(EnumConverter.convert(ValintatuloksenTila.class, valintatulos.getTila()));
                                 valintatapajonoDTO.setJulkaistavissa(valintatulos.getJulkaistavissa());
                                 valintatapajonoDTO.setHyvaksyttyVarasijalta(valintatulos.getHyvaksyttyVarasijalta());
-                                valintatapajonoDTO.setVastaanottotilanViimeisinMuutos(viimeisinVastaanottotilanMuutos(valintatulos));
+                                valintatapajonoDTO.setValintatuloksenViimeisinMuutos(viimeisinValintatuloksenMuutos(valintatulos));
                                 if (ValintatuloksenTila.VASTAANOTTANUT.equals(valintatapajonoDTO.getVastaanottotieto()) || ValintatuloksenTila.EHDOLLISESTI_VASTAANOTTANUT.equals(valintatapajonoDTO.getVastaanottotieto())) {
                                     valintatapajonoDTO.setIlmoittautumisTila(EnumConverter.convert(IlmoittautumisTila.class, valintatulos.getIlmoittautumisTila()));
                                 }
@@ -120,7 +113,7 @@ public class RaportointiConverterImpl implements RaportointiConverter {
         return hakijat;
     }
 
-    private static Date viimeisinVastaanottotilanMuutos(Valintatulos valintatulos) {
+    private static Date viimeisinValintatuloksenMuutos(Valintatulos valintatulos) {
         if (valintatulos != null && !valintatulos.getLogEntries().isEmpty()) {
             return valintatulos.getLogEntries().get(valintatulos.getLogEntries().size() - 1).getLuotu();
         }
