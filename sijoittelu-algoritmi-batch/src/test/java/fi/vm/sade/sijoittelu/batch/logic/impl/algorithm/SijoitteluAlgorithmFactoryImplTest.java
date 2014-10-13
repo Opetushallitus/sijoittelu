@@ -1,10 +1,8 @@
 package fi.vm.sade.sijoittelu.batch.logic.impl.algorithm;
 
 
-import fi.vm.sade.sijoittelu.domain.Hakemus;
-import fi.vm.sade.sijoittelu.domain.Hakukohde;
-import fi.vm.sade.sijoittelu.domain.Valintatapajono;
-import fi.vm.sade.sijoittelu.domain.Valintatulos;
+import fi.vm.sade.sijoittelu.domain.*;
+import junit.framework.Assert;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -12,25 +10,36 @@ import java.util.List;
 
 public class SijoitteluAlgorithmFactoryImplTest {
     @Test
-    public void testconstructAlgorithm() {
+    public void testconstructAlgorithm_Perunut() {
         SijoitteluAlgorithmFactory sijoitteluAlgorithmFactory = new SijoitteluAlgorithmFactoryImpl();
 
-        SijoitteluAlgorithm sijoitteluAlgorithm = sijoitteluAlgorithmFactory.constructAlgorithm(
-                generateHakukohteet(), generateValintatulokset());
-    }
-
-    private List<Valintatulos> generateValintatulokset() {
         List<Valintatulos> valintatulokset = new ArrayList<>();
+        Valintatulos valintatulos = new Valintatulos();
+        valintatulos.setValintatapajonoOid("123");
+        valintatulos.setHakukohdeOid("123");
+        valintatulos.setHakemusOid("123");
+        valintatulos.setTila(ValintatuloksenTila.PERUNUT);
 
-        return valintatulokset;
+        valintatulokset.add(valintatulos);
+
+        SijoitteluAlgorithmImpl  sijoitteluAlgorithm = (SijoitteluAlgorithmImpl) sijoitteluAlgorithmFactory.constructAlgorithm(
+                generateHakukohteet(), valintatulokset);
+
+        Assert.assertEquals(sijoitteluAlgorithm.sijoitteluAjo.getHakukohteet().size(), 1);
+        Assert.assertFalse(sijoitteluAlgorithm.sijoitteluAjo.getHakukohteet().get(0).getValintatapajonot().
+                get(0).getHakemukset().get(0).isTilaVoidaanVaihtaa());
+
+
     }
+
 
     private List<Hakukohde> generateHakukohteet() {
         List<Hakukohde> hakukohdes = new ArrayList<>();
 
         Hakukohde hakukohde = new Hakukohde();
         hakukohde.setValintatapajonot(generateValintatapajono());
-
+        hakukohde.setOid("123");
+        hakukohdes.add(hakukohde);
 
         return hakukohdes;
     }
@@ -50,7 +59,9 @@ public class SijoitteluAlgorithmFactoryImplTest {
 
     private List<Hakemus> generateHakemukset() {
         List<Hakemus> hakemukset = new ArrayList<>();
-
+        Hakemus hakemus = new Hakemus();
+        hakemus.setHakemusOid("123");
+        hakemukset.add(hakemus);
         return hakemukset;
     }
 }
