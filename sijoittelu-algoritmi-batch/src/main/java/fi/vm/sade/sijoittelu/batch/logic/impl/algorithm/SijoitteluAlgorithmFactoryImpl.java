@@ -91,6 +91,9 @@ public class SijoitteluAlgorithmFactoryImpl implements SijoitteluAlgorithmFactor
                         if (tila == ValintatuloksenTila.PERUNUT) {
                             hakemus.setTila(HakemuksenTila.PERUNUT);
                             voidaanVaihtaa = false;
+                        } else if (tila == ValintatuloksenTila.EHDOLLISESTI_VASTAANOTTANUT) {
+                            hakemus.setTila(HakemuksenTila.HYVAKSYTTY);
+                            hakemus.setIlmoittautumisTila(valintatulos.getIlmoittautumisTila());
                         } else if (tila == ValintatuloksenTila.EI_VASTAANOTETTU_MAARA_AIKANA) {
                             hakemus.setTila(HakemuksenTila.PERUNUT);
                             hakemus.getTilanKuvaukset().put("FI", "Peruuntunut, ei vastaanottanut määräaikana");
