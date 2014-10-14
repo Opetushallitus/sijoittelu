@@ -102,7 +102,10 @@ public class Valintatapajono implements Serializable {
         return hakemukset;
     }
 
-    //public List<Saanto> getSaannot() {
+    public void setHakemukset(ArrayList<Hakemus> hakemukset) {
+        this.hakemukset = hakemukset;
+    }
+//public List<Saanto> getSaannot() {
 //		return saannot;
     //}
 
