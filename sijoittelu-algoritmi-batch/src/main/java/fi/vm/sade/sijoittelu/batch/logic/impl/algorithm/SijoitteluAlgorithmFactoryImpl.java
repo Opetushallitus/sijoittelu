@@ -79,7 +79,7 @@ public class SijoitteluAlgorithmFactoryImpl implements SijoitteluAlgorithmFactor
 
                     Valintatulos valintatulos = getValintatulos(hakukohde, valintatapajono, hakemus, valintatulokset);
 
-                    List<ValintatuloksenTila> hyvaksyttylista = Arrays.asList(ValintatuloksenTila.ILMOITETTU, ValintatuloksenTila.VASTAANOTTANUT, ValintatuloksenTila.EHDOLLISESTI_VASTAANOTTANUT, ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI);
+                    List<ValintatuloksenTila> hyvaksyttylista = Arrays.asList(ValintatuloksenTila.ILMOITETTU, ValintatuloksenTila.VASTAANOTTANUT);
                     Map<String, String> varasijamap = new HashMap<>();
                     varasijamap.put("FI", "Varasijalta hyväksytty");
                     varasijamap.put("SV", "Godkänd från reservplats");
@@ -93,6 +93,7 @@ public class SijoitteluAlgorithmFactoryImpl implements SijoitteluAlgorithmFactor
                             voidaanVaihtaa = false;
                         } else if (tila == ValintatuloksenTila.EHDOLLISESTI_VASTAANOTTANUT) {
                             hakemus.setTila(HakemuksenTila.HYVAKSYTTY);
+
                             hakemus.setIlmoittautumisTila(valintatulos.getIlmoittautumisTila());
                             voidaanVaihtaa = true;
                         } else if (tila == ValintatuloksenTila.EI_VASTAANOTETTU_MAARA_AIKANA) {
@@ -105,6 +106,7 @@ public class SijoitteluAlgorithmFactoryImpl implements SijoitteluAlgorithmFactor
                             hakemus.setTila(HakemuksenTila.PERUUTETTU);
                         } else if (valintatulos.getJulkaistavissa() && tila == ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI) {
                             hakemus.setTila(HakemuksenTila.HYVAKSYTTY);
+
                             voidaanVaihtaa = false;
                             hakemus.setIlmoittautumisTila(valintatulos.getIlmoittautumisTila());
                         } else if (hyvaksyttylista.contains(tila)) {

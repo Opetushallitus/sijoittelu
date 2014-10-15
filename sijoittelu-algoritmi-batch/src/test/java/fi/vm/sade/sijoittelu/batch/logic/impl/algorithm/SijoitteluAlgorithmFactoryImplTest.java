@@ -10,7 +10,7 @@ import java.util.List;
 
 public class SijoitteluAlgorithmFactoryImplTest {
     @Test
-    public void testconstructAlgorithm_Perunut() {
+    public void testconstructAlgorithm_PERUNUT() {
         SijoitteluAlgorithmFactory sijoitteluAlgorithmFactory = new SijoitteluAlgorithmFactoryImpl();
 
         List<Valintatulos> valintatulokset = new ArrayList<>();
@@ -26,12 +26,171 @@ public class SijoitteluAlgorithmFactoryImplTest {
                 generateHakukohteet(), valintatulokset);
 
         Assert.assertEquals(sijoitteluAlgorithm.sijoitteluAjo.getHakukohteet().size(), 1);
+        Assert.assertEquals(sijoitteluAlgorithm.sijoitteluAjo.getHakukohteet().get(0).getValintatapajonot().
+                        get(0).getHakemukset().get(0).getHakemus().getTila(), HakemuksenTila.PERUNUT);
         Assert.assertFalse(sijoitteluAlgorithm.sijoitteluAjo.getHakukohteet().get(0).getValintatapajonot().
                 get(0).getHakemukset().get(0).isTilaVoidaanVaihtaa());
 
 
     }
 
+    @Test
+    public void testconstructAlgorithm_EHDOLLISESTI_VASTAANOTTANUT() {
+        SijoitteluAlgorithmFactory sijoitteluAlgorithmFactory = new SijoitteluAlgorithmFactoryImpl();
+
+        List<Valintatulos> valintatulokset = new ArrayList<>();
+        Valintatulos valintatulos = new Valintatulos();
+        valintatulos.setValintatapajonoOid("123");
+        valintatulos.setHakukohdeOid("123");
+        valintatulos.setHakemusOid("123");
+        valintatulos.setTila(ValintatuloksenTila.EHDOLLISESTI_VASTAANOTTANUT);
+
+        valintatulokset.add(valintatulos);
+
+        SijoitteluAlgorithmImpl  sijoitteluAlgorithm = (SijoitteluAlgorithmImpl) sijoitteluAlgorithmFactory.constructAlgorithm(
+                generateHakukohteet(), valintatulokset);
+
+        Assert.assertEquals(sijoitteluAlgorithm.sijoitteluAjo.getHakukohteet().size(), 1);
+        Assert.assertEquals(sijoitteluAlgorithm.sijoitteluAjo.getHakukohteet().get(0).getValintatapajonot().
+                get(0).getHakemukset().get(0).getHakemus().getTila(), HakemuksenTila.HYVAKSYTTY);
+        Assert.assertEquals(sijoitteluAlgorithm.sijoitteluAjo.getHakukohteet().get(0).getValintatapajonot().
+                get(0).getHakemukset().get(0).getHakemus().getIlmoittautumisTila(), valintatulos.getIlmoittautumisTila());
+        Assert.assertTrue(sijoitteluAlgorithm.sijoitteluAjo.getHakukohteet().get(0).getValintatapajonot().
+                get(0).getHakemukset().get(0).isTilaVoidaanVaihtaa());
+
+    }
+
+
+    @Test
+    public void testconstructAlgorithm_EI_VASTAANOTETTU_MAARA_AIKANA() {
+        SijoitteluAlgorithmFactory sijoitteluAlgorithmFactory = new SijoitteluAlgorithmFactoryImpl();
+
+        List<Valintatulos> valintatulokset = new ArrayList<>();
+        Valintatulos valintatulos = new Valintatulos();
+        valintatulos.setValintatapajonoOid("123");
+        valintatulos.setHakukohdeOid("123");
+        valintatulos.setHakemusOid("123");
+        valintatulos.setTila(ValintatuloksenTila.EI_VASTAANOTETTU_MAARA_AIKANA);
+
+        valintatulokset.add(valintatulos);
+
+        SijoitteluAlgorithmImpl  sijoitteluAlgorithm = (SijoitteluAlgorithmImpl) sijoitteluAlgorithmFactory.constructAlgorithm(
+                generateHakukohteet(), valintatulokset);
+
+        Assert.assertEquals(sijoitteluAlgorithm.sijoitteluAjo.getHakukohteet().size(), 1);
+        Assert.assertEquals(sijoitteluAlgorithm.sijoitteluAjo.getHakukohteet().get(0).getValintatapajonot().
+                get(0).getHakemukset().get(0).getHakemus().getTila(), HakemuksenTila.PERUNUT);
+
+        Assert.assertFalse(sijoitteluAlgorithm.sijoitteluAjo.getHakukohteet().get(0).getValintatapajonot().
+                get(0).getHakemukset().get(0).isTilaVoidaanVaihtaa());
+
+    }
+
+
+    @Test
+    public void testconstructAlgorithm_PERUUTETTU() {
+        SijoitteluAlgorithmFactory sijoitteluAlgorithmFactory = new SijoitteluAlgorithmFactoryImpl();
+
+        List<Valintatulos> valintatulokset = new ArrayList<>();
+        Valintatulos valintatulos = new Valintatulos();
+        valintatulos.setValintatapajonoOid("123");
+        valintatulos.setHakukohdeOid("123");
+        valintatulos.setHakemusOid("123");
+        valintatulos.setTila(ValintatuloksenTila.PERUUTETTU);
+
+        valintatulokset.add(valintatulos);
+
+        SijoitteluAlgorithmImpl  sijoitteluAlgorithm = (SijoitteluAlgorithmImpl) sijoitteluAlgorithmFactory.constructAlgorithm(
+                generateHakukohteet(), valintatulokset);
+
+        Assert.assertEquals(sijoitteluAlgorithm.sijoitteluAjo.getHakukohteet().size(), 1);
+        Assert.assertEquals(sijoitteluAlgorithm.sijoitteluAjo.getHakukohteet().get(0).getValintatapajonot().
+                get(0).getHakemukset().get(0).getHakemus().getTila(), HakemuksenTila.PERUUTETTU);
+        Assert.assertTrue(sijoitteluAlgorithm.sijoitteluAjo.getHakukohteet().get(0).getValintatapajonot().
+                get(0).getHakemukset().get(0).isTilaVoidaanVaihtaa());
+
+    }
+
+    @Test
+    public void testconstructAlgorithm_VASTAANOTTANUT_SITOVASTI() {
+        SijoitteluAlgorithmFactory sijoitteluAlgorithmFactory = new SijoitteluAlgorithmFactoryImpl();
+
+        List<Valintatulos> valintatulokset = new ArrayList<>();
+        Valintatulos valintatulos = new Valintatulos();
+        valintatulos.setValintatapajonoOid("123");
+        valintatulos.setHakukohdeOid("123");
+        valintatulos.setHakemusOid("123");
+        valintatulos.setJulkaistavissa(true);
+        valintatulos.setTila(ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI);
+
+        valintatulokset.add(valintatulos);
+
+        SijoitteluAlgorithmImpl  sijoitteluAlgorithm = (SijoitteluAlgorithmImpl) sijoitteluAlgorithmFactory.constructAlgorithm(
+                generateHakukohteet(), valintatulokset);
+
+        Assert.assertEquals(sijoitteluAlgorithm.sijoitteluAjo.getHakukohteet().size(), 1);
+        Assert.assertEquals(sijoitteluAlgorithm.sijoitteluAjo.getHakukohteet().get(0).getValintatapajonot().
+                get(0).getHakemukset().get(0).getHakemus().getTila(), HakemuksenTila.HYVAKSYTTY);
+        Assert.assertEquals(sijoitteluAlgorithm.sijoitteluAjo.getHakukohteet().get(0).getValintatapajonot().
+                get(0).getHakemukset().get(0).getHakemus().getIlmoittautumisTila(), valintatulos.getIlmoittautumisTila());
+
+        Assert.assertFalse(sijoitteluAlgorithm.sijoitteluAjo.getHakukohteet().get(0).getValintatapajonot().
+                get(0).getHakemukset().get(0).isTilaVoidaanVaihtaa());
+
+    }
+
+
+    @Test
+    public void testconstructAlgorithm_ILMOITETTU() {
+        SijoitteluAlgorithmFactory sijoitteluAlgorithmFactory = new SijoitteluAlgorithmFactoryImpl();
+
+        List<Valintatulos> valintatulokset = new ArrayList<>();
+        Valintatulos valintatulos = new Valintatulos();
+        valintatulos.setValintatapajonoOid("123");
+        valintatulos.setHakukohdeOid("123");
+        valintatulos.setHakemusOid("123");
+        valintatulos.setJulkaistavissa(true);
+
+        valintatulos.setTila(ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI);
+
+        valintatulokset.add(valintatulos);
+
+        SijoitteluAlgorithmImpl  sijoitteluAlgorithm = (SijoitteluAlgorithmImpl) sijoitteluAlgorithmFactory.constructAlgorithm(
+                generateHakukohteet(), valintatulokset);
+
+        Assert.assertEquals(sijoitteluAlgorithm.sijoitteluAjo.getHakukohteet().size(), 1);
+        Assert.assertEquals(sijoitteluAlgorithm.sijoitteluAjo.getHakukohteet().get(0).getValintatapajonot().
+                get(0).getHakemukset().get(0).getHakemus().getTila(), HakemuksenTila.HYVAKSYTTY);
+        Assert.assertFalse(sijoitteluAlgorithm.sijoitteluAjo.getHakukohteet().get(0).getValintatapajonot().
+                get(0).getHakemukset().get(0).isTilaVoidaanVaihtaa());
+
+    }
+
+    @Test
+    public void testconstructAlgorithm_VASTAANOTTANUT() {
+        SijoitteluAlgorithmFactory sijoitteluAlgorithmFactory = new SijoitteluAlgorithmFactoryImpl();
+
+        List<Valintatulos> valintatulokset = new ArrayList<>();
+        Valintatulos valintatulos = new Valintatulos();
+        valintatulos.setValintatapajonoOid("123");
+        valintatulos.setHakukohdeOid("123");
+        valintatulos.setHakemusOid("123");
+        valintatulos.setJulkaistavissa(true);
+
+        valintatulos.setTila(ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI);
+
+        valintatulokset.add(valintatulos);
+
+        SijoitteluAlgorithmImpl  sijoitteluAlgorithm = (SijoitteluAlgorithmImpl) sijoitteluAlgorithmFactory.constructAlgorithm(
+                generateHakukohteet(), valintatulokset);
+
+        Assert.assertEquals(sijoitteluAlgorithm.sijoitteluAjo.getHakukohteet().size(), 1);
+        Assert.assertEquals(sijoitteluAlgorithm.sijoitteluAjo.getHakukohteet().get(0).getValintatapajonot().
+                get(0).getHakemukset().get(0).getHakemus().getTila(), HakemuksenTila.HYVAKSYTTY);
+        Assert.assertFalse(sijoitteluAlgorithm.sijoitteluAjo.getHakukohteet().get(0).getValintatapajonot().
+                get(0).getHakemukset().get(0).isTilaVoidaanVaihtaa());
+
+    }
 
     private List<Hakukohde> generateHakukohteet() {
         List<Hakukohde> hakukohdes = new ArrayList<>();
