@@ -29,7 +29,7 @@ public class PreSijoitteluProcessorPeruutaAlemmatPeruneetJaHyvaksytyt implements
                         valintatapajonoWrapper.getValintatapajono());
                 for (HakemusWrapper hakemusWrapper : valintatapajonoWrapper.getHakemukset()) {
                     HenkiloWrapper henkiloWrapper = hakemusWrapper.getHenkilo();
-                    Integer parasHyvaksyttyHakutoive = parasHyvaksyttyTaiPeruttuHakutoive(henkiloWrapper, hakukohdeWrapper, valintatapajonoWrapper);
+                    Integer parasHyvaksyttyHakutoive = parasHyvaksyttyTaiPeruttuHakutoive(henkiloWrapper);
 
                     if (parasHyvaksyttyHakutoive != null && hakemusWrapper.isTilaVoidaanVaihtaa() &&
                         hakemusWrapper.getHakemus().getTila() == HakemuksenTila.VARALLA &&
@@ -99,14 +99,11 @@ public class PreSijoitteluProcessorPeruutaAlemmatPeruneetJaHyvaksytyt implements
         return null;
     }
 
-    private Integer parasHyvaksyttyTaiPeruttuHakutoive(HenkiloWrapper wrapper, HakukohdeWrapper hakukohdeWrapper,
-                                                       ValintatapajonoWrapper valintatapajonoWrapper) {
+    private Integer parasHyvaksyttyTaiPeruttuHakutoive(HenkiloWrapper wrapper) {
         Integer parasHyvaksyttyHakutoive = null;
 
         for(HakemusWrapper hakemusWrapper :  wrapper.getHakemukset()) {
-            if(hakemusWrapper.getHakemus().getTila() == HakemuksenTila.HYVAKSYTTY &&
-                    !isVastaanottanutEhdollisesti(hakemusWrapper, hakukohdeWrapper.getHakukohde(),
-                            valintatapajonoWrapper.getValintatapajono())
+            if(hakemusWrapper.getHakemus().getTila() == HakemuksenTila.HYVAKSYTTY
                     || hakemusWrapper.getHakemus().getTila() == HakemuksenTila.PERUNUT
                     || hakemusWrapper.getHakemus().getTila() == HakemuksenTila.VARASIJALTA_HYVAKSYTTY) {
                 if(parasHyvaksyttyHakutoive == null || parasHyvaksyttyHakutoive > hakemusWrapper.getHakemus().getPrioriteetti())  {
