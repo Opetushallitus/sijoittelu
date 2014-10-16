@@ -38,7 +38,8 @@ public class PreSijoitteluProcessorPeruutaAlemmatPeruneetJaHyvaksytyt implements
                         isVastaanottanutEhdollisesti(hakemusWrapper, hakukohdeWrapper.getHakukohde(),
                                         valintatapajonoWrapper.getValintatapajono()) &&
                         hakemusWrapper.getHakemus().getPrioriteetti() >= parasHyvaksyttyHakutoive ||
-                        hakemusWrapper.isTilaVoidaanVaihtaa() && vastaanottanutSitovasti
+                            vastaanottanutSitovasti && !isCurrentVastaanottanutSitovasti(hakemusWrapper, hakukohdeWrapper.getHakukohde(),
+                                    valintatapajonoWrapper.getValintatapajono())
                     ) {
                         if (vastaanottanutSitovasti) {
                             hakemusWrapper.getHakemus().getTilanKuvaukset().put("FI", "Peruuntunut, ottanut vastaan toisen opiskelupaikan");
@@ -60,6 +61,8 @@ public class PreSijoitteluProcessorPeruutaAlemmatPeruneetJaHyvaksytyt implements
         }
     }
 
+
+
     private boolean isVastaanottanutEhdollisesti(HakemusWrapper hakemusWrapper, Hakukohde hakukohde, Valintatapajono valintatapajono) {
 
         Valintatulos valintatulos = getValintatulos(hakukohde,valintatapajono,hakemusWrapper.getHakemus(),hakemusWrapper.getHenkilo().getValintatulos());
@@ -71,6 +74,16 @@ public class PreSijoitteluProcessorPeruutaAlemmatPeruneetJaHyvaksytyt implements
         return false;
     }
 
+    private boolean isCurrentVastaanottanutSitovasti(HakemusWrapper hakemusWrapper, Hakukohde hakukohde, Valintatapajono valintatapajono) {
+
+        Valintatulos valintatulos = getValintatulos(hakukohde,valintatapajono,hakemusWrapper.getHakemus(),hakemusWrapper.getHenkilo().getValintatulos());
+        if (valintatulos != null) {
+            if (valintatulos.getTila() == ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI) {
+                return true;
+            }
+        }
+        return false;
+    }
 
     private boolean isVastaanottanutSitovasti(List<HakemusWrapper> hakemusWrapperit, Hakukohde hakukohde, Valintatapajono valintatapajono) {
 
