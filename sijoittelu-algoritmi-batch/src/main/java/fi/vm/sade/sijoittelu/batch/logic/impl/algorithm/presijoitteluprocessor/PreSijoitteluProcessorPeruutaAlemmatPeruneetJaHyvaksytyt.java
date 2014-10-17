@@ -51,11 +51,10 @@ public class PreSijoitteluProcessorPeruutaAlemmatPeruneetJaHyvaksytyt implements
                             hakemusWrapper.getHakemus().getTilanKuvaukset().put("EN", "Cancelled, accepted for a study place with higher priority");
                         }
                         hakemusWrapper.getHakemus().setTila(HakemuksenTila.PERUUNTUNUT);
+                        hakemusWrapper.setTilaVoidaanVaihtaa(false);
                     }
 
                 }
-
-
 
             }
         }
