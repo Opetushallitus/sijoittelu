@@ -38,7 +38,8 @@ public class PreSijoitteluProcessorPeruutaAlemmatPeruneetJaHyvaksytyt implements
                         isVastaanottanutEhdollisesti(hakemusWrapper, hakukohdeWrapper.getHakukohde(),
                                         valintatapajonoWrapper.getValintatapajono()) &&
                         hakemusWrapper.getHakemus().getPrioriteetti() >= parasHyvaksyttyHakutoive ||
-                        hakemusWrapper.isTilaVoidaanVaihtaa() && vastaanottanutSitovasti
+                            vastaanottanutSitovasti && !isCurrentVastaanottanutSitovasti(hakemusWrapper, hakukohdeWrapper.getHakukohde(),
+                                    valintatapajonoWrapper.getValintatapajono())
                     ) {
                         if (vastaanottanutSitovasti) {
                             hakemusWrapper.getHakemus().getTilanKuvaukset().put("FI", "Peruuntunut, ottanut vastaan toisen opiskelupaikan");
@@ -50,15 +51,16 @@ public class PreSijoitteluProcessorPeruutaAlemmatPeruneetJaHyvaksytyt implements
                             hakemusWrapper.getHakemus().getTilanKuvaukset().put("EN", "Cancelled, accepted for a study place with higher priority");
                         }
                         hakemusWrapper.getHakemus().setTila(HakemuksenTila.PERUUNTUNUT);
+                        hakemusWrapper.setTilaVoidaanVaihtaa(false);
                     }
 
                 }
 
-
-
             }
         }
     }
+
+
 
     private boolean isVastaanottanutEhdollisesti(HakemusWrapper hakemusWrapper, Hakukohde hakukohde, Valintatapajono valintatapajono) {
 
@@ -71,6 +73,16 @@ public class PreSijoitteluProcessorPeruutaAlemmatPeruneetJaHyvaksytyt implements
         return false;
     }
 
+    private boolean isCurrentVastaanottanutSitovasti(HakemusWrapper hakemusWrapper, Hakukohde hakukohde, Valintatapajono valintatapajono) {
+
+        Valintatulos valintatulos = getValintatulos(hakukohde,valintatapajono,hakemusWrapper.getHakemus(),hakemusWrapper.getHenkilo().getValintatulos());
+        if (valintatulos != null) {
+            if (valintatulos.getTila() == ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI) {
+                return true;
+            }
+        }
+        return false;
+    }
 
     private boolean isVastaanottanutSitovasti(List<HakemusWrapper> hakemusWrapperit, Hakukohde hakukohde, Valintatapajono valintatapajono) {
 

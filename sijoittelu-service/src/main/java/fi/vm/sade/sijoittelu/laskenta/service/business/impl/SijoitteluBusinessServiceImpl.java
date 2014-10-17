@@ -165,18 +165,12 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
         long startTime = System.currentTimeMillis();
         String hakuOid = sijoitteluTyyppi.getHakuOid();
         ValiSijoittelu sijoittelu = getOrCreateValiSijoittelu(hakuOid);
-        SijoitteluAjo viimeisinSijoitteluajo = sijoittelu
-                .getLatestSijoitteluajo();
 
         List<Hakukohde> uudetHakukohteet =
                 sijoitteluTyyppi.getHakukohteet().parallelStream().map(DomainConverter::convertToHakukohde).collect(Collectors.toList());
         List<Hakukohde> olemassaolevatHakukohteet = Collections
                 .<Hakukohde> emptyList();
-        if (viimeisinSijoitteluajo != null) {
-            olemassaolevatHakukohteet = hakukohdeDao
-                    .getHakukohdeForSijoitteluajo(viimeisinSijoitteluajo
-                            .getSijoitteluajoId());
-        }
+
         SijoitteluAjo uusiSijoitteluajo = createValiSijoitteluAjo(sijoittelu);
         List<Hakukohde> kaikkiHakukohteet = merge(uusiSijoitteluajo,
                 olemassaolevatHakukohteet, uudetHakukohteet);
