@@ -159,6 +159,43 @@ public class VastaanottotietoTest {
                 .get(0), "1.2.246.562.24.00000000006", HakemuksenTila.HYVAKSYTTY);
         TestHelper.assertoi(hakukohteet.get(2).getValintatapajonot()
                 .get(0), "1.2.246.562.24.00000000005", HakemuksenTila.PERUUNTUNUT);
+
+
+        valintatuloses = new ArrayList<>();
+        valintatulos = new Valintatulos();
+
+        valintatulos.setHakemusOid("1.2.246.562.24.00000000002");
+        valintatulos.setHakijaOid("oid");
+        valintatulos.setHakukohdeOid("1.2.246.562.11.00000000008");
+        valintatulos.setHakuOid(t.getHakuOid());
+        valintatulos.setJulkaistavissa(true);
+        valintatulos.setTila(ValintatuloksenTila.KESKEN);
+        valintatulos.setValintatapajonoOid("esimerkkikoulu_jono_1");
+
+        valintatuloses.add(valintatulos);
+
+        valintatulos = new Valintatulos();
+        valintatulos.setHakemusOid("1.2.246.562.24.00000000003");
+        valintatulos.setHakijaOid("oid");
+        valintatulos.setHakukohdeOid("1.2.246.562.11.00000000008");
+        valintatulos.setHakuOid(t.getHakuOid());
+        valintatulos.setJulkaistavissa(true);
+        valintatulos.setTila(ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI);
+        valintatulos.setValintatapajonoOid("esimerkkikoulu_jono_1");
+
+        valintatuloses.add(valintatulos);
+
+        h = new SijoitteluAlgorithmFactoryImpl();
+        s = h.constructAlgorithm(hakukohteet, valintatuloses);
+        s.start();
+
+        System.out.println(PrintHelper.tulostaSijoittelu(s));
+
+        // assertoi
+        TestHelper.assertoi(hakukohteet.get(1).getValintatapajonot()
+                .get(0), "1.2.246.562.24.00000000002", HakemuksenTila.PERUUNTUNUT);
+        TestHelper.assertoi(hakukohteet.get(1).getValintatapajonot()
+                .get(0), "1.2.246.562.24.00000000003", HakemuksenTila.HYVAKSYTTY);
     }
 
     @Test
@@ -242,6 +279,78 @@ public class VastaanottotietoTest {
                 .get(0), "1.2.246.562.24.00000000006", HakemuksenTila.PERUUNTUNUT);
         TestHelper.assertoi(hakukohteet.get(2).getValintatapajonot()
                 .get(0), "1.2.246.562.24.00000000005", HakemuksenTila.HYVAKSYTTY);
+
+        valintatuloses = new ArrayList<>();
+        valintatulos = new Valintatulos();
+
+        valintatulos.setHakemusOid("1.2.246.562.24.00000000002");
+        valintatulos.setHakijaOid("oid");
+        valintatulos.setHakukohdeOid("1.2.246.562.11.00000000008");
+        valintatulos.setHakuOid(t.getHakuOid());
+        valintatulos.setJulkaistavissa(true);
+        valintatulos.setTila(ValintatuloksenTila.KESKEN);
+        valintatulos.setValintatapajonoOid("esimerkkikoulu_jono_1");
+
+        valintatuloses.add(valintatulos);
+
+        valintatulos = new Valintatulos();
+        valintatulos.setHakemusOid("1.2.246.562.24.00000000001");
+        valintatulos.setHakijaOid("oid");
+        valintatulos.setHakukohdeOid("1.2.246.562.11.00000000008");
+        valintatulos.setHakuOid(t.getHakuOid());
+        valintatulos.setJulkaistavissa(true);
+        valintatulos.setTila(ValintatuloksenTila.EHDOLLISESTI_VASTAANOTTANUT);
+        valintatulos.setValintatapajonoOid("esimerkkikoulu_jono_1");
+
+        valintatuloses.add(valintatulos);
+
+        h = new SijoitteluAlgorithmFactoryImpl();
+        s = h.constructAlgorithm(hakukohteet, valintatuloses);
+        s.start();
+
+        System.out.println(PrintHelper.tulostaSijoittelu(s));
+
+        // assertoi
+        TestHelper.assertoi(hakukohteet.get(1).getValintatapajonot()
+                .get(0), "1.2.246.562.24.00000000002", HakemuksenTila.HYVAKSYTTY);
+        TestHelper.assertoi(hakukohteet.get(1).getValintatapajonot()
+                .get(0), "1.2.246.562.24.00000000001", HakemuksenTila.PERUUNTUNUT);
+
+        valintatuloses = new ArrayList<>();
+        valintatulos = new Valintatulos();
+
+        valintatulos.setHakemusOid("1.2.246.562.24.00000000002");
+        valintatulos.setHakijaOid("oid");
+        valintatulos.setHakukohdeOid("1.2.246.562.11.00000000008");
+        valintatulos.setHakuOid(t.getHakuOid());
+        valintatulos.setJulkaistavissa(true);
+        valintatulos.setTila(ValintatuloksenTila.KESKEN);
+        valintatulos.setValintatapajonoOid("esimerkkikoulu_jono_1");
+
+        valintatuloses.add(valintatulos);
+
+        valintatulos = new Valintatulos();
+        valintatulos.setHakemusOid("1.2.246.562.24.00000000003");
+        valintatulos.setHakijaOid("oid");
+        valintatulos.setHakukohdeOid("1.2.246.562.11.00000000008");
+        valintatulos.setHakuOid(t.getHakuOid());
+        valintatulos.setJulkaistavissa(true);
+        valintatulos.setTila(ValintatuloksenTila.EHDOLLISESTI_VASTAANOTTANUT);
+        valintatulos.setValintatapajonoOid("esimerkkikoulu_jono_1");
+
+        valintatuloses.add(valintatulos);
+
+        h = new SijoitteluAlgorithmFactoryImpl();
+        s = h.constructAlgorithm(hakukohteet, valintatuloses);
+        s.start();
+
+        System.out.println(PrintHelper.tulostaSijoittelu(s));
+
+        // assertoi
+        TestHelper.assertoi(hakukohteet.get(1).getValintatapajonot()
+                .get(0), "1.2.246.562.24.00000000002", HakemuksenTila.HYVAKSYTTY);
+        TestHelper.assertoi(hakukohteet.get(1).getValintatapajonot()
+                .get(0), "1.2.246.562.24.00000000003", HakemuksenTila.PERUUNTUNUT);
 
     }
 }
