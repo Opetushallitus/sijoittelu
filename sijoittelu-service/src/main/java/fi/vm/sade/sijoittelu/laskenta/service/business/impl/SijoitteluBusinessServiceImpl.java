@@ -175,7 +175,7 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
         List<Hakukohde> kaikkiHakukohteet = merge(uusiSijoitteluajo,
                 olemassaolevatHakukohteet, uudetHakukohteet);
 
-        List<Valintatulos> valintatulokset = valintatulosDao.loadValintatulokset(hakuOid);
+        List<Valintatulos> valintatulokset = Collections.emptyList();
         SijoitteluAlgorithm sijoitteluAlgorithm = algorithmFactory
                 .constructAlgorithm(kaikkiHakukohteet, valintatulokset);
 
@@ -485,8 +485,10 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
 //			}
 
             if (tila == ValintatuloksenTila.PERUUTETTU) {
-                throw new TilanTallennukseenEiOikeuksiaException(
+                if(v == null || !v.getTila().equals(tila)) {
+                    throw new TilanTallennukseenEiOikeuksiaException(
                         "Oikeudet eivät riitä Peruutettutilan tallennukseen");
+                }
             }
 
             // Otetaan toistaiseksi pois, koska ilmoittatumistilaa ei voi tällä toteutuksella muuttaa
