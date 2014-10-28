@@ -154,7 +154,7 @@ public class SijoitteluBusinessServiceImplTest {
 
 		Mockito.when(
 				valintatulosDaoMock.loadValintatulos(HAKUKOHDE_OID, VALINTATAPAJONO_OID,
-						HAKEMUS_OID)).thenReturn(getValintatulos(null));
+						HAKEMUS_OID)).thenReturn(getValintatulos(ValintatuloksenTila.KESKEN));
 
 		sijoitteluBusinessService.vaihdaHakemuksenTila(HAKU_OID, HAKUKOHDE_OID,
 				VALINTATAPAJONO_OID, HAKEMUS_OID,
@@ -200,7 +200,7 @@ public class SijoitteluBusinessServiceImplTest {
 
 		Mockito.when(
 				valintatulosDaoMock.loadValintatulos(HAKUKOHDE_OID, VALINTATAPAJONO_OID,
-						HAKEMUS_OID)).thenReturn(getValintatulos(null));
+						HAKEMUS_OID)).thenReturn(getValintatulos(ValintatuloksenTila.KESKEN));
 
 		sijoitteluBusinessService.vaihdaHakemuksenTila(HAKU_OID, HAKUKOHDE_OID,
 				VALINTATAPAJONO_OID, HAKEMUS_OID, ValintatuloksenTila.PERUNUT,
@@ -220,7 +220,7 @@ public class SijoitteluBusinessServiceImplTest {
 
 		Mockito.when(
 				valintatulosDaoMock.loadValintatulos(HAKUKOHDE_OID, VALINTATAPAJONO_OID,
-						HAKEMUS_OID_2)).thenReturn(getValintatulos(null));
+						HAKEMUS_OID_2)).thenReturn(getValintatulos(ValintatuloksenTila.KESKEN));
 
 		sijoitteluBusinessService.vaihdaHakemuksenTila(HAKU_OID, HAKUKOHDE_OID,
 				VALINTATAPAJONO_OID, HAKEMUS_OID_2,

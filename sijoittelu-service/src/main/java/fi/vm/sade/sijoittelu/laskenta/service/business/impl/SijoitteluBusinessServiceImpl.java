@@ -476,6 +476,11 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
 		Valintatulos v = valintatulosDao.loadValintatulos(hakukohdeOid, valintatapajonoOid,
 				hakemusOid);
 
+        if(v != null && v.getTila().equals(tila) && v.getIlmoittautumisTila().equals(ilmoittautumisTila)
+                && v.getJulkaistavissa() == julkaistavissa && v.getHyvaksyttyVarasijalta() == hyvaksyttyVarasijalta) {
+            return;
+        }
+
 		if (!ophAdmin) {
             // Ilmoitettu tila on poistettu käytöstä
 //			if ((v == null || v.getTila() == null)
@@ -508,6 +513,7 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
 			v.setHakutoive(hakemus.getPrioriteetti());
 			v.setHakuOid(hakuoid);
 		}
+
 		v.setTila(tila);
 		v.setIlmoittautumisTila(ilmoittautumisTila);
         v.setJulkaistavissa(julkaistavissa);
