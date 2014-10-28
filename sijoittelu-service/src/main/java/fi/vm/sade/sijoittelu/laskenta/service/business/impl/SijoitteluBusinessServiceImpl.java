@@ -175,7 +175,7 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
         List<Hakukohde> kaikkiHakukohteet = merge(uusiSijoitteluajo,
                 olemassaolevatHakukohteet, uudetHakukohteet);
 
-        List<Valintatulos> valintatulokset = valintatulosDao.loadValintatulokset(hakuOid);
+        List<Valintatulos> valintatulokset = Collections.emptyList();
         SijoitteluAlgorithm sijoitteluAlgorithm = algorithmFactory
                 .constructAlgorithm(kaikkiHakukohteet, valintatulokset);
 
@@ -476,6 +476,11 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
 		Valintatulos v = valintatulosDao.loadValintatulos(hakukohdeOid, valintatapajonoOid,
 				hakemusOid);
 
+        if(v != null && v.getTila().equals(tila) && v.getIlmoittautumisTila().equals(ilmoittautumisTila)
+                && v.getJulkaistavissa() == julkaistavissa && v.getHyvaksyttyVarasijalta() == hyvaksyttyVarasijalta) {
+            return;
+        }
+
 		if (!ophAdmin) {
             // Ilmoitettu tila on poistettu käytöstä
 //			if ((v == null || v.getTila() == null)
@@ -485,8 +490,10 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
 //			}
 
             if (tila == ValintatuloksenTila.PERUUTETTU) {
-                throw new TilanTallennukseenEiOikeuksiaException(
+                if(v == null || !v.getTila().equals(tila)) {
+                    throw new TilanTallennukseenEiOikeuksiaException(
                         "Oikeudet eivät riitä Peruutettutilan tallennukseen");
+                }
             }
 
             // Otetaan toistaiseksi pois, koska ilmoittatumistilaa ei voi tällä toteutuksella muuttaa
@@ -506,6 +513,7 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
 			v.setHakutoive(hakemus.getPrioriteetti());
 			v.setHakuOid(hakuoid);
 		}
+
 		v.setTila(tila);
 		v.setIlmoittautumisTila(ilmoittautumisTila);
         v.setJulkaistavissa(julkaistavissa);
