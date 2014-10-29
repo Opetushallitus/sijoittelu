@@ -33,10 +33,10 @@ import java.util.List;
 import static fi.vm.sade.sijoittelu.laskenta.actors.creators.SpringExtension.SpringExtProvider;
 import static fi.vm.sade.valintalaskenta.tulos.roles.ValintojenToteuttaminenRole.CRUD;
 
-@Path("valisijoittele")
+@Path("erillissijoittele")
 @Component
 @PreAuthorize("isAuthenticated()")
-@Api(value = "/tila", description = "Resurssi sijoitteluun")
+@Api(value = "/erillissijoittele", description = "Resurssi sijoitteluun")
 public class ErillisSijoitteluResource {
 
 	private final static Logger LOGGER = LoggerFactory
@@ -62,7 +62,6 @@ public class ErillisSijoitteluResource {
 	@POST
     @Path("{hakuOid}")
     @Consumes("application/json")
-    @Produces("application/json")
 	@PreAuthorize(CRUD)
 	public Long sijoittele(@PathParam("hakuOid") String hakuOid, ValisijoitteluDTO hakukohteet) {
 
