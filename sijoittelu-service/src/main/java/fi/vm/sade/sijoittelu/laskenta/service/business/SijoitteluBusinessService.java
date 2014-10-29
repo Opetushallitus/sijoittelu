@@ -19,6 +19,8 @@ public interface SijoitteluBusinessService {
 
     List<HakukohdeDTO> valisijoittele(HakuDTO sijoitteluTyyppi);
 
+    long erillissijoittele(HakuDTO sijoitteluTyyppi);
+
 	Valintatulos haeHakemuksenTila(String hakuoid, String hakukohdeOid,
 			String valintatapajonoOid, String hakemusOid);
 

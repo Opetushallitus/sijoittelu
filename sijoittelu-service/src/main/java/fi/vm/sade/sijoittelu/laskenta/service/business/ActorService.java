@@ -18,4 +18,6 @@ public interface ActorService {
 
     ActorRef getSijoitteluActor();
 
+    ActorRef getErillisSijoitteluActor();
+
 }

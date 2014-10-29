@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 import akka.actor.ActorRef;
 import fi.vm.sade.sijoittelu.domain.*;
@@ -11,12 +12,9 @@ import fi.vm.sade.sijoittelu.domain.comparator.HakemusComparator;
 import fi.vm.sade.sijoittelu.laskenta.actors.messages.PoistaHakukohteet;
 import fi.vm.sade.sijoittelu.laskenta.actors.messages.PoistaVanhatAjotSijoittelulta;
 import fi.vm.sade.sijoittelu.laskenta.service.business.ActorService;
-import fi.vm.sade.sijoittelu.tulos.dao.HakukohdeDao;
+import fi.vm.sade.sijoittelu.tulos.dao.*;
 import fi.vm.sade.sijoittelu.laskenta.mapping.SijoitteluModelMapper;
 import fi.vm.sade.sijoittelu.laskenta.service.exception.*;
-import fi.vm.sade.sijoittelu.tulos.dao.SijoitteluDao;
-import fi.vm.sade.sijoittelu.tulos.dao.ValiSijoitteluDao;
-import fi.vm.sade.sijoittelu.tulos.dao.ValintatulosDao;
 import fi.vm.sade.sijoittelu.tulos.dto.HakukohdeDTO;
 import fi.vm.sade.sijoittelu.tulos.service.impl.converters.SijoitteluTulosConverter;
 import fi.vm.sade.valintalaskenta.domain.dto.valintatieto.HakuDTO;
@@ -62,6 +60,9 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
 
     @Autowired
     private ValiSijoitteluDao valisijoitteluDao;
+
+    @Autowired
+    private ErillisSijoitteluDao erillisSijoitteluDao;
 
 	@Autowired
 	private Authorizer authorizer;
@@ -188,6 +189,40 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
         valisijoitteluDao.persistSijoittelu(sijoittelu);
 
         return kaikkiHakukohteet.parallelStream().map(h -> sijoitteluTulosConverter.convert(h)).collect(Collectors.toList());
+    }
+
+    @Override
+    public long erillissijoittele(HakuDTO sijoitteluTyyppi) {
+        long startTime = System.currentTimeMillis();
+        String hakuOid = sijoitteluTyyppi.getHakuOid();
+        ErillisSijoittelu sijoittelu = getOrCreateErillisSijoittelu(hakuOid);
+
+        List<Hakukohde> uudetHakukohteet =
+                sijoitteluTyyppi.getHakukohteet().parallelStream().map(DomainConverter::convertToHakukohde).collect(Collectors.toList());
+        List<Hakukohde> olemassaolevatHakukohteet = Collections
+                .<Hakukohde> emptyList();
+
+        SijoitteluAjo uusiSijoitteluajo = createErillisSijoitteluAjo(sijoittelu);
+        List<Hakukohde> kaikkiHakukohteet = merge(uusiSijoitteluajo,
+                olemassaolevatHakukohteet, uudetHakukohteet);
+
+        List<Valintatulos> valintatulokset = sijoitteluTyyppi.getHakukohteet()
+                .stream()
+                .map(h -> valintatulosDao.loadValintatuloksetForHakukohde(h.getOid()))
+                .flatMap(list -> list.stream())
+                .collect(Collectors.toList());
+        SijoitteluAlgorithm sijoitteluAlgorithm = algorithmFactory
+                .constructAlgorithm(kaikkiHakukohteet, valintatulokset);
+
+        uusiSijoitteluajo.setStartMils(startTime);
+        sijoitteluAlgorithm.start();
+        uusiSijoitteluajo.setEndMils(System.currentTimeMillis());
+
+        processOldApplications(olemassaolevatHakukohteet, kaikkiHakukohteet);
+
+        erillisSijoitteluDao.persistSijoittelu(sijoittelu);
+
+        return uusiSijoitteluajo.getSijoitteluajoId();
     }
 
     private void processOldApplications(
@@ -344,6 +379,17 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
         return sijoitteluAjo;
     }
 
+    private SijoitteluAjo createErillisSijoitteluAjo(ErillisSijoittelu sijoittelu) {
+        SijoitteluAjo sijoitteluAjo = new SijoitteluAjo();
+        Long now = System.currentTimeMillis();
+        sijoitteluAjo.setSijoitteluajoId(now);
+        sijoitteluAjo.setHakuOid(sijoittelu.getHakuOid()); // silta varalta etta
+        // tehdaan omaksi
+        // entityksi
+        sijoittelu.getSijoitteluajot().add(sijoitteluAjo);
+        return sijoitteluAjo;
+    }
+
 	private Sijoittelu getOrCreateSijoittelu(String hakuoid) {
 		Optional<Sijoittelu> sijoitteluOpt = sijoitteluDao.getSijoitteluByHakuOid(hakuoid);
 
@@ -368,6 +414,22 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
         }
         else {
             ValiSijoittelu sijoittelu = new ValiSijoittelu();
+            sijoittelu.setCreated(new Date());
+            sijoittelu.setSijoitteluId(System.currentTimeMillis());
+            sijoittelu.setHakuOid(hakuoid);
+            return sijoittelu;
+        }
+
+    }
+
+    private ErillisSijoittelu getOrCreateErillisSijoittelu(String hakuoid) {
+        Optional<ErillisSijoittelu> sijoitteluOpt = erillisSijoitteluDao.getSijoitteluByHakuOid(hakuoid);
+
+        if (sijoitteluOpt.isPresent()) {
+            return sijoitteluOpt.get();
+        }
+        else {
+            ErillisSijoittelu sijoittelu = new ErillisSijoittelu();
             sijoittelu.setCreated(new Date());
             sijoittelu.setSijoitteluId(System.currentTimeMillis());
             sijoittelu.setHakuOid(hakuoid);

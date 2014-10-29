@@ -28,6 +28,8 @@ public class ActorServiceImpl implements ActorService {
 
     private ActorRef router;
 
+    private ActorRef erillisRouter;
+
     @PostConstruct
     public void initActorSystem() {
         actorSystem = ActorSystem.create("SijoitteluActorSystem");
@@ -36,6 +38,10 @@ public class ActorServiceImpl implements ActorService {
                 SpringExtProvider.get(actorSystem).props("SijoitteluActor")
                         .withRouter(new RoundRobinRouter(1)),
                 "SijoitteluRouter");
+        erillisRouter = actorSystem.actorOf(
+                SpringExtProvider.get(actorSystem).props("ErillisSijoitteluActor")
+                        .withRouter(new RoundRobinRouter(3)),
+                "ErillisSijoitteluRouter");
 
     }
 
@@ -59,5 +65,10 @@ public class ActorServiceImpl implements ActorService {
     @Override
     public ActorRef getSijoitteluActor() {
         return router;
+    }
+
+    @Override
+    public ActorRef getErillisSijoitteluActor() {
+        return erillisRouter;
     }
 }
