@@ -22,6 +22,18 @@ public class Hakijaryhma implements Serializable {
 
     private String nimi;
 
+    private String hakukohdeOid;
+
+    private int kiintio;
+
+    private boolean kaytaKaikki;
+
+    private boolean tarkkaKiintio;
+
+    private boolean kaytetaanRyhmaanKuuluvia;
+
+    private String valintatapajonoOid;
+
     private List<String> hakemusOid = new ArrayList<String>();
 
     public List<String> getHakemusOid() {
@@ -69,5 +81,53 @@ public class Hakijaryhma implements Serializable {
                 ", nimi='" + nimi + '\'' +
                 ", hakemusOid=" + hakemusOid +
                 '}';
+    }
+
+    public String getHakukohdeOid() {
+        return hakukohdeOid;
+    }
+
+    public void setHakukohdeOid(String hakukohdeOid) {
+        this.hakukohdeOid = hakukohdeOid;
+    }
+
+    public int getKiintio() {
+        return kiintio;
+    }
+
+    public void setKiintio(int kiintio) {
+        this.kiintio = kiintio;
+    }
+
+    public boolean isKaytaKaikki() {
+        return kaytaKaikki;
+    }
+
+    public void setKaytaKaikki(boolean kaytaKaikki) {
+        this.kaytaKaikki = kaytaKaikki;
+    }
+
+    public boolean isTarkkaKiintio() {
+        return tarkkaKiintio;
+    }
+
+    public void setTarkkaKiintio(boolean tarkkaKiintio) {
+        this.tarkkaKiintio = tarkkaKiintio;
+    }
+
+    public boolean isKaytetaanRyhmaanKuuluvia() {
+        return kaytetaanRyhmaanKuuluvia;
+    }
+
+    public void setKaytetaanRyhmaanKuuluvia(boolean kaytetaanRyhmaanKuuluvia) {
+        this.kaytetaanRyhmaanKuuluvia = kaytetaanRyhmaanKuuluvia;
+    }
+
+    public String getValintatapajonoOid() {
+        return valintatapajonoOid;
+    }
+
+    public void setValintatapajonoOid(String valintatapajonoOid) {
+        this.valintatapajonoOid = valintatapajonoOid;
     }
 }
