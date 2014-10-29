@@ -14,7 +14,7 @@ import java.util.List;
 /**
  * @author Kari Kammonen
  */
-@Entity("ValiSijoittelu")
+@Entity("ErillisSijoittelu")
 public class ErillisSijoittelu implements Serializable {
 
     @SuppressWarnings("unused")
