@@ -32,9 +32,9 @@ public class ErillisSijoitteluActor extends AbstractActor {
         receive(ReceiveBuilder.match(HakuDTO.class, haku -> {
             try {
                 log.error("Erillissijoittelukutsu saapunut actorille!");
-                //sijoitteluBusinessService.sijoittele(haku);
+                long ajo = sijoitteluBusinessService.erillissijoittele(haku);
                 log.error("Erillissijoittelu suoritettu onnistuneesti!");
-                sender().tell(true, self());
+                sender().tell(ajo, self());
             } catch (Exception e) {
                 e.printStackTrace();
                 log.error("Erillissijoittelu epäonnistui syystä {}!\r\n{}",
