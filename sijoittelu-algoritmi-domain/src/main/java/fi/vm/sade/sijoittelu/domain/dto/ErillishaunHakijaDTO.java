@@ -16,7 +16,7 @@ public class ErillishaunHakijaDTO {
 	private String hakemusOid;
 	private String hakukohdeOid;
 	private boolean julkaistavissa;
-	private boolean hyvaksyttyVarasijalta;
+	//private boolean hyvaksyttyVarasijalta;
 	private String hakijaOid;
 	private String hakuOid;
 	private String tarjoajaOid;
@@ -25,6 +25,10 @@ public class ErillishaunHakijaDTO {
 	private IlmoittautumisTila ilmoittautumisTila;
 	private HakemuksenTila hakemuksenTila;
 
+	public ErillishaunHakijaDTO() {
+			
+		}
+	
 	public Valintatulos asValintatulos() {
 		Valintatulos v = new Valintatulos();
 		v.setHakemusOid(hakemusOid);
@@ -41,7 +45,7 @@ public class ErillishaunHakijaDTO {
 	}
 	
 	public boolean isHyvaksyttyVarasijalta() {
-		return hyvaksyttyVarasijalta;
+		return HakemuksenTila.VARASIJALTA_HYVAKSYTTY.equals(hakemuksenTila);
 	}
 
 	public boolean isJulkaistavissa() {
@@ -83,4 +87,35 @@ public class ErillishaunHakijaDTO {
 	public String getValintatapajonoOid() {
 		return valintatapajonoOid;
 	}
+	public void setHakemuksenTila(HakemuksenTila hakemuksenTila) {
+		this.hakemuksenTila = hakemuksenTila;
+	}
+	public void setHakemusOid(String hakemusOid) {
+		this.hakemusOid = hakemusOid;
+	}
+	public void setHakijaOid(String hakijaOid) {
+		this.hakijaOid = hakijaOid;
+	}
+	public void setHakukohdeOid(String hakukohdeOid) {
+		this.hakukohdeOid = hakukohdeOid;
+	}
+	public void setHakuOid(String hakuOid) {
+		this.hakuOid = hakuOid;
+	}
+	public void setIlmoittautumisTila(IlmoittautumisTila ilmoittautumisTila) {
+		this.ilmoittautumisTila = ilmoittautumisTila;
+	}
+	public void setJulkaistavissa(boolean julkaistavissa) {
+		this.julkaistavissa = julkaistavissa;
+	}
+	public void setTarjoajaOid(String tarjoajaOid) {
+		this.tarjoajaOid = tarjoajaOid;
+	}
+	public void setValintatapajonoOid(String valintatapajonoOid) {
+		this.valintatapajonoOid = valintatapajonoOid;
+	}
+	public void setValintatuloksenTila(ValintatuloksenTila valintatuloksenTila) {
+		this.valintatuloksenTila = valintatuloksenTila;
+	}
+	
 }
