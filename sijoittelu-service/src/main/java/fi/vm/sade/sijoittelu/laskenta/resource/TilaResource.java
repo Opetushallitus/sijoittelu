@@ -176,7 +176,7 @@ public class TilaResource {
 			erillishaunHakijaDtos.stream().forEach(
 					e -> muutaTilaa(e.getTarjoajaOid(), e.getHakuOid(),
 							e.getHakukohdeOid(), e.getHakemusOid(),
-							e.getHakemuksenTila(), Optional.empty()));
+							e.getHakemuksenTila(), Optional.empty(), Optional.of(e.getValintatapajonoOid())));
 			erillishaunHakijaDtos
 					.stream()
 					.map(e -> e.asValintatulos())
@@ -205,7 +205,7 @@ public class TilaResource {
 	}
 
 	private void muutaTilaa(String tarjoajaOid, String hakuOid,
-			String hakukohdeOid, String hakemusOid, HakemuksenTila tila, Optional<List<String>> tilanKuvaukset) {
+			String hakukohdeOid, String hakemusOid, HakemuksenTila tila, Optional<List<String>> tilanKuvaukset, Optional<String> valintatapajonoOid) {
         Optional<SijoitteluAjo> sijoitteluAjoOpt = raportointiService
                 .latestSijoitteluAjoForHaku(hakuOid);
 
@@ -247,12 +247,7 @@ public class TilaResource {
             hakukohde.setSijoitteluajoId(ajo.getSijoitteluajoId());
             hakukohde.setTarjoajaOid(tarjoajaOid);
 
-            Valintatapajono jono = new Valintatapajono();
-            jono.setHyvaksytty(0);
-            jono.setVaralla(0);
-            jono.setOid(UUID.randomUUID().toString());
-            jono.setAloituspaikat(0);
-            jono.setPrioriteetti(0);
+            Valintatapajono jono = createValintatapaJono(UUID.randomUUID().toString());
 
             hakukohde.getValintatapajonot().add(jono);
             hakukohdeDao.persistHakukohde(hakukohde);
@@ -267,7 +262,16 @@ public class TilaResource {
                 hakukohdeDao.persistHakukohde(kohde);
             }
 
-            Valintatapajono jono = kohde.getValintatapajonot().get(0);
+            Valintatapajono jono;
+            if (valintatapajonoOid.isPresent()) {
+                jono = kohde.getValintatapajonot()
+                        .stream()
+                        .filter(j -> j.getOid().equals(valintatapajonoOid.get()))
+                        .findFirst()
+                        .orElse(createValintatapaJono(valintatapajonoOid.get()));
+            } else {
+                jono = kohde.getValintatapajonot().get(0);
+            }
 
             Optional<Hakemus> hakemusOpt = jono.getHakemukset()
                     .parallelStream()
@@ -327,6 +331,17 @@ public class TilaResource {
 
 	}
 
+    private Valintatapajono createValintatapaJono(String valintatapajonoOid) {
+        Valintatapajono jono = new Valintatapajono();
+        jono.setHyvaksytty(0);
+        jono.setVaralla(0);
+        jono.setOid(valintatapajonoOid);
+        jono.setAloituspaikat(0);
+        jono.setPrioriteetti(0);
+
+        return jono;
+    }
+
 	@POST
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("haku/{hakuOid}/hakukohde/{hakukohdeOid}/hakemus/{hakemusOid}")
@@ -352,7 +367,7 @@ public class TilaResource {
 
             Optional<List<String>> kuvaukset = Optional.ofNullable(tilaObj.getTilanKuvaukset());
 
-            muutaTilaa(tarjoajaOid, hakuOid, hakukohdeOid, hakemusOid, tila, kuvaukset);
+            muutaTilaa(tarjoajaOid, hakuOid, hakukohdeOid, hakemusOid, tila, kuvaukset, Optional.empty());
 
             return Response.status(Response.Status.ACCEPTED).build();
 
