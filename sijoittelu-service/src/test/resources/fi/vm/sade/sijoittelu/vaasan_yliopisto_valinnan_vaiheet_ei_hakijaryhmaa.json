@@ -12,7 +12,7 @@
                     "valintatapajonoOid" : "1410634972926-6437870106021103090",
                     "nimi" : "Pisteet",
                     "prioriteetti" : 0,
-                    "aloituspaikat" : 1,
+                    "aloituspaikat" : 2,
                     "siirretaanSijoitteluun" : true,
                     "tasasijasaanto" : "YLITAYTTO",
                     "eiVarasijatayttoa" : false,
@@ -28,7 +28,7 @@
                             "jarjestyskriteeritulokset" : [
                                 {
                                     "prioriteetti" : 0,
-                                    "arvo" : "11",
+                                    "arvo" : "20",
                                     "tila" : "HYVAKSYTTAVISSA",
                                     "nimi" : "Testikriteeri"
                                 }

@@ -33,7 +33,7 @@ public class BasicSijoitteluHakijaryhmaTasasijaTest {
      *
      * @throws IOException
      */
-    @Ignore
+
     @Test
     public void testSijoittelu() throws IOException {
         // tee sijoittelu

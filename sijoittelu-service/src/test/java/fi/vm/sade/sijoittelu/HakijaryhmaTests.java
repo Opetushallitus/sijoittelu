@@ -81,7 +81,6 @@ public class HakijaryhmaTests {
 
     }
 
-    @Ignore
     @Test
     @UsingDataSet(locations = "vaasan_yliopisto_valinnan_vaiheet_kaksi_hakijaryhmaa_toinen_eri_jonossa.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
     public void testSijoitteluTwoHakijaryhmaToisessaEriJono() throws IOException {
@@ -113,7 +112,7 @@ public class HakijaryhmaTests {
 
         System.out.println(PrintHelper.tulostaSijoittelu(s));
 
-        assertoiAinoastaanValittu(hakukohteet.get(0).getValintatapajonot().get(0), "1.2.246.562.11.00001068863", "1.2.246.562.11.00001090792");
+        assertoiAinoastaanValittu(hakukohteet.get(0).getValintatapajonot().get(0), "1.2.246.562.11.00001068863", "1.2.246.562.11.00001090792", "1.2.246.562.11.00001067411");
     }
 
     public final static void assertoiAinoastaanValittu(Valintatapajono h, String... oids) {
