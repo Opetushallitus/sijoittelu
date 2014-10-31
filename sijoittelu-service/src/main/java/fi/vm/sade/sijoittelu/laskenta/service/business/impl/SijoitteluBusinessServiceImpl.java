@@ -515,7 +515,7 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
 
 		if (valintatapajono == null) {
 			throw new ValintatapajonoaEiLoytynytException(
-					"Valintatapajonoa ei löytynyt.");
+                    "Valintatapajonoa " + valintatapajonoOid + "ei löytynyt hakukohteelle " + hakukohdeOid + " haussa " + hakuoid);
 		}
 
 		Hakemus hakemus = getHakemus(hakemusOid, valintatapajono);
@@ -554,7 +554,7 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
             if (tila == ValintatuloksenTila.PERUUTETTU) {
                 if(v == null || !v.getTila().equals(tila)) {
                     throw new TilanTallennukseenEiOikeuksiaException(
-                        "Oikeudet eivät riitä Peruutettutilan tallennukseen");
+                            "Oikeudet eivät riitä Peruutettu tilan tallennukseen hakemukselle " + hakemusOid + " hakukohteelle " + hakukohdeOid + " haussa " + hakuoid);
                 }
             }
 
