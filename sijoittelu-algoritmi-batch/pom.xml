@@ -109,6 +109,11 @@
             <version>4.1.4</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <artifactId>nosqlunit-mongodb</artifactId>
+            <groupId>com.lordofthejars</groupId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>

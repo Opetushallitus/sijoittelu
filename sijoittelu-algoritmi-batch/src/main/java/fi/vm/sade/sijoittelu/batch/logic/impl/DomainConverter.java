@@ -4,6 +4,7 @@ package fi.vm.sade.sijoittelu.batch.logic.impl;
 import fi.vm.sade.sijoittelu.domain.*;
 import fi.vm.sade.valintalaskenta.domain.dto.*;
 import fi.vm.sade.valintalaskenta.domain.dto.valintatieto.ValintatietoValintatapajonoDTO;
+import fi.vm.sade.valintalaskenta.domain.valinta.JarjestyskriteerituloksenTila;
 
 import java.util.List;
 import java.util.Map;
@@ -89,11 +90,17 @@ public class DomainConverter {
     private static void addHakijaRyhmas(HakukohdeDTO hakukohdeTyyppi, Hakukohde hakukohde) {
         for (HakijaryhmaDTO h : hakukohdeTyyppi.getHakijaryhma()) {
             Hakijaryhma hakijaryhma = new Hakijaryhma();
-            hakijaryhma.setPaikat(h.getKiintio());
+            hakijaryhma.setKiintio(h.getKiintio());
             hakijaryhma.setNimi(h.getNimi());
             hakijaryhma.setOid(h.getHakijaryhmaOid());
             hakijaryhma.setPrioriteetti(h.getPrioriteetti());
-            for (JonosijaDTO jonosija : h.getJonosijat()) {
+            hakijaryhma.setKaytaKaikki(h.isKaytaKaikki());
+            hakijaryhma.setKaytetaanRyhmaanKuuluvia(h.isKaytetaanRyhmaanKuuluvia());
+            hakijaryhma.setHakukohdeOid(h.getHakukohdeOid());
+            hakijaryhma.setTarkkaKiintio(h.isTarkkaKiintio());
+            hakijaryhma.setValintatapajonoOid(h.getValintatapajonoOid());
+            List<JonosijaDTO> hyvaksytyt = h.getJonosijat().stream().filter(j -> j.getJarjestyskriteerit().first().getTila().equals(JarjestyskriteerituloksenTila.HYVAKSYTTAVISSA)).collect(Collectors.toList());
+            for (JonosijaDTO jonosija : hyvaksytyt) {
                 hakijaryhma.getHakemusOid().add(jonosija.getHakemusOid());
             }
             hakukohde.getHakijaryhmat().add(hakijaryhma);
@@ -120,6 +127,8 @@ public class DomainConverter {
             hakemus.setTila(HakemuksenTila.VARALLA);
             hakemus.setHyvaksyttyHarkinnanvaraisesti(true);
         } else if (hakijaTyyppi.getTila() == JarjestyskriteerituloksenTilaDTO.HYVAKSYTTAVISSA) {
+            hakemus.setTila(HakemuksenTila.VARALLA);
+        } else if (hakijaTyyppi.isHylattyValisijoittelussa()) {
             hakemus.setTila(HakemuksenTila.VARALLA);
         } else {
             Map<String,String> tilanKuvaukset = hakijaTyyppi.getTilanKuvaus().parallelStream().collect(Collectors.toMap(AvainArvoDTO::getAvain, AvainArvoDTO::getArvo));

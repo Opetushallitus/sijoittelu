@@ -4,7 +4,9 @@ import static fi.vm.sade.sijoittelu.laskenta.roles.SijoitteluRole.READ_UPDATE_CR
 import static fi.vm.sade.sijoittelu.laskenta.roles.SijoitteluRole.UPDATE_CRUD;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
+import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -15,9 +17,11 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import fi.vm.sade.sijoittelu.domain.*;
+import fi.vm.sade.sijoittelu.domain.dto.ErillishaunHakijaDTO;
 import fi.vm.sade.sijoittelu.tulos.dao.HakukohdeDao;
 import fi.vm.sade.sijoittelu.tulos.dao.SijoitteluDao;
 import fi.vm.sade.sijoittelu.tulos.service.RaportointiService;
+
 import org.apache.commons.lang.StringUtils;
 import org.codehaus.jackson.map.annotate.JsonView;
 import org.slf4j.Logger;
@@ -44,20 +48,19 @@ public class TilaResource {
 	private final static Logger LOGGER = LoggerFactory
 			.getLogger(TilaResource.class);
 
-    static final String LATEST = "latest";
+	static final String LATEST = "latest";
 
 	@Autowired
 	private SijoitteluBusinessService sijoitteluBusinessService;
 
-    @Autowired
-    private RaportointiService raportointiService;
+	@Autowired
+	private RaportointiService raportointiService;
 
-    @Autowired
-    private HakukohdeDao hakukohdeDao;
+	@Autowired
+	private HakukohdeDao hakukohdeDao;
 
-
-    @Autowired
-    private SijoitteluDao sijoitteluDao;
+	@Autowired
+	private SijoitteluDao sijoitteluDao;
 
 	@GET
 	@JsonView(JsonViews.MonenHakemuksenTila.class)
@@ -143,7 +146,8 @@ public class TilaResource {
 						.getIlmoittautumisTila();
 				sijoitteluBusinessService.vaihdaHakemuksenTila(hakuOid,
 						hakukohdeOid, v.getValintatapajonoOid(),
-						v.getHakemusOid(), tila, selite, ilmoittautumisTila, v.getJulkaistavissa(), v.getHyvaksyttyVarasijalta());
+						v.getHakemusOid(), tila, selite, ilmoittautumisTila,
+						v.getJulkaistavissa(), v.getHyvaksyttyVarasijalta());
 			}
 			return Response.status(Response.Status.ACCEPTED).build();
 		} catch (Exception e) {
@@ -155,123 +159,233 @@ public class TilaResource {
 		}
 	}
 
-    @POST
-    @Produces(MediaType.APPLICATION_JSON)
-    @Path("haku/{hakuOid}/hakukohde/{hakukohdeOid}/hakemus/{hakemusOid}")
-    @PreAuthorize(UPDATE_CRUD)
-    @ApiOperation(value = "Hakemuksen sijoittelun tilan muuttaminen")
-    public Response muutaSijoittelunTilaa(@PathParam("hakuOid") String hakuOid,
-                                         @PathParam("hakukohdeOid") String hakukohdeOid,
-                                         @PathParam("hakemusOid") String hakemusOid,
-                                         Tila tilaObj,
-                                         @QueryParam("tarjoajaOid") String tarjoajaOid) {
+	@POST
+	@JsonView(JsonViews.Tila.class)
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Path("erillishaku/{hakuOid}/hakukohde/{hakukohdeOid}")
+	@PreAuthorize(UPDATE_CRUD)
+	@ApiOperation(value = "Erillishaun hakijoiden tuonti hakukohteelle")
+	public Response tuoErillishaunHakijat(
+			Collection<ErillishaunHakijaDTO> erillishaunHakijaDtos) {
+		if (erillishaunHakijaDtos == null || erillishaunHakijaDtos.isEmpty()) {
+			LOGGER.error("Yritettiin tuoda tyhjaa joukkoa erillishaun hakijoiden tuontiin!");
+			throw new RuntimeException(
+					"Yritettiin tuoda tyhjaa joukkoa erillishaun hakijoiden tuontiin!");
+		}
+		try {
+			erillishaunHakijaDtos.stream().forEach(
+					e -> muutaTilaa(e.getTarjoajaOid(), e.getHakuOid(),
+							e.getHakukohdeOid(), e.getHakemusOid(),
+							e.getHakemuksenTila(), Optional.empty(), Optional.of(e.getValintatapajonoOid())));
+			erillishaunHakijaDtos
+					.stream()
+					.map(e -> e.asValintatulos())
+					.forEach(
+							v -> {
+								ValintatuloksenTila tila = v.getTila();
+								IlmoittautumisTila ilmoittautumisTila = v
+										.getIlmoittautumisTila();
+								sijoitteluBusinessService.vaihdaHakemuksenTila(
+										v.getHakuOid(), v.getHakukohdeOid(),
+										v.getValintatapajonoOid(),
+										v.getHakemusOid(), tila,
+										"Erillishauntuonti",
+										ilmoittautumisTila,
+										v.getJulkaistavissa(),
+										v.getHyvaksyttyVarasijalta());
+							});
+			return Response.status(Response.Status.ACCEPTED).build();
+		} catch (Exception e) {
+			LOGGER.error("Error in erillishaunhakijat tuonti! {}", e);
+			Map error = new HashMap();
+			error.put("message", e.getMessage());
+			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+					.entity(error).build();
+		}
+	}
 
-        try {
+	private void muutaTilaa(String tarjoajaOid, String hakuOid,
+			String hakukohdeOid, String hakemusOid, HakemuksenTila tila, Optional<List<String>> tilanKuvaukset, Optional<String> valintatapajonoOid) {
+        Optional<SijoitteluAjo> sijoitteluAjoOpt = raportointiService
+                .latestSijoitteluAjoForHaku(hakuOid);
 
-            Optional<SijoitteluAjo> sijoitteluAjoOpt = raportointiService.latestSijoitteluAjoForHaku(hakuOid);
+        if (!sijoitteluAjoOpt.isPresent()) {
+            Sijoittelu sijoittelu = new Sijoittelu();
+            sijoittelu.setCreated(new Date());
+            sijoittelu.setSijoitteluId(System.currentTimeMillis());
+            sijoittelu.setHakuOid(hakuOid);
 
-            if(!sijoitteluAjoOpt.isPresent()) {
-                Sijoittelu sijoittelu = new Sijoittelu();
-                sijoittelu.setCreated(new Date());
-                sijoittelu.setSijoitteluId(System.currentTimeMillis());
-                sijoittelu.setHakuOid(hakuOid);
+            SijoitteluAjo sijoitteluAjo = new SijoitteluAjo();
+            Long now = System.currentTimeMillis();
+            sijoitteluAjo.setSijoitteluajoId(now);
+            sijoitteluAjo.setHakuOid(sijoittelu.getHakuOid());
+            sijoittelu.getSijoitteluajot().add(sijoitteluAjo);
 
-                SijoitteluAjo sijoitteluAjo = new SijoitteluAjo();
-                Long now = System.currentTimeMillis();
-                sijoitteluAjo.setSijoitteluajoId(now);
-                sijoitteluAjo.setHakuOid(sijoittelu.getHakuOid());
-                sijoittelu.getSijoitteluajot().add(sijoitteluAjo);
+            sijoitteluDao.persistSijoittelu(sijoittelu);
 
-                sijoitteluDao.persistSijoittelu(sijoittelu);
+            sijoitteluAjoOpt = Optional.of(sijoitteluAjo);
+        }
 
-                sijoitteluAjoOpt = Optional.of(sijoitteluAjo);
-            }
+        SijoitteluAjo ajo = sijoitteluAjoOpt.get();
 
-            SijoitteluAjo ajo = sijoitteluAjoOpt.get();
+        Optional<HakukohdeItem> itemOpt = ajo.getHakukohteet()
+                .parallelStream()
+                .filter(h -> h.getOid().equals(hakukohdeOid)).findFirst();
+        if (!itemOpt.isPresent()) {
+            Sijoittelu sijoittelu = sijoitteluDao
+                    .getSijoitteluByHakuOid(hakuOid).get();
+            HakukohdeItem item = new HakukohdeItem();
+            item.setOid(hakukohdeOid);
+            sijoittelu.getLatestSijoitteluajo().getHakukohteet()
+                    .add(item);
 
-            Optional<HakukohdeItem> itemOpt = ajo.getHakukohteet().parallelStream().filter(h -> h.getOid().equals(hakukohdeOid)).findFirst();
-            if (StringUtils.isBlank(tilaObj.getTila())) {
-                if (!itemOpt.isPresent()) {
-                    Sijoittelu sijoittelu = sijoitteluDao.getSijoitteluByHakuOid(hakuOid).get();
-                    HakukohdeItem item = new HakukohdeItem();
-                    item.setOid(hakukohdeOid);
-                    sijoittelu.getLatestSijoitteluajo().getHakukohteet().add(item);
+            sijoitteluDao.persistSijoittelu(sijoittelu);
 
-                    sijoitteluDao.persistSijoittelu(sijoittelu);
+            Hakukohde hakukohde = new Hakukohde();
+            hakukohde.setKaikkiJonotSijoiteltu(true);
+            hakukohde.setOid(hakukohdeOid);
+            hakukohde.setSijoitteluajoId(ajo.getSijoitteluajoId());
+            hakukohde.setTarjoajaOid(tarjoajaOid);
 
-                    Hakukohde hakukohde = new Hakukohde();
-                    hakukohde.setKaikkiJonotSijoiteltu(true);
-                    hakukohde.setOid(hakukohdeOid);
-                    hakukohde.setSijoitteluajoId(ajo.getSijoitteluajoId());
-                    hakukohde.setTarjoajaOid(tarjoajaOid);
+            Valintatapajono jono = createValintatapaJono(UUID.randomUUID().toString());
 
-                    Valintatapajono jono = new Valintatapajono();
-                    jono.setHyvaksytty(0);
-                    jono.setVaralla(0);
-                    jono.setOid(UUID.randomUUID().toString());
-                    jono.setAloituspaikat(0);
-                    jono.setPrioriteetti(0);
+            hakukohde.getValintatapajonot().add(jono);
+            hakukohdeDao.persistHakukohde(hakukohde);
 
-                    hakukohde.getValintatapajonot().add(jono);
-                    hakukohdeDao.persistHakukohde(hakukohde);
+        }
 
-                }
-            }
-
-            Hakukohde kohde = hakukohdeDao.getHakukohdeForSijoitteluajo(ajo.getSijoitteluajoId(), hakukohdeOid);
-            if (kohde != null) {
-                if (kohde.getTarjoajaOid() == null) {
-                    kohde.setTarjoajaOid(tarjoajaOid);
-                    hakukohdeDao.persistHakukohde(kohde);
-                }
-
-                Valintatapajono jono = kohde.getValintatapajonot().get(0);
-
-                Optional<Hakemus> hakemusOpt = jono.getHakemukset().parallelStream().filter(h -> h.getHakemusOid().equals(hakemusOid)).findFirst();
-
-                if (hakemusOpt.isPresent()) {
-                    if (StringUtils.isNotBlank(tilaObj.getTila())) {
-                        hakemusOpt.get().setTila(HakemuksenTila.valueOf(tilaObj.getTila()));
-                        if (tilaObj.getTilanKuvaukset() != null && tilaObj.getTilanKuvaukset().size() == 3) {
-                            hakemusOpt.get().getTilanKuvaukset().put("FI", tilaObj.getTilanKuvaukset().get(0));
-                            hakemusOpt.get().getTilanKuvaukset().put("SV", tilaObj.getTilanKuvaukset().get(1));
-                            hakemusOpt.get().getTilanKuvaukset().put("EN", tilaObj.getTilanKuvaukset().get(2));
-                        }
-                    } else {
-                        if (tilaObj.isHyvaksy()) {
-                            hakemusOpt.get().setTila(HakemuksenTila.HYVAKSYTTY);
-                            jono.setHyvaksytty(jono.getHyvaksytty() + 1);
-                        } else {
-                            hakemusOpt.get().setTila(HakemuksenTila.HYLATTY);
-                            jono.setHyvaksytty(jono.getHyvaksytty() - 1);
-                        }
-                    }
-                } else {
-                    Hakemus hakemus = new Hakemus();
-                    hakemus.setHakemusOid(hakemusOid);
-                    hakemus.setJonosija(1);
-                    hakemus.setPrioriteetti(1);
-                    if (tilaObj.isHyvaksy()) {
-                        hakemus.setTila(HakemuksenTila.HYVAKSYTTY);
-                        jono.setHyvaksytty(jono.getHyvaksytty() + 1);
-                    } else {
-                        hakemus.setTila(HakemuksenTila.HYLATTY);
-                        jono.setHyvaksytty(jono.getHyvaksytty() - 1);
-                    }
-                    jono.getHakemukset().add(hakemus);
-
-                }
-
+        Hakukohde kohde = hakukohdeDao.getHakukohdeForSijoitteluajo(
+                ajo.getSijoitteluajoId(), hakukohdeOid);
+        if (kohde != null) {
+            if (kohde.getTarjoajaOid() == null) {
+                kohde.setTarjoajaOid(tarjoajaOid);
                 hakukohdeDao.persistHakukohde(kohde);
             }
-            return Response.status(Response.Status.ACCEPTED).build();
-        } catch (Exception e) {
-            LOGGER.error("Hakemuksen tilan asetus epäonnistui", e);
-            Map error = new HashMap();
-            error.put("message", e.getMessage());
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity(error).build();
+
+            Valintatapajono jono;
+            if (valintatapajonoOid.isPresent()) {
+                jono = kohde.getValintatapajonot()
+                        .stream()
+                        .filter(j -> j.getOid().equals(valintatapajonoOid.get()))
+                        .findFirst()
+                        .orElse(createValintatapaJono(valintatapajonoOid.get()));
+            } else {
+                jono = kohde.getValintatapajonot().get(0);
+            }
+
+            Optional<Hakemus> hakemusOpt = jono.getHakemukset()
+                    .parallelStream()
+                    .filter(h -> h.getHakemusOid().equals(hakemusOid))
+                    .findFirst();
+
+            if (hakemusOpt.isPresent()) {
+                hakemusOpt.get().setTila(tila);
+
+                if(tilanKuvaukset.isPresent() && tilanKuvaukset.get().size() == 3) {
+                    hakemusOpt
+                            .get()
+                            .getTilanKuvaukset()
+                            .put("FI",
+                                    tilanKuvaukset.get().get(0));
+                    hakemusOpt
+                            .get()
+                            .getTilanKuvaukset()
+                            .put("SV",
+                                    tilanKuvaukset.get().get(1));
+                    hakemusOpt
+                            .get()
+                            .getTilanKuvaukset()
+                            .put("EN",
+                                    tilanKuvaukset.get().get(2));
+                }
+
+            } else {
+                Hakemus hakemus = new Hakemus();
+                hakemus.setHakemusOid(hakemusOid);
+                hakemus.setJonosija(1);
+                hakemus.setPrioriteetti(1);
+                hakemus.setTila(tila);
+                if(tilanKuvaukset.isPresent() && tilanKuvaukset.get().size() == 3) {
+                    hakemus
+                            .getTilanKuvaukset()
+                            .put("FI",
+                                    tilanKuvaukset.get().get(0));
+                    hakemus
+                            .getTilanKuvaukset()
+                            .put("SV",
+                                    tilanKuvaukset.get().get(1));
+                    hakemus
+                            .getTilanKuvaukset()
+                            .put("EN",
+                                    tilanKuvaukset.get().get(2));
+                }
+                jono.getHakemukset().add(hakemus);
+
+            }
+
+            jono.setHyvaksytty(getMaara(jono.getHakemukset(), Arrays.asList(HakemuksenTila.HYVAKSYTTY, HakemuksenTila.VARASIJALTA_HYVAKSYTTY)));
+            jono.setVaralla(getMaara(jono.getHakemukset(), Arrays.asList(HakemuksenTila.VARALLA)));
+
+            hakukohdeDao.persistHakukohde(kohde);
         }
+
+	}
+
+    private Valintatapajono createValintatapaJono(String valintatapajonoOid) {
+        Valintatapajono jono = new Valintatapajono();
+        jono.setHyvaksytty(0);
+        jono.setVaralla(0);
+        jono.setOid(valintatapajonoOid);
+        jono.setAloituspaikat(0);
+        jono.setPrioriteetti(0);
+
+        return jono;
+    }
+
+	@POST
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("haku/{hakuOid}/hakukohde/{hakukohdeOid}/hakemus/{hakemusOid}")
+	@PreAuthorize(UPDATE_CRUD)
+	@ApiOperation(value = "Hakemuksen sijoittelun tilan muuttaminen")
+	public Response muutaSijoittelunTilaa(@PathParam("hakuOid") String hakuOid,
+			@PathParam("hakukohdeOid") String hakukohdeOid,
+			@PathParam("hakemusOid") String hakemusOid, Tila tilaObj,
+			@QueryParam("tarjoajaOid") String tarjoajaOid) {
+
+		try {
+            HakemuksenTila tila;
+
+            if (StringUtils.isNotBlank(tilaObj.getTila())) {
+                tila = HakemuksenTila.valueOf(tilaObj.getTila());
+            } else {
+                if(tilaObj.isHyvaksy()) {
+                    tila = HakemuksenTila.HYVAKSYTTY;
+                } else {
+                    tila = HakemuksenTila.HYLATTY;
+                }
+            }
+
+            Optional<List<String>> kuvaukset = Optional.ofNullable(tilaObj.getTilanKuvaukset());
+
+            muutaTilaa(tarjoajaOid, hakuOid, hakukohdeOid, hakemusOid, tila, kuvaukset, Optional.empty());
+
+            return Response.status(Response.Status.ACCEPTED).build();
+
+		} catch (Exception e) {
+			LOGGER.error("Hakemuksen tilan asetus epäonnistui", e);
+			Map error = new HashMap();
+			error.put("message", e.getMessage());
+			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+					.entity(error).build();
+		}
+	}
+
+    private int getMaara(List<Hakemus> hakemukset, List<HakemuksenTila> tilat) {
+
+        return (int) hakemukset.parallelStream().filter(h -> tilat.indexOf(h.getTila()) != -1)
+                .reduce(0,
+                        (sum, b) -> sum + 1,
+                        Integer::sum);
     }
 
 }

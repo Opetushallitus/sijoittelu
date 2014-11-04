@@ -4,15 +4,13 @@ import fi.vm.sade.service.valintaperusteet.dto.model.Kieli;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.postsijoitteluprocessor.PostSijoitteluProcessor;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.presijoitteluprocessor.PreSijoitteluProcessor;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.*;
-import fi.vm.sade.sijoittelu.domain.HakemuksenTila;
-import fi.vm.sade.sijoittelu.domain.Hakemus;
-import fi.vm.sade.sijoittelu.domain.IlmoittautumisTila;
-import fi.vm.sade.sijoittelu.domain.Tasasijasaanto;
+import fi.vm.sade.sijoittelu.domain.*;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.stream.Collectors;
 
 /**
  *
@@ -62,12 +60,20 @@ public class SijoitteluAlgorithmImpl implements SijoitteluAlgorithm {
             depth = n;
         }
 
-        for (ValintatapajonoWrapper valintatapajono : hakukohde.getValintatapajonot()) {
-            this.sijoittele(valintatapajono, n);
-        }
         for (HakijaryhmaWrapper hakijaryhmaWrapper : hakukohde.getHakijaryhmaWrappers()) {
             this.sijoittele(hakijaryhmaWrapper, n);
         }
+
+        for (ValintatapajonoWrapper valintatapajono : hakukohde.getValintatapajonot()) {
+            this.sijoittele(valintatapajono, n);
+
+//            List<HakijaryhmaWrapper> list = hakukohde.getHakijaryhmaWrappers().stream().filter(w -> w.getHakijaryhma().getValintatapajonoOid() == null || w.getHakijaryhma().getValintatapajonoOid().equals(valintatapajono.getValintatapajono().getOid())).collect(Collectors.toList());
+//            for (HakijaryhmaWrapper hakijaryhmaWrapper : list) {
+//                this.sijoittele(hakijaryhmaWrapper, n);
+//            }
+
+        }
+
     }
 
     private void sijoittele(ValintatapajonoWrapper valintatapajono, int n) {
@@ -98,6 +104,7 @@ public class SijoitteluAlgorithmImpl implements SijoitteluAlgorithm {
             }
             for (HakemusWrapper hk : kaikkiTasasijaHakemukset) {
                 if (eiKorvattavissaOlevatHyvaksytytHakemukset.contains(hk)) {
+//                    System.out.println();
                     // ei voida tehdä mitaan, tila on jo poistettu. ignoretetaan
                 } else if (valituksiHaluavatHakemukset.contains(hk)) {
                     if (valintatapajono.getValintatapajono().getKaikkiEhdonTayttavatHyvaksytaan() != null
@@ -107,7 +114,10 @@ public class SijoitteluAlgorithmImpl implements SijoitteluAlgorithm {
                         if (saanto == Tasasijasaanto.ALITAYTTO) {
                             varalle.add(hk);
                         } else if (saanto == Tasasijasaanto.YLITAYTTO) {
-                            hyvaksyttavaksi.add(hk);
+                            if(kaikkiTasasijaHakemukset.size() == 1 && tilaa == 0)
+                                varalle.add(hk);
+                            else
+                                hyvaksyttavaksi.add(hk);
                         }
                     } else if (tasasijaTilanneRatkaistu) {
                         varalle.add(hk);
@@ -151,19 +161,21 @@ public class SijoitteluAlgorithmImpl implements SijoitteluAlgorithm {
         ArrayList<HakemusWrapper> muuttuneetHakemukset = new ArrayList<HakemusWrapper>();
         List<List<HakemusWrapper>> hakijaryhmanVarasijallaOlevat = hakijaryhmanVarasijajarjestys(hakijaryhmaWrapper);
         ListIterator<List<HakemusWrapper>> it = hakijaryhmanVarasijallaOlevat.listIterator();
-
+        Hakijaryhma ryhma = hakijaryhmaWrapper.getHakijaryhma();
         while (it.hasNext() && hakijaryhmassaVajaata(hakijaryhmaWrapper) > 0) {
             List<HakemusWrapper> tasasijaVarasijaHakemukset = it.next();
             for (HakemusWrapper paras : tasasijaVarasijaHakemukset) {
                 ValintatapajonoWrapper v = paras.getValintatapajono();
-                HakemusWrapper huonoin = haeHuonoinValittuEiVajaaseenRyhmaanKuuluva(v);
-                muuttuneetHakemukset.addAll(hyvaksyHakemus(paras));
-                paras.getHakemus().getTilanKuvaukset().put("FI","Varasijalta hyväksytty");
-                paras.getHakemus().getTilanKuvaukset().put("SV","Godkänd från reservplats");
-                paras.getHakemus().getTilanKuvaukset().put("EN","Accepted from a reserve place");
-                muuttuneetHakemukset.add(paras);
-                if (huonoin != null) {
-                    muuttuneetHakemukset.addAll(asetaVaralleHakemus(huonoin));
+                if(ryhma.getValintatapajonoOid() == null || ryhma.getValintatapajonoOid().equals(v.getValintatapajono().getOid())) {
+                    HakemusWrapper huonoin = haeHuonoinValittuEiVajaaseenRyhmaanKuuluva(v);
+                    muuttuneetHakemukset.addAll(hyvaksyHakemus(paras));
+    //                paras.getHakemus().getTilanKuvaukset().put("FI","Varasijalta hyväksytty");
+    //                paras.getHakemus().getTilanKuvaukset().put("SV","Godkänd från reservplats");
+    //                paras.getHakemus().getTilanKuvaukset().put("EN","Accepted from a reserve place");
+                    muuttuneetHakemukset.add(paras);
+                    if (huonoin != null) {
+                        muuttuneetHakemukset.addAll(asetaVaralleHakemus(huonoin));
+                    }
                 }
             }
         }
@@ -191,7 +203,7 @@ public class SijoitteluAlgorithmImpl implements SijoitteluAlgorithm {
             HakemusWrapper h = it.next();
             tasasijaHakemukset.add(h);
             HakemusWrapper seuraava = SijoitteluHelper.peek(it);
-            if (seuraava == null || seuraava.getHakemus().getJonosija() != h.getHakemus().getJonosija()) {
+            if (seuraava == null || !seuraava.getHakemus().getJonosija().equals(h.getHakemus().getJonosija())) {
                 break;
             }
         }
@@ -314,8 +326,11 @@ public class SijoitteluAlgorithmImpl implements SijoitteluAlgorithm {
 
         ArrayList<HakijaryhmaWrapper> hakijanHakijaryhmat = new ArrayList<HakijaryhmaWrapper>();
         for (HakijaryhmaWrapper hakijaryhmaWrapper : hakemusWrapper.getValintatapajono().getHakukohdeWrapper().getHakijaryhmaWrappers()) {
-            if (hakijaryhmaWrapper.getHenkiloWrappers().contains(hakemusWrapper.getHenkilo())) {
-                hakijanHakijaryhmat.add(hakijaryhmaWrapper);
+            Hakijaryhma hakijaryhma = hakijaryhmaWrapper.getHakijaryhma();
+            if(hakijaryhma.getValintatapajonoOid() == null || hakijaryhma.getValintatapajonoOid().equals(hakemusWrapper.getValintatapajono().getValintatapajono().getOid())) {
+                if (hakijaryhmaWrapper.getHenkiloWrappers().contains(hakemusWrapper.getHenkilo())) {
+                    hakijanHakijaryhmat.add(hakijaryhmaWrapper);
+                }
             }
         }
         for (HakijaryhmaWrapper a : hakijanHakijaryhmat) {
@@ -382,11 +397,22 @@ public class SijoitteluAlgorithmImpl implements SijoitteluAlgorithm {
                             if (h.getHakemus().getTila() != HakemuksenTila.HYLATTY
                                     && h.getHakemus().getTila() != HakemuksenTila.PERUUTETTU
                                     && h.getHakemus().getTila() != HakemuksenTila.PERUNUT) {
-                                h.getHakemus().getTilanKuvaukset().put("FI","Peruuntunut, aloituspaikat täynnä");
-                                h.getHakemus().getTilanKuvaukset().put("SV","Annullerad, nybörjarplatser fyllda");
-                                h.getHakemus().getTilanKuvaukset().put("EN","Cancelled, study places are filled");
+                                if(h.getValintatapajono().getHakukohdeWrapper().getHakukohde().getOid()
+                                        .equals(hakemus.getValintatapajono().getHakukohdeWrapper().getHakukohde().getOid())) {
+                                    h.getHakemus().getTilanKuvaukset().put("FI","Peruuntunut, hyväksytty toisessa valintatapajonossa");
+                                } else {
+                                    h.getHakemus().getTilanKuvaukset().put("FI","Peruuntunut, aloituspaikat täynnä");
+                                    h.getHakemus().getTilanKuvaukset().put("SV","Annullerad, nybörjarplatser fyllda");
+                                    h.getHakemus().getTilanKuvaukset().put("EN","Cancelled, study places are filled");
+                                }
                                 h.getHakemus().setTila(HakemuksenTila.PERUUNTUNUT);
                             }
+                        }
+                    } else {
+                        if(h.getValintatapajono().getHakukohdeWrapper().getHakukohde().getOid()
+                                .equals(hakemus.getValintatapajono().getHakukohdeWrapper().getHakukohde().getOid())) {
+                            h.getHakemus().getTilanKuvaukset().put("FI","Peruuntunut, hyväksytty toisessa valintatapajonossa");
+                            h.getHakemus().setTila(HakemuksenTila.PERUUNTUNUT);
                         }
                     }
                 }
@@ -470,7 +496,7 @@ public class SijoitteluAlgorithmImpl implements SijoitteluAlgorithm {
     }
 
     private int hakijaryhmassaVajaata(HakijaryhmaWrapper hakijaryhmaWrapper) {
-        int needed = hakijaryhmaWrapper.getHakijaryhma().getPaikat();
+        int needed = hakijaryhmaWrapper.getHakijaryhma().getKiintio();
         for (ValintatapajonoWrapper valintatapajonoWrapper : hakijaryhmaWrapper.getHakukohdeWrapper().getValintatapajonot()) {
             for (HakemusWrapper h : valintatapajonoWrapper.getHakemukset()) {
                 if ((h.getHakemus().getTila() == HakemuksenTila.HYVAKSYTTY || h.getHakemus().getTila() == HakemuksenTila.VARASIJALTA_HYVAKSYTTY) && hakijaryhmaWrapper.getHenkiloWrappers().contains(h.getHenkilo())) {
