@@ -75,6 +75,17 @@ public class HakemusDTO implements Serializable {
     @JsonView(JsonViews.Hakemus.class)
     private String hakuOid;
 
+    public int getTodellinenJonosija() {
+    	if(jonosija == null) {
+    		return 0;
+    	} else {
+    		if(tasasijaJonosija == null) {
+    			return jonosija;
+    		}
+    		return jonosija + tasasijaJonosija - 1;
+    	}
+    }
+    
     private List<PistetietoDTO> pistetiedot = new ArrayList<PistetietoDTO>();
    /*
     public String getValintatuloksenTila() {
