@@ -69,7 +69,7 @@ public class SijoitteluResourceImpl implements SijoitteluResource {
         return sijoitteluAjo.map(ajo -> {
             HakukohdeDTO hakukohdeBySijoitteluajo = sijoitteluTulosService
                     .getHakukohdeBySijoitteluajo(ajo, hakukohdeOid);
-            return Response.ok().entity(hakukohdeBySijoitteluajo).build();
+            return Response.ok().entity(Optional.ofNullable(hakukohdeBySijoitteluajo).orElse(new HakukohdeDTO())).build();
         }).orElse(Response.ok().entity(new HakukohdeDTO()).build());
 
 	}
