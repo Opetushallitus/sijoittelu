@@ -5,6 +5,7 @@ import fi.vm.sade.sijoittelu.batch.logic.impl.DomainConverter;
 import fi.vm.sade.sijoittelu.domain.Hakukohde;
 import fi.vm.sade.sijoittelu.domain.Valintatulos;
 import fi.vm.sade.valintalaskenta.domain.dto.valintatieto.HakuDTO;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.FileWriter;
@@ -28,6 +29,7 @@ public class BasicSijoitteluHakijaryhmaTest {
 	 * 
 	 * @throws IOException
 	 */
+    @Ignore
 	@Test
 	public void testSijoittelu() throws IOException {
 		// tee sijoittelu

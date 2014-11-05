@@ -147,6 +147,10 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
 
         processOldApplications(olemassaolevatHakukohteet, kaikkiHakukohteet);
 
+        // VT-18 tallennetaan sijoittelualgoritmin muplaanmat valintatiedot
+        sijoitteluAlgorithm.getSijoitteluAjo().getMuuttuneetValintatulokset()
+                .forEach(valintatulosDao::createOrUpdateValintatulos);
+
         ActorRef siivoaja = actorService.getSiivousActor();
         try {
             sijoitteluDao.persistSijoittelu(sijoittelu);

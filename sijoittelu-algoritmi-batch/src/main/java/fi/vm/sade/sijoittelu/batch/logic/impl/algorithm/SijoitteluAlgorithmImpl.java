@@ -3,13 +3,12 @@ package fi.vm.sade.sijoittelu.batch.logic.impl.algorithm;
 import fi.vm.sade.service.valintaperusteet.dto.model.Kieli;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.postsijoitteluprocessor.PostSijoitteluProcessor;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.presijoitteluprocessor.PreSijoitteluProcessor;
+import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.util.TilanKuvaukset;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.*;
 import fi.vm.sade.sijoittelu.domain.*;
+import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.ListIterator;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -28,6 +27,11 @@ public class SijoitteluAlgorithmImpl implements SijoitteluAlgorithm {
     protected List<PostSijoitteluProcessor> postSijoitteluProcessors;
 
     protected int depth = 0;
+
+    @Override
+    public SijoitteluajoWrapper getSijoitteluAjo() {
+        return sijoitteluAjo;
+    }
 
     @Override
     public void start() {
@@ -60,18 +64,13 @@ public class SijoitteluAlgorithmImpl implements SijoitteluAlgorithm {
             depth = n;
         }
 
-        for (HakijaryhmaWrapper hakijaryhmaWrapper : hakukohde.getHakijaryhmaWrappers()) {
-            this.sijoittele(hakijaryhmaWrapper, n);
-        }
-
         for (ValintatapajonoWrapper valintatapajono : hakukohde.getValintatapajonot()) {
             this.sijoittele(valintatapajono, n);
 
-//            List<HakijaryhmaWrapper> list = hakukohde.getHakijaryhmaWrappers().stream().filter(w -> w.getHakijaryhma().getValintatapajonoOid() == null || w.getHakijaryhma().getValintatapajonoOid().equals(valintatapajono.getValintatapajono().getOid())).collect(Collectors.toList());
-//            for (HakijaryhmaWrapper hakijaryhmaWrapper : list) {
-//                this.sijoittele(hakijaryhmaWrapper, n);
-//            }
+        }
 
+        for (HakijaryhmaWrapper hakijaryhmaWrapper : hakukohde.getHakijaryhmaWrappers()) {
+            this.sijoittele(hakijaryhmaWrapper, n);
         }
 
     }
@@ -169,9 +168,6 @@ public class SijoitteluAlgorithmImpl implements SijoitteluAlgorithm {
                 if(ryhma.getValintatapajonoOid() == null || ryhma.getValintatapajonoOid().equals(v.getValintatapajono().getOid())) {
                     HakemusWrapper huonoin = haeHuonoinValittuEiVajaaseenRyhmaanKuuluva(v);
                     muuttuneetHakemukset.addAll(hyvaksyHakemus(paras));
-    //                paras.getHakemus().getTilanKuvaukset().put("FI","Varasijalta hyväksytty");
-    //                paras.getHakemus().getTilanKuvaukset().put("SV","Godkänd från reservplats");
-    //                paras.getHakemus().getTilanKuvaukset().put("EN","Accepted from a reserve place");
                     muuttuneetHakemukset.add(paras);
                     if (huonoin != null) {
                         muuttuneetHakemukset.addAll(asetaVaralleHakemus(huonoin));
@@ -377,44 +373,99 @@ public class SijoitteluAlgorithmImpl implements SijoitteluAlgorithm {
         if(hakemus.isTilaVoidaanVaihtaa()) {
             if(hakemus.getHakemus().getEdellinenTila() == HakemuksenTila.VARALLA || hakemus.getHakemus().getEdellinenTila() == HakemuksenTila.VARASIJALTA_HYVAKSYTTY) {
                 hakemus.getHakemus().setTila(HakemuksenTila.VARASIJALTA_HYVAKSYTTY);
-                hakemus.getHakemus().getTilanKuvaukset().put("FI", "Varasijalta hyväksytty");
-                hakemus.getHakemus().getTilanKuvaukset().put("SV", "Godkänd från reservplats");
-                hakemus.getHakemus().getTilanKuvaukset().put("EN", "Accepted from a reserve place");
+                hakemus.getHakemus().setTilanKuvaukset(TilanKuvaukset.varasijaltaHyvaksytty());
             } else {
                 hakemus.getHakemus().setTila(HakemuksenTila.HYVAKSYTTY);
             }
 
             for (HakemusWrapper h : hakemus.getHenkilo().getHakemukset()) {
-                if (h != hakemus && hakemus.getHakemus().getPrioriteetti() <= h.getHakemus().getPrioriteetti()) {
+                // Alemmat toiveet
+                if (h != hakemus && hakemus.getHakemus().getPrioriteetti() < h.getHakemus().getPrioriteetti()) {
                     if(h.isTilaVoidaanVaihtaa()) {
                         if (h.getHakemus().getTila() == HakemuksenTila.HYVAKSYTTY || h.getHakemus().getTila() == HakemuksenTila.VARASIJALTA_HYVAKSYTTY) {
                             h.getHakemus().setTila(HakemuksenTila.PERUUNTUNUT);
-                            h.getHakemus().getTilanKuvaukset().put("FI","Peruuntunut, hyväksytty ylemmälle hakutoiveelle");
-                            h.getHakemus().getTilanKuvaukset().put("SV","Annullerad, godkänt till ansökningsmål med högre prioritet");
-                            h.getHakemus().getTilanKuvaukset().put("EN","Cancelled, accepted for a study place with higher priority");
+                            h.getHakemus().setTilanKuvaukset(TilanKuvaukset.peruuntunutYlempiToive());
                             uudelleenSijoiteltavatHakukohteet.add(h);
                         } else {
                             if (h.getHakemus().getTila() != HakemuksenTila.HYLATTY
                                     && h.getHakemus().getTila() != HakemuksenTila.PERUUTETTU
                                     && h.getHakemus().getTila() != HakemuksenTila.PERUNUT) {
-                                if(h.getValintatapajono().getHakukohdeWrapper().getHakukohde().getOid()
-                                        .equals(hakemus.getValintatapajono().getHakukohdeWrapper().getHakukohde().getOid())) {
-                                    h.getHakemus().getTilanKuvaukset().put("FI","Peruuntunut, hyväksytty toisessa valintatapajonossa");
-                                } else {
-                                    h.getHakemus().getTilanKuvaukset().put("FI","Peruuntunut, aloituspaikat täynnä");
-                                    h.getHakemus().getTilanKuvaukset().put("SV","Annullerad, nybörjarplatser fyllda");
-                                    h.getHakemus().getTilanKuvaukset().put("EN","Cancelled, study places are filled");
-                                }
+                                h.getHakemus().setTilanKuvaukset(TilanKuvaukset.peruuntunutAloituspaikatTaynna());
                                 h.getHakemus().setTila(HakemuksenTila.PERUUNTUNUT);
                             }
                         }
-                    } else {
-                        if(h.getValintatapajono().getHakukohdeWrapper().getHakukohde().getOid()
-                                .equals(hakemus.getValintatapajono().getHakukohdeWrapper().getHakukohde().getOid())) {
-                            h.getHakemus().getTilanKuvaukset().put("FI","Peruuntunut, hyväksytty toisessa valintatapajonossa");
-                            h.getHakemus().setTila(HakemuksenTila.PERUUNTUNUT);
+                    }
+                }
+                // Saman toiveen muut jonot
+                if (h != hakemus && hakemus.getHakemus().getPrioriteetti().equals(h.getHakemus().getPrioriteetti())) {
+                    Valintatapajono current = h.getValintatapajono().getValintatapajono();
+                    Valintatapajono hyvaksyttyJono = hakemus.getValintatapajono().getValintatapajono();
+                    // Peruutetaan vain korkeamman prioriteetin jonot
+                    if(hyvaksyttyJono.getPrioriteetti() < current.getPrioriteetti()) {
+                        // Perustapaus
+                        if(h.isTilaVoidaanVaihtaa()) {
+                            if (h.getHakemus().getTila() != HakemuksenTila.HYLATTY
+                                    && h.getHakemus().getTila() != HakemuksenTila.PERUUTETTU
+                                    && h.getHakemus().getTila() != HakemuksenTila.PERUNUT) {
+                                h.getHakemus().setTilanKuvaukset(TilanKuvaukset.peruuntunutHyvaksyttyToisessaJonossa());
+                                h.getHakemus().setTila(HakemuksenTila.PERUUNTUNUT);
+                            }
+                        } else {
+                            // Hakemukselle merkattu, että tilaa ei voi vaihtaa, mutta vaihdetaan kuitenkin jos hyväksytty
+                            HakemuksenTila vanhaTila = h.getHakemus().getTila();
+                            if(vanhaTila == HakemuksenTila.HYVAKSYTTY || vanhaTila == HakemuksenTila.VARASIJALTA_HYVAKSYTTY) {
+                                h.getHakemus().setTilanKuvaukset(TilanKuvaukset.peruuntunutHyvaksyttyToisessaJonossa());
+                                h.getHakemus().setTila(HakemuksenTila.PERUUNTUNUT);
+
+                                Optional<Valintatulos> jononTulos = h.getHenkilo().getValintatulos().stream().filter(v -> v.getValintatapajonoOid().equals(current.getOid())).findFirst();
+                                if(jononTulos.isPresent() && !jononTulos.get().getTila().equals(ValintatuloksenTila.KESKEN)) {
+
+                                    Valintatulos muokattava = jononTulos.get();
+
+                                    Optional<Valintatulos> nykyinenTulos = h.getHenkilo().getValintatulos().stream().filter(v -> v.getValintatapajonoOid().equals(hyvaksyttyJono.getOid())).findFirst();
+                                    Valintatulos nykyinen;
+                                    if(nykyinenTulos.isPresent()) {
+                                        nykyinen = nykyinenTulos.get();
+                                        nykyinen.setHyvaksyttyVarasijalta(muokattava.getHyvaksyttyVarasijalta());
+                                        nykyinen.setIlmoittautumisTila(muokattava.getIlmoittautumisTila());
+                                        nykyinen.setJulkaistavissa(muokattava.getJulkaistavissa());
+                                        nykyinen.setLogEntries(muokattava.getLogEntries());
+                                        nykyinen.setTila(muokattava.getTila());
+                                    } else {
+                                        nykyinen = new Valintatulos();
+                                        nykyinen.setHyvaksyttyVarasijalta(muokattava.getHyvaksyttyVarasijalta());
+                                        nykyinen.setIlmoittautumisTila(muokattava.getIlmoittautumisTila());
+                                        nykyinen.setJulkaistavissa(muokattava.getJulkaistavissa());
+                                        nykyinen.setLogEntries(muokattava.getLogEntries());
+                                        nykyinen.setTila(muokattava.getTila());
+                                        nykyinen.setValintatapajonoOid(hyvaksyttyJono.getOid());
+                                        nykyinen.setHakemusOid(muokattava.getHakemusOid());
+                                        nykyinen.setHakijaOid(muokattava.getHakijaOid());
+                                        nykyinen.setHakukohdeOid(muokattava.getHakukohdeOid());
+                                        nykyinen.setHakuOid(muokattava.getHakuOid());
+                                        nykyinen.setHakutoive(muokattava.getHakutoive());
+                                        hakemus.getHenkilo().getValintatulos().add(nykyinen);
+                                    }
+
+                                    muokattava.setTila(ValintatuloksenTila.KESKEN);
+                                    muokattava.setIlmoittautumisTila(IlmoittautumisTila.EI_TEHTY);
+                                    muokattava.setHyvaksyttyVarasijalta(false);
+
+                                    // Lisää muokatut valintatulokset listaan tallennusta varten
+                                    sijoitteluAjo.getMuuttuneetValintatulokset()
+                                            .addAll(Arrays.asList(muokattava, nykyinen));
+
+                                }
+                                if(vanhaTila == HakemuksenTila.HYVAKSYTTY) {
+                                    hakemus.getHakemus().setTila(HakemuksenTila.HYVAKSYTTY);
+                                }
+                                hakemus.setTilaVoidaanVaihtaa(false);
+                                uudelleenSijoiteltavatHakukohteet.add(h);
+                            }
+
                         }
                     }
+
                 }
             }
         }
@@ -473,7 +524,9 @@ public class SijoitteluAlgorithmImpl implements SijoitteluAlgorithm {
     private boolean hakijaHaluaa(HakemusWrapper hakemusWrapper) {
         HenkiloWrapper henkilo = hakemusWrapper.getHenkilo();
         for (HakemusWrapper h : henkilo.getHakemukset()) {
-            if ((HakemuksenTila.HYVAKSYTTY.equals(h.getHakemus().getTila()) || HakemuksenTila.VARASIJALTA_HYVAKSYTTY.equals(h.getHakemus().getTila())) && h.getHakemus().getPrioriteetti() <= hakemusWrapper.getHakemus().getPrioriteetti() && hakemusWrapper != h) {
+            if ((HakemuksenTila.HYVAKSYTTY.equals(h.getHakemus().getTila()) || HakemuksenTila.VARASIJALTA_HYVAKSYTTY.equals(h.getHakemus().getTila()))
+                    && (h.getHakemus().getPrioriteetti() < hakemusWrapper.getHakemus().getPrioriteetti() || (h.getHakemus().getPrioriteetti().equals(hakemusWrapper.getHakemus().getPrioriteetti()) && h.getValintatapajono().getValintatapajono().getPrioriteetti() < hakemusWrapper.getValintatapajono().getValintatapajono().getPrioriteetti()))
+                    && hakemusWrapper != h) {
                 return false;
             }
         }
