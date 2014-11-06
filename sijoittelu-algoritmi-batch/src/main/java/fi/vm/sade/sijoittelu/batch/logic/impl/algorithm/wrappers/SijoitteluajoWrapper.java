@@ -1,6 +1,7 @@
 package fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers;
 
 import fi.vm.sade.sijoittelu.domain.SijoitteluAjo;
+import fi.vm.sade.sijoittelu.domain.Valintatulos;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,9 +17,12 @@ public class SijoitteluajoWrapper {
 
     private List<HakukohdeWrapper> hakukohteet = new ArrayList<HakukohdeWrapper>();
 
+    private List<Valintatulos> muuttuneetValintatulokset = new ArrayList<>();
+
     public List<HakukohdeWrapper> getHakukohteet() {
         return hakukohteet;
     }
+
 
     public void setHakukohteet(List<HakukohdeWrapper> hakukohteet) {
         this.hakukohteet = hakukohteet;
@@ -30,6 +34,14 @@ public class SijoitteluajoWrapper {
 
     public void setSijoitteluajo(SijoitteluAjo sijoitteluajo) {
         this.sijoitteluajo = sijoitteluajo;
+    }
+
+    public List<Valintatulos> getMuuttuneetValintatulokset() {
+        return muuttuneetValintatulokset;
+    }
+
+    public void setMuuttuneetValintatulokset(List<Valintatulos> muuttuneetValintatulokset) {
+        this.muuttuneetValintatulokset = muuttuneetValintatulokset;
     }
 
 }

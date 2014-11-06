@@ -55,7 +55,7 @@ public class SijoitteluAlgorithmFactoryImplTest {
                 get(0).getHakemukset().get(0).getHakemus().getTila(), HakemuksenTila.HYVAKSYTTY);
         Assert.assertEquals(sijoitteluAlgorithm.sijoitteluAjo.getHakukohteet().get(0).getValintatapajonot().
                 get(0).getHakemukset().get(0).getHakemus().getIlmoittautumisTila(), valintatulos.getIlmoittautumisTila());
-        Assert.assertTrue(sijoitteluAlgorithm.sijoitteluAjo.getHakukohteet().get(0).getValintatapajonot().
+        Assert.assertTrue(!sijoitteluAlgorithm.sijoitteluAjo.getHakukohteet().get(0).getValintatapajonot().
                 get(0).getHakemukset().get(0).isTilaVoidaanVaihtaa());
 
     }

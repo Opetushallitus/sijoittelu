@@ -5,6 +5,7 @@ import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.presijoitteluprocessor.P
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.presijoitteluprocessor.PreSijoitteluProcessorPeruutaAlemmatPeruneetJaHyvaksytyt;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.presijoitteluprocessor.PreSijoitteluProcessorSort;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.presijoitteluprocessor.PreSijoitteluProcessorTasasijaArvonta;
+import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.util.TilanKuvaukset;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.*;
 import fi.vm.sade.sijoittelu.domain.*;
 import org.springframework.stereotype.Component;
@@ -79,11 +80,7 @@ public class SijoitteluAlgorithmFactoryImpl implements SijoitteluAlgorithmFactor
 
                     Valintatulos valintatulos = getValintatulos(hakukohde, valintatapajono, hakemus, valintatulokset);
 
-                    List<ValintatuloksenTila> hyvaksyttylista = Arrays.asList(ValintatuloksenTila.ILMOITETTU, ValintatuloksenTila.VASTAANOTTANUT);
-                    Map<String, String> varasijamap = new HashMap<>();
-                    varasijamap.put("FI", "Varasijalta hyväksytty");
-                    varasijamap.put("SV", "Godkänd från reservplats");
-                    varasijamap.put("EN", "Accepted from a reserve place");
+                    List<ValintatuloksenTila> hyvaksyttylista = Arrays.asList(ValintatuloksenTila.ILMOITETTU, ValintatuloksenTila.VASTAANOTTANUT, ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI);
 
                     if (valintatulos != null && valintatulos.getTila() != null) {
                         ValintatuloksenTila tila = valintatulos.getTila();
@@ -93,25 +90,17 @@ public class SijoitteluAlgorithmFactoryImpl implements SijoitteluAlgorithmFactor
                             voidaanVaihtaa = false;
                         } else if (tila == ValintatuloksenTila.EHDOLLISESTI_VASTAANOTTANUT) {
                             hakemus.setTila(HakemuksenTila.HYVAKSYTTY);
-
                             hakemus.setIlmoittautumisTila(valintatulos.getIlmoittautumisTila());
-                            voidaanVaihtaa = true;
+                            voidaanVaihtaa = false;
                         } else if (tila == ValintatuloksenTila.EI_VASTAANOTETTU_MAARA_AIKANA) {
                             hakemus.setTila(HakemuksenTila.PERUNUT);
-                            hakemus.getTilanKuvaukset().put("FI", "Peruuntunut, ei vastaanottanut määräaikana");
-                            hakemus.getTilanKuvaukset().put("SV", "Annullerad, har inte tagit emot platsen inom utsatt tid");
-                            hakemus.getTilanKuvaukset().put("EN", "Cancelled, has not confirmed the study place within the deadline");
+                            hakemus.setTilanKuvaukset(TilanKuvaukset.peruuntunutEiVastaanottanutMaaraaikana());
                             voidaanVaihtaa = false;
                         } else if (tila == ValintatuloksenTila.PERUUTETTU) {
                             hakemus.setTila(HakemuksenTila.PERUUTETTU);
-                        } else if (valintatulos.getJulkaistavissa() && tila == ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI) {
-                            hakemus.setTila(HakemuksenTila.HYVAKSYTTY);
-
-                            voidaanVaihtaa = false;
-                            hakemus.setIlmoittautumisTila(valintatulos.getIlmoittautumisTila());
                         } else if (hyvaksyttylista.contains(tila)) {
                             if (hakemus.getEdellinenTila() == HakemuksenTila.VARALLA || hakemus.getEdellinenTila() == HakemuksenTila.VARASIJALTA_HYVAKSYTTY) {
-                                hakemus.setTilanKuvaukset(varasijamap);
+                                hakemus.setTilanKuvaukset(TilanKuvaukset.varasijaltaHyvaksytty());
                                 hakemus.setTila(HakemuksenTila.VARASIJALTA_HYVAKSYTTY);
                             } else {
                                 hakemus.setTila(HakemuksenTila.HYVAKSYTTY);
@@ -120,7 +109,7 @@ public class SijoitteluAlgorithmFactoryImpl implements SijoitteluAlgorithmFactor
                             hakemus.setIlmoittautumisTila(valintatulos.getIlmoittautumisTila());
                         } else if (valintatulos.getJulkaistavissa() && (hakemus.getEdellinenTila() == HakemuksenTila.HYVAKSYTTY || hakemus.getEdellinenTila() == HakemuksenTila.VARASIJALTA_HYVAKSYTTY)) {
                             if (hakemus.getEdellinenTila() == HakemuksenTila.VARASIJALTA_HYVAKSYTTY) {
-                                hakemus.setTilanKuvaukset(varasijamap);
+                                hakemus.setTilanKuvaukset(TilanKuvaukset.varasijaltaHyvaksytty());
                                 hakemus.setTila(HakemuksenTila.VARASIJALTA_HYVAKSYTTY);
                             } else {
                                 hakemus.setTila(HakemuksenTila.HYVAKSYTTY);
@@ -128,7 +117,7 @@ public class SijoitteluAlgorithmFactoryImpl implements SijoitteluAlgorithmFactor
                             voidaanVaihtaa = false;
                             hakemus.setIlmoittautumisTila(valintatulos.getIlmoittautumisTila());
                         } else if (valintatulos.getHyvaksyttyVarasijalta()) {
-                            hakemus.setTilanKuvaukset(varasijamap);
+                            hakemus.setTilanKuvaukset(TilanKuvaukset.varasijaltaHyvaksytty());
                             hakemus.setTila(HakemuksenTila.VARASIJALTA_HYVAKSYTTY);
                             hakemus.setIlmoittautumisTila(valintatulos.getIlmoittautumisTila());
                             voidaanVaihtaa = false;

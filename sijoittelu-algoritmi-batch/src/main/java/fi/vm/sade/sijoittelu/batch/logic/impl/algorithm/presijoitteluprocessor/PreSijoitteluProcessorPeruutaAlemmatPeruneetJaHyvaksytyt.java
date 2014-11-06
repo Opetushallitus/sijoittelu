@@ -1,5 +1,6 @@
 package fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.presijoitteluprocessor;
 
+import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.util.TilanKuvaukset;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.*;
 import fi.vm.sade.sijoittelu.domain.*;
 
@@ -33,22 +34,18 @@ public class PreSijoitteluProcessorPeruutaAlemmatPeruneetJaHyvaksytyt implements
 
                     if (parasHyvaksyttyHakutoive != null && hakemusWrapper.isTilaVoidaanVaihtaa() &&
                         hakemusWrapper.getHakemus().getTila() == HakemuksenTila.VARALLA &&
-                        hakemusWrapper.getHakemus().getPrioriteetti() >= parasHyvaksyttyHakutoive ||
+                        hakemusWrapper.getHakemus().getPrioriteetti() > parasHyvaksyttyHakutoive ||
                         parasHyvaksyttyHakutoive != null && hakemusWrapper.isTilaVoidaanVaihtaa() &&
                         isVastaanottanutEhdollisesti(hakemusWrapper, hakukohdeWrapper.getHakukohde(),
                                         valintatapajonoWrapper.getValintatapajono()) &&
-                        hakemusWrapper.getHakemus().getPrioriteetti() >= parasHyvaksyttyHakutoive ||
+                        hakemusWrapper.getHakemus().getPrioriteetti() > parasHyvaksyttyHakutoive ||
                             vastaanottanutSitovasti && !isCurrentVastaanottanutSitovasti(hakemusWrapper, hakukohdeWrapper.getHakukohde(),
                                     valintatapajonoWrapper.getValintatapajono())
                     ) {
                         if (vastaanottanutSitovasti) {
-                            hakemusWrapper.getHakemus().getTilanKuvaukset().put("FI", "Peruuntunut, ottanut vastaan toisen opiskelupaikan");
-                            hakemusWrapper.getHakemus().getTilanKuvaukset().put("SV", "Annullerad, ottanut vastaan toisen opiskelupaikan");
-                            hakemusWrapper.getHakemus().getTilanKuvaukset().put("EN", "Cancelled, ottanut vastaan toisen opiskelupaikan");
+                            hakemusWrapper.getHakemus().setTilanKuvaukset(TilanKuvaukset.peruuntunutVastaanottanutToisenOpiskelupaikan());
                         } else {
-                            hakemusWrapper.getHakemus().getTilanKuvaukset().put("FI", "Peruuntunut, hyväksytty ylemmälle hakutoiveelle");
-                            hakemusWrapper.getHakemus().getTilanKuvaukset().put("SV", "Annullerad, godkänt till ansökningsmål med högre prioritet");
-                            hakemusWrapper.getHakemus().getTilanKuvaukset().put("EN", "Cancelled, accepted for a study place with higher priority");
+                            hakemusWrapper.getHakemus().setTilanKuvaukset(TilanKuvaukset.peruuntunutYlempiToive());
                         }
                         hakemusWrapper.getHakemus().setTila(HakemuksenTila.PERUUNTUNUT);
                         hakemusWrapper.setTilaVoidaanVaihtaa(false);

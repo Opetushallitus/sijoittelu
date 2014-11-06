@@ -44,10 +44,6 @@ public class ErillishaunHakijaDTO {
 		return v;
 	}
 	
-	public boolean isHyvaksyttyVarasijalta() {
-		return HakemuksenTila.VARASIJALTA_HYVAKSYTTY.equals(hakemuksenTila);
-	}
-
 	public boolean isJulkaistavissa() {
 		return julkaistavissa;
 	}

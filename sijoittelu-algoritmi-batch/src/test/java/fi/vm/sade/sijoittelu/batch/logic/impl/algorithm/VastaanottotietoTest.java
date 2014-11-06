@@ -239,7 +239,7 @@ public class VastaanottotietoTest {
 
         // assertoi
         TestHelper.assertoi(hakukohteet.get(2).getValintatapajonot()
-                .get(0), "1.2.246.562.24.00000000005", HakemuksenTila.PERUUNTUNUT);
+                .get(0), "1.2.246.562.24.00000000005", HakemuksenTila.HYVAKSYTTY);
         TestHelper.assertoi(hakukohteet.get(2).getValintatapajonot()
                 .get(0), "1.2.246.562.24.00000000006", HakemuksenTila.HYVAKSYTTY);
 
@@ -276,7 +276,7 @@ public class VastaanottotietoTest {
 
         // assertoi
         TestHelper.assertoi(hakukohteet.get(2).getValintatapajonot()
-                .get(0), "1.2.246.562.24.00000000006", HakemuksenTila.PERUUNTUNUT);
+                .get(0), "1.2.246.562.24.00000000006", HakemuksenTila.HYVAKSYTTY);
         TestHelper.assertoi(hakukohteet.get(2).getValintatapajonot()
                 .get(0), "1.2.246.562.24.00000000005", HakemuksenTila.HYVAKSYTTY);
 
@@ -312,9 +312,9 @@ public class VastaanottotietoTest {
 
         // assertoi
         TestHelper.assertoi(hakukohteet.get(1).getValintatapajonot()
-                .get(0), "1.2.246.562.24.00000000002", HakemuksenTila.HYVAKSYTTY);
+                .get(0), "1.2.246.562.24.00000000002", HakemuksenTila.VARALLA);
         TestHelper.assertoi(hakukohteet.get(1).getValintatapajonot()
-                .get(0), "1.2.246.562.24.00000000001", HakemuksenTila.PERUUNTUNUT);
+                .get(0), "1.2.246.562.24.00000000001", HakemuksenTila.HYVAKSYTTY);
 
         valintatuloses = new ArrayList<>();
         valintatulos = new Valintatulos();
@@ -348,9 +348,9 @@ public class VastaanottotietoTest {
 
         // assertoi
         TestHelper.assertoi(hakukohteet.get(1).getValintatapajonot()
-                .get(0), "1.2.246.562.24.00000000002", HakemuksenTila.HYVAKSYTTY);
+                .get(0), "1.2.246.562.24.00000000002", HakemuksenTila.VARALLA);
         TestHelper.assertoi(hakukohteet.get(1).getValintatapajonot()
-                .get(0), "1.2.246.562.24.00000000003", HakemuksenTila.PERUUNTUNUT);
+                .get(0), "1.2.246.562.24.00000000003", HakemuksenTila.HYVAKSYTTY);
 
     }
 }
