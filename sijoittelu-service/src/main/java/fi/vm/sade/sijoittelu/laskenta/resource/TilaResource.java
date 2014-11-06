@@ -247,7 +247,12 @@ public class TilaResource {
             hakukohde.setSijoitteluajoId(ajo.getSijoitteluajoId());
             hakukohde.setTarjoajaOid(tarjoajaOid);
 
-            Valintatapajono jono = createValintatapaJono(UUID.randomUUID().toString());
+            Valintatapajono jono;
+            if (valintatapajonoOid.isPresent()) {
+                jono = createValintatapaJono(valintatapajonoOid.get());
+            } else {
+                jono = createValintatapaJono(UUID.randomUUID().toString());
+            }
 
             hakukohde.getValintatapajonot().add(jono);
             hakukohdeDao.persistHakukohde(hakukohde);
@@ -264,11 +269,17 @@ public class TilaResource {
 
             Valintatapajono jono;
             if (valintatapajonoOid.isPresent()) {
-                jono = kohde.getValintatapajonot()
+                Optional<Valintatapajono> valintatapajonoOptional = kohde.getValintatapajonot()
                         .stream()
                         .filter(j -> j.getOid().equals(valintatapajonoOid.get()))
-                        .findFirst()
-                        .orElse(createValintatapaJono(valintatapajonoOid.get()));
+                        .findFirst();
+                if(valintatapajonoOptional.isPresent()) {
+                    jono = valintatapajonoOptional.get();
+                } else {
+                    jono = createValintatapaJono(valintatapajonoOid.get());
+                    kohde.getValintatapajonot().add(jono);
+                }
+
             } else {
                 jono = kohde.getValintatapajonot().get(0);
             }
