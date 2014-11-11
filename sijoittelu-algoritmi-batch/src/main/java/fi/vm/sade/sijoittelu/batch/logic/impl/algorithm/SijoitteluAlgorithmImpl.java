@@ -382,7 +382,8 @@ public class SijoitteluAlgorithmImpl implements SijoitteluAlgorithm {
                 // Alemmat toiveet
                 if (h != hakemus && hakemus.getHakemus().getPrioriteetti() < h.getHakemus().getPrioriteetti()) {
                     if(h.isTilaVoidaanVaihtaa()) {
-                        if (h.getHakemus().getTila() == HakemuksenTila.HYVAKSYTTY || h.getHakemus().getTila() == HakemuksenTila.VARASIJALTA_HYVAKSYTTY) {
+                        if (h.getHakemus().getTila() == HakemuksenTila.HYVAKSYTTY
+                                || h.getHakemus().getTila() == HakemuksenTila.VARASIJALTA_HYVAKSYTTY) {
                             h.getHakemus().setTila(HakemuksenTila.PERUUNTUNUT);
                             h.getHakemus().setTilanKuvaukset(TilanKuvaukset.peruuntunutYlempiToive());
                             uudelleenSijoiteltavatHakukohteet.add(h);
@@ -390,7 +391,8 @@ public class SijoitteluAlgorithmImpl implements SijoitteluAlgorithm {
                             if (h.getHakemus().getTila() != HakemuksenTila.HYLATTY
                                     && h.getHakemus().getTila() != HakemuksenTila.PERUUTETTU
                                     && h.getHakemus().getTila() != HakemuksenTila.PERUNUT) {
-                                h.getHakemus().setTilanKuvaukset(TilanKuvaukset.peruuntunutAloituspaikatTaynna());
+                                //h.getHakemus().setTilanKuvaukset(TilanKuvaukset.peruuntunutAloituspaikatTaynna());
+                                h.getHakemus().setTilanKuvaukset(TilanKuvaukset.peruuntunutYlempiToive());
                                 h.getHakemus().setTila(HakemuksenTila.PERUUNTUNUT);
                             }
                         }
