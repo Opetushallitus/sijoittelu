@@ -40,7 +40,7 @@ import static fi.vm.sade.valintalaskenta.tulos.roles.ValintojenToteuttaminenRole
 @Path("sijoittele")
 @Component
 // @PreAuthorize("isAuthenticated()")
-@Api(value = "/tila", description = "Resurssi sijoitteluun")
+@Api(value = "/sijoittele", description = "Resurssi sijoitteluun")
 public class SijoitteluResource {
 
 	private final static Logger LOGGER = LoggerFactory
