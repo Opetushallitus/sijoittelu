@@ -1,5 +1,8 @@
 package fi.vm.sade.sijoittelu.domain.dto;
 
+import com.wordnik.swagger.annotations.ApiModel;
+import com.wordnik.swagger.annotations.ApiModelProperty;
+
 import fi.vm.sade.sijoittelu.domain.HakemuksenTila;
 import fi.vm.sade.sijoittelu.domain.IlmoittautumisTila;
 import fi.vm.sade.sijoittelu.domain.ValintatuloksenTila;
@@ -10,19 +13,30 @@ import fi.vm.sade.sijoittelu.domain.Valintatulos;
  * @author Jussi Jartamo
  * 
  */
+@ApiModel("Erillishaunhakija")
 public class ErillishaunHakijaDTO {
-
+	
+	@ApiModelProperty(value = "Valintatapajonon tunniste", required = true)
 	private String valintatapajonoOid;
+	@ApiModelProperty(value = "Hakemuksen tunniste", required = false)
 	private String hakemusOid;
+	@ApiModelProperty(value = "Hakukohteen tunniste", required = false)
 	private String hakukohdeOid;
+	@ApiModelProperty(value = "Saako hakijan tulokset julkaista", required = false)
 	private boolean julkaistavissa;
 	//private boolean hyvaksyttyVarasijalta;
+	@ApiModelProperty(value = "Hakijan tunniste", required = false)
 	private String hakijaOid;
+	@ApiModelProperty(value = "Haun tunniste", required = false)
 	private String hakuOid;
+	@ApiModelProperty(value = "Tarjoajan (organisaation) tunniste", required = false)
 	private String tarjoajaOid;
 	//private int hakutoive; // aina ensimmainen?
+	@ApiModelProperty(value = "Valintatuloksen tila", required = false)
 	private ValintatuloksenTila valintatuloksenTila;
+	@ApiModelProperty(value = "Ilmoittautumisen tila", required = false)
 	private IlmoittautumisTila ilmoittautumisTila;
+	@ApiModelProperty(value = "Hakemuksen tila", required = false)
 	private HakemuksenTila hakemuksenTila;
 
 	public ErillishaunHakijaDTO() {

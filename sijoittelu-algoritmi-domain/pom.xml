@@ -14,6 +14,11 @@
 
     <dependencies>
     	<dependency>
+    		<groupId>com.wordnik</groupId>
+    		<artifactId>swagger-annotations</artifactId>
+    		<version>${swagger.version}</version>
+    	</dependency>
+    	<dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
         </dependency>
@@ -47,5 +52,6 @@
             <groupId>org.mongodb</groupId>
             <artifactId>mongo-java-driver</artifactId>
         </dependency>
+        
     </dependencies>
 </project>
