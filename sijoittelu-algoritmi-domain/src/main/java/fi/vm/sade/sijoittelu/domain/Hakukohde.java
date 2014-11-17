@@ -15,7 +15,8 @@ import java.util.List;
 @Entity("Hakukohde")
 @Indexes( {
         @Index("oid, sijoitteluajoId"),
-        @Index("sijoitteluajoId")}
+        @Index("sijoitteluajoId"),
+        @Index("sijoitteluajoId, valintatapajonot.hakemukset.hakemusOid")}
 )
 public class Hakukohde implements Serializable {
 
