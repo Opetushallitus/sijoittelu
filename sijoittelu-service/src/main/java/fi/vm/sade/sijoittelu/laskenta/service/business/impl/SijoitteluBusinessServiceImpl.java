@@ -2,12 +2,15 @@ package fi.vm.sade.sijoittelu.laskenta.service.business.impl;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 import akka.actor.ActorRef;
+import com.google.gson.GsonBuilder;
 import fi.vm.sade.sijoittelu.domain.*;
 import fi.vm.sade.sijoittelu.domain.comparator.HakemusComparator;
 import fi.vm.sade.sijoittelu.laskenta.actors.messages.PoistaHakukohteet;
@@ -147,9 +150,14 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
         SijoitteluAlgorithm sijoitteluAlgorithm = algorithmFactory
                 .constructAlgorithm(kaikkiHakukohteet, valintatulokset);
 
-        ParametriDTO parametri = ohjausparametriResource.haePaivamaara(hakuOid);
-        if(parametri != null && parametri.getPH_VTSSV() != null && parametri.getPH_VTSSV().getDate() != null) {
-            sijoitteluAlgorithm.getSijoitteluAjo().setKaikkiKohteetSijoittelussa(LocalDate.ofEpochDay(parametri.getPH_VTSSV().getDate()));
+        try {
+            ParametriDTO parametri = new GsonBuilder().create().fromJson(ohjausparametriResource.haePaivamaara(hakuOid), ParametriDTO.class);
+            if(parametri != null && parametri.getPH_VTSSV() != null && parametri.getPH_VTSSV().getDate() != null) {
+                sijoitteluAlgorithm.getSijoitteluAjo().setKaikkiKohteetSijoittelussa(fromTimestamp(parametri.getPH_VTSSV().getDate()));
+            }
+        } catch(Exception e) {
+            LOG.error("############## Ohjausparametrin muuntaminen LocalDateksi epäonnistui ##############");
+            e.printStackTrace();
         }
 
         uusiSijoitteluajo.setStartMils(startTime);
@@ -174,6 +182,10 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
         }
 
 
+    }
+
+    private LocalDate fromTimestamp(Long timestamp) {
+        return LocalDateTime.ofInstant(new Date(timestamp).toInstant(), ZoneId.systemDefault()).toLocalDate();
     }
 
     @Override

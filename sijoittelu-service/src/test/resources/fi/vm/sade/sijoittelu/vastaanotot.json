@@ -1,0 +1,263 @@
+{
+    "Valinnanvaihe": [
+        {
+            "jarjestysnumero" : 1,
+            "hakuOid" : "1.2.246.562.29.173465377510",
+            "hakukohdeOid" : "hakukohde1",
+            "valinnanvaiheOid" : "valinnanvaihe1",
+            "tarjoajaOid" : "1.2.246.562.10.28342991297",
+            "nimi" : "Varsinainen valinta",
+            "valintatapajonot" : [
+                {
+                    "valintatapajonoOid" : "jono1",
+                    "nimi" : "Pisteet",
+                    "prioriteetti" : 0,
+                    "aloituspaikat" : 3,
+                    "siirretaanSijoitteluun" : true,
+                    "tasasijasaanto" : "YLITAYTTO",
+                    "eiVarasijatayttoa" : false,
+                    "valmisSijoiteltavaksi" : true,
+                    "jonosijat": [
+                        {
+                            "hakemusOid" : "oid1",
+                            "hakijaOid" : "oid1",
+                            "etunimi" : "1",
+                            "sukunimi" : "Nevala",
+                            "hakutoiveprioriteetti" : 1,
+                            "harkinnanvarainen" : false,
+                            "jarjestyskriteeritulokset" : [
+                                {
+                                    "prioriteetti" : 0,
+                                    "arvo" : "11",
+                                    "tila" : "HYVAKSYTTAVISSA",
+                                    "nimi" : "Testikriteeri"
+                                }
+                            ]
+                        },
+                        {
+                            "hakemusOid" : "oid2",
+                            "hakijaOid" : "oid2",
+                            "etunimi" : "2",
+                            "sukunimi" : "Nevala",
+                            "hakutoiveprioriteetti" : 1,
+                            "harkinnanvarainen" : false,
+                            "jarjestyskriteeritulokset" : [
+                                {
+                                    "prioriteetti" : 0,
+                                    "arvo" : "11",
+                                    "tila" : "HYVAKSYTTAVISSA",
+                                    "nimi" : "Testikriteeri"
+                                }
+                            ]
+                        },
+                        {
+                            "hakemusOid" : "oid3",
+                            "hakijaOid" : "oid3",
+                            "etunimi" : "3",
+                            "sukunimi" : "Nevala",
+                            "hakutoiveprioriteetti" : 1,
+                            "harkinnanvarainen" : false,
+                            "jarjestyskriteeritulokset" : [
+                                {
+                                    "prioriteetti" : 0,
+                                    "arvo" : "11",
+                                    "tila" : "HYVAKSYTTAVISSA",
+                                    "nimi" : "Testikriteeri"
+                                }
+                            ]
+                        },
+                        {
+                            "hakemusOid" : "oid4",
+                            "hakijaOid" : "oid4",
+                            "etunimi" : "4",
+                            "sukunimi" : "Nevala",
+                            "hakutoiveprioriteetti" : 1,
+                            "harkinnanvarainen" : false,
+                            "jarjestyskriteeritulokset" : [
+                                {
+                                    "prioriteetti" : 0,
+                                    "arvo" : "11",
+                                    "tila" : "HYVAKSYTTAVISSA",
+                                    "nimi" : "Testikriteeri"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "jarjestysnumero" : 1,
+            "hakuOid" : "1.2.246.562.29.173465377510",
+            "hakukohdeOid" : "hakukohde2",
+            "valinnanvaiheOid" : "valinnanvaihe2",
+            "tarjoajaOid" : "1.2.246.562.10.28342991297",
+            "nimi" : "Varsinainen valinta",
+            "valintatapajonot" : [
+                {
+                    "valintatapajonoOid" : "jono2",
+                    "nimi" : "Pisteet",
+                    "prioriteetti" : 0,
+                    "aloituspaikat" : 3,
+                    "siirretaanSijoitteluun" : true,
+                    "tasasijasaanto" : "YLITAYTTO",
+                    "eiVarasijatayttoa" : false,
+                    "valmisSijoiteltavaksi" : true,
+                    "jonosijat": [
+                        {
+                            "hakemusOid" : "oid1",
+                            "hakijaOid" : "oid1",
+                            "etunimi" : "1",
+                            "sukunimi" : "Nevala",
+                            "hakutoiveprioriteetti" : 2,
+                            "harkinnanvarainen" : false,
+                            "jarjestyskriteeritulokset" : [
+                                {
+                                    "prioriteetti" : 0,
+                                    "arvo" : "11",
+                                    "tila" : "HYVAKSYTTAVISSA",
+                                    "nimi" : "Testikriteeri"
+                                }
+                            ]
+                        },
+                        {
+                            "hakemusOid" : "oid2",
+                            "hakijaOid" : "oid2",
+                            "etunimi" : "2",
+                            "sukunimi" : "Nevala",
+                            "hakutoiveprioriteetti" : 2,
+                            "harkinnanvarainen" : false,
+                            "jarjestyskriteeritulokset" : [
+                                {
+                                    "prioriteetti" : 0,
+                                    "arvo" : "11",
+                                    "tila" : "HYVAKSYTTAVISSA",
+                                    "nimi" : "Testikriteeri"
+                                }
+                            ]
+                        },
+                        {
+                            "hakemusOid" : "oid3",
+                            "hakijaOid" : "oid3",
+                            "etunimi" : "3",
+                            "sukunimi" : "Nevala",
+                            "hakutoiveprioriteetti" : 2,
+                            "harkinnanvarainen" : false,
+                            "jarjestyskriteeritulokset" : [
+                                {
+                                    "prioriteetti" : 0,
+                                    "arvo" : "11",
+                                    "tila" : "HYVAKSYTTAVISSA",
+                                    "nimi" : "Testikriteeri"
+                                }
+                            ]
+                        },
+                        {
+                            "hakemusOid" : "oid4",
+                            "hakijaOid" : "oid4",
+                            "etunimi" : "4",
+                            "sukunimi" : "Nevala",
+                            "hakutoiveprioriteetti" : 2,
+                            "harkinnanvarainen" : false,
+                            "jarjestyskriteeritulokset" : [
+                                {
+                                    "prioriteetti" : 0,
+                                    "arvo" : "11",
+                                    "tila" : "HYVAKSYTTAVISSA",
+                                    "nimi" : "Testikriteeri"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "jarjestysnumero" : 1,
+            "hakuOid" : "1.2.246.562.29.173465377510",
+            "hakukohdeOid" : "hakukohde3",
+            "valinnanvaiheOid" : "valinnanvaihe3",
+            "tarjoajaOid" : "1.2.246.562.10.28342991297",
+            "nimi" : "Varsinainen valinta",
+            "valintatapajonot" : [
+                {
+                    "valintatapajonoOid" : "jono3",
+                    "nimi" : "Pisteet",
+                    "prioriteetti" : 0,
+                    "aloituspaikat" : 3,
+                    "siirretaanSijoitteluun" : true,
+                    "tasasijasaanto" : "YLITAYTTO",
+                    "eiVarasijatayttoa" : false,
+                    "valmisSijoiteltavaksi" : true,
+                    "jonosijat": [
+                        {
+                            "hakemusOid" : "oid1",
+                            "hakijaOid" : "oid1",
+                            "etunimi" : "1",
+                            "sukunimi" : "Nevala",
+                            "hakutoiveprioriteetti" : 3,
+                            "harkinnanvarainen" : false,
+                            "jarjestyskriteeritulokset" : [
+                                {
+                                    "prioriteetti" : 0,
+                                    "arvo" : "11",
+                                    "tila" : "HYVAKSYTTAVISSA",
+                                    "nimi" : "Testikriteeri"
+                                }
+                            ]
+                        },
+                        {
+                            "hakemusOid" : "oid2",
+                            "hakijaOid" : "oid2",
+                            "etunimi" : "2",
+                            "sukunimi" : "Nevala",
+                            "hakutoiveprioriteetti" : 3,
+                            "harkinnanvarainen" : false,
+                            "jarjestyskriteeritulokset" : [
+                                {
+                                    "prioriteetti" : 0,
+                                    "arvo" : "11",
+                                    "tila" : "HYVAKSYTTAVISSA",
+                                    "nimi" : "Testikriteeri"
+                                }
+                            ]
+                        },
+                        {
+                            "hakemusOid" : "oid3",
+                            "hakijaOid" : "oid3",
+                            "etunimi" : "3",
+                            "sukunimi" : "Nevala",
+                            "hakutoiveprioriteetti" : 3,
+                            "harkinnanvarainen" : false,
+                            "jarjestyskriteeritulokset" : [
+                                {
+                                    "prioriteetti" : 0,
+                                    "arvo" : "11",
+                                    "tila" : "HYVAKSYTTAVISSA",
+                                    "nimi" : "Testikriteeri"
+                                }
+                            ]
+                        },
+                        {
+                            "hakemusOid" : "oid4",
+                            "hakijaOid" : "oid4",
+                            "etunimi" : "4",
+                            "sukunimi" : "Nevala",
+                            "hakutoiveprioriteetti" : 3,
+                            "harkinnanvarainen" : false,
+                            "jarjestyskriteeritulokset" : [
+                                {
+                                    "prioriteetti" : 0,
+                                    "arvo" : "11",
+                                    "tila" : "HYVAKSYTTAVISSA",
+                                    "nimi" : "Testikriteeri"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+
+    ]
+}
