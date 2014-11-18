@@ -49,7 +49,7 @@ public class PreSijoitteluProcessorPeruutaAlemmatPeruneetJaHyvaksytytTest {
         Assert.assertEquals(sijoitteluajoWrapper.getHakukohteet().get(0)
                 .getValintatapajonot().get(0).getHakemukset().get(0).getHakemus().getTila(), HakemuksenTila.HYVAKSYTTY);
         Assert.assertEquals(sijoitteluajoWrapper.getHakukohteet().get(1)
-                .getValintatapajonot().get(0).getHakemukset().get(1).getHakemus().getTila(), HakemuksenTila.PERUUNTUNUT);
+                .getValintatapajonot().get(0).getHakemukset().get(0).getHakemus().getTila(), HakemuksenTila.PERUUNTUNUT);
     }
 
     @Test
@@ -106,6 +106,7 @@ public class PreSijoitteluProcessorPeruutaAlemmatPeruneetJaHyvaksytytTest {
         h.setHakemusOid("123");
         hakemus.setHakemus(h);
         hakemus.setTilaVoidaanVaihtaa(true);
+        hakemus.setValintatapajono(sijoitteluajoWrapper.getHakukohteet().get(1).getValintatapajonot().get(0));
 
         Hakemus h2 = new Hakemus();
         h2.setPrioriteetti(1);
@@ -113,6 +114,7 @@ public class PreSijoitteluProcessorPeruutaAlemmatPeruneetJaHyvaksytytTest {
         h2.setHakemusOid("321");
         hakemus2.setHakemus(h2);
         hakemus2.setTilaVoidaanVaihtaa(false);
+        hakemus2.setValintatapajono(sijoitteluajoWrapper.getHakukohteet().get(0).getValintatapajonot().get(0));
 
 
         HenkiloWrapper henkilo = generateHenkiloWrapper();
@@ -140,7 +142,7 @@ public class PreSijoitteluProcessorPeruutaAlemmatPeruneetJaHyvaksytytTest {
         Assert.assertEquals(sijoitteluajoWrapper.getHakukohteet().get(0)
                 .getValintatapajonot().get(0).getHakemukset().get(0).getHakemus().getTila(), HakemuksenTila.PERUUNTUNUT);
         Assert.assertEquals(sijoitteluajoWrapper.getHakukohteet().get(1)
-                .getValintatapajonot().get(0).getHakemukset().get(1).getHakemus().getTila(), HakemuksenTila.HYVAKSYTTY);
+                .getValintatapajonot().get(0).getHakemukset().get(0).getHakemus().getTila(), HakemuksenTila.HYVAKSYTTY);
 
         sijoitteluajoWrapper = generateSijoitteluajoWrapper();
 
@@ -153,6 +155,7 @@ public class PreSijoitteluProcessorPeruutaAlemmatPeruneetJaHyvaksytytTest {
         h.setHakemusOid("123");
         hakemus.setHakemus(h);
         hakemus.setTilaVoidaanVaihtaa(false);
+        hakemus.setValintatapajono(sijoitteluajoWrapper.getHakukohteet().get(0).getValintatapajonot().get(0));
 
         h2 = new Hakemus();
         h2.setPrioriteetti(2);
@@ -160,6 +163,7 @@ public class PreSijoitteluProcessorPeruutaAlemmatPeruneetJaHyvaksytytTest {
         h2.setHakemusOid("321");
         hakemus2.setHakemus(h2);
         hakemus2.setTilaVoidaanVaihtaa(true);
+        hakemus2.setValintatapajono(sijoitteluajoWrapper.getHakukohteet().get(1).getValintatapajonot().get(0));
 
 
         henkilo = generateHenkiloWrapper();
@@ -187,7 +191,7 @@ public class PreSijoitteluProcessorPeruutaAlemmatPeruneetJaHyvaksytytTest {
         Assert.assertEquals(sijoitteluajoWrapper.getHakukohteet().get(0)
                 .getValintatapajonot().get(0).getHakemukset().get(0).getHakemus().getTila(), HakemuksenTila.HYVAKSYTTY);
         Assert.assertEquals(sijoitteluajoWrapper.getHakukohteet().get(1)
-                .getValintatapajonot().get(0).getHakemukset().get(1).getHakemus().getTila(), HakemuksenTila.PERUUNTUNUT);
+                .getValintatapajonot().get(0).getHakemukset().get(0).getHakemus().getTila(), HakemuksenTila.PERUUNTUNUT);
     }
 
     @Test
@@ -203,15 +207,18 @@ public class PreSijoitteluProcessorPeruutaAlemmatPeruneetJaHyvaksytytTest {
         h.setPrioriteetti(1);
         h.setTila(HakemuksenTila.HYVAKSYTTY);
         h.setHakemusOid("123");
-
         hakemus.setTilaVoidaanVaihtaa(false);
         hakemus.setHakemus(h);
+        hakemus.setValintatapajono(sijoitteluajoWrapper.getHakukohteet().get(1).getValintatapajonot().get(0));
+
+
         Hakemus h2 = new Hakemus();
         h2.setPrioriteetti(2);
         h2.setTila(HakemuksenTila.HYVAKSYTTY);
         h2.setHakemusOid("321");
         hakemus2.setHakemus(h2);
         hakemus2.setTilaVoidaanVaihtaa(true);
+        hakemus2.setValintatapajono(sijoitteluajoWrapper.getHakukohteet().get(0).getValintatapajonot().get(0));
 
 
         HenkiloWrapper henkilo = generateHenkiloWrapper();
@@ -257,6 +264,7 @@ public class PreSijoitteluProcessorPeruutaAlemmatPeruneetJaHyvaksytytTest {
         h.setPrioriteetti(2);
         h.setTila(HakemuksenTila.HYVAKSYTTY);
         h.setHakemusOid("123");
+        hakemus.setValintatapajono(sijoitteluajoWrapper.getHakukohteet().get(1).getValintatapajonot().get(0));
 
         hakemus.setTilaVoidaanVaihtaa(true);
         hakemus.setHakemus(h);
@@ -266,6 +274,7 @@ public class PreSijoitteluProcessorPeruutaAlemmatPeruneetJaHyvaksytytTest {
         h2.setHakemusOid("321");
         hakemus2.setHakemus(h2);
         hakemus2.setTilaVoidaanVaihtaa(false);
+        hakemus2.setValintatapajono(sijoitteluajoWrapper.getHakukohteet().get(0).getValintatapajonot().get(0));
 
 
         henkilo = generateHenkiloWrapper();
@@ -302,12 +311,12 @@ public class PreSijoitteluProcessorPeruutaAlemmatPeruneetJaHyvaksytytTest {
                 .getValintatapajonot().get(0).getHakemukset().get(1).getHakemus().getTila(), HakemuksenTila.HYVAKSYTTY);
     }
 
-    private List<ValintatapajonoWrapper> generateValintatapajonoWrapper() {
+    private List<ValintatapajonoWrapper> generateValintatapajonoWrapper(String oid) {
         List<ValintatapajonoWrapper> valintatapajonot = new ArrayList<>();
 
         ValintatapajonoWrapper valintatapajono = new ValintatapajonoWrapper();
         Valintatapajono valintatapajono1 = new Valintatapajono();
-        valintatapajono1.setOid("123");
+        valintatapajono1.setOid(oid);
         valintatapajono.setValintatapajono(valintatapajono1);
 
         List<HakemusWrapper> hakemukset = generateHakemusWrapper();
@@ -336,8 +345,8 @@ public class PreSijoitteluProcessorPeruutaAlemmatPeruneetJaHyvaksytytTest {
         hakukohde.setOid("123");
 
         hakukohde1.setHakukohde(hakukohde);
-        List<ValintatapajonoWrapper> valintatapajonoWrapper = generateValintatapajonoWrapper();
-        hakukohde1.setValintatapajonot(valintatapajonoWrapper);
+//        List<ValintatapajonoWrapper> valintatapajonoWrapper = generateValintatapajonoWrapper();
+        hakukohde1.setValintatapajonot(generateValintatapajonoWrapper("123"));
 
         hakukohteet.add(hakukohde1);
 
@@ -347,7 +356,7 @@ public class PreSijoitteluProcessorPeruutaAlemmatPeruneetJaHyvaksytytTest {
         hakuk2.setOid("321");
 
         hakukohde2.setHakukohde(hakuk2);
-        hakukohde2.setValintatapajonot(valintatapajonoWrapper);
+        hakukohde2.setValintatapajonot(generateValintatapajonoWrapper("321"));
 
         hakukohteet.add(hakukohde2);
 

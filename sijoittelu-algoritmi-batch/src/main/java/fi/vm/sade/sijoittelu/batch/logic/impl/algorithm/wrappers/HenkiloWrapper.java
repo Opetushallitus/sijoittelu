@@ -19,7 +19,7 @@ public class HenkiloWrapper {
     private String hakemusOid;
 
     //henkilolla voi poikkeustapauksissa olla useampi valintatulos
-    private List<Valintatulos> valintatulos = new ArrayList<Valintatulos>();;
+    private List<Valintatulos> valintatulos = new ArrayList<Valintatulos>();
 
     public List<HakemusWrapper> getHakemukset() {
         return hakemukset;

@@ -4,7 +4,7 @@ import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.util.TilanKuvaukset;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.*;
 import fi.vm.sade.sijoittelu.domain.*;
 
-import java.util.List;
+import java.util.*;
 
 /**
  * Created with IntelliJ IDEA.
@@ -16,107 +16,143 @@ import java.util.List;
 public class PreSijoitteluProcessorPeruutaAlemmatPeruneetJaHyvaksytyt implements PreSijoitteluProcessor {
     /**
      * Peruutetaan jo jonnekkin hyväksyttyjen alemmat hakemukset.
-     * Tata voisi optimoida bitusti luuppaamalla vain henkilo=>hakemus tyyliin. mutta kiire.
      * Kaytannossa tata tarvitaan jos algoritmi on tyytyvainen nykytilanteeseeen eika koskaan muuta henkilon tilaa, jolloin varalla olevat jaavat koskemattomiksi.
      * @param sijoitteluajoWrapper
      */
 
     @Override
     public void process(SijoitteluajoWrapper sijoitteluajoWrapper) {
-        for (HakukohdeWrapper hakukohdeWrapper : sijoitteluajoWrapper.getHakukohteet()) {
-            for (ValintatapajonoWrapper valintatapajonoWrapper : hakukohdeWrapper.getValintatapajonot()) {
+        Set<HenkiloWrapper> henkilot = new HashSet<>();
+        sijoitteluajoWrapper.getHakukohteet().parallelStream().forEach(hakukohdeWrapper -> {
+            hakukohdeWrapper.getValintatapajonot().parallelStream().forEach(valintatapajonoWrapper -> {
+                valintatapajonoWrapper.getHakemukset().forEach(hakemusWrapper -> {
+                    if(!henkilot.contains(hakemusWrapper.getHenkilo())) {
+                        henkilot.add(hakemusWrapper.getHenkilo());
+                    }
+                });
+            });
+        });
 
-                boolean vastaanottanutSitovasti = isVastaanottanutSitovasti(valintatapajonoWrapper.getHakemukset(), hakukohdeWrapper.getHakukohde(),
-                        valintatapajonoWrapper.getValintatapajono());
-                for (HakemusWrapper hakemusWrapper : valintatapajonoWrapper.getHakemukset()) {
-                    HenkiloWrapper henkiloWrapper = hakemusWrapper.getHenkilo();
-                    Integer parasHyvaksyttyHakutoive = parasHyvaksyttyTaiPeruttuHakutoive(henkiloWrapper);
+        henkilot.forEach(henkilo -> {
+            Optional<Valintatulos> sitovaOpt = sitovastiVastaanottanut(henkilo);
+            Hakemus parasHyvaksyttyHakutoive = parasHyvaksyttyTaiPeruttuHakutoive(henkilo);
 
-                    if (parasHyvaksyttyHakutoive != null && hakemusWrapper.isTilaVoidaanVaihtaa() &&
-                        hakemusWrapper.getHakemus().getTila() == HakemuksenTila.VARALLA &&
-                        hakemusWrapper.getHakemus().getPrioriteetti() > parasHyvaksyttyHakutoive ||
-                        parasHyvaksyttyHakutoive != null && hakemusWrapper.isTilaVoidaanVaihtaa() &&
-                        isVastaanottanutEhdollisesti(hakemusWrapper, hakukohdeWrapper.getHakukohde(),
-                                        valintatapajonoWrapper.getValintatapajono()) &&
-                        hakemusWrapper.getHakemus().getPrioriteetti() > parasHyvaksyttyHakutoive ||
-                            vastaanottanutSitovasti && !isCurrentVastaanottanutSitovasti(hakemusWrapper, hakukohdeWrapper.getHakukohde(),
-                                    valintatapajonoWrapper.getValintatapajono())
-                    ) {
-                        if (vastaanottanutSitovasti) {
-                            hakemusWrapper.getHakemus().setTilanKuvaukset(TilanKuvaukset.peruuntunutVastaanottanutToisenOpiskelupaikan());
-                        } else {
-                            hakemusWrapper.getHakemus().setTilanKuvaukset(TilanKuvaukset.peruuntunutYlempiToive());
+            Optional<Valintatulos> ehdollinenOpt = ehdollisestiVastaanottanut(henkilo);
+            List<HakemuksenTila> yliajettavat = Arrays.asList(HakemuksenTila.HYVAKSYTTY, HakemuksenTila.VARALLA, HakemuksenTila.VARASIJALTA_HYVAKSYTTY);
+            // Vastaanotanut sitovasti, perutaan kaikki muut
+            if(sitovaOpt.isPresent()) {
+                Valintatulos sitova = sitovaOpt.get();
+                henkilo.getHakemukset().forEach(hakemus -> {
+                    Hakemus h = hakemus.getHakemus();
+                    if(yliajettavat.contains(h.getTila())
+                            && !hakemus.getValintatapajono().getValintatapajono().getOid().equals(sitova.getValintatapajonoOid())) {
+                        h.setTilanKuvaukset(TilanKuvaukset.peruuntunutVastaanottanutToisenOpiskelupaikan());
+                        h.setTila(HakemuksenTila.PERUUNTUNUT);
+                        hakemus.setTilaVoidaanVaihtaa(false);
+                        Optional<Valintatulos> nykyinenTulos = henkilo.getValintatulos().stream().filter(v -> v.getValintatapajonoOid().equals(hakemus.getValintatapajono().getValintatapajono().getOid())).findFirst();
+                        if(nykyinenTulos.isPresent()) {
+                            lisaaMuokattavaValintatulos(sijoitteluajoWrapper, nykyinenTulos.get());
                         }
-                        hakemusWrapper.getHakemus().setTila(HakemuksenTila.PERUUNTUNUT);
-                        hakemusWrapper.setTilaVoidaanVaihtaa(false);
                     }
-
-                }
-
+                });
             }
-        }
-    }
-
-
-
-    private boolean isVastaanottanutEhdollisesti(HakemusWrapper hakemusWrapper, Hakukohde hakukohde, Valintatapajono valintatapajono) {
-
-        Valintatulos valintatulos = getValintatulos(hakukohde,valintatapajono,hakemusWrapper.getHakemus(),hakemusWrapper.getHenkilo().getValintatulos());
-        if (valintatulos != null) {
-            if (valintatulos.getTila() == ValintatuloksenTila.EHDOLLISESTI_VASTAANOTTANUT) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private boolean isCurrentVastaanottanutSitovasti(HakemusWrapper hakemusWrapper, Hakukohde hakukohde, Valintatapajono valintatapajono) {
-
-        Valintatulos valintatulos = getValintatulos(hakukohde,valintatapajono,hakemusWrapper.getHakemus(),hakemusWrapper.getHenkilo().getValintatulos());
-        if (valintatulos != null) {
-            if (valintatulos.getTila() == ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private boolean isVastaanottanutSitovasti(List<HakemusWrapper> hakemusWrapperit, Hakukohde hakukohde, Valintatapajono valintatapajono) {
-
-        for(HakemusWrapper hakemusWrapper :  hakemusWrapperit) {
-            Valintatulos valintatulos = getValintatulos(hakukohde,valintatapajono,hakemusWrapper.getHakemus(),hakemusWrapper.getHenkilo().getValintatulos());
-            if (valintatulos != null) {
-                if (valintatulos.getTila() == ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
-    private Valintatulos getValintatulos(Hakukohde hakukohde, Valintatapajono valintatapajono, Hakemus hakemus, List<Valintatulos> valintatulokset) {
-        if(valintatulokset != null) {
-            for(Valintatulos vt : valintatulokset) {
-                if(vt.getHakukohdeOid().equals(hakukohde.getOid()) &&
-                        vt.getValintatapajonoOid().equals(valintatapajono.getOid()) ) {
-                    if( vt.getHakemusOid() != null && !vt.getHakemusOid().isEmpty() && vt.getHakemusOid().equals(hakemus.getHakemusOid()) ) {
-                        return vt;
+            // Ehdollinen vastaanotto, perutaan alemmat
+            else if(ehdollinenOpt.isPresent()) {
+                Valintatulos ehdollinen = ehdollinenOpt.get();
+                henkilo.getHakemukset().forEach(hakemus -> {
+                    Hakemus h = hakemus.getHakemus();
+                    if(yliajettavat.contains(h.getTila())
+                            && !hakemus.getValintatapajono().getValintatapajono().getOid().equals(ehdollinen.getValintatapajonoOid())
+                            && h.getPrioriteetti() > parasHyvaksyttyHakutoive.getPrioriteetti()) {
+                        h.setTilanKuvaukset(TilanKuvaukset.peruuntunutYlempiToive());
+                        h.setTila(HakemuksenTila.PERUUNTUNUT);
+                        hakemus.setTilaVoidaanVaihtaa(false);
+                        Optional<Valintatulos> nykyinenTulos = henkilo.getValintatulos().stream().filter(v -> v.getValintatapajonoOid().equals(hakemus.getValintatapajono().getValintatapajono().getOid())).findFirst();
+                        if(nykyinenTulos.isPresent()) {
+                            lisaaMuokattavaValintatulos(sijoitteluajoWrapper, nykyinenTulos.get());
+                        }
                     }
-                }
+                });
             }
-        }
-        return null;
+
+            // Päivämäärä jolloin kaikki tulokset pitää olla siirrettynä sijoitteluun on ohitettu
+            // Ei peruta enää hyväksyttyjä ja julkaistavissa olevia
+            if(sijoitteluajoWrapper.paivamaaraOhitettu()) {
+                henkilo.getHakemukset().forEach(hakemus -> {
+                    Hakemus h = hakemus.getHakemus();
+                    if(parasHyvaksyttyHakutoive != null) {
+                        if(hakemus.isTilaVoidaanVaihtaa() && h.getTila() == HakemuksenTila.VARALLA && h.getPrioriteetti() > parasHyvaksyttyHakutoive.getPrioriteetti()) {
+                            h.setTilanKuvaukset(TilanKuvaukset.peruuntunutYlempiToive());
+                            h.setTila(HakemuksenTila.PERUUNTUNUT);
+                            hakemus.setTilaVoidaanVaihtaa(false);
+                        }
+                        // Perutaan myös ehdollinen vastaanotto
+                        else if(h.getPrioriteetti() > parasHyvaksyttyHakutoive.getPrioriteetti()
+                                && ehdollinenOpt.isPresent()
+                                && ehdollinenOpt.get().getValintatapajonoOid().equals(hakemus.getValintatapajono().getValintatapajono().getOid())) {
+                            h.setTilanKuvaukset(TilanKuvaukset.peruuntunutYlempiToive());
+                            h.setTila(HakemuksenTila.PERUUNTUNUT);
+                            hakemus.setTilaVoidaanVaihtaa(false);
+                            Optional<Valintatulos> nykyinenTulos = henkilo.getValintatulos().stream().filter(v -> v.getValintatapajonoOid().equals(hakemus.getValintatapajono().getValintatapajono().getOid())).findFirst();
+                            if(nykyinenTulos.isPresent()) {
+                                lisaaMuokattavaValintatulos(sijoitteluajoWrapper, nykyinenTulos.get());
+                            }
+                        }
+                    }
+                });
+            }
+            // Kaikki jonot ei vielä sijoittelussa, yliajetaan tylysti kaikki alemmat hyväksytyt ja varalla olot
+            else {
+                henkilo.getHakemukset().forEach(hakemus -> {
+                    Hakemus h = hakemus.getHakemus();
+                    if(parasHyvaksyttyHakutoive != null) {
+                        if(yliajettavat.contains(h.getTila()) && h.getPrioriteetti() > parasHyvaksyttyHakutoive.getPrioriteetti()) {
+                            h.setTilanKuvaukset(TilanKuvaukset.peruuntunutYlempiToive());
+                            h.setTila(HakemuksenTila.PERUUNTUNUT);
+                            hakemus.setTilaVoidaanVaihtaa(false);
+                            Optional<Valintatulos> nykyinenTulos = henkilo.getValintatulos().stream().filter(v -> v.getValintatapajonoOid().equals(hakemus.getValintatapajono().getValintatapajono().getOid())).findFirst();
+                            if(nykyinenTulos.isPresent()) {
+                                lisaaMuokattavaValintatulos(sijoitteluajoWrapper, nykyinenTulos.get());
+                            }
+                        }
+                    }
+                });
+            }
+
+        });
+
     }
 
-    private Integer parasHyvaksyttyTaiPeruttuHakutoive(HenkiloWrapper wrapper) {
-        Integer parasHyvaksyttyHakutoive = null;
+    private void lisaaMuokattavaValintatulos(SijoitteluajoWrapper sijoitteluajoWrapper, Valintatulos nykyinen) {
+        nykyinen.setIlmoittautumisTila(IlmoittautumisTila.EI_TEHTY);
+        nykyinen.setTila(ValintatuloksenTila.KESKEN);
+        nykyinen.setHyvaksyttyVarasijalta(false);
+        sijoitteluajoWrapper.getMuuttuneetValintatulokset().add(nykyinen);
+    }
+
+    private Optional<Valintatulos> sitovastiVastaanottanut(HenkiloWrapper henkiloWrapper) {
+        return henkiloWrapper.getValintatulos()
+                .stream()
+                .filter(v -> v.getTila().equals(ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI))
+                .findFirst();
+    }
+
+    private Optional<Valintatulos> ehdollisestiVastaanottanut(HenkiloWrapper henkiloWrapper) {
+        return henkiloWrapper.getValintatulos()
+                .stream()
+                .filter(v -> v.getTila().equals(ValintatuloksenTila.EHDOLLISESTI_VASTAANOTTANUT))
+                .findFirst();
+    }
+
+    private Hakemus parasHyvaksyttyTaiPeruttuHakutoive(HenkiloWrapper wrapper) {
+        Hakemus parasHyvaksyttyHakutoive = null;
 
         for(HakemusWrapper hakemusWrapper :  wrapper.getHakemukset()) {
             if(hakemusWrapper.getHakemus().getTila() == HakemuksenTila.HYVAKSYTTY
                     || hakemusWrapper.getHakemus().getTila() == HakemuksenTila.PERUNUT
                     || hakemusWrapper.getHakemus().getTila() == HakemuksenTila.VARASIJALTA_HYVAKSYTTY) {
-                if(parasHyvaksyttyHakutoive == null || parasHyvaksyttyHakutoive > hakemusWrapper.getHakemus().getPrioriteetti())  {
-                    parasHyvaksyttyHakutoive = hakemusWrapper.getHakemus().getPrioriteetti();
+                if(parasHyvaksyttyHakutoive == null || parasHyvaksyttyHakutoive.getPrioriteetti() > hakemusWrapper.getHakemus().getPrioriteetti())  {
+                    parasHyvaksyttyHakutoive = hakemusWrapper.getHakemus();
                 }
             }
         }
