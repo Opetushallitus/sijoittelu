@@ -1,6 +1,7 @@
 package fi.vm.sade.sijoittelu.laskenta.service.business.impl;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
@@ -11,6 +12,8 @@ import fi.vm.sade.sijoittelu.domain.*;
 import fi.vm.sade.sijoittelu.domain.comparator.HakemusComparator;
 import fi.vm.sade.sijoittelu.laskenta.actors.messages.PoistaHakukohteet;
 import fi.vm.sade.sijoittelu.laskenta.actors.messages.PoistaVanhatAjotSijoittelulta;
+import fi.vm.sade.sijoittelu.laskenta.external.resource.OhjausparametriResource;
+import fi.vm.sade.sijoittelu.laskenta.external.resource.dto.ParametriDTO;
 import fi.vm.sade.sijoittelu.laskenta.service.business.ActorService;
 import fi.vm.sade.sijoittelu.tulos.dao.*;
 import fi.vm.sade.sijoittelu.laskenta.mapping.SijoitteluModelMapper;
@@ -82,6 +85,9 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
     @Autowired
     ActorService actorService;
 
+    @Autowired
+    OhjausparametriResource ohjausparametriResource;
+
 	/**
 	 * ei versioi sijoittelua, tekeee uuden sijoittelun olemassaoleville
 	 * kohteille ei kayteta viela mihinkaan
@@ -140,6 +146,11 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
         List<Valintatulos> valintatulokset = valintatulosDao.loadValintatulokset(hakuOid);
         SijoitteluAlgorithm sijoitteluAlgorithm = algorithmFactory
                 .constructAlgorithm(kaikkiHakukohteet, valintatulokset);
+
+        ParametriDTO parametri = ohjausparametriResource.haePaivamaara(hakuOid);
+        if(parametri != null && parametri.getPH_VTSSV() != null && parametri.getPH_VTSSV().getDate() != null) {
+            sijoitteluAlgorithm.getSijoitteluAjo().setKaikkiKohteetSijoittelussa(LocalDate.ofEpochDay(parametri.getPH_VTSSV().getDate()));
+        }
 
         uusiSijoitteluajo.setStartMils(startTime);
         sijoitteluAlgorithm.start();
@@ -536,7 +547,7 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
 		authorizer.checkOrganisationAccess(tarjoajaOid,
 				SijoitteluRole.UPDATE_ROLE, SijoitteluRole.CRUD_ROLE);
 
-		boolean ophAdmin = checkIfOphAdmin(hakemus);
+//		boolean ophAdmin = checkIfOphAdmin(hakemus);
 
 
 		Valintatulos v = valintatulosDao.loadValintatulos(hakukohdeOid, valintatapajonoOid,
@@ -547,28 +558,28 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
             return;
         }
 
-		if (!ophAdmin) {
-            // Ilmoitettu tila on poistettu käytöstä
-//			if ((v == null || v.getTila() == null)
-//					&& tila != ValintatuloksenTila.ILMOITETTU) {
-//				throw new ValintatulostaEiOleIlmoitettuException(
-//						"Valintatulosta ei ole ilmoitettu");
-//			}
-
-            if (tila == ValintatuloksenTila.PERUUTETTU) {
-                if(v == null || !v.getTila().equals(tila)) {
-                    throw new TilanTallennukseenEiOikeuksiaException(
-                            "Oikeudet eivät riitä Peruutettu tilan tallennukseen hakemukselle " + hakemusOid + " hakukohteelle " + hakukohdeOid + " haussa " + hakuoid);
-                }
-            }
-
-            // Otetaan toistaiseksi pois, koska ilmoittatumistilaa ei voi tällä toteutuksella muuttaa
-//			if ((v != null && v.getTila() != null)
-//					&& v.getTila() != ValintatuloksenTila.ILMOITETTU) {
-//				throw new ValintatulosOnJoVastaanotettuException(
-//						"Valintatulos on jo vastaanotettu");
-//			}
-		}
+//		if (!ophAdmin) {
+//            // Ilmoitettu tila on poistettu käytöstä
+////			if ((v == null || v.getTila() == null)
+////					&& tila != ValintatuloksenTila.ILMOITETTU) {
+////				throw new ValintatulostaEiOleIlmoitettuException(
+////						"Valintatulosta ei ole ilmoitettu");
+////			}
+//
+//            if (tila == ValintatuloksenTila.PERUUTETTU) {
+//                if(v == null || !v.getTila().equals(tila)) {
+//                    throw new TilanTallennukseenEiOikeuksiaException(
+//                            "Oikeudet eivät riitä Peruutettu tilan tallennukseen hakemukselle " + hakemusOid + " hakukohteelle " + hakukohdeOid + " haussa " + hakuoid);
+//                }
+//            }
+//
+//            // Otetaan toistaiseksi pois, koska ilmoittatumistilaa ei voi tällä toteutuksella muuttaa
+////			if ((v != null && v.getTila() != null)
+////					&& v.getTila() != ValintatuloksenTila.ILMOITETTU) {
+////				throw new ValintatulosOnJoVastaanotettuException(
+////						"Valintatulos on jo vastaanotettu");
+////			}
+//		}
 
 		if (v == null) {
 			v = new Valintatulos();

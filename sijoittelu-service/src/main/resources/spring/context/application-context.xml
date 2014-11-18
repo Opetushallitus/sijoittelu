@@ -51,6 +51,16 @@
         </jaxrs-client:providers>
     </jaxrs-client:client>
 
+    <jaxrs-client:client id="ParametriServiceRestClient"
+                         address="${valintalaskentakoostepalvelu.parametriservice.rest.url}"
+                         serviceClass="fi.vm.sade.sijoittelu.laskenta.external.resource.OhjausparametriResource"
+                         inheritHeaders="true">
+        <jaxrs-client:providers>
+            <bean class="org.codehaus.jackson.jaxrs.JacksonJsonProvider" />
+            <bean class="fi.vm.sade.sijoittelu.tulos.resource.ObjectMapperProvider" />
+        </jaxrs-client:providers>
+    </jaxrs-client:client>
+
     <context:component-scan base-package="fi.vm.sade.sijoittelu.laskenta"/>
     <context:component-scan base-package="fi.vm.sade.sijoittelu.batch"/>
     <context:component-scan base-package="fi.vm.sade.valintalaskenta.tulos.dao"/>
