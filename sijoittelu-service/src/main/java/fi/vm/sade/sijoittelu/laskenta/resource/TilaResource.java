@@ -34,6 +34,7 @@ import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 
 import fi.vm.sade.sijoittelu.laskenta.service.business.SijoitteluBusinessService;
+import scala.tools.cmd.Opt;
 
 /**
  * Created with IntelliJ IDEA. User: kkammone Date: 20.5.2013 Time: 17:23 To
@@ -176,7 +177,8 @@ public class TilaResource {
 			erillishaunHakijaDtos.stream().forEach(
 					e -> muutaTilaa(e.getTarjoajaOid(), e.getHakuOid(),
 							e.getHakukohdeOid(), e.getHakemusOid(),
-							e.getHakemuksenTila(), Optional.empty(), Optional.of(e.getValintatapajonoOid())));
+							e.getHakemuksenTila(), Optional.empty(), Optional.of(e.getValintatapajonoOid()),
+                            Optional.ofNullable(e.getEtunimi()), Optional.ofNullable(e.getSukunimi())));
 			erillishaunHakijaDtos
 					.stream()
 					.map(e -> e.asValintatulos())
@@ -205,7 +207,9 @@ public class TilaResource {
 	}
 
 	private void muutaTilaa(String tarjoajaOid, String hakuOid,
-			String hakukohdeOid, String hakemusOid, HakemuksenTila tila, Optional<List<String>> tilanKuvaukset, Optional<String> valintatapajonoOid) {
+			String hakukohdeOid, String hakemusOid, HakemuksenTila tila,
+            Optional<List<String>> tilanKuvaukset, Optional<String> valintatapajonoOid,
+            Optional<String> etunimi, Optional<String> sukunimi) {
         Optional<SijoitteluAjo> sijoitteluAjoOpt = raportointiService
                 .latestSijoitteluAjoForHaku(hakuOid);
 
@@ -309,6 +313,12 @@ public class TilaResource {
                             .put("EN",
                                     tilanKuvaukset.get().get(2));
                 }
+                if(etunimi.isPresent()) {
+                    hakemusOpt.get().setEtunimi(etunimi.get());
+                }
+                if(sukunimi.isPresent()) {
+                    hakemusOpt.get().setSukunimi(sukunimi.get());
+                }
 
             } else {
                 Hakemus hakemus = new Hakemus();
@@ -329,6 +339,12 @@ public class TilaResource {
                             .getTilanKuvaukset()
                             .put("EN",
                                     tilanKuvaukset.get().get(2));
+                }
+                if(etunimi.isPresent()) {
+                    hakemus.setEtunimi(etunimi.get());
+                }
+                if(sukunimi.isPresent()) {
+                    hakemus.setSukunimi(sukunimi.get());
                 }
                 jono.getHakemukset().add(hakemus);
 
@@ -378,7 +394,8 @@ public class TilaResource {
 
             Optional<List<String>> kuvaukset = Optional.ofNullable(tilaObj.getTilanKuvaukset());
 
-            muutaTilaa(tarjoajaOid, hakuOid, hakukohdeOid, hakemusOid, tila, kuvaukset, Optional.empty());
+            muutaTilaa(tarjoajaOid, hakuOid, hakukohdeOid, hakemusOid, tila, kuvaukset,
+                    Optional.empty(),Optional.empty(),Optional.empty());
 
             return Response.status(Response.Status.ACCEPTED).build();
 

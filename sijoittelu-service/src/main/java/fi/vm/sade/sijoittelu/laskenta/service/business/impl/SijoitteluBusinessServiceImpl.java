@@ -546,7 +546,7 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
 		}
 
 		Hakemus hakemus = getHakemus(hakemusOid, valintatapajono);
-
+		
 		// Oph-admin voi muokata aina
 		// organisaatio updater voi muokata, jos hyväksytty
 
