@@ -128,6 +128,7 @@ public class SijoitteluResource {
 																				.getVarasijojaTaytetaanAsti());
 																		jono.setAktiivinen(perusteJono
 																				.getAktiivinen());
+                                                                        jono.setKaikkiEhdonTayttavatHyvaksytaan(perusteJono.getKaikkiEhdonTayttavatHyvaksytaan());
 																		konvertoidut
 																				.add(jono);
 																		jonot.remove(jono
