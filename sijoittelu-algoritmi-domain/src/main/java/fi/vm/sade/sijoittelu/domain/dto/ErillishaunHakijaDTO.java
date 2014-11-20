@@ -38,11 +38,25 @@ public class ErillishaunHakijaDTO {
 	private IlmoittautumisTila ilmoittautumisTila;
 	@ApiModelProperty(value = "Hakemuksen tila", required = false)
 	private HakemuksenTila hakemuksenTila;
-
-	public ErillishaunHakijaDTO() {
-			
-		}
+	@ApiModelProperty(value = "Hakijan etunimi", required = false)
+	private String etunimi;
+	@ApiModelProperty(value = "Hakijan sukunimi", required = false)
+	private String sukunimi;
 	
+	public ErillishaunHakijaDTO() {
+	}
+	public String getEtunimi() {
+		return etunimi;
+	}
+	public void setEtunimi(String etunimi) {
+		this.etunimi = etunimi;
+	}
+	public String getSukunimi() {
+		return sukunimi;
+	}
+	public void setSukunimi(String sukunimi) {
+		this.sukunimi = sukunimi;
+	}
 	public Valintatulos asValintatulos() {
 		Valintatulos v = new Valintatulos();
 		v.setHakemusOid(hakemusOid);
