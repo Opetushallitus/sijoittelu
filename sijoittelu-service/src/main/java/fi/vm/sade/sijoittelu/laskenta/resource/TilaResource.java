@@ -168,6 +168,8 @@ public class TilaResource {
 	@PreAuthorize(UPDATE_CRUD)
 	@ApiOperation(value = "Erillishaun hakijoiden tuonti hakukohteelle")
 	public Response tuoErillishaunHakijat(
+			@ApiParam("valintatapajononNimi")
+			@QueryParam("valintatapajononNimi") String valintatapajononNimi,
 			@ApiParam("description") Collection<ErillishaunHakijaDTO> erillishaunHakijaDtos) {
 		if (erillishaunHakijaDtos == null || erillishaunHakijaDtos.isEmpty()) {
 			LOGGER.error("Yritettiin tuoda tyhjaa joukkoa erillishaun hakijoiden tuontiin!");
@@ -175,8 +177,11 @@ public class TilaResource {
 					"Yritettiin tuoda tyhjaa joukkoa erillishaun hakijoiden tuontiin!");
 		}
 		try {
+			LOGGER.error("Tuodaan erillishaun tietoja jonolle {}", erillishaunHakijaDtos.iterator().next().getValintatapajonoOid());
 			erillishaunHakijaDtos.stream().forEach(
-					e -> muutaTilaa(e.getTarjoajaOid(), e.getHakuOid(),
+					e -> muutaTilaa(
+							valintatapajononNimi,
+							e.getTarjoajaOid(), e.getHakuOid(),
 							e.getHakukohdeOid(), e.getHakemusOid(),
 							e.getHakemuksenTila(), Optional.empty(), Optional.of(e.getValintatapajonoOid()),
                             Optional.ofNullable(e.getEtunimi()), Optional.ofNullable(e.getSukunimi())));
@@ -207,7 +212,9 @@ public class TilaResource {
 		}
 	}
 
-	private void muutaTilaa(String tarjoajaOid, String hakuOid,
+	private void muutaTilaa(
+			String valintatapajononNimi,
+			String tarjoajaOid, String hakuOid,
 			String hakukohdeOid, String hakemusOid, HakemuksenTila tila,
             Optional<List<String>> tilanKuvaukset, Optional<String> valintatapajonoOid,
             Optional<String> etunimi, Optional<String> sukunimi) {
@@ -254,9 +261,9 @@ public class TilaResource {
 
             Valintatapajono jono;
             if (valintatapajonoOid.isPresent()) {
-                jono = createValintatapaJono(valintatapajonoOid.get());
+                jono = createValintatapaJono(valintatapajononNimi, valintatapajonoOid.get());
             } else {
-                jono = createValintatapaJono(UUID.randomUUID().toString());
+                jono = createValintatapaJono(valintatapajononNimi, UUID.randomUUID().toString());
             }
 
             hakukohde.getValintatapajonot().add(jono);
@@ -281,7 +288,7 @@ public class TilaResource {
                 if(valintatapajonoOptional.isPresent()) {
                     jono = valintatapajonoOptional.get();
                 } else {
-                    jono = createValintatapaJono(valintatapajonoOid.get());
+                    jono = createValintatapaJono(valintatapajononNimi, valintatapajonoOid.get());
                     kohde.getValintatapajonot().add(jono);
                 }
 
@@ -359,13 +366,14 @@ public class TilaResource {
 
 	}
 
-    private Valintatapajono createValintatapaJono(String valintatapajonoOid) {
+    private Valintatapajono createValintatapaJono(String valintatapajononNimi, String valintatapajonoOid) {
         Valintatapajono jono = new Valintatapajono();
         jono.setHyvaksytty(0);
         jono.setVaralla(0);
         jono.setOid(valintatapajonoOid);
         jono.setAloituspaikat(0);
         jono.setPrioriteetti(0);
+        jono.setNimi(valintatapajononNimi);
 
         return jono;
     }
@@ -375,7 +383,9 @@ public class TilaResource {
 	@Path("haku/{hakuOid}/hakukohde/{hakukohdeOid}/hakemus/{hakemusOid}")
 	@PreAuthorize(UPDATE_CRUD)
 	@ApiOperation(value = "Hakemuksen sijoittelun tilan muuttaminen")
-	public Response muutaSijoittelunTilaa(@PathParam("hakuOid") String hakuOid,
+	public Response muutaSijoittelunTilaa(
+			@QueryParam("valintatapajononNimi") String valintatapajononNimi,
+			@PathParam("hakuOid") String hakuOid,
 			@PathParam("hakukohdeOid") String hakukohdeOid,
 			@PathParam("hakemusOid") String hakemusOid, Tila tilaObj,
 			@QueryParam("tarjoajaOid") String tarjoajaOid) {
@@ -395,7 +405,7 @@ public class TilaResource {
 
             Optional<List<String>> kuvaukset = Optional.ofNullable(tilaObj.getTilanKuvaukset());
 
-            muutaTilaa(tarjoajaOid, hakuOid, hakukohdeOid, hakemusOid, tila, kuvaukset,
+            muutaTilaa(valintatapajononNimi, tarjoajaOid, hakuOid, hakukohdeOid, hakemusOid, tila, kuvaukset,
                     Optional.empty(),Optional.empty(),Optional.empty());
 
             return Response.status(Response.Status.ACCEPTED).build();
