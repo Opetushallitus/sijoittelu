@@ -32,6 +32,7 @@ import org.springframework.stereotype.Component;
 
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
+import com.wordnik.swagger.annotations.ApiParam;
 
 import fi.vm.sade.sijoittelu.laskenta.service.business.SijoitteluBusinessService;
 import scala.tools.cmd.Opt;
@@ -167,7 +168,7 @@ public class TilaResource {
 	@PreAuthorize(UPDATE_CRUD)
 	@ApiOperation(value = "Erillishaun hakijoiden tuonti hakukohteelle")
 	public Response tuoErillishaunHakijat(
-			Collection<ErillishaunHakijaDTO> erillishaunHakijaDtos) {
+			@ApiParam("description") Collection<ErillishaunHakijaDTO> erillishaunHakijaDtos) {
 		if (erillishaunHakijaDtos == null || erillishaunHakijaDtos.isEmpty()) {
 			LOGGER.error("Yritettiin tuoda tyhjaa joukkoa erillishaun hakijoiden tuontiin!");
 			throw new RuntimeException(
