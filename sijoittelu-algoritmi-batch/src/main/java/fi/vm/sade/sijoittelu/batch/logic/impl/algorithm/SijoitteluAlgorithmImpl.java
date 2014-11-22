@@ -8,6 +8,8 @@ import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.*;
 import fi.vm.sade.sijoittelu.domain.*;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -69,10 +71,58 @@ public class SijoitteluAlgorithmImpl implements SijoitteluAlgorithm {
 
         }
 
+        final int rekursio = n;
+
+        // Tayttöjonot
+        hakukohde.getValintatapajonot().forEach(valintatapajono -> {
+            ArrayList<HakemusWrapper> eiKorvattavissaOlevatHyvaksytytHakemukset = eiKorvattavissaOlevatHyvaksytytHakemukset(valintatapajono);
+            int aloituspaikat = valintatapajono.getValintatapajono().getAloituspaikat();
+            List<HakemuksenTila> tilat = Arrays.asList(HakemuksenTila.HYVAKSYTTY, HakemuksenTila.VARASIJALTA_HYVAKSYTTY);
+            int hyvaksytyt = valintatapajono.getHakemukset().stream().filter(h->tilat.contains(h.getHakemus().getTila())).collect(Collectors.toList()).size();
+            int tilaa = aloituspaikat - hyvaksytyt;
+            String tayttojono = valintatapajono.getValintatapajono().getTayttojono();
+            if(sijoitteluAjo.varasijaSaannotVoimassa()
+                && tilaa > 0 && tayttojono != null && !tayttojono.isEmpty()
+                && !tayttojono.equals(valintatapajono.getValintatapajono().getOid())) {
+                // Vielä on tilaa ja pitäis jostain täytellä
+
+                Optional<ValintatapajonoWrapper> opt = hakukohde.getValintatapajonot()
+                        .stream().filter(v -> v.getValintatapajono().getOid().equals(tayttojono)).findFirst();
+
+                if(opt.isPresent()) {
+                    // Jono löytyi hakukohteen jonoista
+                    ValintatapajonoWrapper kasiteltava = opt.get();
+                    List<HakemusWrapper> varasijajono = muodostaVarasijaJono(kasiteltava.getHakemukset())
+                            .stream()
+                            .filter(h -> !onHyvaksyttyHakukohteessa(hakukohde, h))
+                            .collect(Collectors.toList());
+                    ArrayList<HakemusWrapper> muuttuneetHakemukset = new ArrayList<>();
+                    while(tilaa > 0 && !varasijajono.isEmpty()) {
+                        // Vielä on tilaa ja hakemuksia, jotka ei oo tässä hakukohteessa hyväksyttyjä
+                        HakemusWrapper hyvaksyttava = varasijajono.get(0);
+                        hyvaksyttava.getHakemus().setTilanKuvaukset(TilanKuvaukset.hyvaksyttyTayttojonoSaannolla(valintatapajono.getValintatapajono().getNimi()));
+                        muuttuneetHakemukset.addAll(hyvaksyHakemus(varasijajono.get(0)));
+                        tilaa--;
+                        varasijajono.remove(hyvaksyttava);
+                    }
+                    for (HakukohdeWrapper v : uudelleenSijoiteltavatHakukohteet(muuttuneetHakemukset)) {
+                        sijoittele(v, rekursio);
+                    }
+                }
+            }
+        });
+
         for (HakijaryhmaWrapper hakijaryhmaWrapper : hakukohde.getHakijaryhmaWrappers()) {
             this.sijoittele(hakijaryhmaWrapper, n);
         }
 
+    }
+
+    private boolean onHyvaksyttyHakukohteessa(HakukohdeWrapper hakukohde, HakemusWrapper hakija) {
+        return hakukohde.getValintatapajonot()
+                .stream().flatMap(v -> v.getHakemukset().stream())
+                .filter(h->h.getHakemus().getHakemusOid().equals(hakija.getHakemus().getHakemusOid()))
+                .anyMatch(h->h.getHakemus().getTila().equals(HakemuksenTila.HYVAKSYTTY));
     }
 
     private void sijoittele(ValintatapajonoWrapper valintatapajono, int n) {
@@ -89,6 +139,13 @@ public class SijoitteluAlgorithmImpl implements SijoitteluAlgorithm {
         boolean tasaSijaTilanne = false;
         boolean tasasijaTilanneRatkaistu = false;
 
+        Date varasijojaTaytetaanAsti = valintatapajono.getValintatapajono().getVarasijojaTaytetaanAsti();
+        LocalDateTime varasijaTayttoPaattyy = sijoitteluAjo.getHakuKierrosPaattyy();
+
+        if(varasijojaTaytetaanAsti != null) {
+            varasijaTayttoPaattyy = LocalDateTime.ofInstant(varasijojaTaytetaanAsti.toInstant(), ZoneId.systemDefault());
+        }
+
         ListIterator<HakemusWrapper> it = valintatapajono.getHakemukset().listIterator();
         while (it.hasNext()) {
             ArrayList<HakemusWrapper> kaikkiTasasijaHakemukset = tasasijaHakemukset(it);
@@ -101,10 +158,20 @@ public class SijoitteluAlgorithmImpl implements SijoitteluAlgorithm {
                     tasaSijaTilanne = true;
                 }
             }
+
             for (HakemusWrapper hk : kaikkiTasasijaHakemukset) {
                 if (eiKorvattavissaOlevatHyvaksytytHakemukset.contains(hk)) {
-//                    System.out.println();
-                    // ei voida tehdä mitaan, tila on jo poistettu. ignoretetaan
+                    // Asetetaaan tila varmuuden vuoksi
+                    hk.getHakemus().setTila(HakemuksenTila.HYVAKSYTTY);
+                    hk.getHakemus().setTilanKuvaukset(new HashMap<>());
+                    hk.setTilaVoidaanVaihtaa(false);
+
+                } else if(sijoitteluAjo.hakukierrosOnPaattynyt() || sijoitteluAjo.getToday().isAfter(varasijaTayttoPaattyy)) {
+                    // Hakukierros on päättynyt tai käsiteltävän jonon varasijasäännöt eivät ole enää voimassa.
+                    // Asetetaan kaikki hakemukset joiden tila voidaan vaihtaa tilaan peruuntunut
+                    hk.getHakemus().setTila(HakemuksenTila.PERUUNTUNUT);
+                    hk.getHakemus().setTilanKuvaukset(TilanKuvaukset.peruuntunutHakukierrosOnPaattynyt());
+                    hk.setTilaVoidaanVaihtaa(false);
                 } else if (valituksiHaluavatHakemukset.contains(hk)) {
                     if (valintatapajono.getValintatapajono().getKaikkiEhdonTayttavatHyvaksytaan() != null
                             && valintatapajono.getValintatapajono().getKaikkiEhdonTayttavatHyvaksytaan()) {
@@ -480,14 +547,44 @@ public class SijoitteluAlgorithmImpl implements SijoitteluAlgorithm {
         boolean hakemuksenTila = hakemus.getTila() != HakemuksenTila.HYLATTY && hakemus.getTila() != HakemuksenTila.PERUUTETTU && hakemus.getTila() != HakemuksenTila.PERUNUT;
 
         boolean hakijaAloistuspaikkojenSisallaTaiVarasijataytto = true;
-        if(hakemusWrapper.getValintatapajono().getValintatapajono().getEiVarasijatayttoa() != null && hakemusWrapper.getValintatapajono().getValintatapajono().getEiVarasijatayttoa()
-                && !hakemusWrapper.getValintatapajono().getValintatapajono().getKaikkiEhdonTayttavatHyvaksytaan()) {
+
+        boolean eiVarasijaTayttoa = false;
+
+
+        // Jos varasijasäännöt ovat astuneet voimaan niin katsotaan saako varasijoilta täyttää
+        if(sijoitteluAjo.varasijaSaannotVoimassa()) {
+            if(hakemusWrapper.getValintatapajono().getValintatapajono().getEiVarasijatayttoa() != null) {
+                eiVarasijaTayttoa = hakemusWrapper.getValintatapajono().getValintatapajono().getEiVarasijatayttoa();
+            }
+        }
+
+        if(eiVarasijaTayttoa && !hakemusWrapper.getValintatapajono().getValintatapajono().getKaikkiEhdonTayttavatHyvaksytaan()) {
             hakijaAloistuspaikkojenSisallaTaiVarasijataytto  = hakijaAloistuspaikkojenSisalla(hakemusWrapper);
+            if(!hakijaAloistuspaikkojenSisallaTaiVarasijataytto && sijoitteluAjo.isKKHaku()) {
+                hakemusWrapper.getHakemus().setTila(HakemuksenTila.PERUUNTUNUT);
+                hakemusWrapper.getHakemus().setTilanKuvaukset(TilanKuvaukset.peruuntunutAloituspaikatTaynna());
+                hakemusWrapper.setTilaVoidaanVaihtaa(false);
+            }
+        }
+
+        Integer varasijat = hakemusWrapper.getValintatapajono().getValintatapajono().getVarasijat();
+        boolean huomioitavienVarasijojenSisalla = true;
+
+        if(sijoitteluAjo.varasijaSaannotVoimassa()
+                && varasijat != null
+                && varasijat > 0) {
+            huomioitavienVarasijojenSisalla = hakijaKasiteltavienVarasijojenSisalla(hakemusWrapper, varasijat);
+            if(!huomioitavienVarasijojenSisalla) {
+                hakemusWrapper.getHakemus().setTila(HakemuksenTila.PERUUNTUNUT);
+                hakemusWrapper.getHakemus().setTilanKuvaukset(TilanKuvaukset.peruuntunutEiMahduKasiteltavienVarasijojenMaaraan());
+                hakemusWrapper.setTilaVoidaanVaihtaa(false);
+            }
+
         }
 
         boolean eiPeruttuaKorkeampaaTaiSamaaHakutoivetta =  eiPeruttuaKorkeampaaTaiSamaaHakutoivetta(hakemusWrapper);
 
-        return hakemuksenTila && hakijaAloistuspaikkojenSisallaTaiVarasijataytto && eiPeruttuaKorkeampaaTaiSamaaHakutoivetta;
+        return hakemuksenTila && hakijaAloistuspaikkojenSisallaTaiVarasijataytto && eiPeruttuaKorkeampaaTaiSamaaHakutoivetta && huomioitavienVarasijojenSisalla;
     }
 
     protected boolean eiPeruttuaKorkeampaaTaiSamaaHakutoivetta(HakemusWrapper hakemusWrapper) {
@@ -522,6 +619,29 @@ public class SijoitteluAlgorithmImpl implements SijoitteluAlgorithm {
         }
         return true;
     }
+
+    private boolean hakijaKasiteltavienVarasijojenSisalla(HakemusWrapper hakemusWrapper, Integer varasijat) {
+        ValintatapajonoWrapper valintatapajono = hakemusWrapper.getValintatapajono() ;
+        int aloituspaikat = valintatapajono.getValintatapajono().getAloituspaikat() + varasijat;
+        List<HakemusWrapper> hakemukset = valintatapajono.getHakemukset();
+
+        int i = 0;
+
+        for(HakemusWrapper h : hakemukset )  {
+
+            if(h.getHakemus().getTila() != HakemuksenTila.HYLATTY) {
+                i++;
+            }
+            if(h == hakemusWrapper && i <= aloituspaikat) { //vertaa instanssia
+                return true;
+            }  else if(i>aloituspaikat)   {
+                return false;
+            }
+        }
+        return true;
+    }
+
+
 
     private boolean hakijaHaluaa(HakemusWrapper hakemusWrapper) {
         HenkiloWrapper henkilo = hakemusWrapper.getHenkilo();

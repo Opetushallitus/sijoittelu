@@ -59,4 +59,22 @@ public class TilanKuvaukset {
             put("FI", "Peruuntunut, varasija ei mahdu käsiteltävien varasijojen määrään");
         }};
     }
+
+    public static Map<String, String> peruuntunutHakukierrosOnPaattynyt() {
+        return new HashMap<String, String>() {{
+            put("FI", "Peruuntunut, hakukierros on päättynyt");
+        }};
+    }
+
+    public static Map<String, String> peruuntunutEiVarasijaTayttoa() {
+        return new HashMap<String, String>() {{
+            put("FI", "Peruuntunut, ei varasijatäyttöä");
+        }};
+    }
+
+    public static Map<String, String> hyvaksyttyTayttojonoSaannolla(String jono) {
+        return new HashMap<String, String>() {{
+            put("FI", "Hyväksytty täyttöjonosäännöllä valintatapajonosta: " + jono);
+        }};
+    }
 }

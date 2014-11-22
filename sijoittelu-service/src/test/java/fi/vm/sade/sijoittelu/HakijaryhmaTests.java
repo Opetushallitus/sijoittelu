@@ -22,6 +22,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -115,6 +116,7 @@ public class HakijaryhmaTests {
         assertoiAinoastaanValittu(hakukohteet.get(0).getValintatapajonot().get(0), "1.2.246.562.11.00001068863", "1.2.246.562.11.00001090792", "1.2.246.562.11.00001067411");
     }
 
+    @Ignore
     @Test
     @UsingDataSet(locations = "alitaytto_simple_case.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
     public void testYlitayttoRekursio() throws IOException {
@@ -125,6 +127,7 @@ public class HakijaryhmaTests {
 
         SijoitteluAlgorithmFactoryImpl h = new SijoitteluAlgorithmFactoryImpl();
         SijoitteluAlgorithm s = h.constructAlgorithm(hakukohteet, Collections.<Valintatulos>newArrayList());
+        s.getSijoitteluAjo().setKaikkiKohteetSijoittelussa(LocalDateTime.now().plusDays(10));
         s.start();
 
         System.out.println(PrintHelper.tulostaSijoittelu(s));

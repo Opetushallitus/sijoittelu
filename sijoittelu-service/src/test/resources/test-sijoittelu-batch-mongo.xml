@@ -9,6 +9,7 @@
 
     <mockito:mock id="valintaperusteetResource" class="fi.vm.sade.service.valintaperusteet.resource.ValintaperusteetResource" />
     <mockito:mock id="ohjausparametriResource" class="fi.vm.sade.sijoittelu.laskenta.external.resource.OhjausparametriResource" />
+    <mockito:mock id="hakuV1Resource" class="fi.vm.sade.tarjonta.service.resources.v1.HakuV1Resource" />
 
     <context:annotation-config/>
     <context:component-scan base-package="fi.vm.sade.sijoittelu.tulos"/>

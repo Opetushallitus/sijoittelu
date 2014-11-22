@@ -21,9 +21,15 @@ public class SijoitteluajoWrapper {
 
     private List<Valintatulos> muuttuneetValintatulokset = new ArrayList<>();
 
-    private LocalDate today = LocalDate.now();
+    private final LocalDateTime today = LocalDateTime.now();
 
-    private LocalDate kaikkiKohteetSijoittelussa = LocalDate.now().minusDays(1);
+    private LocalDateTime kaikkiKohteetSijoittelussa = LocalDateTime.now().minusDays(1);
+
+    private LocalDateTime varasijaSaannotAstuvatVoimaan = LocalDateTime.now().minusDays(1);
+
+    private LocalDateTime hakuKierrosPaattyy = LocalDateTime.now().plusYears(100);
+
+    private boolean isKKHaku = false;
 
     public List<HakukohdeWrapper> getHakukohteet() {
         return hakukohteet;
@@ -50,19 +56,51 @@ public class SijoitteluajoWrapper {
         this.muuttuneetValintatulokset = muuttuneetValintatulokset;
     }
 
-    public LocalDate getToday() {
+    public LocalDateTime getToday() {
         return today;
     }
 
-    public LocalDate getKaikkiKohteetSijoittelussa() {
+    public LocalDateTime getKaikkiKohteetSijoittelussa() {
         return kaikkiKohteetSijoittelussa;
     }
 
-    public void setKaikkiKohteetSijoittelussa(LocalDate kaikkiKohteetSijoittelussa) {
+    public void setKaikkiKohteetSijoittelussa(LocalDateTime kaikkiKohteetSijoittelussa) {
         this.kaikkiKohteetSijoittelussa = kaikkiKohteetSijoittelussa;
     }
 
     public boolean paivamaaraOhitettu() {
         return today.isAfter(kaikkiKohteetSijoittelussa);
+    }
+
+    public boolean varasijaSaannotVoimassa() {
+        return today.isAfter(varasijaSaannotAstuvatVoimaan);
+    }
+
+    public boolean hakukierrosOnPaattynyt() {
+        return today.isAfter(hakuKierrosPaattyy);
+    }
+
+    public boolean isKKHaku() {
+        return isKKHaku;
+    }
+
+    public void setKKHaku(boolean isKKHaku) {
+        this.isKKHaku = isKKHaku;
+    }
+
+    public LocalDateTime getVarasijaSaannotAstuvatVoimaan() {
+        return varasijaSaannotAstuvatVoimaan;
+    }
+
+    public void setVarasijaSaannotAstuvatVoimaan(LocalDateTime varasijaSaannotAstuvatVoimaan) {
+        this.varasijaSaannotAstuvatVoimaan = varasijaSaannotAstuvatVoimaan;
+    }
+
+    public LocalDateTime getHakuKierrosPaattyy() {
+        return hakuKierrosPaattyy;
+    }
+
+    public void setHakuKierrosPaattyy(LocalDateTime hakuKierrosPaattyy) {
+        this.hakuKierrosPaattyy = hakuKierrosPaattyy;
     }
 }
