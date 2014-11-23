@@ -66,7 +66,7 @@
                          inheritHeaders="true">
         <jaxrs-client:providers>
             <bean class="com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider"/>
-            <bean class="fi.vm.sade.valinta.kooste.ObjectMapperProvider" />
+            <bean class="fi.vm.sade.sijoittelu.tulos.resource.ObjectMapperProvider" />
         </jaxrs-client:providers>
     </jaxrs-client:client>
 
