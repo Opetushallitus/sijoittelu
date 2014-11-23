@@ -75,13 +75,16 @@ public class SijoitteluAlgorithmImpl implements SijoitteluAlgorithm {
 
         // Tayttöjonot
         hakukohde.getValintatapajonot().forEach(valintatapajono -> {
-            ArrayList<HakemusWrapper> eiKorvattavissaOlevatHyvaksytytHakemukset = eiKorvattavissaOlevatHyvaksytytHakemukset(valintatapajono);
             int aloituspaikat = valintatapajono.getValintatapajono().getAloituspaikat();
             List<HakemuksenTila> tilat = Arrays.asList(HakemuksenTila.HYVAKSYTTY, HakemuksenTila.VARASIJALTA_HYVAKSYTTY);
             int hyvaksytyt = valintatapajono.getHakemukset().stream().filter(h->tilat.contains(h.getHakemus().getTila())).collect(Collectors.toList()).size();
             int tilaa = aloituspaikat - hyvaksytyt;
             String tayttojono = valintatapajono.getValintatapajono().getTayttojono();
+
+            LocalDateTime varasijaTayttoPaattyy = varasijaTayttoPaattyy(valintatapajono);
+
             if(sijoitteluAjo.varasijaSaannotVoimassa()
+                && sijoitteluAjo.getToday().isBefore(varasijaTayttoPaattyy)
                 && tilaa > 0 && tayttojono != null && !tayttojono.isEmpty()
                 && !tayttojono.equals(valintatapajono.getValintatapajono().getOid())) {
                 // Vielä on tilaa ja pitäis jostain täytellä
@@ -101,7 +104,7 @@ public class SijoitteluAlgorithmImpl implements SijoitteluAlgorithm {
                         // Vielä on tilaa ja hakemuksia, jotka ei oo tässä hakukohteessa hyväksyttyjä
                         HakemusWrapper hyvaksyttava = varasijajono.get(0);
                         hyvaksyttava.getHakemus().setTilanKuvaukset(TilanKuvaukset.hyvaksyttyTayttojonoSaannolla(valintatapajono.getValintatapajono().getNimi()));
-                        muuttuneetHakemukset.addAll(hyvaksyHakemus(varasijajono.get(0)));
+                        muuttuneetHakemukset.addAll(hyvaksyHakemus(hyvaksyttava));
                         tilaa--;
                         varasijajono.remove(hyvaksyttava);
                     }
@@ -125,6 +128,17 @@ public class SijoitteluAlgorithmImpl implements SijoitteluAlgorithm {
                 .anyMatch(h->h.getHakemus().getTila().equals(HakemuksenTila.HYVAKSYTTY));
     }
 
+    private LocalDateTime varasijaTayttoPaattyy(ValintatapajonoWrapper valintatapajono) {
+        Date varasijojaTaytetaanAsti = valintatapajono.getValintatapajono().getVarasijojaTaytetaanAsti();
+        LocalDateTime varasijaTayttoPaattyy = sijoitteluAjo.getHakuKierrosPaattyy();
+
+        if(varasijojaTaytetaanAsti != null) {
+            varasijaTayttoPaattyy = LocalDateTime.ofInstant(varasijojaTaytetaanAsti.toInstant(), ZoneId.systemDefault());
+        }
+
+        return varasijaTayttoPaattyy;
+    }
+
     private void sijoittele(ValintatapajonoWrapper valintatapajono, int n) {
 
         ArrayList<HakemusWrapper> hyvaksyttavaksi = new ArrayList<HakemusWrapper>();
@@ -139,12 +153,7 @@ public class SijoitteluAlgorithmImpl implements SijoitteluAlgorithm {
         boolean tasaSijaTilanne = false;
         boolean tasasijaTilanneRatkaistu = false;
 
-        Date varasijojaTaytetaanAsti = valintatapajono.getValintatapajono().getVarasijojaTaytetaanAsti();
-        LocalDateTime varasijaTayttoPaattyy = sijoitteluAjo.getHakuKierrosPaattyy();
-
-        if(varasijojaTaytetaanAsti != null) {
-            varasijaTayttoPaattyy = LocalDateTime.ofInstant(varasijojaTaytetaanAsti.toInstant(), ZoneId.systemDefault());
-        }
+        LocalDateTime varasijaTayttoPaattyy = varasijaTayttoPaattyy(valintatapajono);
 
         ListIterator<HakemusWrapper> it = valintatapajono.getHakemukset().listIterator();
         while (it.hasNext()) {
