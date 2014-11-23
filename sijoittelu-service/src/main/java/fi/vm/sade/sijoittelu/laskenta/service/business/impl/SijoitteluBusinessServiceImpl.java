@@ -214,6 +214,9 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
             throw new RuntimeException("Sijoittelua haulle " + hakuOid + " ei voida suorittaa, koska hakukierros on asetettu päättymään ennen kuin varasija säännöt astuvat voimaan");
         }
 
+        LOG.error("Sijoittelun ohjausparametrit asetettu haulle {}. onko korkeakouluhaku: {}, kaikki kohteet sijoittelussa: {}, hakukierros päätty: {}, varasijasäännöt astuvat voimaan: {}, varasijasäännöt voimassa: {}",
+                hakuOid, sijoitteluAlgorithm.getSijoitteluAjo().isKKHaku(), kaikkiKohteetSijoittelussa, hakuKierrosPaattyy, varasijaSaannotAstuvatVoimaan, sijoitteluAlgorithm.getSijoitteluAjo().varasijaSaannotVoimassa());
+
         uusiSijoitteluajo.setStartMils(startTime);
         sijoitteluAlgorithm.start();
         uusiSijoitteluajo.setEndMils(System.currentTimeMillis());
