@@ -62,7 +62,7 @@
     </jaxrs-client:client>
     <jaxrs-client:client id="TarjontaHakuResourceRestClient"
                          address="${valintalaskentakoostepalvelu.tarjonta.rest.url}"
-                         serviceClass="fi.vm.sade.tarjonta.service.resources.v1.HakuV1Resource"
+                         serviceClass="fi.vm.sade.sijoittelu.laskenta.external.resource.HakuV1Resource"
                          inheritHeaders="true">
         <jaxrs-client:providers>
             <bean class="com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider"/>
