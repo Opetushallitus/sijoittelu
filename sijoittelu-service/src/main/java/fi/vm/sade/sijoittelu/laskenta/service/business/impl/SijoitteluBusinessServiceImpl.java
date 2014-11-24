@@ -187,13 +187,16 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
                     || parametri.getPH_VSSAV() == null
                     || parametri.getPH_VSSAV().getDate() == null )) {
                 throw new RuntimeException("Sijoittelua haulle " + hakuOid + " ei voida suorittaa, koska kyseessä on korkeakouluhaku ja vaadittavia ohjausparametrejä (PH_VTSSV, PH_VSSAV) ei saatu haettua tai asetettua.");
+            } else if(sijoitteluAlgorithm.getSijoitteluAjo().isKKHaku()){
+                LOG.error("Saadut ohjausparametrit: kaikkikohteet sijoittelussa-> {}, varasijasäännöt astuvat voimaan-> {}", fromTimestamp(parametri.getPH_VTSSV().getDate()), fromTimestamp(parametri.getPH_VSSAV().getDate()));
             }
             if(parametri.getPH_VTSSV() != null && parametri.getPH_VTSSV().getDate() != null) {
                 sijoitteluAlgorithm.getSijoitteluAjo().setKaikkiKohteetSijoittelussa(fromTimestamp(parametri.getPH_VTSSV().getDate()));
             }
             if(parametri.getPH_VSSAV() != null && parametri.getPH_VSSAV().getDate() != null) {
-                sijoitteluAlgorithm.getSijoitteluAjo().setKaikkiKohteetSijoittelussa(fromTimestamp(parametri.getPH_VTSSV().getDate()));
+                sijoitteluAlgorithm.getSijoitteluAjo().setKaikkiKohteetSijoittelussa(fromTimestamp(parametri.getPH_VSSAV().getDate()));
             }
+
         } catch(Exception e) {
             LOG.error("############## Ohjausparametrin muuntaminen LocalDateksi epäonnistui ##############");
             e.printStackTrace();
