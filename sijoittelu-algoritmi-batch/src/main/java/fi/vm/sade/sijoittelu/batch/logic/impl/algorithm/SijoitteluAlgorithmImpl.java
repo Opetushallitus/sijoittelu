@@ -237,17 +237,70 @@ public class SijoitteluAlgorithmImpl implements SijoitteluAlgorithm {
         List<List<HakemusWrapper>> hakijaryhmanVarasijallaOlevat = hakijaryhmanVarasijajarjestys(hakijaryhmaWrapper);
         ListIterator<List<HakemusWrapper>> it = hakijaryhmanVarasijallaOlevat.listIterator();
         Hakijaryhma ryhma = hakijaryhmaWrapper.getHakijaryhma();
+
+
+
+        ArrayList<HakemusWrapper> hyvaksyttavaksi = new ArrayList<HakemusWrapper>();
+        ArrayList<HakemusWrapper> varalle = new ArrayList<HakemusWrapper>();
+
+
         while (it.hasNext() && hakijaryhmassaVajaata(hakijaryhmaWrapper) > 0) {
             List<HakemusWrapper> tasasijaVarasijaHakemukset = it.next();
+
+
             for (HakemusWrapper paras : tasasijaVarasijaHakemukset) {
                 ValintatapajonoWrapper v = paras.getValintatapajono();
+                Tasasijasaanto saanto = v.getValintatapajono().getTasasijasaanto();
+
+
+
                 if(ryhma.getValintatapajonoOid() == null || ryhma.getValintatapajonoOid().equals(v.getValintatapajono().getOid())) {
-                    HakemusWrapper huonoin = haeHuonoinValittuEiVajaaseenRyhmaanKuuluva(v);
-                    muuttuneetHakemukset.addAll(hyvaksyHakemus(paras));
-                    muuttuneetHakemukset.add(paras);
-                    if (huonoin != null) {
-                        muuttuneetHakemukset.addAll(asetaVaralleHakemus(huonoin));
+                    List<HakemuksenTila> tilat = Arrays.asList(HakemuksenTila.HYVAKSYTTY, HakemuksenTila.VARASIJALTA_HYVAKSYTTY);
+                    int hyvaksytyt = v.getHakemukset().stream().filter(h->tilat.contains(h.getHakemus().getTila())).collect(Collectors.toList()).size();
+                    int tilaa = v.getValintatapajono().getAloituspaikat() - hyvaksytyt;
+                    boolean tasaSijaTilanne = false;
+                    if(tilaa <= 0) {
+                        if (saanto == Tasasijasaanto.YLITAYTTO || saanto == Tasasijasaanto.ALITAYTTO) {
+                            tasaSijaTilanne = true;
+                        }
                     }
+                    if (tasaSijaTilanne) {
+                        if (saanto == Tasasijasaanto.YLITAYTTO) {
+                            HakemusWrapper huonoin = haeHuonoinValittuEiVajaaseenRyhmaanKuuluva(v, hakijaryhmaWrapper);
+                            muuttuneetHakemukset.addAll(hyvaksyHakemus(paras));
+                            muuttuneetHakemukset.add(paras);
+                            paras.setTilaVoidaanVaihtaa(false);
+//                            if (huonoin != null) {
+//                                muuttuneetHakemukset.addAll(asetaVaralleHakemus(huonoin));
+//                            }
+                        }
+                    } else {
+                        HakemusWrapper huonoin = haeHuonoinValittuEiVajaaseenRyhmaanKuuluva(v, hakijaryhmaWrapper);
+                        muuttuneetHakemukset.addAll(hyvaksyHakemus(paras));
+                        muuttuneetHakemukset.add(paras);
+                        if (huonoin != null) {
+                            muuttuneetHakemukset.addAll(asetaVaralleHakemus(huonoin));
+                        }
+                    }
+//                    if(tilaa >= 0) {
+//                        HakemusWrapper huonoin = haeHuonoinValittuEiVajaaseenRyhmaanKuuluva(v);
+//                        muuttuneetHakemukset.addAll(hyvaksyHakemus(paras));
+//                        muuttuneetHakemukset.add(paras);
+//
+//                        if (huonoin != null) {
+//                            muuttuneetHakemukset.addAll(asetaVaralleHakemus(huonoin));
+//                        }
+//                    } else {
+//                        if(v.getValintatapajono().getTasasijasaanto().equals(Tasasijasaanto.YLITAYTTO)) {
+//                            HakemusWrapper huonoin = haeHuonoinValittuEiVajaaseenRyhmaanKuuluva(v);
+//                            muuttuneetHakemukset.addAll(hyvaksyHakemus(paras));
+//                            muuttuneetHakemukset.add(paras);
+//
+//                            if (huonoin != null) {
+//                                muuttuneetHakemukset.addAll(asetaVaralleHakemus(huonoin));
+//                            }
+//                        }
+//                    }
                 }
             }
         }
@@ -664,11 +717,12 @@ public class SijoitteluAlgorithmImpl implements SijoitteluAlgorithm {
         return true;
     }
 
-    private HakemusWrapper haeHuonoinValittuEiVajaaseenRyhmaanKuuluva(ValintatapajonoWrapper valintatapajonoWrapper) {
+    private HakemusWrapper haeHuonoinValittuEiVajaaseenRyhmaanKuuluva(ValintatapajonoWrapper valintatapajonoWrapper, HakijaryhmaWrapper hakijaryhmaWrapper) {
         HakemusWrapper huonoinHakemus = null;
         for (int i = valintatapajonoWrapper.getHakemukset().size() - 1; i >= 0; i--) {
             HakemusWrapper h = valintatapajonoWrapper.getHakemukset().get(i);
-            if (h.getHakemus().getTila() == HakemuksenTila.HYVAKSYTTY || h.getHakemus().getTila() == HakemuksenTila.VARASIJALTA_HYVAKSYTTY) {
+            boolean kuuluuRyhmaan = hakijaryhmaWrapper.getHakijaryhma().getHakemusOid().contains(h.getHakemus().getHakemusOid());
+            if ((h.getHakemus().getTila() == HakemuksenTila.HYVAKSYTTY || h.getHakemus().getTila() == HakemuksenTila.VARASIJALTA_HYVAKSYTTY) && kuuluuRyhmaan) {
                 if (voidaanKorvata(h)) {
                     huonoinHakemus = h;
                     break;
