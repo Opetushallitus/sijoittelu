@@ -102,13 +102,19 @@ public class SijoitteluAlgorithmImpl implements SijoitteluAlgorithm {
                     ValintatapajonoWrapper kasiteltava = opt.get();
                     List<HakemusWrapper> varasijajono = muodostaVarasijaJono(kasiteltava.getHakemukset())
                             .stream()
-                            .filter(h -> !onHyvaksyttyHakukohteessa(hakukohde, h))
+                                    //.filter(h -> !onHyvaksyttyHakukohteessa(hakukohde, h))
+                            .filter(h -> onHylattyJonossa(valintatapajono, h))
                             .collect(Collectors.toList());
 
                     while(tilaa > 0 && !varasijajono.isEmpty()) {
                         // Vielä on tilaa ja hakemuksia, jotka ei oo tässä hakukohteessa hyväksyttyjä
-                        HakemusWrapper hyvaksyttava = varasijajono.get(0);
-                        hyvaksyttava.getHakemus().setTilanKuvaukset(TilanKuvaukset.hyvaksyttyTayttojonoSaannolla(valintatapajono.getValintatapajono().getNimi()));
+                        //HakemusWrapper hyvaksyttava = varasijajono.get(0);
+                        HakemusWrapper hyvaksyttava = valintatapajono.getHakemukset()
+                                .stream()
+                                .filter(h-> h.getHakemus().getHakemusOid().equals(varasijajono.get(0).getHakemus().getHakemusOid()))
+                                .findFirst()
+                                .get();
+                        hyvaksyttava.getHakemus().setTilanKuvaukset(TilanKuvaukset.hyvaksyttyTayttojonoSaannolla(kasiteltava.getValintatapajono().getNimi()));
                         muuttuneetHakemukset.addAll(hyvaksyHakemus(hyvaksyttava));
                         tilaa--;
                         varasijajono.remove(hyvaksyttava);
@@ -129,6 +135,12 @@ public class SijoitteluAlgorithmImpl implements SijoitteluAlgorithm {
                 .stream().flatMap(v -> v.getHakemukset().stream())
                 .filter(h->h.getHakemus().getHakemusOid().equals(hakija.getHakemus().getHakemusOid()))
                 .anyMatch(h->h.getHakemus().getTila().equals(HakemuksenTila.HYVAKSYTTY));
+    }
+
+    private boolean onHylattyJonossa(ValintatapajonoWrapper valintatapajonoWrapper, HakemusWrapper hakija) {
+        return valintatapajonoWrapper.getHakemukset()
+                .stream()
+                .anyMatch(h-> h.getHakemus().getHakemusOid().equals(hakija.getHakemus().getHakemusOid()) && h.getHakemus().getTila().equals(HakemuksenTila.HYLATTY));
     }
 
     private LocalDateTime varasijaTayttoPaattyy(ValintatapajonoWrapper valintatapajono) {

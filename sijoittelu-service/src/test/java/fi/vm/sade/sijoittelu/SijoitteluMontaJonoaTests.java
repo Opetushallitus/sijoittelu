@@ -311,7 +311,7 @@ public class SijoitteluMontaJonoaTests {
 
         System.out.println(PrintHelper.tulostaSijoittelu(s));
 
-        hakukohteet.get(0).getValintatapajonot().get(1).getHakemukset().forEach(hak -> {
+        hakukohteet.get(0).getValintatapajonot().get(0).getHakemukset().forEach(hak -> {
             if(hak.getHakemusOid().equals("1.2.246.562.11.00001067411")) {
                 Assert.assertTrue(hak.getTila().equals(HakemuksenTila.HYVAKSYTTY));
                 Assert.assertEquals(hak.getTilanKuvaukset().get("FI"), TilanKuvaukset.hyvaksyttyTayttojonoSaannolla("Pisteet").get("FI"));
