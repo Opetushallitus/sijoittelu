@@ -194,7 +194,7 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
                 sijoitteluAlgorithm.getSijoitteluAjo().setKaikkiKohteetSijoittelussa(fromTimestamp(parametri.getPH_VTSSV().getDate()));
             }
             if(parametri.getPH_VSSAV() != null && parametri.getPH_VSSAV().getDate() != null) {
-                sijoitteluAlgorithm.getSijoitteluAjo().setKaikkiKohteetSijoittelussa(fromTimestamp(parametri.getPH_VSSAV().getDate()));
+                sijoitteluAlgorithm.getSijoitteluAjo().setVarasijaSaannotAstuvatVoimaan(fromTimestamp(parametri.getPH_VSSAV().getDate()));
             }
 
         } catch(Exception e) {
