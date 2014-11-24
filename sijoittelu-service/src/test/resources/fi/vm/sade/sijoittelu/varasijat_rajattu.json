@@ -14,7 +14,7 @@
                     "prioriteetti" : 0,
                     "aloituspaikat" : 1,
                     "siirretaanSijoitteluun" : true,
-                    "tasasijasaanto" : "ARVONTA",
+                    "tasasijasaanto" : "YLITAYTTO",
                     "eiVarasijatayttoa" : false,
                     "valmisSijoiteltavaksi" : true,
                     "varasijat": 1,

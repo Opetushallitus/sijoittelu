@@ -12,9 +12,9 @@
                     "valintatapajonoOid" : "1410634972926-6437870106021103090",
                     "nimi" : "Pisteet",
                     "prioriteetti" : 0,
-                    "aloituspaikat" : 40,
+                    "aloituspaikat" : 10,
                     "siirretaanSijoitteluun" : true,
-                    "tasasijasaanto" : "YLITAYTTO",
+                    "tasasijasaanto" : "ALITAYTTO",
                     "eiVarasijatayttoa" : false,
                     "valmisSijoiteltavaksi" : true,
                     "jonosijat" : [
@@ -29,7 +29,7 @@
                             "jarjestyskriteeritulokset" : [
                                 {
                                     "prioriteetti" : 0,
-                                    "arvo" : "11",
+                                    "arvo" : "100",
                                     "tila" : "HYVAKSYTTAVISSA",
                                     "nimi" : "Testikriteeri"
                                 }
@@ -46,7 +46,7 @@
                             "jarjestyskriteeritulokset" : [
                                 {
                                     "prioriteetti" : 0,
-                                    "arvo" : "19",
+                                    "arvo" : "100",
                                     "tila" : "HYVAKSYTTAVISSA",
                                     "nimi" : "Testikriteeri"
                                 }
@@ -63,7 +63,7 @@
                             "jarjestyskriteeritulokset" : [
                                 {
                                     "prioriteetti" : 0,
-                                    "arvo" : "17",
+                                    "arvo" : "100",
                                     "tila" : "HYVAKSYTTAVISSA",
                                     "nimi" : "Testikriteeri"
                                 }
@@ -80,7 +80,7 @@
                             "jarjestyskriteeritulokset" : [
                                 {
                                     "prioriteetti" : 0,
-                                    "arvo" : "50",
+                                    "arvo" : "100",
                                     "tila" : "HYVAKSYTTAVISSA",
                                     "nimi" : "Testikriteeri"
                                 }
@@ -97,7 +97,7 @@
                             "jarjestyskriteeritulokset" : [
                                 {
                                     "prioriteetti" : 0,
-                                    "arvo" : "16",
+                                    "arvo" : "100",
                                     "tila" : "HYVAKSYTTAVISSA",
                                     "nimi" : "Testikriteeri"
                                 }
@@ -114,7 +114,7 @@
                             "jarjestyskriteeritulokset" : [
                                 {
                                     "prioriteetti" : 0,
-                                    "arvo" : "30",
+                                    "arvo" : "100",
                                     "tila" : "HYVAKSYTTAVISSA",
                                     "nimi" : "Testikriteeri"
                                 }
@@ -131,7 +131,7 @@
                             "jarjestyskriteeritulokset" : [
                                 {
                                     "prioriteetti" : 0,
-                                    "arvo" : "41",
+                                    "arvo" : "100",
                                     "tila" : "HYVAKSYTTAVISSA",
                                     "nimi" : "Testikriteeri"
                                 }
@@ -148,7 +148,7 @@
                             "jarjestyskriteeritulokset" : [
                                 {
                                     "prioriteetti" : 0,
-                                    "arvo" : "35",
+                                    "arvo" : "100",
                                     "tila" : "HYVAKSYTTAVISSA",
                                     "nimi" : "Testikriteeri"
                                 }
@@ -165,7 +165,7 @@
                             "jarjestyskriteeritulokset" : [
                                 {
                                     "prioriteetti" : 0,
-                                    "arvo" : "17",
+                                    "arvo" : "100",
                                     "tila" : "HYVAKSYTTAVISSA",
                                     "nimi" : "Testikriteeri"
                                 }
@@ -182,7 +182,7 @@
                             "jarjestyskriteeritulokset" : [
                                 {
                                     "prioriteetti" : 0,
-                                    "arvo" : "",
+                                    "arvo" : "100",
                                     "tila" : "HYVAKSYTTAVISSA",
                                     "nimi" : "Testikriteeri"
                                 }
@@ -199,7 +199,7 @@
                             "jarjestyskriteeritulokset" : [
                                 {
                                     "prioriteetti" : 0,
-                                    "arvo" : "16",
+                                    "arvo" : "99",
                                     "tila" : "HYVAKSYTTAVISSA",
                                     "nimi" : "Testikriteeri"
                                 }
@@ -216,7 +216,7 @@
                             "jarjestyskriteeritulokset" : [
                                 {
                                     "prioriteetti" : 0,
-                                    "arvo" : "23",
+                                    "arvo" : "99",
                                     "tila" : "HYVAKSYTTAVISSA",
                                     "nimi" : "Testikriteeri"
                                 }
@@ -10579,6 +10579,7 @@
             "kaytaKaikki" : true,
             "tarkkaKiintio" : false,
             "kaytetaanRyhmaanKuuluvia" : true,
+            "valintatapajonoOid": "nönönöö",
             "jonosijat" : [
                 {
                     "hakemusOid" : "1.2.246.562.11.00001067411",

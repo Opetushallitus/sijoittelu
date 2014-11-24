@@ -154,6 +154,26 @@ public class HakijaryhmaTests {
 
     }
 
+    @Ignore
+    @Test
+    @UsingDataSet(locations = "ylitaytto_vaihe.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
+    public void testYlitaytto() throws IOException {
+
+        HakuDTO haku = valintatietoService.haeValintatiedot("1.2.246.562.29.173465377510");
+
+        List<Hakukohde> hakukohteet = haku.getHakukohteet().parallelStream().map(DomainConverter::convertToHakukohde).collect(Collectors.toList());
+
+        SijoitteluAlgorithmFactoryImpl h = new SijoitteluAlgorithmFactoryImpl();
+        SijoitteluAlgorithm s = h.constructAlgorithm(hakukohteet, Collections.<Valintatulos>newArrayList());
+        s.getSijoitteluAjo().setKaikkiKohteetSijoittelussa(LocalDateTime.now().plusDays(10));
+        s.start();
+
+        System.out.println(PrintHelper.tulostaSijoittelu(s));
+
+//        assertoiAinoastaanValittu(hakukohteet.get(0).getValintatapajonot().get(0), "hakija1", "hakija3", "hakija4", "hakija5");
+
+    }
+
     public final static void assertoiAinoastaanValittu(Valintatapajono h, String... oids) {
         List<String> wanted = Arrays.asList(oids);
         List<String> actual = new ArrayList<String>();
