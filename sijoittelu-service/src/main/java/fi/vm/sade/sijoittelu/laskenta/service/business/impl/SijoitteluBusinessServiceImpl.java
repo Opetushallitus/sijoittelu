@@ -202,7 +202,10 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
             e.printStackTrace();
             if(sijoitteluAlgorithm.getSijoitteluAjo().isKKHaku()) {
                 throw new RuntimeException("Sijoittelua haulle " + hakuOid + " ei voida suorittaa, koska kyseessä on korkeakouluhaku ja vaadittavia ohjausparametrejä (PH_VTSSV, PH_VSSAV) ei saatu haettua tai asetettua.");
+            } else {
+                throw new RuntimeException("Sijoittelua haulle " + hakuOid + " ei voida suorittaa, koska hakukierroksen päättymispäivää ei saatu haettua tai asetettua.");
             }
+
         }
 
         LocalDateTime kaikkiKohteetSijoittelussa = sijoitteluAlgorithm.getSijoitteluAjo().getKaikkiKohteetSijoittelussa();
