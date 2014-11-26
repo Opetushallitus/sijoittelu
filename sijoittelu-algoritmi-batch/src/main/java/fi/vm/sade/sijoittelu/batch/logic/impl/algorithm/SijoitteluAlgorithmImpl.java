@@ -208,7 +208,10 @@ public class SijoitteluAlgorithmImpl implements SijoitteluAlgorithm {
                         hyvaksyttavaksi.add(hk);
                     } else if (tasaSijaTilanne && !tasasijaTilanneRatkaistu) {
                         if (saanto == Tasasijasaanto.ALITAYTTO) {
-                            varalle.add(hk);
+                            if(kaikkiTasasijaHakemukset.size() == 1 && tilaa == 0)
+                                hyvaksyttavaksi.add(hk);
+                            else
+                                varalle.add(hk);
                         } else if (saanto == Tasasijasaanto.YLITAYTTO) {
                             if(kaikkiTasasijaHakemukset.size() == 1 && tilaa == 0)
                                 varalle.add(hk);
