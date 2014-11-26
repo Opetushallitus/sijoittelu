@@ -24,7 +24,7 @@ public class ValintatulosDaoImpl implements ValintatulosDao {
 
     @PostConstruct
     public void ensureIndexes() {
-        morphiaDS.ensureIndexes(Valintatulos.class);
+        EnsureIndexes.ensureIndexes(morphiaDS, Valintatulos.class);
     }
 
     @Override
