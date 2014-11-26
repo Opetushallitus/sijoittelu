@@ -85,6 +85,7 @@ public class SijoitteluResource {
 									.haeValintatapajonotSijoittelulle(
 											hakukohde.getOid())
 									.parallelStream()
+                                    .filter(j -> j.getAktiivinen() == null || j.getAktiivinen().equals(Boolean.TRUE))
 									.collect(
 											Collectors.toMap(
 													ValintatapajonoDTO::getOid,
