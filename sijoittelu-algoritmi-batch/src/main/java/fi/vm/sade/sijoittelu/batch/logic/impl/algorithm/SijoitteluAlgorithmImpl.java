@@ -184,15 +184,16 @@ public class SijoitteluAlgorithmImpl implements SijoitteluAlgorithm {
             }
 
             for (HakemusWrapper hk : kaikkiTasasijaHakemukset) {
-                boolean hyvaksyttyHakijaryhmassa = hk.getValintatapajono().getHakukohdeWrapper().getHakijaryhmaWrappers()
-                        .stream()
-                        .filter(h -> h.getHakijaryhma().getValintatapajonoOid() == null || h.getHakijaryhma().getValintatapajonoOid().equals(valintatapajono.getValintatapajono().getOid()))
-                        .flatMap(h -> h.getHenkiloWrappers().stream())
-                        .anyMatch(h -> h.getHakemusOid().equals(hk.getHakemus().getHakemusOid()));
                 if (eiKorvattavissaOlevatHyvaksytytHakemukset.contains(hk)) {
                     // Asetetaaan tila varmuuden vuoksi
-                    hk.getHakemus().setTila(HakemuksenTila.HYVAKSYTTY);
-                    hk.getHakemus().setTilanKuvaukset(new HashMap<>());
+                    if(hk.getHakemus().getEdellinenTila() == HakemuksenTila.VARALLA || hk.getHakemus().getEdellinenTila() == HakemuksenTila.VARASIJALTA_HYVAKSYTTY) {
+                        hk.getHakemus().setTila(HakemuksenTila.VARASIJALTA_HYVAKSYTTY);
+                        hk.getHakemus().setTilanKuvaukset(TilanKuvaukset.varasijaltaHyvaksytty());
+                    } else {
+                        hk.getHakemus().setTila(HakemuksenTila.HYVAKSYTTY);
+                        hk.getHakemus().setTilanKuvaukset(new HashMap<>());
+                    }
+
                     hk.setTilaVoidaanVaihtaa(false);
 
                 }
@@ -208,12 +209,12 @@ public class SijoitteluAlgorithmImpl implements SijoitteluAlgorithm {
                         hyvaksyttavaksi.add(hk);
                     } else if (tasaSijaTilanne && !tasasijaTilanneRatkaistu) {
                         if (saanto == Tasasijasaanto.ALITAYTTO) {
-                            if(kaikkiTasasijaHakemukset.size() == 1 && tilaa == 0)
+                            if(tilaa == valituksiHaluavatHakemukset.size())
                                 hyvaksyttavaksi.add(hk);
                             else
                                 varalle.add(hk);
                         } else if (saanto == Tasasijasaanto.YLITAYTTO) {
-                            if(kaikkiTasasijaHakemukset.size() == 1 && tilaa == 0)
+                            if(tilaa == 0 && valituksiHaluavatHakemukset.size() == 1)
                                 varalle.add(hk);
                             else
                                 hyvaksyttavaksi.add(hk);
