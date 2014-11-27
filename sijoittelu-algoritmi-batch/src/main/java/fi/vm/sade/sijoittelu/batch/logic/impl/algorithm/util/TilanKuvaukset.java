@@ -27,6 +27,7 @@ public class TilanKuvaukset {
     public static Map<String, String> peruuntunutHyvaksyttyToisessaJonossa() {
         return new HashMap<String, String>() {{
             put("FI","Peruuntunut, hyväksytty toisessa valintatapajonossa");
+            put("EN", "Cancelled, accepted in another selection method queue");
         }};
     }
 
@@ -57,24 +58,28 @@ public class TilanKuvaukset {
     public static Map<String, String> peruuntunutEiMahduKasiteltavienVarasijojenMaaraan() {
         return new HashMap<String, String>() {{
             put("FI", "Peruuntunut, varasija ei mahdu käsiteltävien varasijojen määrään");
+            put("EN", "Cancelled, the reserve place does not fit into the amount of processed reserve places");
         }};
     }
 
     public static Map<String, String> peruuntunutHakukierrosOnPaattynyt() {
         return new HashMap<String, String>() {{
             put("FI", "Peruuntunut, hakukierros on päättynyt");
+            put("EN", "Cancelled, the application round has ended");
         }};
     }
 
     public static Map<String, String> peruuntunutEiVarasijaTayttoa() {
         return new HashMap<String, String>() {{
             put("FI", "Peruuntunut, ei varasijatäyttöä");
+            put("EN", "Cancelled, no reserve place practice");
         }};
     }
 
     public static Map<String, String> hyvaksyttyTayttojonoSaannolla(String jono) {
         return new HashMap<String, String>() {{
             put("FI", "Hyväksytty täyttöjonosäännöllä valintatapajonosta: " + jono);
+            put("EN", "Accepted from selection method queue: " + jono);
         }};
     }
 }
