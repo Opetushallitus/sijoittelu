@@ -185,17 +185,7 @@ public class SijoitteluAlgorithmImpl implements SijoitteluAlgorithm {
 
             for (HakemusWrapper hk : kaikkiTasasijaHakemukset) {
                 if (eiKorvattavissaOlevatHyvaksytytHakemukset.contains(hk)) {
-                    // Asetetaaan tila varmuuden vuoksi
-                    if(hk.getHakemus().getEdellinenTila() == HakemuksenTila.VARALLA || hk.getHakemus().getEdellinenTila() == HakemuksenTila.VARASIJALTA_HYVAKSYTTY) {
-                        hk.getHakemus().setTila(HakemuksenTila.VARASIJALTA_HYVAKSYTTY);
-                        hk.getHakemus().setTilanKuvaukset(TilanKuvaukset.varasijaltaHyvaksytty());
-                    } else {
-                        hk.getHakemus().setTila(HakemuksenTila.HYVAKSYTTY);
-                        hk.getHakemus().setTilanKuvaukset(new HashMap<>());
-                    }
-
-                    hk.setTilaVoidaanVaihtaa(false);
-
+                    // Ei tehdä mitään
                 }
                 else if(sijoitteluAjo.hakukierrosOnPaattynyt() || sijoitteluAjo.getToday().isAfter(varasijaTayttoPaattyy)) {
                     // Hakukierros on päättynyt tai käsiteltävän jonon varasijasäännöt eivät ole enää voimassa.
@@ -621,10 +611,9 @@ public class SijoitteluAlgorithmImpl implements SijoitteluAlgorithm {
 
         if(eiVarasijaTayttoa && !hakemusWrapper.getValintatapajono().getValintatapajono().getKaikkiEhdonTayttavatHyvaksytaan()) {
             hakijaAloistuspaikkojenSisallaTaiVarasijataytto  = hakijaAloistuspaikkojenSisalla(hakemusWrapper);
-            if(!hakijaAloistuspaikkojenSisallaTaiVarasijataytto && sijoitteluAjo.isKKHaku()) {
+            if(!hakijaAloistuspaikkojenSisallaTaiVarasijataytto && sijoitteluAjo.isKKHaku() && hakemusWrapper.isTilaVoidaanVaihtaa()) {
                 hakemusWrapper.getHakemus().setTila(HakemuksenTila.PERUUNTUNUT);
                 hakemusWrapper.getHakemus().setTilanKuvaukset(TilanKuvaukset.peruuntunutAloituspaikatTaynna());
-                hakemusWrapper.setTilaVoidaanVaihtaa(false);
             }
         }
 
@@ -635,10 +624,9 @@ public class SijoitteluAlgorithmImpl implements SijoitteluAlgorithm {
                 && varasijat != null
                 && varasijat > 0) {
             huomioitavienVarasijojenSisalla = hakijaKasiteltavienVarasijojenSisalla(hakemusWrapper, varasijat);
-            if(!huomioitavienVarasijojenSisalla) {
+            if(!huomioitavienVarasijojenSisalla && hakemusWrapper.isTilaVoidaanVaihtaa()) {
                 hakemusWrapper.getHakemus().setTila(HakemuksenTila.PERUUNTUNUT);
                 hakemusWrapper.getHakemus().setTilanKuvaukset(TilanKuvaukset.peruuntunutEiMahduKasiteltavienVarasijojenMaaraan());
-                hakemusWrapper.setTilaVoidaanVaihtaa(false);
             }
 
         }
