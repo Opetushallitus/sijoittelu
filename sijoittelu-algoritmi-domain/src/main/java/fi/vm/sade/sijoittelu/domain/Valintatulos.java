@@ -21,7 +21,8 @@ import java.util.List;
         @Index("hakukohdeOid, valintatapajonoOid, hakemusOid"),
         @Index("hakukohdeOid, valintatapajonoOid"),
         @Index("hakukohdeOid"),
-        @Index("hakemusOid")
+        @Index("hakemusOid"),
+        @Index("hakuOid, tila, julkaistavissa, mailStatus.sent, mailStatus.previousCheck")
 })
 public class Valintatulos implements Serializable {
 
@@ -63,6 +64,8 @@ public class Valintatulos implements Serializable {
     @Embedded
     @JsonView({JsonViews.Tila.class, JsonViews.MonenHakemuksenTila.class})
     private List<LogEntry> logEntries = new ArrayList<LogEntry>();
+
+    private ValintatulosMailStatus mailStatus = new ValintatulosMailStatus();
 
     public int getHakutoive() {
         return hakutoive;
