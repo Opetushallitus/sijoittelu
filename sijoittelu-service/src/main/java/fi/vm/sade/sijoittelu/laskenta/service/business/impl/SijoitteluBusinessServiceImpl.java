@@ -234,6 +234,7 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
         sijoitteluAlgorithm.getSijoitteluAjo().getMuuttuneetValintatulokset()
                 .forEach(valintatulosDao::createOrUpdateValintatulos);
 
+        System.out.println("Pomppuja: " + sijoitteluAlgorithm.getSijoitteluAjo().getVarasijapomput().size());
         sijoitteluAlgorithm.getSijoitteluAjo().getVarasijapomput().forEach(System.out::println);
 
         ActorRef siivoaja = actorService.getSiivousActor();
