@@ -479,7 +479,12 @@ public class SijoitteluAlgorithmImpl implements SijoitteluAlgorithm {
                 if (varalleAsetettavaHakemusWrapper.getHakemus().getTila() != HakemuksenTila.HYLATTY
                         && varalleAsetettavaHakemusWrapper.getHakemus().getTila() != HakemuksenTila.PERUUTETTU
                         && varalleAsetettavaHakemusWrapper.getHakemus().getTila() != HakemuksenTila.PERUNUT) {
+                    if(varalleAsetettavaHakemusWrapper.getHakemus().getTila() != HakemuksenTila.VARALLA) {
+                        String lokitus = varalleAsetettavaHakemusWrapper.getValintatapajono().getHakukohdeWrapper().getHakukohde().getOid() + " - " + varalleAsetettavaHakemusWrapper.getHakemus().getHakemusOid() + " - " + varalleAsetettavaHakemusWrapper.getHakemus().getTilanKuvaukset().getOrDefault("FI", varalleAsetettavaHakemusWrapper.getHakemus().getTila().name());
+                        sijoitteluAjo.getVarasijapomput().add(lokitus);
+                    }
                     varalleAsetettavaHakemusWrapper.getHakemus().setTila(HakemuksenTila.VARALLA);
+
                 }
             }
         }

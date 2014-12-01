@@ -23,8 +23,8 @@ public class PreSijoitteluProcessorPeruutaAlemmatPeruneetJaHyvaksytyt implements
     @Override
     public void process(SijoitteluajoWrapper sijoitteluajoWrapper) {
         Set<HenkiloWrapper> henkilot = new HashSet<>();
-        sijoitteluajoWrapper.getHakukohteet().parallelStream().forEach(hakukohdeWrapper -> {
-            hakukohdeWrapper.getValintatapajonot().parallelStream().forEach(valintatapajonoWrapper -> {
+        sijoitteluajoWrapper.getHakukohteet().forEach(hakukohdeWrapper -> {
+            hakukohdeWrapper.getValintatapajonot().forEach(valintatapajonoWrapper -> {
                 valintatapajonoWrapper.getHakemukset().forEach(hakemusWrapper -> {
                     if(!henkilot.contains(hakemusWrapper.getHenkilo())) {
                         henkilot.add(hakemusWrapper.getHenkilo());

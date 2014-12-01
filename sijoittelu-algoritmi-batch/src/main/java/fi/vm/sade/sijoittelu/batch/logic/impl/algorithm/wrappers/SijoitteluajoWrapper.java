@@ -31,6 +31,8 @@ public class SijoitteluajoWrapper {
 
     private boolean isKKHaku = false;
 
+    private List<String> varasijapomput = new ArrayList<>();
+
     public List<HakukohdeWrapper> getHakukohteet() {
         return hakukohteet;
     }
@@ -102,5 +104,13 @@ public class SijoitteluajoWrapper {
 
     public void setHakuKierrosPaattyy(LocalDateTime hakuKierrosPaattyy) {
         this.hakuKierrosPaattyy = hakuKierrosPaattyy;
+    }
+
+    public List<String> getVarasijapomput() {
+        return varasijapomput;
+    }
+
+    public void setVarasijapomput(List<String> varasijapomput) {
+        this.varasijapomput = varasijapomput;
     }
 }

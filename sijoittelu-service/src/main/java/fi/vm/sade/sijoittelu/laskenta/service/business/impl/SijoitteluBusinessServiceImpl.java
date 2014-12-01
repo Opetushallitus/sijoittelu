@@ -142,7 +142,7 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
                 .getLatestSijoitteluajo();
 
         List<Hakukohde> uudetHakukohteet =
-        sijoitteluTyyppi.getHakukohteet().parallelStream().map(DomainConverter::convertToHakukohde).collect(Collectors.toList());
+        sijoitteluTyyppi.getHakukohteet().stream().map(DomainConverter::convertToHakukohde).collect(Collectors.toList());
         List<Hakukohde> olemassaolevatHakukohteet = Collections
                 .<Hakukohde> emptyList();
         if (viimeisinSijoitteluajo != null) {
@@ -155,6 +155,7 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
                 olemassaolevatHakukohteet, uudetHakukohteet);
 
         List<Valintatulos> valintatulokset = valintatulosDao.loadValintatulokset(hakuOid);
+        System.out.println("Sijoittelun valintatulosten määrä: " + valintatulokset.size());
         SijoitteluAlgorithm sijoitteluAlgorithm = algorithmFactory
                 .constructAlgorithm(kaikkiHakukohteet, valintatulokset);
 
@@ -232,6 +233,8 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
         // VT-18 tallennetaan sijoittelualgoritmin muplaanmat valintatiedot
         sijoitteluAlgorithm.getSijoitteluAjo().getMuuttuneetValintatulokset()
                 .forEach(valintatulosDao::createOrUpdateValintatulos);
+
+        sijoitteluAlgorithm.getSijoitteluAjo().getVarasijapomput().forEach(System.out::println);
 
         ActorRef siivoaja = actorService.getSiivousActor();
         try {
