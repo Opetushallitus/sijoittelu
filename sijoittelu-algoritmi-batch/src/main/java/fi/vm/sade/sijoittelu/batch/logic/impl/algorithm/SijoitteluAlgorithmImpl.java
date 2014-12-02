@@ -1,13 +1,12 @@
 package fi.vm.sade.sijoittelu.batch.logic.impl.algorithm;
 
-import fi.vm.sade.service.valintaperusteet.dto.model.Kieli;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.comparator.HakemusWrapperComparator;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.postsijoitteluprocessor.PostSijoitteluProcessor;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.presijoitteluprocessor.PreSijoitteluProcessor;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.util.TilanKuvaukset;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.*;
 import fi.vm.sade.sijoittelu.domain.*;
-import org.springframework.beans.factory.annotation.Autowired;
+import fi.vm.sade.sijoittelu.domain.comparator.HakemusComparator;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -106,9 +105,10 @@ public class SijoitteluAlgorithmImpl implements SijoitteluAlgorithm {
                     ValintatapajonoWrapper kasiteltava = opt.get();
                     List<HakemusWrapper> varasijajono = muodostaVarasijaJono(kasiteltava.getHakemukset())
                             .stream()
-                                    //.filter(h -> !onHyvaksyttyHakukohteessa(hakukohde, h))
                             .filter(h -> onHylattyJonossa(valintatapajono, h))
                             .collect(Collectors.toList());
+
+                    varasijajono.sort(new HakemusWrapperComparator());
 
                     while(tilaa > 0 && !varasijajono.isEmpty()) {
                         // Vielä on tilaa ja hakemuksia, jotka ei oo tässä hakukohteessa hyväksyttyjä
@@ -176,6 +176,8 @@ public class SijoitteluAlgorithmImpl implements SijoitteluAlgorithm {
 
         LocalDateTime varasijaTayttoPaattyy = varasijaTayttoPaattyy(valintatapajono);
 
+        boolean taytetaankoPoissaOlevat = taytetaankoPoissaOlevat(valintatapajono);
+
         ListIterator<HakemusWrapper> it = valintatapajono.getHakemukset().listIterator();
         boolean tasasijaSaantoKaytetty = false;
         Set<HakemusWrapper> kaytetyt = new HashSet<>();
@@ -205,7 +207,14 @@ public class SijoitteluAlgorithmImpl implements SijoitteluAlgorithm {
                 varalle.addAll(valituksiHaluavatHakemukset);
             } else if(tilaa - valituksiHaluavatHakemukset.size() >= 0) {
                 hyvaksyttavaksi.addAll(valituksiHaluavatHakemukset);
-                tilaa = tilaa - valituksiHaluavatHakemukset.size();
+                if(taytetaankoPoissaOlevat) {
+                    tilaa = tilaa - valituksiHaluavatHakemukset
+                            .stream()
+                            .filter(h -> !poissaoloTilat.contains(h.getHakemus().getIlmoittautumisTila()))
+                            .collect(Collectors.toList()).size();
+                } else {
+                    tilaa = tilaa - valituksiHaluavatHakemukset.size();
+                }
             } else if(tilaa > 0 && tilaa - valituksiHaluavatHakemukset.size() < 0) {
                 if(saanto == Tasasijasaanto.ALITAYTTO) {
                     varalle.addAll(valituksiHaluavatHakemukset);
@@ -215,7 +224,9 @@ public class SijoitteluAlgorithmImpl implements SijoitteluAlgorithm {
                     for (HakemusWrapper aValituksiHaluavatHakemukset : valituksiHaluavatHakemukset) {
                         if (tilaa > 0) {
                             hyvaksyttavaksi.add(aValituksiHaluavatHakemukset);
-                            tilaa--;
+                            if(!taytetaankoPoissaOlevat || !poissaoloTilat.contains(aValituksiHaluavatHakemukset.getHakemus().getIlmoittautumisTila())) {
+                                tilaa--;
+                            }
                         } else {
                             varalle.add(aValituksiHaluavatHakemukset);
                         }
@@ -270,13 +281,6 @@ public class SijoitteluAlgorithmImpl implements SijoitteluAlgorithm {
                     // Kuinka paljon hakijaryhmän halukkaista on tästä jonosta
                     int haluavat = jonoittain.getOrDefault(v.getValintatapajono().getOid(), new ArrayList<>()).size();
 
-//                    if(ryhma.getValintatapajonoOid() == null) {
-//                        haluavat = jonoittain.getOrDefault(v.getValintatapajono().getOid(), new ArrayList<>()).size();
-//                    } else {
-//                        haluavat = jonoittain.getOrDefault(v.getValintatapajono().getOid(), new ArrayList<>()).size();
-//                    }
-
-
                     if(haluavat == 0) { // Jo käsitelty loopissa
                         // Ei tehä mitään
                     } else if(tilaa - haluavat < 0) { // tasasija tilanne
@@ -310,15 +314,6 @@ public class SijoitteluAlgorithmImpl implements SijoitteluAlgorithm {
                         });
                         jonoittain.remove(v.getValintatapajono().getOid());
                     }
-
-//                    HakemusWrapper huonoin = haeHuonoinValittuEiVajaaseenRyhmaanKuuluva(v, hakijaryhmaWrapper);
-//                    muuttuneetHakemukset.addAll(hyvaksyHakemus(paras));
-//                    muuttuneetHakemukset.add(paras);
-//                    paras.setTilaVoidaanVaihtaa(false);
-//                    paras.setHyvaksyttyHakijaryhmastaTaiTayttoJonosta(true);
-//                    if (huonoin != null) {
-//                        muuttuneetHakemukset.addAll(asetaVaralleHakemus(huonoin));
-//                    }
 
                 }
             }
@@ -429,12 +424,15 @@ public class SijoitteluAlgorithmImpl implements SijoitteluAlgorithm {
                 .collect(Collectors.toSet());
     }
 
+    private boolean taytetaankoPoissaOlevat(ValintatapajonoWrapper valintatapajono) {
+        return valintatapajono.getValintatapajono().getPoissaOlevaTaytto() != null && valintatapajono.getValintatapajono().getPoissaOlevaTaytto();
+    }
+
     private ArrayList<HakemusWrapper> eiKorvattavissaOlevatHyvaksytytHakemukset(ValintatapajonoWrapper valintatapajono) {
         ArrayList<HakemusWrapper> eiKorvattavissaOlevatHyvaksytytHakemukset = new ArrayList<HakemusWrapper>();
-        boolean taytetaankoPoissaOlevat = false;
-        if(valintatapajono.getValintatapajono().getPoissaOlevaTaytto() != null && valintatapajono.getValintatapajono().getPoissaOlevaTaytto()) {
-            taytetaankoPoissaOlevat = true;
-        }
+
+        boolean taytetaankoPoissaOlevat = taytetaankoPoissaOlevat(valintatapajono);
+
         for (HakemusWrapper h : valintatapajono.getHakemukset()) {
 
             boolean korvattavissa = false;
@@ -457,21 +455,6 @@ public class SijoitteluAlgorithmImpl implements SijoitteluAlgorithm {
     private boolean voidaanKorvata(HakemusWrapper hakemusWrapper) {
 
         boolean voidaanKorvata = true;
-
-//        ArrayList<HakijaryhmaWrapper> hakijanHakijaryhmat = new ArrayList<HakijaryhmaWrapper>();
-//        for (HakijaryhmaWrapper hakijaryhmaWrapper : hakemusWrapper.getValintatapajono().getHakukohdeWrapper().getHakijaryhmaWrappers()) {
-//            Hakijaryhma hakijaryhma = hakijaryhmaWrapper.getHakijaryhma();
-//            if(hakijaryhma.getValintatapajonoOid() == null || hakijaryhma.getValintatapajonoOid().equals(hakemusWrapper.getValintatapajono().getValintatapajono().getOid())) {
-//                if (hakijaryhmaWrapper.getHenkiloWrappers().contains(hakemusWrapper.getHenkilo())) {
-//                    hakijanHakijaryhmat.add(hakijaryhmaWrapper);
-//                }
-//            }
-//        }
-//        for (HakijaryhmaWrapper a : hakijanHakijaryhmat) {
-//            if (hakijaryhmassaVajaata(a) >= 0) {
-//                voidaanKorvata = false;
-//            }
-//        }
 
         if(hakemusWrapper.isHyvaksyttyHakijaryhmastaTaiTayttoJonosta()) {
             voidaanKorvata = false;
@@ -767,19 +750,6 @@ public class SijoitteluAlgorithmImpl implements SijoitteluAlgorithm {
             }
         }
         return needed;
-    }
-
-
-    private boolean onkoTasasijaTilanne(int tilaa, int valituksiHaluavat, Tasasijasaanto saanto) {
-        if(tilaa == 0) {
-            return false;
-        }
-        if(tilaa - (valituksiHaluavat - 1) <= 0) {
-            if(saanto == Tasasijasaanto.ALITAYTTO || saanto == Tasasijasaanto.YLITAYTTO) {
-                return true;
-            }
-        }
-        return false;
     }
 
 }

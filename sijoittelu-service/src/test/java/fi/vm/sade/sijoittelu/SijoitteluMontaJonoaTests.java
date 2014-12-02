@@ -132,6 +132,48 @@ public class SijoitteluMontaJonoaTests {
     }
 
     @Test
+    @UsingDataSet(locations = "monta_jonoa.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
+    public void testPoissaolevaTaytto() throws IOException {
+
+        HakuDTO haku = valintatietoService.haeValintatiedot("1.2.246.562.29.173465377510");
+
+        List<Hakukohde> hakukohteet = haku.getHakukohteet().parallelStream().map(DomainConverter::convertToHakukohde).collect(Collectors.toList());
+        Valintatulos tulos = new Valintatulos();
+        tulos.setHakemusOid("1.2.246.562.11.00001067411");
+        tulos.setHakijaOid("1.2.246.562.11.00001067411");
+        tulos.setHakukohdeOid("1.2.246.562.20.18895322503");
+        tulos.setHakuOid("1.2.246.562.29.173465377510");
+        tulos.setHakutoive(1);
+        tulos.setHyvaksyttyVarasijalta(false);
+        tulos.setIlmoittautumisTila(IlmoittautumisTila.POISSA);
+        tulos.setJulkaistavissa(true);
+        tulos.setTila(ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI);
+        tulos.setValintatapajonoOid("oid1");
+
+        SijoitteluAlgorithmFactoryImpl h = new SijoitteluAlgorithmFactoryImpl();
+        SijoitteluAlgorithm s = h.constructAlgorithm(hakukohteet, Arrays.asList(tulos));
+        s.start();
+
+        System.out.println(PrintHelper.tulostaSijoittelu(s));
+
+//        assertoiAinoastaanValittu(hakukohteet.get(0).getValintatapajonot().get(0), "1.2.246.562.11.00001068863");
+//        assertoiAinoastaanValittu(hakukohteet.get(0).getValintatapajonot().get(1), "1.2.246.562.11.00001090792");
+//
+//        hakukohteet.get(0).getValintatapajonot().get(0).getHakemukset().forEach(hak -> {
+//            if(hak.getHakemusOid().equals("1.2.246.562.11.00001090792")) {
+//                Assert.assertTrue(hak.getTila().equals(HakemuksenTila.VARALLA));
+//            }
+//        });
+//
+//        hakukohteet.get(0).getValintatapajonot().get(1).getHakemukset().forEach(hak -> {
+//            if(hak.getHakemusOid().equals("1.2.246.562.11.00001068863")) {
+//                Assert.assertTrue(hak.getTila().equals(HakemuksenTila.PERUUNTUNUT));
+//            }
+//        });
+
+    }
+
+    @Test
     @UsingDataSet(locations = "ei_varasijatayttoa.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
     public void testEiVarasijatayttoa() throws IOException {
 
