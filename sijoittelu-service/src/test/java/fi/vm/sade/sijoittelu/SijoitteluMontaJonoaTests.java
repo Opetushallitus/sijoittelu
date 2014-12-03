@@ -320,6 +320,31 @@ public class SijoitteluMontaJonoaTests {
 
     }
 
+    @Test
+    @UsingDataSet(locations = "peruuta_alemmat.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
+    public void testPeruutaAlemmat() throws IOException {
+
+        HakuDTO haku = valintatietoService.haeValintatiedot("haku1");
+
+
+        List<Hakukohde> hakukohteet = haku.getHakukohteet().parallelStream().map(DomainConverter::convertToHakukohde).collect(Collectors.toList());
+
+        SijoitteluAlgorithmFactoryImpl h = new SijoitteluAlgorithmFactoryImpl();
+        SijoitteluAlgorithm s = h.constructAlgorithm(hakukohteet, Collections.newArrayList());
+        s.start();
+
+        System.out.println(PrintHelper.tulostaSijoittelu(s));
+
+        hakukohteet.remove(2);
+
+        h = new SijoitteluAlgorithmFactoryImpl();
+        s = h.constructAlgorithm(hakukohteet, Collections.newArrayList());
+        s.start();
+
+        System.out.println(PrintHelper.tulostaSijoittelu(s));
+
+    }
+
     public final static void assertoiAinoastaanValittu(Valintatapajono h, String... oids) {
         List<String> wanted = Arrays.asList(oids);
         List<String> actual = new ArrayList<String>();
