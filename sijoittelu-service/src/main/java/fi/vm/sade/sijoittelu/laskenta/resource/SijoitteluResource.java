@@ -130,6 +130,7 @@ public class SijoitteluResource {
 																		jono.setAktiivinen(perusteJono
 																				.getAktiivinen());
                                                                         jono.setKaikkiEhdonTayttavatHyvaksytaan(perusteJono.getKaikkiEhdonTayttavatHyvaksytaan());
+                                                                        jono.setNimi(perusteJono.getNimi());
 																		konvertoidut
 																				.add(jono);
 																		jonot.remove(jono
