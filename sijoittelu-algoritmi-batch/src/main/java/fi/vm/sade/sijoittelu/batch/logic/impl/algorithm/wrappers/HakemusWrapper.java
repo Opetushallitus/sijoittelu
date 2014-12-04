@@ -15,6 +15,10 @@ public class HakemusWrapper {
 
     private HenkiloWrapper henkilo;
 
+    private boolean hyvaksyttyHakijaryhmastaTaiTayttoJonosta = false;
+
+    private boolean hyvaksyttavissaHakijaryhmanJalkeen = false;
+
     //jos hakemuksen tilaa ei voida muuttaa, esm. ilmoitettu hakijalle jo
     private boolean tilaVoidaanVaihtaa = true;
 
@@ -49,5 +53,21 @@ public class HakemusWrapper {
 
     public void setTilaVoidaanVaihtaa(boolean tilaVoidaanVaihtaa) {
         this.tilaVoidaanVaihtaa = tilaVoidaanVaihtaa;
+    }
+
+    public boolean isHyvaksyttyHakijaryhmastaTaiTayttoJonosta() {
+        return hyvaksyttyHakijaryhmastaTaiTayttoJonosta;
+    }
+
+    public void setHyvaksyttyHakijaryhmastaTaiTayttoJonosta(boolean hyvaksyttyHakijaryhmastaTaiTayttoJonosta) {
+        this.hyvaksyttyHakijaryhmastaTaiTayttoJonosta = hyvaksyttyHakijaryhmastaTaiTayttoJonosta;
+    }
+
+    public boolean isHyvaksyttavissaHakijaryhmanJalkeen() {
+        return hyvaksyttavissaHakijaryhmanJalkeen;
+    }
+
+    public void setHyvaksyttavissaHakijaryhmanJalkeen(boolean hyvaksyttavissaHakijaryhmanJalkeen) {
+        this.hyvaksyttavissaHakijaryhmanJalkeen = hyvaksyttavissaHakijaryhmanJalkeen;
     }
 }

@@ -1,21 +1,17 @@
 package fi.vm.sade.sijoittelu.tulos.dao.impl;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 import javax.annotation.PostConstruct;
 
-import fi.vm.sade.sijoittelu.tulos.dao.util.MongoMapReduceUtil;
 import org.mongodb.morphia.Datastore;
-import org.mongodb.morphia.MapreduceType;
 import org.mongodb.morphia.mapping.Mapper;
 import org.mongodb.morphia.mapping.cache.DefaultEntityCache;
 import org.mongodb.morphia.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Repository;
 
 import com.mongodb.BasicDBObject;
@@ -26,6 +22,7 @@ import com.mongodb.MapReduceOutput;
 
 import fi.vm.sade.sijoittelu.domain.Hakukohde;
 import fi.vm.sade.sijoittelu.tulos.dao.HakukohdeDao;
+import fi.vm.sade.sijoittelu.tulos.dao.util.MongoMapReduceUtil;
 
 @Repository
 public class HakukohdeDaoImpl implements HakukohdeDao {
@@ -35,7 +32,7 @@ public class HakukohdeDaoImpl implements HakukohdeDao {
 
     @PostConstruct
     public void ensureIndexes() {
-        morphiaDS.ensureIndexes(Hakukohde.class);
+        EnsureIndexes.ensureIndexes(morphiaDS, Hakukohde.class);
     }
 
     @Override

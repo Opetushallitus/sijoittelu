@@ -1,5 +1,7 @@
 package fi.vm.sade.sijoittelu.tulos.dto;
 
+import static java.util.Arrays.*;
+
 /**
  * Created with IntelliJ IDEA.
  * User: kkammone
@@ -17,5 +19,9 @@ public enum ValintatuloksenTila {
     PERUUTETTU,                    // Hakijan tila on peruutettu
     EHDOLLISESTI_VASTAANOTTANUT,    // Ehdollisesti vastaanottanut
     VASTAANOTTANUT_SITOVASTI,       // Sitovasti vastaanottanut, kk-tila
-    KESKEN
+    KESKEN;
+    
+    public boolean isVastaanottanut() {
+        return asList(VASTAANOTTANUT, VASTAANOTTANUT_LASNA, VASTAANOTTANUT_POISSAOLEVA).contains(this);
+    }
 }

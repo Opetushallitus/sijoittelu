@@ -22,6 +22,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -117,6 +118,25 @@ public class HakijaryhmaTests {
 
     @Test
     @UsingDataSet(locations = "alitaytto_simple_case.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
+    public void testAlitayttoRekursio() throws IOException {
+
+        HakuDTO haku = valintatietoService.haeValintatiedot("1.2.246.562.29.173465377510");
+
+        List<Hakukohde> hakukohteet = haku.getHakukohteet().parallelStream().map(DomainConverter::convertToHakukohde).collect(Collectors.toList());
+
+        SijoitteluAlgorithmFactoryImpl h = new SijoitteluAlgorithmFactoryImpl();
+        SijoitteluAlgorithm s = h.constructAlgorithm(hakukohteet, Collections.<Valintatulos>newArrayList());
+        s.getSijoitteluAjo().setKaikkiKohteetSijoittelussa(LocalDateTime.now().plusDays(10));
+        s.start();
+
+        System.out.println(PrintHelper.tulostaSijoittelu(s));
+
+        assertoiAinoastaanValittu(hakukohteet.get(0).getValintatapajonot().get(0), "hakija1");
+
+    }
+
+    @Test
+    @UsingDataSet(locations = "ylitaytto_simple_case.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
     public void testYlitayttoRekursio() throws IOException {
 
         HakuDTO haku = valintatietoService.haeValintatiedot("1.2.246.562.29.173465377510");
@@ -125,9 +145,32 @@ public class HakijaryhmaTests {
 
         SijoitteluAlgorithmFactoryImpl h = new SijoitteluAlgorithmFactoryImpl();
         SijoitteluAlgorithm s = h.constructAlgorithm(hakukohteet, Collections.<Valintatulos>newArrayList());
+        s.getSijoitteluAjo().setKaikkiKohteetSijoittelussa(LocalDateTime.now().plusDays(10));
         s.start();
 
         System.out.println(PrintHelper.tulostaSijoittelu(s));
+
+        assertoiAinoastaanValittu(hakukohteet.get(0).getValintatapajonot().get(0), "hakija1", "hakija3", "hakija4", "hakija5");
+
+    }
+
+    @Ignore
+    @Test
+    @UsingDataSet(locations = "ylitaytto_vaihe.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
+    public void testYlitaytto() throws IOException {
+
+        HakuDTO haku = valintatietoService.haeValintatiedot("1.2.246.562.29.173465377510");
+
+        List<Hakukohde> hakukohteet = haku.getHakukohteet().parallelStream().map(DomainConverter::convertToHakukohde).collect(Collectors.toList());
+
+        SijoitteluAlgorithmFactoryImpl h = new SijoitteluAlgorithmFactoryImpl();
+        SijoitteluAlgorithm s = h.constructAlgorithm(hakukohteet, Collections.<Valintatulos>newArrayList());
+        s.getSijoitteluAjo().setKaikkiKohteetSijoittelussa(LocalDateTime.now().plusDays(10));
+        s.start();
+
+        System.out.println(PrintHelper.tulostaSijoittelu(s));
+
+//        assertoiAinoastaanValittu(hakukohteet.get(0).getValintatapajonot().get(0), "hakija1", "hakija3", "hakija4", "hakija5");
 
     }
 

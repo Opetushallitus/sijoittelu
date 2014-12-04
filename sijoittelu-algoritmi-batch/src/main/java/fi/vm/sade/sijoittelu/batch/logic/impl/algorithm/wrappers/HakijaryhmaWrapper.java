@@ -18,6 +18,8 @@ public class HakijaryhmaWrapper {
 
     private List<HenkiloWrapper> henkiloWrappers = new ArrayList<HenkiloWrapper>();
 
+    private boolean alitayttoSaantoTaytetty = false;
+
     public Hakijaryhma getHakijaryhma() {
         return hakijaryhma;
     }
@@ -38,4 +40,11 @@ public class HakijaryhmaWrapper {
         return henkiloWrappers;
     }
 
+    public boolean isAlitayttoSaantoTaytetty() {
+        return alitayttoSaantoTaytetty;
+    }
+
+    public void setAlitayttoSaantoTaytetty(boolean alitayttoSaantoTaytetty) {
+        this.alitayttoSaantoTaytetty = alitayttoSaantoTaytetty;
+    }
 }

@@ -15,6 +15,7 @@ import fi.vm.sade.sijoittelu.domain.*;
 import fi.vm.sade.sijoittelu.domain.comparator.HakemusComparator;
 import fi.vm.sade.sijoittelu.laskenta.actors.messages.PoistaHakukohteet;
 import fi.vm.sade.sijoittelu.laskenta.actors.messages.PoistaVanhatAjotSijoittelulta;
+import fi.vm.sade.sijoittelu.laskenta.external.resource.HakuV1Resource;
 import fi.vm.sade.sijoittelu.laskenta.external.resource.OhjausparametriResource;
 import fi.vm.sade.sijoittelu.laskenta.external.resource.dto.ParametriDTO;
 import fi.vm.sade.sijoittelu.laskenta.service.business.ActorService;
@@ -23,6 +24,8 @@ import fi.vm.sade.sijoittelu.laskenta.mapping.SijoitteluModelMapper;
 import fi.vm.sade.sijoittelu.laskenta.service.exception.*;
 import fi.vm.sade.sijoittelu.tulos.dto.HakukohdeDTO;
 import fi.vm.sade.sijoittelu.tulos.service.impl.converters.SijoitteluTulosConverter;
+import fi.vm.sade.tarjonta.service.resources.v1.dto.HakuV1RDTO;
+import fi.vm.sade.tarjonta.service.resources.v1.dto.ResultV1RDTO;
 import fi.vm.sade.valintalaskenta.domain.dto.valintatieto.HakuDTO;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -50,6 +53,8 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
 			.getLogger(SijoitteluBusinessServiceImpl.class);
 
     private HakemusComparator hakemusComparator = new HakemusComparator();
+
+    private final String KK_KOHDEJOUKKO = "haunkohdejoukko_12";
 
 	@Autowired
 	private SijoitteluAlgorithmFactory algorithmFactory;
@@ -90,6 +95,9 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
 
     @Autowired
     OhjausparametriResource ohjausparametriResource;
+
+    @Autowired
+    HakuV1Resource hakuV1Resource;
 
 	/**
 	 * ei versioi sijoittelua, tekeee uuden sijoittelun olemassaoleville
@@ -134,7 +142,7 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
                 .getLatestSijoitteluajo();
 
         List<Hakukohde> uudetHakukohteet =
-        sijoitteluTyyppi.getHakukohteet().parallelStream().map(DomainConverter::convertToHakukohde).collect(Collectors.toList());
+        sijoitteluTyyppi.getHakukohteet().stream().map(DomainConverter::convertToHakukohde).collect(Collectors.toList());
         List<Hakukohde> olemassaolevatHakukohteet = Collections
                 .<Hakukohde> emptyList();
         if (viimeisinSijoitteluajo != null) {
@@ -147,18 +155,74 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
                 olemassaolevatHakukohteet, uudetHakukohteet);
 
         List<Valintatulos> valintatulokset = valintatulosDao.loadValintatulokset(hakuOid);
+        System.out.println("Sijoittelun valintatulosten määrä: " + valintatulokset.size());
         SijoitteluAlgorithm sijoitteluAlgorithm = algorithmFactory
                 .constructAlgorithm(kaikkiHakukohteet, valintatulokset);
 
+        // Asetetaan haun tiedot tarjonnasta ja ohjausparametreista
+        try {
+            ResultV1RDTO<HakuV1RDTO> tarjonnanHaku = hakuV1Resource.findByOid(hakuOid);
+            String kohdejoukko = tarjonnanHaku.getResult().getKohdejoukkoUri();
+            if(kohdejoukko.split("#")[0].equals(KK_KOHDEJOUKKO)) {
+                sijoitteluAlgorithm.getSijoitteluAjo().setKKHaku(true);
+            }
+        } catch(Exception e) { // Heitetään poikkeus koska ei voida tietää onko kk-haku
+            LOG.error("############## Haun hakeminen tarjonnasta epäonnistui ##############");
+            e.printStackTrace();
+            throw new RuntimeException("Sijoittelua haulle " + hakuOid + " ei voida suorittaa, koska tarjonnasta ei saatu haun tietoja");
+        }
+
         try {
             ParametriDTO parametri = new GsonBuilder().create().fromJson(ohjausparametriResource.haePaivamaara(hakuOid), ParametriDTO.class);
-            if(parametri != null && parametri.getPH_VTSSV() != null && parametri.getPH_VTSSV().getDate() != null) {
+
+            if(parametri == null || parametri.getPH_HKP() == null || parametri.getPH_HKP().getDate() == null) {
+                // Ei tiedetä koska hakukierros päättyy, heitetään poikkeus
+                throw new RuntimeException("Sijoittelua haulle " + hakuOid + " ei voida suorittaa, koska hakukierroksen päättymispäivä parametria ei saatu.");
+            } else {
+                sijoitteluAlgorithm.getSijoitteluAjo().setHakuKierrosPaattyy(fromTimestamp(parametri.getPH_HKP().getDate()));
+            }
+
+            if(sijoitteluAlgorithm.getSijoitteluAjo().isKKHaku()
+                    && (parametri.getPH_VTSSV() == null
+                    || parametri.getPH_VTSSV().getDate() == null
+                    || parametri.getPH_VSSAV() == null
+                    || parametri.getPH_VSSAV().getDate() == null )) {
+                throw new RuntimeException("Sijoittelua haulle " + hakuOid + " ei voida suorittaa, koska kyseessä on korkeakouluhaku ja vaadittavia ohjausparametrejä (PH_VTSSV, PH_VSSAV) ei saatu haettua tai asetettua.");
+            } else if(sijoitteluAlgorithm.getSijoitteluAjo().isKKHaku()){
+                LOG.error("Saadut ohjausparametrit: kaikkikohteet sijoittelussa-> {}, varasijasäännöt astuvat voimaan-> {}", fromTimestamp(parametri.getPH_VTSSV().getDate()), fromTimestamp(parametri.getPH_VSSAV().getDate()));
+            }
+            if(parametri.getPH_VTSSV() != null && parametri.getPH_VTSSV().getDate() != null) {
                 sijoitteluAlgorithm.getSijoitteluAjo().setKaikkiKohteetSijoittelussa(fromTimestamp(parametri.getPH_VTSSV().getDate()));
             }
+            if(parametri.getPH_VSSAV() != null && parametri.getPH_VSSAV().getDate() != null) {
+                sijoitteluAlgorithm.getSijoitteluAjo().setVarasijaSaannotAstuvatVoimaan(fromTimestamp(parametri.getPH_VSSAV().getDate()));
+            }
+
         } catch(Exception e) {
             LOG.error("############## Ohjausparametrin muuntaminen LocalDateksi epäonnistui ##############");
             e.printStackTrace();
+            if(sijoitteluAlgorithm.getSijoitteluAjo().isKKHaku()) {
+                throw new RuntimeException("Sijoittelua haulle " + hakuOid + " ei voida suorittaa, koska kyseessä on korkeakouluhaku ja vaadittavia ohjausparametrejä (PH_VTSSV, PH_VSSAV) ei saatu haettua tai asetettua.");
+            } else {
+                throw new RuntimeException("Sijoittelua haulle " + hakuOid + " ei voida suorittaa, koska hakukierroksen päättymispäivää ei saatu haettua tai asetettua.");
+            }
+
         }
+
+        LocalDateTime kaikkiKohteetSijoittelussa = sijoitteluAlgorithm.getSijoitteluAjo().getKaikkiKohteetSijoittelussa();
+        LocalDateTime hakuKierrosPaattyy = sijoitteluAlgorithm.getSijoitteluAjo().getHakuKierrosPaattyy();
+        LocalDateTime varasijaSaannotAstuvatVoimaan = sijoitteluAlgorithm.getSijoitteluAjo().getVarasijaSaannotAstuvatVoimaan();
+
+        if(hakuKierrosPaattyy.isBefore(kaikkiKohteetSijoittelussa)) {
+            throw new RuntimeException("Sijoittelua haulle " + hakuOid + " ei voida suorittaa, koska hakukierros on asetettu päättymään ennen kuin kaikkien kohteiden tulee olla sijoittelussa.");
+        }
+
+        if(sijoitteluAlgorithm.getSijoitteluAjo().isKKHaku() && hakuKierrosPaattyy.isBefore(varasijaSaannotAstuvatVoimaan)) {
+            throw new RuntimeException("Sijoittelua haulle " + hakuOid + " ei voida suorittaa, koska hakukierros on asetettu päättymään ennen kuin varasija säännöt astuvat voimaan");
+        }
+
+        LOG.error("Sijoittelun ohjausparametrit asetettu haulle {}. onko korkeakouluhaku: {}, kaikki kohteet sijoittelussa: {}, hakukierros päätty: {}, varasijasäännöt astuvat voimaan: {}, varasijasäännöt voimassa: {}",
+                hakuOid, sijoitteluAlgorithm.getSijoitteluAjo().isKKHaku(), kaikkiKohteetSijoittelussa, hakuKierrosPaattyy, varasijaSaannotAstuvatVoimaan, sijoitteluAlgorithm.getSijoitteluAjo().varasijaSaannotVoimassa());
 
         uusiSijoitteluajo.setStartMils(startTime);
         sijoitteluAlgorithm.start();
@@ -169,6 +233,9 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
         // VT-18 tallennetaan sijoittelualgoritmin muplaanmat valintatiedot
         sijoitteluAlgorithm.getSijoitteluAjo().getMuuttuneetValintatulokset()
                 .forEach(valintatulosDao::createOrUpdateValintatulos);
+
+        System.out.println("Pomppuja: " + sijoitteluAlgorithm.getSijoitteluAjo().getVarasijapomput().size());
+        sijoitteluAlgorithm.getSijoitteluAjo().getVarasijapomput().forEach(System.out::println);
 
         ActorRef siivoaja = actorService.getSiivousActor();
         try {
@@ -184,8 +251,8 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
 
     }
 
-    private LocalDate fromTimestamp(Long timestamp) {
-        return LocalDateTime.ofInstant(new Date(timestamp).toInstant(), ZoneId.systemDefault()).toLocalDate();
+    private LocalDateTime fromTimestamp(Long timestamp) {
+        return LocalDateTime.ofInstant(new Date(timestamp).toInstant(), ZoneId.systemDefault());
     }
 
     @Override
@@ -418,7 +485,7 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
     }
 
 	private Sijoittelu getOrCreateSijoittelu(String hakuoid) {
-		Optional<Sijoittelu> sijoitteluOpt = sijoitteluDao.getSijoitteluByHakuOid(hakuoid);
+ 		Optional<Sijoittelu> sijoitteluOpt = sijoitteluDao.getSijoitteluByHakuOid(hakuoid);
 
         if (sijoitteluOpt.isPresent()) {
             return sijoitteluOpt.get();

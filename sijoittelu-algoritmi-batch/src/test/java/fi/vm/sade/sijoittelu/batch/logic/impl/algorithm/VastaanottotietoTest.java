@@ -169,7 +169,7 @@ public class VastaanottotietoTest {
         TestHelper.assertoi(hakukohteet.get(0).getValintatapajonot()
                 .get(1), "1.2.246.562.24.00000000006", HakemuksenTila.PERUUNTUNUT);
         TestHelper.assertoi(hakukohteet.get(0).getValintatapajonot()
-                .get(0), "1.2.246.562.24.00000000003", HakemuksenTila.PERUUNTUNUT);
+                .get(0), "1.2.246.562.24.00000000003", HakemuksenTila.VARALLA);
 
 
         valintatuloses = new ArrayList<>();

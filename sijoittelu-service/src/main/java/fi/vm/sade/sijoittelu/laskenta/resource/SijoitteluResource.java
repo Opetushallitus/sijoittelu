@@ -85,6 +85,7 @@ public class SijoitteluResource {
 									.haeValintatapajonotSijoittelulle(
 											hakukohde.getOid())
 									.parallelStream()
+                                    .filter(j -> j.getAktiivinen() == null || j.getAktiivinen().equals(Boolean.TRUE))
 									.collect(
 											Collectors.toMap(
 													ValintatapajonoDTO::getOid,
@@ -128,6 +129,8 @@ public class SijoitteluResource {
 																				.getVarasijojaTaytetaanAsti());
 																		jono.setAktiivinen(perusteJono
 																				.getAktiivinen());
+                                                                        jono.setKaikkiEhdonTayttavatHyvaksytaan(perusteJono.getKaikkiEhdonTayttavatHyvaksytaan());
+                                                                        jono.setNimi(perusteJono.getNimi());
 																		konvertoidut
 																				.add(jono);
 																		jonot.remove(jono
@@ -143,33 +146,34 @@ public class SijoitteluResource {
 
 		LOGGER.error("Valintaperusteet asetettu {}!", hakuOid);
 
-		Timeout timeout = new Timeout(Duration.create(60, "minutes"));
-
-		Future<Object> future = Patterns.ask(actorService.getSijoitteluActor(),
-				haku, timeout);
+//		Timeout timeout = new Timeout(Duration.create(60, "minutes"));
+//
+//		Future<Object> future = Patterns.ask(actorService.getSijoitteluActor(),
+//				haku, timeout);
+//
+//		try {
+//			LOGGER.error("############### Odotellaan sijoittelun valmistumista ###############");
+//			boolean onnistui = (boolean) Await.result(future,
+//					timeout.duration());
+//			LOGGER.error("############### Sijoittelu valmis ###############");
+//			return String.valueOf(onnistui);
+//		} catch (Exception e) {
+//			LOGGER.error("############### Sijoittelu epäonnistui ###############");
+//			e.printStackTrace();
+//			return "false";
+//		}
 
 		try {
-			LOGGER.error("############### Odotellaan sijoittelun valmistumista ###############");
-			boolean onnistui = (boolean) Await.result(future,
-					timeout.duration());
-			LOGGER.error("############### Sijoittelu valmis ###############");
-			return String.valueOf(onnistui);
+		    sijoitteluBusinessService.sijoittele(haku);
+		    LOGGER.error("Sijoittelu suoritettu onnistuneesti!");
+            return "true";
 		} catch (Exception e) {
-			LOGGER.error("############### Sijoittelu epäonnistui ###############");
-			e.printStackTrace();
-			return "false";
+		    e.printStackTrace();
+		    LOGGER.error("Sijoittelu epäonnistui syystä {}!\r\n{}",
+		    e.getMessage(), Arrays.toString(e.getStackTrace()));
+		    return "false";
 		}
 
-		// try {
-		// sijoitteluBusinessService.sijoittele(haku);
-		// LOGGER.error("Sijoittelu suoritettu onnistuneesti!");
-		// } catch (Exception e) {
-		// e.printStackTrace();
-		// LOGGER.error("Sijoittelu epäonnistui syystä {}!\r\n{}",
-		// e.getMessage(), Arrays.toString(e.getStackTrace()));
-		// return "false";
-		// }
-		// return "true";
 	}
 
 }
