@@ -203,6 +203,9 @@ public class SijoitteluAlgorithmImpl implements SijoitteluAlgorithm {
 
                 });
 
+            } else if (valintatapajono.getValintatapajono().getKaikkiEhdonTayttavatHyvaksytaan() != null
+                    && valintatapajono.getValintatapajono().getKaikkiEhdonTayttavatHyvaksytaan()) {
+                hyvaksyttavaksi.addAll(valituksiHaluavatHakemukset);
             } else if(tasasijaSaantoKaytetty) {
                 varalle.addAll(valituksiHaluavatHakemukset);
             } else if(tilaa - valituksiHaluavatHakemukset.size() >= 0) {

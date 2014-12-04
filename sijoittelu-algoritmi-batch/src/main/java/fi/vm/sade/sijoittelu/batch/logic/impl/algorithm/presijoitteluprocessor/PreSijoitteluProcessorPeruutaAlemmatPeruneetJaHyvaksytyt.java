@@ -42,17 +42,33 @@ public class PreSijoitteluProcessorPeruutaAlemmatPeruneetJaHyvaksytyt implements
             // Vastaanotanut sitovasti, perutaan kaikki muut
             if(sitovaOpt.isPresent()) {
                 Valintatulos sitova = sitovaOpt.get();
+                HakemusWrapper sitovaHakemus = henkilo.getHakemukset()
+                        .stream()
+                        .filter(h->h.getValintatapajono().getValintatapajono().getOid().equals(sitova.getValintatapajonoOid()))
+                        .findFirst().get();
+
                 henkilo.getHakemukset().forEach(hakemus -> {
                     Hakemus h = hakemus.getHakemus();
                     if(yliajettavat.contains(h.getTila())
                             && !hakemus.getValintatapajono().getValintatapajono().getOid().equals(sitova.getValintatapajonoOid())) {
-                        h.setTilanKuvaukset(TilanKuvaukset.peruuntunutVastaanottanutToisenOpiskelupaikan());
-                        h.setTila(HakemuksenTila.PERUUNTUNUT);
-                        hakemus.setTilaVoidaanVaihtaa(false);
-                        Optional<Valintatulos> nykyinenTulos = henkilo.getValintatulos().stream().filter(v -> v.getValintatapajonoOid().equals(hakemus.getValintatapajono().getValintatapajono().getOid())).findFirst();
-                        if(nykyinenTulos.isPresent()) {
-                            lisaaMuokattavaValintatulos(sijoitteluajoWrapper, nykyinenTulos.get());
+                        if(!hakemus.getHakemus().getPrioriteetti().equals(sitovaHakemus.getHakemus().getPrioriteetti())) {
+                            h.setTilanKuvaukset(TilanKuvaukset.peruuntunutVastaanottanutToisenOpiskelupaikan());
+                            h.setTila(HakemuksenTila.PERUUNTUNUT);
+                            hakemus.setTilaVoidaanVaihtaa(false);
+                            Optional<Valintatulos> nykyinenTulos = henkilo.getValintatulos().stream().filter(v -> v.getValintatapajonoOid().equals(hakemus.getValintatapajono().getValintatapajono().getOid())).findFirst();
+                            if(nykyinenTulos.isPresent()) {
+                                lisaaMuokattavaValintatulos(sijoitteluajoWrapper, nykyinenTulos.get());
+                            }
+                        } else if(sitovaHakemus.getValintatapajono().getValintatapajono().getPrioriteetti() < hakemus.getValintatapajono().getValintatapajono().getPrioriteetti()) {
+                            h.setTilanKuvaukset(TilanKuvaukset.peruuntunutHyvaksyttyToisessaJonossa());
+                            h.setTila(HakemuksenTila.PERUUNTUNUT);
+                            hakemus.setTilaVoidaanVaihtaa(false);
+                            Optional<Valintatulos> nykyinenTulos = henkilo.getValintatulos().stream().filter(v -> v.getValintatapajonoOid().equals(hakemus.getValintatapajono().getValintatapajono().getOid())).findFirst();
+                            if(nykyinenTulos.isPresent()) {
+                                lisaaMuokattavaValintatulos(sijoitteluajoWrapper, nykyinenTulos.get());
+                            }
                         }
+
                     }
                 });
             }
