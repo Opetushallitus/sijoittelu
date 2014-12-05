@@ -81,8 +81,9 @@ public class HakutoiveenValintatapajonoDTO {
     private boolean hyvaksyttyVarasijalta;
 
     private Date valintatuloksenViimeisinMuutos;
+	private Date hakemuksenTilanViimeisinMuutos;
 
-    public IlmoittautumisTila getIlmoittautumisTila() {
+	public IlmoittautumisTila getIlmoittautumisTila() {
 		return ilmoittautumisTila;
 	}
 
@@ -284,4 +285,12 @@ public class HakutoiveenValintatapajonoDTO {
     public void setValintatuloksenViimeisinMuutos(Date valintatuloksenViimeisinMuutos) {
         this.valintatuloksenViimeisinMuutos = valintatuloksenViimeisinMuutos;
     }
+
+	public Date getHakemuksenTilanViimeisinMuutos() {
+		return hakemuksenTilanViimeisinMuutos;
+	}
+
+	public void setHakemuksenTilanViimeisinMuutos(Date hakemuksenTilanViimeisinMuutos) {
+		this.hakemuksenTilanViimeisinMuutos = hakemuksenTilanViimeisinMuutos;
+	}
 }

@@ -52,6 +52,7 @@ public class RaportointiConverterImpl implements RaportointiConverter {
                     hakutoiveenValintatapajonoDTO.setValintatapajonoPrioriteetti(hakemusDTO.getPrioriteetti());
                     // hakutoiveenValintatapajonoDTO.setValintatapajonoPrioriteetti(hakemusDTO.getPrioriteetti());
                     hakutoiveenValintatapajonoDTO.setValintatapajonoOid(valintatapajono.getOid());
+                    hakutoiveenValintatapajonoDTO.setHakemuksenTilanViimeisinMuutos(viimeisinHakemuksenTilanMuutos(hakemusDTO));
                     applyPistetiedot(raportointiHakutoiveDTO, hakemusDTO.getPistetiedot());
                 }
             }
@@ -111,6 +112,13 @@ public class RaportointiConverterImpl implements RaportointiConverter {
             }
         }
         return hakijat;
+    }
+
+    private static Date viimeisinHakemuksenTilanMuutos(HakemusDTO hakemus) {
+        if (hakemus != null && !hakemus.getTilaHistoria().isEmpty()) {
+            return hakemus.getTilaHistoria().get(hakemus.getTilaHistoria().size() - 1).getLuotu();
+        }
+        return null;
     }
 
     private static Date viimeisinValintatuloksenMuutos(Valintatulos valintatulos) {
