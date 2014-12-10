@@ -153,7 +153,7 @@ public class TilaResource {
 			}
 			return Response.status(Response.Status.ACCEPTED).build();
 		} catch (Exception e) {
-			LOGGER.error("Error inserting valintakoekoodi.", e);
+			LOGGER.error("Error inserting valintakoekoodi. {}\r\n{}", e.getMessage(), Arrays.toString(e.getStackTrace()));
 			Map error = new HashMap();
 			error.put("message", e.getMessage());
 			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
@@ -204,7 +204,7 @@ public class TilaResource {
 							});
 			return Response.status(Response.Status.ACCEPTED).build();
 		} catch (Exception e) {
-			LOGGER.error("Error in erillishaunhakijat tuonti! {}", e);
+			LOGGER.error("Error in erillishaunhakijat tuonti! {}\r\n{}", e.getMessage(), Arrays.toString(e.getStackTrace()));
 			Map error = new HashMap();
 			error.put("message", e.getMessage());
 			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
