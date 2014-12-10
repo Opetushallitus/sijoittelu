@@ -98,6 +98,7 @@ public class SijoitteluAlgorithmFactoryImpl implements SijoitteluAlgorithmFactor
                             voidaanVaihtaa = false;
                         } else if (tila == ValintatuloksenTila.PERUUTETTU) {
                             hakemus.setTila(HakemuksenTila.PERUUTETTU);
+                            voidaanVaihtaa = false;
                         } else if (hyvaksyttylista.contains(tila)) {
                             if (hakemus.getEdellinenTila() == HakemuksenTila.VARALLA || hakemus.getEdellinenTila() == HakemuksenTila.VARASIJALTA_HYVAKSYTTY) {
                                 hakemus.setTilanKuvaukset(TilanKuvaukset.varasijaltaHyvaksytty());

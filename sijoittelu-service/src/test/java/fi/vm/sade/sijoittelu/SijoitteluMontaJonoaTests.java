@@ -156,20 +156,106 @@ public class SijoitteluMontaJonoaTests {
 
         System.out.println(PrintHelper.tulostaSijoittelu(s));
 
-//        assertoiAinoastaanValittu(hakukohteet.get(0).getValintatapajonot().get(0), "1.2.246.562.11.00001068863");
-//        assertoiAinoastaanValittu(hakukohteet.get(0).getValintatapajonot().get(1), "1.2.246.562.11.00001090792");
-//
-//        hakukohteet.get(0).getValintatapajonot().get(0).getHakemukset().forEach(hak -> {
-//            if(hak.getHakemusOid().equals("1.2.246.562.11.00001090792")) {
-//                Assert.assertTrue(hak.getTila().equals(HakemuksenTila.VARALLA));
-//            }
-//        });
-//
-//        hakukohteet.get(0).getValintatapajonot().get(1).getHakemukset().forEach(hak -> {
-//            if(hak.getHakemusOid().equals("1.2.246.562.11.00001068863")) {
-//                Assert.assertTrue(hak.getTila().equals(HakemuksenTila.PERUUNTUNUT));
-//            }
-//        });
+        assertoiAinoastaanValittu(hakukohteet.get(0).getValintatapajonot().get(0), "1.2.246.562.11.00001068863", "1.2.246.562.11.00001067411");
+        assertoiAinoastaanValittu(hakukohteet.get(0).getValintatapajonot().get(1), "1.2.246.562.11.00001090792");
+
+    }
+
+    @Test
+    @UsingDataSet(locations = "monta_jonoa.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
+    public void testPerunut() throws IOException {
+
+        HakuDTO haku = valintatietoService.haeValintatiedot("1.2.246.562.29.173465377510");
+
+        List<Hakukohde> hakukohteet = haku.getHakukohteet().parallelStream().map(DomainConverter::convertToHakukohde).collect(Collectors.toList());
+        Valintatulos tulos = new Valintatulos();
+        tulos.setHakemusOid("1.2.246.562.11.00001068863");
+        tulos.setHakijaOid("1.2.246.562.11.00001068863");
+        tulos.setHakukohdeOid("1.2.246.562.20.18895322503");
+        tulos.setHakuOid("1.2.246.562.29.173465377510");
+        tulos.setHakutoive(1);
+        tulos.setHyvaksyttyVarasijalta(false);
+        tulos.setIlmoittautumisTila(IlmoittautumisTila.EI_TEHTY);
+        tulos.setJulkaistavissa(true);
+        tulos.setTila(ValintatuloksenTila.EI_VASTAANOTETTU_MAARA_AIKANA);
+        tulos.setValintatapajonoOid("oid1");
+
+        SijoitteluAlgorithmFactoryImpl h = new SijoitteluAlgorithmFactoryImpl();
+        SijoitteluAlgorithm s = h.constructAlgorithm(hakukohteet, Arrays.asList(tulos));
+        s.start();
+
+        System.out.println(PrintHelper.tulostaSijoittelu(s));
+
+        assertoiAinoastaanValittu(hakukohteet.get(0).getValintatapajonot().get(0), "1.2.246.562.11.00001090792");
+        assertoiAinoastaanValittu(hakukohteet.get(0).getValintatapajonot().get(1), "1.2.246.562.11.00001067411");
+
+        hakukohteet.get(0).getValintatapajonot().get(0).getHakemukset().forEach(hak -> {
+            if(hak.getHakemusOid().equals("1.2.246.562.11.00001068863")) {
+                Assert.assertTrue(hak.getTila().equals(HakemuksenTila.PERUNUT));
+            }
+        });
+
+        hakukohteet.get(0).getValintatapajonot().get(1).getHakemukset().forEach(hak -> {
+            if(hak.getHakemusOid().equals("1.2.246.562.11.00001068863")) {
+                Assert.assertTrue(hak.getTila().equals(HakemuksenTila.PERUNUT));
+            }
+        });
+
+
+
+        Valintatulos tulos2 = new Valintatulos();
+        tulos2.setHakemusOid("1.2.246.562.11.00001068863");
+        tulos2.setHakijaOid("1.2.246.562.11.00001068863");
+        tulos2.setHakukohdeOid("1.2.246.562.20.18895322503");
+        tulos2.setHakuOid("1.2.246.562.29.173465377510");
+        tulos2.setHakutoive(1);
+        tulos2.setHyvaksyttyVarasijalta(false);
+        tulos2.setIlmoittautumisTila(IlmoittautumisTila.EI_TEHTY);
+        tulos2.setJulkaistavissa(true);
+        tulos2.setTila(ValintatuloksenTila.EHDOLLISESTI_VASTAANOTTANUT);
+        tulos2.setValintatapajonoOid("oid2");
+
+        s = h.constructAlgorithm(hakukohteet, Arrays.asList(tulos, tulos2));
+        s.start();
+
+        System.out.println(PrintHelper.tulostaSijoittelu(s));
+
+        assertoiAinoastaanValittu(hakukohteet.get(0).getValintatapajonot().get(0), "1.2.246.562.11.00001090792");
+        assertoiAinoastaanValittu(hakukohteet.get(0).getValintatapajonot().get(1), "1.2.246.562.11.00001068863");
+
+        hakukohteet.get(0).getValintatapajonot().get(0).getHakemukset().forEach(hak -> {
+            if(hak.getHakemusOid().equals("1.2.246.562.11.00001068863")) {
+                Assert.assertTrue(hak.getTila().equals(HakemuksenTila.PERUNUT));
+            }
+        });
+
+        hakukohteet.get(0).getValintatapajonot().get(1).getHakemukset().forEach(hak -> {
+            if(hak.getHakemusOid().equals("1.2.246.562.11.00001068863")) {
+                Assert.assertTrue(hak.getTila().equals(HakemuksenTila.HYVAKSYTTY));
+            }
+        });
+
+        tulos2.setTila(ValintatuloksenTila.KESKEN);
+
+        s = h.constructAlgorithm(hakukohteet, Arrays.asList(tulos, tulos2));
+        s.start();
+
+        System.out.println(PrintHelper.tulostaSijoittelu(s));
+
+        assertoiAinoastaanValittu(hakukohteet.get(0).getValintatapajonot().get(0), "1.2.246.562.11.00001090792");
+        assertoiAinoastaanValittu(hakukohteet.get(0).getValintatapajonot().get(1), "1.2.246.562.11.00001067411");
+
+        hakukohteet.get(0).getValintatapajonot().get(0).getHakemukset().forEach(hak -> {
+            if(hak.getHakemusOid().equals("1.2.246.562.11.00001068863")) {
+                Assert.assertTrue(hak.getTila().equals(HakemuksenTila.PERUNUT));
+            }
+        });
+
+        hakukohteet.get(0).getValintatapajonot().get(1).getHakemukset().forEach(hak -> {
+            if(hak.getHakemusOid().equals("1.2.246.562.11.00001068863")) {
+                Assert.assertTrue(hak.getTila().equals(HakemuksenTila.PERUNUT));
+            }
+        });
 
     }
 
