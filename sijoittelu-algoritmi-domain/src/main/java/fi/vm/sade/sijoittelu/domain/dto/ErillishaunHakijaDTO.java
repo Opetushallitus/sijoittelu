@@ -16,33 +16,33 @@ import fi.vm.sade.sijoittelu.domain.Valintatulos;
 @ApiModel("Erillishaunhakija")
 public class ErillishaunHakijaDTO {
 	@ApiModelProperty(value = "Valintatapajonon tunniste", required = true)
-	public final String valintatapajonoOid;
+	public  String valintatapajonoOid;
 	@ApiModelProperty(value = "Hakemuksen tunniste", required = false)
-	public final String hakemusOid;
+    public  String hakemusOid;
 	@ApiModelProperty(value = "Hakukohteen tunniste", required = false)
-	public final String hakukohdeOid;
+    public  String hakukohdeOid;
 	@ApiModelProperty(value = "Saako hakijan tulokset julkaista", required = false)
-	public final boolean julkaistavissa;
+    public  boolean julkaistavissa;
 	//public boolean hyvaksyttyVarasijalta;
 	@ApiModelProperty(value = "Hakijan tunniste", required = false)
-	public final String hakijaOid;
+    public  String hakijaOid;
 	@ApiModelProperty(value = "Haun tunniste", required = false)
-	public final String hakuOid;
+    public  String hakuOid;
 	@ApiModelProperty(value = "Tarjoajan (organisaation) tunniste", required = false)
-	public final String tarjoajaOid;
+    public  String tarjoajaOid;
 	//public int hakutoive; // aina ensimmainen?
 	@ApiModelProperty(value = "Valintatuloksen tila", required = false)
-	public final ValintatuloksenTila valintatuloksenTila;
+    public  ValintatuloksenTila valintatuloksenTila;
 	@ApiModelProperty(value = "Ilmoittautumisen tila", required = false)
-	public final IlmoittautumisTila ilmoittautumisTila;
+    public  IlmoittautumisTila ilmoittautumisTila;
 	@ApiModelProperty(value = "Hakemuksen tila", required = false)
-	public final HakemuksenTila hakemuksenTila;
+    public  HakemuksenTila hakemuksenTila;
 	@ApiModelProperty(value = "Hakijan etunimi", required = false)
-	public final String etunimi;
+    public  String etunimi;
 	@ApiModelProperty(value = "Hakijan sukunimi", required = false)
-	public final String sukunimi;
+    public  String sukunimi;
 
-	public ErillishaunHakijaDTO(final String valintatapajonoOid, final String hakemusOid, final String hakukohdeOid, final boolean julkaistavissa, final String hakijaOid, final String hakuOid, final String tarjoajaOid, final ValintatuloksenTila valintatuloksenTila, final IlmoittautumisTila ilmoittautumisTila, final HakemuksenTila hakemuksenTila, final String etunimi, final String sukunimi) {
+	public ErillishaunHakijaDTO( String valintatapajonoOid,  String hakemusOid,  String hakukohdeOid,  boolean julkaistavissa,  String hakijaOid,  String hakuOid,  String tarjoajaOid,  ValintatuloksenTila valintatuloksenTila,  IlmoittautumisTila ilmoittautumisTila,  HakemuksenTila hakemuksenTila,  String etunimi,  String sukunimi) {
 		this.valintatapajonoOid = valintatapajonoOid;
 		this.hakemusOid = hakemusOid;
 		this.hakukohdeOid = hakukohdeOid;
@@ -57,7 +57,105 @@ public class ErillishaunHakijaDTO {
 		this.sukunimi = sukunimi;
 	}
 
-	public Valintatulos asValintatulos() {
+    public ErillishaunHakijaDTO() {}
+
+    public String getValintatapajonoOid() {
+        return valintatapajonoOid;
+    }
+
+    public void setValintatapajonoOid(String valintatapajonoOid) {
+        this.valintatapajonoOid = valintatapajonoOid;
+    }
+
+    public String getHakemusOid() {
+        return hakemusOid;
+    }
+
+    public void setHakemusOid(String hakemusOid) {
+        this.hakemusOid = hakemusOid;
+    }
+
+    public String getHakukohdeOid() {
+        return hakukohdeOid;
+    }
+
+    public void setHakukohdeOid(String hakukohdeOid) {
+        this.hakukohdeOid = hakukohdeOid;
+    }
+
+    public boolean isJulkaistavissa() {
+        return julkaistavissa;
+    }
+
+    public void setJulkaistavissa(boolean julkaistavissa) {
+        this.julkaistavissa = julkaistavissa;
+    }
+
+    public String getHakijaOid() {
+        return hakijaOid;
+    }
+
+    public void setHakijaOid(String hakijaOid) {
+        this.hakijaOid = hakijaOid;
+    }
+
+    public String getHakuOid() {
+        return hakuOid;
+    }
+
+    public void setHakuOid(String hakuOid) {
+        this.hakuOid = hakuOid;
+    }
+
+    public String getTarjoajaOid() {
+        return tarjoajaOid;
+    }
+
+    public void setTarjoajaOid(String tarjoajaOid) {
+        this.tarjoajaOid = tarjoajaOid;
+    }
+
+    public ValintatuloksenTila getValintatuloksenTila() {
+        return valintatuloksenTila;
+    }
+
+    public void setValintatuloksenTila(ValintatuloksenTila valintatuloksenTila) {
+        this.valintatuloksenTila = valintatuloksenTila;
+    }
+
+    public IlmoittautumisTila getIlmoittautumisTila() {
+        return ilmoittautumisTila;
+    }
+
+    public void setIlmoittautumisTila(IlmoittautumisTila ilmoittautumisTila) {
+        this.ilmoittautumisTila = ilmoittautumisTila;
+    }
+
+    public HakemuksenTila getHakemuksenTila() {
+        return hakemuksenTila;
+    }
+
+    public void setHakemuksenTila(HakemuksenTila hakemuksenTila) {
+        this.hakemuksenTila = hakemuksenTila;
+    }
+
+    public String getEtunimi() {
+        return etunimi;
+    }
+
+    public void setEtunimi(String etunimi) {
+        this.etunimi = etunimi;
+    }
+
+    public String getSukunimi() {
+        return sukunimi;
+    }
+
+    public void setSukunimi(String sukunimi) {
+        this.sukunimi = sukunimi;
+    }
+
+    public Valintatulos asValintatulos() {
 		Valintatulos v = new Valintatulos();
 		v.setHakemusOid(hakemusOid);
 		v.setHakijaOid(hakijaOid);
