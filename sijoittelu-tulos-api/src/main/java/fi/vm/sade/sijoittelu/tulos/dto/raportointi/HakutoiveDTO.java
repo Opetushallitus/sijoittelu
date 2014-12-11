@@ -31,10 +31,24 @@ public class HakutoiveDTO implements Comparable<HakutoiveDTO> {
 
     @Override
     public int compareTo(HakutoiveDTO o) {
-        if (hakutoive == null) {
-            return 0;
+        int diff = nullAwareCompare(hakutoive, o.hakutoive);
+        if (diff != 0) {
+            return diff;
         }
-        return hakutoive.compareTo(o.hakutoive);
+        return nullAwareCompare(hakukohdeOid, o.hakukohdeOid);
+    }
+
+    private <T extends Comparable<T>> int nullAwareCompare(T o1, T o2) {
+        if(o1 == null){
+            if(o2 == null) {
+                return 0;
+            }
+            return 1;
+        }
+        if(o2 == null) {
+            return -1;
+        }
+        return o1.compareTo(o2);
     }
 
     public String getHakukohdeOid() {
