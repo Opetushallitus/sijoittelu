@@ -56,6 +56,14 @@ public class HakutoiveDTOTest {
         HakutoiveDTO o2 = createHakutoive(1, "oid2");
         assertFirstIsBefore(o1, o2);
     }
+
+    @Test
+    public void testWithNoPriorityButDifferentOid() {
+        HakutoiveDTO o1 = createHakutoive(null, "oid1");
+        HakutoiveDTO o2 = createHakutoive(null, null);
+        assertFirstIsBefore(o1, o2);
+    }
+
     @Test
     public void testWithSamePriorityAndOtherWithOtherNOOid() {
         HakutoiveDTO o1 = createHakutoive(1, "oid1");
@@ -78,6 +86,7 @@ public class HakutoiveDTOTest {
         HakutoiveDTO o4 = createHakutoive(null, "oid4");
         HakutoiveDTO o5 = createHakutoive(1, "oid3");
         HakutoiveDTO o6 = createHakutoive(2, null);
-        assertEquals(new TreeSet(Arrays.asList(o2, o5, o6, o1, o4)), new TreeSet(Arrays.asList(o1, o2, o3, o4, o5, o6)));
+        HakutoiveDTO o7 = createHakutoive(null, null);
+        assertEquals(new TreeSet(Arrays.asList(o2, o5, o6, o1, o4, o7)), new TreeSet(Arrays.asList(o1, o2, o3, o4, o5, o6, o7)));
     }
 }
