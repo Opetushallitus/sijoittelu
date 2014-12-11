@@ -106,7 +106,7 @@ public class SijoitteluAlgorithmFactoryImplTest {
         Assert.assertEquals(sijoitteluAlgorithm.sijoitteluAjo.getHakukohteet().size(), 1);
         Assert.assertEquals(sijoitteluAlgorithm.sijoitteluAjo.getHakukohteet().get(0).getValintatapajonot().
                 get(0).getHakemukset().get(0).getHakemus().getTila(), HakemuksenTila.PERUUTETTU);
-        Assert.assertTrue(sijoitteluAlgorithm.sijoitteluAjo.getHakukohteet().get(0).getValintatapajonot().
+        Assert.assertTrue(!sijoitteluAlgorithm.sijoitteluAjo.getHakukohteet().get(0).getValintatapajonot().
                 get(0).getHakemukset().get(0).isTilaVoidaanVaihtaa());
 
     }

@@ -485,6 +485,7 @@ public class SijoitteluAlgorithmImpl implements SijoitteluAlgorithm {
                     if(hakemusWrapper.isTilaVoidaanVaihtaa()) {
                         if (!hylatytTilat.contains(hakemusWrapper.getHakemus().getTila())) {
                             hakemusWrapper.getHakemus().setTila(HakemuksenTila.VARALLA);
+                            hakemusWrapper.getHakemus().getTilanKuvaukset().clear();
                             uudelleenSijoiteltavatHakukohteet.add(hakemusWrapper);
                         }
                     }
@@ -492,6 +493,7 @@ public class SijoitteluAlgorithmImpl implements SijoitteluAlgorithm {
             } else {
                 if (!hylatytTilat.contains(varalleAsetettavaHakemusWrapper.getHakemus().getTila())) {
                     varalleAsetettavaHakemusWrapper.getHakemus().setTila(HakemuksenTila.VARALLA);
+                    varalleAsetettavaHakemusWrapper.getHakemus().getTilanKuvaukset().clear();
                 }
             }
         }
