@@ -177,14 +177,14 @@ public class TilaResource {
 					"Yritettiin tuoda tyhjaa joukkoa erillishaun hakijoiden tuontiin!");
 		}
 		try {
-			LOGGER.error("Tuodaan erillishaun tietoja jonolle {}", erillishaunHakijaDtos.iterator().next().getValintatapajonoOid());
+			LOGGER.error("Tuodaan erillishaun tietoja jonolle {}", erillishaunHakijaDtos.iterator().next().valintatapajonoOid);
 			erillishaunHakijaDtos.stream().forEach(
 					e -> muutaTilaa(
 							valintatapajononNimi,
-							e.getTarjoajaOid(), e.getHakuOid(),
-							e.getHakukohdeOid(), e.getHakemusOid(),
-							e.getHakemuksenTila(), Optional.empty(), Optional.of(e.getValintatapajonoOid()),
-                            Optional.ofNullable(e.getEtunimi()), Optional.ofNullable(e.getSukunimi())));
+							e.tarjoajaOid, e.hakuOid,
+							e.hakukohdeOid, e.hakemusOid,
+							e.hakemuksenTila, Optional.empty(), Optional.of(e.valintatapajonoOid),
+                            Optional.ofNullable(e.etunimi), Optional.ofNullable(e.sukunimi)));
 			erillishaunHakijaDtos
 					.stream()
 					.map(e -> e.asValintatulos())
