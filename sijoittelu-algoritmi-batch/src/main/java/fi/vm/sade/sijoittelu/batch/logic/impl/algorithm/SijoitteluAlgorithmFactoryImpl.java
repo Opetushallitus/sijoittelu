@@ -89,7 +89,12 @@ public class SijoitteluAlgorithmFactoryImpl implements SijoitteluAlgorithmFactor
                             hakemus.setTila(HakemuksenTila.PERUNUT);
                             voidaanVaihtaa = false;
                         } else if (tila == ValintatuloksenTila.EHDOLLISESTI_VASTAANOTTANUT) {
-                            hakemus.setTila(HakemuksenTila.HYVAKSYTTY);
+                            if (hakemus.getEdellinenTila() == HakemuksenTila.VARALLA || hakemus.getEdellinenTila() == HakemuksenTila.VARASIJALTA_HYVAKSYTTY) {
+                                hakemus.setTilanKuvaukset(TilanKuvaukset.varasijaltaHyvaksytty());
+                                hakemus.setTila(HakemuksenTila.VARASIJALTA_HYVAKSYTTY);
+                            } else {
+                                hakemus.setTila(HakemuksenTila.HYVAKSYTTY);
+                            }
                             hakemus.setIlmoittautumisTila(valintatulos.getIlmoittautumisTila());
                             voidaanVaihtaa = false;
                         } else if (tila == ValintatuloksenTila.EI_VASTAANOTETTU_MAARA_AIKANA) {
