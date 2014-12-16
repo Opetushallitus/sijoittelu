@@ -88,6 +88,18 @@
 		<!-- internal -->
 		<dependency>
 			<groupId>fi.vm.sade.valintaperusteet</groupId>
+			<artifactId>http</artifactId>
+			<version>1.0-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>fi.vm.sade.valintaperusteet</groupId>
+			<artifactId>integration-testing</artifactId>
+			<version>1.0-SNAPSHOT</version>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>fi.vm.sade.valintaperusteet</groupId>
 			<artifactId>valintalaskenta-tulos-service</artifactId>
 			<version>${project.version}</version>
 		</dependency>
@@ -368,22 +380,23 @@
 			<groupId>org.javassist</groupId>
 			<artifactId>javassist</artifactId>
 		</dependency>
+
 		<dependency>
 			<groupId>org.apache.tomcat.embed</groupId>
 			<artifactId>tomcat-embed-core</artifactId>
-			<version>7.0.42</version>
+			<version>${tomcat.version}</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.tomcat.embed</groupId>
 			<artifactId>tomcat-embed-logging-juli</artifactId>
-			<version>7.0.39</version>
+			<version>${tomcat.version}</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.tomcat.embed</groupId>
 			<artifactId>tomcat-embed-jasper</artifactId>
-			<version>7.0.42</version>
+			<version>${tomcat.version}</version>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>

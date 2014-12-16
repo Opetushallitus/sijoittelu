@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xmlns:jaxrs-client="http://cxf.apache.org/jaxrs-client" xmlns:jaxrs="http://cxf.apache.org/jaxrs"
+       xmlns:http="http://cxf.apache.org/transports/http/configuration"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+         http://cxf.apache.org/jaxrs http://cxf.apache.org/schemas/jaxrs.xsd
+         http://cxf.apache.org/jaxrs-client http://cxf.apache.org/schemas/jaxrs-client.xsd
+         http://cxf.apache.org/transports/http/configuration http://cxf.apache.org/schemas/configuration/http-conf.xsd
+         http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd
+         http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
+
+    <context:annotation-config/>
+
+    <beans xmlns="http://www.springframework.org/schema/beans"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ctx="http://www.springframework.org/schema/context"
+           xmlns:jaxws="http://cxf.apache.org/jaxws"
+           xsi:schemaLocation="http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd
+
+         http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+         http://cxf.apache.org/jaxws http://cxf.apache.org/schemas/jaxws.xsd">
+
+      <ctx:annotation-config />
+
+      <import resource="classpath:META-INF/cxf/cxf.xml"/>
+      <import resource="classpath:META-INF/cxf/cxf-extension-jaxws.xml" />
+      <import resource="classpath:META-INF/cxf/cxf-servlet.xml" />
+
+    </beans>
+
+    <beans
+      xmlns:mockito="http://www.mockito.org/spring/mockito"
+      xsi:schemaLocation="http://www.mockito.org/spring/mockito http://www.mockito.org/spring/mockito.xsd"
+      profile="it">
+
+      <context:property-placeholder
+        location="classpath:sijoittelu-service.properties, classpath:it-profile.properties"
+        ignore-resource-not-found="true"/>
+
+      <mockito:mock id="valintaperusteetResource" class="fi.vm.sade.service.valintaperusteet.resource.ValintaperusteetResource" />
+      <mockito:mock id="ohjausparametriResource" class="fi.vm.sade.sijoittelu.laskenta.external.resource.OhjausparametriResource" />
+      <mockito:mock id="hakuV1Resource" class="fi.vm.sade.sijoittelu.laskenta.external.resource.HakuV1Resource" />
+      <mockito:mock id="hakukohdeV1Resource" class="fi.vm.sade.sijoittelu.laskenta.external.resource.HakukohdeV1Resource" />
+
+      <context:component-scan base-package="fi.vm.sade.sijoittelu.tulos"/>
+      <context:component-scan base-package="fi.vm.sade.sijoittelu.laskenta"/>
+      <context:component-scan base-package="fi.vm.sade.sijoittelu.batch"/>
+      <context:component-scan base-package="fi.vm.sade.security.mock"/>
+
+      <bean id="mongodFactory" class="de.flapdoodle.embed.mongo.tests.MongodForTestsFactory" destroy-method="shutdown"/>
+      <bean id="mongo" class="com.mongodb.MongoClient" factory-bean="mongodFactory" factory-method="newMongo"/>
+
+      <bean id="morphia" class="org.mongodb.morphia.Morphia"/>
+      <bean id="datastore" factory-bean="morphia" factory-method="createDatastore">
+        <constructor-arg type="com.mongodb.MongoClient" ref="mongo"/>
+        <constructor-arg type="String" value="sijoitteludb"/>
+      </bean>
+
+
+      <bean id="morphia2" class="org.mongodb.morphia.Morphia" />
+      <bean id="datastore2" factory-bean="morphia2" factory-method="createDatastore">
+        <constructor-arg type="com.mongodb.MongoClient" ref="mongo" />
+        <constructor-arg type="java.lang.String" value="test" />
+      </bean>
+
+      <context:component-scan base-package="fi.vm.sade.valintalaskenta.tulos.dao"/>
+      <context:component-scan base-package="fi.vm.sade.valintalaskenta.tulos.service.impl"/>
+      <context:component-scan base-package="fi.vm.sade.valintalaskenta.tulos.resource.impl"/>
+      <context:component-scan base-package="fi.vm.sade.valintalaskenta.tulos.service.impl.converters"/>
+
+      <bean id="modelMapper" class="fi.vm.sade.valintalaskenta.tulos.mapping.ValintalaskentaModelMapper"/>
+
+      <bean id="sijoitteluModelMapper" class="fi.vm.sade.sijoittelu.laskenta.mapping.SijoitteluModelMapper"/>
+
+    </beans>
+
+</beans>
