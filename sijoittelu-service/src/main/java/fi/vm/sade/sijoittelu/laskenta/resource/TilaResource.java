@@ -18,6 +18,7 @@ import javax.ws.rs.core.Response;
 
 import fi.vm.sade.sijoittelu.domain.*;
 import fi.vm.sade.sijoittelu.domain.dto.ErillishaunHakijaDTO;
+import fi.vm.sade.sijoittelu.laskenta.service.it.TarjontaIntegrationService;
 import fi.vm.sade.sijoittelu.tulos.dao.HakukohdeDao;
 import fi.vm.sade.sijoittelu.tulos.dao.SijoitteluDao;
 import fi.vm.sade.sijoittelu.tulos.service.RaportointiService;
@@ -63,6 +64,9 @@ public class TilaResource {
 
 	@Autowired
 	private SijoitteluDao sijoitteluDao;
+
+    @Autowired
+    TarjontaIntegrationService tarjontaIntegrationService;
 
 	@GET
 	@JsonView(JsonViews.MonenHakemuksenTila.class)
@@ -153,7 +157,7 @@ public class TilaResource {
 			}
 			return Response.status(Response.Status.ACCEPTED).build();
 		} catch (Exception e) {
-			LOGGER.error("Error inserting valintakoekoodi. {}\r\n{}", e.getMessage(), Arrays.toString(e.getStackTrace()));
+			LOGGER.error("Valintatulosten tallenus epäonnistui. {}\r\n{}", e.getMessage(), Arrays.toString(e.getStackTrace()));
 			Map error = new HashMap();
 			error.put("message", e.getMessage());
 			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
@@ -274,9 +278,24 @@ public class TilaResource {
         Hakukohde kohde = hakukohdeDao.getHakukohdeForSijoitteluajo(
                 ajo.getSijoitteluajoId(), hakukohdeOid);
         if (kohde != null) {
-            if (kohde.getTarjoajaOid() == null) {
-                kohde.setTarjoajaOid(tarjoajaOid);
-                hakukohdeDao.persistHakukohde(kohde);
+            if (kohde.getTarjoajaOid() == null || StringUtils.isBlank(kohde.getTarjoajaOid())) {
+                if(tarjoajaOid == null || StringUtils.isBlank(tarjoajaOid)) {
+                    try {
+                        Optional<String> tOid = tarjontaIntegrationService.getTarjoajaOid(kohde.getOid());
+                        if(tOid.isPresent()) {
+                            kohde.setTarjoajaOid(tOid.get());
+                            hakukohdeDao.persistHakukohde(kohde);
+                        } else {
+                            throw new RuntimeException("Hakukohteelle " + hakukohdeOid + " ei löytynyt tarjoajaOidia sijoitteluajosta");
+                        }
+                    } catch(Exception e) {
+                        e.printStackTrace();
+                        throw new RuntimeException("Hakukohteelle " + hakukohdeOid + " ei löytynyt tarjoajaOidia sijoitteluajosta");
+                    }
+                } else {
+                    kohde.setTarjoajaOid(tarjoajaOid);
+                    hakukohdeDao.persistHakukohde(kohde);
+                }
             }
 
             Valintatapajono jono;
