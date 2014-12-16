@@ -16,15 +16,18 @@ import fi.vm.sade.sijoittelu.domain.comparator.HakemusComparator;
 import fi.vm.sade.sijoittelu.laskenta.actors.messages.PoistaHakukohteet;
 import fi.vm.sade.sijoittelu.laskenta.actors.messages.PoistaVanhatAjotSijoittelulta;
 import fi.vm.sade.sijoittelu.laskenta.external.resource.HakuV1Resource;
+import fi.vm.sade.sijoittelu.laskenta.external.resource.HakukohdeV1Resource;
 import fi.vm.sade.sijoittelu.laskenta.external.resource.OhjausparametriResource;
 import fi.vm.sade.sijoittelu.laskenta.external.resource.dto.ParametriDTO;
 import fi.vm.sade.sijoittelu.laskenta.service.business.ActorService;
+import fi.vm.sade.sijoittelu.laskenta.service.it.TarjontaIntegrationService;
 import fi.vm.sade.sijoittelu.tulos.dao.*;
 import fi.vm.sade.sijoittelu.laskenta.mapping.SijoitteluModelMapper;
 import fi.vm.sade.sijoittelu.laskenta.service.exception.*;
 import fi.vm.sade.sijoittelu.tulos.dto.HakukohdeDTO;
 import fi.vm.sade.sijoittelu.tulos.service.impl.converters.SijoitteluTulosConverter;
 import fi.vm.sade.tarjonta.service.resources.v1.dto.HakuV1RDTO;
+import fi.vm.sade.tarjonta.service.resources.v1.dto.HakukohdeV1RDTO;
 import fi.vm.sade.tarjonta.service.resources.v1.dto.ResultV1RDTO;
 import fi.vm.sade.valintalaskenta.domain.dto.valintatieto.HakuDTO;
 import org.apache.commons.lang.StringUtils;
@@ -94,10 +97,7 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
     ActorService actorService;
 
     @Autowired
-    OhjausparametriResource ohjausparametriResource;
-
-    @Autowired
-    HakuV1Resource hakuV1Resource;
+    TarjontaIntegrationService tarjontaIntegrationService;
 
 	/**
 	 * ei versioi sijoittelua, tekeee uuden sijoittelun olemassaoleville
@@ -161,10 +161,13 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
 
         // Asetetaan haun tiedot tarjonnasta ja ohjausparametreista
         try {
-            ResultV1RDTO<HakuV1RDTO> tarjonnanHaku = hakuV1Resource.findByOid(hakuOid);
-            String kohdejoukko = tarjonnanHaku.getResult().getKohdejoukkoUri();
-            if(kohdejoukko.split("#")[0].equals(KK_KOHDEJOUKKO)) {
-                sijoitteluAlgorithm.getSijoitteluAjo().setKKHaku(true);
+            Optional<String> kohdejoukko = tarjontaIntegrationService.getHaunKohdejoukko(hakuOid);
+            if(kohdejoukko.isPresent()) {
+                if(kohdejoukko.get().equals(KK_KOHDEJOUKKO)) {
+                    sijoitteluAlgorithm.getSijoitteluAjo().setKKHaku(true);
+                }
+            } else {
+                throw new RuntimeException("Sijoittelua haulle " + hakuOid + " ei voida suorittaa, koska tarjonnasta ei saatu haun tietoja");
             }
         } catch(Exception e) { // Heitetään poikkeus koska ei voida tietää onko kk-haku
             LOG.error("############## Haun hakeminen tarjonnasta epäonnistui ##############");
@@ -173,7 +176,7 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
         }
 
         try {
-            ParametriDTO parametri = new GsonBuilder().create().fromJson(ohjausparametriResource.haePaivamaara(hakuOid), ParametriDTO.class);
+            ParametriDTO parametri = tarjontaIntegrationService.getHaunParametrit(hakuOid);
 
             if(parametri == null || parametri.getPH_HKP() == null || parametri.getPH_HKP().getDate() == null) {
                 // Ei tiedetä koska hakukierros päättyy, heitetään poikkeus
@@ -620,7 +623,19 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
 		String tarjoajaOid = hakukohde.getTarjoajaOid();
 
         if(tarjoajaOid == null || StringUtils.isBlank(tarjoajaOid)) {
-            throw new RuntimeException("Hakukohteelle " + hakukohdeOid + " ei löytynyt tarjoajaOidia sijoitteluajosta: " + ajoId);
+            try {
+                Optional<String> tOid = tarjontaIntegrationService.getTarjoajaOid(hakukohde.getOid());
+                if(tOid.isPresent()) {
+                    hakukohde.setTarjoajaOid(tOid.get());
+                    hakukohdeDao.persistHakukohde(hakukohde);
+                } else {
+                    throw new RuntimeException("Hakukohteelle " + hakukohdeOid + " ei löytynyt tarjoajaOidia sijoitteluajosta: " + ajoId);
+                }
+            } catch(Exception e) {
+                e.printStackTrace();
+                throw new RuntimeException("Hakukohteelle " + hakukohdeOid + " ei löytynyt tarjoajaOidia sijoitteluajosta: " + ajoId);
+            }
+
         }
 
 		authorizer.checkOrganisationAccess(tarjoajaOid,
