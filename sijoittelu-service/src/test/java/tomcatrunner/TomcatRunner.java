@@ -19,28 +19,24 @@ public class TomcatRunner {
     public TomcatRunner(final int port) {
         this.port = port;
         this.tomcat = new Tomcat();
-        String webappDirLocation = ProjectRootFinder.findProjectRoot() + "/sijoittelu/sijoittelu-service/src/main/webapp/";
-        Context webContext = null;
+        tomcat.setPort(port);
+    }
+
+    public Server start() {
         try {
+            String webappDirLocation = ProjectRootFinder.findProjectRoot() + "/sijoittelu/sijoittelu-service/src/main/webapp/";
+            Context webContext = null;
             webContext = tomcat.addWebapp("/sijoittelu-service", webappDirLocation);
 
             if (SpringProfile.activeProfile().equals("it")) {
                 // use it-profile-web.xml instead of web.xml
                 webContext.getServletContext().setAttribute(Globals.ALT_DD_ATTR, ProjectRootFinder.findProjectRoot() + "/sijoittelu/sijoittelu-service/src/test/resources/it-profile-web.xml");
             }
-
-            tomcat.setPort(port);
-
-        } catch (ServletException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public Server start() {
-        try {
             tomcat.start();
             return tomcat.getServer();
         } catch (LifecycleException e) {
+            throw new RuntimeException(e);
+        } catch (ServletException e) {
             throw new RuntimeException(e);
         }
     }

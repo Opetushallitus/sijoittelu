@@ -5,7 +5,8 @@ public class SharedTomcat {
 
     public final static int port = tomcat.port;
 
-    public void start() {
+    public static void start() {
+        SpringProfile.setProfile("it");
         tomcat.start();
     }
 }
