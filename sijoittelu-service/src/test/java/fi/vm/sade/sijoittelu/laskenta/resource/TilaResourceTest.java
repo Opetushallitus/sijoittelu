@@ -26,7 +26,10 @@ import fi.vm.sade.sijoittelu.SijoitteluServiceTomcat;
 public class TilaResourceTest {
     String hakuOid = "1.2.246.562.5.2013080813081926341928";
     String hakukohdeOid = "1.2.246.562.5.72607738902";
-    final String hakemusOid = "1.2.246.562.11.00000441369";
+    String hakemusOid = "1.2.246.562.11.00000441369";
+    String tarjoajaOid = "1.2.246.562.10.591352080610";
+    String valintatapajonoOid = "14090336922663576781797489829886";
+    String hakijaOid = "1.2.246.562.24.14229104472";
 
 
     @Before
@@ -48,12 +51,12 @@ public class TilaResourceTest {
         hakija.setHakemuksenTila(HakemuksenTila.HYLATTY);
         hakija.setHakuOid(hakuOid);
         hakija.setHakemusOid(hakemusOid);
-        hakija.setHakijaOid("1.2.246.562.24.14229104472");
+        hakija.setHakijaOid(hakijaOid);
         hakija.setHakukohdeOid(hakukohdeOid);
         hakija.setIlmoittautumisTila(IlmoittautumisTila.EI_ILMOITTAUTUNUT);
         hakija.setJulkaistavissa(true);
-        hakija.setTarjoajaOid("1.2.246.562.10.591352080610");
-        hakija.setValintatapajonoOid("14090336922663576781797489829886");
+        hakija.setTarjoajaOid(tarjoajaOid);
+        hakija.setValintatapajonoOid(valintatapajonoOid);
         hakija.setValintatuloksenTila(ValintatuloksenTila.EHDOLLISESTI_VASTAANOTTANUT);
         List<ErillishaunHakijaDTO> hakijat = Arrays.asList(hakija);
         final String url = "http://localhost:" + SharedTomcat.port + "/sijoittelu-service/resources/tila/erillishaku/"+hakuOid+"/hakukohde/"+hakukohdeOid;
