@@ -5,25 +5,23 @@ import static org.junit.Assert.assertEquals;
 import java.util.Arrays;
 import java.util.List;
 
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import org.apache.cxf.jaxrs.client.JAXRSClientFactoryBean;
+import org.apache.cxf.jaxrs.client.WebClient;
 import org.junit.Before;
 import org.junit.Test;
-
-import com.google.common.collect.Lists;
 
 import fi.vm.sade.sijoittelu.domain.HakemuksenTila;
 import fi.vm.sade.sijoittelu.domain.IlmoittautumisTila;
 import fi.vm.sade.sijoittelu.domain.ValintatuloksenTila;
 import fi.vm.sade.sijoittelu.domain.Valintatulos;
 import fi.vm.sade.sijoittelu.domain.dto.ErillishaunHakijaDTO;
-import tomcatrunner.SharedTomcat;
+import fi.vm.sade.valinta.http.HttpResource;
+import fi.vm.sade.valinta.integrationtest.SharedTomcat;
+import fi.vm.sade.sijoittelu.SijoitteluServiceTomcat;
 
 public class TilaResourceTest {
     String hakuOid = "1.2.246.562.5.2013080813081926341928";
@@ -33,7 +31,7 @@ public class TilaResourceTest {
 
     @Before
     public void startServer() {
-        SharedTomcat.start();
+        SijoitteluServiceTomcat.startShared();
     }
 
     @Test
@@ -70,19 +68,12 @@ public class TilaResourceTest {
         assertEquals(ValintatuloksenTila.EHDOLLISESTI_VASTAANOTTANUT, haeTulokset().get(0).getTila());
     }
 
-    org.apache.cxf.jaxrs.client.WebClient createClient(String url) {
-        JAXRSClientFactoryBean bean = new JAXRSClientFactoryBean();
-        bean.setAddress(url);
-        bean.setThreadSafe(true);
-        List<Object> providers = Lists.newArrayList();
-        providers.add(new com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider());
-        bean.setProviders(providers);
-        return bean.createWebClient();
-    }
-
     private List<Valintatulos> haeTulokset() {
         final String url = "http://localhost:" + SharedTomcat.port + "/sijoittelu-service/resources/tila/" + hakemusOid;
         return createClient(url).accept(MediaType.APPLICATION_JSON).get(new GenericType<List<Valintatulos>>() { });
     }
 
+    private WebClient createClient(String url) {
+        return new HttpResource(url, 1000).webClient;
+    }
 }
