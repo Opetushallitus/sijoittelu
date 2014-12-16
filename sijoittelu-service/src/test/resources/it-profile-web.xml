@@ -4,7 +4,7 @@
          id="WebApp_ID" version="2.5">
   <context-param>
     <param-name>contextConfigLocation</param-name>
-    <param-value>classpath:spring/context/application-context.xml</param-value>
+    <param-value>classpath:spring/context/test-application-context.xml</param-value>
   </context-param>
 
   <listener>
