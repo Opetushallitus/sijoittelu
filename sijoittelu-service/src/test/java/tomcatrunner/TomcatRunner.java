@@ -10,6 +10,7 @@ import org.apache.catalina.startup.Tomcat;
 
 public class TomcatRunner {
     public final int port;
+    private boolean running;
     private final Tomcat tomcat;
 
     public final static void main(String... args) throws ServletException, LifecycleException {
@@ -23,21 +24,24 @@ public class TomcatRunner {
     }
 
     public Server start() {
-        try {
-            String webappDirLocation = ProjectRootFinder.findProjectRoot() + "/sijoittelu/sijoittelu-service/src/main/webapp/";
-            Context webContext = null;
-            webContext = tomcat.addWebapp("/sijoittelu-service", webappDirLocation);
+        if (!running) {
+            try {
+                String webappDirLocation = ProjectRootFinder.findProjectRoot() + "/sijoittelu/sijoittelu-service/src/main/webapp/";
+                Context webContext = null;
+                webContext = tomcat.addWebapp("/sijoittelu-service", webappDirLocation);
 
-            if (SpringProfile.activeProfile().equals("it")) {
-                // use it-profile-web.xml instead of web.xml
-                webContext.getServletContext().setAttribute(Globals.ALT_DD_ATTR, ProjectRootFinder.findProjectRoot() + "/sijoittelu/sijoittelu-service/src/test/resources/it-profile-web.xml");
+                if (SpringProfile.activeProfile().equals("it")) {
+                    // use it-profile-web.xml instead of web.xml
+                    webContext.getServletContext().setAttribute(Globals.ALT_DD_ATTR, ProjectRootFinder.findProjectRoot() + "/sijoittelu/sijoittelu-service/src/test/resources/it-profile-web.xml");
+                }
+                tomcat.start();
+                running = true;
+            } catch (LifecycleException e) {
+                throw new RuntimeException(e);
+            } catch (ServletException e) {
+                throw new RuntimeException(e);
             }
-            tomcat.start();
-            return tomcat.getServer();
-        } catch (LifecycleException e) {
-            throw new RuntimeException(e);
-        } catch (ServletException e) {
-            throw new RuntimeException(e);
         }
+        return tomcat.getServer();
     }
 }
