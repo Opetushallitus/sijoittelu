@@ -651,6 +651,52 @@ public class SijoitteluMontaJonoaTests {
 
     }
 
+    @Test
+    @UsingDataSet(locations = "peruuntunut_taytto.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
+    public void testPeruunutunutTaytto() throws IOException {
+
+        HakuDTO haku = valintatietoService.haeValintatiedot("haku1");
+
+        List<Hakukohde> hakukohteet = haku.getHakukohteet().parallelStream().map(DomainConverter::convertToHakukohde).collect(Collectors.toList());
+
+        SijoitteluAlgorithmFactoryImpl h = new SijoitteluAlgorithmFactoryImpl();
+        SijoitteluAlgorithm s = h.constructAlgorithm(hakukohteet, Collections.newArrayList());
+        s.start();
+
+        Valintatulos tulos1 = createTulos("oid1", "hakukohde1", "jono1");
+        Valintatulos tulos2 = createTulos("oid2", "hakukohde1", "jono1");
+
+        Valintatulos tulos3 = createTulos("oid3", "hakukohde1", "jono1");
+        Valintatulos tulos4 = createTulos("oid4", "hakukohde1", "jono1");
+
+        Valintatulos tulos6 = createTulos("oid6", "hakukohde1", "jono1");
+
+        Valintatulos tulos7 = createTulos("oid7", "hakukohde1", "jono1");
+        Valintatulos tulos8 = createTulos("oid8", "hakukohde1", "jono1");
+
+        Valintatulos tulos9 = createTulos("oid9", "hakukohde1", "jono1");
+        Valintatulos tulos10 = createTulos("oid10", "hakukohde1", "jono1");
+
+        s = h.constructAlgorithm(hakukohteet, Arrays.asList(tulos1, tulos2,tulos3, tulos4, tulos6,tulos7, tulos8,tulos9, tulos10));
+        s.start();
+
+        s = h.constructAlgorithm(hakukohteet, Arrays.asList(tulos1, tulos2,tulos3, tulos4, tulos6,tulos7, tulos8,tulos9, tulos10));
+        s.getSijoitteluAjo().getHakukohteet().get(0).getValintatapajonot().get(0).getHakemukset().stream().filter(hak->hak.getHakemus().getHakemusOid().equals("oid1") || hak.getHakemus().getHakemusOid().equals("oid2")).forEach(hak -> {
+            hak.setTilaVoidaanVaihtaa(false);
+            hak.getHakemus().setTila(HakemuksenTila.PERUUNTUNUT);
+        });
+        s.start();
+
+        int koko = hakukohteet.get(0).getValintatapajonot().get(0)
+                .getHakemukset().stream()
+                .filter(hak->hak.getTila() == HakemuksenTila.HYVAKSYTTY || hak.getTila() == HakemuksenTila.VARASIJALTA_HYVAKSYTTY)
+                .collect(Collectors.toList()).size();
+
+        Assert.assertEquals(koko, 4);
+
+
+    }
+
     private Valintatulos createTulos(String hakemus, String hakukohde, String valintatapajono) {
         Valintatulos tulos = new Valintatulos();
         tulos.setHakemusOid(hakemus);
