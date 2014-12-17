@@ -176,6 +176,19 @@ public class SijoitteluAlgorithmImpl implements SijoitteluAlgorithm {
 
         LocalDateTime varasijaTayttoPaattyy = varasijaTayttoPaattyy(valintatapajono);
 
+        // Muutetaan ehdolliset vastaanotot sitoviksi jos jonon varasijatäyttö on päättynyt
+        if(sijoitteluAjo.getToday().isAfter(varasijaTayttoPaattyy) && sijoitteluAjo.isKKHaku()) {
+            valintatapajono.getHakemukset()
+                    .stream()
+                    .flatMap(h->h.getHenkilo().getValintatulos().stream())
+                    .filter(v->v.getValintatapajonoOid().equals(valintatapajono.getValintatapajono().getOid())
+                            && v.getTila() == ValintatuloksenTila.EHDOLLISESTI_VASTAANOTTANUT)
+                    .forEach(v -> {
+                        v.setTila(ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI);
+                        sijoitteluAjo.getMuuttuneetValintatulokset().add(v);
+                    });
+        }
+
         boolean taytetaankoPoissaOlevat = taytetaankoPoissaOlevat(valintatapajono);
 
         ListIterator<HakemusWrapper> it = valintatapajono.getHakemukset().listIterator();
@@ -535,8 +548,12 @@ public class SijoitteluAlgorithmImpl implements SijoitteluAlgorithm {
                         // Perustapaus
                         if(h.isTilaVoidaanVaihtaa()) {
                             if (!hylatytTilat.contains(h.getHakemus().getTila())) {
+                                HakemuksenTila vanhaTila = h.getHakemus().getTila();
                                 h.getHakemus().setTilanKuvaukset(TilanKuvaukset.peruuntunutHyvaksyttyToisessaJonossa());
                                 h.getHakemus().setTila(HakemuksenTila.PERUUNTUNUT);
+                                if(hyvaksytytTilat.contains(vanhaTila)) {
+                                    uudelleenSijoiteltavatHakukohteet.add(h);
+                                }
                             }
                         } else {
                             // Hakemukselle merkattu, että tilaa ei voi vaihtaa, mutta vaihdetaan kuitenkin jos hyväksytty
@@ -698,6 +715,12 @@ public class SijoitteluAlgorithmImpl implements SijoitteluAlgorithm {
 
     private boolean hakijaHaluaa(HakemusWrapper hakemusWrapper) {
         HenkiloWrapper henkilo = hakemusWrapper.getHenkilo();
+
+        // Tila on PERUUNUTUNUT eikä sitä voi vaihtaa
+        if(!hakemusWrapper.isTilaVoidaanVaihtaa() && hakemusWrapper.getHakemus().getTila() == HakemuksenTila.PERUUNTUNUT) {
+            return false;
+        }
+
         for (HakemusWrapper h : henkilo.getHakemukset()) {
             if (hyvaksytytTilat.contains(h.getHakemus().getTila())
                     && (h.getHakemus().getPrioriteetti() < hakemusWrapper.getHakemus().getPrioriteetti() || (h.getHakemus().getPrioriteetti().equals(hakemusWrapper.getHakemus().getPrioriteetti()) && h.getValintatapajono().getValintatapajono().getPrioriteetti() < hakemusWrapper.getValintatapajono().getValintatapajono().getPrioriteetti()))
