@@ -23,8 +23,11 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -420,6 +423,38 @@ public class SijoitteluMontaJonoaTests {
                 Assert.assertEquals(hak.getTilanKuvaukset().get("FI"), TilanKuvaukset.peruuntunutEiMahduKasiteltavienVarasijojenMaaraan().get("FI"));
             }
         });
+
+    }
+
+    @Test
+    @UsingDataSet(locations = "ehdolliset_sitoviksi.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
+    public void testEhdollisetSitoviksi() throws IOException {
+
+        HakuDTO haku = valintatietoService.haeValintatiedot("haku1");
+
+        List<Hakukohde> hakukohteet = haku.getHakukohteet().parallelStream().map(DomainConverter::convertToHakukohde).collect(Collectors.toList());
+
+        LocalDateTime time = LocalDateTime.ofInstant(new Date().toInstant(), ZoneId.systemDefault());
+
+        hakukohteet.get(0).getValintatapajonot().get(0).setVarasijojaTaytetaanAsti(new Date(time.minusHours(10).toInstant(ZoneOffset.UTC).toEpochMilli()));
+
+        Valintatulos tulos1 = createTulos("hakemus2", "hakukohde1", "oid1");
+        tulos1.setTila(ValintatuloksenTila.EHDOLLISESTI_VASTAANOTTANUT);
+
+        Valintatulos tulos2 = createTulos("hakemus3", "hakukohde1", "oid2");
+        tulos1.setTila(ValintatuloksenTila.EHDOLLISESTI_VASTAANOTTANUT);
+
+        SijoitteluAlgorithmFactoryImpl h = new SijoitteluAlgorithmFactoryImpl();
+        SijoitteluAlgorithm s = h.constructAlgorithm(hakukohteet, Arrays.asList(tulos1, tulos2));
+        s.getSijoitteluAjo().setKKHaku(true);
+        s.start();
+
+        System.out.println(PrintHelper.tulostaSijoittelu(s));
+
+        List<Valintatulos> muuttuneetValintatulokset = s.getSijoitteluAjo().getMuuttuneetValintatulokset();
+
+        Assert.assertEquals(1, muuttuneetValintatulokset.size());
+        Assert.assertEquals(ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI, muuttuneetValintatulokset.get(0).getTila());
 
     }
 

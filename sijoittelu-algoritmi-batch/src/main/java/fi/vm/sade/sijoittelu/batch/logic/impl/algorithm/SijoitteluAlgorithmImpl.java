@@ -177,7 +177,7 @@ public class SijoitteluAlgorithmImpl implements SijoitteluAlgorithm {
         LocalDateTime varasijaTayttoPaattyy = varasijaTayttoPaattyy(valintatapajono);
 
         // Muutetaan ehdolliset vastaanotot sitoviksi jos jonon varasijatäyttö on päättynyt
-        if(sijoitteluAjo.getToday().isAfter(varasijaTayttoPaattyy)) {
+        if(sijoitteluAjo.getToday().isAfter(varasijaTayttoPaattyy) && sijoitteluAjo.isKKHaku()) {
             valintatapajono.getHakemukset()
                     .stream()
                     .flatMap(h->h.getHenkilo().getValintatulos().stream())
