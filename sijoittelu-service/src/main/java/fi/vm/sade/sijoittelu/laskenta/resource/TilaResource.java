@@ -206,7 +206,7 @@ public class TilaResource {
 										v.getJulkaistavissa(),
 										v.getHyvaksyttyVarasijalta());
 							});
-			LOGGER.info("Erillishaun tietojon tuonti onnistui jonolle {}", erillishaunHakijaDtos.iterator().next().valintatapajonoOid);
+			LOGGER.info("Erillishaun tietojen tuonti onnistui jonolle {}", erillishaunHakijaDtos.iterator().next().valintatapajonoOid);
 			return Response.status(Response.Status.ACCEPTED).build();
 		} catch (Exception e) {
 			LOGGER.error("Error in erillishaunhakijat tuonti! {}\r\n{}", e.getMessage(), Arrays.toString(e.getStackTrace()));
