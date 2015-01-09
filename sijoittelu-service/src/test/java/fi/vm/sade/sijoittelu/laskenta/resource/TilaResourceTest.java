@@ -12,6 +12,7 @@ import javax.ws.rs.core.Response;
 
 import org.apache.cxf.jaxrs.client.WebClient;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import fi.vm.sade.sijoittelu.domain.HakemuksenTila;
@@ -22,7 +23,7 @@ import fi.vm.sade.sijoittelu.domain.dto.ErillishaunHakijaDTO;
 import fi.vm.sade.valinta.http.HttpResource;
 import fi.vm.sade.valinta.integrationtest.tomcat.SharedTomcat;
 import fi.vm.sade.valinta.integrationtest.tomcat.SijoitteluServiceTomcat;
-
+@Ignore
 public class TilaResourceTest {
     String hakuOid = "1.2.246.562.5.2013080813081926341928";
     String hakukohdeOid = "1.2.246.562.5.72607738902";
