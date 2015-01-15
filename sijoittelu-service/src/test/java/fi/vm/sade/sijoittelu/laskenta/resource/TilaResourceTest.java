@@ -22,7 +22,7 @@ import fi.vm.sade.sijoittelu.domain.Valintatulos;
 import fi.vm.sade.sijoittelu.domain.dto.ErillishaunHakijaDTO;
 import fi.vm.sade.valinta.http.HttpResource;
 import fi.vm.sade.valinta.integrationtest.tomcat.SharedTomcat;
-import fi.vm.sade.valinta.integrationtest.tomcat.SijoitteluServiceTomcat;
+import fi.vm.sade.sijoittelu.SijoitteluServiceTomcat;
 @Ignore
 public class TilaResourceTest {
     String hakuOid = "1.2.246.562.5.2013080813081926341928";
