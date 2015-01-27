@@ -21,7 +21,7 @@ import fi.vm.sade.sijoittelu.domain.ValintatuloksenTila;
 import fi.vm.sade.sijoittelu.domain.Valintatulos;
 import fi.vm.sade.sijoittelu.domain.dto.ErillishaunHakijaDTO;
 import fi.vm.sade.valinta.http.HttpResource;
-import fi.vm.sade.valinta.integrationtest.tomcat.SharedTomcat;
+import fi.vm.sade.integrationtest.tomcat.SharedTomcat;
 import fi.vm.sade.sijoittelu.SijoitteluServiceTomcat;
 @Ignore
 public class TilaResourceTest {

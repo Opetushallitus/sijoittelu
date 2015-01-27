@@ -1,7 +1,5 @@
 package fi.vm.sade.sijoittelu.tulos.dto;
 
-import org.codehaus.jackson.map.annotate.JsonView;
-
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -15,64 +13,42 @@ import java.util.Map;
  */
 public class HakemusDTO implements Serializable {
 
-    @JsonView({ JsonViews.Hakemus.class, JsonViews.Hakukohde.class })
     private String hakijaOid;
 
-    @JsonView({ JsonViews.Hakemus.class, JsonViews.Hakukohde.class })
     private String hakemusOid;
 
-    @JsonView({ JsonViews.Hakemus.class, JsonViews.Hakukohde.class })
     private BigDecimal pisteet;
 
-    @JsonView({ JsonViews.Hakemus.class, JsonViews.Hakukohde.class })
     private BigDecimal paasyJaSoveltuvuusKokeenTulos;
 
-    @JsonView({ JsonViews.Hakemus.class, JsonViews.Hakukohde.class })
     private String etunimi;
 
-    @JsonView({ JsonViews.Hakemus.class, JsonViews.Hakukohde.class })
     private String sukunimi;
 
-    @JsonView({ JsonViews.Hakemus.class, JsonViews.Hakukohde.class })
     private Integer prioriteetti;
 
-    @JsonView({ JsonViews.Hakemus.class, JsonViews.Hakukohde.class })
     private Integer jonosija;
 
-    @JsonView({ JsonViews.Hakemus.class, JsonViews.Hakukohde.class })
     private Integer tasasijaJonosija;
 
-    @JsonView({ JsonViews.Hakemus.class, JsonViews.Hakukohde.class })
     private HakemuksenTila tila;
 
-    @JsonView({ JsonViews.Hakemus.class, JsonViews.Hakukohde.class })
     private Map<String,String> tilanKuvaukset = new HashMap<String,String>();
 
-    @JsonView({ JsonViews.Hakemus.class, JsonViews.Hakukohde.class })
     private List<TilaHistoriaDTO> tilaHistoria = new ArrayList<TilaHistoriaDTO>();
 
-   // @JsonView({ JsonViews.Hakemus.class, JsonViews.Hakukohde.class })
-   // private String valintatuloksenTila;
-
-    @JsonView({ JsonViews.Hakemus.class, JsonViews.Hakukohde.class })
     private boolean hyvaksyttyHarkinnanvaraisesti = false;
 
-    @JsonView({ JsonViews.Hakemus.class, JsonViews.Hakukohde.class })
     private Integer varasijanNumero;
 
-    @JsonView(JsonViews.Hakemus.class)
     private Long sijoitteluajoId;
 
-    @JsonView(JsonViews.Hakemus.class)
     private String hakukohdeOid;
 
-    @JsonView(JsonViews.Hakemus.class)
     private String tarjoajaOid;
 
-    @JsonView(JsonViews.Hakemus.class)
     private String valintatapajonoOid;
 
-    @JsonView(JsonViews.Hakemus.class)
     private String hakuOid;
 
     public int getTodellinenJonosija() {
