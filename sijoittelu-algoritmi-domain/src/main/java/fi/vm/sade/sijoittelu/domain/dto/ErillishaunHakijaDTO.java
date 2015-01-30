@@ -8,6 +8,8 @@ import fi.vm.sade.sijoittelu.domain.IlmoittautumisTila;
 import fi.vm.sade.sijoittelu.domain.ValintatuloksenTila;
 import fi.vm.sade.sijoittelu.domain.Valintatulos;
 
+import java.util.Optional;
+
 /**
  * 
  * @author Jussi Jartamo
@@ -42,7 +44,9 @@ public class ErillishaunHakijaDTO {
 	@ApiModelProperty(value = "Hakijan sukunimi", required = false)
     public  String sukunimi;
 
-	public ErillishaunHakijaDTO( String valintatapajonoOid,  String hakemusOid,  String hakukohdeOid,  boolean julkaistavissa,  String hakijaOid,  String hakuOid,  String tarjoajaOid,  ValintatuloksenTila valintatuloksenTila,  IlmoittautumisTila ilmoittautumisTila,  HakemuksenTila hakemuksenTila,  String etunimi,  String sukunimi) {
+    public boolean poistetaankoTulokset = false;
+
+	public ErillishaunHakijaDTO( String valintatapajonoOid,  String hakemusOid,  String hakukohdeOid,  boolean julkaistavissa,  String hakijaOid,  String hakuOid,  String tarjoajaOid,  ValintatuloksenTila valintatuloksenTila,  IlmoittautumisTila ilmoittautumisTila,  HakemuksenTila hakemuksenTila,  String etunimi,  String sukunimi, Optional<Boolean> poistetaankoTulokset) {
 		this.valintatapajonoOid = valintatapajonoOid;
 		this.hakemusOid = hakemusOid;
 		this.hakukohdeOid = hakukohdeOid;
@@ -55,6 +59,7 @@ public class ErillishaunHakijaDTO {
 		this.hakemuksenTila = hakemuksenTila;
 		this.etunimi = etunimi;
 		this.sukunimi = sukunimi;
+        this.poistetaankoTulokset = poistetaankoTulokset.orElse(false);
 	}
 
     public ErillishaunHakijaDTO() {}
@@ -153,6 +158,14 @@ public class ErillishaunHakijaDTO {
 
     public void setSukunimi(String sukunimi) {
         this.sukunimi = sukunimi;
+    }
+
+    public boolean getPoistetaankoTulokset() {
+        return this.poistetaankoTulokset;
+    }
+
+    public void setPoistetaankoTulokset(boolean poistetaankoTulokset) {
+        this.poistetaankoTulokset = poistetaankoTulokset;
     }
 
     public Valintatulos asValintatulos() {

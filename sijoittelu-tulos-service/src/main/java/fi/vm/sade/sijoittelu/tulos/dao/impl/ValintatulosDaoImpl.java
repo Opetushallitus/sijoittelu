@@ -107,6 +107,11 @@ public class ValintatulosDaoImpl implements ValintatulosDao {
     }
 
     @Override
+    public void remove(Valintatulos valintatulos) {
+        morphiaDS.delete(valintatulos);
+    }
+
+    @Override
     public void createOrUpdateValintatulos(Valintatulos tulos) {
         morphiaDS.save(tulos);
     }

@@ -21,6 +21,7 @@ import fi.vm.sade.sijoittelu.domain.dto.ErillishaunHakijaDTO;
 import fi.vm.sade.sijoittelu.laskenta.service.it.TarjontaIntegrationService;
 import fi.vm.sade.sijoittelu.tulos.dao.HakukohdeDao;
 import fi.vm.sade.sijoittelu.tulos.dao.SijoitteluDao;
+import fi.vm.sade.sijoittelu.tulos.dao.ValintatulosDao;
 import fi.vm.sade.sijoittelu.tulos.service.RaportointiService;
 
 import org.apache.commons.lang.StringUtils;
@@ -64,6 +65,9 @@ public class TilaResource {
 
 	@Autowired
 	private SijoitteluDao sijoitteluDao;
+
+    @Autowired
+    private ValintatulosDao valintatulosDao;
 
     @Autowired
     TarjontaIntegrationService tarjontaIntegrationService;
@@ -182,14 +186,28 @@ public class TilaResource {
 		}
 		try {
 			LOGGER.info("Tuodaan erillishaun tietoja jonolle {}", erillishaunHakijaDtos.iterator().next().valintatapajonoOid);
-			erillishaunHakijaDtos.stream().forEach(
+
+            Map<Boolean, List<ErillishaunHakijaDTO>> ryhmitelty = erillishaunHakijaDtos.stream().collect(Collectors.partitioningBy(ErillishaunHakijaDTO::getPoistetaankoTulokset));
+
+            ryhmitelty.getOrDefault(true, new ArrayList<>()).stream().forEach(
+                    e -> {
+                        if(e.getValintatapajonoOid() == null) {
+                            throw new RuntimeException("Hakemuksen " + e.getHakemusOid() + " tuloksia ei voi poistaa, koska valintatapajonoOid on null");
+                        } else {
+                            poistaTulokset(e.getHakuOid(), e.getHakukohdeOid(), e.getHakemusOid(), e.getValintatapajonoOid());
+                        }
+
+                    }
+            );
+
+            ryhmitelty.getOrDefault(false, new ArrayList<>()).stream().forEach(
 					e -> muutaTilaa(
 							valintatapajononNimi,
 							e.tarjoajaOid, e.hakuOid,
 							e.hakukohdeOid, e.hakemusOid,
 							e.hakemuksenTila, Optional.empty(), Optional.of(e.valintatapajonoOid),
                             Optional.ofNullable(e.etunimi), Optional.ofNullable(e.sukunimi)));
-			erillishaunHakijaDtos
+            ryhmitelty.getOrDefault(false, new ArrayList<>())
 					.stream()
 					.map(e -> e.asValintatulos())
 					.forEach(
@@ -216,6 +234,44 @@ public class TilaResource {
 					.entity(error).build();
 		}
 	}
+
+    private void poistaTulokset(String hakuOid, String hakukohdeOid, String hakemusOid, String valintatapajonoOid) {
+        Optional<SijoitteluAjo> sijoitteluAjoOpt = raportointiService
+                .latestSijoitteluAjoForHaku(hakuOid);
+        if(!sijoitteluAjoOpt.isPresent()) {
+            throw new RuntimeException("Haulle " + hakuOid + " ei löytynyt sijoitteluajoja");
+        } else {
+            Optional<Hakukohde> hakukohde = Optional.ofNullable(hakukohdeDao.getHakukohdeForSijoitteluajo(sijoitteluAjoOpt.get().getSijoitteluajoId(), hakukohdeOid));
+            if(!hakukohde.isPresent()) {
+                throw new RuntimeException("hakukohteelle " + hakukohdeOid + " ei löytynyt tuloksia");
+            } else {
+                Optional<Hakemus> hakemus = hakukohde.get().getValintatapajonot()
+                        .stream()
+                        .filter(j -> j.getOid().equals(valintatapajonoOid))
+                        .flatMap(j -> j.getHakemukset().stream())
+                        .filter(h -> h.getHakemusOid().equals(hakemusOid))
+                        .findFirst();
+
+                if(!hakemus.isPresent()) {
+                    throw new RuntimeException("hakukohteelle " + hakukohdeOid + " ei löytynyt tuloksia valintatapajonosta " + valintatapajonoOid + " hakemukselle " + hakemusOid);
+                } else {
+                    Valintatapajono valintatapajono = hakukohde.get().getValintatapajonot()
+                            .stream()
+                            .filter(j -> j.getOid().equals(valintatapajonoOid))
+                            .findFirst()
+                            .get();
+                    valintatapajono.getHakemukset().remove(hakemus.get());
+                    hakukohdeDao.persistHakukohde(hakukohde.get());
+
+                    // Tarkistetaan vielä löytyykö valintatuloksia ja jos löytyy niin poistetaan ne
+                    Valintatulos valintatulos = valintatulosDao.loadValintatulos(hakukohdeOid, valintatapajonoOid, hakemusOid);
+                    if(valintatulos != null) {
+                        valintatulosDao.remove(valintatulos);
+                    }
+                }
+            }
+        }
+    }
 
 	private void muutaTilaa(
 			String valintatapajononNimi,
