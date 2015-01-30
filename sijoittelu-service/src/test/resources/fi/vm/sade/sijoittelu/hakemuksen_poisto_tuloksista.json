@@ -1,0 +1,82 @@
+{
+    "Sijoittelu": [
+        {
+            "hakuOid": "haku1",
+            "sijoitteluId": 1407160499958,
+            "sijoittele": true,
+            "sijoitteluajot": [
+                {
+                    "sijoitteluajoId": 1411476567068,
+                    "hakuOid": "haku1",
+                    "startMils": 1411476567066,
+                    "endMils": 1411476567071,
+                    "hakukohteet": [
+                        {
+                            "oid": "hakukohde1"
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "Hakukohde": [
+        {
+            "oid": "hakukohde1",
+            "sijoitteluajoId": 1407160499958,
+            "tarjoajaOid": "tarjoaja1",
+            "valintatapajonot": [
+                {
+                    "oid": "jono1",
+                    "prioriteetti": 0,
+                    "tasasijasaanto": "ARVONTA",
+                    "aloituspaikat": 18,
+                    "eiVarasijatayttoa": false,
+                    "hakemukset": [
+                        {
+                            "etunimi": "Etu",
+                            "hakemusOid": "hakemus1",
+                            "hakijaOid": "hakija1",
+                            "hyvaksyttyHarkinnanvaraisesti": false,
+                            "jonosija": 1,
+                            "pisteet": "36.0",
+                            "pistetiedot": [
+                                {
+                                    "laskennallinenArvo": "false",
+                                    "osallistuminen": "MERKITSEMATTA",
+                                    "tunniste": "kielikoe_fi"
+                                }
+                            ],
+                            "prioriteetti": 3,
+                            "sukunimi": "Suku",
+                            "tasasijaJonosija": 1,
+                            "tila": "HYVAKSYTTY"
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "Valintatulos": [
+        {
+            "valintatapajonoOid": "jono1",
+            "hakemusOid": "hakemus1",
+            "hakukohdeOid": "hakukohde1",
+            "hakijaOid": "hakija1",
+            "hakuOid": "haku1",
+            "hakutoive": 3,
+            "tila": "KESKEN",
+            "ilmoittautumisTila": "EI_TEHTY",
+            "julkaistavissa": true,
+            "logEntries": [
+                {
+                    "luotu": {
+                        "$date": "2014-08-26T16:05:23.943Z"
+                    },
+                    "muokkaaja": "muokkaaja1",
+                    "muutos": "KESKEN",
+                    "selite": "Massamuokkaus"
+                }
+            ]
+        }
+    ]
+}

@@ -10,6 +10,7 @@ import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import fi.vm.sade.sijoittelu.tulos.dto.HakukohdeDTO;
 import org.apache.cxf.jaxrs.client.WebClient;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -23,7 +24,7 @@ import fi.vm.sade.sijoittelu.domain.dto.ErillishaunHakijaDTO;
 import fi.vm.sade.valinta.http.HttpResource;
 import fi.vm.sade.integrationtest.tomcat.SharedTomcat;
 import fi.vm.sade.sijoittelu.SijoitteluServiceTomcat;
-@Ignore
+
 public class TilaResourceTest {
     String hakuOid = "1.2.246.562.5.2013080813081926341928";
     String hakukohdeOid = "1.2.246.562.5.72607738902";
@@ -40,7 +41,7 @@ public class TilaResourceTest {
 
     @Test
     public void smokeTest() {
-        final List<Valintatulos> tulokset = haeTulokset();
+        final List<Valintatulos> tulokset = haeTulokset(hakemusOid);
         assertEquals(1, tulokset.size());
     }
 
@@ -69,12 +70,62 @@ public class TilaResourceTest {
         assertEquals(202, response.getStatus());
 
         // Tarkistetaan, että tila meni kantaan
-        assertEquals(ValintatuloksenTila.EHDOLLISESTI_VASTAANOTTANUT, haeTulokset().get(0).getTila());
+        assertEquals(ValintatuloksenTila.EHDOLLISESTI_VASTAANOTTANUT, haeTulokset(hakemusOid).get(0).getTila());
     }
 
-    private List<Valintatulos> haeTulokset() {
+    @Test
+    public void tulostenPoisto() {
+        final ErillishaunHakijaDTO hakija = new ErillishaunHakijaDTO();
+        hakija.setEtunimi("etunimi");
+        hakija.setSukunimi("sukunimi");
+        hakija.setHakemuksenTila(HakemuksenTila.HYLATTY);
+        hakija.setHakuOid("haku1");
+        hakija.setHakemusOid("hakemus1");
+        hakija.setHakijaOid("hakija1");
+        hakija.setHakukohdeOid("hakukohde1");
+        hakija.setIlmoittautumisTila(IlmoittautumisTila.EI_ILMOITTAUTUNUT);
+        hakija.setJulkaistavissa(true);
+        hakija.setTarjoajaOid("tarjoaja1");
+        hakija.setValintatapajonoOid("jono1");
+        hakija.setValintatuloksenTila(ValintatuloksenTila.EHDOLLISESTI_VASTAANOTTANUT);
+        List<ErillishaunHakijaDTO> hakijat = Arrays.asList(hakija);
+        final String url = "http://localhost:" + SharedTomcat.port + "/sijoittelu-service/resources/tila/erillishaku/"+hakuOid+"/hakukohde/"+hakukohdeOid;
+        final Response response = createClient(url)
+                .query("valintatapajononNimi", "varsinainen jono")
+                .type(MediaType.APPLICATION_JSON_TYPE)
+                .accept(MediaType.APPLICATION_JSON_TYPE)
+                .post(Entity.entity(hakijat, MediaType.APPLICATION_JSON));
+
+        assertEquals(202, response.getStatus());
+
+        assertEquals(1, haeTulokset("hakemus1").size());
+        assertEquals("hakemus1", haeHakukohde("haku1", "hakukohde1").getValintatapajonot().stream().filter(j -> j.getOid().equals("jono1")).findFirst().get().getHakemukset().get(0).getHakemusOid());
+
+        hakija.setPoistetaankoTulokset(true);
+        hakijat = Arrays.asList(hakija);
+
+        final Response response2 = createClient(url)
+                .query("valintatapajononNimi", "varsinainen jono")
+                .type(MediaType.APPLICATION_JSON_TYPE)
+                .accept(MediaType.APPLICATION_JSON_TYPE)
+                .post(Entity.entity(hakijat, MediaType.APPLICATION_JSON));
+
+        assertEquals(202, response2.getStatus());
+
+
+        // Tarkistetaan, että poistui kannasta
+        assertEquals(0, haeTulokset("hakemus1").size());
+        assertEquals(0, haeHakukohde("haku1", "hakukohde1").getValintatapajonot().stream().filter(j -> j.getOid().equals("jono1")).findFirst().get().getHakemukset().size());
+    }
+
+    private List<Valintatulos> haeTulokset(String hakemusOid) {
         final String url = "http://localhost:" + SharedTomcat.port + "/sijoittelu-service/resources/tila/" + hakemusOid;
         return createClient(url).accept(MediaType.APPLICATION_JSON).get(new GenericType<List<Valintatulos>>() { });
+    }
+
+    private HakukohdeDTO haeHakukohde(String hakuOid, String hakukohdeOid) {
+        final String url = "http://localhost:" + SharedTomcat.port + "/sijoittelu-service/resources/sijoittelu/" + hakuOid + "/sijoitteluajo/latest/hakukohdedto/"+hakukohdeOid;
+        return createClient(url).accept(MediaType.APPLICATION_JSON).get(new GenericType<HakukohdeDTO>() { });
     }
 
     private WebClient createClient(String url) {
