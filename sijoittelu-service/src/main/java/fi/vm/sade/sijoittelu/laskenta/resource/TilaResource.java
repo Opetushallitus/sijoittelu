@@ -205,7 +205,7 @@ public class TilaResource {
 							valintatapajononNimi,
 							e.tarjoajaOid, e.hakuOid,
 							e.hakukohdeOid, e.hakemusOid,
-							e.hakemuksenTila, Optional.empty(), Optional.of(e.valintatapajonoOid),
+							e.hakemuksenTila, Optional.empty(), Optional.ofNullable(e.valintatapajonoOid),
                             Optional.ofNullable(e.etunimi), Optional.ofNullable(e.sukunimi)));
             ryhmitelty.getOrDefault(false, new ArrayList<>())
 					.stream()
