@@ -45,7 +45,7 @@
                        inheritHeaders="true">
     <jaxrs-client:providers>
       <bean class="org.codehaus.jackson.jaxrs.JacksonJsonProvider" />
-      <bean class="fi.vm.sade.sijoittelu.laskenta.external.resource.ObjectMapperProvider" />
+      <bean class="fi.vm.sade.sijoittelu.tulos.resource.ObjectMapperProvider" />
     </jaxrs-client:providers>
   </jaxrs-client:client>
 
@@ -55,7 +55,7 @@
                        inheritHeaders="true">
     <jaxrs-client:providers>
       <bean class="org.codehaus.jackson.jaxrs.JacksonJsonProvider" />
-      <bean class="fi.vm.sade.sijoittelu.laskenta.external.resource.ObjectMapperProvider" />
+      <bean class="fi.vm.sade.sijoittelu.tulos.resource.ObjectMapperProvider" />
     </jaxrs-client:providers>
   </jaxrs-client:client>
   <jaxrs-client:client id="TarjontaHakuResourceRestClient"
@@ -64,7 +64,7 @@
                        inheritHeaders="true">
     <jaxrs-client:providers>
       <bean class="com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider"/>
-      <bean class="fi.vm.sade.sijoittelu.laskenta.external.resource.ObjectMapperProvider" />
+      <bean class="fi.vm.sade.sijoittelu.tulos.resource.ObjectMapperProvider" />
     </jaxrs-client:providers>
   </jaxrs-client:client>
   <jaxrs-client:client id="TarjontaHakukohdeResourceRestClient"
@@ -73,7 +73,7 @@
                        inheritHeaders="true">
     <jaxrs-client:providers>
       <bean class="com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider"/>
-      <bean class="fi.vm.sade.sijoittelu.laskenta.external.resource.ObjectMapperProvider" />
+      <bean class="fi.vm.sade.sijoittelu.tulos.resource.ObjectMapperProvider" />
     </jaxrs-client:providers>
   </jaxrs-client:client>
 

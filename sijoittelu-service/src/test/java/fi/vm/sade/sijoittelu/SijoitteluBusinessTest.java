@@ -10,6 +10,7 @@ import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoitteluAlgorithmFacto
 import fi.vm.sade.sijoittelu.domain.*;
 import fi.vm.sade.sijoittelu.laskenta.external.resource.HakuV1Resource;
 import fi.vm.sade.sijoittelu.laskenta.external.resource.OhjausparametriResource;
+import fi.vm.sade.sijoittelu.laskenta.external.resource.dto.ResultDTO;
 import fi.vm.sade.sijoittelu.laskenta.service.business.SijoitteluBusinessService;
 import fi.vm.sade.sijoittelu.tulos.dao.HakukohdeDao;
 import fi.vm.sade.sijoittelu.tulos.dao.SijoitteluDao;
@@ -114,7 +115,7 @@ public class SijoitteluBusinessTest {
         fi.vm.sade.sijoittelu.laskenta.external.resource.dto.HakuDTO hakuRDTO = new GsonBuilder().create().fromJson(hakuJson,  new TypeToken<HakuV1RDTO>() {
         }.getType());
 
-        ResultV1RDTO<fi.vm.sade.sijoittelu.laskenta.external.resource.dto.HakuDTO> dto = new ResultV1RDTO<>();
+        ResultDTO<fi.vm.sade.sijoittelu.laskenta.external.resource.dto.HakuDTO> dto = new ResultDTO<>();
         dto.setResult(hakuRDTO);
 
         when(hakuV1Resource.findByOid(anyString())).thenReturn(dto);

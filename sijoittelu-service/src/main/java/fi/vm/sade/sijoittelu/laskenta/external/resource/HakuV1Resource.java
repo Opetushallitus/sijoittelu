@@ -1,7 +1,7 @@
 package fi.vm.sade.sijoittelu.laskenta.external.resource;
 
 import fi.vm.sade.sijoittelu.laskenta.external.resource.dto.HakuDTO;
-import fi.vm.sade.tarjonta.service.resources.v1.dto.ResultV1RDTO;
+import fi.vm.sade.sijoittelu.laskenta.external.resource.dto.ResultDTO;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -22,6 +22,6 @@ public interface HakuV1Resource {
 	@Produces(MediaType.APPLICATION_JSON + ";charset=UTF-8")
 	// @ApiOperation(value = "Palauttaa haun annetulla oid:lla", notes =
 	// "Palauttaa haun annetulla oid:lla", response = HakuV1RDTO.class)
-	public ResultV1RDTO<HakuDTO> findByOid(@PathParam("oid") String oid);
+	public ResultDTO<HakuDTO> findByOid(@PathParam("oid") String oid);
 
 }
