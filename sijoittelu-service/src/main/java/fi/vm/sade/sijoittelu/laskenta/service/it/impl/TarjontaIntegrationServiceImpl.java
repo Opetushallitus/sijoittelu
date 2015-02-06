@@ -4,6 +4,8 @@ import com.google.gson.GsonBuilder;
 import fi.vm.sade.sijoittelu.laskenta.external.resource.HakuV1Resource;
 import fi.vm.sade.sijoittelu.laskenta.external.resource.HakukohdeV1Resource;
 import fi.vm.sade.sijoittelu.laskenta.external.resource.OhjausparametriResource;
+import fi.vm.sade.sijoittelu.laskenta.external.resource.dto.HakuDTO;
+import fi.vm.sade.sijoittelu.laskenta.external.resource.dto.HakukohdeDTO;
 import fi.vm.sade.sijoittelu.laskenta.external.resource.dto.ParametriDTO;
 import fi.vm.sade.sijoittelu.laskenta.service.it.TarjontaIntegrationService;
 import fi.vm.sade.tarjonta.service.resources.v1.dto.HakuV1RDTO;
@@ -33,7 +35,7 @@ public class TarjontaIntegrationServiceImpl implements TarjontaIntegrationServic
     @Override
     public Optional<String> getTarjoajaOid(String hakukohdeOid) {
         try {
-            ResultV1RDTO<HakukohdeV1RDTO> tarjonnanHakukohde = hakukohdeV1Resource.findByOid(hakukohdeOid);
+            ResultV1RDTO<HakukohdeDTO> tarjonnanHakukohde = hakukohdeV1Resource.findByOid(hakukohdeOid);
             return tarjonnanHakukohde.getResult().getTarjoajaOids().stream().findFirst();
         } catch(Exception e) {
             e.printStackTrace();
@@ -45,7 +47,7 @@ public class TarjontaIntegrationServiceImpl implements TarjontaIntegrationServic
     @Override
     public Optional<String> getHaunKohdejoukko(String hakuOid) {
         try {
-            ResultV1RDTO<HakuV1RDTO> tarjonnanHaku = hakuV1Resource.findByOid(hakuOid);
+            ResultV1RDTO<HakuDTO> tarjonnanHaku = hakuV1Resource.findByOid(hakuOid);
             return Optional.ofNullable(tarjonnanHaku.getResult().getKohdejoukkoUri().split("#")[0]);
         } catch (Exception e) {
             e.printStackTrace();

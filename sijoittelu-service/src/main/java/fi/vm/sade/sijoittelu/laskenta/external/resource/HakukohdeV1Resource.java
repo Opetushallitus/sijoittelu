@@ -1,6 +1,6 @@
 package fi.vm.sade.sijoittelu.laskenta.external.resource;
 
-import fi.vm.sade.tarjonta.service.resources.v1.dto.HakukohdeV1RDTO;
+import fi.vm.sade.sijoittelu.laskenta.external.resource.dto.HakukohdeDTO;
 import fi.vm.sade.tarjonta.service.resources.v1.dto.ResultV1RDTO;
 
 import javax.ws.rs.GET;
@@ -20,6 +20,6 @@ public interface HakukohdeV1Resource {
 	@GET
 	@Path("/{oid}")
 	@Produces(MediaType.APPLICATION_JSON + ";charset=UTF-8")
-	public ResultV1RDTO<HakukohdeV1RDTO> findByOid(@PathParam("oid") String oid);
+	public ResultV1RDTO<HakukohdeDTO> findByOid(@PathParam("oid") String oid);
 
 }
