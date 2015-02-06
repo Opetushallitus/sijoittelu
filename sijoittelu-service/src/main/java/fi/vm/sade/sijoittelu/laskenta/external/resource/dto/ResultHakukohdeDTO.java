@@ -3,15 +3,15 @@ package fi.vm.sade.sijoittelu.laskenta.external.resource.dto;
 /**
  * Created by kjsaila on 06/02/15.
  */
-public class ResultDTO<T> {
+public class ResultHakukohdeDTO {
 
-    private T result;
+    private HakukohdeDTO result;
 
-    public T getResult() {
+    public HakukohdeDTO getResult() {
         return result;
     }
 
-    public void setResult(T result) {
+    public void setResult(HakukohdeDTO result) {
         this.result = result;
     }
 }

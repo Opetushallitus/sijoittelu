@@ -5,23 +5,19 @@ import com.google.gson.reflect.TypeToken;
 import com.lordofthejars.nosqlunit.annotation.UsingDataSet;
 import com.lordofthejars.nosqlunit.core.LoadStrategyEnum;
 import com.lordofthejars.nosqlunit.mongodb.MongoDbRule;
-import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoitteluAlgorithm;
-import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoitteluAlgorithmFactory;
 import fi.vm.sade.sijoittelu.domain.*;
 import fi.vm.sade.sijoittelu.laskenta.external.resource.HakuV1Resource;
 import fi.vm.sade.sijoittelu.laskenta.external.resource.OhjausparametriResource;
-import fi.vm.sade.sijoittelu.laskenta.external.resource.dto.ResultDTO;
+import fi.vm.sade.sijoittelu.laskenta.external.resource.dto.ResultHakuDTO;
 import fi.vm.sade.sijoittelu.laskenta.service.business.SijoitteluBusinessService;
 import fi.vm.sade.sijoittelu.tulos.dao.HakukohdeDao;
 import fi.vm.sade.sijoittelu.tulos.dao.SijoitteluDao;
 import fi.vm.sade.sijoittelu.tulos.dao.ValiSijoitteluDao;
 import fi.vm.sade.sijoittelu.tulos.dao.ValintatulosDao;
-import fi.vm.sade.tarjonta.service.resources.v1.dto.HakuV1RDTO;
-import fi.vm.sade.tarjonta.service.resources.v1.dto.ResultV1RDTO;
-import fi.vm.sade.valintalaskenta.domain.dto.HakukohdeDTO;
+
 import fi.vm.sade.valintalaskenta.domain.dto.valintatieto.HakuDTO;
 import fi.vm.sade.valintalaskenta.tulos.service.impl.ValintatietoService;
-import junit.framework.Assert;
+
 import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
@@ -29,19 +25,15 @@ import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.config.PropertyPlaceholderConfigurer;
+
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.core.io.ClassPathResource;
+
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.io.IOException;
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static com.lordofthejars.nosqlunit.mongodb.MongoDbRule.MongoDbRuleBuilder.newMongoDbRule;
 import static org.mockito.Matchers.anyString;
@@ -112,10 +104,10 @@ public class SijoitteluBusinessTest {
                 "    \"modifiedBy\": \"1.2.246.562.24.15473337696\", \n" +
                 "    \"oid\": \"1.2.246.562.29.92175749016\"\n" +
                 "  }";
-        fi.vm.sade.sijoittelu.laskenta.external.resource.dto.HakuDTO hakuRDTO = new GsonBuilder().create().fromJson(hakuJson,  new TypeToken<HakuV1RDTO>() {
+        fi.vm.sade.sijoittelu.laskenta.external.resource.dto.HakuDTO hakuRDTO = new GsonBuilder().create().fromJson(hakuJson,  new TypeToken<HakuDTO>() {
         }.getType());
 
-        ResultDTO<fi.vm.sade.sijoittelu.laskenta.external.resource.dto.HakuDTO> dto = new ResultDTO<>();
+        ResultHakuDTO dto = new ResultHakuDTO();
         dto.setResult(hakuRDTO);
 
         when(hakuV1Resource.findByOid(anyString())).thenReturn(dto);
