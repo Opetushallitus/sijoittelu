@@ -29,7 +29,6 @@
         </property>
     </bean>
 
-   <!-- <import resource="context/application-context-tulos-converter.xml" />-->
     <import resource="application-context-tulos-mongo.xml" />
     <import resource="application-context-tulos-swagger.xml" />
 </beans>
