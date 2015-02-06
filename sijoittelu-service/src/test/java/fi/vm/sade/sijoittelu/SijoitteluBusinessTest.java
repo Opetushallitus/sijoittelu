@@ -111,10 +111,10 @@ public class SijoitteluBusinessTest {
                 "    \"modifiedBy\": \"1.2.246.562.24.15473337696\", \n" +
                 "    \"oid\": \"1.2.246.562.29.92175749016\"\n" +
                 "  }";
-        HakuV1RDTO hakuRDTO = new GsonBuilder().create().fromJson(hakuJson,  new TypeToken<HakuV1RDTO>() {
+        fi.vm.sade.sijoittelu.laskenta.external.resource.dto.HakuDTO hakuRDTO = new GsonBuilder().create().fromJson(hakuJson,  new TypeToken<HakuV1RDTO>() {
         }.getType());
 
-        ResultV1RDTO<HakuV1RDTO> dto = new ResultV1RDTO<>();
+        ResultV1RDTO<fi.vm.sade.sijoittelu.laskenta.external.resource.dto.HakuDTO> dto = new ResultV1RDTO<>();
         dto.setResult(hakuRDTO);
 
         when(hakuV1Resource.findByOid(anyString())).thenReturn(dto);
