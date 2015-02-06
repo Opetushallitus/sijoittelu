@@ -11,14 +11,11 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 
-import org.codehaus.jackson.map.annotate.JsonView;
-
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
 
 import fi.vm.sade.sijoittelu.tulos.dto.HakukohdeDTO;
-import fi.vm.sade.sijoittelu.tulos.dto.JsonViews;
 import fi.vm.sade.sijoittelu.tulos.dto.SijoitteluDTO;
 import fi.vm.sade.sijoittelu.tulos.dto.SijoitteluajoDTO;
 import fi.vm.sade.sijoittelu.tulos.dto.raportointi.HakijaDTO;
@@ -37,7 +34,6 @@ public interface SijoitteluResource {
 	static final String LATEST = "latest";
 
 	@GET
-	@JsonView(JsonViews.Sijoittelu.class)
 	@Produces(APPLICATION_JSON)
 	@Path("/{hakuOid}")
 	@ApiOperation(position = 1, value = "Hakee sijoittelun tiedot haulle. Paa-asiallinen kaytto sijoitteluajojen tunnisteiden hakuun.", response = SijoitteluDTO.class)
@@ -45,7 +41,6 @@ public interface SijoitteluResource {
 			@ApiParam(value = "Haun yksilollinen tunniste", required = true) @PathParam("hakuOid") String hakuOid);
 
 	@GET
-	@JsonView(JsonViews.Sijoitteluajo.class)
 	@Produces(APPLICATION_JSON)
 	@Path("/{hakuOid}/sijoitteluajo/{sijoitteluajoId}")
 	@ApiOperation(position = 2, value = "Hakee sijoitteluajon tiedot. Paasiallinen kaytto sijoitteluun osallistuvien hakukohteiden hakemiseen", response = SijoitteluajoDTO.class)
@@ -54,7 +49,6 @@ public interface SijoitteluResource {
 			@ApiParam(value = "Sijoitteluajon tunniste tai 'latest' avainsana", required = true) @PathParam("sijoitteluajoId") String sijoitteluajoId);
 
 	@GET
-	@JsonView(JsonViews.Hakukohde.class)
 	@Produces(APPLICATION_JSON)
 	@Path("/{hakuOid}/sijoitteluajo/{sijoitteluajoId}/hakukohde/{hakukohdeOid}")
 	@ApiOperation(position = 3, value = "Hakee hakukohteen tiedot tietyssa sijoitteluajossa.", response = HakukohdeDTO.class)
@@ -64,7 +58,6 @@ public interface SijoitteluResource {
 			@ApiParam(value = "Hakukohteen tunniste", required = true) @PathParam("hakukohdeOid") String hakukohdeOid);
 
 	@GET
-	@JsonView(JsonViews.Hakukohde.class)
 	@Produces(APPLICATION_JSON)
 	@Path("/{hakuOid}/sijoitteluajo/{sijoitteluajoId}/hakukohdedto/{hakukohdeOid}")
 	@ApiOperation(position = 3, value = "Hakee hakukohteen tiedot tietyssa sijoitteluajossa.", response = HakukohdeDTO.class)
@@ -74,7 +67,6 @@ public interface SijoitteluResource {
 			@ApiParam(value = "Hakukohteen tunniste", required = true) @PathParam("hakukohdeOid") String hakukohdeOid);
 
 	@GET
-	@JsonView(JsonViews.Hakija.class)
 	@Produces(APPLICATION_JSON)
 	@Path("/{hakuOid}/sijoitteluajo/{sijoitteluajoId}/hakemukset")
 	@ApiOperation(position = 4, value = "Sivutettu listaus hakemuksien/hakijoiden listaukseen. Yksityiskohtainen listaus kaikista hakutoiveista ja niiden valintatapajonoista", response = HakijaPaginationObject.class)
@@ -89,7 +81,6 @@ public interface SijoitteluResource {
 			@ApiParam(value = "Aloita nayttaminen kohdasta n. Kayta sivutuksessa.", required = false) @QueryParam("index") Integer index);
 
 	@GET
-	@JsonView(JsonViews.Hakija.class)
 	@Produces(APPLICATION_JSON)
 	@Path("/{hakuOid}/sijoitteluajo/{sijoitteluajoId}/hakemus/{hakemusOid}")
 	@ApiOperation(position = 5, value = "Nayttaa yksittaisen hakemuksen kaikki hakutoiveet ja tiedot kaikista valintatapajonoista", response = HakijaDTO.class)

@@ -1,8 +1,6 @@
 package fi.vm.sade.sijoittelu.tulos.dto.raportointi;
 
-import fi.vm.sade.sijoittelu.tulos.dto.JsonViews;
 import fi.vm.sade.sijoittelu.tulos.dto.PistetietoDTO;
-import org.codehaus.jackson.map.annotate.JsonView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,19 +10,14 @@ import java.util.List;
  */
 public class HakutoiveDTO implements Comparable<HakutoiveDTO> {
 
-    @JsonView(JsonViews.Hakija.class)
     private Integer hakutoive;
 
-    @JsonView(JsonViews.Hakija.class)
     private String hakukohdeOid;
 
-    @JsonView(JsonViews.Hakija.class)
     private String tarjoajaOid;
 
-    @JsonView(JsonViews.Hakija.class)
     private List<PistetietoDTO> pistetiedot = new ArrayList<PistetietoDTO>();
 
-    @JsonView(JsonViews.Hakija.class)
     private List<HakutoiveenValintatapajonoDTO> hakutoiveenValintatapajonot = new ArrayList<HakutoiveenValintatapajonoDTO>();
 
     private boolean kaikkiJonotSijoiteltu = true;

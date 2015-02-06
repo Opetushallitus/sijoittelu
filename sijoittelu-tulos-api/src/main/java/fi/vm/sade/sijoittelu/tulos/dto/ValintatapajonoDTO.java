@@ -1,7 +1,5 @@
 package fi.vm.sade.sijoittelu.tulos.dto;
 
-import org.codehaus.jackson.map.annotate.JsonView;
-
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -14,46 +12,32 @@ import java.util.List;
  */
 public class ValintatapajonoDTO implements Serializable {
 
-    @JsonView(JsonViews.Hakukohde.class)
     private Tasasijasaanto tasasijasaanto;
 
-    @JsonView(JsonViews.Hakukohde.class)
     private ValintatapajonoTila tila;
 
-    @JsonView(JsonViews.Hakukohde.class)
     private String oid;
 
-    @JsonView(JsonViews.Hakukohde.class)
     private String nimi;
 
-    @JsonView(JsonViews.Hakukohde.class)
     private Integer prioriteetti;
 
-    @JsonView(JsonViews.Hakukohde.class)
     private Integer aloituspaikat;
 
-    @JsonView(JsonViews.Hakukohde.class)
     private BigDecimal alinHyvaksyttyPistemaara;
 
-    @JsonView(JsonViews.Hakukohde.class)
     private Boolean eiVarasijatayttoa;
 
-    @JsonView(JsonViews.Hakukohde.class)
     private Boolean kaikkiEhdonTayttavatHyvaksytaan;
 
-    @JsonView(JsonViews.Hakukohde.class)
     private Boolean poissaOlevaTaytto;
 
-    @JsonView(JsonViews.Hakukohde.class)
     private List<HakemusDTO> hakemukset = new ArrayList<HakemusDTO>();
 
-    @JsonView(JsonViews.Hakukohde.class)
     private Integer hakeneet;
 
-    @JsonView(JsonViews.Hakukohde.class)
     private Integer hyvaksytty;
 
-    @JsonView(JsonViews.Hakukohde.class)
     private Integer varalla;
 
     private Integer varasijat = 0;

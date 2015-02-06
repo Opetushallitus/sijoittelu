@@ -1,6 +1,5 @@
 package fi.vm.sade.sijoittelu.tulos.dto;
 
-import org.codehaus.jackson.map.annotate.JsonView;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -12,19 +11,14 @@ import java.util.List;
  */
 public class SijoitteluajoDTO implements Serializable {
 
-    @JsonView({ JsonViews.Sijoitteluajo.class, JsonViews.Sijoittelu.class })
     private Long sijoitteluajoId;
 
-    @JsonView(JsonViews.Sijoitteluajo.class)
     private String hakuOid;
 
-    @JsonView({ JsonViews.Sijoitteluajo.class, JsonViews.Sijoittelu.class })
     private Long startMils;
 
-    @JsonView({ JsonViews.Sijoitteluajo.class, JsonViews.Sijoittelu.class })
     private Long endMils;
 
-    @JsonView(JsonViews.Sijoitteluajo.class)
     private List<HakukohdeDTO> hakukohteet = new ArrayList<HakukohdeDTO>();
 
     public Long getSijoitteluajoId() {

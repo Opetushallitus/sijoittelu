@@ -2,7 +2,6 @@ package fi.vm.sade.sijoittelu.domain;
 
 import org.mongodb.morphia.annotations.*;
 import org.bson.types.ObjectId;
-import org.codehaus.jackson.map.annotate.JsonView;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -31,38 +30,34 @@ public class Valintatulos implements Serializable {
     private ObjectId id;
 
     //Maarittaa 2 muun kanssa taman luokan hakemisen
-    @JsonView(JsonViews.MonenHakemuksenTila.class)
     private String valintatapajonoOid;
     //Maarittaa 2 muun kanssa taman luokan hakemisen
-    @JsonView(JsonViews.MonenHakemuksenTila.class)
     private String hakemusOid;
     //Maarittaa 2 muun kanssa taman luokan hakemisen
-    @JsonView(JsonViews.MonenHakemuksenTila.class)
     private String hakukohdeOid;
 
-    @JsonView(JsonViews.MonenHakemuksenTila.class)
+
     private boolean julkaistavissa;
 
-    @JsonView(JsonViews.MonenHakemuksenTila.class)
+
     private boolean hyvaksyttyVarasijalta;
 
-    @JsonView(JsonViews.MonenHakemuksenTila.class)
+
     private String hakijaOid;
 
-    @JsonView(JsonViews.MonenHakemuksenTila.class)
+
     private String hakuOid;
 
-    @JsonView(JsonViews.MonenHakemuksenTila.class)
+
     private int hakutoive;
 
-    @JsonView({JsonViews.Tila.class, JsonViews.MonenHakemuksenTila.class})
+
     private ValintatuloksenTila tila = ValintatuloksenTila.KESKEN;
 
-    @JsonView({JsonViews.Tila.class, JsonViews.MonenHakemuksenTila.class})
+
     private IlmoittautumisTila ilmoittautumisTila = IlmoittautumisTila.EI_TEHTY;
 
     @Embedded
-    @JsonView({JsonViews.Tila.class, JsonViews.MonenHakemuksenTila.class})
     private List<LogEntry> logEntries = new ArrayList<LogEntry>();
 
     private ValintatulosMailStatus mailStatus = new ValintatulosMailStatus();

@@ -32,14 +32,9 @@ public class ValiSijoittelu implements Serializable {
      */
     private boolean sijoittele = true;
 
-    //@Embedded
-    // @JsonView(JsonViews.Basic.class)
-    // private Haku haku;
-
     @Reference(value = "Valintatulos", lazy = true)
     private List<Valintatulos> valintatulokset = new ArrayList<Valintatulos>();
 
-    // @Reference(value = "SijoitteluAjo", lazy = true)
     @Embedded
     private List<SijoitteluAjo> sijoitteluajot = new ArrayList<SijoitteluAjo>();
 
@@ -64,14 +59,6 @@ public class ValiSijoittelu implements Serializable {
     public void setSijoitteluId(Long sijoitteluId) {
         this.sijoitteluId = sijoitteluId;
     }
-
-    //  public Haku getHaku() {
-    //     return haku;
-    // }
-
-    // public void setHaku(Haku haku) {
-    //      this.haku = haku;
-    // }
 
     public Date getCreated() {
         return created;

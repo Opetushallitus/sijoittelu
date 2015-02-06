@@ -1,7 +1,5 @@
 package fi.vm.sade.sijoittelu.tulos.dto;
 
-import org.codehaus.jackson.map.annotate.JsonView;
-
 import java.io.Serializable;
 
 /**
@@ -13,19 +11,14 @@ import java.io.Serializable;
  */
 public class PistetietoDTO implements Serializable {
 
-    @JsonView(JsonViews.Hakija.class)
     private String tunniste;
 
-    @JsonView(JsonViews.Hakija.class)
     private String arvo;
 
-    @JsonView(JsonViews.Hakija.class)
     private String laskennallinenArvo;
 
-    @JsonView(JsonViews.Hakija.class)
     private String osallistuminen;
 
-    @JsonView(JsonViews.Hakija.class)
     public String getOsallistuminen() {
         return osallistuminen;
     }

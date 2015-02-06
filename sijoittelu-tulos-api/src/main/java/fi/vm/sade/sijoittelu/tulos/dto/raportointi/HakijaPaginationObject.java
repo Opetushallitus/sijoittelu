@@ -1,8 +1,5 @@
 package fi.vm.sade.sijoittelu.tulos.dto.raportointi;
 
-import fi.vm.sade.sijoittelu.tulos.dto.JsonViews;
-import org.codehaus.jackson.map.annotate.JsonView;
-
 import java.util.List;
 
 /**
@@ -14,10 +11,8 @@ import java.util.List;
  */
 public class HakijaPaginationObject {
 
-    @JsonView({ JsonViews.All.class})
     private Integer totalCount;
 
-    @JsonView({ JsonViews.All.class})
     private List<HakijaDTO> results;
 
     public Integer getTotalCount() {

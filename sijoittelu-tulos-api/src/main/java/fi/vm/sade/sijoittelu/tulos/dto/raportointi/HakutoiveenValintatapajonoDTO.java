@@ -7,65 +7,46 @@ import java.util.Map;
 
 import fi.vm.sade.sijoittelu.tulos.dto.IlmoittautumisTila;
 import fi.vm.sade.sijoittelu.tulos.dto.ValintatuloksenTila;
-import org.codehaus.jackson.map.annotate.JsonView;
 
 import fi.vm.sade.sijoittelu.tulos.dto.HakemuksenTila;
-import fi.vm.sade.sijoittelu.tulos.dto.JsonViews;
 
 /**
  *  Hakemukseen liittyvän hakumuksen sijoittelutila yksittäisessä valintatapajonossa
  */
 public class HakutoiveenValintatapajonoDTO {
 
-	@JsonView(JsonViews.Hakija.class)
 	private Integer valintatapajonoPrioriteetti;
 
-	@JsonView(JsonViews.Hakija.class)
 	private String valintatapajonoOid;
 
-	@JsonView(JsonViews.Hakija.class)
 	private String valintatapajonoNimi;
 
-	@JsonView(JsonViews.Hakija.class)
 	private Integer jonosija;
 
-	@JsonView(JsonViews.Hakija.class)
 	private BigDecimal paasyJaSoveltuvuusKokeenTulos;
 
-	@JsonView(JsonViews.Hakija.class)
 	private Integer varasijanNumero;
 
-	@JsonView(JsonViews.Hakija.class)
 	private HakemuksenTila tila;
 
-	@JsonView(JsonViews.Hakija.class)
 	private Map<String, String> tilanKuvaukset = new HashMap<String, String>();
 
-	@JsonView(JsonViews.Hakija.class)
 	private ValintatuloksenTila vastaanottotieto = ValintatuloksenTila.KESKEN;
 
-	@JsonView(JsonViews.Hakija.class)
 	private IlmoittautumisTila ilmoittautumisTila = IlmoittautumisTila.EI_TEHTY;
 
-	@JsonView(JsonViews.Hakija.class)
 	private boolean hyvaksyttyHarkinnanvaraisesti = false;
 
-	@JsonView(JsonViews.Hakija.class)
 	private Integer tasasijaJonosija;
 
-	@JsonView(JsonViews.Hakija.class)
 	private BigDecimal pisteet;
 
-	@JsonView(JsonViews.Hakija.class)
 	private BigDecimal alinHyvaksyttyPistemaara;
 
-	@JsonView(JsonViews.Hakija.class)
 	private Integer hakeneet;
 
-	@JsonView(JsonViews.Hakija.class)
 	private Integer hyvaksytty;
 
-	@JsonView(JsonViews.Hakija.class)
 	private Integer varalla;
 
     private Integer varasijat = 0;

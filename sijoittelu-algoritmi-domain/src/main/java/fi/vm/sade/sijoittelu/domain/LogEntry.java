@@ -11,7 +11,6 @@ package fi.vm.sade.sijoittelu.domain;
 import org.mongodb.morphia.annotations.Embedded;
 import org.mongodb.morphia.annotations.Id;
 import org.bson.types.ObjectId;
-import org.codehaus.jackson.map.annotate.JsonView;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -21,13 +20,13 @@ public class LogEntry implements Serializable {
     @Id
     private ObjectId id;
 
-    @JsonView({JsonViews.Tila.class, JsonViews.MonenHakemuksenTila.class})
+
     private Date luotu;
-    @JsonView({JsonViews.Tila.class, JsonViews.MonenHakemuksenTila.class})
+
     private String muokkaaja;
-    @JsonView({JsonViews.Tila.class, JsonViews.MonenHakemuksenTila.class})
+
     private String muutos;
-    @JsonView({JsonViews.Tila.class, JsonViews.MonenHakemuksenTila.class})
+
     private String selite;
 
     public Date getLuotu() {

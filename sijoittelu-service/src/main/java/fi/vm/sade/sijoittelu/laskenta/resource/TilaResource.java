@@ -25,7 +25,6 @@ import fi.vm.sade.sijoittelu.tulos.dao.ValintatulosDao;
 import fi.vm.sade.sijoittelu.tulos.service.RaportointiService;
 
 import org.apache.commons.lang.StringUtils;
-import org.codehaus.jackson.map.annotate.JsonView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -73,7 +72,6 @@ public class TilaResource {
     TarjontaIntegrationService tarjontaIntegrationService;
 
 	@GET
-	@JsonView(JsonViews.MonenHakemuksenTila.class)
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("{hakemusOid}")
 	@PreAuthorize(READ_UPDATE_CRUD)
@@ -88,7 +86,6 @@ public class TilaResource {
 	}
 
 	@GET
-	@JsonView(JsonViews.Tila.class)
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("{hakemusOid}/{hakuOid}/{hakukohdeOid}/{valintatapajonoOid}/")
 	@PreAuthorize(READ_UPDATE_CRUD)
@@ -106,7 +103,6 @@ public class TilaResource {
 	}
 
 	@GET
-	@JsonView(JsonViews.MonenHakemuksenTila.class)
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/hakukohde/{hakukohdeOid}/{valintatapajonoOid}/")
 	@ApiOperation(value = "Valintatulosten haku hakukohteelle ja valintatapajonolle")
@@ -123,7 +119,6 @@ public class TilaResource {
 	}
 
 	@GET
-	@JsonView(JsonViews.MonenHakemuksenTila.class)
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/hakukohde/{hakukohdeOid}")
 	@ApiOperation(value = "Valintatulosten haku hakukohteelle ja valintatapajonolle")
@@ -139,7 +134,6 @@ public class TilaResource {
 	}
 
 	@POST
-	@JsonView(JsonViews.Tila.class)
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("haku/{hakuOid}/hakukohde/{hakukohdeOid}")
 	@PreAuthorize(UPDATE_CRUD)
@@ -170,7 +164,6 @@ public class TilaResource {
 	}
 
 	@POST
-	@JsonView(JsonViews.Tila.class)
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Path("erillishaku/{hakuOid}/hakukohde/{hakukohdeOid}")
 	@PreAuthorize(UPDATE_CRUD)
