@@ -11,7 +11,8 @@
                     ],
                     "nimi": "Gofore",
                     "hakijaryhmaOid": "1.2.246.562.24.20000000001",
-                    "kiintio": 3
+                    "kiintio": 3,
+                    "kaytetaanRyhmaanKuuluvia": true
                 }
             ],
             "oid": "1.2.246.562.11.00000000001",

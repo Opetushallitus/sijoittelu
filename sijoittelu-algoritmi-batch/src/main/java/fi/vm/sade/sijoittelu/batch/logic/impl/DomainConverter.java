@@ -99,7 +99,13 @@ public class DomainConverter {
             hakijaryhma.setHakukohdeOid(h.getHakukohdeOid());
             hakijaryhma.setTarkkaKiintio(h.isTarkkaKiintio());
             hakijaryhma.setValintatapajonoOid(h.getValintatapajonoOid());
-            List<JonosijaDTO> hyvaksytyt = h.getJonosijat().stream().filter(j -> j.getJarjestyskriteerit().first().getTila().equals(JarjestyskriteerituloksenTila.HYVAKSYTTAVISSA)).collect(Collectors.toList());
+            // Tarkistetaan inversio vipu hakijaryhmasta
+            final JarjestyskriteerituloksenTila filtteriEhto =
+                    h.isKaytetaanRyhmaanKuuluvia() ?
+                    JarjestyskriteerituloksenTila.HYVAKSYTTAVISSA : JarjestyskriteerituloksenTila.HYLATTY;
+            List<JonosijaDTO> hyvaksytyt = h.getJonosijat().stream()
+                    .filter(j -> filtteriEhto.equals(j.getJarjestyskriteerit().first().getTila()))
+                    .collect(Collectors.toList());
             for (JonosijaDTO jonosija : hyvaksytyt) {
                 hakijaryhma.getHakemusOid().add(jonosija.getHakemusOid());
             }
