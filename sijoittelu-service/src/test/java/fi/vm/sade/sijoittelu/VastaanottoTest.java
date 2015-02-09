@@ -31,7 +31,7 @@ import static com.lordofthejars.nosqlunit.mongodb.MongoDbRule.MongoDbRuleBuilder
 @ContextConfiguration(locations = "classpath:test-sijoittelu-batch-mongo.xml")
 @RunWith(SpringJUnit4ClassRunner.class)
 @UsingDataSet
-public class VastaanottoTests {
+public class VastaanottoTest {
 
     @Autowired
     private ValintatietoService valintatietoService;
