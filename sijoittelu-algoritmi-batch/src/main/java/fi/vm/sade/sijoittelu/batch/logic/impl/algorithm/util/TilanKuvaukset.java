@@ -82,4 +82,10 @@ public class TilanKuvaukset {
             put("EN", "Accepted from selection method queue: " + jono);
         }};
     }
+
+    public static Map<String, String> hylattyHakijaryhmaanKuulumattomana(String hakijaryhma) {
+        return new HashMap<String, String>() {{
+            put("FI", "Hylätty, ei kuulu hakijaryhmään: " + hakijaryhma);
+        }};
+    }
 }

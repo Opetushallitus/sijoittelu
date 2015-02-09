@@ -71,6 +71,25 @@ public class SijoitteluAlgorithmImpl implements SijoitteluAlgorithm {
             depth = n;
         }
 
+        List<HakijaryhmaWrapper> vainRyhmaanKuuluvatHyvaksytaan = hakukohde
+                .getHakijaryhmaWrappers()
+                .stream()
+                .filter(h -> h.getHakijaryhma().isKaytaKaikki())
+                .collect(Collectors.toList());
+
+        // Hylätään hakijat, jotka eivät kuulu hakijaryhmään
+        vainRyhmaanKuuluvatHyvaksytaan.forEach(h -> {
+            String jonoOid = h.getHakijaryhma().getValintatapajonoOid();
+            if(jonoOid != null) {
+                hakukohde.getValintatapajonot()
+                        .stream()
+                        .filter(v -> v.getValintatapajono().getOid().equals(jonoOid))
+                        .forEach(v -> hylkaaRyhmaanKuulumattomat(h,v));
+            } else {
+                hakukohde.getValintatapajonot().forEach(v -> hylkaaRyhmaanKuulumattomat(h,v));
+            }
+        });
+
         for (ValintatapajonoWrapper valintatapajono : hakukohde.getValintatapajonot()) {
             this.sijoittele(valintatapajono, n);
 
@@ -132,6 +151,17 @@ public class SijoitteluAlgorithmImpl implements SijoitteluAlgorithm {
             sijoittele(v, n);
         }
 
+    }
+
+    private void hylkaaRyhmaanKuulumattomat(HakijaryhmaWrapper h, ValintatapajonoWrapper v) {
+        v.getHakemukset().forEach(hakemus -> {
+            if(!h.getHenkiloWrappers().contains(hakemus.getHenkilo()) && hakemus.isTilaVoidaanVaihtaa()) {
+                hakemus.setTilaVoidaanVaihtaa(false);
+                hakemus.getHakemus().setTila(HakemuksenTila.HYLATTY);
+                hakemus.getHakemus()
+                        .setTilanKuvaukset(TilanKuvaukset.hylattyHakijaryhmaanKuulumattomana(h.getHakijaryhma().getNimi()));
+            }
+        });
     }
 
     private boolean onHyvaksyttyHakukohteessa(HakukohdeWrapper hakukohde, HakemusWrapper hakija) {

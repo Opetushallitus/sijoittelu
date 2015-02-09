@@ -80,7 +80,7 @@
             "nimi" : "Ensikertalaisten kiintiö",
             "kuvaus" : "Ensikertalaisten kiintiö",
             "kiintio" : 2,
-            "kaytaKaikki" : true,
+            "kaytaKaikki" : false,
             "tarkkaKiintio" : false,
             "kaytetaanRyhmaanKuuluvia" : true,
             "jonosijat": [
