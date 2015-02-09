@@ -40,6 +40,7 @@
         ignore-resource-not-found="true"/>
 
       <mockito:mock id="valintaperusteetResource" class="fi.vm.sade.service.valintaperusteet.resource.ValintaperusteetResource" />
+      <mockito:mock id="valintalaskentakoostepalvelu" class="fi.vm.sade.service.valintaperusteet.resource.ValintalaskentakoostepalveluResource" />
       <mockito:mock id="ohjausparametriResource" class="fi.vm.sade.sijoittelu.laskenta.external.resource.OhjausparametriResource" />
       <mockito:mock id="hakuV1Resource" class="fi.vm.sade.sijoittelu.laskenta.external.resource.HakuV1Resource" />
       <mockito:mock id="hakukohdeV1Resource" class="fi.vm.sade.sijoittelu.laskenta.external.resource.HakukohdeV1Resource" />
