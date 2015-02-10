@@ -52,14 +52,18 @@ public class SijoitteluResource {
 	private final static Logger LOGGER = LoggerFactory
 			.getLogger(SijoitteluResource.class);
 
-	@Autowired
-	private SijoitteluBusinessService sijoitteluBusinessService;
+	private final SijoitteluBusinessService sijoitteluBusinessService;
+	private final ValintatietoService valintatietoService;
+	private final ValintalaskentakoostepalveluResource valintalaskentakoostepalveluResource;
 
 	@Autowired
-	private ValintatietoService valintatietoService;
-
-	@Autowired
-	private ValintalaskentakoostepalveluResource valintalaskentakoostepalveluResource;
+	public SijoitteluResource(SijoitteluBusinessService sijoitteluBusinessService,
+							  ValintatietoService valintatietoService,
+							  ValintalaskentakoostepalveluResource valintalaskentakoostepalveluResource) {
+		this.sijoitteluBusinessService = sijoitteluBusinessService;
+		this.valintatietoService = valintatietoService;
+		this.valintalaskentakoostepalveluResource = valintalaskentakoostepalveluResource;
+	}
 
 	@GET
 	@Path("{hakuOid}")
