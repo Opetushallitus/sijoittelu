@@ -94,6 +94,7 @@ public class SijoitteluResource {
 											hakijaryhma.setKiintio(h.getKiintio());
 											hakijaryhma.setKuvaus(h.getKuvaus());
 											hakijaryhma.setNimi(h.getNimi());
+                                            hakijaryhma.setTarkkaKiintio(h.isTarkkaKiintio());
 											//hakijaryhma.setPrioriteetti();
 											//hakijaryhma.setTarkkaKiintio();
 											//hakijaryhma.setValintatapajonoOid();
