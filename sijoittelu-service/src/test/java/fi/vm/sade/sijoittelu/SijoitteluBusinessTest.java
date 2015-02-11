@@ -5,6 +5,7 @@ import com.google.gson.reflect.TypeToken;
 import com.lordofthejars.nosqlunit.annotation.UsingDataSet;
 import com.lordofthejars.nosqlunit.core.LoadStrategyEnum;
 import com.lordofthejars.nosqlunit.mongodb.MongoDbRule;
+import fi.vm.sade.sijoittelu.batch.logic.impl.DomainConverter;
 import fi.vm.sade.sijoittelu.domain.*;
 import fi.vm.sade.sijoittelu.laskenta.external.resource.HakuV1Resource;
 import fi.vm.sade.sijoittelu.laskenta.external.resource.OhjausparametriResource;
@@ -15,6 +16,7 @@ import fi.vm.sade.sijoittelu.tulos.dao.SijoitteluDao;
 import fi.vm.sade.sijoittelu.tulos.dao.ValiSijoitteluDao;
 import fi.vm.sade.sijoittelu.tulos.dao.ValintatulosDao;
 
+import fi.vm.sade.valintalaskenta.domain.dto.HakukohdeDTO;
 import fi.vm.sade.valintalaskenta.domain.dto.valintatieto.HakuDTO;
 import fi.vm.sade.valintalaskenta.tulos.service.impl.ValintatietoService;
 
@@ -31,11 +33,14 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.util.ReflectionTestUtils;
+import sun.jvm.hotspot.utilities.Assert;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static com.lordofthejars.nosqlunit.mongodb.MongoDbRule.MongoDbRuleBuilder.newMongoDbRule;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -167,6 +172,43 @@ public class SijoitteluBusinessTest {
                 });
             });
         });
+
+    }
+
+
+
+    @Test
+    @UsingDataSet(locations = "valisijoittelu_hylkays.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
+    public void testAlahylkaaValisijoittelussaHylattyja() throws IOException {
+
+        HakuDTO haku = valintatietoService.haeValintatiedot("haku1");
+
+        List<Hakukohde> hakukohteet = haku.getHakukohteet().stream().map(h -> DomainConverter.convertToHakukohde(h)).collect(Collectors.toList());
+
+        Hakemus hakemus1 = hakukohteet.stream()
+                .flatMap(h -> h.getValintatapajonot().stream())
+                .flatMap(j -> j.getHakemukset().stream())
+                .filter(h -> h.getHakemusOid().equals("hakemus1"))
+                .findFirst()
+                .get();
+
+        Hakemus hakemus2 = hakukohteet.stream()
+                .flatMap(h -> h.getValintatapajonot().stream())
+                .flatMap(j -> j.getHakemukset().stream())
+                .filter(h -> h.getHakemusOid().equals("hakemus2"))
+                .findFirst()
+                .get();
+
+        Hakemus hakemus3 = hakukohteet.stream()
+                .flatMap(h -> h.getValintatapajonot().stream())
+                .flatMap(j -> j.getHakemukset().stream())
+                .filter(h -> h.getHakemusOid().equals("hakemus3"))
+                .findFirst()
+                .get();
+
+        assertEquals(HakemuksenTila.VARALLA, hakemus1.getTila());
+        assertEquals(HakemuksenTila.HYLATTY, hakemus2.getTila());
+        assertEquals(HakemuksenTila.HYLATTY, hakemus3.getTila());
 
     }
 
