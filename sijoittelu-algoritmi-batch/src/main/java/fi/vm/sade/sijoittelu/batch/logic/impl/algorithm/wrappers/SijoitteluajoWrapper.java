@@ -1,12 +1,21 @@
 package fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers;
 
+import com.google.common.collect.Sets;
+import com.google.common.hash.HashCode;
+import com.google.common.hash.HashFunction;
+import com.google.common.hash.Hasher;
+import com.google.common.hash.Hashing;
 import fi.vm.sade.sijoittelu.domain.SijoitteluAjo;
 import fi.vm.sade.sijoittelu.domain.Valintatulos;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.function.Supplier;
 
 /**
  * 
@@ -14,6 +23,8 @@ import java.util.List;
  * 
  */
 public class SijoitteluajoWrapper {
+    private static final Logger LOG = LoggerFactory.getLogger(SijoitteluajoWrapper.class);
+    //private transient int hashcode = -1;
 
     private SijoitteluAjo sijoitteluajo;
 
@@ -112,5 +123,53 @@ public class SijoitteluajoWrapper {
 
     public void setVarasijapomput(List<String> varasijapomput) {
         this.varasijapomput = varasijapomput;
+    }
+
+    private static final HashFunction MD5 = Hashing.md5(); // hieman nopeampi kuin SHA1 ja yhta tarkoitukseen sopiva
+
+    public HashCode asHash() {
+        return asHash(MD5);
+    }
+
+    private HashCode asHash(HashFunction hashFunction) {
+        return jarjestettyValivaiheellinenHashStrategia(hashFunction);
+    }
+
+    private HashCode jarjestettyValivaiheellinenHashStrategia(HashFunction hashFunction) {
+        long t0 = System.currentTimeMillis();
+        final Hasher hasher = hashFunction.newHasher();
+        // Jokaiselle hakukohteelle oma hasher ja yhdistetaan hash-arvot lopuksi
+        // jolloin voidaan seurata yksittaisten hakukohteiden muuttumista
+        Supplier<Hasher> hashSupplier = () -> hashFunction.newHasher(); // hasher;
+
+        //Set<HashCode> hashOfEachHakukohde = Sets.new
+        hakukohteet.stream().sorted().forEach(h -> {
+            Hasher hakemuksetHasher = hashSupplier.get();
+            h.hakukohteenHakemukset().forEach(hk -> hk.hash(hakemuksetHasher));
+            Hasher valintatuloksetHasher = hashSupplier.get();
+            h.hakukohteenHakijat().forEach(hk -> hk.hash(valintatuloksetHasher));
+            HashCode hakukohteenHakemustenHash = hakemuksetHasher.hash();
+            HashCode hakukohteenValintatulostenHash = valintatuloksetHasher.hash();
+            LOG.trace("Hakukohde {}: Valintatulosten HASH = {}, hakemusten HASH = {}",
+                    h.getHakukohde().getOid(), hakukohteenValintatulostenHash, hakukohteenHakemustenHash);
+            hasher.putBytes(hakukohteenHakemustenHash.asBytes());
+            hasher.putBytes(hakukohteenValintatulostenHash.asBytes());
+        });
+        HashCode hash = hasher.hash();
+        LOG.debug("Sijoitteluajon HASH {} (kesto {}ms)", hash, (System.currentTimeMillis() - t0));
+        return hash;
+    }
+
+    // ei juuri yhtaan nopeampi ja epavarmempi
+    private HashCode valivaiheetonHashStrategia(HashFunction hashFunction) {
+        long t0 = System.currentTimeMillis();
+        final Hasher hasher = hashFunction.newHasher();
+        hakukohteet.stream().forEach(h -> {
+            h.hakukohteenHakemukset().forEach(hk -> hk.hash(hasher));
+            h.hakukohteenHakijat().forEach(hk -> hk.hash(hasher));
+        });
+        HashCode hash = hasher.hash();
+        LOG.debug("Sijoitteluajon HASH {} (kesto {}ms)", hash, (System.currentTimeMillis() - t0));
+        return hash;
     }
 }

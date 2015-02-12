@@ -1,5 +1,9 @@
 package fi.vm.sade.sijoittelu.batch.logic.impl.algorithm;
 
+import com.google.common.collect.Sets;
+import com.google.common.hash.HashCode;
+import com.google.common.hash.Hashing;
+import com.google.common.hash.HashingInputStream;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.comparator.HakemusWrapperComparator;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.postsijoitteluprocessor.PostSijoitteluProcessor;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.presijoitteluprocessor.PreSijoitteluProcessor;
@@ -7,6 +11,9 @@ import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.util.TilanKuvaukset;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.*;
 import fi.vm.sade.sijoittelu.domain.*;
 import fi.vm.sade.sijoittelu.domain.comparator.HakemusComparator;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -16,10 +23,12 @@ import java.util.stream.Collectors;
 /**
  *
  * @author Kari Kammonen
+ * @author Jussi Jartamo
  *
  */
 public class SijoitteluAlgorithmImpl implements SijoitteluAlgorithm {
-
+    private static final Logger LOG = LoggerFactory.getLogger(SijoitteluAlgorithmImpl.class);
+    //private final Set<HashCode> hashset = Sets.newHashSet();
     protected SijoitteluAlgorithmImpl() { 	}
 
     protected SijoitteluajoWrapper sijoitteluAjo;
@@ -66,12 +75,11 @@ public class SijoitteluAlgorithmImpl implements SijoitteluAlgorithm {
     }
 
     private void sijoittele(HakukohdeWrapper hakukohde, int n) {
+        //HashCode hash = sijoitteluAjo.asHash();
         n++;
         if (n > depth) {
             depth = n;
         }
-
-
 
         for (ValintatapajonoWrapper valintatapajono : hakukohde.getValintatapajonot()) {
             this.sijoittele(valintatapajono, n);

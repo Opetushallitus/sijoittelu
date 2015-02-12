@@ -16,6 +16,8 @@ import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Profile;
@@ -35,7 +37,7 @@ import static com.lordofthejars.nosqlunit.mongodb.MongoDbRule.MongoDbRuleBuilder
 @RunWith(SpringJUnit4ClassRunner.class)
 @UsingDataSet
 public class HakijaryhmaTest {
-
+    private static final Logger LOG = LoggerFactory.getLogger(HakijaryhmaTest.class);
     @Autowired
     private ValintatietoService valintatietoService;
 
@@ -132,8 +134,7 @@ public class HakijaryhmaTest {
         s.getSijoitteluAjo().setKaikkiKohteetSijoittelussa(LocalDateTime.now().plusDays(10));
         s.start();
 
-        System.out.println(PrintHelper.tulostaSijoittelu(s));
-
+        LOG.info("\r\n{}",PrintHelper.tulostaSijoittelu(s));
         assertoiAinoastaanValittu(hakukohteet.get(0).getValintatapajonot().get(0), "hakija1");
 
     }
@@ -151,7 +152,7 @@ public class HakijaryhmaTest {
         s.getSijoitteluAjo().setKaikkiKohteetSijoittelussa(LocalDateTime.now().plusDays(10));
         s.start();
 
-        System.out.println(PrintHelper.tulostaSijoittelu(s));
+        LOG.info("\r\n{}",PrintHelper.tulostaSijoittelu(s));
 
         assertoiAinoastaanValittu(hakukohteet.get(0).getValintatapajonot().get(0), "hakija1", "hakija3", "hakija4", "hakija5");
 
