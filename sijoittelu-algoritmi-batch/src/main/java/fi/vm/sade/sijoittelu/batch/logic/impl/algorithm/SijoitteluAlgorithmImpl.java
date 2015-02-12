@@ -77,7 +77,7 @@ public class SijoitteluAlgorithmImpl implements SijoitteluAlgorithm {
                 muuttuneetHakukohteet.addAll(sijoittele(hakukohde));
             }
             ++depth;
-        } while(muuttuneetHakukohteet.isEmpty());
+        } while(!muuttuneetHakukohteet.isEmpty());
 
     }
 
