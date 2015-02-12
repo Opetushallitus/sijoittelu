@@ -83,12 +83,13 @@ public class SijoitteluAlgorithmImpl implements SijoitteluAlgorithm {
 
     private Set<HakukohdeWrapper> sijoittele(HakukohdeWrapper hakukohde) {
         Set<HakukohdeWrapper> muuttuneetHakukohteet = Sets.newHashSet();
-        for (ValintatapajonoWrapper valintatapajono : hakukohde.getValintatapajonot()) {
-            muuttuneetHakukohteet.addAll(this.sijoittele(valintatapajono));
-        }
 
         for (HakijaryhmaWrapper hakijaryhmaWrapper : hakukohde.getHakijaryhmaWrappers()) {
             muuttuneetHakukohteet.addAll(this.sijoittele(hakijaryhmaWrapper));
+        }
+
+        for (ValintatapajonoWrapper valintatapajono : hakukohde.getValintatapajonot()) {
+            muuttuneetHakukohteet.addAll(this.sijoittele(valintatapajono));
         }
 
         // Tayttöjonot
@@ -758,7 +759,7 @@ public class SijoitteluAlgorithmImpl implements SijoitteluAlgorithm {
 
 
         Optional<HakemusWrapper> huonoinHakemus = sortattu.stream()
-                .filter(h-> hyvaksytytTilat.contains(h.getHakemus().getTila()) && voidaanKorvata(h))
+                .filter(h -> hyvaksytytTilat.contains(h.getHakemus().getTila()) && voidaanKorvata(h))
                 .findFirst();
 
         if(huonoinHakemus.isPresent()) {
