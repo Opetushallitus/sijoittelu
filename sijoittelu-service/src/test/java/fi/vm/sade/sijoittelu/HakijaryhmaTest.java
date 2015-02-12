@@ -154,7 +154,7 @@ public class HakijaryhmaTest {
 
         LOG.info("\r\n{}",PrintHelper.tulostaSijoittelu(s));
 
-        assertoiAinoastaanValittu(hakukohteet.get(0).getValintatapajonot().get(0), "hakija1", "hakija3", "hakija4", "hakija5");
+        assertoiAinoastaanValittu(hakukohteet.get(0).getValintatapajonot().get(0), "hakija3", "hakija4", "hakija5");
 
     }
 
