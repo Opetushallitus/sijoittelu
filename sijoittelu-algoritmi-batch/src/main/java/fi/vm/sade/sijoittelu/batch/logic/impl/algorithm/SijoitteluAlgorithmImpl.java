@@ -28,7 +28,7 @@ import java.util.stream.Collectors;
  */
 public class SijoitteluAlgorithmImpl implements SijoitteluAlgorithm {
     private static final Logger LOG = LoggerFactory.getLogger(SijoitteluAlgorithmImpl.class);
-    //private final Set<HashCode> hashset = Sets.newHashSet();
+    private final Set<HashCode> hashset = Sets.newHashSet();
     protected SijoitteluAlgorithmImpl() { 	}
 
     protected SijoitteluajoWrapper sijoitteluAjo;
@@ -76,9 +76,15 @@ public class SijoitteluAlgorithmImpl implements SijoitteluAlgorithm {
             for (HakukohdeWrapper hakukohde : iteraationHakukohteet) {
                 muuttuneetHakukohteet.addAll(sijoittele(hakukohde));
             }
+            HashCode hash = sijoitteluAjo.asHash();
+            if(hashset.contains(hash)) {
+                LOG.error("Sijoittelu on iteraatiolla {} uudelleen aikaisemmassa tilassa (tila {})", depth, hash);
+            } else {
+                LOG.debug("Iteraatio {} HASH {}", depth, hash);
+            }
             ++depth;
         } while(!muuttuneetHakukohteet.isEmpty());
-
+        --depth;
     }
 
     private Set<HakukohdeWrapper> sijoittele(HakukohdeWrapper hakukohde) {
