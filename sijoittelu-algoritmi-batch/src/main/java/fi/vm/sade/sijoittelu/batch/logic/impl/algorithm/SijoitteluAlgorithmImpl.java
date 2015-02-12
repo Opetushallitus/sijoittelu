@@ -187,6 +187,7 @@ public class SijoitteluAlgorithmImpl implements SijoitteluAlgorithm {
         LocalDateTime varasijaTayttoPaattyy = varasijaTayttoPaattyy(valintatapajono);
 
         // Muutetaan ehdolliset vastaanotot sitoviksi jos jonon varasijatäyttö on päättynyt
+        // TODO: tämä toimii väärin!!! Pitäisi katsoa ylemmän hakutoiveen päivämääriä. Oma PostProcessor os paikallaan
         if(sijoitteluAjo.getToday().isAfter(varasijaTayttoPaattyy) && sijoitteluAjo.isKKHaku()) {
             valintatapajono.getHakemukset()
                     .stream()
@@ -344,6 +345,11 @@ public class SijoitteluAlgorithmImpl implements SijoitteluAlgorithm {
                 }
             }
         }
+
+        if(hakijaRyhmassaLiikaaHyvaksyttyja(hakijaryhmaWrapper)) {
+            // Hakijaryhmällä tarkka kiintiö ja liikaa hyväksyttyjä
+        }
+
         Set<HakukohdeWrapper> uudelleenSijoiteltavatHakukohteet = uudelleenSijoiteltavatHakukohteet(muuttuneetHakemukset);
         for (HakukohdeWrapper h : uudelleenSijoiteltavatHakukohteet) {
             sijoittele(h, n);
@@ -778,9 +784,21 @@ public class SijoitteluAlgorithmImpl implements SijoitteluAlgorithm {
 
     }
 
+    private List<ValintatapajonoWrapper> hakijaryhmaanLiittyvatJonot(HakijaryhmaWrapper hakijaryhmaWrapper) {
+        String jonoId = hakijaryhmaWrapper.getHakijaryhma().getValintatapajonoOid();
+        if(jonoId != null) {
+            return hakijaryhmaWrapper.getHakukohdeWrapper().getValintatapajonot()
+                    .stream()
+                    .filter(j -> j.getValintatapajono().getOid().equals(jonoId))
+                    .collect(Collectors.toList());
+        } else {
+            return hakijaryhmaWrapper.getHakukohdeWrapper().getValintatapajonot();
+        }
+    }
+
     private int hakijaryhmassaVajaata(HakijaryhmaWrapper hakijaryhmaWrapper) {
         int needed = hakijaryhmaWrapper.getHakijaryhma().getKiintio();
-        for (ValintatapajonoWrapper valintatapajonoWrapper : hakijaryhmaWrapper.getHakukohdeWrapper().getValintatapajonot()) {
+        for (ValintatapajonoWrapper valintatapajonoWrapper : hakijaryhmaanLiittyvatJonot(hakijaryhmaWrapper)) {
             for (HakemusWrapper h : valintatapajonoWrapper.getHakemukset()) {
                 if (hyvaksytytTilat.contains(h.getHakemus().getTila()) && hakijaryhmaWrapper.getHenkiloWrappers().contains(h.getHenkilo())) {
                     needed--;
@@ -788,6 +806,54 @@ public class SijoitteluAlgorithmImpl implements SijoitteluAlgorithm {
             }
         }
         return needed;
+    }
+
+    private boolean hakijaRyhmassaLiikaaHyvaksyttyja(HakijaryhmaWrapper hakijaryhmaWrapper) {
+        if(!hakijaryhmaWrapper.getHakijaryhma().isTarkkaKiintio()) {
+            return false;
+        }
+        int needed = hakijaryhmaWrapper.getHakijaryhma().getKiintio();
+        int hyvaksytyt = hakijaryhmaanLiittyvatJonot(hakijaryhmaWrapper)
+                .stream()
+                .flatMap(j -> j.getHakemukset().stream())
+                .filter(h -> hyvaksytytTilat.contains(h.getHakemus().getTila())
+                        && hakijaryhmaWrapper.getHenkiloWrappers().contains(h.getHenkilo()))
+                .collect(Collectors.toList())
+                .size();
+
+        return hyvaksytyt > needed;
+    }
+
+    private List<HakemusWrapper> hakijaryhmanHyvaksytytJotkaVoiPudottaaVaralle(HakijaryhmaWrapper hakijaryhmaWrapper) {
+
+        List<HakijaryhmaWrapper> pienemmanPrioriteetinRyhmat = hakijaryhmaWrapper
+                .getHakukohdeWrapper()
+                .getHakijaryhmaWrappers()
+                .stream()
+                .filter(h -> h.getHakijaryhma().getPrioriteetti()
+                        < hakijaryhmaWrapper.getHakijaryhma().getPrioriteetti())
+                .collect(Collectors.toList());
+
+        Set<String> hyvaksytytOids = new HashSet<>();
+
+        pienemmanPrioriteetinRyhmat.forEach(hakijaryhma -> {
+            hakijaryhmaanLiittyvatJonot(hakijaryhma)
+                    .stream()
+                    .flatMap(j -> j.getHakemukset().stream())
+                    .filter(h -> hyvaksytytTilat.contains(h.getHakemus().getTila())
+                            && hakijaryhma.getHenkiloWrappers().contains(h.getHenkilo()))
+                    .forEach(h -> hyvaksytytOids.add(h.getHakemus().getHakemusOid()));
+        });
+
+        return hakijaryhmaanLiittyvatJonot(hakijaryhmaWrapper)
+                .stream()
+                .flatMap(j -> j.getHakemukset().stream())
+                .filter(h -> hyvaksytytTilat.contains(h.getHakemus().getTila())
+                        && hakijaryhmaWrapper.getHenkiloWrappers().contains(h.getHenkilo())
+                        && !hyvaksytytOids.contains(h.getHakemus().getHakemusOid()))
+                .sorted((h1, h2) -> h2.getHakemus().getJonosija().compareTo(h1.getHakemus().getJonosija()))
+                .collect(Collectors.toList());
+
     }
 
 }
