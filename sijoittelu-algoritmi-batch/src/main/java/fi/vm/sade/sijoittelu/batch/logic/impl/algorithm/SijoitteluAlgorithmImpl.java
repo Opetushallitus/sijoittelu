@@ -69,25 +69,26 @@ public class SijoitteluAlgorithmImpl implements SijoitteluAlgorithm {
     }
 
     private void sijoittele() {
-        for (HakukohdeWrapper hakukohde : sijoitteluAjo.getHakukohteet()) {
-            sijoittele(hakukohde, 0);
-        }
+        Set<HakukohdeWrapper> muuttuneetHakukohteet = Sets.newHashSet(sijoitteluAjo.getHakukohteet());
+        do {
+            Set<HakukohdeWrapper> iteraationHakukohteet = muuttuneetHakukohteet;
+            muuttuneetHakukohteet = Sets.newHashSet();
+            for (HakukohdeWrapper hakukohde : iteraationHakukohteet) {
+                muuttuneetHakukohteet.addAll(sijoittele(hakukohde));
+            }
+            ++depth;
+        } while(muuttuneetHakukohteet.isEmpty());
+
     }
 
-    private void sijoittele(HakukohdeWrapper hakukohde, int n) {
-        //HashCode hash = sijoitteluAjo.asHash();
-        n++;
-        if (n > depth) {
-            depth = n;
-        }
-
+    private Set<HakukohdeWrapper> sijoittele(HakukohdeWrapper hakukohde) {
+        Set<HakukohdeWrapper> muuttuneetHakukohteet = Sets.newHashSet();
         for (ValintatapajonoWrapper valintatapajono : hakukohde.getValintatapajonot()) {
-            this.sijoittele(valintatapajono, n);
-
+            muuttuneetHakukohteet.addAll(this.sijoittele(valintatapajono));
         }
 
         for (HakijaryhmaWrapper hakijaryhmaWrapper : hakukohde.getHakijaryhmaWrappers()) {
-            this.sijoittele(hakijaryhmaWrapper, n);
+            muuttuneetHakukohteet.addAll(this.sijoittele(hakijaryhmaWrapper));
         }
 
         // Tayttöjonot
@@ -137,11 +138,8 @@ public class SijoitteluAlgorithmImpl implements SijoitteluAlgorithm {
                 }
             }
         });
-
-        for (HakukohdeWrapper v : uudelleenSijoiteltavatHakukohteet(muuttuneetHakemukset)) {
-            sijoittele(v, n);
-        }
-
+        muuttuneetHakukohteet.addAll(uudelleenSijoiteltavatHakukohteet(muuttuneetHakemukset));
+        return muuttuneetHakukohteet;
     }
 
     private boolean onHyvaksyttyHakukohteessa(HakukohdeWrapper hakukohde, HakemusWrapper hakija) {
@@ -172,7 +170,7 @@ public class SijoitteluAlgorithmImpl implements SijoitteluAlgorithm {
         return varasijaTayttoPaattyy;
     }
 
-    private void sijoittele(ValintatapajonoWrapper valintatapajono, int n) {
+    private Set<HakukohdeWrapper> sijoittele(ValintatapajonoWrapper valintatapajono) {
 
         ArrayList<HakemusWrapper> hyvaksyttavaksi = new ArrayList<HakemusWrapper>();
         ArrayList<HakemusWrapper> varalle = new ArrayList<HakemusWrapper>();
@@ -277,11 +275,10 @@ public class SijoitteluAlgorithmImpl implements SijoitteluAlgorithm {
                 .filter(h->hyvaksytytTilat.contains(h.getHakemus().getTila()))
                 .forEach(h->muuttuneetHakemukset.addAll(asetaVaralleHakemus(h)));
 
-        uudelleenSijoiteltavatHakukohteet(muuttuneetHakemukset).forEach(v->sijoittele(v,n));
-
+        return uudelleenSijoiteltavatHakukohteet(muuttuneetHakemukset);
     }
 
-    private void sijoittele(HakijaryhmaWrapper hakijaryhmaWrapper, int n) {
+    private Set<HakukohdeWrapper> sijoittele(HakijaryhmaWrapper hakijaryhmaWrapper) {
         ArrayList<HakemusWrapper> muuttuneetHakemukset = new ArrayList<HakemusWrapper>();
         List<List<HakemusWrapper>> hakijaryhmanVarasijallaOlevat = hakijaryhmanVarasijajarjestys(hakijaryhmaWrapper);
         ListIterator<List<HakemusWrapper>> it = hakijaryhmanVarasijallaOlevat.listIterator();
@@ -344,11 +341,7 @@ public class SijoitteluAlgorithmImpl implements SijoitteluAlgorithm {
                 }
             }
         }
-        Set<HakukohdeWrapper> uudelleenSijoiteltavatHakukohteet = uudelleenSijoiteltavatHakukohteet(muuttuneetHakemukset);
-        for (HakukohdeWrapper h : uudelleenSijoiteltavatHakukohteet) {
-            sijoittele(h, n);
-        }
-
+        return uudelleenSijoiteltavatHakukohteet(muuttuneetHakemukset);
     }
 
     private List<HakemusWrapper> valituksiHaluavatHakemukset(ArrayList<HakemusWrapper> hakemukset) {
