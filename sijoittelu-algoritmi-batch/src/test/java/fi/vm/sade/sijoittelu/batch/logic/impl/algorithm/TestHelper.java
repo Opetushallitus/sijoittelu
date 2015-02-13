@@ -3,8 +3,11 @@ package fi.vm.sade.sijoittelu.batch.logic.impl.algorithm;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
+import com.google.common.collect.Sets;
+import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.SijoitteluajoWrapper;
 import fi.vm.sade.sijoittelu.domain.HakemuksenTila;
 import fi.vm.sade.sijoittelu.domain.Hakemus;
+import fi.vm.sade.sijoittelu.domain.Hakukohde;
 import fi.vm.sade.sijoittelu.domain.Valintatapajono;
 import fi.vm.sade.valintalaskenta.domain.dto.valintatieto.HakuDTO;
 import junit.framework.Assert;
@@ -13,9 +16,11 @@ import org.codehaus.jackson.map.DeserializationConfig;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
 import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * 
@@ -38,6 +43,45 @@ public final class TestHelper {
             e.printStackTrace();
             throw new RuntimeException(e);
         }
+    }
+    private static Hakukohde hakukohde(String endsWith, SijoitteluajoWrapper ajo) {
+        return ajo.sijoitteluAjonHakukohteet().filter(h -> h.getOid().endsWith(endsWith)).findFirst().get();
+    }
+    public static Function<SijoitteluajoWrapper, Hakukohde> hakukohde(String endsWith) {
+        return (ajo) -> hakukohde(endsWith,ajo);
+    }
+    public static Function<Hakukohde, Valintatapajono> valintatapajono(String endsWith) {
+        return (hakukohde) -> hakukohde.getValintatapajonot().stream().filter(v -> v.getOid().endsWith(endsWith)).findFirst().get();
+    }
+    public static Function<Valintatapajono, Void> hyvaksyttyjaHakemuksiaAinoastaan(String ... endsWith) {
+        final Set<String> endings = Sets.newHashSet(endsWith);
+        return (valintatapajono) -> {
+            List<Hakemus> ylimaaraisetHyvaksytytHakemukset =
+            valintatapajono.getHakemukset().stream().filter(h -> HakemuksenTila.HYVAKSYTTY.equals(h.getTila()) && !endings.stream().anyMatch(e -> h.getHakemusOid().endsWith(e))).collect(Collectors.toList());
+
+            List<Hakemus> puuttuneetHakemukset =
+                    valintatapajono.getHakemukset().stream().filter(h -> endings.stream().anyMatch(e -> h.getHakemusOid().endsWith(e) && !HakemuksenTila.HYVAKSYTTY.equals(h.getTila()))).collect(Collectors.toList());
+            if(!ylimaaraisetHyvaksytytHakemukset.isEmpty() && !puuttuneetHakemukset.isEmpty()) {
+                Assert.fail("Valintatapajonossa oli ylimääräisiä hyväksyttyjä hakemuksia " + toString(ylimaaraisetHyvaksytytHakemukset) + " ja puuttuvia hyväksytyksi odotettuja hakemuksia " + toString(puuttuneetHakemukset));
+            } else {
+                if(!ylimaaraisetHyvaksytytHakemukset.isEmpty()) {
+                    Assert.fail("Valintatapajonossa oli ylimääräisiä hyväksyttyjä hakemuksia " + toString(ylimaaraisetHyvaksytytHakemukset));
+                } else if(!puuttuneetHakemukset.isEmpty()) {
+                    Assert.fail("Valintatapajonossa oli puuttuvia hyväksytyksi odotettuja hakemuksia " + toString(puuttuneetHakemukset));
+                }
+            }
+
+            return null;
+        };
+    }
+
+    private final static String toString(List<Hakemus> h) {
+        return Arrays.toString(h.stream().map(h0 -> h0.getHakemusOid()).toArray());
+    }
+    public final static void assertoi(SijoitteluajoWrapper ajo, Function<SijoitteluajoWrapper, Hakukohde> hakukohdeFunction, Function<Hakukohde, Valintatapajono> valintatapajonoFunction,
+                                      Function<Valintatapajono, Void> hakemuksetFunction
+    ) {
+        hakukohdeFunction.andThen(valintatapajonoFunction).andThen(hakemuksetFunction).apply(ajo);
     }
 
     public static String objectsToXml(HakuDTO sijoitteluTyyppi) {

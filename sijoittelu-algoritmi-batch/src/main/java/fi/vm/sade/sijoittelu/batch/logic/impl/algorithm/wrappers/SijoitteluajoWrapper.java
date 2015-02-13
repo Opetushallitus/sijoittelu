@@ -5,6 +5,7 @@ import com.google.common.hash.HashCode;
 import com.google.common.hash.HashFunction;
 import com.google.common.hash.Hasher;
 import com.google.common.hash.Hashing;
+import fi.vm.sade.sijoittelu.domain.Hakukohde;
 import fi.vm.sade.sijoittelu.domain.SijoitteluAjo;
 import fi.vm.sade.sijoittelu.domain.Valintatulos;
 import org.slf4j.Logger;
@@ -14,8 +15,10 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.function.Supplier;
+import java.util.stream.Stream;
 
 /**
  * 
@@ -134,7 +137,10 @@ public class SijoitteluajoWrapper {
     private HashCode asHash(HashFunction hashFunction) {
         return jarjestettyValivaiheellinenHashStrategia(hashFunction);
     }
-
+    public Stream<Hakukohde> sijoitteluAjonHakukohteet() {
+        return hakukohteet.stream().map(v -> v.getHakukohde())
+                .filter(Objects::nonNull).distinct();
+    }
     private HashCode jarjestettyValivaiheellinenHashStrategia(HashFunction hashFunction) {
         long t0 = System.currentTimeMillis();
         final Hasher hasher = hashFunction.newHasher();
