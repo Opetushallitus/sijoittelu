@@ -84,12 +84,7 @@
                             "siirretaanSijoitteluun": true,
                             "tasasijasaanto": "YLITAYTTO",
                             "valintatapajonooid": "laakkis_jono_1"
-                        }
-                    ]
-                },
-                {
-                    "valinnanvaihe": 1,
-                    "valintatapajonot": [
+                        },
                         {
                             "aloituspaikat": 4,
                             "hakija": [
@@ -155,6 +150,7 @@
                             "tasasijasaanto": "YLITAYTTO",
                             "valintatapajonooid": "laakkis_jono_2"
                         }
+
                     ]
                 }
             ]

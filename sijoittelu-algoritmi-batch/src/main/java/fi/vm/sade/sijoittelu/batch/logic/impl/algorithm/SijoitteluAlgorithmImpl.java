@@ -152,14 +152,14 @@ public class SijoitteluAlgorithmImpl implements SijoitteluAlgorithm {
     private boolean onHyvaksyttyHakukohteessa(HakukohdeWrapper hakukohde, HakemusWrapper hakija) {
         return hakukohde.getValintatapajonot()
                 .stream().flatMap(v -> v.getHakemukset().stream())
-                .filter(h->h.getHakemus().getHakemusOid().equals(hakija.getHakemus().getHakemusOid()))
+                .filter(h -> h.getHakemus().getHakemusOid().equals(hakija.getHakemus().getHakemusOid()))
                 .anyMatch(h->h.getHakemus().getTila().equals(HakemuksenTila.HYVAKSYTTY));
     }
 
     private boolean onHylattyJonossa(ValintatapajonoWrapper valintatapajonoWrapper, HakemusWrapper hakija) {
         return valintatapajonoWrapper.getHakemukset()
                 .stream()
-                .anyMatch(h-> h.getHakemus().getHakemusOid().equals(hakija.getHakemus().getHakemusOid()) && h.getHakemus().getTila().equals(HakemuksenTila.HYLATTY));
+                .anyMatch(h -> h.getHakemus().getHakemusOid().equals(hakija.getHakemus().getHakemusOid()) && h.getHakemus().getTila().equals(HakemuksenTila.HYLATTY));
     }
 
     private boolean onkoVarasijaisia(ValintatapajonoWrapper valintatapajonoWrapper) {
@@ -285,69 +285,203 @@ public class SijoitteluAlgorithmImpl implements SijoitteluAlgorithm {
         return uudelleenSijoiteltavatHakukohteet(muuttuneetHakemukset);
     }
 
-    private Set<HakukohdeWrapper> sijoittele(HakijaryhmaWrapper hakijaryhmaWrapper) {
-        ArrayList<HakemusWrapper> muuttuneetHakemukset = new ArrayList<HakemusWrapper>();
-        List<List<HakemusWrapper>> hakijaryhmanVarasijallaOlevat = hakijaryhmanVarasijajarjestys(hakijaryhmaWrapper);
-        ListIterator<List<HakemusWrapper>> it = hakijaryhmanVarasijallaOlevat.listIterator();
-        Hakijaryhma ryhma = hakijaryhmaWrapper.getHakijaryhma();
+    private List<ValintatapajonoWrapper> hakijaryhmaanLiittyvatJonot(HakijaryhmaWrapper hakijaryhmaWrapper) {
+        String jonoId = hakijaryhmaWrapper.getHakijaryhma().getValintatapajonoOid();
+        if(jonoId != null) {
+            return hakijaryhmaWrapper.getHakukohdeWrapper().getValintatapajonot()
+                    .stream()
+                    .filter(j -> j.getValintatapajono().getOid().equals(jonoId))
+                    .collect(Collectors.toList());
+        } else {
+            return hakijaryhmaWrapper.getHakukohdeWrapper().getValintatapajonot();
+        }
+    }
 
+    private boolean mahtuukoJonoon(List<HakemusWrapper> hakemukset, ValintatapajonoWrapper valintatapajonoWrapper) {
+        int aloituspaikat = valintatapajonoWrapper.getValintatapajono().getAloituspaikat();
+        int hyvaksytyt = valintatapajonoWrapper.getHakemukset().stream().filter(h-> hyvaksytytTilat.contains(h.getHakemus().getTila())).collect(Collectors.toList()).size();
+        if(aloituspaikat - hyvaksytyt <= 0) {
+            return false;
+        } else {
+            if(valintatapajonoWrapper.getValintatapajono().getTasasijasaanto().equals(Tasasijasaanto.YLITAYTTO)) {
+                return true;
+            } else if(aloituspaikat - hyvaksytyt - hakemukset.size() >= 0) {
+                return true;
+            }
+        }
+        return false;
+    }
 
-        while (it.hasNext() && hakijaryhmassaVajaata(hakijaryhmaWrapper) > 0 && !hakijaryhmaWrapper.isAlitayttoSaantoTaytetty()) {
-            List<HakemusWrapper> tasasijaVarasijaHakemukset = it.next();
-            Map<String, List<HakemusWrapper>> jonoittain =
-                tasasijaVarasijaHakemukset.stream()
-                        .collect(Collectors.groupingBy(h->h.getValintatapajono().getValintatapajono().getOid()));
+    private List<HakemusWrapper> samallaSijalla(HakemusWrapper hakemus, ValintatapajonoWrapper valintatapajonoWrapper) {
+        if(valintatapajonoWrapper.getValintatapajono().getTasasijasaanto().equals(Tasasijasaanto.ARVONTA)) {
+            return Arrays.asList(hakemus);
+        } else {
+            return valintatapajonoWrapper.getHakemukset()
+                    .stream()
+                    .filter(h -> h.getHakemus().getJonosija().equals(hakemus.getHakemus().getJonosija()))
+                    .collect(Collectors.toList());
+        }
 
-            for (HakemusWrapper paras : tasasijaVarasijaHakemukset) {
-                ValintatapajonoWrapper v = paras.getValintatapajono();
-                Tasasijasaanto saanto = v.getValintatapajono().getTasasijasaanto();
+    }
 
-                if(ryhma.getValintatapajonoOid() == null || ryhma.getValintatapajonoOid().equals(v.getValintatapajono().getOid())) {
-                    // Haetaan valintatapajonon hyväksytyt
-                    int hyvaksytyt = v.getHakemukset().stream().filter(h->hyvaksytytTilat.contains(h.getHakemus().getTila())).collect(Collectors.toList()).size();
-                    // Paljonko jonossa on tilaa
-                    int tilaa = v.getValintatapajono().getAloituspaikat() - hyvaksytyt;
+    private List<HakemusWrapper> seuraavaksiParhaatHakijaryhmasta(List<HakemusWrapper> hakemukset) {
+        HakemusWrapperComparator comparator = new HakemusWrapperComparator();
 
-                    // Kuinka paljon hakijaryhmän halukkaista on tästä jonosta
-                    int haluavat = jonoittain.getOrDefault(v.getValintatapajono().getOid(), new ArrayList<>()).size();
+        Map<ValintatapajonoWrapper, List<HakemusWrapper>> jonoittain = hakemukset
+                .stream()
+                .sorted(comparator::compare)
+                .collect(Collectors.groupingBy(HakemusWrapper::getValintatapajono));
 
-                    if(haluavat == 0) { // Jo käsitelty loopissa
-                        // Ei tehä mitään
-                    } else if(tilaa - haluavat < 0) { // tasasija tilanne
-                        if(saanto == Tasasijasaanto.YLITAYTTO) {
-                            jonoittain.get(v.getValintatapajono().getOid()).forEach(h-> {
-                                h.setHyvaksyttyHakijaryhmastaTaiTayttoJonosta(true);
-                                muuttuneetHakemukset.addAll(hyvaksyHakemus(h));
-                            });
-                        }
-                        jonoittain.remove(v.getValintatapajono().getOid());
+        Map<Integer, List<HakemusWrapper>> jonojenParhaat = jonoittain.values()
+                .stream()
+                .map(l -> l.get(0))
+                .collect(Collectors.groupingBy(h -> h.getHakemus().getJonosija()));
 
-                        // Asetetaan huonoimmat varalle
-                        huonoimmatTasasijaiset(v).forEach(h ->
-                                muuttuneetHakemukset.addAll(asetaVaralleHakemus(h))
-                        );
-
-                        v.getHakemukset().forEach(h -> {
-                            if(hyvaksytytTilat.contains(h.getHakemus().getTila()) && !h.isHyvaksyttyHakijaryhmastaTaiTayttoJonosta()) {
-                                h.setHyvaksyttavissaHakijaryhmanJalkeen(true);
-                            }
-                        });
-
-                        if(saanto == Tasasijasaanto.ALITAYTTO) {
-                            hakijaryhmaWrapper.setAlitayttoSaantoTaytetty(true);
-                        }
-
-                    } else {
-                        jonoittain.get(v.getValintatapajono().getOid()).forEach(h-> {
-                            h.setHyvaksyttyHakijaryhmastaTaiTayttoJonosta(true);
-                            muuttuneetHakemukset.addAll(hyvaksyHakemus(h));
-                        });
-                        jonoittain.remove(v.getValintatapajono().getOid());
+        List<HakemusWrapper> result = new ArrayList<>();
+        for(Integer i : jonojenParhaat.keySet()) {
+            List<HakemusWrapper> parhaat = jonojenParhaat.get(i);
+            if(parhaat.size() == 1) {
+                HakemusWrapper paras = parhaat.get(0);
+                List<HakemusWrapper> samallaSijalla = samallaSijalla(paras, paras.getValintatapajono());
+                if(mahtuukoJonoon(samallaSijalla, paras.getValintatapajono())) {
+                    result = samallaSijalla;
+                    break;
+                }
+            } else {
+                List<HakemusWrapper> jononMukaanSortattu = parhaat
+                        .stream()
+                        .sorted((h1, h2) ->
+                                Integer.compare(h1.getValintatapajono().getValintatapajono().getPrioriteetti(),
+                                        h2.getValintatapajono().getValintatapajono().getPrioriteetti()))
+                        .collect(Collectors.toList());
+                for (HakemusWrapper paras : jononMukaanSortattu) {
+                    List<HakemusWrapper> samallaSijalla = samallaSijalla(paras, paras.getValintatapajono());
+                    if(mahtuukoJonoon(samallaSijalla, paras.getValintatapajono())) {
+                        result = samallaSijalla;
+                        break;
                     }
-
                 }
             }
         }
+
+        if(result.isEmpty()) {
+            // jossain on ylitäyttö ja pitäis saada hyväksytyks tai alitäyttö lukko
+        }
+
+        return result;
+
+    }
+
+
+    private Set<HakukohdeWrapper> sijoittele(HakijaryhmaWrapper hakijaryhmaWrapper) {
+
+        // Tähän hakijaryhmään liittyvät valintatapajonot
+        List<ValintatapajonoWrapper> liittyvatJonot = hakijaryhmaanLiittyvatJonot(hakijaryhmaWrapper);
+
+        // Näiden jonojen HakemusWrapperit, jotka kuuluvat tähän hakijaryhmään
+        List<HakemusWrapper> ryhmaanKuuluvat = hakijaRyhmaanKuuluvat(
+                liittyvatJonot
+                        .stream()
+                        .flatMap(j -> j.getHakemukset().stream())
+                        .collect(Collectors.toList()),
+                hakijaryhmaWrapper);
+
+        // Hakijaryhmään kuuluvien hyväksyttyjen määrä
+        int hyvaksyttyjenMaara = ryhmaanKuuluvat
+                .stream()
+                .filter(h -> hyvaksytytTilat.contains(h.getHakemus().getTila()))
+                .collect(Collectors.toList()).size();
+
+        int kiintio = hakijaryhmaWrapper.getHakijaryhma().getKiintio();
+        boolean tarkkaKiintio = hakijaryhmaWrapper.getHakijaryhma().isTarkkaKiintio();
+
+        ArrayList<HakemusWrapper> muuttuneetHakemukset = new ArrayList<HakemusWrapper>();
+
+        if(tarkkaKiintio && hyvaksyttyjenMaara > kiintio) {
+            // Tarkka kiintiö on ylittynyt, pitäis mahdollisesti tiputtaa joku varalle
+        } else if(hyvaksyttyjenMaara < kiintio) {
+            // Hakijaryhmän valituksi haluavat
+            List<HakemusWrapper> valituksiHaluavat = ryhmaanKuuluvat
+                    .stream()
+                    .filter(h -> h.getHakemus().getTila().equals(HakemuksenTila.VARALLA))
+                    .collect(Collectors.toList());
+
+            if(!valituksiHaluavat.isEmpty()) {
+                List<HakemusWrapper> valittavat = seuraavaksiParhaatHakijaryhmasta(valituksiHaluavat);
+                valittavat.forEach(h -> {
+                    h.setHyvaksyttyHakijaryhmastaTaiTayttoJonosta(true);
+                    muuttuneetHakemukset.addAll(hyvaksyHakemus(h));
+                });
+
+                return sijoittele(hakijaryhmaWrapper);
+
+            }
+
+
+        }
+
+
+//        List<List<HakemusWrapper>> hakijaryhmanVarasijallaOlevat = hakijaryhmanVarasijajarjestys(hakijaryhmaWrapper);
+//        ListIterator<List<HakemusWrapper>> it = hakijaryhmanVarasijallaOlevat.listIterator();
+//        Hakijaryhma ryhma = hakijaryhmaWrapper.getHakijaryhma();
+//
+//
+//        while (it.hasNext() && hakijaryhmassaVajaata(hakijaryhmaWrapper) > 0 && !hakijaryhmaWrapper.isAlitayttoSaantoTaytetty()) {
+//            List<HakemusWrapper> tasasijaVarasijaHakemukset = it.next();
+//            Map<String, List<HakemusWrapper>> jonoittain =
+//                tasasijaVarasijaHakemukset.stream()
+//                        .collect(Collectors.groupingBy(h->h.getValintatapajono().getValintatapajono().getOid()));
+//
+//            for (HakemusWrapper paras : tasasijaVarasijaHakemukset) {
+//                ValintatapajonoWrapper v = paras.getValintatapajono();
+//                Tasasijasaanto saanto = v.getValintatapajono().getTasasijasaanto();
+//
+//                if(ryhma.getValintatapajonoOid() == null || ryhma.getValintatapajonoOid().equals(v.getValintatapajono().getOid())) {
+//                    // Haetaan valintatapajonon hyväksytyt
+//                    int hyvaksytyt = v.getHakemukset().stream().filter(h->hyvaksytytTilat.contains(h.getHakemus().getTila())).collect(Collectors.toList()).size();
+//                    // Paljonko jonossa on tilaa
+//                    int tilaa = v.getValintatapajono().getAloituspaikat() - hyvaksytyt;
+//
+//                    // Kuinka paljon hakijaryhmän halukkaista on tästä jonosta
+//                    int haluavat = jonoittain.getOrDefault(v.getValintatapajono().getOid(), new ArrayList<>()).size();
+//
+//                    if(haluavat == 0) { // Jo käsitelty loopissa
+//                        // Ei tehä mitään
+//                    } else if(tilaa - haluavat < 0) { // tasasija tilanne
+//                        if(saanto == Tasasijasaanto.YLITAYTTO) {
+//                            jonoittain.get(v.getValintatapajono().getOid()).forEach(h-> {
+//                                h.setHyvaksyttyHakijaryhmastaTaiTayttoJonosta(true);
+//                                muuttuneetHakemukset.addAll(hyvaksyHakemus(h));
+//                            });
+//                        }
+//                        jonoittain.remove(v.getValintatapajono().getOid());
+//
+//                        // Asetetaan huonoimmat varalle
+//                        huonoimmatTasasijaiset(v).forEach(h ->
+//                                muuttuneetHakemukset.addAll(asetaVaralleHakemus(h))
+//                        );
+//
+//                        v.getHakemukset().forEach(h -> {
+//                            if(hyvaksytytTilat.contains(h.getHakemus().getTila()) && !h.isHyvaksyttyHakijaryhmastaTaiTayttoJonosta()) {
+//                                h.setHyvaksyttavissaHakijaryhmanJalkeen(true);
+//                            }
+//                        });
+//
+//                        if(saanto == Tasasijasaanto.ALITAYTTO) {
+//                            hakijaryhmaWrapper.setAlitayttoSaantoTaytetty(true);
+//                        }
+//
+//                    } else {
+//                        jonoittain.get(v.getValintatapajono().getOid()).forEach(h-> {
+//                            h.setHyvaksyttyHakijaryhmastaTaiTayttoJonosta(true);
+//                            muuttuneetHakemukset.addAll(hyvaksyHakemus(h));
+//                        });
+//                        jonoittain.remove(v.getValintatapajono().getOid());
+//                    }
+//
+//                }
+//            }
+//        }
         return uudelleenSijoiteltavatHakukohteet(muuttuneetHakemukset);
     }
 
