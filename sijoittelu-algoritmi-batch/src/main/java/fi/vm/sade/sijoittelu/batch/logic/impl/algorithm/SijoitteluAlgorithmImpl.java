@@ -98,54 +98,57 @@ public class SijoitteluAlgorithmImpl implements SijoitteluAlgorithm {
             muuttuneetHakukohteet.addAll(this.sijoittele(valintatapajono));
         }
 
-        // Tayttöjonot
-        ArrayList<HakemusWrapper> muuttuneetHakemukset = new ArrayList<>();
-        hakukohde.getValintatapajonot().forEach(valintatapajono -> {
-            int aloituspaikat = valintatapajono.getValintatapajono().getAloituspaikat();
-            int hyvaksytyt = valintatapajono.getHakemukset().stream().filter(h->hyvaksytytTilat.contains(h.getHakemus().getTila())).collect(Collectors.toList()).size();
-            int tilaa = aloituspaikat - hyvaksytyt;
-            String tayttojono = valintatapajono.getValintatapajono().getTayttojono();
 
-            LocalDateTime varasijaTayttoPaattyy = varasijaTayttoPaattyy(valintatapajono);
+        // Otetaan pois kunnes tiedetään pitääkö hakijaryhmät huomioida
+//        // Tayttöjonot
+//        ArrayList<HakemusWrapper> muuttuneetHakemukset = new ArrayList<>();
+//        hakukohde.getValintatapajonot().forEach(valintatapajono -> {
+//            int aloituspaikat = valintatapajono.getValintatapajono().getAloituspaikat();
+//            int hyvaksytyt = valintatapajono.getHakemukset().stream().filter(h->hyvaksytytTilat.contains(h.getHakemus().getTila())).collect(Collectors.toList()).size();
+//            int tilaa = aloituspaikat - hyvaksytyt;
+//            String tayttojono = valintatapajono.getValintatapajono().getTayttojono();
+//
+//            LocalDateTime varasijaTayttoPaattyy = varasijaTayttoPaattyy(valintatapajono);
+//
+//            if(sijoitteluAjo.varasijaSaannotVoimassa()
+//                    && sijoitteluAjo.getToday().isBefore(varasijaTayttoPaattyy)
+//                    && tilaa > 0 && tayttojono != null && !tayttojono.isEmpty()
+//                    && !tayttojono.equals(valintatapajono.getValintatapajono().getOid())
+//                    && !onkoVarasijaisia(valintatapajono)) {
+//                // Vielä on tilaa ja pitäis jostain täytellä
+//
+//                Optional<ValintatapajonoWrapper> opt = hakukohde.getValintatapajonot()
+//                        .stream().filter(v -> v.getValintatapajono().getOid().equals(tayttojono)).findFirst();
+//
+//                if(opt.isPresent()) {
+//                    // Jono löytyi hakukohteen jonoista
+//                    ValintatapajonoWrapper kasiteltava = opt.get();
+//                    List<HakemusWrapper> varasijajono = muodostaVarasijaJono(kasiteltava.getHakemukset())
+//                            .stream()
+//                            .filter(h -> onHylattyJonossa(valintatapajono, h))
+//                            .collect(Collectors.toList());
+//
+//                    varasijajono.sort(new HakemusWrapperComparator());
+//
+//                    while(tilaa > 0 && !varasijajono.isEmpty()) {
+//                        // Vielä on tilaa ja hakemuksia, jotka ei oo tässä hakukohteessa hyväksyttyjä
+//                        //HakemusWrapper hyvaksyttava = varasijajono.get(0);
+//                        HakemusWrapper hyvaksyttava = valintatapajono.getHakemukset()
+//                                .stream()
+//                                .filter(h-> h.getHakemus().getHakemusOid().equals(varasijajono.get(0).getHakemus().getHakemusOid()))
+//                                .findFirst()
+//                                .get();
+//                        hyvaksyttava.getHakemus().setTilanKuvaukset(TilanKuvaukset.hyvaksyttyTayttojonoSaannolla(kasiteltava.getValintatapajono().getNimi()));
+//                        muuttuneetHakemukset.addAll(hyvaksyHakemus(hyvaksyttava));
+//                        tilaa--;
+//                        varasijajono.remove(hyvaksyttava);
+//                    }
+//
+//                }
+//            }
+//        });
+//        muuttuneetHakukohteet.addAll(uudelleenSijoiteltavatHakukohteet(muuttuneetHakemukset));
 
-            if(sijoitteluAjo.varasijaSaannotVoimassa()
-                    && sijoitteluAjo.getToday().isBefore(varasijaTayttoPaattyy)
-                    && tilaa > 0 && tayttojono != null && !tayttojono.isEmpty()
-                    && !tayttojono.equals(valintatapajono.getValintatapajono().getOid())
-                    && !onkoVarasijaisia(valintatapajono)) {
-                // Vielä on tilaa ja pitäis jostain täytellä
-
-                Optional<ValintatapajonoWrapper> opt = hakukohde.getValintatapajonot()
-                        .stream().filter(v -> v.getValintatapajono().getOid().equals(tayttojono)).findFirst();
-
-                if(opt.isPresent()) {
-                    // Jono löytyi hakukohteen jonoista
-                    ValintatapajonoWrapper kasiteltava = opt.get();
-                    List<HakemusWrapper> varasijajono = muodostaVarasijaJono(kasiteltava.getHakemukset())
-                            .stream()
-                            .filter(h -> onHylattyJonossa(valintatapajono, h))
-                            .collect(Collectors.toList());
-
-                    varasijajono.sort(new HakemusWrapperComparator());
-
-                    while(tilaa > 0 && !varasijajono.isEmpty()) {
-                        // Vielä on tilaa ja hakemuksia, jotka ei oo tässä hakukohteessa hyväksyttyjä
-                        //HakemusWrapper hyvaksyttava = varasijajono.get(0);
-                        HakemusWrapper hyvaksyttava = valintatapajono.getHakemukset()
-                                .stream()
-                                .filter(h-> h.getHakemus().getHakemusOid().equals(varasijajono.get(0).getHakemus().getHakemusOid()))
-                                .findFirst()
-                                .get();
-                        hyvaksyttava.getHakemus().setTilanKuvaukset(TilanKuvaukset.hyvaksyttyTayttojonoSaannolla(kasiteltava.getValintatapajono().getNimi()));
-                        muuttuneetHakemukset.addAll(hyvaksyHakemus(hyvaksyttava));
-                        tilaa--;
-                        varasijajono.remove(hyvaksyttava);
-                    }
-
-                }
-            }
-        });
-        muuttuneetHakukohteet.addAll(uudelleenSijoiteltavatHakukohteet(muuttuneetHakemukset));
         return muuttuneetHakukohteet;
     }
 
