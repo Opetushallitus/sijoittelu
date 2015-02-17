@@ -35,5 +35,29 @@ public class HakijaryhmaSpecTest extends SijoitteluTestSpec {
         SijoitteluajoWrapper ajo = ajaSijoittelu("testdata_erikoistapaukset/sijoittelu_liian_iso_kiintio.json");
         assertoi(ajo, hakukohde("1"), valintatapajono("1"), hyvaksyttyjaHakemuksiaAinoastaan("1", "2"));
     }
+
+    @Test
+    public void tarkkaKiintioPerusTapaus() {
+        SijoitteluajoWrapper ajo = ajaSijoittelu("testdata_erikoistapaukset/sijoittelu_tarkka_kiintio.json");
+        assertoi(ajo, hakukohde("1"), valintatapajono("1"), hyvaksyttyjaHakemuksiaAinoastaan("1", "2", "4"));
+    }
+
+    @Test
+    public void tarkkaKiintioTasasijaYlitys() {
+        SijoitteluajoWrapper ajo = ajaSijoittelu("testdata_erikoistapaukset/sijoittelu_tarkka_kiintio_tasasija_kiintion_ylitys.json");
+        assertoi(ajo, hakukohde("1"), valintatapajono("1"), hyvaksyttyjaHakemuksiaAinoastaan("1", "2", "3"));
+    }
+
+    @Test
+    public void tarkkaKiintioParasVaralle() {
+        SijoitteluajoWrapper ajo = ajaSijoittelu("testdata_erikoistapaukset/sijoittelu_tarkka_kiintio_2_hakijaryhmaa.json");
+        assertoi(ajo, hakukohde("1"), valintatapajono("1"), hyvaksyttyjaHakemuksiaAinoastaan("2", "3", "4"));
+    }
+
+    @Test
+    public void tarkkaKiintioJaKiintioJaaVajaaksi() {
+        SijoitteluajoWrapper ajo = ajaSijoittelu("testdata_erikoistapaukset/sijoittelu_tarkka_kiintio_2_hakijaryhmaa_kiintio_jaa_vajaaksi.json");
+        assertoi(ajo, hakukohde("1"), valintatapajono("1"), hyvaksyttyjaHakemuksiaAinoastaan("2", "1", "4"));
+    }
 }
 

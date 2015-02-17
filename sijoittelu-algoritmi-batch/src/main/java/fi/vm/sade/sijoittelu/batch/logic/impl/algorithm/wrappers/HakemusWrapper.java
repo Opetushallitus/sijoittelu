@@ -26,8 +26,7 @@ public class HakemusWrapper {
     // Yhden hakukohderekursion aikainen lippu, jolla katsotaan voidaanko korvata
     private boolean hyvaksyttyHakijaryhmasta = false;
 
-    // Yhden hakukohderekursion aikainen lippu, jolla katsotaan voidaanko korvata
-    private boolean hyvaksyttyValintatapaJonosta = false;
+    private boolean hyvaksyttavissaHakijaryhmanJalkeen = true;
 
     //jos hakemuksen tilaa ei voida muuttaa, esm. ilmoitettu hakijalle jo
     private boolean tilaVoidaanVaihtaa = true;
@@ -101,11 +100,11 @@ public class HakemusWrapper {
         }
     }
 
-    public boolean isHyvaksyttyValintatapaJonosta() {
-        return hyvaksyttyValintatapaJonosta;
+    public boolean isHyvaksyttavissaHakijaryhmanJalkeen() {
+        return hyvaksyttavissaHakijaryhmanJalkeen;
     }
 
-    public void setHyvaksyttyValintatapaJonosta(boolean hyvaksyttyValintatapaJonosta) {
-        this.hyvaksyttyValintatapaJonosta = hyvaksyttyValintatapaJonosta;
+    public void setHyvaksyttavissaHakijaryhmanJalkeen(boolean hyvaksyttavissaHakijaryhmanJalkeen) {
+        this.hyvaksyttavissaHakijaryhmanJalkeen = hyvaksyttavissaHakijaryhmanJalkeen;
     }
 }
