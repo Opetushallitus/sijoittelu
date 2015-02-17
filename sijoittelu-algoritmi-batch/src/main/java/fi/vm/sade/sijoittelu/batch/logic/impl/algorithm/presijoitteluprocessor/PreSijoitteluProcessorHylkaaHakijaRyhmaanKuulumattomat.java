@@ -1,17 +1,11 @@
 package fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.presijoitteluprocessor;
 
-import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.comparator.HakemusWrapperComparator;
-import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.comparator.HakijaryhmaWrapperComparator;
-import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.comparator.HakukohdeWrapperComparator;
-import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.comparator.ValintatapajonoWrapperComparator;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.util.TilanKuvaukset;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.HakijaryhmaWrapper;
-import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.HakukohdeWrapper;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.SijoitteluajoWrapper;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.ValintatapajonoWrapper;
 import fi.vm.sade.sijoittelu.domain.HakemuksenTila;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -24,12 +18,12 @@ public class PreSijoitteluProcessorHylkaaHakijaRyhmaanKuulumattomat implements P
 
     @Override
     public void process(SijoitteluajoWrapper sijoitteluajoWrapper) {
-        this.hylkaaHaikjaryhmiinKuulumattomat(sijoitteluajoWrapper);
+        this.hylkaaHakijaryhmiinKuulumattomat(sijoitteluajoWrapper);
 
     }
 
 
-    private void hylkaaHaikjaryhmiinKuulumattomat(SijoitteluajoWrapper sijoitteluajoWrapper) {
+    private void hylkaaHakijaryhmiinKuulumattomat(SijoitteluajoWrapper sijoitteluajoWrapper) {
         sijoitteluajoWrapper.getHakukohteet().forEach(hakukohde -> {
             List<HakijaryhmaWrapper> vainRyhmaanKuuluvatHyvaksytaan = hakukohde
                     .getHakijaryhmaWrappers()
