@@ -23,5 +23,17 @@ public class HakijaryhmaSpecTest extends SijoitteluTestSpec {
         SijoitteluajoWrapper ajo = ajaSijoittelu("testdata_erikoistapaukset/sijoittelu_ylitaytto_rajatapaus.json");
         assertoi(ajo, hakukohde("1"), valintatapajono("1"), hyvaksyttyjaHakemuksiaAinoastaan("2", "3", "4"));
     }
+
+    @Test
+    public void testaaHakijaryhmaAlitayttoLukko() {
+        SijoitteluajoWrapper ajo = ajaSijoittelu("testdata_erikoistapaukset/sijoittelu_alitaytto_lukko.json");
+        assertoi(ajo, hakukohde("1"), valintatapajono("1"), hyvaksyttyjaHakemuksiaAinoastaan("1"));
+    }
+
+    @Test
+    public void liianIsoKiintio() {
+        SijoitteluajoWrapper ajo = ajaSijoittelu("testdata_erikoistapaukset/sijoittelu_liian_iso_kiintio.json");
+        assertoi(ajo, hakukohde("1"), valintatapajono("1"), hyvaksyttyjaHakemuksiaAinoastaan("1", "2"));
+    }
 }
 

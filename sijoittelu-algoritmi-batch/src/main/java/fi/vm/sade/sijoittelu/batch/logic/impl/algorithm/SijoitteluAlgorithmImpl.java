@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.*;
+import java.util.function.BinaryOperator;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -502,6 +503,13 @@ public class SijoitteluAlgorithmImpl implements SijoitteluAlgorithm {
                 .collect(Collectors.toList()).size();
 
         int kiintio = hakijaryhmaWrapper.getHakijaryhma().getKiintio();
+
+        int alotuspaikat = liittyvatJonot.stream().map(v -> v.getValintatapajono().getAloituspaikat()).reduce(0, (a, b) -> a + b);
+
+        if(kiintio > alotuspaikat) {
+            kiintio = alotuspaikat;
+        }
+
         boolean tarkkaKiintio = hakijaryhmaWrapper.getHakijaryhma().isTarkkaKiintio();
 
         ArrayList<HakemusWrapper> muuttuneetHakemukset = new ArrayList<HakemusWrapper>();
@@ -528,7 +536,10 @@ public class SijoitteluAlgorithmImpl implements SijoitteluAlgorithm {
                     muuttuneetHakemukset.addAll(hyvaksyHakemus(h));
                 });
 
-                muuttuneet.addAll(sijoitteleHakijaryhma(hakijaryhmaWrapper));
+                boolean lukko = liittyvatJonot.stream().anyMatch(ValintatapajonoWrapper::isAlitayttoLukko);
+                if(!lukko) {
+                    muuttuneet.addAll(sijoitteleHakijaryhma(hakijaryhmaWrapper));
+                }
 
             }
         }
