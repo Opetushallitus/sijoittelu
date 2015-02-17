@@ -13,14 +13,14 @@ import java.util.stream.Stream;
 /**
  * @author Jussi Jartamo
  */
-public class HakijaryhmaSpec extends SijoitteluTestSpec {
+public class HakijaryhmaSpecTest extends SijoitteluTestSpec {
 
 
     @Test
     public void testaaHakijaryhmaYlitaytonRajatapaukset() {
         SijoitteluajoWrapper ajo = kaksiHakukohdettaJaKaksiJonoaJaHakijaryhmaYhdenKiintiolla();
         assertoi(ajo, hakukohde("1"), valintatapajono("1"), hyvaksyttyjaHakemuksiaAinoastaan("2", "3"));
-        assertoi(ajo, hakukohde("1"), valintatapajono("2"), hyvaksyttyjaHakemuksiaAinoastaan("7", "10"));
+        assertoi(ajo, hakukohde("1"), valintatapajono("2"), hyvaksyttyjaHakemuksiaAinoastaan("10", "7"));
     }
 }
 

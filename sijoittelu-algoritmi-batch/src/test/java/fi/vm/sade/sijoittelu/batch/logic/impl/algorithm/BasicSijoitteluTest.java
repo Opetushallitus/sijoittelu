@@ -50,6 +50,8 @@ public class BasicSijoitteluTest {
         fstream.flush();
         fstream.close();
 
+        System.out.println(PrintHelper.tulostaSijoittelu(s));
+
         // assertoi
         TestHelper.assertoiAinoastaanValittu(hakukohteet.get(0).getValintatapajonot()
                 .get(0), "1.2.246.562.24.00000000004");

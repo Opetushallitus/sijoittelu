@@ -7,8 +7,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Collections;
-import java.util.Objects;
-import java.util.function.Function;
 
 import static java.util.Optional.ofNullable;
 
@@ -25,9 +23,11 @@ public class HakemusWrapper {
 
     private HenkiloWrapper henkilo;
 
-    private boolean hyvaksyttyHakijaryhmastaTaiTayttoJonosta = false;
+    // Yhden hakukohderekursion aikainen lippu, jolla katsotaan voidaanko korvata
+    private boolean hyvaksyttyHakijaryhmasta = false;
 
-    private boolean hyvaksyttavissaHakijaryhmanJalkeen = false;
+    // Yhden hakukohderekursion aikainen lippu, jolla katsotaan voidaanko korvata
+    private boolean hyvaksyttyValintatapaJonosta = false;
 
     //jos hakemuksen tilaa ei voida muuttaa, esm. ilmoitettu hakijalle jo
     private boolean tilaVoidaanVaihtaa = true;
@@ -65,20 +65,12 @@ public class HakemusWrapper {
         this.tilaVoidaanVaihtaa = tilaVoidaanVaihtaa;
     }
 
-    public boolean isHyvaksyttyHakijaryhmastaTaiTayttoJonosta() {
-        return hyvaksyttyHakijaryhmastaTaiTayttoJonosta;
+    public boolean isHyvaksyttyHakijaryhmasta() {
+        return hyvaksyttyHakijaryhmasta;
     }
 
-    public void setHyvaksyttyHakijaryhmastaTaiTayttoJonosta(boolean hyvaksyttyHakijaryhmastaTaiTayttoJonosta) {
-        this.hyvaksyttyHakijaryhmastaTaiTayttoJonosta = hyvaksyttyHakijaryhmastaTaiTayttoJonosta;
-    }
-
-    public boolean isHyvaksyttavissaHakijaryhmanJalkeen() {
-        return hyvaksyttavissaHakijaryhmanJalkeen;
-    }
-
-    public void setHyvaksyttavissaHakijaryhmanJalkeen(boolean hyvaksyttavissaHakijaryhmanJalkeen) {
-        this.hyvaksyttavissaHakijaryhmanJalkeen = hyvaksyttavissaHakijaryhmanJalkeen;
+    public void setHyvaksyttyHakijaryhmasta(boolean hyvaksyttyHakijaryhmasta) {
+        this.hyvaksyttyHakijaryhmasta = hyvaksyttyHakijaryhmasta;
     }
 
     public void hash(Hasher hf) {
@@ -107,5 +99,13 @@ public class HakemusWrapper {
             LOG.error("Hakemuswrapperilla ei ole hakemusta!");
             throw new RuntimeException("Hakemuswrapperilla ei ole hakemusta!");
         }
+    }
+
+    public boolean isHyvaksyttyValintatapaJonosta() {
+        return hyvaksyttyValintatapaJonosta;
+    }
+
+    public void setHyvaksyttyValintatapaJonosta(boolean hyvaksyttyValintatapaJonosta) {
+        this.hyvaksyttyValintatapaJonosta = hyvaksyttyValintatapaJonosta;
     }
 }

@@ -80,7 +80,7 @@
                                     "tila": "HYVAKSYTTAVISSA"
                                 }
                             ],
-                            "prioriteetti": 1,
+                            "prioriteetti": 0,
                             "siirretaanSijoitteluun": true,
                             "tasasijasaanto": "YLITAYTTO",
                             "valintatapajonooid": "laakkis_jono_1"

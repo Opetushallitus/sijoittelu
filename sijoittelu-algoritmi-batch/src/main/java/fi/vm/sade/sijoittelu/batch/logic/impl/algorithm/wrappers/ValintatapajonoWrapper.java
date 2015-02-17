@@ -16,6 +16,9 @@ public class ValintatapajonoWrapper {
 
     private HakukohdeWrapper hakukohdeWrapper;
 
+    // Yhden sijoittelukierroksen aikainen lukko, jos alitäyttösääntö on lauennut hakijaryhmäkäsittelyssä
+    private boolean alitayttoLukko = false;
+
     private List<HakemusWrapper> hakemukset = new ArrayList<HakemusWrapper>();
 
     public void setHakemukset(List<HakemusWrapper> hakemukset) {
@@ -42,4 +45,11 @@ public class ValintatapajonoWrapper {
         this.hakukohdeWrapper = hakukohdeWrapper;
     }
 
+    public boolean isAlitayttoLukko() {
+        return alitayttoLukko;
+    }
+
+    public void setAlitayttoLukko(boolean alitayttoLukko) {
+        this.alitayttoLukko = alitayttoLukko;
+    }
 }

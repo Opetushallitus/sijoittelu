@@ -9,8 +9,10 @@ import fi.vm.sade.sijoittelu.batch.logic.impl.DomainConverter;
 import fi.vm.sade.sijoittelu.domain.*;
 import fi.vm.sade.sijoittelu.laskenta.external.resource.HakuV1Resource;
 import fi.vm.sade.sijoittelu.laskenta.external.resource.OhjausparametriResource;
+import fi.vm.sade.sijoittelu.laskenta.external.resource.dto.ParametriDTO;
 import fi.vm.sade.sijoittelu.laskenta.external.resource.dto.ResultHakuDTO;
 import fi.vm.sade.sijoittelu.laskenta.service.business.SijoitteluBusinessService;
+import fi.vm.sade.sijoittelu.laskenta.service.it.TarjontaIntegrationService;
 import fi.vm.sade.sijoittelu.tulos.dao.HakukohdeDao;
 import fi.vm.sade.sijoittelu.tulos.dao.SijoitteluDao;
 import fi.vm.sade.sijoittelu.tulos.dao.ValiSijoitteluDao;
@@ -69,10 +71,7 @@ public class SijoitteluBusinessTest {
     private SijoitteluBusinessService sijoitteluService;
 
     @Autowired
-    private HakuV1Resource hakuV1Resource;
-
-    @Autowired
-    private OhjausparametriResource ohjausparametriResource;
+    private TarjontaIntegrationService tarjontaIntegrationService;
 
     @Autowired
     private ValintatietoService valintatietoService;
@@ -85,40 +84,23 @@ public class SijoitteluBusinessTest {
 
     @Test
     @UsingDataSet(locations = "peruuta_alemmat.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
-    @Ignore
     public void testPeruutaAlemmat() throws IOException {
 
-        hakuV1Resource = mock(HakuV1Resource.class);
-        ohjausparametriResource = mock(OhjausparametriResource.class);
+        tarjontaIntegrationService = mock(TarjontaIntegrationService.class);
 
         ReflectionTestUtils.setField(sijoitteluService,
-                "hakuV1Resource",
-                hakuV1Resource);
+                "tarjontaIntegrationService",
+                tarjontaIntegrationService);
 
-        ReflectionTestUtils.setField(sijoitteluService,
-                "ohjausparametriResource",
-                ohjausparametriResource);
 
-        String hakuJson = "{\n" +
-                "    \"hakukausiUri\": \"kausi_s#1\", \n" +
-                "    \"hakukausiVuosi\": 2014, \n" +
-                "    \"hakutapaUri\": \"hakutapa_01#1\", \n" +
-                "    \"hakutyyppiUri\": \"hakutyyppi_01#1\", \n" +
-                "    \"kohdejoukkoUri\": \"haunkohdejoukko_11#1\", \n" +
-                "    \"modifiedBy\": \"1.2.246.562.24.15473337696\", \n" +
-                "    \"oid\": \"1.2.246.562.29.92175749016\"\n" +
-                "  }";
-        fi.vm.sade.sijoittelu.laskenta.external.resource.dto.HakuDTO hakuRDTO = new GsonBuilder().create().fromJson(hakuJson,  new TypeToken<HakuDTO>() {
-        }.getType());
-
-        ResultHakuDTO dto = new ResultHakuDTO();
-        dto.setResult(hakuRDTO);
-
-        when(hakuV1Resource.findByOid(anyString())).thenReturn(dto);
+        when(tarjontaIntegrationService.getHaunKohdejoukko(anyString())).thenReturn(Optional.of("haunkohdejoukko_11"));
 
         String json = "{ \"target\": \"1.2.246.562.29.173465377510\", \"__modified__\": 1416309364472, \"__modifiedBy__\": \"1.2.246.562.24.47840234552\", \"PH_TJT\": {\"date\": null}, \"PH_HKLPT\": {\"date\": null}, \"PH_HKMT\": {\"date\": null}, \"PH_KKM\": { \"dateStart\": null, \"dateEnd\": null }, \"PH_HVVPTP\": {\"date\": null}, \"PH_KTT\": { \"dateStart\": null, \"dateEnd\": null }, \"PH_OLVVPKE\": { \"dateStart\": null, \"dateEnd\": null }, \"PH_VLS\": { \"dateStart\": null, \"dateEnd\": null }, \"PH_SS\": { \"dateStart\": null, \"dateEnd\": null }, \"PH_JKLIP\": {\"date\": null}, \"PH_HKP\": {\"date\": 14168663953898}, \"PH_VTSSV\": {\"date\": 1416866395389}, \"PH_VSSAV\": {\"date\": 1416866458888}, \"PH_VTJH\": { \"dateStart\": null, \"dateEnd\": null }, \"PH_EVR\": {\"date\": null}, \"PH_OPVP\": {\"date\": null}, \"PH_HPVOA\": {\"date\": null}, \"PH_IP\": {\"date\": null} }";
 
-        when(ohjausparametriResource.haePaivamaara(anyString())).thenReturn(json);
+        ParametriDTO dto = new GsonBuilder().create().fromJson(json, new TypeToken<ParametriDTO>() {
+        }.getType());
+
+        when(tarjontaIntegrationService.getHaunParametrit(anyString())).thenReturn(dto);
 
         HakuDTO haku = valintatietoService.haeValintatiedot("haku1");
 

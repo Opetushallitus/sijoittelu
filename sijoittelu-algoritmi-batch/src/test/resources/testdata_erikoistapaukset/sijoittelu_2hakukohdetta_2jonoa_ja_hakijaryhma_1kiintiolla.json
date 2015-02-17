@@ -7,7 +7,7 @@
                     "jonosijat": [
                         {"hakemusOid" : "1.2.246.562.24.00000000001", "jarjestyskriteerit":[{"tila": "HYVAKSYTTAVISSA"}]},
                         {"hakemusOid" : "1.2.246.562.24.00000000004", "jarjestyskriteerit":[{"tila": "HYVAKSYTTAVISSA"}]},
-                        {"hakemusOid" :"1.2.246.562.24.000000000010", "jarjestyskriteerit":[{"tila": "HYVAKSYTTAVISSA"}]}
+                        {"hakemusOid" : "1.2.246.562.24.00000000010", "jarjestyskriteerit":[{"tila": "HYVAKSYTTAVISSA"}]}
                     ],
                     "nimi": "Gofore",
                     "hakijaryhmaOid": "1.2.246.562.24.20000000001",

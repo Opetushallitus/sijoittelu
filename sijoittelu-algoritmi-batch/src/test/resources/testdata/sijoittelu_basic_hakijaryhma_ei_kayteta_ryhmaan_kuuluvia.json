@@ -6,8 +6,13 @@
                 {
                     "jonosijat": [
                         {"hakemusOid" : "1.2.246.562.24.00000000001", "jarjestyskriteerit":[{"tila": "HYLATTY"}]},
-                        {"hakemusOid" :"1.2.246.562.24.00000000002", "jarjestyskriteerit":[{"tila": "HYLATTY"}]},
-                        {"hakemusOid" :"1.2.246.562.24.00000000003","jarjestyskriteerit":[{"tila": "HYLATTY"}]}
+                        {"hakemusOid" :"1.2.246.562.24.00000000002","jarjestyskriteerit":[{"tila": "HYVAKSYTTAVISSA"}]},
+                        {"hakemusOid" :"1.2.246.562.24.00000000003","jarjestyskriteerit":[{"tila": "HYVAKSYTTAVISSA"}]},
+                        {"hakemusOid" :"1.2.246.562.24.00000000004","jarjestyskriteerit":[{"tila": "HYVAKSYTTAVISSA"}]},
+                        {"hakemusOid" :"1.2.246.562.24.00000000005","jarjestyskriteerit":[{"tila": "HYVAKSYTTAVISSA"}]},
+                        {"hakemusOid" :"1.2.246.562.24.00000000006","jarjestyskriteerit":[{"tila": "HYVAKSYTTAVISSA"}]},
+                        {"hakemusOid" :"1.2.246.562.24.00000000007", "jarjestyskriteerit":[{"tila": "HYLATTY"}]},
+                        {"hakemusOid" :"1.2.246.562.24.00000000008","jarjestyskriteerit":[{"tila": "HYLATTY"}]}
                     ],
                     "nimi": "Gofore",
                     "hakijaryhmaOid": "1.2.246.562.24.20000000001",
@@ -80,16 +85,11 @@
                                     "tila": "HYVAKSYTTAVISSA"
                                 }
                             ],
-                            "prioriteetti": 1,
+                            "prioriteetti": 0,
                             "siirretaanSijoitteluun": true,
                             "tasasijasaanto": "YLITAYTTO",
                             "valintatapajonooid": "laakkis_jono_1"
-                        }
-                    ]
-                },
-                {
-                    "valinnanvaihe": 1,
-                    "valintatapajonot": [
+                        },
                         {
                             "aloituspaikat": 4,
                             "hakija": [
