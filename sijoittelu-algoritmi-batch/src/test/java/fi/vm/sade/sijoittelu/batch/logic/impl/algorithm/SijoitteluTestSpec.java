@@ -11,7 +11,6 @@ import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.function.Function;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 /**
@@ -36,8 +35,10 @@ public abstract class SijoitteluTestSpec {
         return algoritmi().apply(t);
     }
 
-    public SijoitteluajoWrapper kaksiHakukohdettaJaKaksiJonoaJaHakijaryhmaYhdenKiintiolla() {
-        HakuDTO t = TestHelper.xmlToObjects("testdata_erikoistapaukset/sijoittelu_2hakukohdetta_2jonoa_ja_hakijaryhma_1kiintiolla.json");
+    public SijoitteluajoWrapper ajaSijoittelu(String filename) {
+        HakuDTO t = TestHelper.xmlToObjects(filename);
         return algoritmi().apply(t);
     }
+
+
 }

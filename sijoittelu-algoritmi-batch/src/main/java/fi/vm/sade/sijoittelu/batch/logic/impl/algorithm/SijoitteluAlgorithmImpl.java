@@ -102,7 +102,7 @@ public class SijoitteluAlgorithmImpl implements SijoitteluAlgorithm {
 //        ArrayList<HakemusWrapper> muuttuneetHakemukset = new ArrayList<>();
 //        hakukohde.getValintatapajonot().forEach(valintatapajono -> {
 //            int aloituspaikat = valintatapajono.getValintatapajono().getAloituspaikat();
-//            int hyvaksytyt = valintatapajono.getHakemukset().stream().filter(h->hyvaksytytTilat.contains(h.getHakemus().getTila())).collect(Collectors.toList()).size();
+//            int hyvaksytyt = valintatapajono.getHakemukset().stream().filter(h->kuuluuHyvaksyttyihinTiloihin(h.getHakemus().getTila())).collect(Collectors.toList()).size();
 //            int tilaa = aloituspaikat - hyvaksytyt;
 //            String tayttojono = valintatapajono.getValintatapajono().getTayttojono();
 //
@@ -159,12 +159,15 @@ public class SijoitteluAlgorithmImpl implements SijoitteluAlgorithm {
         return muuttuneetHakukohteet;
     }
 
-    private boolean onHyvaksyttyHakukohteessa(HakukohdeWrapper hakukohde, HakemusWrapper hakija) {
-        return hakukohde.getValintatapajonot()
-                .stream().flatMap(v -> v.getHakemukset().stream())
-                .filter(h -> h.getHakemus().getHakemusOid().equals(hakija.getHakemus().getHakemusOid()))
-                .anyMatch(h->h.getHakemus().getTila().equals(HakemuksenTila.HYVAKSYTTY));
+    private List<HakemusWrapper> muodostaVarasijaJono(List<HakemusWrapper> hakemukset) {
+
+        return hakemukset.stream()
+                .filter(h -> !kuuluuHyvaksyttyihinTiloihin(h.getHakemus().getTila())
+                        && hakijaHaluaa(h)
+                        && saannotSallii(h))
+                .collect(Collectors.toList());
     }
+
 
     private boolean onHylattyJonossa(ValintatapajonoWrapper valintatapajonoWrapper, HakemusWrapper hakija) {
         return valintatapajonoWrapper.getHakemukset()
@@ -534,97 +537,12 @@ public class SijoitteluAlgorithmImpl implements SijoitteluAlgorithm {
         return muuttuneet;
     }
 
-    private List<HakemusWrapper> valituksiHaluavatHakemukset(List<HakemusWrapper> hakemukset) {
-
-        return hakemukset.stream()
-                .filter(h -> hakijaHaluaa(h) && saannotSallii(h))
-                .collect(Collectors.toList());
-
-    }
-
-    // hae hakemukset jotka ovat seuraavana samalla sijalla
-    private ArrayList<HakemusWrapper> tasasijaHakemukset(ListIterator<HakemusWrapper> it) {
-        ArrayList<HakemusWrapper> tasasijaHakemukset = new ArrayList<HakemusWrapper>();
-        while (it.hasNext()) {
-            HakemusWrapper h = it.next();
-            tasasijaHakemukset.add(h);
-            HakemusWrapper seuraava = SijoitteluHelper.peek(it);
-            if (seuraava == null || !seuraava.getHakemus().getJonosija().equals(h.getHakemus().getJonosija())) {
-                break;
-            }
-        }
-        return tasasijaHakemukset;
-    }
-
     private List<HakemusWrapper> hakijaRyhmaanKuuluvat(List<HakemusWrapper> hakemus, HakijaryhmaWrapper ryhma) {
 
         return hakemus.stream()
                 .filter(h -> ryhma.getHenkiloWrappers().contains(h.getHenkilo()))
                 .collect(Collectors.toList());
 
-    }
-
-    private List<List<HakemusWrapper>> hakijaryhmanVarasijajarjestys(HakijaryhmaWrapper hakijaryhmaWrapper) {
-
-        List<List<HakemusWrapper>> list = new ArrayList<List<HakemusWrapper>>();
-        List<ListIterator<HakemusWrapper>> iterators = new ArrayList<ListIterator<HakemusWrapper>>();
-
-        for (ValintatapajonoWrapper valintatapajonoWrapper : hakijaryhmaWrapper.getHakukohdeWrapper().getValintatapajonot()) {
-            iterators.add(muodostaVarasijaJono(valintatapajonoWrapper.getHakemukset()).listIterator());
-        }
-        while (true) {
-            boolean jatka = false;
-            for (ListIterator<HakemusWrapper> it : iterators) {
-                if (it.hasNext()) {
-
-                    ArrayList<HakemusWrapper> kaikkiTasasijaHakemukset = tasasijaHakemukset(it);
-                    List<HakemusWrapper> valituksiHaluavatHakemukset = valituksiHaluavatHakemukset(kaikkiTasasijaHakemukset);
-
-                    List<HakemusWrapper> a = hakijaRyhmaanKuuluvat(valituksiHaluavatHakemukset, hakijaryhmaWrapper);
-                    a = poistaDuplikaatit(a, list);
-                    if (a != null && !a.isEmpty()) {
-                        list.add(a);
-                    }
-                    jatka = true;
-                }
-            }
-            if (!jatka) {
-                break;
-            }
-        }
-
-        return list;
-    }
-
-    private List<HakemusWrapper> muodostaVarasijaJono(List<HakemusWrapper> hakemukset) {
-
-        return hakemukset.stream()
-                .filter(h -> !kuuluuHyvaksyttyihinTiloihin(h.getHakemus().getTila())
-                        && hakijaHaluaa(h)
-                        && saannotSallii(h))
-                .collect(Collectors.toList());
-    }
-
-    private List<HakemusWrapper> poistaDuplikaatit(List<HakemusWrapper> hakemukset, List<List<HakemusWrapper>> lista) {
-        List<HakemusWrapper> returnable = new ArrayList<HakemusWrapper>();
-        for (HakemusWrapper h : hakemukset) {
-            boolean found = false;
-            for (List<HakemusWrapper> l : lista) {
-                for (HakemusWrapper hakemusWrapper : l) {
-                    if (hakemusWrapper.getHenkilo().equals(h.getHenkilo())) {
-                        found = true;
-                        break;
-                    }
-                }
-                if (found) {
-                    break;
-                }
-            }
-            if (!found) {
-                returnable.add(h);
-            }
-        }
-        return returnable;
     }
 
     private Set<HakukohdeWrapper> uudelleenSijoiteltavatHakukohteet(List<HakemusWrapper> muuttuneetHakemukset) {
@@ -655,35 +573,6 @@ public class SijoitteluAlgorithmImpl implements SijoitteluAlgorithm {
 
     }
 
-    private ArrayList<HakemusWrapper> eiKorvattavissaOlevatHyvaksytytHakemukset(ValintatapajonoWrapper valintatapajono) {
-        ArrayList<HakemusWrapper> eiKorvattavissaOlevatHyvaksytytHakemukset = new ArrayList<HakemusWrapper>();
-
-        boolean taytetaankoPoissaOlevat = taytetaankoPoissaOlevat(valintatapajono);
-
-        for (HakemusWrapper h : valintatapajono.getHakemukset()) {
-
-            boolean korvattavissa = false;
-            IlmoittautumisTila tila = h.getHakemus().getIlmoittautumisTila();
-
-            // Jos jonolle on merkitty että täytetään poissa olevien tilalle
-            // ja hakija on ilmoittautunut poissaolevaksi voidaan korvata
-            if(kuuluuPoissaoloTiloihin(tila) && taytetaankoPoissaOlevat) {
-               korvattavissa = true;
-            }
-
-            // Hakija on hyväksytty eikä korvattavissa poissolosäännön jälkeen
-            if (kuuluuHyvaksyttyihinTiloihin(h.getHakemus().getTila()) && !korvattavissa) {
-                // Tarkistetaan onko hakemuswrapperissa sijotteluajon aikaisia merkintöjä
-                // sille voidaanko korvata
-                if (!voidaanKorvata(h)) {
-                    eiKorvattavissaOlevatHyvaksytytHakemukset.add(h);
-                }
-            }
-        }
-
-        return eiKorvattavissaOlevatHyvaksytytHakemukset;
-    }
-
     private boolean voidaanKorvata(HakemusWrapper hakemusWrapper) {
 
         boolean voidaanKorvata = true;
@@ -697,11 +586,6 @@ public class SijoitteluAlgorithmImpl implements SijoitteluAlgorithm {
         if(hakemusWrapper.isHyvaksyttyHakijaryhmasta()) {
             voidaanKorvata = false;
         }
-
-        // Hyväksytty valintatapajonosta, ei voida enää korvata käynnissä olevan ajokierroksen aikana
-//        if(hakemusWrapper.isHyvaksyttyValintatapaJonosta()) {
-//            voidaanKorvata = false;
-//        }
 
         return voidaanKorvata;
     }
@@ -730,8 +614,8 @@ public class SijoitteluAlgorithmImpl implements SijoitteluAlgorithm {
         return uudelleenSijoiteltavatHakukohteet;
     }
 
-    private HashSet<HakemusWrapper> hyvaksyHakemus(HakemusWrapper hakemus) {
-        HashSet<HakemusWrapper> uudelleenSijoiteltavatHakukohteet = new HashSet<HakemusWrapper>();
+    private Set<HakemusWrapper> hyvaksyHakemus(HakemusWrapper hakemus) {
+        Set<HakemusWrapper> uudelleenSijoiteltavatHakukohteet = new HashSet<HakemusWrapper>();
         if(hakemus.isTilaVoidaanVaihtaa()) {
             if(kuuluuVaraTiloihin(hakemus.getHakemus().getEdellinenTila())) {
                 hakemus.getHakemus().setTila(HakemuksenTila.VARASIJALTA_HYVAKSYTTY);
@@ -957,40 +841,5 @@ public class SijoitteluAlgorithmImpl implements SijoitteluAlgorithm {
         return true;
     }
 
-
-
-    private List<HakemusWrapper> huonoimmatTasasijaiset(ValintatapajonoWrapper valintatapajonoWrapper) {
-        HakemusWrapperComparator comparator = new HakemusWrapperComparator();
-        List<HakemusWrapper> sortattu = valintatapajonoWrapper.getHakemukset()
-                .stream()
-                .sorted((h1, h2) -> comparator.compare(h2, h1))
-                .collect(Collectors.toList());
-
-
-        Optional<HakemusWrapper> huonoinHakemus = sortattu.stream()
-                .filter(h -> kuuluuHyvaksyttyihinTiloihin(h.getHakemus().getTila()) && voidaanKorvata(h))
-                .findFirst();
-
-        if(huonoinHakemus.isPresent()) {
-            return sortattu.stream()
-                    .filter(h-> h.getHakemus().getJonosija().equals(huonoinHakemus.get().getHakemus().getJonosija()) && voidaanKorvata(h))
-                    .collect(Collectors.toList());
-        } else {
-            return new ArrayList<>();
-        }
-
-    }
-
-    private int hakijaryhmassaVajaata(HakijaryhmaWrapper hakijaryhmaWrapper) {
-        int needed = hakijaryhmaWrapper.getHakijaryhma().getKiintio();
-        for (ValintatapajonoWrapper valintatapajonoWrapper : hakijaryhmaWrapper.getHakukohdeWrapper().getValintatapajonot()) {
-            for (HakemusWrapper h : valintatapajonoWrapper.getHakemukset()) {
-                if (kuuluuHyvaksyttyihinTiloihin(h.getHakemus().getTila()) && hakijaryhmaWrapper.getHenkiloWrappers().contains(h.getHenkilo())) {
-                    needed--;
-                }
-            }
-        }
-        return needed;
-    }
 
 }
