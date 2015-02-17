@@ -510,33 +510,8 @@ public class SijoitteluAlgorithmImpl implements SijoitteluAlgorithm {
 
         List<HakemusWrapper> muuttuneetHakemukset = new ArrayList<>();
 
-        if(tarkkaKiintio && hyvaksyttyjenMaara == kiintio) {
+        if(tarkkaKiintio && hyvaksyttyjenMaara >= kiintio) {
             asetaEiHyvaksyttavissaHakijaryhmanJalkeen(ryhmaanKuuluvat);
-
-        }
-
-        else if(tarkkaKiintio && hyvaksyttyjenMaara > kiintio) {
-            HakemusWrapperComparator comparator = new HakemusWrapperComparator();
-            Integer jonosija = ryhmaanKuuluvat
-                    .stream()
-                    .filter(h -> kuuluuHyvaksyttyihinTiloihin(h.getHakemus().getTila()))
-                    .sorted((h1, h2) -> comparator.compare(h2, h1))
-                    .limit(1)
-                    .map(h -> h.getHakemus().getJonosija())
-                    .reduce(0, (a, b) -> a + b);
-
-            long samallaSijalla = ryhmaanKuuluvat
-                    .stream()
-                    .filter(h -> kuuluuHyvaksyttyihinTiloihin(h.getHakemus().getTila()))
-                    .filter(h -> h.getHakemus().getJonosija().equals(jonosija))
-                    .count();
-
-            if(samallaSijalla > 1) {
-                asetaEiHyvaksyttavissaHakijaryhmanJalkeen(ryhmaanKuuluvat);
-            } else {
-
-            }
-
 
         } else if(hyvaksyttyjenMaara < kiintio) {
             // Hakijaryhmän valituksi haluavat
@@ -709,34 +684,7 @@ public class SijoitteluAlgorithmImpl implements SijoitteluAlgorithm {
 
                                     Valintatulos muokattava = jononTulos.get();
 
-                                    Optional<Valintatulos> nykyinenTulos = h.getHenkilo().getValintatulos().stream().filter(v -> v.getValintatapajonoOid().equals(hyvaksyttyJono.getOid())).findFirst();
-                                    Valintatulos nykyinen;
-                                    if(nykyinenTulos.isPresent()) {
-                                        nykyinen = nykyinenTulos.get();
-                                        nykyinen.setHyvaksyttyVarasijalta(muokattava.getHyvaksyttyVarasijalta());
-                                        nykyinen.setIlmoittautumisTila(muokattava.getIlmoittautumisTila());
-                                        nykyinen.setJulkaistavissa(muokattava.getJulkaistavissa());
-                                        nykyinen.setLogEntries(muokattava.getLogEntries());
-                                        nykyinen.setTila(muokattava.getTila());
-                                    } else {
-                                        nykyinen = new Valintatulos();
-                                        nykyinen.setHyvaksyttyVarasijalta(muokattava.getHyvaksyttyVarasijalta());
-                                        nykyinen.setIlmoittautumisTila(muokattava.getIlmoittautumisTila());
-                                        nykyinen.setJulkaistavissa(muokattava.getJulkaistavissa());
-                                        nykyinen.setLogEntries(muokattava.getLogEntries());
-                                        nykyinen.setTila(muokattava.getTila());
-                                        nykyinen.setValintatapajonoOid(hyvaksyttyJono.getOid());
-                                        nykyinen.setHakemusOid(muokattava.getHakemusOid());
-                                        nykyinen.setHakijaOid(muokattava.getHakijaOid());
-                                        nykyinen.setHakukohdeOid(muokattava.getHakukohdeOid());
-                                        nykyinen.setHakuOid(muokattava.getHakuOid());
-                                        nykyinen.setHakutoive(muokattava.getHakutoive());
-                                        hakemus.getHenkilo().getValintatulos().add(nykyinen);
-                                    }
-
-                                    muokattava.setTila(ValintatuloksenTila.KESKEN);
-                                    muokattava.setIlmoittautumisTila(IlmoittautumisTila.EI_TEHTY);
-                                    muokattava.setHyvaksyttyVarasijalta(false);
+                                    Valintatulos nykyinen = muokkaaValintatulos(hakemus, h, hyvaksyttyJono, muokattava);
 
                                     // Lisää muokatut valintatulokset listaan tallennusta varten
                                     sijoitteluAjo.getMuuttuneetValintatulokset()
@@ -757,6 +705,38 @@ public class SijoitteluAlgorithmImpl implements SijoitteluAlgorithm {
             }
         }
         return uudelleenSijoiteltavatHakukohteet;
+    }
+
+    private Valintatulos muokkaaValintatulos(HakemusWrapper hakemus, HakemusWrapper h, Valintatapajono hyvaksyttyJono, Valintatulos muokattava) {
+        Optional<Valintatulos> nykyinenTulos = h.getHenkilo().getValintatulos().stream().filter(v -> v.getValintatapajonoOid().equals(hyvaksyttyJono.getOid())).findFirst();
+        Valintatulos nykyinen;
+        if(nykyinenTulos.isPresent()) {
+            nykyinen = nykyinenTulos.get();
+            nykyinen.setHyvaksyttyVarasijalta(muokattava.getHyvaksyttyVarasijalta());
+            nykyinen.setIlmoittautumisTila(muokattava.getIlmoittautumisTila());
+            nykyinen.setJulkaistavissa(muokattava.getJulkaistavissa());
+            nykyinen.setLogEntries(muokattava.getLogEntries());
+            nykyinen.setTila(muokattava.getTila());
+        } else {
+            nykyinen = new Valintatulos();
+            nykyinen.setHyvaksyttyVarasijalta(muokattava.getHyvaksyttyVarasijalta());
+            nykyinen.setIlmoittautumisTila(muokattava.getIlmoittautumisTila());
+            nykyinen.setJulkaistavissa(muokattava.getJulkaistavissa());
+            nykyinen.setLogEntries(muokattava.getLogEntries());
+            nykyinen.setTila(muokattava.getTila());
+            nykyinen.setValintatapajonoOid(hyvaksyttyJono.getOid());
+            nykyinen.setHakemusOid(muokattava.getHakemusOid());
+            nykyinen.setHakijaOid(muokattava.getHakijaOid());
+            nykyinen.setHakukohdeOid(muokattava.getHakukohdeOid());
+            nykyinen.setHakuOid(muokattava.getHakuOid());
+            nykyinen.setHakutoive(muokattava.getHakutoive());
+            hakemus.getHenkilo().getValintatulos().add(nykyinen);
+        }
+
+        muokattava.setTila(ValintatuloksenTila.KESKEN);
+        muokattava.setIlmoittautumisTila(IlmoittautumisTila.EI_TEHTY);
+        muokattava.setHyvaksyttyVarasijalta(false);
+        return nykyinen;
     }
 
     private boolean saannotSallii(HakemusWrapper hakemusWrapper) {

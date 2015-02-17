@@ -59,5 +59,11 @@ public class HakijaryhmaSpecTest extends SijoitteluTestSpec {
         SijoitteluajoWrapper ajo = ajaSijoittelu("testdata_erikoistapaukset/sijoittelu_tarkka_kiintio_2_hakijaryhmaa_kiintio_jaa_vajaaksi.json");
         assertoi(ajo, hakukohde("1"), valintatapajono("1"), hyvaksyttyjaHakemuksiaAinoastaan("2", "1", "4"));
     }
+
+    @Test
+    public void tarkkaKiintioYlittyy() {
+        SijoitteluajoWrapper ajo = ajaSijoittelu("testdata_erikoistapaukset/sijoittelu_tarkka_kiintio_2_hakijaryhmaa_kiintio_ylittyy.json");
+        assertoi(ajo, hakukohde("1"), valintatapajono("1"), hyvaksyttyjaHakemuksiaAinoastaan("1", "2", "3"));
+    }
 }
 
