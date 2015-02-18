@@ -672,26 +672,25 @@ public class SijoitteluAlgorithmImpl implements SijoitteluAlgorithm {
     }
 
     private boolean saannotSallii(HakemusWrapper hakemusWrapper) {
-        Hakemus hakemus = hakemusWrapper.getHakemus();
-        boolean hakemuksenTila = !kuuluuHylattyihinTiloihin(hakemus.getTila());
+        boolean hakemuksenTila = !kuuluuHylattyihinTiloihin(hakemuksenTila(hakemusWrapper));
         boolean hakijaAloistuspaikkojenSisallaTaiVarasijataytto = true;
         boolean eiVarasijaTayttoa = false;
 
         // Jos varasijasäännöt ovat astuneet voimaan niin katsotaan saako varasijoilta täyttää
         if(sijoitteluAjo.varasijaSaannotVoimassa()) {
-            if(hakemusWrapper.getValintatapajono().getValintatapajono().getEiVarasijatayttoa() != null) {
-                eiVarasijaTayttoa = hakemusWrapper.getValintatapajono().getValintatapajono().getEiVarasijatayttoa();
+            if(jononEiVarasijatayttoa(hakemusWrapper) != null) {
+                eiVarasijaTayttoa = jononEiVarasijatayttoa(hakemusWrapper);
             }
         }
 
-        if(eiVarasijaTayttoa && !hakemusWrapper.getValintatapajono().getValintatapajono().getKaikkiEhdonTayttavatHyvaksytaan()) {
+        if(eiVarasijaTayttoa && !jononKaikkiEhdonTayttavatHyvaksytaan(hakemusWrapper)) {
             hakijaAloistuspaikkojenSisallaTaiVarasijataytto  = hakijaAloistuspaikkojenSisalla(hakemusWrapper);
             if(!hakijaAloistuspaikkojenSisallaTaiVarasijataytto && sijoitteluAjo.isKKHaku() && hakemusWrapper.isTilaVoidaanVaihtaa()) {
                 asetaTilaksiPeruuntunutAloituspaikatTaynna(hakemusWrapper);
             }
         }
 
-        Integer varasijat = hakemusWrapper.getValintatapajono().getValintatapajono().getVarasijat();
+        Integer varasijat = jononVarasijat(hakemusWrapper);
         boolean huomioitavienVarasijojenSisalla = true;
 
         if(sijoitteluAjo.varasijaSaannotVoimassa()
