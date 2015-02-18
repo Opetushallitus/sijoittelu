@@ -214,6 +214,7 @@ public class SijoitteluAlgorithmImpl implements SijoitteluAlgorithm {
         LocalDateTime varasijaTayttoPaattyy = varasijaTayttoPaattyy(valintatapajono);
 
         // Muutetaan ehdolliset vastaanotot sitoviksi jos jonon varasijatäyttö on päättynyt
+        // TODO: tämä toimii väärin!!! Pitäisi katsoa ylemmän hakutoiveen päivämääriä. Oma PostProcessor os paikallaan
         if(sijoitteluAjo.getToday().isAfter(varasijaTayttoPaattyy) && sijoitteluAjo.isKKHaku()) {
             muutaEhdollisetVastaanototSitoviksi(valintatapajono);
         }
