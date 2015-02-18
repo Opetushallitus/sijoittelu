@@ -1,0 +1,20 @@
+{
+    "jonosijat": [
+        {"hakemusOid" : "h1", "jarjestyskriteerit":[{"tila": "HYVAKSYTTAVISSA"}]},
+        {"hakemusOid" : "h2", "jarjestyskriteerit":[{"tila": "HYVAKSYTTAVISSA"}]},
+        {"hakemusOid" : "h3", "jarjestyskriteerit":[{"tila": "HYVAKSYTTAVISSA"}]},
+        {"hakemusOid" : "h4", "jarjestyskriteerit":[{"tila": "HYVAKSYTTAVISSA"}]},
+        {"hakemusOid" : "h5", "jarjestyskriteerit":[{"tila": "HYVAKSYTTAVISSA"}]},
+        {"hakemusOid" : "h6", "jarjestyskriteerit":[{"tila": "HYLATTY"}]},
+        {"hakemusOid" : "h7", "jarjestyskriteerit":[{"tila": "HYLATTY"}]},
+        {"hakemusOid" : "h8", "jarjestyskriteerit":[{"tila": "HYLATTY"}]},
+        {"hakemusOid" : "h9", "jarjestyskriteerit":[{"tila": "HYLATTY"}]}
+    ],
+    "nimi": "Hakijaryhma",
+    "hakijaryhmaOid": "hakijaryhma1",
+    "kiintio": 1,
+    "kaytetaanRyhmaanKuuluvia": true,
+    "tarkkaKiintio": false,
+    "kaytaKaikki": false,
+    "valintatapajonoOid": ""
+}

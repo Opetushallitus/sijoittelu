@@ -1,0 +1,65 @@
+[
+    {
+        "jonosija": 1,
+        "hakemusOid": "h1",
+        "prioriteetti": 1,
+        "pisteet": "0",
+        "tila": "HYVAKSYTTAVISSA"
+    },
+    {
+        "jonosija": 2,
+        "hakemusOid": "h2",
+        "prioriteetti": 1,
+        "pisteet": "0",
+        "tila": "HYVAKSYTTAVISSA"
+    },
+    {
+        "jonosija": 3,
+        "hakemusOid": "h3",
+        "prioriteetti": 1,
+        "pisteet": "0",
+        "tila": "HYVAKSYTTAVISSA"
+    },
+    {
+        "jonosija": 4,
+        "hakemusOid": "h4",
+        "prioriteetti": 1,
+        "pisteet": "0",
+        "tila": "HYVAKSYTTAVISSA"
+    },
+    {
+        "jonosija": 5,
+        "hakemusOid": "h5",
+        "prioriteetti": 1,
+        "pisteet": "0",
+        "tila": "HYVAKSYTTAVISSA"
+    },
+    {
+        "jonosija": 6,
+        "hakemusOid": "h6",
+        "prioriteetti": 1,
+        "pisteet": "0",
+        "tila": "HYVAKSYTTAVISSA"
+    },
+    {
+        "jonosija": 7,
+        "hakemusOid": "h7",
+        "prioriteetti": 1,
+        "pisteet": "0",
+        "tila": "HYVAKSYTTAVISSA"
+    },
+    {
+        "jonosija": 8,
+        "hakemusOid": "h8",
+        "prioriteetti": 1,
+        "pisteet": "0",
+        "tila": "HYVAKSYTTAVISSA"
+    },
+    {
+        "jonosija": 9,
+        "hakemusOid": "h9",
+        "prioriteetti": 1,
+        "pisteet": "0",
+        "tila": "HYVAKSYTTAVISSA"
+    }
+]

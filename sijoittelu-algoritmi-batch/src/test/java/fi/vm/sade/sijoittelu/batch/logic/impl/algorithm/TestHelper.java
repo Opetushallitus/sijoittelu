@@ -75,6 +75,19 @@ public final class TestHelper {
         };
     }
 
+    public static Function<Valintatapajono, Void> eiHyvaksyttyja() {
+        return (valintatapajono) -> {
+            List<Hakemus> hyvaksytytHakemukset =
+                    valintatapajono.getHakemukset().stream().filter(h -> HakemuksenTila.HYVAKSYTTY.equals(h.getTila())).collect(Collectors.toList());
+
+            if(!hyvaksytytHakemukset.isEmpty()) {
+                Assert.fail("Valintatapajonossa oli hyväksyttyjä hakemuksia " + toString(hyvaksytytHakemukset));
+            }
+
+            return null;
+        };
+    }
+
     private final static String toString(List<Hakemus> h) {
         return Arrays.toString(h.stream().map(h0 -> h0.getHakemusOid()).toArray());
     }

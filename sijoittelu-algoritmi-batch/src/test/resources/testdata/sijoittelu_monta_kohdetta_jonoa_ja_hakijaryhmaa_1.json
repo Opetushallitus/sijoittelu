@@ -1,0 +1,575 @@
+{
+    "hakuOid": "haku",
+    "hakukohteet": [
+        {
+            "hakijaryhma": [
+                {
+                    "jonosijat": [
+                        {"hakemusOid" : "h1", "jarjestyskriteerit":[{"tila": "HYVAKSYTTAVISSA"}]},
+                        {"hakemusOid" : "h2", "jarjestyskriteerit":[{"tila": "HYVAKSYTTAVISSA"}]},
+                        {"hakemusOid" : "h3", "jarjestyskriteerit":[{"tila": "HYLATTY"}]},
+                        {"hakemusOid" : "h4", "jarjestyskriteerit":[{"tila": "HYLATTY"}]},
+                        {"hakemusOid" : "h5", "jarjestyskriteerit":[{"tila": "HYVAKSYTTAVISSA"}]},
+                        {"hakemusOid" : "h6", "jarjestyskriteerit":[{"tila": "HYLATTY"}]},
+                        {"hakemusOid" : "h7", "jarjestyskriteerit":[{"tila": "HYLATTY"}]},
+                        {"hakemusOid" : "h8", "jarjestyskriteerit":[{"tila": "HYLATTY"}]},
+                        {"hakemusOid" : "h9", "jarjestyskriteerit":[{"tila": "HYLATTY"}]},
+                        {"hakemusOid" : "h10", "jarjestyskriteerit":[{"tila": "HYLATTY"}]},
+                        {"hakemusOid" : "ha", "jarjestyskriteerit":[{"tila": "HYLATTY"}]}
+                    ],
+                    "nimi": "Ensikertalaisten kiintiö",
+                    "hakijaryhmaOid": "hakijaryhma1",
+                    "kiintio": 1,
+                    "kaytetaanRyhmaanKuuluvia": true,
+                    "tarkkaKiintio": true,
+                    "kaytaKaikki": false
+                }
+            ],
+            "oid": "hakukohde1",
+            "valinnanvaihe": [
+                {
+                    "valinnanvaihe": 1,
+                    "valintatapajonot": [
+                        {
+                            "valintatapajonooid": "jono1",
+                            "prioriteetti": 0,
+                            "aloituspaikat": 2,
+                            "tasasijasaanto": "YLITAYTTO",
+                            "siirretaanSijoitteluun": true,
+                            "hakija": [
+                                {
+                                    "jonosija": 1,
+                                    "hakemusOid": "h1",
+                                    "prioriteetti": 2,
+                                    "pisteet": "0",
+                                    "tila": "HYVAKSYTTAVISSA"
+                                },
+                                {
+                                    "jonosija": 2,
+                                    "hakemusOid": "h2",
+                                    "prioriteetti": 1,
+                                    "pisteet": "0",
+                                    "tila": "HYVAKSYTTAVISSA"
+                                },
+                                {
+                                    "jonosija": 3,
+                                    "hakemusOid": "h3",
+                                    "prioriteetti": 3,
+                                    "pisteet": "0",
+                                    "tila": "HYVAKSYTTAVISSA"
+                                },
+                                {
+                                    "jonosija": 4,
+                                    "hakemusOid": "h4",
+                                    "prioriteetti": 3,
+                                    "pisteet": "0",
+                                    "tila": "HYVAKSYTTAVISSA"
+                                },
+                                {
+                                    "jonosija": 5,
+                                    "hakemusOid": "h5",
+                                    "prioriteetti": 1,
+                                    "pisteet": "0",
+                                    "tila": "HYVAKSYTTAVISSA"
+                                },
+                                {
+                                    "jonosija": 6,
+                                    "hakemusOid": "h6",
+                                    "prioriteetti": 1,
+                                    "pisteet": "0",
+                                    "tila": "HYVAKSYTTAVISSA"
+                                },
+                                {
+                                    "jonosija": 7,
+                                    "hakemusOid": "h7",
+                                    "prioriteetti": 2,
+                                    "pisteet": "0",
+                                    "tila": "HYVAKSYTTAVISSA"
+                                },
+                                {
+                                    "jonosija": 8,
+                                    "hakemusOid": "h8",
+                                    "prioriteetti": 1,
+                                    "pisteet": "0",
+                                    "tila": "HYVAKSYTTAVISSA"
+                                },
+                                {
+                                    "jonosija": 9,
+                                    "hakemusOid": "h9",
+                                    "prioriteetti": 1,
+                                    "pisteet": "0",
+                                    "tila": "HYVAKSYTTAVISSA"
+                                },
+                                {
+                                    "jonosija": 10,
+                                    "hakemusOid": "h10",
+                                    "prioriteetti": 1,
+                                    "pisteet": "0",
+                                    "tila": "HYVAKSYTTAVISSA"
+                                },
+                                {
+                                    "jonosija": 10,
+                                    "hakemusOid": "ha",
+                                    "prioriteetti": 3,
+                                    "pisteet": "0",
+                                    "tila": "HYVAKSYTTAVISSA"
+                                }
+                            ]
+                        },
+                        {
+                            "valintatapajonooid": "jono2",
+                            "prioriteetti": 1,
+                            "aloituspaikat": 3,
+                            "tasasijasaanto": "ALITAYTTO",
+                            "siirretaanSijoitteluun": true,
+                            "hakija": [
+                                {
+                                    "jonosija": 1,
+                                    "hakemusOid": "h1",
+                                    "prioriteetti": 2,
+                                    "pisteet": "0",
+                                    "tila": "HYVAKSYTTAVISSA"
+                                },
+                                {
+                                    "jonosija": 2,
+                                    "hakemusOid": "h2",
+                                    "prioriteetti": 1,
+                                    "pisteet": "0",
+                                    "tila": "HYVAKSYTTAVISSA"
+                                },
+                                {
+                                    "jonosija": 3,
+                                    "hakemusOid": "h3",
+                                    "prioriteetti": 3,
+                                    "pisteet": "0",
+                                    "tila": "HYVAKSYTTAVISSA"
+                                },
+                                {
+                                    "jonosija": 4,
+                                    "hakemusOid": "h4",
+                                    "prioriteetti": 3,
+                                    "pisteet": "0",
+                                    "tila": "HYVAKSYTTAVISSA"
+                                },
+                                {
+                                    "jonosija": 5,
+                                    "hakemusOid": "h5",
+                                    "prioriteetti": 1,
+                                    "pisteet": "0",
+                                    "tila": "HYVAKSYTTAVISSA"
+                                },
+                                {
+                                    "jonosija": 6,
+                                    "hakemusOid": "h6",
+                                    "prioriteetti": 1,
+                                    "pisteet": "0",
+                                    "tila": "HYVAKSYTTAVISSA"
+                                },
+                                {
+                                    "jonosija": 7,
+                                    "hakemusOid": "h7",
+                                    "prioriteetti": 2,
+                                    "pisteet": "0",
+                                    "tila": "HYVAKSYTTAVISSA"
+                                },
+                                {
+                                    "jonosija": 8,
+                                    "hakemusOid": "h8",
+                                    "prioriteetti": 1,
+                                    "pisteet": "0",
+                                    "tila": "HYVAKSYTTAVISSA"
+                                },
+                                {
+                                    "jonosija": 9,
+                                    "hakemusOid": "h9",
+                                    "prioriteetti": 1,
+                                    "pisteet": "0",
+                                    "tila": "HYVAKSYTTAVISSA"
+                                },
+                                {
+                                    "jonosija": 10,
+                                    "hakemusOid": "h10",
+                                    "prioriteetti": 1,
+                                    "pisteet": "0",
+                                    "tila": "HYVAKSYTTAVISSA"
+                                },
+                                {
+                                    "jonosija": 10,
+                                    "hakemusOid": "ha",
+                                    "prioriteetti": 3,
+                                    "pisteet": "0",
+                                    "tila": "HYVAKSYTTAVISSA"
+                                }
+                            ]
+                        },
+                        {
+                            "valintatapajonooid": "jono3",
+                            "prioriteetti": 2,
+                            "aloituspaikat": 2,
+                            "tasasijasaanto": "YLITAYTTO",
+                            "siirretaanSijoitteluun": true,
+                            "hakija": [
+                                {
+                                    "jonosija": 1,
+                                    "hakemusOid": "h1",
+                                    "prioriteetti": 2,
+                                    "pisteet": "0",
+                                    "tila": "HYVAKSYTTAVISSA"
+                                },
+                                {
+                                    "jonosija": 2,
+                                    "hakemusOid": "h2",
+                                    "prioriteetti": 1,
+                                    "pisteet": "0",
+                                    "tila": "HYVAKSYTTAVISSA"
+                                },
+                                {
+                                    "jonosija": 3,
+                                    "hakemusOid": "h3",
+                                    "prioriteetti": 3,
+                                    "pisteet": "0",
+                                    "tila": "HYVAKSYTTAVISSA"
+                                },
+                                {
+                                    "jonosija": 4,
+                                    "hakemusOid": "h4",
+                                    "prioriteetti": 3,
+                                    "pisteet": "0",
+                                    "tila": "HYVAKSYTTAVISSA"
+                                },
+                                {
+                                    "jonosija": 5,
+                                    "hakemusOid": "h5",
+                                    "prioriteetti": 1,
+                                    "pisteet": "0",
+                                    "tila": "HYVAKSYTTAVISSA"
+                                },
+                                {
+                                    "jonosija": 6,
+                                    "hakemusOid": "h6",
+                                    "prioriteetti": 1,
+                                    "pisteet": "0",
+                                    "tila": "HYVAKSYTTAVISSA"
+                                },
+                                {
+                                    "jonosija": 7,
+                                    "hakemusOid": "h7",
+                                    "prioriteetti": 2,
+                                    "pisteet": "0",
+                                    "tila": "HYVAKSYTTAVISSA"
+                                },
+                                {
+                                    "jonosija": 8,
+                                    "hakemusOid": "h8",
+                                    "prioriteetti": 1,
+                                    "pisteet": "0",
+                                    "tila": "HYVAKSYTTAVISSA"
+                                },
+                                {
+                                    "jonosija": 9,
+                                    "hakemusOid": "h9",
+                                    "prioriteetti": 1,
+                                    "pisteet": "0",
+                                    "tila": "HYVAKSYTTAVISSA"
+                                },
+                                {
+                                    "jonosija": 10,
+                                    "hakemusOid": "h10",
+                                    "prioriteetti": 1,
+                                    "pisteet": "0",
+                                    "tila": "HYVAKSYTTAVISSA"
+                                },
+                                {
+                                    "jonosija": 10,
+                                    "hakemusOid": "ha",
+                                    "prioriteetti": 3,
+                                    "pisteet": "0",
+                                    "tila": "HYVAKSYTTAVISSA"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "hakijaryhma": [],
+            "oid": "hakukohde2",
+            "valinnanvaihe": [
+                {
+                    "valinnanvaihe": 1,
+                    "valintatapajonot": [
+                        {
+                            "valintatapajonooid": "jono4",
+                            "prioriteetti": 0,
+                            "aloituspaikat": 10,
+                            "tasasijasaanto": "ALITAYTTO",
+                            "siirretaanSijoitteluun": true,
+                            "hakija": [
+                                {
+                                    "jonosija": 1,
+                                    "hakemusOid": "h1",
+                                    "prioriteetti": 1,
+                                    "pisteet": "0",
+                                    "tila": "HYVAKSYTTAVISSA"
+                                },
+                                {
+                                    "jonosija": 2,
+                                    "hakemusOid": "h2",
+                                    "prioriteetti": 3,
+                                    "pisteet": "0",
+                                    "tila": "HYVAKSYTTAVISSA"
+                                },
+                                {
+                                    "jonosija": 3,
+                                    "hakemusOid": "h3",
+                                    "prioriteetti": 1,
+                                    "pisteet": "0",
+                                    "tila": "HYVAKSYTTAVISSA"
+                                },
+                                {
+                                    "jonosija": 4,
+                                    "hakemusOid": "h4",
+                                    "prioriteetti": 2,
+                                    "pisteet": "0",
+                                    "tila": "HYVAKSYTTAVISSA"
+                                },
+                                {
+                                    "jonosija": 5,
+                                    "hakemusOid": "h5",
+                                    "prioriteetti": 2,
+                                    "pisteet": "0",
+                                    "tila": "HYVAKSYTTAVISSA"
+                                },
+                                {
+                                    "jonosija": 6,
+                                    "hakemusOid": "h6",
+                                    "prioriteetti": 3,
+                                    "pisteet": "0",
+                                    "tila": "HYVAKSYTTAVISSA"
+                                },
+                                {
+                                    "jonosija": 7,
+                                    "hakemusOid": "h7",
+                                    "prioriteetti": 1,
+                                    "pisteet": "0",
+                                    "tila": "HYVAKSYTTAVISSA"
+                                },
+                                {
+                                    "jonosija": 8,
+                                    "hakemusOid": "h8",
+                                    "prioriteetti": 3,
+                                    "pisteet": "0",
+                                    "tila": "HYVAKSYTTAVISSA"
+                                },
+                                {
+                                    "jonosija": 9,
+                                    "hakemusOid": "h9",
+                                    "prioriteetti": 2,
+                                    "pisteet": "0",
+                                    "tila": "HYVAKSYTTAVISSA"
+                                },
+                                {
+                                    "jonosija": 10,
+                                    "hakemusOid": "h10",
+                                    "prioriteetti": 2,
+                                    "pisteet": "0",
+                                    "tila": "HYVAKSYTTAVISSA"
+                                },
+                                {
+                                    "jonosija": 10,
+                                    "hakemusOid": "ha",
+                                    "prioriteetti": 2,
+                                    "pisteet": "0",
+                                    "tila": "HYVAKSYTTAVISSA"
+                                }
+                            ]
+                        }
+                    ]
+                }]
+        },
+        {
+            "hakijaryhma": [],
+            "oid": "hakukohde3",
+            "valinnanvaihe": [
+                {
+                    "valinnanvaihe": 1,
+                    "valintatapajonot": [
+                        {
+                            "valintatapajonooid": "jono5",
+                            "prioriteetti": 0,
+                            "aloituspaikat": 1,
+                            "tasasijasaanto": "ALITAYTTO",
+                            "siirretaanSijoitteluun": true,
+                            "hakija": [
+                                {
+                                    "jonosija": 1,
+                                    "hakemusOid": "h1",
+                                    "prioriteetti": 3,
+                                    "pisteet": "0",
+                                    "tila": "HYVAKSYTTAVISSA"
+                                },
+                                {
+                                    "jonosija": 2,
+                                    "hakemusOid": "h2",
+                                    "prioriteetti": 2,
+                                    "pisteet": "0",
+                                    "tila": "HYVAKSYTTAVISSA"
+                                },
+                                {
+                                    "jonosija": 3,
+                                    "hakemusOid": "h3",
+                                    "prioriteetti": 2,
+                                    "pisteet": "0",
+                                    "tila": "HYVAKSYTTAVISSA"
+                                },
+                                {
+                                    "jonosija": 4,
+                                    "hakemusOid": "h4",
+                                    "prioriteetti": 1,
+                                    "pisteet": "0",
+                                    "tila": "HYVAKSYTTAVISSA"
+                                },
+                                {
+                                    "jonosija": 5,
+                                    "hakemusOid": "h5",
+                                    "prioriteetti": 3,
+                                    "pisteet": "0",
+                                    "tila": "HYVAKSYTTAVISSA"
+                                },
+                                {
+                                    "jonosija": 6,
+                                    "hakemusOid": "h6",
+                                    "prioriteetti": 2,
+                                    "pisteet": "0",
+                                    "tila": "HYVAKSYTTAVISSA"
+                                },
+                                {
+                                    "jonosija": 7,
+                                    "hakemusOid": "h7",
+                                    "prioriteetti": 3,
+                                    "pisteet": "0",
+                                    "tila": "HYVAKSYTTAVISSA"
+                                },
+                                {
+                                    "jonosija": 8,
+                                    "hakemusOid": "h8",
+                                    "prioriteetti": 2,
+                                    "pisteet": "0",
+                                    "tila": "HYVAKSYTTAVISSA"
+                                },
+                                {
+                                    "jonosija": 9,
+                                    "hakemusOid": "h9",
+                                    "prioriteetti": 3,
+                                    "pisteet": "0",
+                                    "tila": "HYVAKSYTTAVISSA"
+                                },
+                                {
+                                    "jonosija": 10,
+                                    "hakemusOid": "h10",
+                                    "prioriteetti": 3,
+                                    "pisteet": "0",
+                                    "tila": "HYVAKSYTTAVISSA"
+                                },
+                                {
+                                    "jonosija": 10,
+                                    "hakemusOid": "ha",
+                                    "prioriteetti": 1,
+                                    "pisteet": "0",
+                                    "tila": "HYVAKSYTTAVISSA"
+                                }
+                            ]
+                        },
+                        {
+                            "valintatapajonooid": "jono6",
+                            "prioriteetti": 1,
+                            "aloituspaikat": 2,
+                            "tasasijasaanto": "YLITAYTTO",
+                            "siirretaanSijoitteluun": true,
+                            "hakija": [
+                                {
+                                    "jonosija": 1,
+                                    "hakemusOid": "h1",
+                                    "prioriteetti": 3,
+                                    "pisteet": "0",
+                                    "tila": "HYVAKSYTTAVISSA"
+                                },
+                                {
+                                    "jonosija": 2,
+                                    "hakemusOid": "h2",
+                                    "prioriteetti": 2,
+                                    "pisteet": "0",
+                                    "tila": "HYVAKSYTTAVISSA"
+                                },
+                                {
+                                    "jonosija": 3,
+                                    "hakemusOid": "h3",
+                                    "prioriteetti": 2,
+                                    "pisteet": "0",
+                                    "tila": "HYVAKSYTTAVISSA"
+                                },
+                                {
+                                    "jonosija": 4,
+                                    "hakemusOid": "h4",
+                                    "prioriteetti": 1,
+                                    "pisteet": "0",
+                                    "tila": "HYVAKSYTTAVISSA"
+                                },
+                                {
+                                    "jonosija": 5,
+                                    "hakemusOid": "h5",
+                                    "prioriteetti": 3,
+                                    "pisteet": "0",
+                                    "tila": "HYVAKSYTTAVISSA"
+                                },
+                                {
+                                    "jonosija": 6,
+                                    "hakemusOid": "h6",
+                                    "prioriteetti": 2,
+                                    "pisteet": "0",
+                                    "tila": "HYVAKSYTTAVISSA"
+                                },
+                                {
+                                    "jonosija": 7,
+                                    "hakemusOid": "h7",
+                                    "prioriteetti": 3,
+                                    "pisteet": "0",
+                                    "tila": "HYVAKSYTTAVISSA"
+                                },
+                                {
+                                    "jonosija": 8,
+                                    "hakemusOid": "h8",
+                                    "prioriteetti": 2,
+                                    "pisteet": "0",
+                                    "tila": "HYVAKSYTTAVISSA"
+                                },
+                                {
+                                    "jonosija": 9,
+                                    "hakemusOid": "h9",
+                                    "prioriteetti": 3,
+                                    "pisteet": "0",
+                                    "tila": "HYVAKSYTTAVISSA"
+                                },
+                                {
+                                    "jonosija": 10,
+                                    "hakemusOid": "h10",
+                                    "prioriteetti": 3,
+                                    "pisteet": "0",
+                                    "tila": "HYVAKSYTTAVISSA"
+                                },
+                                {
+                                    "jonosija": 10,
+                                    "hakemusOid": "ha",
+                                    "prioriteetti": 1,
+                                    "pisteet": "0",
+                                    "tila": "HYVAKSYTTAVISSA"
+                                }
+                            ]
+                        }
+                    ]
+                }]
+        }
+    ]
+}
+

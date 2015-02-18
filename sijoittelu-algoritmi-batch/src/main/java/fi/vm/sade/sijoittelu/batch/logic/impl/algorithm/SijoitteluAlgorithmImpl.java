@@ -514,7 +514,7 @@ public class SijoitteluAlgorithmImpl implements SijoitteluAlgorithm {
                 boolean lukko = liittyvatJonot.stream().anyMatch(ValintatapajonoWrapper::isAlitayttoLukko);
 
                 // Kiintiö ei täyty, koska alitäyttö
-                if(!lukko) {
+                if(!lukko && (!valittavat.getLeft().isEmpty() || !valittavat.getRight().isEmpty())) {
                     muuttuneet.addAll(sijoitteleHakijaryhma(hakijaryhmaWrapper));
                 }
 
@@ -767,8 +767,7 @@ public class SijoitteluAlgorithmImpl implements SijoitteluAlgorithm {
                             ||
                             // Hakija hyväksytty paremman prioriteetin jonossa
                             (hakemuksenPrioriteetti(h).equals(hakemuksenPrioriteetti(hakemusWrapper))
-                                    && jononPrioriteetti(h)
-                                    < jononPrioriteetti(hakemusWrapper)))
+                                    && jononPrioriteetti(h) < jononPrioriteetti(hakemusWrapper)))
                     &&
                     // eikä vertailla itseensä
                     hakemusWrapper != h) {
