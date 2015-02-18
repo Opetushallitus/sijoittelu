@@ -20,6 +20,7 @@ import java.util.stream.Collectors;
 
 import static fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.util.TilaTaulukot.*;
 import static fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.util.TilojenMuokkaus.*;
+import static fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.WrapperHelperMethods.*;
 
 /**
  *
@@ -90,7 +91,6 @@ public class SijoitteluAlgorithmImpl implements SijoitteluAlgorithm {
             muuttuneetHakukohteet.addAll(this.sijoitteleValintatapajono(valintatapajono));
         }
 
-
         // Otetaan pois kunnes tiedetään pitääkö hakijaryhmät huomioida
 //        // Tayttöjonot
 //        ArrayList<HakemusWrapper> muuttuneetHakemukset = new ArrayList<>();
@@ -155,7 +155,7 @@ public class SijoitteluAlgorithmImpl implements SijoitteluAlgorithm {
 
     private List<HakemusWrapper> muodostaVarasijaJono(List<HakemusWrapper> hakemukset) {
         return hakemukset.stream()
-                .filter(h -> !kuuluuHyvaksyttyihinTiloihin(h.getHakemus().getTila())
+                .filter(h -> !kuuluuHyvaksyttyihinTiloihin(hakemuksenTila(h))
                         && hakijaHaluaa(h)
                         && saannotSallii(h))
                 .collect(Collectors.toList());
@@ -165,11 +165,11 @@ public class SijoitteluAlgorithmImpl implements SijoitteluAlgorithm {
     private boolean onHylattyJonossa(ValintatapajonoWrapper valintatapajonoWrapper, HakemusWrapper hakija) {
         return valintatapajonoWrapper.getHakemukset()
                 .stream()
-                .anyMatch(h -> h.getHakemus().getHakemusOid().equals(hakija.getHakemus().getHakemusOid()) && h.getHakemus().getTila().equals(HakemuksenTila.HYLATTY));
+                .anyMatch(h -> hakemuksenHakemusOid(h).equals(hakemuksenHakemusOid(hakija)) && hakemuksenTila(h).equals(HakemuksenTila.HYLATTY));
     }
 
     private boolean onkoVarasijaisia(ValintatapajonoWrapper valintatapajonoWrapper) {
-        return valintatapajonoWrapper.getHakemukset().parallelStream().anyMatch(h->h.getHakemus().getTila().equals(HakemuksenTila.VARALLA));
+        return valintatapajonoWrapper.getHakemukset().parallelStream().anyMatch(h-> hakemuksenTila(h).equals(HakemuksenTila.VARALLA));
     }
 
     private LocalDateTime varasijaTayttoPaattyy(ValintatapajonoWrapper valintatapajono) {
@@ -184,7 +184,7 @@ public class SijoitteluAlgorithmImpl implements SijoitteluAlgorithm {
     }
 
     private List<HakemusWrapper> muuttuneetHyvaksytyt(List<HakemusWrapper> hakemukset) {
-        return hakemukset.stream().filter(h -> !kuuluuHyvaksyttyihinTiloihin(h.getHakemus().getTila())).collect(Collectors.toList());
+        return hakemukset.stream().filter(h -> !kuuluuHyvaksyttyihinTiloihin(hakemuksenTila(h))).collect(Collectors.toList());
     }
 
     // TODO: tämä ei toimi oikein, jos päivämäärät vaihtelee. Muutetaan postprocessoriksi
@@ -225,16 +225,14 @@ public class SijoitteluAlgorithmImpl implements SijoitteluAlgorithm {
             return muuttuneetHakukohteet;
         }
 
-        //List<HakemusWrapper> muuttuneetHakemukset = new ArrayList<HakemusWrapper>();
-
-        Tasasijasaanto saanto = valintatapajono.getValintatapajono().getTasasijasaanto();
+        Tasasijasaanto saanto = jononTasasijasaanto(valintatapajono);
 
         List<HakemusWrapper> eiKorvattavissaOlevatHyvaksytytHakemukset = valintatapajononHyvaksytytHakemuksetJoitaEiVoiKorvata(valintatapajono);
 
         List<HakemusWrapper> valituksiHaluavatHakemukset =
                 valintatapajono.getHakemukset().stream()
                         .filter(h -> !eiKorvattavissaOlevatHyvaksytytHakemukset.contains(h))
-                        .filter(h -> !kuuluuHyvaksyttyihinTiloihin(h.getHakemus().getTila()))
+                        .filter(h -> !kuuluuHyvaksyttyihinTiloihin(hakemuksenTila(h)))
                         .filter(h ->
                                 hakijaHaluaa(h)
                                         && saannotSallii(h))
@@ -256,17 +254,15 @@ public class SijoitteluAlgorithmImpl implements SijoitteluAlgorithm {
         // Jonolle on merkitty, että kaikki ehdon täyttävät hyväksytään
         if (valintatapajono.getValintatapajono().getKaikkiEhdonTayttavatHyvaksytaan() != null
                 && valintatapajono.getValintatapajono().getKaikkiEhdonTayttavatHyvaksytaan()) {
-
             valituksiHaluavatHakemukset.forEach(this::hyvaksyHakemus);
             muuttuneetHakukohteet.addAll(uudelleenSijoiteltavatHakukohteet(muuttuneetHyvaksytyt(valituksiHaluavatHakemukset)));
             return muuttuneetHakukohteet;
         }
 
-        int aloituspaikat = valintatapajono.getValintatapajono().getAloituspaikat();
+        int aloituspaikat = jononAloituspaikat(valintatapajono);
         int tilaa = aloituspaikat - eiKorvattavissaOlevatHyvaksytytHakemukset.size();
 
         if(tilaa <= 0) {
-
             return muuttuneetHakukohteet;
         }
 
@@ -316,12 +312,12 @@ public class SijoitteluAlgorithmImpl implements SijoitteluAlgorithm {
     }
 
     private boolean mahtuukoJonoon(List<HakemusWrapper> hakemukset, ValintatapajonoWrapper valintatapajonoWrapper) {
-        int aloituspaikat = valintatapajonoWrapper.getValintatapajono().getAloituspaikat();
-        int hyvaksytyt = valintatapajonoWrapper.getHakemukset().stream().filter(h-> kuuluuHyvaksyttyihinTiloihin(h.getHakemus().getTila())).collect(Collectors.toList()).size();
+        int aloituspaikat = jononAloituspaikat(valintatapajonoWrapper);
+        int hyvaksytyt = valintatapajonoWrapper.getHakemukset().stream().filter(h-> kuuluuHyvaksyttyihinTiloihin(hakemuksenTila(h))).collect(Collectors.toList()).size();
         if(aloituspaikat - hyvaksytyt <= 0) {
             return false;
         } else {
-            if(valintatapajonoWrapper.getValintatapajono().getTasasijasaanto().equals(Tasasijasaanto.YLITAYTTO)) {
+            if(jononTasasijasaanto(valintatapajonoWrapper).equals(Tasasijasaanto.YLITAYTTO)) {
                 return true;
             } else if(aloituspaikat - hyvaksytyt - hakemukset.size() >= 0) {
                 return true;
@@ -345,11 +341,13 @@ public class SijoitteluAlgorithmImpl implements SijoitteluAlgorithm {
     private Pair<List<HakemusWrapper>, List<HakemusWrapper>> seuraavaksiParhaatHakijaryhmasta(List<HakemusWrapper> valituksiHaluavat, HakijaryhmaWrapper hakijaryhmaWrapper) {
         HakemusWrapperComparator comparator = new HakemusWrapperComparator();
 
+        // Valituksihaluavat jonoittain
         Map<ValintatapajonoWrapper, List<HakemusWrapper>> jonoittain = valituksiHaluavat
                 .stream()
                 .sorted(comparator::compare)
                 .collect(Collectors.groupingBy(HakemusWrapper::getValintatapajono));
 
+        // Jonojen parhaat jonosijoittain
         Map<Integer, List<HakemusWrapper>> jonojenParhaat = jonoittain.values()
                 .stream()
                 .map(l -> l.get(0))
@@ -362,7 +360,7 @@ public class SijoitteluAlgorithmImpl implements SijoitteluAlgorithm {
             // jossain on ylitäyttö ja pitäis saada hyväksytyks tai alitäyttö lukko
             List<ValintatapajonoWrapper> ylitayttoJonot = jonoittain.keySet()
                     .stream()
-                    .filter(v -> v.getValintatapajono().getTasasijasaanto().equals(Tasasijasaanto.YLITAYTTO))
+                    .filter(v -> jononTasasijasaanto(v).equals(Tasasijasaanto.YLITAYTTO))
                     .collect(Collectors.toList());
 
             if(!ylitayttoJonot.isEmpty()) {
@@ -374,7 +372,7 @@ public class SijoitteluAlgorithmImpl implements SijoitteluAlgorithm {
                 });
             } else {
                 jonoittain.keySet().forEach(j -> {
-                    if(j.getValintatapajono().getTasasijasaanto().equals(Tasasijasaanto.ALITAYTTO)) {
+                    if(jononTasasijasaanto(j).equals(Tasasijasaanto.ALITAYTTO)) {
                         j.setAlitayttoLukko(true);
                     }
                 });
@@ -408,8 +406,8 @@ public class SijoitteluAlgorithmImpl implements SijoitteluAlgorithm {
     private List<HakemusWrapper> haeHyvaksytytEiHakijaryhmaanKuuluvat(ValintatapajonoWrapper valintatapajonoWrapper, HakijaryhmaWrapper hakijaryhmaWrapper) {
         return valintatapajonoWrapper.getHakemukset()
                 .stream()
-                .filter(h -> kuuluuHyvaksyttyihinTiloihin(h.getHakemus().getTila()) && voidaanKorvata(h))
-                .filter(h -> !hakijaryhmaWrapper.getHakijaryhma().getHakemusOid().contains(h.getHakemus().getHakemusOid()))
+                .filter(h -> kuuluuHyvaksyttyihinTiloihin(hakemuksenTila(h)) && voidaanKorvata(h))
+                .filter(h -> !hakijaryhmaWrapper.getHakijaryhma().getHakemusOid().contains(hakemuksenHakemusOid(h)))
                 .collect(Collectors.toList());
     }
 
@@ -418,6 +416,7 @@ public class SijoitteluAlgorithmImpl implements SijoitteluAlgorithm {
         for(Integer i : jonojenParhaat.keySet()) {
             List<HakemusWrapper> parhaat = jonojenParhaat.get(i);
             if(parhaat.size() == 1) {
+                // Vain yhdestä jonosta löytyi hakemus tältä sijalta
                 HakemusWrapper paras = parhaat.get(0);
                 List<HakemusWrapper> parhaatJonoonMahtuvat = haeParhaatJonoonMahtuvat(jonoittain, paras);
                 if(!parhaatJonoonMahtuvat.isEmpty()) {
@@ -427,8 +426,8 @@ public class SijoitteluAlgorithmImpl implements SijoitteluAlgorithm {
                 List<HakemusWrapper> jononMukaanSortattu = parhaat
                         .stream()
                         .sorted((h1, h2) ->
-                                Integer.compare(h1.getValintatapajono().getValintatapajono().getPrioriteetti(),
-                                        h2.getValintatapajono().getValintatapajono().getPrioriteetti()))
+                                Integer.compare(jononPrioriteetti(h1),
+                                        jononPrioriteetti(h2)))
                         .collect(Collectors.toList());
                 for (HakemusWrapper paras : jononMukaanSortattu) {
                     List<HakemusWrapper> parhaatJonoonMahtuvat = haeParhaatJonoonMahtuvat(jonoittain, paras);
@@ -442,7 +441,8 @@ public class SijoitteluAlgorithmImpl implements SijoitteluAlgorithm {
     }
 
     private List<HakemusWrapper> haeParhaatJonoonMahtuvat(Map<ValintatapajonoWrapper, List<HakemusWrapper>> jonoittain, HakemusWrapper paras) {
-        List<HakemusWrapper> samallaSijalla = samallaSijalla(paras, jonoittain.get(paras.getValintatapajono()), paras.getValintatapajono().getValintatapajono().getTasasijasaanto());
+        List<HakemusWrapper> samallaSijalla =
+                samallaSijalla(paras, jonoittain.get(paras.getValintatapajono()), jononTasasijasaanto(paras.getValintatapajono()));
         if(mahtuukoJonoon(samallaSijalla, paras.getValintatapajono())) {
             return samallaSijalla;
         } else {
@@ -468,13 +468,13 @@ public class SijoitteluAlgorithmImpl implements SijoitteluAlgorithm {
         // Hakijaryhmään kuuluvien hyväksyttyjen määrä
         int hyvaksyttyjenMaara = ryhmaanKuuluvat
                 .stream()
-                .filter(h -> kuuluuHyvaksyttyihinTiloihin(h.getHakemus().getTila()))
+                .filter(h -> kuuluuHyvaksyttyihinTiloihin(hakemuksenTila(h)))
                 .collect(Collectors.toList()).size();
 
         int kiintio = hakijaryhmaWrapper.getHakijaryhma().getKiintio();
         int alotuspaikat = liittyvatJonot
                 .stream()
-                .map(v -> v.getValintatapajono().getAloituspaikat())
+                .map(v -> jononAloituspaikat(v))
                 .reduce(0, (a, b) -> a + b);
 
         // Jos hakijaryhmän kiintiö on suurempi kuin mahdolliset aloituspaikat niin asetetaan kiintiöksi aloituspaikka määrä
@@ -492,12 +492,13 @@ public class SijoitteluAlgorithmImpl implements SijoitteluAlgorithm {
             // Hakijaryhmän valituksi haluavat
             List<HakemusWrapper> valituksiHaluavat = ryhmaanKuuluvat
                     .stream()
-                    .filter(h -> h.getHakemus().getTila().equals(HakemuksenTila.VARALLA))
+                    .filter(h -> hakemuksenTila(h).equals(HakemuksenTila.VARALLA))
                     .filter(h -> hakijaHaluaa(h) && saannotSallii(h))
                     .collect(Collectors.toList());
 
             if(!valituksiHaluavat.isEmpty()) {
-                Pair<List<HakemusWrapper>, List<HakemusWrapper>> valittavat = seuraavaksiParhaatHakijaryhmasta(valituksiHaluavat, hakijaryhmaWrapper);
+                Pair<List<HakemusWrapper>, List<HakemusWrapper>> valittavat
+                        = seuraavaksiParhaatHakijaryhmasta(valituksiHaluavat, hakijaryhmaWrapper);
 
                 // Aloituspaikat täynnä ylitäytöllä, joten tiputetaan varalle
                 valittavat.getRight().forEach(v -> {
@@ -527,7 +528,7 @@ public class SijoitteluAlgorithmImpl implements SijoitteluAlgorithm {
     private void asetaEiHyvaksyttavissaHakijaryhmanJalkeen(List<HakemusWrapper> ryhmaanKuuluvat) {
         ryhmaanKuuluvat
                 .stream()
-                .filter(h -> h.getHakemus().getTila().equals(HakemuksenTila.VARALLA))
+                .filter(h -> hakemuksenTila(h).equals(HakemuksenTila.VARALLA))
                 .filter(h -> hakijaHaluaa(h) && saannotSallii(h))
                 .forEach(h -> h.setHyvaksyttavissaHakijaryhmanJalkeen(false));
     }
@@ -551,7 +552,7 @@ public class SijoitteluAlgorithmImpl implements SijoitteluAlgorithm {
 
     private List<HakemusWrapper> valintatapajononHyvaksytytHakemuksetJoitaEiVoiKorvata(ValintatapajonoWrapper valintatapajono) {
         List<Predicate<HakemusWrapper>> filters = new ArrayList<>();
-        filters.add(h -> kuuluuHyvaksyttyihinTiloihin(h.getHakemus().getTila()));
+        filters.add(h -> kuuluuHyvaksyttyihinTiloihin(hakemuksenTila(h)));
 
         if(taytetaankoPoissaOlevat(valintatapajono)) {
             filters.add(h -> !kuuluuPoissaoloTiloihin(h.getHakemus().getIlmoittautumisTila()));
@@ -580,17 +581,17 @@ public class SijoitteluAlgorithmImpl implements SijoitteluAlgorithm {
     private Set<HakemusWrapper> asetaVaralleHakemus(HakemusWrapper varalleAsetettavaHakemusWrapper) {
         Set<HakemusWrapper> uudelleenSijoiteltavatHakukohteet = new HashSet<>();
         if(varalleAsetettavaHakemusWrapper.isTilaVoidaanVaihtaa()) {
-            if(kuuluuHyvaksyttyihinTiloihin(varalleAsetettavaHakemusWrapper.getHakemus().getTila())) {
+            if(kuuluuHyvaksyttyihinTiloihin(hakemuksenTila(varalleAsetettavaHakemusWrapper))) {
                 for (HakemusWrapper hakemusWrapper : varalleAsetettavaHakemusWrapper.getHenkilo().getHakemukset()) {
                     if(hakemusWrapper.isTilaVoidaanVaihtaa()) {
-                        if (!kuuluuHylattyihinTiloihin(hakemusWrapper.getHakemus().getTila())) {
+                        if (!kuuluuHylattyihinTiloihin(hakemuksenTila(hakemusWrapper))) {
                             asetaTilaksiVaralla(hakemusWrapper);
                             uudelleenSijoiteltavatHakukohteet.add(hakemusWrapper);
                         }
                     }
                 }
             } else {
-                if (!kuuluuHyvaksyttyihinTiloihin(varalleAsetettavaHakemusWrapper.getHakemus().getTila())) {
+                if (!kuuluuHyvaksyttyihinTiloihin(hakemuksenTila(varalleAsetettavaHakemusWrapper))) {
                     asetaTilaksiVaralla(varalleAsetettavaHakemusWrapper);
                 }
             }
@@ -609,28 +610,28 @@ public class SijoitteluAlgorithmImpl implements SijoitteluAlgorithm {
 
             for (HakemusWrapper h : hakemus.getHenkilo().getHakemukset()) {
                 // Alemmat toiveet
-                if (h != hakemus && hakemus.getHakemus().getPrioriteetti() < h.getHakemus().getPrioriteetti()) {
+                if (h != hakemus && hakemuksenPrioriteetti(hakemus) < hakemuksenPrioriteetti(h)) {
                     if(h.isTilaVoidaanVaihtaa()) {
-                        if (kuuluuHyvaksyttyihinTiloihin(h.getHakemus().getTila())) {
+                        if (kuuluuHyvaksyttyihinTiloihin(hakemuksenTila(h))) {
                             asetaTilaksiPeruuntunutYlempiToive(h);
                             uudelleenSijoiteltavatHakukohteet.add(h);
                         } else {
-                            if (!kuuluuHylattyihinTiloihin(h.getHakemus().getTila())) {
+                            if (!kuuluuHylattyihinTiloihin(hakemuksenTila(h))) {
                                 asetaTilaksiPeruuntunutYlempiToive(h);
                             }
                         }
                     }
                 }
                 // Saman toiveen muut jonot
-                if (h != hakemus && hakemus.getHakemus().getPrioriteetti().equals(h.getHakemus().getPrioriteetti())) {
+                if (h != hakemus && hakemuksenPrioriteetti(hakemus).equals(hakemuksenPrioriteetti(h))) {
                     Valintatapajono current = h.getValintatapajono().getValintatapajono();
                     Valintatapajono hyvaksyttyJono = hakemus.getValintatapajono().getValintatapajono();
                     // Peruutetaan vain korkeamman prioriteetin jonot
                     if(hyvaksyttyJono.getPrioriteetti() < current.getPrioriteetti()) {
                         // Perustapaus
                         if(h.isTilaVoidaanVaihtaa()) {
-                            if (!kuuluuHylattyihinTiloihin(h.getHakemus().getTila())) {
-                                HakemuksenTila vanhaTila = h.getHakemus().getTila();
+                            if (!kuuluuHylattyihinTiloihin(hakemuksenTila(h))) {
+                                HakemuksenTila vanhaTila = hakemuksenTila(h);
                                 asetaTilaksiPeruuntunutToinenJono(h);
                                 if(kuuluuHyvaksyttyihinTiloihin(vanhaTila)) {
                                     uudelleenSijoiteltavatHakukohteet.add(h);
@@ -638,7 +639,7 @@ public class SijoitteluAlgorithmImpl implements SijoitteluAlgorithm {
                             }
                         } else {
                             // Hakemukselle merkattu, että tilaa ei voi vaihtaa, mutta vaihdetaan kuitenkin jos hyväksytty
-                            HakemuksenTila vanhaTila = h.getHakemus().getTila();
+                            HakemuksenTila vanhaTila = hakemuksenTila(h);
                             if(kuuluuHyvaksyttyihinTiloihin(vanhaTila)) {
                                 asetaTilaksiPeruuntunutToinenJono(h);
 
@@ -716,41 +717,30 @@ public class SijoitteluAlgorithmImpl implements SijoitteluAlgorithm {
         return hakemusWrapper.getHenkilo().getHakemukset()
                 .stream()
                 .filter(h -> h != hakemusWrapper)
-                .noneMatch(h -> h.getHakemus().getTila() == HakemuksenTila.PERUNUT
-                        && h.getHakemus().getPrioriteetti() <= hakemusWrapper.getHakemus().getPrioriteetti());
+                .noneMatch(h -> hakemuksenTila(h) == HakemuksenTila.PERUNUT
+                        && hakemuksenPrioriteetti(h) <= hakemuksenPrioriteetti(hakemusWrapper));
     }
 
     private boolean hakijaAloistuspaikkojenSisalla(HakemusWrapper hakemusWrapper) {
         ValintatapajonoWrapper valintatapajono = hakemusWrapper.getValintatapajono() ;
-        int aloituspaikat = valintatapajono.getValintatapajono().getAloituspaikat();
-        List<HakemusWrapper> hakemukset = valintatapajono.getHakemukset();
+        int aloituspaikat = jononAloituspaikat(valintatapajono);
 
-        int i = 0;
-
-        for(HakemusWrapper h : hakemukset )  {
-
-            if(h.getHakemus().getTila() != HakemuksenTila.HYLATTY) {
-                i++;
-            }
-            if(h == hakemusWrapper && i <= aloituspaikat) { //vertaa instanssia
-                return true;
-            }  else if(i>aloituspaikat)   {
-                return false;
-            }
-        }
-        return true;
+        return onkoPaikkojenSisalla(hakemusWrapper, aloituspaikat, valintatapajono.getHakemukset());
     }
 
     private boolean hakijaKasiteltavienVarasijojenSisalla(HakemusWrapper hakemusWrapper, Integer varasijat) {
         ValintatapajonoWrapper valintatapajono = hakemusWrapper.getValintatapajono() ;
-        int aloituspaikat = valintatapajono.getValintatapajono().getAloituspaikat() + varasijat;
-        List<HakemusWrapper> hakemukset = valintatapajono.getHakemukset();
+        int aloituspaikat = jononAloituspaikat(valintatapajono) + varasijat;
 
+        return onkoPaikkojenSisalla(hakemusWrapper, aloituspaikat, valintatapajono.getHakemukset());
+    }
+
+    private boolean onkoPaikkojenSisalla(HakemusWrapper hakemusWrapper, int aloituspaikat, List<HakemusWrapper> hakemukset) {
         int i = 0;
 
         for(HakemusWrapper h : hakemukset )  {
 
-            if(h.getHakemus().getTila() != HakemuksenTila.HYLATTY) {
+            if(hakemuksenTila(h) != HakemuksenTila.HYLATTY) {
                 i++;
             }
             if(h == hakemusWrapper && i <= aloituspaikat) { //vertaa instanssia
@@ -766,19 +756,20 @@ public class SijoitteluAlgorithmImpl implements SijoitteluAlgorithm {
         HenkiloWrapper henkilo = hakemusWrapper.getHenkilo();
 
         // Tila on PERUUNUTUNUT eikä sitä voi vaihtaa
-        if(!hakemusWrapper.isTilaVoidaanVaihtaa() && hakemusWrapper.getHakemus().getTila() == HakemuksenTila.PERUUNTUNUT) {
+        if(!hakemusWrapper.isTilaVoidaanVaihtaa() && hakemuksenTila(hakemusWrapper) == HakemuksenTila.PERUUNTUNUT) {
             return false;
         }
 
         for (HakemusWrapper h : henkilo.getHakemukset()) {
-            if (kuuluuHyvaksyttyihinTiloihin(h.getHakemus().getTila())
+            if (kuuluuHyvaksyttyihinTiloihin(hakemuksenTila(h))
                     &&
                     // Hakija hyväksytty paremmalle hakutoiveelle
-                    (h.getHakemus().getPrioriteetti() < hakemusWrapper.getHakemus().getPrioriteetti()
+                    (hakemuksenPrioriteetti(h) < hakemuksenPrioriteetti(hakemusWrapper)
                             ||
                             // Hakija hyväksytty paremman prioriteetin jonossa
-                            (h.getHakemus().getPrioriteetti().equals(hakemusWrapper.getHakemus().getPrioriteetti())
-                                    && h.getValintatapajono().getValintatapajono().getPrioriteetti() < hakemusWrapper.getValintatapajono().getValintatapajono().getPrioriteetti()))
+                            (hakemuksenPrioriteetti(h).equals(hakemuksenPrioriteetti(hakemusWrapper))
+                                    && jononPrioriteetti(h)
+                                    < jononPrioriteetti(hakemusWrapper)))
                     &&
                     // eikä vertailla itseensä
                     hakemusWrapper != h) {
