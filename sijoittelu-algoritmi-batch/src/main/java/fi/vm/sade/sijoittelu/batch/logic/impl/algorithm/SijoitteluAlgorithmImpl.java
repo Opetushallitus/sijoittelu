@@ -30,7 +30,6 @@ import static fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.WrapperH
  */
 public class SijoitteluAlgorithmImpl implements SijoitteluAlgorithm {
     private static final Logger LOG = LoggerFactory.getLogger(SijoitteluAlgorithmImpl.class);
-    private final Set<HashCode> hashset = Sets.newHashSet();
     protected SijoitteluAlgorithmImpl() { 	}
     protected SijoitteluajoWrapper sijoitteluAjo;
     protected List<PreSijoitteluProcessor> preSijoitteluProcessors;
@@ -62,22 +61,79 @@ public class SijoitteluAlgorithmImpl implements SijoitteluAlgorithm {
     }
 
     private void sijoittele() {
-        Set<HakukohdeWrapper> muuttuneetHakukohteet = Sets.newHashSet(sijoitteluAjo.getHakukohteet());
-        do {
-            Set<HakukohdeWrapper> iteraationHakukohteet = muuttuneetHakukohteet;
-            muuttuneetHakukohteet = Sets.newHashSet();
-            for (HakukohdeWrapper hakukohde : iteraationHakukohteet) {
-                muuttuneetHakukohteet.addAll(sijoitteleHakukohde(hakukohde));
+        SijoitteleKunnesValmisTaiSilmukkaHavaittu sijoittelunIterointi = new SijoitteleKunnesValmisTaiSilmukkaHavaittu();
+        try {
+            sijoittelunIterointi.sijoittele();
+        } catch(SijoitteluSilmukkaException s) {
+            new SijoitteleKunnesTavoiteHashTuleeVastaanTaiHeitaPoikkeus().sijoittele(
+                    sijoittelunIterointi.edellinenHash,sijoittelunIterointi.iteraationHakukohteet
+            );
+        }
+    }
+
+    private class SijoitteleKunnesTavoiteHashTuleeVastaanTaiHeitaPoikkeus {
+        private final Set<HashCode> hashset = Sets.newHashSet();
+
+        public void sijoittele(HashCode tavoiteHash, Set<HakukohdeWrapper> muuttuneetHakukohteet) {
+            HashCode hash = SijoitteluAlgorithmImpl.this.sijoitteluAjo.asHash();
+            if(hash.equals(tavoiteHash)) {
+                LOG.error("###\r\n### Sijoittelu on silmukassa missä yhden iteraation jälkeen päädytään samaan tilaan samoilla muuttuneilla hakukohteilla.\r\n###");
+                return;
             }
-            HashCode hash = sijoitteluAjo.asHash();
-            if(hashset.contains(hash)) {
-                LOG.error("Sijoittelu on iteraatiolla {} uudelleen aikaisemmassa tilassa (tila {})", depth, hash);
-            } else {
-                LOG.debug("Iteraatio {} HASH {}", depth, hash);
-            }
-            ++depth;
-        } while(!muuttuneetHakukohteet.isEmpty());
-        --depth;
+            int i = 0;
+            do {
+                Set<HakukohdeWrapper> iteraationHakukohteet = muuttuneetHakukohteet;
+                muuttuneetHakukohteet = Sets.newHashSet();
+                for (HakukohdeWrapper hakukohde : iteraationHakukohteet) {
+                    muuttuneetHakukohteet.addAll(sijoitteleHakukohde(hakukohde));
+                }
+                hash = SijoitteluAlgorithmImpl.this.sijoitteluAjo.asHash();
+                ++i;
+                if(hash.equals(tavoiteHash)) {
+                    LOG.error("###\r\n### Sijoittelu päätettiin silmukan viimeiseen tilaan. Silmukan koko oli {} iteraatiota.\r\n###", i);
+                    return;
+                }
+                if(hashset.contains(hash)) {
+                    LOG.error("Sijoittelu on iteraatiolla {} uudelleen aikaisemmassa tilassa (tila {}). Tämä tarkoittaa että sijoittelualgoritmi ei tuota aina samannäköisiä silmukoita.", depth, hash);
+                    throw new SijoitteluFailedException("Sijoittelu on iteraatiolla "+depth+" uudelleen aikaisemmassa tilassa (tila " + hash + ")");
+                } else {
+                    LOG.debug("Iteraatio {} HASH {}", depth, hash);
+                    hashset.add(hash);
+                }
+                ++depth;
+            } while(!muuttuneetHakukohteet.isEmpty());
+            --depth;
+            LOG.error("Sijoittelu meni läpi silmukasta huolimatta. Onko algoritmissa silmukan havaitsemislogiikkaa?");
+        }
+    }
+
+    private class SijoitteleKunnesValmisTaiSilmukkaHavaittu {
+        private final Set<HashCode> hashset = Sets.newHashSet();
+        private HashCode edellinenHash = null;
+        private Set<HakukohdeWrapper> iteraationHakukohteet = null;
+        public void sijoittele() {
+            Set<HakukohdeWrapper> muuttuneetHakukohteet = Sets.newHashSet(SijoitteluAlgorithmImpl.this.sijoitteluAjo.getHakukohteet());
+            HashCode hash = null;
+            do {
+                iteraationHakukohteet = muuttuneetHakukohteet;
+                muuttuneetHakukohteet = Sets.newHashSet();
+                for (HakukohdeWrapper hakukohde : iteraationHakukohteet) {
+                    muuttuneetHakukohteet.addAll(sijoitteleHakukohde(hakukohde));
+                }
+                edellinenHash = hash;
+                hash = SijoitteluAlgorithmImpl.this.sijoitteluAjo.asHash();
+                if(hashset.contains(hash)) {
+                    LOG.error("Sijoittelu on iteraatiolla {} uudelleen aikaisemmassa tilassa (tila {})", depth, hash);
+                    throw new SijoitteluSilmukkaException("Sijoittelu on iteraatiolla "+depth+" uudelleen aikaisemmassa tilassa (tila " + hash + ")");
+                } else {
+                    LOG.debug("Iteraatio {} HASH {}", depth, hash);
+                    hashset.add(hash);
+                }
+                ++depth;
+            } while(!muuttuneetHakukohteet.isEmpty());
+            --depth;
+        }
+
     }
 
     private Set<HakukohdeWrapper> sijoitteleHakukohde(HakukohdeWrapper hakukohde) {
