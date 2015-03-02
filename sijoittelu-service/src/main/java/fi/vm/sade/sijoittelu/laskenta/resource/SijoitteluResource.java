@@ -68,7 +68,7 @@ public class SijoitteluResource {
 	@GET
 	@Path("{hakuOid}")
 	// @PreAuthorize(CRUD)
-	@ApiOperation(value = "Hakemuksen valintatulosten haku")
+	@ApiOperation(value = "Hakemuksen valintatulosten haku", response = String.class)
 	public String sijoittele(@PathParam("hakuOid") String hakuOid) {
 
 		LOGGER.error("Valintatietoja valmistetaan haulle {}!", hakuOid);

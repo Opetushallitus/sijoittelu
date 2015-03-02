@@ -27,8 +27,8 @@ import fi.vm.sade.sijoittelu.tulos.dto.raportointi.HakijaPaginationObject;
  * 
  *         Autentikointi annotaatiot implementaatiossa!
  */
-@Path("sijoittelu")
-@Api(value = "/sijoittelu", description = "Resurssi sijoittelun tuloksien hakemiseen")
+//@Path("sijoittelu")
+//@Api(value = "/sijoittelu", description = "Resurssi sijoittelun tuloksien hakemiseen")
 public interface SijoitteluResource {
 
 	static final String LATEST = "latest";
@@ -36,14 +36,14 @@ public interface SijoitteluResource {
 	@GET
 	@Produces(APPLICATION_JSON)
 	@Path("/{hakuOid}")
-	@ApiOperation(position = 1, value = "Hakee sijoittelun tiedot haulle. Paa-asiallinen kaytto sijoitteluajojen tunnisteiden hakuun.", response = SijoitteluDTO.class)
+	//@ApiOperation(position = 1, value = "Hakee sijoittelun tiedot haulle. Paa-asiallinen kaytto sijoitteluajojen tunnisteiden hakuun.", response = SijoitteluDTO.class)
 	SijoitteluDTO getSijoitteluByHakuOid(
 			@ApiParam(value = "Haun yksilollinen tunniste", required = true) @PathParam("hakuOid") String hakuOid);
 
 	@GET
 	@Produces(APPLICATION_JSON)
 	@Path("/{hakuOid}/sijoitteluajo/{sijoitteluajoId}")
-	@ApiOperation(position = 2, value = "Hakee sijoitteluajon tiedot. Paasiallinen kaytto sijoitteluun osallistuvien hakukohteiden hakemiseen", response = SijoitteluajoDTO.class)
+	//@ApiOperation(position = 2, value = "Hakee sijoitteluajon tiedot. Paasiallinen kaytto sijoitteluun osallistuvien hakukohteiden hakemiseen", response = SijoitteluajoDTO.class)
 	SijoitteluajoDTO getSijoitteluajo(
 			@ApiParam(value = "Haun tunniste", required = true) @PathParam("hakuOid") String hakuOid,
 			@ApiParam(value = "Sijoitteluajon tunniste tai 'latest' avainsana", required = true) @PathParam("sijoitteluajoId") String sijoitteluajoId);
@@ -51,7 +51,7 @@ public interface SijoitteluResource {
 	@GET
 	@Produces(APPLICATION_JSON)
 	@Path("/{hakuOid}/sijoitteluajo/{sijoitteluajoId}/hakukohde/{hakukohdeOid}")
-	@ApiOperation(position = 3, value = "Hakee hakukohteen tiedot tietyssa sijoitteluajossa.", response = HakukohdeDTO.class)
+	//@ApiOperation(position = 3, value = "Hakee hakukohteen tiedot tietyssa sijoitteluajossa.", response = HakukohdeDTO.class)
 	Response getHakukohdeBySijoitteluajo(
 			@ApiParam(value = "Haun tunniste", required = true) @PathParam("hakuOid") String hakuOid,
 			@ApiParam(value = "Sijoitteluajon tunniste tai 'latest' avainsana", required = true) @PathParam("sijoitteluajoId") String sijoitteluajoId,
@@ -60,7 +60,7 @@ public interface SijoitteluResource {
 	@GET
 	@Produces(APPLICATION_JSON)
 	@Path("/{hakuOid}/sijoitteluajo/{sijoitteluajoId}/hakukohdedto/{hakukohdeOid}")
-	@ApiOperation(position = 3, value = "Hakee hakukohteen tiedot tietyssa sijoitteluajossa.", response = HakukohdeDTO.class)
+	//@ApiOperation(position = 3, value = "Hakee hakukohteen tiedot tietyssa sijoitteluajossa.", response = HakukohdeDTO.class)
 	HakukohdeDTO getHakukohdeBySijoitteluajoPlainDTO(
 			@ApiParam(value = "Haun tunniste", required = true) @PathParam("hakuOid") String hakuOid,
 			@ApiParam(value = "Sijoitteluajon tunniste tai 'latest' avainsana", required = true) @PathParam("sijoitteluajoId") String sijoitteluajoId,
@@ -69,7 +69,7 @@ public interface SijoitteluResource {
 	@GET
 	@Produces(APPLICATION_JSON)
 	@Path("/{hakuOid}/sijoitteluajo/{sijoitteluajoId}/hakemukset")
-	@ApiOperation(position = 4, value = "Sivutettu listaus hakemuksien/hakijoiden listaukseen. Yksityiskohtainen listaus kaikista hakutoiveista ja niiden valintatapajonoista", response = HakijaPaginationObject.class)
+	//@ApiOperation(position = 4, value = "Sivutettu listaus hakemuksien/hakijoiden listaukseen. Yksityiskohtainen listaus kaikista hakutoiveista ja niiden valintatapajonoista", response = HakijaPaginationObject.class)
 	HakijaPaginationObject hakemukset(
 			@ApiParam(value = "Haun tunniste", required = true) @PathParam("hakuOid") String hakuOid,
 			@ApiParam(value = "Sijoitteluajon tunniste tai 'latest' avainsana", required = true) @PathParam("sijoitteluajoId") String sijoitteluajoId,
@@ -83,7 +83,7 @@ public interface SijoitteluResource {
 	@GET
 	@Produces(APPLICATION_JSON)
 	@Path("/{hakuOid}/sijoitteluajo/{sijoitteluajoId}/hakemus/{hakemusOid}")
-	@ApiOperation(position = 5, value = "Nayttaa yksittaisen hakemuksen kaikki hakutoiveet ja tiedot kaikista valintatapajonoista", response = HakijaDTO.class)
+	//@ApiOperation(position = 5, value = "Nayttaa yksittaisen hakemuksen kaikki hakutoiveet ja tiedot kaikista valintatapajonoista", response = HakijaDTO.class)
 	HakijaDTO hakemus(
 			@ApiParam(value = "Haun tunniste", required = true) @PathParam("hakuOid") String hakuOid,
 			@ApiParam(value = "Sijoitteluajon tunniste tai 'latest' avainsana", required = true) @PathParam("sijoitteluajoId") String sijoitteluajoId,

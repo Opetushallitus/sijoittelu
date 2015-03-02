@@ -105,9 +105,9 @@ public class TilaResource {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/hakukohde/{hakukohdeOid}/{valintatapajonoOid}/")
-	@ApiOperation(value = "Valintatulosten haku hakukohteelle ja valintatapajonolle")
 	@PreAuthorize(READ_UPDATE_CRUD)
-	public List<Valintatulos> haku(
+    @ApiOperation(value = "Valintatulosten haku hakukohteelle ja valintatapajonolle")
+    public List<Valintatulos> haku(
 			@PathParam("hakukohdeOid") String hakukohdeOid,
 			@PathParam("valintatapajonoOid") String valintatapajonoOid) {
 		List<Valintatulos> v = sijoitteluBusinessService.haeHakemustenTilat(
@@ -121,9 +121,9 @@ public class TilaResource {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/hakukohde/{hakukohdeOid}")
-	@ApiOperation(value = "Valintatulosten haku hakukohteelle ja valintatapajonolle")
 	@PreAuthorize(READ_UPDATE_CRUD)
-	public List<Valintatulos> hakukohteelle(
+    @ApiOperation(value = "Valintatulosten haku hakukohteelle ja valintatapajonolle")
+    public List<Valintatulos> hakukohteelle(
 			@PathParam("hakukohdeOid") String hakukohdeOid) {
 		List<Valintatulos> v = sijoitteluBusinessService
 				.haeHakukohteenTilat(hakukohdeOid);
@@ -165,13 +165,15 @@ public class TilaResource {
 
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
-	@Path("erillishaku/{hakuOid}/hakukohde/{hakukohdeOid}")
+	@Path("/erillishaku/{hakuOid}/hakukohde/{hakukohdeOid}")
 	@PreAuthorize(UPDATE_CRUD)
 	@ApiOperation(value = "Erillishaun hakijoiden tuonti hakukohteelle")
 	public Response tuoErillishaunHakijat(
 			@ApiParam("valintatapajononNimi")
 			@QueryParam("valintatapajononNimi") String valintatapajononNimi,
-			@ApiParam("description") Collection<ErillishaunHakijaDTO> erillishaunHakijaDtos) {
+            @PathParam("hakuOid") String hakuOid,
+            @PathParam("hakukohdeOid") String hakukohdeOid,
+            List<ErillishaunHakijaDTO> erillishaunHakijaDtos) {
 		if (erillishaunHakijaDtos == null || erillishaunHakijaDtos.isEmpty()) {
 			LOGGER.error("Yritettiin tuoda tyhjaa joukkoa erillishaun hakijoiden tuontiin!");
 			throw new RuntimeException(

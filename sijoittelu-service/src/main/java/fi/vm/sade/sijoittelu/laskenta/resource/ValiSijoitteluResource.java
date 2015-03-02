@@ -6,6 +6,7 @@ import akka.pattern.Patterns;
 import akka.routing.RoundRobinRouter;
 import akka.util.Timeout;
 import com.wordnik.swagger.annotations.Api;
+import com.wordnik.swagger.annotations.ApiOperation;
 import fi.vm.sade.sijoittelu.laskenta.service.business.SijoitteluBusinessService;
 import fi.vm.sade.sijoittelu.tulos.dto.HakukohdeDTO;
 import fi.vm.sade.sijoittelu.tulos.dto.ValisijoitteluDTO;
@@ -80,6 +81,7 @@ public class ValiSijoitteluResource {
     @Consumes("application/json")
     @Produces("application/json")
 	@PreAuthorize(CRUD)
+	@ApiOperation(value = "Välisijoittelun suorittaminen")
 	public List<HakukohdeDTO> sijoittele(@PathParam("hakuOid") String hakuOid, ValisijoitteluDTO hakukohteet) {
 
 		LOGGER.error("Valintatietoja valmistetaan valisijottelulle");

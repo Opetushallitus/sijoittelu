@@ -1,14 +1,16 @@
 package fi.vm.sade.sijoittelu.tulos.resource;
 
 import static fi.vm.sade.sijoittelu.tulos.roles.SijoitteluRole.READ_UPDATE_CRUD;
+import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-import javax.ws.rs.PathParam;
+import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
 
+import com.wordnik.swagger.annotations.Api;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,8 +33,10 @@ import fi.vm.sade.sijoittelu.tulos.service.SijoitteluTulosService;
 /**
  * User: wuoti Date: 26.4.2013 Time: 12.41
  */
+@Path("sijoittelu")
 @Component
 @PreAuthorize("isAuthenticated()")
+@Api(value = "/sijoittelu", description = "Resurssi sijoittelun tuloksien hakemiseen")
 public class SijoitteluResourceImpl implements SijoitteluResource {
 
 	private final static Logger LOGGER = LoggerFactory
@@ -44,27 +48,37 @@ public class SijoitteluResourceImpl implements SijoitteluResource {
     @Autowired
 	private RaportointiService raportointiService;
 
-	@Override
+	@GET
+	@Path("/{hakuOid}")
+	@Produces(APPLICATION_JSON)
 	@PreAuthorize(READ_UPDATE_CRUD)
-	@ApiOperation(value = "xxxx1", httpMethod = "GET")
-	public SijoitteluDTO getSijoitteluByHakuOid(String hakuOid) {
+	@ApiOperation(position = 1, value = "Hakee sijoittelun tiedot haulle. Paa-asiallinen kaytto sijoitteluajojen tunnisteiden hakuun.", response = SijoitteluDTO.class)
+	public SijoitteluDTO getSijoitteluByHakuOid(
+			@ApiParam(name="hakuOid", value = "Haun yksilollinen tunniste", required = true) @PathParam("hakuOid") String hakuOid) {
 		return sijoitteluTulosService.getSijoitteluByHakuOid(hakuOid);
 	}
 
-	@Override
+	@GET
+	@Path("/{hakuOid}/sijoitteluajo/{sijoitteluajoId}")
+	@Produces(APPLICATION_JSON)
 	@PreAuthorize(READ_UPDATE_CRUD)
-	@ApiOperation(value = "xxxx2", httpMethod = "GET")
-	public SijoitteluajoDTO getSijoitteluajo(String hakuOid,
-			String sijoitteluajoId) {
+	@ApiOperation(position = 2, value = "Hakee sijoitteluajon tiedot. Paasiallinen kaytto sijoitteluun osallistuvien hakukohteiden hakemiseen", response = SijoitteluajoDTO.class)
+	public SijoitteluajoDTO getSijoitteluajo(
+			@ApiParam(name="hakuOid", value = "Haun yksilollinen tunniste", required = true) @PathParam("hakuOid") String hakuOid,
+			@ApiParam(value = "Sijoitteluajon tunniste tai 'latest' avainsana", required = true) @PathParam("sijoitteluajoId") String sijoitteluajoId) {
         Optional<SijoitteluAjo> ajo = getSijoitteluAjo(sijoitteluajoId, hakuOid);
         return ajo.map(sijoitteluTulosService::getSijoitteluajo).orElse(new SijoitteluajoDTO());
 	}
 
-	@Override
 	@PreAuthorize(READ_UPDATE_CRUD)
-	@ApiOperation(value = "xxxx3", httpMethod = "GET")
-	public Response getHakukohdeBySijoitteluajo(String hakuOid,
-			String sijoitteluajoId, String hakukohdeOid) {
+	@GET
+	@Path("/{hakuOid}/sijoitteluajo/{sijoitteluajoId}/hakukohde/{hakukohdeOid}")
+	@Produces(APPLICATION_JSON)
+	@ApiOperation(position = 3, value = "Hakee hakukohteen tiedot tietyssa sijoitteluajossa.", response = HakukohdeDTO.class)
+	public Response getHakukohdeBySijoitteluajo(
+			@ApiParam(name="hakuOid", value = "Haun tunniste", required = true) @PathParam("hakuOid") String hakuOid,
+			@ApiParam(name="sijoitteluajoId", value = "Sijoitteluajon tunniste tai 'latest' avainsana", required = true) @PathParam("sijoitteluajoId") String sijoitteluajoId,
+			@ApiParam(name="hakukohdeOid", value = "Hakukohteen tunniste", required = true) @PathParam("hakukohdeOid") String hakukohdeOid) {
         Optional<SijoitteluAjo> sijoitteluAjo = getSijoitteluAjo(sijoitteluajoId, hakuOid);
         return sijoitteluAjo.map(ajo -> {
             HakukohdeDTO hakukohdeBySijoitteluajo = sijoitteluTulosService
@@ -74,11 +88,15 @@ public class SijoitteluResourceImpl implements SijoitteluResource {
 
 	}
 
-	@Override
+	@GET
+	@Produces(APPLICATION_JSON)
+	@Path("/{hakuOid}/sijoitteluajo/{sijoitteluajoId}/hakukohdedto/{hakukohdeOid}")
 	@PreAuthorize(READ_UPDATE_CRUD)
-	@ApiOperation(value = "xxxx3", httpMethod = "GET")
-	public HakukohdeDTO getHakukohdeBySijoitteluajoPlainDTO(String hakuOid,
-			String sijoitteluajoId, String hakukohdeOid) {
+	@ApiOperation(position = 3, value = "Hakee hakukohteen tiedot tietyssa sijoitteluajossa.", response = HakukohdeDTO.class)
+	public HakukohdeDTO getHakukohdeBySijoitteluajoPlainDTO(
+			@ApiParam(value = "Haun tunniste", required = true) @PathParam("hakuOid") String hakuOid,
+			@ApiParam(value = "Sijoitteluajon tunniste tai 'latest' avainsana", required = true) @PathParam("sijoitteluajoId") String sijoitteluajoId,
+			@ApiParam(value = "Hakukohteen tunniste", required = true) @PathParam("hakukohdeOid") String hakukohdeOid) {
         Optional<SijoitteluAjo> ajo = getSijoitteluAjo(sijoitteluajoId, hakuOid);
         return ajo.map(a -> sijoitteluTulosService.getHakukohdeBySijoitteluajo(a,hakukohdeOid)).orElse(new HakukohdeDTO());
 	}
@@ -86,11 +104,19 @@ public class SijoitteluResourceImpl implements SijoitteluResource {
 
 	@Override
 	@PreAuthorize(READ_UPDATE_CRUD)
-	@ApiOperation(value = "xxxx4", httpMethod = "GET")
-	public HakijaPaginationObject hakemukset(String hakuOid,
-			String sijoitteluajoId, Boolean hyvaksytyt,
-			Boolean ilmanHyvaksyntaa, Boolean vastaanottaneet,
-			List<String> hakukohdeOid, Integer count, Integer index) {
+	@GET
+	@Path("/{hakuOid}/sijoitteluajo/{sijoitteluajoId}/hakemukset")
+	@Produces(APPLICATION_JSON)
+	@ApiOperation(position = 4, value = "Sivutettu listaus hakemuksien/hakijoiden listaukseen. Yksityiskohtainen listaus kaikista hakutoiveista ja niiden valintatapajonoista", response = HakijaPaginationObject.class)
+	public HakijaPaginationObject hakemukset(
+			@ApiParam(value = "Haun tunniste", required = true) @PathParam("hakuOid") String hakuOid,
+			@ApiParam(value = "Sijoitteluajon tunniste tai 'latest' avainsana", required = true) @PathParam("sijoitteluajoId") String sijoitteluajoId,
+			@ApiParam(value = "Listaa jossakin kohteessa hyvaksytyt", required = false) @QueryParam("hyvaksytyt") Boolean hyvaksytyt,
+			@ApiParam(value = "Listaa henkilot jotka ovat taysin ilman hyvaksyntaa (missaan kohteessa) ", required = false) @QueryParam("ilmanHyvaksyntaa") Boolean ilmanHyvaksyntaa,
+			@ApiParam(value = "Listaa henkilot jotka ovat ottaneet paikan lasna tai poissaolevana vastaan", required = false) @QueryParam("vastaanottaneet") Boolean vastaanottaneet,
+			@ApiParam(value = "Rajoita hakua niin etta naytetaan hakijat jotka ovat jollain toiveella hakeneet naihin kohetisiin", required = false) @QueryParam("hakukohdeOid") List<String> hakukohdeOid,
+			@ApiParam(value = "Nayta n kappaletta tuloksia. Kayta sivutuksessa", required = false) @QueryParam("count") Integer count,
+			@ApiParam(value = "Aloita nayttaminen kohdasta n. Kayta sivutuksessa.", required = false) @QueryParam("index") Integer index) {
 		try {
             Optional<SijoitteluAjo> sijoitteluAjo = getSijoitteluAjo(sijoitteluajoId, hakuOid);
 
@@ -113,12 +139,15 @@ public class SijoitteluResourceImpl implements SijoitteluResource {
 		}
 	}
 
-	@Override
 	@PreAuthorize(READ_UPDATE_CRUD)
-	@ApiOperation(value = "xxxx5", httpMethod = "GET")
-	public HakijaDTO hakemus(@PathParam("hakuOid") String hakuOid,
-			@PathParam("sijoitteluajoId") String sijoitteluajoId,
-			@PathParam("hakemusOid") String hakemusOid) {
+	@GET
+	@Path("/{hakuOid}/sijoitteluajo/{sijoitteluajoId}/hakemus/{hakemusOid}")
+	@Produces(APPLICATION_JSON)
+	@ApiOperation(position = 5, value = "Nayttaa yksittaisen hakemuksen kaikki hakutoiveet ja tiedot kaikista valintatapajonoista", response = HakijaDTO.class)
+	public HakijaDTO hakemus(
+			@ApiParam(value = "Haun tunniste", required = true) @PathParam("hakuOid") String hakuOid,
+			@ApiParam(value = "Sijoitteluajon tunniste tai 'latest' avainsana", required = true) @PathParam("sijoitteluajoId") String sijoitteluajoId,
+			@ApiParam(value = "Hakemuksen tunniste", required = true) @PathParam("hakemusOid") String hakemusOid) {
 
         Optional<SijoitteluAjo> ajo = getSijoitteluAjo(sijoitteluajoId, hakuOid);
         return ajo.map(a -> raportointiService.hakemus(a, hakemusOid)).orElse(new HakijaDTO());

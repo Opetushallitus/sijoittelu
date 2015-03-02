@@ -17,18 +17,16 @@ import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
  *         Autentikointi annotaatiot implementaatiossa!
  */
 @Path("erillissijoittelu")
-@Api(value = "/erillissijoittelu", description = "Resurssi erillissijoittelun tuloksien hakemiseen")
 public interface ErillisSijoitteluResource {
 
 
 	@GET
 	@Produces(APPLICATION_JSON)
 	@Path("/{hakuOid}/sijoitteluajo/{sijoitteluajoId}/hakukohde/{hakukohdeOid}")
-	@ApiOperation(position = 3, value = "Hakee hakukohteen tiedot tietyssa sijoitteluajossa.", response = HakukohdeDTO.class)
 	Response getHakukohdeBySijoitteluajo(
-            @ApiParam(value = "Haun tunniste", required = true) @PathParam("hakuOid") String hakuOid,
-            @ApiParam(value = "Sijoitteluajon tunniste", required = true) @PathParam("sijoitteluajoId") String sijoitteluajoId,
-            @ApiParam(value = "Hakukohteen tunniste", required = true) @PathParam("hakukohdeOid") String hakukohdeOid);
+            @PathParam("hakuOid") String hakuOid,
+            @PathParam("sijoitteluajoId") String sijoitteluajoId,
+            @PathParam("hakukohdeOid") String hakukohdeOid);
 
 
 
