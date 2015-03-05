@@ -8,70 +8,76 @@
             "tarjoajaOid" : "tarjoaja1",
             "nimi" : "Varsinainen valinta",
             "valintatapajonot" : [
+                {"$ref": "Valintatapajono", "$id": {"$oid": "541bef0ae4b0e1d22689e606"}}
+            ]
+        }
+
+    ],
+    "Valintatapajono": [
+        {
+            "_id": {
+                "$oid": "541bef0ae4b0e1d22689e606"
+            },
+            "valintatapajonoOid" : "jono1",
+            "nimi" : "Pisteet",
+            "prioriteetti" : 0,
+            "aloituspaikat" : 2,
+            "siirretaanSijoitteluun" : true,
+            "tasasijasaanto" : "YLITAYTTO",
+            "eiVarasijatayttoa" : false,
+            "valmisSijoiteltavaksi" : true,
+            "jonosijat": [
                 {
-                    "valintatapajonoOid" : "jono1",
-                    "nimi" : "Pisteet",
-                    "prioriteetti" : 0,
-                    "aloituspaikat" : 2,
-                    "siirretaanSijoitteluun" : true,
-                    "tasasijasaanto" : "YLITAYTTO",
-                    "eiVarasijatayttoa" : false,
-                    "valmisSijoiteltavaksi" : true,
-                    "jonosijat": [
+                    "hakemusOid" : "hakemus1",
+                    "hakijaOid" : "hakija1",
+                    "etunimi" : "Etunimi",
+                    "sukunimi" : "Sukunimi",
+                    "hakutoiveprioriteetti" : 1,
+                    "harkinnanvarainen" : false,
+                    "hylattyValisijoittelussa": true,
+                    "jarjestyskriteeritulokset" : [
                         {
-                            "hakemusOid" : "hakemus1",
-                            "hakijaOid" : "hakija1",
-                            "etunimi" : "Etunimi",
-                            "sukunimi" : "Sukunimi",
-                            "hakutoiveprioriteetti" : 1,
-                            "harkinnanvarainen" : false,
-                            "hylattyValisijoittelussa": true,
-                            "jarjestyskriteeritulokset" : [
-                                {
-                                    "prioriteetti" : 0,
-                                    "arvo" : "11",
-                                    "tila" : "HYLATTY",
-                                    "nimi" : "Testikriteeri"
-                                }
-                            ]
-                        },
+                            "prioriteetti" : 0,
+                            "arvo" : "11",
+                            "tila" : "HYLATTY",
+                            "nimi" : "Testikriteeri"
+                        }
+                    ]
+                },
+                {
+                    "hakemusOid" : "hakemus2",
+                    "hakijaOid" : "hakija2",
+                    "etunimi" : "Etunimi",
+                    "sukunimi" : "Sukunimi",
+                    "hakutoiveprioriteetti" : 2,
+                    "harkinnanvarainen" : false,
+                    "hylattyValisijoittelussa": false,
+                    "jarjestyskriteeritulokset" : [
                         {
-                            "hakemusOid" : "hakemus2",
-                            "hakijaOid" : "hakija2",
-                            "etunimi" : "Etunimi",
-                            "sukunimi" : "Sukunimi",
-                            "hakutoiveprioriteetti" : 2,
-                            "harkinnanvarainen" : false,
-                            "hylattyValisijoittelussa": false,
-                            "jarjestyskriteeritulokset" : [
-                                {
-                                    "prioriteetti" : 0,
-                                    "arvo" : "19",
-                                    "tila" : "HYLATTY",
-                                    "nimi" : "Testikriteeri"
-                                }
-                            ]
-                        },
+                            "prioriteetti" : 0,
+                            "arvo" : "19",
+                            "tila" : "HYLATTY",
+                            "nimi" : "Testikriteeri"
+                        }
+                    ]
+                },
+                {
+                    "hakemusOid" : "hakemus3",
+                    "hakijaOid" : "hakija3",
+                    "etunimi" : "Etunimi",
+                    "sukunimi" : "Sukunimi",
+                    "hakutoiveprioriteetti" : 4,
+                    "harkinnanvarainen" : false,
+                    "jarjestyskriteeritulokset" : [
                         {
-                            "hakemusOid" : "hakemus3",
-                            "hakijaOid" : "hakija3",
-                            "etunimi" : "Etunimi",
-                            "sukunimi" : "Sukunimi",
-                            "hakutoiveprioriteetti" : 4,
-                            "harkinnanvarainen" : false,
-                            "jarjestyskriteeritulokset" : [
-                                {
-                                    "prioriteetti" : 0,
-                                    "arvo" : "17",
-                                    "tila" : "HYLATTY",
-                                    "nimi" : "Testikriteeri"
-                                }
-                            ]
+                            "prioriteetti" : 0,
+                            "arvo" : "17",
+                            "tila" : "HYLATTY",
+                            "nimi" : "Testikriteeri"
                         }
                     ]
                 }
             ]
         }
-
     ]
 }
