@@ -13,12 +13,13 @@
 
   <servlet>
     <servlet-name>Jersey REST Service</servlet-name>
-    <servlet-class>com.sun.jersey.spi.spring.container.servlet.SpringServlet</servlet-class>
+    <servlet-class>org.glassfish.jersey.servlet.ServletContainer</servlet-class>
     <init-param>
-      <param-name>com.sun.jersey.api.json.POJOMappingFeature</param-name>
-      <param-value>true</param-value>
+      <param-name>javax.ws.rs.Application</param-name>
+      <param-value>fi.vm.sade.sijoittelu.laskenta.resource.SijoitteluResourceConfig</param-value>
     </init-param>
     <load-on-startup>1</load-on-startup>
+    <async-supported>true</async-supported>
   </servlet>
   <servlet-mapping>
     <servlet-name>Jersey REST Service</servlet-name>
