@@ -14,6 +14,9 @@
 
     <context:annotation-config/>
 
+    <import resource="classpath:META-INF/cxf/cxf.xml" />
+    <import resource="classpath:META-INF/cxf/cxf-servlet.xml" />
+
   <context:property-placeholder
     location="classpath:sijoittelu-service.properties, file:///${user.home:''}/oph-configuration/common.properties, file:///${user.home:''}/oph-configuration/valinta.properties, file:///${user.home:''}/oph-configuration/sijoittelu-service.properties,  file:///${user.home:''}/oph-configuration/override.properties"
     ignore-resource-not-found="true"
@@ -111,7 +114,6 @@
 
   <import resource="application-context-db.xml" />
   <import resource="application-context-service.xml" />
-  <import resource="application-context-ws.xml" />
   <import resource="application-context-mongo.xml" />
   <import resource="application-context-tulos.xml" /> <!-- tulee tulos projektilta jarrissa -->
 
@@ -132,6 +134,23 @@
 
   <bean id="sijoitteluModelMapper" class="fi.vm.sade.sijoittelu.laskenta.mapping.SijoitteluModelMapper"/>
 
+    <bean id="jsonProvider" class="com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider" />
+    <bean id="cors-filter" class="fi.vm.sade.sijoittelu.laskenta.resource.filter.CorsResponseFilter"/>
 
+
+    <jaxrs:server id="sijoittelunResurssit">
+        <jaxrs:serviceBeans>
+            <ref bean="sijoitteluResource"/>
+            <ref bean="tilaResource"/>
+            <ref bean="erillisSijoitteluResource"/>
+            <ref bean="valiSijoitteluResource"/>
+            <ref bean="sijoitteluResourceImpl"/>
+            <ref bean="erillisSijoitteluResourceImpl"/>
+        </jaxrs:serviceBeans>
+        <jaxrs:providers>
+            <ref bean="jsonProvider" />
+            <ref bean="cors-filter" />
+        </jaxrs:providers>
+    </jaxrs:server>
 
 </beans>

@@ -4,13 +4,16 @@ import static org.junit.Assert.assertEquals;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 
 import fi.vm.sade.sijoittelu.tulos.dto.HakukohdeDTO;
+import junit.framework.Assert;
 import org.apache.cxf.jaxrs.client.WebClient;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -40,7 +43,18 @@ public class TilaResourceTest {
     }
 
     @Test
-    public void smokeTest() {
+    public void ensureCorsIsSet() throws Exception{
+        final String url = "http://localhost:" + SharedTomcat.port + "/sijoittelu-service/resources/tila/" + hakemusOid;
+        Response response = createClient(url).accept(MediaType.APPLICATION_JSON).get();
+        if(response.getStatus() == 200) {
+            MultivaluedMap headers = response.getHeaders();
+            Assert.assertTrue("*".equals(headers.getFirst("Access-Control-Allow-Origin")));
+        } else {
+            // smokeTest hajoo ja joku muu ongelma kyseessa
+        }
+    }
+    @Test
+    public void smokeTest() throws Exception{
         final List<Valintatulos> tulokset = haeTulokset(hakemusOid);
         assertEquals(1, tulokset.size());
     }

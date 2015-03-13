@@ -7,8 +7,11 @@ import org.apache.catalina.LifecycleException;
 import fi.vm.sade.integrationtest.tomcat.EmbeddedTomcat;
 import fi.vm.sade.integrationtest.tomcat.SharedTomcat;
 import fi.vm.sade.integrationtest.util.ProjectRootFinder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class SijoitteluServiceTomcat extends EmbeddedTomcat {
+    private static final Logger LOG = LoggerFactory.getLogger(SijoitteluServiceTomcat.class);
     static final String SIJOITTELU_MODULE_ROOT = ProjectRootFinder.findProjectRoot() + "/sijoittelu/sijoittelu-service";
     static final String SIJOITTELU_CONTEXT_PATH = "sijoittelu-service";
 
@@ -21,6 +24,7 @@ public class SijoitteluServiceTomcat extends EmbeddedTomcat {
     }
 
     public static void startShared() {
+        LOG.error("######### PALVELIN KÄYNNISTYY PORTTIIN {}",SharedTomcat.port);
         SharedTomcat.start(SIJOITTELU_MODULE_ROOT, SIJOITTELU_CONTEXT_PATH);
     }
 }
