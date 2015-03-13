@@ -46,6 +46,21 @@
       <context:component-scan base-package="fi.vm.sade.valintalaskenta.tulos.resource.impl"/>
       <context:component-scan base-package="fi.vm.sade.valintalaskenta.tulos.service.impl.converters"/>
 
+        <bean id="swaggerResourceJSON" class="com.wordnik.swagger.jaxrs.listing.ApiListingResourceJSON"/>
+
+        <!-- Swagger writers -->
+        <bean id="resourceWriter" class="com.wordnik.swagger.jaxrs.listing.ResourceListingProvider" scope="singleton"/>
+        <bean id="apiWriter" class="com.wordnik.swagger.jaxrs.listing.ApiDeclarationProvider" scope="singleton"/>
+
+        <!-- Swagger configuration -->
+        <bean id="swaggerConfig" class="com.wordnik.swagger.jaxrs.config.BeanConfig">
+            <property name="resourcePackage" value="fi.vm.sade.sijoittelu"/>
+            <property name="version" value="1.0"/>
+
+            <property name="title" value="Swagger API documentation"/>
+            <property name="scan" value="true"/>
+        </bean>
+
       <bean id="modelMapper" class="fi.vm.sade.valintalaskenta.tulos.mapping.ValintalaskentaModelMapper"/>
 
       <bean id="sijoitteluModelMapper" class="fi.vm.sade.sijoittelu.laskenta.mapping.SijoitteluModelMapper"/>
@@ -58,10 +73,13 @@
             <ref bean="erillisSijoitteluResource"/>
             <ref bean="valiSijoitteluResource"/>
             <ref bean="sijoitteluResourceImpl"/>
+            <ref bean="swaggerResourceJSON"/>
         </jaxrs:serviceBeans>
         <jaxrs:providers>
             <ref bean="jsonProvider" />
             <ref bean="cors-filter"/>
+            <ref bean="resourceWriter" />
+            <ref bean="apiWriter" />
         </jaxrs:providers>
     </jaxrs:server>
     </beans>

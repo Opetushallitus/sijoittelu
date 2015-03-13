@@ -146,10 +146,13 @@
             <ref bean="valiSijoitteluResource"/>
             <ref bean="sijoitteluResourceImpl"/>
             <ref bean="erillisSijoitteluResourceImpl"/>
+            <ref bean="swaggerResourceJSON"/>
         </jaxrs:serviceBeans>
         <jaxrs:providers>
             <ref bean="jsonProvider" />
             <ref bean="cors-filter" />
+            <ref bean="resourceWriter" />
+            <ref bean="apiWriter" />
         </jaxrs:providers>
     </jaxrs:server>
 
