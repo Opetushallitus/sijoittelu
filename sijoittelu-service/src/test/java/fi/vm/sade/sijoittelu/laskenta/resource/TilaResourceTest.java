@@ -143,6 +143,6 @@ public class TilaResourceTest {
     }
 
     private WebClient createClient(String url) {
-        return new HttpResource(url, 1000).getWebClient();
+        return new HttpResource(url, 15000).getWebClient();
     }
 }
