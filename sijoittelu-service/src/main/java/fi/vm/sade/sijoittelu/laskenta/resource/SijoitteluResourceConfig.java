@@ -1,6 +1,7 @@
 package fi.vm.sade.sijoittelu.laskenta.resource;
 
 import org.glassfish.jersey.server.ResourceConfig;
+import org.glassfish.jersey.server.spring.scope.RequestContextFilter;
 
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerResponseContext;
@@ -12,6 +13,7 @@ import java.io.IOException;
  */
 public class SijoitteluResourceConfig extends ResourceConfig {
     public SijoitteluResourceConfig() {
+        register(RequestContextFilter.class);
         // json output and input
         /**
          * CORS Filter

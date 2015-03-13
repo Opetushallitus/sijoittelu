@@ -36,14 +36,15 @@ import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
 
 import fi.vm.sade.sijoittelu.laskenta.service.business.SijoitteluBusinessService;
+import org.springframework.stereotype.Controller;
 import scala.tools.cmd.Opt;
 
 /**
  * Created with IntelliJ IDEA. User: kkammone Date: 20.5.2013 Time: 17:23 To
  * change this template use File | Settings | File Templates.
  */
+@Controller
 @Path("tila")
-@Component
 @PreAuthorize("isAuthenticated()")
 @Api(value = "/tila", description = "Resurssi sijoittelun tilojen käsittelyyn")
 public class TilaResource {

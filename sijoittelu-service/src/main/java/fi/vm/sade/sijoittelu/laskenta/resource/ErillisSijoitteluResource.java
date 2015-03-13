@@ -21,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Controller;
 import scala.concurrent.Await;
 import scala.concurrent.Future;
 import scala.concurrent.duration.Duration;
@@ -35,7 +36,7 @@ import static fi.vm.sade.sijoittelu.laskenta.actors.creators.SpringExtension.Spr
 import static fi.vm.sade.valintalaskenta.tulos.roles.ValintojenToteuttaminenRole.CRUD;
 
 @Path("erillissijoittele")
-@Component
+@Controller
 @PreAuthorize("isAuthenticated()")
 @Api(value = "/erillissijoittele", description = "Resurssi sijoitteluun")
 public class ErillisSijoitteluResource {

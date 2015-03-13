@@ -29,12 +29,13 @@ import fi.vm.sade.sijoittelu.tulos.dto.raportointi.HakijaDTO;
 import fi.vm.sade.sijoittelu.tulos.dto.raportointi.HakijaPaginationObject;
 import fi.vm.sade.sijoittelu.tulos.service.RaportointiService;
 import fi.vm.sade.sijoittelu.tulos.service.SijoitteluTulosService;
+import org.springframework.stereotype.Controller;
 
 /**
  * User: wuoti Date: 26.4.2013 Time: 12.41
  */
 @Path("sijoittelu")
-@Component
+@Controller
 @PreAuthorize("isAuthenticated()")
 @Api(value = "/sijoittelu", description = "Resurssi sijoittelun tuloksien hakemiseen")
 public class SijoitteluResourceImpl implements SijoitteluResource {

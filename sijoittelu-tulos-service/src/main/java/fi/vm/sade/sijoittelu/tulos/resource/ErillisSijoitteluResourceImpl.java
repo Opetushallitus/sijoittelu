@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Controller;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -30,7 +31,7 @@ import static fi.vm.sade.sijoittelu.tulos.roles.SijoitteluRole.READ_UPDATE_CRUD;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 
 
-@Component
+@Controller
 @PreAuthorize("isAuthenticated()")
 @Path("/erillissijoittelu")
 @Api(value = "/erillissijoittelu", description = "Resurssi erillissijoittelun tuloksien hakemiseen")
