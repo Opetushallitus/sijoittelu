@@ -134,7 +134,7 @@
 
   <bean id="sijoitteluModelMapper" class="fi.vm.sade.sijoittelu.laskenta.mapping.SijoitteluModelMapper"/>
 
-    <bean id="jsonProvider" class="com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider" />
+    <bean id="jaxrsConfig" class="fi.vm.sade.sijoittelu.laskenta.resource.JaxrsConfiguration" />
     <bean id="cors-filter" class="fi.vm.sade.sijoittelu.laskenta.resource.filter.CorsResponseFilter"/>
 
 
