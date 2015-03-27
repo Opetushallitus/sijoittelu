@@ -15,9 +15,8 @@ import fi.vm.sade.valintalaskenta.domain.dto.valintatieto.ValintatietoValintatap
 import fi.vm.sade.valintalaskenta.tulos.service.impl.ValintatietoService;
 import org.junit.Test;
 
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
+
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
 import static java.util.Arrays.*;
@@ -57,7 +56,9 @@ public class SijoitteluResourceTest {
             {
                 when(valintatietoService.haeValintatiedot(anyString())).thenReturn(haku);
                 when(valintalaskentakoostepalveluResource.readByHakukohdeOids(anyList())).thenReturn(asList(hakijaryhmavalintaperusteista));
-                when(valintalaskentakoostepalveluResource.haeValintatapajonotSijoittelulle(anyList())).thenReturn(asList(valintaperusteista));
+                final HashMap<String, List<ValintatapajonoDTO>> vpMap = new HashMap<>();
+                vpMap.put(hakukohdeOid, Arrays.asList(valintaperusteista));
+                when(valintalaskentakoostepalveluResource.haeValintatapajonotSijoittelulle(anyList())).thenReturn(vpMap);
                 sijoitteluResource.sijoittele(EMPTY);
             }
             verify(valintalaskentakoostepalveluResource, times(1)).readByHakukohdeOids(asList(hakukohdeOid));
