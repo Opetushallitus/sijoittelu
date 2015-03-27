@@ -80,90 +80,88 @@ public class SijoitteluResource {
 
 		LOGGER.error("Asetetaan valintaperusteet {}!", hakuOid);
 		final Map<String, HakijaryhmaValintatapajonoDTO> hakijaryhmaByOid = haeMahdollisestiMuuttuneetHakijaryhmat(haku);
-		final Map<String, ValintatapajonoDTO> valintatapajonoByOid = Maps.newHashMap(haeMahdollisestiMuuttuneetValintatapajonot(haku));
+		final Map<String, Map<String, ValintatapajonoDTO>> hakukohdeMapToValintatapajonoByOid = Maps.newHashMap(haeMahdollisestiMuuttuneetValintatapajonot(haku));
 		//;
 
-		haku.getHakukohteet()
-				.forEach(
-						hakukohde -> {
-							ofNullable(hakukohde.getHakijaryhma()).orElse(emptyList()).forEach(
-									hakijaryhma -> {
-										if(hakijaryhma != null && hakijaryhmaByOid.containsKey(hakijaryhma.getHakijaryhmaOid())) {
-											HakijaryhmaValintatapajonoDTO h = hakijaryhmaByOid.get(hakijaryhma.getHakijaryhmaOid());
-											//hakijaryhma.setCreatedAt();
-											//hakijaryhma.setHakijaryhmaOid();
-											//hakijaryhma.setHakukohdeOid();
-											//hakijaryhma.setJonosijat();
-											hakijaryhma.setKaytaKaikki(h.isKaytaKaikki());
-											hakijaryhma.setKaytetaanRyhmaanKuuluvia(h.isKaytetaanRyhmaanKuuluvia());
-											hakijaryhma.setKiintio(h.getKiintio());
-											hakijaryhma.setKuvaus(h.getKuvaus());
-											hakijaryhma.setNimi(h.getNimi());
-                                            hakijaryhma.setTarkkaKiintio(h.isTarkkaKiintio());
-											//hakijaryhma.setPrioriteetti();
-											//hakijaryhma.setTarkkaKiintio();
-											//hakijaryhma.setValintatapajonoOid();
-										}
-									}
-							);
-							hakukohde
-									.getValinnanvaihe()
-									.forEach(
-											vaihe -> {
+		haku.getHakukohteet().forEach(
+		hakukohde -> {
+			ofNullable(hakukohde.getHakijaryhma()).orElse(emptyList()).forEach(
+					hakijaryhma -> {
+						if(hakijaryhma != null && hakijaryhmaByOid.containsKey(hakijaryhma.getHakijaryhmaOid())) {
+							HakijaryhmaValintatapajonoDTO h = hakijaryhmaByOid.get(hakijaryhma.getHakijaryhmaOid());
+							//hakijaryhma.setCreatedAt();
+							//hakijaryhma.setHakijaryhmaOid();
+							//hakijaryhma.setHakukohdeOid();
+							//hakijaryhma.setJonosijat();
+							hakijaryhma.setKaytaKaikki(h.isKaytaKaikki());
+							hakijaryhma.setKaytetaanRyhmaanKuuluvia(h.isKaytetaanRyhmaanKuuluvia());
+							hakijaryhma.setKiintio(h.getKiintio());
+							hakijaryhma.setKuvaus(h.getKuvaus());
+							hakijaryhma.setNimi(h.getNimi());
+							hakijaryhma.setTarkkaKiintio(h.isTarkkaKiintio());
+							//hakijaryhma.setPrioriteetti();
+							//hakijaryhma.setTarkkaKiintio();
+							//hakijaryhma.setValintatapajonoOid();
+						}
+					}
+			);
+			Map<String, ValintatapajonoDTO> valintatapajonoByOid = hakukohdeMapToValintatapajonoByOid.get(hakukohde.getOid());
+			hakukohde
+					.getValinnanvaihe()
+					.forEach(
+							vaihe -> {
+								List<ValintatietoValintatapajonoDTO> konvertoidut = new ArrayList<>();
+								vaihe.getValintatapajonot()
+										.forEach(
+												jono -> {
 
 
-												List<ValintatietoValintatapajonoDTO> konvertoidut = new ArrayList<>();
-												vaihe.getValintatapajonot()
-														.forEach(
-																jono -> {
-
-
-																	if (valintatapajonoByOid
-																			.containsKey(jono
-																					.getOid())
-																			&& jono.getValmisSijoiteltavaksi()
-																			&& jono.getAktiivinen()) {
-																		ValintatapajonoDTO perusteJono = valintatapajonoByOid
-																				.get(jono
-																						.getOid());
-																		jono.setAloituspaikat(perusteJono
-																				.getAloituspaikat());
-																		jono.setEiVarasijatayttoa(perusteJono
-																				.getEiVarasijatayttoa());
-																		jono.setPoissaOlevaTaytto(perusteJono
-																				.getPoissaOlevaTaytto());
-																		jono.setTasasijasaanto(EnumConverter
-																				.convert(
-																						Tasasijasaanto.class,
-																						perusteJono
-																								.getTasapistesaanto()));
-																		jono.setTayttojono(perusteJono
-																				.getTayttojono());
-																		jono.setVarasijat(perusteJono
-																				.getVarasijat());
-																		jono.setVarasijaTayttoPaivat(perusteJono
-																				.getVarasijaTayttoPaivat());
-																		jono.setVarasijojaKaytetaanAlkaen(perusteJono
-																				.getVarasijojaKaytetaanAlkaen());
-																		jono.setVarasijojaTaytetaanAsti(perusteJono
-																				.getVarasijojaTaytetaanAsti());
-																		jono.setAktiivinen(perusteJono
-																				.getAktiivinen());
-                                                                        jono.setKaikkiEhdonTayttavatHyvaksytaan(perusteJono.getKaikkiEhdonTayttavatHyvaksytaan());
-                                                                        jono.setNimi(perusteJono.getNimi());
-																		konvertoidut
-																				.add(jono);
-																		valintatapajonoByOid.remove(jono
-																				.getOid());
-																	}
-																});
-												vaihe.setValintatapajonot(konvertoidut);
-											});
-							if (!valintatapajonoByOid.isEmpty()) {
-								LOGGER.error("Kaikkia jonoja ei ole sijoiteltu");
-								hakukohde.setKaikkiJonotSijoiteltu(false);
-							}
-						});
+													if (valintatapajonoByOid
+															.containsKey(jono
+																	.getOid())
+															&& jono.getValmisSijoiteltavaksi()
+															&& jono.getAktiivinen()) {
+														ValintatapajonoDTO perusteJono = valintatapajonoByOid
+																.get(jono
+																		.getOid());
+														jono.setAloituspaikat(perusteJono
+																.getAloituspaikat());
+														jono.setEiVarasijatayttoa(perusteJono
+																.getEiVarasijatayttoa());
+														jono.setPoissaOlevaTaytto(perusteJono
+																.getPoissaOlevaTaytto());
+														jono.setTasasijasaanto(EnumConverter
+																.convert(
+																		Tasasijasaanto.class,
+																		perusteJono
+																				.getTasapistesaanto()));
+														jono.setTayttojono(perusteJono
+																.getTayttojono());
+														jono.setVarasijat(perusteJono
+																.getVarasijat());
+														jono.setVarasijaTayttoPaivat(perusteJono
+																.getVarasijaTayttoPaivat());
+														jono.setVarasijojaKaytetaanAlkaen(perusteJono
+																.getVarasijojaKaytetaanAlkaen());
+														jono.setVarasijojaTaytetaanAsti(perusteJono
+																.getVarasijojaTaytetaanAsti());
+														jono.setAktiivinen(perusteJono
+																.getAktiivinen());
+														jono.setKaikkiEhdonTayttavatHyvaksytaan(perusteJono.getKaikkiEhdonTayttavatHyvaksytaan());
+														jono.setNimi(perusteJono.getNimi());
+														konvertoidut
+																.add(jono);
+														valintatapajonoByOid.remove(jono
+																.getOid());
+													}
+												});
+								vaihe.setValintatapajonot(konvertoidut);
+							});
+			if (!valintatapajonoByOid.isEmpty()) {
+				LOGGER.error("Kaikkia jonoja ei ole sijoiteltu");
+				hakukohde.setKaikkiJonotSijoiteltu(false);
+			}
+		});
 
 		LOGGER.error("Valintaperusteet asetettu {}!", hakuOid);
 
@@ -203,7 +201,7 @@ public class SijoitteluResource {
 		}
 		return hakijaryhmaByOid;
 	}
-	private Map<String, ValintatapajonoDTO> haeMahdollisestiMuuttuneetValintatapajonot(HakuDTO haku) {
+	private Map<String,Map<String, ValintatapajonoDTO>> haeMahdollisestiMuuttuneetValintatapajonot(HakuDTO haku) {
 		Set<String> hakukohdeOidsWithAktiivisetJonot =
 				haku.getHakukohteet().stream()
 						// Joku valinnanvaihe jossa aktiivinen jono
@@ -216,24 +214,26 @@ public class SijoitteluResource {
 								//
 						.collect(Collectors.toSet());
 
-		Map<String, ValintatapajonoDTO> valintatapajonoByOid = Collections.emptyMap();
 		if(!hakukohdeOidsWithAktiivisetJonot.isEmpty()) {
 			LOGGER.error("Haetaan valintatapajonoja sijoittelua varten");
 			try {
-				valintatapajonoByOid =
-						valintalaskentakoostepalveluResource.haeValintatapajonotSijoittelulle(Lists.newArrayList(hakukohdeOidsWithAktiivisetJonot))
+				return valintalaskentakoostepalveluResource.haeValintatapajonotSijoittelulle(Lists.newArrayList(hakukohdeOidsWithAktiivisetJonot))
+								.entrySet()
 								.stream()
-										// Valintaperusteet pitaisi palauttaa vain aktiivisia mutta filtteroidaan varmuuden vuoksi
-								.filter(v -> TRUE.equals(v.getAktiivinen()))
-										//
-								.collect(Collectors.toMap(v -> v.getOid(), v -> v));
+								.collect(Collectors.toMap(v -> v.getKey(), v -> {
+									Map<String, ValintatapajonoDTO> jonot =
+									v.getValue().stream().filter(v0 -> TRUE.equals(v0.getAktiivinen())).collect(Collectors.toMap(v0 -> v0.getOid(), v0 -> {
+
+										return v0;
+									}));
+									return jonot;
+								}));
 			} catch(Exception e) {
 				LOGGER.error("Valintatapajonojen hakeminen epäonnistui virheeseen {} {}", e.getMessage(), Arrays.toString(e.getStackTrace()));
 				throw e;
 			}
-			LOGGER.info("Saatiin hakukohteille {} yhteensä {} aktiivista valintatapajonoa", Arrays.toString(hakukohdeOidsWithAktiivisetJonot.toArray()),
-					valintatapajonoByOid.size());
+		} else {
+			return Collections.emptyMap();
 		}
-		return valintatapajonoByOid;
 	}
 }
