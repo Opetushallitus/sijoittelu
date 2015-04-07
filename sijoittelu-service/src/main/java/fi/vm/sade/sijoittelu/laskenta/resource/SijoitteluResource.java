@@ -72,13 +72,13 @@ public class SijoitteluResource {
 	@ApiOperation(value = "Hakemuksen valintatulosten haku", response = String.class)
 	public String sijoittele(@PathParam("hakuOid") String hakuOid) {
 
-		LOGGER.error("Valintatietoja valmistetaan haulle {}!", hakuOid);
+		LOGGER.info("Valintatietoja valmistetaan haulle {}!", hakuOid);
 
 		HakuDTO haku = valintatietoService.haeValintatiedot(hakuOid);
 
-		LOGGER.error("Valintatiedot haettu serviceltä {}!", hakuOid);
+		LOGGER.info("Valintatiedot haettu serviceltä {}!", hakuOid);
 
-		LOGGER.error("Asetetaan valintaperusteet {}!", hakuOid);
+		LOGGER.info("Asetetaan valintaperusteet {}!", hakuOid);
 		final Map<String, HakijaryhmaValintatapajonoDTO> hakijaryhmaByOid = haeMahdollisestiMuuttuneetHakijaryhmat(haku);
 		final Map<String, Map<String, ValintatapajonoDTO>> hakukohdeMapToValintatapajonoByOid = Maps.newHashMap(haeMahdollisestiMuuttuneetValintatapajonot(haku));
 		//;
@@ -158,16 +158,16 @@ public class SijoitteluResource {
 								vaihe.setValintatapajonot(konvertoidut);
 							});
 			if (!valintatapajonoByOid.isEmpty()) {
-				LOGGER.error("Kaikkia jonoja ei ole sijoiteltu");
+				LOGGER.warn("Kaikkia jonoja ei ole sijoiteltu {}!", hakukohde.getOid());
 				hakukohde.setKaikkiJonotSijoiteltu(false);
 			}
 		});
 
-		LOGGER.error("Valintaperusteet asetettu {}!", hakuOid);
+		LOGGER.info("Valintaperusteet asetettu {}!", hakuOid);
 
 		try {
 		    sijoitteluBusinessService.sijoittele(haku);
-		    LOGGER.error("Sijoittelu suoritettu onnistuneesti!");
+		    LOGGER.info("Sijoittelu suoritettu onnistuneesti!");
             return "true";
 		} catch (Exception e) {
 		    e.printStackTrace();
@@ -184,7 +184,7 @@ public class SijoitteluResource {
 
 		Map<String, HakijaryhmaValintatapajonoDTO> hakijaryhmaByOid = Collections.emptyMap();
 		if(!hakukohdeOidsWithHakijaryhma.isEmpty()) {
-			LOGGER.error("Haetaan hakijaryhmät sijoittelua varten");
+			LOGGER.info("Haetaan hakijaryhmät sijoittelua varten");
 			try {
 				hakijaryhmaByOid =
 						valintalaskentakoostepalveluResource.readByHakukohdeOids(Lists.newArrayList(hakukohdeOidsWithHakijaryhma))
