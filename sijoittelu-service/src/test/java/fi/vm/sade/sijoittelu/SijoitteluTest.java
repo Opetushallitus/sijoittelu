@@ -73,7 +73,7 @@ public class SijoitteluTest {
                     }
 
                     if (h.getTila() != HakemuksenTila.HYLATTY || h.getTila() != HakemuksenTila.PERUNUT) {
-                        h.setTila(null);
+                        h.setTila(HakemuksenTila.VARALLA);
                     }
                 }
             }

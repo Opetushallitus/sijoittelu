@@ -298,6 +298,12 @@ public class SijoitteluMontaJonoaTest {
             }
         });
 
+        hakukohteet.get(0).getValintatapajonot().get(0).getHakemukset().forEach(hak -> {
+            if(hak.getHakemusOid().equals("hylatty")) {
+                Assert.assertTrue(hak.getTila().equals(HakemuksenTila.HYLATTY));
+            }
+        });
+
         Valintatulos tulos = new Valintatulos();
         tulos.setHakemusOid("1.2.246.562.11.00001068863");
         tulos.setHakijaOid("1.2.246.562.11.00001068863");
@@ -342,6 +348,12 @@ public class SijoitteluMontaJonoaTest {
             }
         });
 
+        hakukohteet.get(0).getValintatapajonot().get(0).getHakemukset().forEach(hak -> {
+            if(hak.getHakemusOid().equals("hylatty")) {
+                Assert.assertTrue(hak.getTila().equals(HakemuksenTila.HYLATTY));
+            }
+        });
+
         s = h.constructAlgorithm(hakukohteet, Arrays.asList(tulos, tulos2));
         s.start();
 
@@ -362,6 +374,12 @@ public class SijoitteluMontaJonoaTest {
         hakukohteet.get(0).getValintatapajonot().get(0).getHakemukset().forEach(hak -> {
             if(hak.getHakemusOid().equals("1.2.246.562.11.00001067411")) {
                 Assert.assertTrue(hak.getTila().equals(HakemuksenTila.VARALLA));
+            }
+        });
+
+        hakukohteet.get(0).getValintatapajonot().get(0).getHakemukset().forEach(hak -> {
+            if(hak.getHakemusOid().equals("hylatty")) {
+                Assert.assertTrue(hak.getTila().equals(HakemuksenTila.HYLATTY));
             }
         });
 
@@ -387,6 +405,12 @@ public class SijoitteluMontaJonoaTest {
             if(hak.getHakemusOid().equals("1.2.246.562.11.00001067411")) {
                 Assert.assertTrue(hak.getTila().equals(HakemuksenTila.PERUUNTUNUT));
                 Assert.assertEquals(hak.getTilanKuvaukset().get("FI"), TilanKuvaukset.peruuntunutAloituspaikatTaynna().get("FI"));
+            }
+        });
+
+        hakukohteet.get(0).getValintatapajonot().get(0).getHakemukset().forEach(hak -> {
+            if(hak.getHakemusOid().equals("hylatty")) {
+                Assert.assertTrue(hak.getTila().equals(HakemuksenTila.HYLATTY));
             }
         });
 

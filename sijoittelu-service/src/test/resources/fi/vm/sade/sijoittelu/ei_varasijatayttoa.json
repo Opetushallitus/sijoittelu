@@ -78,6 +78,22 @@
                             "nimi" : "Testikriteeri"
                         }
                     ]
+                },
+                {
+                    "hakemusOid" : "hylatty",
+                    "hakijaOid" : "hylatty",
+                    "etunimi" : "Dude",
+                    "sukunimi" : "Hylätty",
+                    "hakutoiveprioriteetti" : 4,
+                    "harkinnanvarainen" : false,
+                    "jarjestyskriteeritulokset" : [
+                        {
+                            "prioriteetti" : 0,
+                            "arvo" : "17",
+                            "tila" : "HYLATTY",
+                            "nimi" : "Testikriteeri"
+                        }
+                    ]
                 }
             ]
         },
@@ -138,6 +154,22 @@
                             "prioriteetti" : 0,
                             "arvo" : "17",
                             "tila" : "HYVAKSYTTAVISSA",
+                            "nimi" : "Testikriteeri"
+                        }
+                    ]
+                },
+                {
+                    "hakemusOid" : "hylatty",
+                    "hakijaOid" : "hylatty",
+                    "etunimi" : "Dude",
+                    "sukunimi" : "Hylätty",
+                    "hakutoiveprioriteetti" : 2,
+                    "harkinnanvarainen" : false,
+                    "jarjestyskriteeritulokset" : [
+                        {
+                            "prioriteetti" : 0,
+                            "arvo" : "17",
+                            "tila" : "HYLATTY",
                             "nimi" : "Testikriteeri"
                         }
                     ]
