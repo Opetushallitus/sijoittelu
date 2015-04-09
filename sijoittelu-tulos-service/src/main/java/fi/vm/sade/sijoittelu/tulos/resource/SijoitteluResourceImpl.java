@@ -132,7 +132,7 @@ public class SijoitteluResourceImpl implements SijoitteluResource {
             });
 
 		} catch (Exception e) {
-			LOGGER.error("Sijoittelun hakemuksia ei saatu! {}", e.getMessage(),
+			LOGGER.error("Sijoittelun hakemuksia ei saatu haulle {}! {}", hakuOid, e.getMessage(),
 					Arrays.toString(e.getStackTrace()));
             HakijaPaginationObject vastaus = new HakijaPaginationObject();
             vastaus.setTotalCount(0);

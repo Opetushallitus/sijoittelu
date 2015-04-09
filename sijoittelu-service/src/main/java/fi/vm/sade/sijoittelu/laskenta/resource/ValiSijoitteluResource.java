@@ -85,7 +85,7 @@ public class ValiSijoitteluResource {
 	@ApiOperation(value = "Välisijoittelun suorittaminen")
 	public List<HakukohdeDTO> sijoittele(@PathParam("hakuOid") String hakuOid, ValisijoitteluDTO hakukohteet) {
 
-		LOGGER.error("Valintatietoja valmistetaan valisijottelulle");
+		LOGGER.info("Valintatietoja valmistetaan valisijottelulle haussa {}", hakuOid);
 
 		HakuDTO haku = valintatietoService.haeValintatiedotJonoille(hakuOid, hakukohteet.getHakukohteet());
 
@@ -101,32 +101,22 @@ public class ValiSijoitteluResource {
             });
         });
 
-		LOGGER.error("Valintatiedot haettu serviceltä {}!", hakuOid);
+		LOGGER.info("Valintatiedot haettu serviceltä haussa {}!", hakuOid);
 
 		Timeout timeout = new Timeout(Duration.create(60, "minutes"));
 
 		Future<Object> future = Patterns.ask(master, haku, timeout);
 
         try {
-            LOGGER.error("############### Odotellaan sijoittelun valmistumista ###############");
+            LOGGER.info("############### Odotellaan välisijoittelun valmistumista haussa {} ###############", hakuOid);
             List<HakukohdeDTO> onnistui = (List<HakukohdeDTO>) Await.result(future, timeout.duration());
-            LOGGER.error("############### Sijoittelu valmis ###############");
+            LOGGER.info("############### Välisijoittelu valmis haussa {} ###############", hakuOid);
             return onnistui;
         } catch (Exception e) {
             e.printStackTrace();
             return new ArrayList<>();
         }
 
-		// try {
-		// sijoitteluBusinessService.sijoittele(haku);
-		// LOGGER.error("Sijoittelu suoritettu onnistuneesti!");
-		// } catch (Exception e) {
-		// e.printStackTrace();
-		// LOGGER.error("Sijoittelu epäonnistui syystä {}!\r\n{}",
-		// e.getMessage(), Arrays.toString(e.getStackTrace()));
-		// return "false";
-		// }
-		// return "true";
 	}
 
 }

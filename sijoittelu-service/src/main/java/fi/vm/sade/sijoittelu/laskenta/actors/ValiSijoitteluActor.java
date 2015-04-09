@@ -33,13 +33,13 @@ public class ValiSijoitteluActor extends AbstractActor {
     public ValiSijoitteluActor() {
         receive(ReceiveBuilder.match(HakuDTO.class, haku -> {
             try {
-                log.error("Sijoittelukutsu saapunut actorille!");
+                log.info("Välisijoittelukutsu haulle {} saapunut actorille!", haku.getHakuOid());
                 List<HakukohdeDTO> tulokset = sijoitteluBusinessService.valisijoittele(haku);
-                log.error("Sijoittelu suoritettu onnistuneesti!");
+                log.info("Välisijoittelu haulle {} suoritettu onnistuneesti!", haku.getHakuOid());
                 sender().tell(tulokset, self());
             } catch (Exception e) {
                 e.printStackTrace();
-                log.error("Sijoittelu epäonnistui syystä {}!\r\n{}",
+                log.error("Välisijoittelu haulle {} epäonnistui syystä {}!\r\n{}", haku.getHakuOid(),
                         e.getMessage(), Arrays.toString(e.getStackTrace()));
                 sender().tell(new Status.Failure(e), ActorRef.noSender());
             }

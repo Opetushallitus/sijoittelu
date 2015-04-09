@@ -31,13 +31,13 @@ public class ErillisSijoitteluActor extends AbstractActor {
     public ErillisSijoitteluActor() {
         receive(ReceiveBuilder.match(HakuDTO.class, haku -> {
             try {
-                log.error("Erillissijoittelukutsu saapunut actorille!");
+                log.info("Erillissijoittelukutsu haulle {} saapunut actorille!", haku.getHakuOid());
                 long ajo = sijoitteluBusinessService.erillissijoittele(haku);
-                log.error("Erillissijoittelu suoritettu onnistuneesti!");
+                log.info("Erillissijoittelu haulle {} suoritettu onnistuneesti!", haku.getHakuOid());
                 sender().tell(ajo, self());
             } catch (Exception e) {
                 e.printStackTrace();
-                log.error("Erillissijoittelu epäonnistui syystä {}!\r\n{}",
+                log.error("Erillissijoittelu haulle {} epäonnistui syystä {}!\r\n{}", haku.getHakuOid(),
                         e.getMessage(), Arrays.toString(e.getStackTrace()));
                 sender().tell(new Status.Failure(e), ActorRef.noSender());
             }

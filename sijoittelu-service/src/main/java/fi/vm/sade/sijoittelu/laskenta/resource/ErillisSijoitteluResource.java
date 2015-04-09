@@ -68,20 +68,20 @@ public class ErillisSijoitteluResource {
 	@ApiOperation(consumes = "application/json", value = "Valintatapajonon vienti taulukkolaskentaan", response = Long.class)
 	public Long sijoittele(@PathParam("hakuOid") String hakuOid, ValisijoitteluDTO hakukohteet) {
 
-		LOGGER.error("Valintatietoja valmistetaan valisijottelulle");
+		LOGGER.info("Valintatietoja valmistetaan valisijottelulle haussa {}", hakuOid);
 
 		HakuDTO haku = valintatietoService.haeValintatiedotJonoille(hakuOid, hakukohteet.getHakukohteet());
 
-		LOGGER.error("Valintatiedot haettu serviceltä {}!", hakuOid);
+		LOGGER.info("Valintatiedot haettu serviceltä haulle {}!", hakuOid);
 
 		Timeout timeout = new Timeout(Duration.create(60, "minutes"));
 
 		Future<Object> future = Patterns.ask(actorService.getErillisSijoitteluActor(), haku, timeout);
 
         try {
-            LOGGER.error("############### Odotellaan erillissijoittelun valmistumista ###############");
+            LOGGER.info("############### Odotellaan erillissijoittelun valmistumista haulle {} ###############", hakuOid);
             long onnistui = (long) Await.result(future, timeout.duration());
-            LOGGER.error("############### Erillissijoittelu valmis ###############");
+            LOGGER.info("############### Erillissijoittelu valmis haulle {} ###############", hakuOid);
             return onnistui;
         } catch (Exception e) {
             e.printStackTrace();

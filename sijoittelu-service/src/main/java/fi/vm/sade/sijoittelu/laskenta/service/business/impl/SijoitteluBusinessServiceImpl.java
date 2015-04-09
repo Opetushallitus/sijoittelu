@@ -192,7 +192,7 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
                     || parametri.getPH_VSSAV().getDate() == null )) {
                 throw new RuntimeException("Sijoittelua haulle " + hakuOid + " ei voida suorittaa, koska kyseessä on korkeakouluhaku ja vaadittavia ohjausparametrejä (PH_VTSSV, PH_VSSAV) ei saatu haettua tai asetettua.");
             } else if(sijoitteluAlgorithm.getSijoitteluAjo().isKKHaku()){
-                LOG.error("Saadut ohjausparametrit: kaikkikohteet sijoittelussa-> {}, varasijasäännöt astuvat voimaan-> {}", fromTimestamp(parametri.getPH_VTSSV().getDate()), fromTimestamp(parametri.getPH_VSSAV().getDate()));
+                LOG.info("Saadut ohjausparametrit haulle {}: kaikkikohteet sijoittelussa-> {}, varasijasäännöt astuvat voimaan-> {}", hakuOid, fromTimestamp(parametri.getPH_VTSSV().getDate()), fromTimestamp(parametri.getPH_VSSAV().getDate()));
             }
             if(parametri.getPH_VTSSV() != null && parametri.getPH_VTSSV().getDate() != null) {
                 sijoitteluAlgorithm.getSijoitteluAjo().setKaikkiKohteetSijoittelussa(fromTimestamp(parametri.getPH_VTSSV().getDate()));
@@ -224,7 +224,7 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
             throw new RuntimeException("Sijoittelua haulle " + hakuOid + " ei voida suorittaa, koska hakukierros on asetettu päättymään ennen kuin varasija säännöt astuvat voimaan");
         }
 
-        LOG.error("Sijoittelun ohjausparametrit asetettu haulle {}. onko korkeakouluhaku: {}, kaikki kohteet sijoittelussa: {}, hakukierros päätty: {}, varasijasäännöt astuvat voimaan: {}, varasijasäännöt voimassa: {}",
+        LOG.info("Sijoittelun ohjausparametrit asetettu haulle {}. onko korkeakouluhaku: {}, kaikki kohteet sijoittelussa: {}, hakukierros päätty: {}, varasijasäännöt astuvat voimaan: {}, varasijasäännöt voimassa: {}",
                 hakuOid, sijoitteluAlgorithm.getSijoitteluAjo().isKKHaku(), kaikkiKohteetSijoittelussa, hakuKierrosPaattyy, varasijaSaannotAstuvatVoimaan, sijoitteluAlgorithm.getSijoitteluAjo().varasijaSaannotVoimassa());
 
         uusiSijoitteluajo.setStartMils(startTime);
@@ -243,7 +243,7 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
         ActorRef siivoaja = actorService.getSiivousActor();
         try {
             sijoitteluDao.persistSijoittelu(sijoittelu);
-            LOG.error("Sijoittelu persistoitu haulle {}. Poistetaan vanhoja ajoja. Säästettävien ajojen määrää {}", sijoittelu.getHakuOid(), maxAjoMaara);
+            LOG.info("Sijoittelu persistoitu haulle {}. Poistetaan vanhoja ajoja. Säästettävien ajojen määrää {}", sijoittelu.getHakuOid(), maxAjoMaara);
             siivoaja.tell(new PoistaVanhatAjotSijoittelulta(sijoittelu.getSijoitteluId(), maxAjoMaara), ActorRef.noSender());
         } catch(Exception e) {
             LOG.error("Sijoittelun persistointi haulle {} epäonnistui. Rollback hakukohteet", sijoittelu.getHakuOid());

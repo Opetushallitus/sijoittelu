@@ -156,7 +156,8 @@ public class TilaResource {
 			}
 			return Response.status(Response.Status.ACCEPTED).build();
 		} catch (Exception e) {
-			LOGGER.error("Valintatulosten tallenus epäonnistui. {}\r\n{}", e.getMessage(), Arrays.toString(e.getStackTrace()));
+			LOGGER.error("Valintatulosten tallenus epäonnistui haussa {} hakukohteelle. {}\r\n{}",
+                    hakuOid, hakukohdeOid, e.getMessage(), Arrays.toString(e.getStackTrace()));
 			Map error = new HashMap();
 			error.put("message", e.getMessage());
 			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
@@ -176,7 +177,7 @@ public class TilaResource {
             @PathParam("hakukohdeOid") String hakukohdeOid,
             List<ErillishaunHakijaDTO> erillishaunHakijaDtos) {
 		if (erillishaunHakijaDtos == null || erillishaunHakijaDtos.isEmpty()) {
-			LOGGER.error("Yritettiin tuoda tyhjaa joukkoa erillishaun hakijoiden tuontiin!");
+			LOGGER.error("Yritettiin tuoda tyhjaa joukkoa erillishaun hakijoiden tuontiin haussa {} hakukohteelle {}!", hakuOid, hakukohdeOid);
 			throw new RuntimeException(
 					"Yritettiin tuoda tyhjaa joukkoa erillishaun hakijoiden tuontiin!");
 		}
@@ -220,10 +221,12 @@ public class TilaResource {
 										v.getJulkaistavissa(),
 										v.getHyvaksyttyVarasijalta());
 							});
-			LOGGER.info("Erillishaun tietojen tuonti onnistui jonolle {}", erillishaunHakijaDtos.iterator().next().valintatapajonoOid);
+			LOGGER.info("Erillishaun tietojen tuonti onnistui jonolle {} haussa {} hakukohteelle {}",
+                    erillishaunHakijaDtos.iterator().next().valintatapajonoOid, hakuOid, hakukohdeOid);
 			return Response.status(Response.Status.ACCEPTED).build();
 		} catch (Exception e) {
-			LOGGER.error("Error in erillishaunhakijat tuonti! {}\r\n{}", e.getMessage(), Arrays.toString(e.getStackTrace()));
+			LOGGER.error("Error in erillishaunhakijat tuonti haussa {} hakukohteelle {}! {}\r\n{}",
+                    e.getMessage(), Arrays.toString(e.getStackTrace()), hakuOid, hakukohdeOid);
 			Map error = new HashMap();
 			error.put("message", e.getMessage());
 			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
@@ -483,7 +486,8 @@ public class TilaResource {
             return Response.status(Response.Status.ACCEPTED).build();
 
 		} catch (Exception e) {
-			LOGGER.error("Hakemuksen tilan asetus epäonnistui", e);
+			LOGGER.error("Hakemuksen tilan asetus epäonnistui haussa {} hakukohteelle {} ja hakemukselle {}",
+                    hakuOid, hakukohdeOid, hakemusOid, e);
 			Map error = new HashMap();
 			error.put("message", e.getMessage());
 			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)

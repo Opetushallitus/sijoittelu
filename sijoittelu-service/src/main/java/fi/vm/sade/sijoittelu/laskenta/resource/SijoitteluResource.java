@@ -167,11 +167,11 @@ public class SijoitteluResource {
 
 		try {
 		    sijoitteluBusinessService.sijoittele(haku);
-		    LOGGER.info("Sijoittelu suoritettu onnistuneesti!");
+		    LOGGER.info("Sijoittelu suoritettu onnistuneesti haulle {}", hakuOid);
             return "true";
 		} catch (Exception e) {
 		    e.printStackTrace();
-		    LOGGER.error("Sijoittelu epäonnistui syystä {}!\r\n{}",
+		    LOGGER.error("Sijoittelu epäonnistui haulle {} syystä {}!\r\n{}", hakuOid,
 		    e.getMessage(), Arrays.toString(e.getStackTrace()));
 		    return "false";
 		}
@@ -215,7 +215,7 @@ public class SijoitteluResource {
 						.collect(Collectors.toSet());
 
 		if(!hakukohdeOidsWithAktiivisetJonot.isEmpty()) {
-			LOGGER.error("Haetaan valintatapajonoja sijoittelua varten");
+			LOGGER.info("Haetaan valintatapajonoja sijoittelua varten haulle {} ja hakukohteille {}", haku.getHakuOid(), Arrays.toString(hakukohdeOidsWithAktiivisetJonot.toArray()));
 			try {
 				return valintalaskentakoostepalveluResource.haeValintatapajonotSijoittelulle(Lists.newArrayList(hakukohdeOidsWithAktiivisetJonot))
 								.entrySet()
