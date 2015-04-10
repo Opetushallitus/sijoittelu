@@ -64,8 +64,9 @@ public class TilanKuvaukset {
 
     public static Map<String, String> peruuntunutHakukierrosOnPaattynyt() {
         return new HashMap<String, String>() {{
-            put("FI", "Peruuntunut, hakukierros on päättynyt");
-            put("EN", "Cancelled, the application round has ended");
+            put("FI", "Peruuntunut, varasijatäyttö päättynyt");
+            put("SV", "Annullerad, besättning av reservplatser har upphört");
+            put("EN", "Cancelled, reserve place selection has ended");
         }};
     }
 
