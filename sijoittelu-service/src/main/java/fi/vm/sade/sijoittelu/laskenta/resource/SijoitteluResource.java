@@ -105,7 +105,7 @@ public class SijoitteluResource {
 						}
 					}
 			);
-			Map<String, ValintatapajonoDTO> valintatapajonoByOid = hakukohdeMapToValintatapajonoByOid.get(hakukohde.getOid());
+			Map<String, ValintatapajonoDTO> valintatapajonoByOid = hakukohdeMapToValintatapajonoByOid.getOrDefault(hakukohde.getOid(), new HashMap<>());
 			hakukohde
 					.getValinnanvaihe()
 					.forEach(
