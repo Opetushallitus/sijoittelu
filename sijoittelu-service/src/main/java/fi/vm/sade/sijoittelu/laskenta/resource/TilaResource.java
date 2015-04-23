@@ -156,7 +156,7 @@ public class TilaResource {
 			}
 			return Response.status(Response.Status.ACCEPTED).build();
 		} catch (Exception e) {
-			LOGGER.error("Valintatulosten tallenus epäonnistui haussa {} hakukohteelle. {}\r\n{}",
+			LOGGER.error("Valintatulosten tallenus epäonnistui haussa {} hakukohteelle {}. {}\r\n{}",
                     hakuOid, hakukohdeOid, e.getMessage(), Arrays.toString(e.getStackTrace()));
 			Map error = new HashMap();
 			error.put("message", e.getMessage());
