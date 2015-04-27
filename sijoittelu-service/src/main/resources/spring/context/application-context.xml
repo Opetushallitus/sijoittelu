@@ -147,6 +147,7 @@
             <ref bean="sijoitteluResourceImpl"/>
             <ref bean="erillisSijoitteluResourceImpl"/>
             <ref bean="swaggerResourceJSON"/>
+            <ref bean="sessionResource"/>
         </jaxrs:serviceBeans>
         <jaxrs:providers>
             <ref bean="jsonProvider" />

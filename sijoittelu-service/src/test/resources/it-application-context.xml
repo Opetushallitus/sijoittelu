@@ -74,6 +74,7 @@
             <ref bean="valiSijoitteluResource"/>
             <ref bean="sijoitteluResourceImpl"/>
             <ref bean="swaggerResourceJSON"/>
+            <ref bean="sessionResource"/>
         </jaxrs:serviceBeans>
         <jaxrs:providers>
             <ref bean="jsonProvider" />
