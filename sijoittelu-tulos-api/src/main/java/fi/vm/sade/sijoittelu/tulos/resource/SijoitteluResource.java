@@ -27,7 +27,7 @@ import fi.vm.sade.sijoittelu.tulos.dto.raportointi.HakijaPaginationObject;
  * 
  *         Autentikointi annotaatiot implementaatiossa!
  */
-//@Path("sijoittelu")
+@Path("sijoittelu")
 //@Api(value = "/sijoittelu", description = "Resurssi sijoittelun tuloksien hakemiseen")
 public interface SijoitteluResource {
 
