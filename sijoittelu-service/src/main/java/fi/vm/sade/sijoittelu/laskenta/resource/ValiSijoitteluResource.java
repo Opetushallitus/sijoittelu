@@ -36,7 +36,6 @@ import static fi.vm.sade.valintalaskenta.tulos.roles.ValintojenToteuttaminenRole
 
 @Path("valisijoittele")
 @Controller
-@PreAuthorize("isAuthenticated()")
 @Api(value = "/valisijoittele", description = "Resurssi sijoitteluun")
 public class ValiSijoitteluResource {
 
@@ -81,7 +80,6 @@ public class ValiSijoitteluResource {
     @Path("{hakuOid}")
     @Consumes("application/json")
     @Produces("application/json")
-	@PreAuthorize(CRUD)
 	@ApiOperation(value = "Välisijoittelun suorittaminen")
 	public List<HakukohdeDTO> sijoittele(@PathParam("hakuOid") String hakuOid, ValisijoitteluDTO hakukohteet) {
 
