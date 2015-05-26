@@ -78,7 +78,7 @@ public class SijoitteluAlgorithmImpl implements SijoitteluAlgorithm {
             HashCode hash = SijoitteluAlgorithmImpl.this.sijoitteluAjo.asHash();
             if(hash.equals(tavoiteHash)) {
                 LOG.error("###\r\n### Sijoittelu on silmukassa missä yhden iteraation jälkeen päädytään samaan tilaan samoilla muuttuneilla hakukohteilla.\r\n###");
-                return;
+                //return;
             }
             int i = 0;
             do {
@@ -91,11 +91,11 @@ public class SijoitteluAlgorithmImpl implements SijoitteluAlgorithm {
                 ++i;
                 if(hash.equals(tavoiteHash)) {
                     LOG.error("###\r\n### Sijoittelu päätettiin silmukan viimeiseen tilaan. Silmukan koko oli {} iteraatiota.\r\n###", i);
-                    return;
+                    //return;
                 }
                 if(hashset.contains(hash)) {
                     LOG.error("Sijoittelu on iteraatiolla {} uudelleen aikaisemmassa tilassa (tila {}). Tämä tarkoittaa että sijoittelualgoritmi ei tuota aina samannäköisiä silmukoita.", depth, hash);
-                    throw new SijoitteluFailedException("Sijoittelu on iteraatiolla "+depth+" uudelleen aikaisemmassa tilassa (tila " + hash + ")");
+                    //throw new SijoitteluFailedException("Sijoittelu on iteraatiolla "+depth+" uudelleen aikaisemmassa tilassa (tila " + hash + ")");
                 } else {
                     LOG.debug("Iteraatio {} HASH {}", depth, hash);
                     hashset.add(hash);
