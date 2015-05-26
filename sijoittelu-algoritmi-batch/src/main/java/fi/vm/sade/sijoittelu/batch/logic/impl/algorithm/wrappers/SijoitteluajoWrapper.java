@@ -13,12 +13,12 @@ import org.slf4j.LoggerFactory;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
+
+import static java.util.Optional.ofNullable;
 
 /**
  * 
@@ -27,6 +27,7 @@ import java.util.stream.Stream;
  */
 public class SijoitteluajoWrapper {
     private static final Logger LOG = LoggerFactory.getLogger(SijoitteluajoWrapper.class);
+    public static final String VALUE_FOR_HASH_FUNCTION_WHEN_UNDEFINED = "undefined"; // määrittelemättömän arvon syöte hash-funktioon
     //private transient int hashcode = -1;
 
     private SijoitteluAjo sijoitteluajo;
@@ -141,6 +142,10 @@ public class SijoitteluajoWrapper {
         return hakukohteet.stream().map(v -> v.getHakukohde())
                 .filter(Objects::nonNull).distinct();
     }
+
+    private final String VALUE_DELIMETER_HAKUKOHDE = "_HAKUKOHDE_";
+    private final String VALUE_DELIMETER_VALINTATULOKSET = "_VALINTATULOKSET_";
+
     private HashCode jarjestettyValivaiheellinenHashStrategia(HashFunction hashFunction) {
         long t0 = System.currentTimeMillis();
         final Hasher hasher = hashFunction.newHasher();
@@ -151,8 +156,10 @@ public class SijoitteluajoWrapper {
         //Set<HashCode> hashOfEachHakukohde = Sets.new
         hakukohteet.stream().sorted().forEach(h -> {
             Hasher hakemuksetHasher = hashSupplier.get();
+            hakemuksetHasher.putUnencodedChars(VALUE_DELIMETER_HAKUKOHDE);
             h.hakukohteenHakemukset().forEach(hk -> hk.hash(hakemuksetHasher));
             Hasher valintatuloksetHasher = hashSupplier.get();
+            valintatuloksetHasher.putUnencodedChars(VALUE_DELIMETER_VALINTATULOKSET);
             h.hakukohteenHakijat().forEach(hk -> hk.hash(valintatuloksetHasher));
             HashCode hakukohteenHakemustenHash = hakemuksetHasher.hash();
             HashCode hakukohteenValintatulostenHash = valintatuloksetHasher.hash();
@@ -165,7 +172,16 @@ public class SijoitteluajoWrapper {
         LOG.debug("Sijoitteluajon HASH {} (kesto {}ms)", hash, (System.currentTimeMillis() - t0));
         return hash;
     }
-
+    public static <U> void ifPresentOrIfNotPresent(U u, Consumer<? super U> present, Supplier<Void> ifNotPresent,
+                                             Supplier<Void> delimeterSupplier) {
+        Optional<U> u0 = ofNullable(u);
+        if(u0.isPresent()) {
+            present.accept(u0.get());
+        } else {
+            ifNotPresent.get();
+            delimeterSupplier.get();
+        }
+    }
     // ei juuri yhtaan nopeampi ja epavarmempi
     private HashCode valivaiheetonHashStrategia(HashFunction hashFunction) {
         long t0 = System.currentTimeMillis();

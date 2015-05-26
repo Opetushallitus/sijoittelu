@@ -11,8 +11,11 @@ import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Function;
+import java.util.function.Supplier;
+
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static java.util.Optional.*;
+import static fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.SijoitteluajoWrapper.ifPresentOrIfNotPresent;
 /**
  * 
  * @author Kari Kammonen
@@ -58,27 +61,50 @@ public class HenkiloWrapper {
         this.valintatulos = valintatulos;
     }
 
+    private final String VALUE_DELIMETER_VALINTATULOS = "_VALINTATULOS_";
+    private final String VALUE_DELIMETER_HAKEMUSOID = "_HAKEMUSOID_";
+    private final String VALUE_DELIMETER_HAKUKOHDE = "_HAKUKOHDE_";
+    private final String VALUE_DELIMETER_HAKUTOIVE = "_HAKUTOIVE_";
+    private final String VALUE_DELIMETER_HYVAKSYTTY_VARASIJALTA = "_HYVAKSYTTY_VARASIJALTA_";
+    private final String VALUE_DELIMETER_IlMOITTAUTUMISTILA = "_ILMOITTAUTUMISTILA_";
+    private final String VALUE_DELIMETER_JULKAISTAVISSA = "_JULKAISTAVISSA_";
+    private final String VALUE_DELIMETER_VALINTATAPAJONOOID = "_VALINTATAPAJONOOID_";
+
     public void hash(Hasher hf) {
         valintatulos.stream().forEach(v -> {
-            ofNullable(v.getHakemusOid()).ifPresent(t -> hf.putUnencodedChars(t));
+            Supplier<Void> undefined =  () -> {hf.putUnencodedChars(SijoitteluajoWrapper.VALUE_FOR_HASH_FUNCTION_WHEN_UNDEFINED); return null;};
+            Function<String, Supplier<Void>> delimeter = dm -> {
+                return () -> {
+                    hf.putUnencodedChars(dm);
+                    return null;
+                };
+            };
+            delimeter.apply(VALUE_DELIMETER_VALINTATULOS).get();
+            ifPresentOrIfNotPresent(v.getHakemusOid(), t -> hf.putUnencodedChars(t), undefined, delimeter.apply(VALUE_DELIMETER_HAKEMUSOID));
             // hakijaoidin tieto sisaltyy jo hakemusoidiin, ei muutoksia sijoittelunaikana, ei yksiloi enempaa jos lisataan
             //ofNullable(v.getHakijaOid()).ifPresent(t -> hf.putUnencodedChars(t));
-            ofNullable(v.getHakukohdeOid()).ifPresent(t -> hf.putUnencodedChars(t));
+            ifPresentOrIfNotPresent(v.getHakukohdeOid(), t -> hf.putUnencodedChars(t), undefined, delimeter.apply(VALUE_DELIMETER_HAKUKOHDE));
             //v.getHakuOid(); ei tarvita hakuOid on kaikilla sama samassa haussa. ei yksiloi.
             hf.putInt(v.getHakutoive());
+            delimeter.apply(VALUE_DELIMETER_HAKUTOIVE).get();
             hf.putBoolean(v.getHyvaksyttyVarasijalta());
+            delimeter.apply(VALUE_DELIMETER_HYVAKSYTTY_VARASIJALTA).get();
             if(v.getIlmoittautumisTila() != null) {
                 hf.putInt(v.getIlmoittautumisTila().ordinal());
             } else {
                 // hf.putInt(-1); // jotain milla erotetaan null jostain arvosta
+                undefined.get();
             }
+            delimeter.apply(VALUE_DELIMETER_IlMOITTAUTUMISTILA).get();
             hf.putBoolean(v.getJulkaistavissa());
+            delimeter.apply(VALUE_DELIMETER_JULKAISTAVISSA).get();
             if(v.getTila() != null) {
                 hf.putInt(v.getTila().ordinal());
             } else {
                 // hf.putInt(-1); // jotain milla erotetaan null jostain arvosta
+                undefined.get();
             }
-            ofNullable(v.getValintatapajonoOid()).ifPresent(t -> hf.putUnencodedChars(t));
+            ifPresentOrIfNotPresent(v.getValintatapajonoOid(), t -> hf.putUnencodedChars(t), undefined, delimeter.apply(VALUE_DELIMETER_VALINTATAPAJONOOID));
         });
     }
 
