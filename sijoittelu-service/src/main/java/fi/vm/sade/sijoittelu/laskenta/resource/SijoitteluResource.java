@@ -1,10 +1,5 @@
 package fi.vm.sade.sijoittelu.laskenta.resource;
 
-import akka.actor.ActorRef;
-import akka.actor.ActorSystem;
-import akka.pattern.Patterns;
-import akka.routing.RoundRobinRouter;
-import akka.util.Timeout;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.wordnik.swagger.annotations.Api;
@@ -12,37 +7,26 @@ import com.wordnik.swagger.annotations.ApiOperation;
 import fi.vm.sade.service.valintaperusteet.dto.HakijaryhmaValintatapajonoDTO;
 import fi.vm.sade.service.valintaperusteet.dto.ValintatapajonoDTO;
 import fi.vm.sade.service.valintaperusteet.resource.ValintalaskentakoostepalveluResource;
-import fi.vm.sade.service.valintaperusteet.resource.ValintaperusteetResource;
-import fi.vm.sade.sijoittelu.laskenta.service.business.ActorService;
 import fi.vm.sade.sijoittelu.laskenta.service.business.SijoitteluBusinessService;
 import fi.vm.sade.sijoittelu.laskenta.util.EnumConverter;
+import fi.vm.sade.valintalaskenta.domain.dto.HakukohdeDTO;
 import fi.vm.sade.valintalaskenta.domain.dto.valintakoe.Tasasijasaanto;
 import fi.vm.sade.valintalaskenta.domain.dto.valintatieto.HakuDTO;
+import fi.vm.sade.valintalaskenta.domain.dto.valintatieto.ValintatietoValinnanvaiheDTO;
 import fi.vm.sade.valintalaskenta.domain.dto.valintatieto.ValintatietoValintatapajonoDTO;
-import fi.vm.sade.valintalaskenta.tulos.service.ValintalaskentaTulosService;
 import fi.vm.sade.valintalaskenta.tulos.service.impl.ValintatietoService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.ApplicationContext;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;
-import scala.concurrent.Await;
-import scala.concurrent.Future;
-import scala.concurrent.duration.Duration;
+
 import static java.lang.Boolean.TRUE;
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
+
 import javax.ws.rs.*;
 import java.util.*;
 import java.util.stream.Collectors;
 import static java.util.Optional.*;
 import static java.util.Collections.*;
-
-import static fi.vm.sade.sijoittelu.laskenta.actors.creators.SpringExtension.SpringExtProvider;
-import static fi.vm.sade.valintalaskenta.tulos.roles.ValintojenToteuttaminenRole.CRUD;
 
 @Path("sijoittele")
 @Controller
@@ -81,82 +65,12 @@ public class SijoitteluResource {
 		LOGGER.info("Asetetaan valintaperusteet {}!", hakuOid);
 		final Map<String, HakijaryhmaValintatapajonoDTO> hakijaryhmaByOid = haeMahdollisestiMuuttuneetHakijaryhmat(haku);
 		final Map<String, Map<String, ValintatapajonoDTO>> hakukohdeMapToValintatapajonoByOid = Maps.newHashMap(haeMahdollisestiMuuttuneetValintatapajonot(haku));
-		//;
 
 		haku.getHakukohteet().forEach(
 		hakukohde -> {
-			ofNullable(hakukohde.getHakijaryhma()).orElse(emptyList()).forEach(
-					hakijaryhma -> {
-						if(hakijaryhma != null && hakijaryhmaByOid.containsKey(hakijaryhma.getHakijaryhmaOid())) {
-							HakijaryhmaValintatapajonoDTO h = hakijaryhmaByOid.get(hakijaryhma.getHakijaryhmaOid());
-							//hakijaryhma.setCreatedAt();
-							//hakijaryhma.setHakijaryhmaOid();
-							//hakijaryhma.setHakukohdeOid();
-							//hakijaryhma.setJonosijat();
-							hakijaryhma.setKaytaKaikki(h.isKaytaKaikki());
-							hakijaryhma.setKaytetaanRyhmaanKuuluvia(h.isKaytetaanRyhmaanKuuluvia());
-							hakijaryhma.setKiintio(h.getKiintio());
-							hakijaryhma.setKuvaus(h.getKuvaus());
-							hakijaryhma.setNimi(h.getNimi());
-							hakijaryhma.setTarkkaKiintio(h.isTarkkaKiintio());
-							//hakijaryhma.setPrioriteetti();
-							//hakijaryhma.setTarkkaKiintio();
-							//hakijaryhma.setValintatapajonoOid();
-						}
-					}
-			);
+			updateHakijaRyhmat(hakijaryhmaByOid, hakukohde);
 			Map<String, ValintatapajonoDTO> valintatapajonoByOid = hakukohdeMapToValintatapajonoByOid.getOrDefault(hakukohde.getOid(), new HashMap<>());
-			hakukohde
-					.getValinnanvaihe()
-					.forEach(
-							vaihe -> {
-								List<ValintatietoValintatapajonoDTO> konvertoidut = new ArrayList<>();
-								vaihe.getValintatapajonot()
-										.forEach(
-												jono -> {
-
-
-													if (valintatapajonoByOid
-															.containsKey(jono
-																	.getOid())
-															&& jono.getValmisSijoiteltavaksi()
-															&& jono.getAktiivinen()) {
-														ValintatapajonoDTO perusteJono = valintatapajonoByOid
-																.get(jono
-																		.getOid());
-														jono.setAloituspaikat(perusteJono
-																.getAloituspaikat());
-														jono.setEiVarasijatayttoa(perusteJono
-																.getEiVarasijatayttoa());
-														jono.setPoissaOlevaTaytto(perusteJono
-																.getPoissaOlevaTaytto());
-														jono.setTasasijasaanto(EnumConverter
-																.convert(
-																		Tasasijasaanto.class,
-																		perusteJono
-																				.getTasapistesaanto()));
-														jono.setTayttojono(perusteJono
-																.getTayttojono());
-														jono.setVarasijat(perusteJono
-																.getVarasijat());
-														jono.setVarasijaTayttoPaivat(perusteJono
-																.getVarasijaTayttoPaivat());
-														jono.setVarasijojaKaytetaanAlkaen(perusteJono
-																.getVarasijojaKaytetaanAlkaen());
-														jono.setVarasijojaTaytetaanAsti(perusteJono
-																.getVarasijojaTaytetaanAsti());
-														jono.setAktiivinen(perusteJono
-																.getAktiivinen());
-														jono.setKaikkiEhdonTayttavatHyvaksytaan(perusteJono.getKaikkiEhdonTayttavatHyvaksytaan());
-														jono.setNimi(perusteJono.getNimi());
-														konvertoidut
-																.add(jono);
-														valintatapajonoByOid.remove(jono
-																.getOid());
-													}
-												});
-								vaihe.setValintatapajonot(konvertoidut);
-							});
+			hakukohde.getValinnanvaihe().forEach(vaihe -> { updateValintatapajonot(valintatapajonoByOid, vaihe); });
 			if (!valintatapajonoByOid.isEmpty()) {
 				LOGGER.warn("Kaikkia jonoja ei ole sijoiteltu {}!", hakukohde.getOid());
 				hakukohde.setKaikkiJonotSijoiteltu(false);
@@ -175,8 +89,57 @@ public class SijoitteluResource {
 		    e.getMessage(), Arrays.toString(e.getStackTrace()));
 		    return "false";
 		}
-
 	}
+
+	private void updateValintatapajonot(Map<String, ValintatapajonoDTO> valintatapajonoByOid, ValintatietoValinnanvaiheDTO vaihe) {
+		List<ValintatietoValintatapajonoDTO> konvertoidut = new ArrayList<>();
+		vaihe.getValintatapajonot().forEach(jono -> {
+			if (valintatapajonoByOid.containsKey(jono.getOid())
+					&& jono.getValmisSijoiteltavaksi()
+					&& jono.getAktiivinen()) {
+
+				ValintatapajonoDTO perusteJono = valintatapajonoByOid.get(jono.getOid());
+				jono.setAloituspaikat(perusteJono.getAloituspaikat());
+				jono.setEiVarasijatayttoa(perusteJono.getEiVarasijatayttoa());
+				jono.setPoissaOlevaTaytto(perusteJono.getPoissaOlevaTaytto());
+				jono.setTasasijasaanto(EnumConverter.convert(Tasasijasaanto.class, perusteJono.getTasapistesaanto()));
+				jono.setTayttojono(perusteJono.getTayttojono());
+				jono.setVarasijat(perusteJono.getVarasijat());
+				jono.setVarasijaTayttoPaivat(perusteJono.getVarasijaTayttoPaivat());
+				jono.setVarasijojaKaytetaanAlkaen(perusteJono.getVarasijojaKaytetaanAlkaen());
+				jono.setVarasijojaTaytetaanAsti(perusteJono.getVarasijojaTaytetaanAsti());
+				jono.setAktiivinen(perusteJono.getAktiivinen());
+				jono.setKaikkiEhdonTayttavatHyvaksytaan(perusteJono.getKaikkiEhdonTayttavatHyvaksytaan());
+				jono.setNimi(perusteJono.getNimi());
+				konvertoidut.add(jono);
+				valintatapajonoByOid.remove(jono.getOid());
+			}
+		});
+		vaihe.setValintatapajonot(konvertoidut);
+	}
+
+	private void updateHakijaRyhmat(Map<String, HakijaryhmaValintatapajonoDTO> hakijaryhmaByOid, HakukohdeDTO hakukohde) {
+		ofNullable(hakukohde.getHakijaryhma()).orElse(emptyList()).forEach( hakijaryhma -> {
+				if(hakijaryhma != null && hakijaryhmaByOid.containsKey(hakijaryhma.getHakijaryhmaOid())) {
+					HakijaryhmaValintatapajonoDTO h = hakijaryhmaByOid.get(hakijaryhma.getHakijaryhmaOid());
+					//hakijaryhma.setCreatedAt();
+					//hakijaryhma.setHakijaryhmaOid();
+					//hakijaryhma.setHakukohdeOid();
+					//hakijaryhma.setJonosijat();
+					hakijaryhma.setKaytaKaikki(h.isKaytaKaikki());
+					hakijaryhma.setKaytetaanRyhmaanKuuluvia(h.isKaytetaanRyhmaanKuuluvia());
+					hakijaryhma.setKiintio(h.getKiintio());
+					hakijaryhma.setKuvaus(h.getKuvaus());
+					hakijaryhma.setNimi(h.getNimi());
+					hakijaryhma.setTarkkaKiintio(h.isTarkkaKiintio());
+					//hakijaryhma.setPrioriteetti();
+					//hakijaryhma.setTarkkaKiintio();
+					//hakijaryhma.setValintatapajonoOid();
+				}
+			}
+        );
+	}
+
 	private Map<String, HakijaryhmaValintatapajonoDTO> haeMahdollisestiMuuttuneetHakijaryhmat(HakuDTO haku) {
 		Set<String> hakukohdeOidsWithHakijaryhma =
 				haku.getHakukohteet().stream().filter(hakukohde -> hakukohde.getHakijaryhma() != null && !hakukohde.getHakijaryhma().isEmpty())
