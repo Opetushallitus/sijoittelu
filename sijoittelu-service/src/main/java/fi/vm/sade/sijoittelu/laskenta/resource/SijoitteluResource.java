@@ -140,9 +140,9 @@ public class SijoitteluResource {
 	}
 
 	private Map<String, HakijaryhmaValintatapajonoDTO> haeMahdollisestiMuuttuneetHakijaryhmat(HakuDTO haku) {
-		Set<String> hakukohdeOidsWithHakijaryhma =
-				haku.getHakukohteet().stream().filter(hakukohde -> hakukohde.getHakijaryhma() != null && !hakukohde.getHakijaryhma().isEmpty())
-						.map(hakukohde -> hakukohde.getOid()).collect(Collectors.toSet());
+		Set<String> hakukohdeOidsWithHakijaryhma = haku.getHakukohteet().stream()
+				.filter(hakukohde -> hakukohde.getHakijaryhma() != null && !hakukohde.getHakijaryhma().isEmpty())
+				.map(hakukohde -> hakukohde.getOid()).collect(Collectors.toSet());
 
 		Map<String, HakijaryhmaValintatapajonoDTO> hakijaryhmaByOid = Collections.emptyMap();
 		if(!hakukohdeOidsWithHakijaryhma.isEmpty()) {
@@ -164,17 +164,13 @@ public class SijoitteluResource {
 		return hakijaryhmaByOid;
 	}
 	private Map<String,Map<String, ValintatapajonoDTO>> haeMahdollisestiMuuttuneetValintatapajonot(HakuDTO haku) {
-		Set<String> hakukohdeOidsWithAktiivisetJonot =
-				haku.getHakukohteet().stream()
-						// Joku valinnanvaihe jossa aktiivinen jono
-						.filter(hakukohde ->
-								hakukohde.getValinnanvaihe().stream().anyMatch(v ->
-										v.getValintatapajonot().stream().anyMatch(j ->
-												TRUE.equals(j.getAktiivinen()))))
-								//
-						.map(hakukohde -> hakukohde.getOid())
-								//
-						.collect(Collectors.toSet());
+		Set<String> hakukohdeOidsWithAktiivisetJonot = haku.getHakukohteet().stream()
+			// Joku valinnanvaihe jossa aktiivinen jono
+			.filter(hakukohde ->
+				hakukohde.getValinnanvaihe().stream()
+					.anyMatch(v -> v.getValintatapajonot().stream()
+							.anyMatch(j -> TRUE.equals(j.getAktiivinen()))))
+			.map(hakukohde -> hakukohde.getOid()).collect(Collectors.toSet());
 
 		if(!hakukohdeOidsWithAktiivisetJonot.isEmpty()) {
 			LOGGER.info("Haetaan valintatapajonoja sijoittelua varten haulle {} ja hakukohteille {}", haku.getHakuOid(), Arrays.toString(hakukohdeOidsWithAktiivisetJonot.toArray()));
