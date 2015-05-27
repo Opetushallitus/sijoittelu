@@ -29,18 +29,20 @@ public class DomainConverter {
     }
 
     private static void addValintatapaJonos(HakukohdeDTO hakukohdeTyyppi, Hakukohde hakukohde) {
-        hakukohdeTyyppi.getValinnanvaihe().stream().forEach(
-                vaihe -> convertJono(vaihe.getValintatapajonot().stream().filter(jono ->
+        hakukohdeTyyppi.getValinnanvaihe().stream().forEach(vaihe -> {
+            convertJono(sijoiteltavaksiValmiitAktiivisetValintatapaJonot(vaihe.getValintatapajonot()), hakukohde);
+        });
+    }
+
+    private static List<ValintatietoValintatapajonoDTO> sijoiteltavaksiValmiitAktiivisetValintatapaJonot(List<ValintatietoValintatapajonoDTO> valintatapajonot) {
+        return valintatapajonot.stream().filter(jono ->
                         jono.isSiirretaanSijoitteluun()
-                        && (jono.getValmisSijoiteltavaksi() == null || jono.getValmisSijoiteltavaksi())
-                        && (jono.getAktiivinen() == null || jono.getAktiivinen())
-                ).collect(Collectors.toList()), hakukohde));
-
-
+                                && (jono.getValmisSijoiteltavaksi() == null || jono.getValmisSijoiteltavaksi())
+                                && (jono.getAktiivinen() == null || jono.getAktiivinen())
+        ).collect(Collectors.toList());
     }
 
     private static void convertJono(List<ValintatietoValintatapajonoDTO> jonot, Hakukohde hakukohde) {
-
         jonot.forEach(valintatapajonoTyyppi -> {
             Valintatapajono valintatapajono = new Valintatapajono();
             valintatapajono.setOid(valintatapajonoTyyppi.getOid());
@@ -82,9 +84,7 @@ public class DomainConverter {
             hakukohde.getValintatapajonot().add(valintatapajono);
 
             valintatapajonoTyyppi.getHakija().forEach(hakija -> addHakemus(hakija, valintatapajono));
-
         });
-
     }
 
     private static void addHakijaRyhmas(HakukohdeDTO hakukohdeTyyppi, Hakukohde hakukohde) {
@@ -100,8 +100,7 @@ public class DomainConverter {
             hakijaryhma.setTarkkaKiintio(h.isTarkkaKiintio());
             hakijaryhma.setValintatapajonoOid(h.getValintatapajonoOid());
             // Tarkistetaan inversio vipu hakijaryhmasta
-            final JarjestyskriteerituloksenTila filtteriEhto =
-                    h.isKaytetaanRyhmaanKuuluvia() ?
+            final JarjestyskriteerituloksenTila filtteriEhto = h.isKaytetaanRyhmaanKuuluvia() ?
                     JarjestyskriteerituloksenTila.HYVAKSYTTAVISSA : JarjestyskriteerituloksenTila.HYLATTY;
             List<JonosijaDTO> hyvaksytyt = h.getJonosijat().stream()
                     .filter(j -> filtteriEhto.equals(j.getJarjestyskriteerit().first().getTila()))
