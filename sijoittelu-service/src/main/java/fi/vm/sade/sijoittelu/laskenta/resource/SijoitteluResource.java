@@ -66,8 +66,7 @@ public class SijoitteluResource {
 		final Map<String, HakijaryhmaValintatapajonoDTO> hakijaryhmaByOid = haeMahdollisestiMuuttuneetHakijaryhmat(haku);
 		final Map<String, Map<String, ValintatapajonoDTO>> hakukohdeMapToValintatapajonoByOid = Maps.newHashMap(haeMahdollisestiMuuttuneetValintatapajonot(haku));
 
-		haku.getHakukohteet().forEach(
-		hakukohde -> {
+		haku.getHakukohteet().forEach( hakukohde -> {
 			updateHakijaRyhmat(hakijaryhmaByOid, hakukohde);
 			Map<String, ValintatapajonoDTO> valintatapajonoByOid = hakukohdeMapToValintatapajonoByOid.getOrDefault(hakukohde.getOid(), new HashMap<>());
 			hakukohde.getValinnanvaihe().forEach(vaihe -> { updateValintatapajonotAndRemoveUsed(valintatapajonoByOid, vaihe); });
