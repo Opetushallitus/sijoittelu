@@ -132,7 +132,7 @@ public class SijoitteluResource {
 					hakijaryhma.setKuvaus(h.getKuvaus());
 					hakijaryhma.setNimi(h.getNimi());
 					hakijaryhma.setTarkkaKiintio(h.isTarkkaKiintio());
-					//hakijaryhma.setPrioriteetti();
+					hakijaryhma.setPrioriteetti(h.getPrioriteetti());
 					//hakijaryhma.setTarkkaKiintio();
 					//hakijaryhma.setValintatapajonoOid();
 				}
