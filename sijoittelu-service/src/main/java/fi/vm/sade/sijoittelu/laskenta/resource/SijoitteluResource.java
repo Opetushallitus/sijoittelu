@@ -110,6 +110,7 @@ public class SijoitteluResource {
 				jono.setAktiivinen(perusteJono.getAktiivinen());
 				jono.setKaikkiEhdonTayttavatHyvaksytaan(perusteJono.getKaikkiEhdonTayttavatHyvaksytaan());
 				jono.setNimi(perusteJono.getNimi());
+				jono.setPrioriteetti(perusteJono.getPrioriteetti());
 				konvertoidut.add(jono);
 				valintatapajonoByOid.remove(jono.getOid());
 			}
