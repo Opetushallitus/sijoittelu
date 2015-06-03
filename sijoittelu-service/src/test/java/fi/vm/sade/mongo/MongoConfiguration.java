@@ -26,6 +26,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 
 import java.io.IOException;
+import java.net.InetAddress;
 import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
@@ -72,7 +73,7 @@ public class MongoConfiguration {
         IMongodConfig mongodConfig = new MongodConfigBuilder()
 
                         .version(Version.Main.PRODUCTION)
-                .net(new Net("127.0.0.1", PORT, Network.localhostIsIPv6()))
+                .net(new Net(Network.getLocalHost().getHostAddress(), PORT, Network.localhostIsIPv6()))
 
                 .build();
 

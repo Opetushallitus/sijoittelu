@@ -71,7 +71,7 @@ public class MongoConfigurationSmoke {
         IMongodConfig mongodConfig = new MongodConfigBuilder()
 
                         .version(Version.Main.PRODUCTION)
-                .net(new Net("127.0.0.1", PORT, Network.localhostIsIPv6()))
+                .net(new Net(Network.getLocalHost().getHostAddress(), PORT, Network.localhostIsIPv6()))
 
                 .build();
 
