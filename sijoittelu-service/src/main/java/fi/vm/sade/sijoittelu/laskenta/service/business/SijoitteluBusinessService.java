@@ -1,6 +1,7 @@
 package fi.vm.sade.sijoittelu.laskenta.service.business;
 
 import java.util.List;
+import java.util.Set;
 
 import fi.vm.sade.sijoittelu.domain.IlmoittautumisTila;
 import fi.vm.sade.sijoittelu.domain.ValintatuloksenTila;
@@ -9,7 +10,7 @@ import fi.vm.sade.sijoittelu.tulos.dto.HakukohdeDTO;
 import fi.vm.sade.valintalaskenta.domain.dto.valintatieto.HakuDTO;
 
 public interface SijoitteluBusinessService {
-    void sijoittele(HakuDTO sijoitteluTyyppi);
+    void sijoittele(HakuDTO sijoitteluTyyppi, Set<String> valintaperusteidenJonot);
 
     List<HakukohdeDTO> valisijoittele(HakuDTO sijoitteluTyyppi);
 

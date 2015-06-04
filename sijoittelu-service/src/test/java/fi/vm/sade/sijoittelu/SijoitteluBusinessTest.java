@@ -1,5 +1,6 @@
 package fi.vm.sade.sijoittelu;
 
+import com.google.common.collect.Sets;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import com.lordofthejars.nosqlunit.annotation.UsingDataSet;
@@ -19,12 +20,16 @@ import fi.vm.sade.sijoittelu.tulos.dao.ValiSijoitteluDao;
 import fi.vm.sade.sijoittelu.tulos.dao.ValintatulosDao;
 
 import fi.vm.sade.valintalaskenta.domain.dto.HakukohdeDTO;
+import fi.vm.sade.valintalaskenta.domain.dto.ValinnanvaiheDTO;
+import fi.vm.sade.valintalaskenta.domain.dto.ValintatapajonoDTO;
 import fi.vm.sade.valintalaskenta.domain.dto.valintatieto.HakuDTO;
 import fi.vm.sade.valintalaskenta.tulos.service.impl.ValintatietoService;
 
+import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,7 +45,9 @@ import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static com.google.common.collect.Sets.newHashSet;
 import static com.lordofthejars.nosqlunit.mongodb.MongoDbRule.MongoDbRuleBuilder.newMongoDbRule;
+import static java.util.stream.Collectors.toSet;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
@@ -82,10 +89,11 @@ public class SijoitteluBusinessTest {
     @Rule
     public MongoDbRule mongoDbRule = newMongoDbRule().defaultSpringMongoDb("test");
 
-    @Test
-    @UsingDataSet(locations = "peruuta_alemmat.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
-    public void testPeruutaAlemmat() throws IOException {
+    @Rule
+    public ExpectedException thrown = ExpectedException.none();
 
+    @Before
+    public void setup() {
         tarjontaIntegrationService = mock(TarjontaIntegrationService.class);
 
         ReflectionTestUtils.setField(sijoitteluService,
@@ -101,10 +109,14 @@ public class SijoitteluBusinessTest {
         }.getType());
 
         when(tarjontaIntegrationService.getHaunParametrit(anyString())).thenReturn(dto);
+    }
 
+    @Test
+    @UsingDataSet(locations = "peruuta_alemmat.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
+    public void testPeruutaAlemmat() throws IOException {
         HakuDTO haku = valintatietoService.haeValintatiedot("haku1");
 
-        sijoitteluService.sijoittele(haku);
+        sijoitteluService.sijoittele(haku, newHashSet("jono1", "jono2", "jono3"));
 
 
         Optional<SijoitteluAjo> latestSijoitteluajo = sijoitteluDao.getLatestSijoitteluajo("haku1");
@@ -122,7 +134,7 @@ public class SijoitteluBusinessTest {
 
         haku.getHakukohteet().remove(0);
 
-        sijoitteluService.sijoittele(haku);
+        sijoitteluService.sijoittele(haku, newHashSet("jono2", "jono3"));
 
         latestSijoitteluajo = sijoitteluDao.getLatestSijoitteluajo("haku1");
         System.out.println("SijoitteluajoID: " + latestSijoitteluajo.get().getSijoitteluajoId());
@@ -139,7 +151,7 @@ public class SijoitteluBusinessTest {
 
         haku = valintatietoService.haeValintatiedot("haku1");
 
-        sijoitteluService.sijoittele(haku);
+        sijoitteluService.sijoittele(haku, newHashSet("jono1", "jono2", "jono3"));
 
         latestSijoitteluajo = sijoitteluDao.getLatestSijoitteluajo("haku1");
         System.out.println("SijoitteluajoID: " + latestSijoitteluajo.get().getSijoitteluajoId());
@@ -156,7 +168,55 @@ public class SijoitteluBusinessTest {
 
     }
 
+    @Test
+    @UsingDataSet(locations = "peruuta_alemmat.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
+    public void testEnemmanJonojaKuinValintaperusteissaVaadittu() {
+        HakuDTO haku = valintatietoService.haeValintatiedot("haku1");
 
+        assertEquals(getValintatapaJonoOids(haku), newHashSet("jono1", "jono2", "jono3"));
+
+        Set<String> valintaperusteenJonot = newHashSet("jono2");
+
+        sijoitteluService.sijoittele(haku, valintaperusteenJonot);
+
+        haku.getHakukohteet().remove(0);
+
+        assertEquals(getValintatapaJonoOids(haku), newHashSet("jono2", "jono3"));
+
+        sijoitteluService.sijoittele(haku, valintaperusteenJonot);
+    }
+
+    @Test
+    @UsingDataSet(locations = "peruuta_alemmat.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
+    public void testPuuttuviaJonojaJotkaVaaditaanValintaperusteissa() {
+        HakuDTO haku = valintatietoService.haeValintatiedot("haku1");
+
+        Set<String> valintaperusteenJonot = newHashSet("jono1");
+
+        sijoitteluService.sijoittele(haku, valintaperusteenJonot);
+
+        haku.getHakukohteet().remove(0);
+        haku.getHakukohteet().remove(0);
+
+        thrown.expect(RuntimeException.class);
+        thrown.expectMessage("Edellisessa sijoittelussa olleet jonot [jono1, jono2] puuttuvat vaikka valintaperusteet yha vaativat jonot [jono1]");
+
+        sijoitteluService.sijoittele(haku, valintaperusteenJonot);
+    }
+
+    @Test
+    @UsingDataSet(locations = "peruuta_alemmat.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
+    public void testPuuttuvaJonoKunPoistettuValintaperusteista() {
+        HakuDTO haku = valintatietoService.haeValintatiedot("haku1");
+
+        Set<String> valintaperusteenJonot = newHashSet("jono2", "jono3");
+
+        sijoitteluService.sijoittele(haku, valintaperusteenJonot);
+
+        haku.getHakukohteet().remove(0);
+
+        sijoitteluService.sijoittele(haku, valintaperusteenJonot);
+    }
 
     @Test
     @UsingDataSet(locations = "valisijoittelu_hylkays.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
@@ -191,6 +251,12 @@ public class SijoitteluBusinessTest {
         assertEquals(HakemuksenTila.HYLATTY, hakemus2.getTila());
         assertEquals(HakemuksenTila.HYLATTY, hakemus3.getTila());
 
+    }
+
+    private Set<String> getValintatapaJonoOids(HakuDTO haku) {
+        return Collections.unmodifiableSet(haku.getHakukohteet().stream()
+                .flatMap(h -> h.getValinnanvaihe().stream().flatMap(v -> v.getValintatapajonot().stream().map(ValintatapajonoDTO::getOid)))
+                .collect(toSet()));
     }
 
 //    @Configuration

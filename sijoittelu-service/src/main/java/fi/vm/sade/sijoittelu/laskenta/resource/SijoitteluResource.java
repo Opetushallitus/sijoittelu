@@ -28,6 +28,7 @@ import java.util.stream.Collectors;
 
 import static java.util.Optional.*;
 import static java.util.Collections.*;
+import static java.util.stream.Collectors.toSet;
 
 @Path("sijoittele")
 @Controller
@@ -76,7 +77,7 @@ public class SijoitteluResource {
         LOGGER.info("Valintaperusteet asetettu {}!", hakuOid);
 
         try {
-            sijoitteluBusinessService.sijoittele(haku);
+            sijoitteluBusinessService.sijoittele(haku, flatMapJonoOids(hakukohdeMapToValintatapajonoByOid));
             LOGGER.info("Sijoittelu suoritettu onnistuneesti haulle {}", hakuOid);
             return "true";
         } catch (Exception e) {
@@ -85,6 +86,12 @@ public class SijoitteluResource {
                     e.getMessage(), Arrays.toString(e.getStackTrace()));
             return "false";
         }
+    }
+
+    private static Set<String> flatMapJonoOids(Map<String, Map<String, ValintatapajonoDTO>> mapToMapOfObjects) {
+        return unmodifiableSet(mapToMapOfObjects.values().stream()
+                .flatMap(map -> map.values().stream().map(ValintatapajonoDTO::getOid))
+                .collect(toSet()));
     }
 
     private void updateValintatapajonotAndRemoveUsed(Map<String, ValintatapajonoDTO> valintatapajonoByOid, ValintatietoValinnanvaiheDTO vaihe) {
@@ -134,7 +141,7 @@ public class SijoitteluResource {
     private Map<String, HakijaryhmaValintatapajonoDTO> haeMahdollisestiMuuttuneetHakijaryhmat(HakuDTO haku) {
         Set<String> hakukohdeOidsWithHakijaryhma = haku.getHakukohteet().stream()
                 .filter(hakukohde -> hakukohde.getHakijaryhma() != null && !hakukohde.getHakijaryhma().isEmpty())
-                .map(hakukohde -> hakukohde.getOid()).collect(Collectors.toSet());
+                .map(hakukohde -> hakukohde.getOid()).collect(toSet());
 
         Map<String, HakijaryhmaValintatapajonoDTO> hakijaryhmaByOid = Collections.emptyMap();
         if (!hakukohdeOidsWithHakijaryhma.isEmpty()) {
@@ -163,7 +170,7 @@ public class SijoitteluResource {
                         hakukohde.getValinnanvaihe().stream()
                                 .anyMatch(v -> v.getValintatapajonot().stream()
                                         .anyMatch(j -> TRUE.equals(j.getAktiivinen()))))
-                .map(hakukohde -> hakukohde.getOid()).collect(Collectors.toSet());
+                .map(hakukohde -> hakukohde.getOid()).collect(toSet());
 
         if (!hakukohdeOidsWithAktiivisetJonot.isEmpty()) {
             LOGGER.info("Haetaan valintatapajonoja sijoittelua varten haulle {} ja hakukohteille {}", haku.getHakuOid(), Arrays.toString(hakukohdeOidsWithAktiivisetJonot.toArray()));

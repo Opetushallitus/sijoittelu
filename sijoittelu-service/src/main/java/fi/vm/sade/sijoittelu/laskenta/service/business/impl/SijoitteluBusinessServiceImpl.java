@@ -8,6 +8,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 import akka.actor.ActorRef;
+import com.google.common.collect.Sets;
+import com.google.common.collect.Sets.SetView;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.SijoitteluajoWrapper;
 import fi.vm.sade.sijoittelu.domain.*;
 import fi.vm.sade.sijoittelu.domain.comparator.HakemusComparator;
@@ -37,6 +39,12 @@ import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoitteluAlgorithm;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoitteluAlgorithmFactory;
 import fi.vm.sade.sijoittelu.laskenta.service.business.SijoitteluBusinessService;
 import fi.vm.sade.sijoittelu.tulos.roles.SijoitteluRole;
+
+import static com.google.common.collect.Sets.difference;
+import static com.google.common.collect.Sets.intersection;
+import static java.util.Collections.unmodifiableSet;
+import static java.util.stream.Collectors.toSet;
+import static org.apache.commons.lang.StringUtils.join;
 
 /**
  * @author Kari Kammonen
@@ -120,13 +128,17 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
 		}
 	}
 
+    private static Set<String> hakukohteidenJonoOidit(List<Hakukohde> hakukohteet) {
+        return unmodifiableSet(hakukohteet.stream()
+                .flatMap(hakukohde -> hakukohde.getValintatapajonot().stream().map(Valintatapajono::getOid))
+                .collect(toSet()));
+    }
+
     /**
      * versioi sijoittelun ja tuo uudet kohteet
-     *
-     * @param sijoitteluTyyppi
      */
     @Override
-    public void sijoittele(HakuDTO sijoitteluTyyppi) {
+    public void sijoittele(HakuDTO sijoitteluTyyppi, Set<String> valintaperusteidenJonot) {
         long startTime = System.currentTimeMillis();
         String hakuOid = sijoitteluTyyppi.getHakuOid();
         Sijoittelu sijoittelu = getOrCreateSijoittelu(hakuOid);
@@ -141,6 +153,16 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
             olemassaolevatHakukohteet = hakukohdeDao
                     .getHakukohdeForSijoitteluajo(viimeisinSijoitteluajo
                             .getSijoitteluajoId());
+            SetView<String> poistuneetJonot = difference(
+                    hakukohteidenJonoOidit(olemassaolevatHakukohteet),
+                    hakukohteidenJonoOidit(uudetHakukohteet));
+            SetView<String> valintaperusteidenVaatimat = intersection(valintaperusteidenJonot, poistuneetJonot);
+            // Uuden sijoittelun jonot pitaa olla superset paitsi jos ne on poistettu valintaperusteista
+            if (poistuneetJonot.size() > 0 && valintaperusteidenVaatimat.size() > 0) {
+                String msg = "Edellisessa sijoittelussa olleet jonot [" + join(poistuneetJonot, ", ") + "] puuttuvat vaikka valintaperusteet yha vaativat jonot [" + join(valintaperusteidenVaatimat, ", ") + "]";
+                LOG.error(msg);
+                throw new RuntimeException(msg);
+            }
         }
         SijoitteluAjo uusiSijoitteluajo = createSijoitteluAjo(sijoittelu);
         List<Hakukohde> kaikkiHakukohteet = merge(uusiSijoitteluajo,

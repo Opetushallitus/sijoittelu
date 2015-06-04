@@ -63,7 +63,7 @@ public class SijoitteluResourceTest {
             }
             verify(valintalaskentakoostepalveluResource, times(1)).readByHakukohdeOids(asList(hakukohdeOid));
             verify(valintalaskentakoostepalveluResource, times(1)).haeValintatapajonotSijoittelulle(asList(hakukohdeOid));
-            verify(sijoitteluBusinessService, times(1)).sijoittele(haku);
+            verify(sijoitteluBusinessService, times(1)).sijoittele(haku, new HashSet<>());
 
             HakukohdeDTO hakukohde = haku.getHakukohteet().iterator().next();
             /// ASSERTOIDAAN ETTA JONON TIEDOT PAIVITTYY

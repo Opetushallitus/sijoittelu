@@ -45,6 +45,7 @@ import fi.vm.sade.sijoittelu.domain.Sijoittelu;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -125,7 +126,7 @@ public class MorphiaIntegrationTest {
 
 		st.setHakuOid("testihakuoidi");
 
-		sijoitteluService.sijoittele(st);
+		sijoitteluService.sijoittele(st, new HashSet<>());
 		Sijoittelu sijoittelu = sijoitteluDao.getSijoitteluByHakuOid("testihakuoidi").get();
 		Assert.assertNotNull(sijoittelu);
 		Assert.assertEquals(sijoittelu.getHakuOid(), "testihakuoidi");

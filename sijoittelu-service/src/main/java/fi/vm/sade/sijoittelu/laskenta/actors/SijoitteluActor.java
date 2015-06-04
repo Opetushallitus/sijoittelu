@@ -14,6 +14,7 @@ import org.springframework.stereotype.Component;
 
 import javax.inject.Named;
 import java.util.Arrays;
+import java.util.HashSet;
 
 @Named("SijoitteluActor")
 @Component
@@ -28,7 +29,7 @@ public class SijoitteluActor extends AbstractActor {
         receive(ReceiveBuilder.match(HakuDTO.class, haku -> {
             try {
                 log.info("Sijoittelukutsu haulle {} saapunut actorille!", haku.getHakuOid());
-                sijoitteluBusinessService.sijoittele(haku);
+                sijoitteluBusinessService.sijoittele(haku, new HashSet<>());
                 log.info("Sijoittelu haulle {} suoritettu onnistuneesti!", haku.getHakuOid());
                 sender().tell(true, self());
             } catch (Exception e) {
