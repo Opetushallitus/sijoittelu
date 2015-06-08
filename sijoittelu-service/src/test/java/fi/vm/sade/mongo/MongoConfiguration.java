@@ -26,7 +26,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 
 import java.io.IOException;
-import java.net.InetAddress;
 import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
