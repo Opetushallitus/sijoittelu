@@ -38,54 +38,47 @@ import static fi.vm.sade.valintalaskenta.tulos.roles.ValintojenToteuttaminenRole
 @Controller
 @Api(value = "/valisijoittele", description = "Resurssi sijoitteluun")
 public class ValiSijoitteluResource {
+    private final static Logger LOGGER = LoggerFactory.getLogger(ValiSijoitteluResource.class);
 
-	private final static Logger LOGGER = LoggerFactory
-			.getLogger(ValiSijoitteluResource.class);
+    @Autowired
+    private SijoitteluBusinessService sijoitteluBusinessService;
 
-	@Autowired
-	private SijoitteluBusinessService sijoitteluBusinessService;
+    @Autowired
+    private ValintalaskentaTulosService tulosService;
 
-	@Autowired
-	private ValintalaskentaTulosService tulosService;
+    @Autowired
+    private ValintatietoService valintatietoService;
 
-	@Autowired
-	private ValintatietoService valintatietoService;
+    @Autowired
+    private ApplicationContext applicationContext;
 
-	@Autowired
-	private ApplicationContext applicationContext;
+    private ActorSystem actorSystem;
 
+    private ActorRef master;
 
-	private ActorSystem actorSystem;
+    @PostConstruct
+    public void initActorSystem() {
+        actorSystem = ActorSystem.create("ValiSijoitteluActorSystem");
+        SpringExtProvider.get(actorSystem).initialize(applicationContext);
 
-	private ActorRef master;
+        master = actorSystem.actorOf(SpringExtProvider.get(actorSystem).props("ValiSijoitteluActor")
+                        .withRouter(new RoundRobinRouter(1)), "ValiSijoitteluRouter");
+    }
 
-	@PostConstruct
-	public void initActorSystem() {
-		actorSystem = ActorSystem.create("ValiSijoitteluActorSystem");
-		SpringExtProvider.get(actorSystem).initialize(applicationContext);
+    @PreDestroy
+    public void tearDownActorSystem() {
+        actorSystem.shutdown();
+        actorSystem.awaitTermination();
+    }
 
-		master = actorSystem.actorOf(
-				SpringExtProvider.get(actorSystem).props("ValiSijoitteluActor")
-						.withRouter(new RoundRobinRouter(1)),
-				"ValiSijoitteluRouter");
-	}
-
-	@PreDestroy
-	public void tearDownActorSystem() {
-		actorSystem.shutdown();
-		actorSystem.awaitTermination();
-	}
-
-	@POST
+    @POST
     @Path("{hakuOid}")
     @Consumes("application/json")
     @Produces("application/json")
-	@ApiOperation(value = "Välisijoittelun suorittaminen")
-	public List<HakukohdeDTO> sijoittele(@PathParam("hakuOid") String hakuOid, ValisijoitteluDTO hakukohteet) {
-
-		LOGGER.info("Valintatietoja valmistetaan valisijottelulle haussa {}", hakuOid);
-
-		HakuDTO haku = valintatietoService.haeValintatiedotJonoille(hakuOid, hakukohteet.getHakukohteet());
+    @ApiOperation(value = "Välisijoittelun suorittaminen")
+    public List<HakukohdeDTO> sijoittele(@PathParam("hakuOid") String hakuOid, ValisijoitteluDTO hakukohteet) {
+        LOGGER.info("Valintatietoja valmistetaan valisijottelulle haussa {}", hakuOid);
+        HakuDTO haku = valintatietoService.haeValintatiedotJonoille(hakuOid, hakukohteet.getHakukohteet());
 
         // Asetetaan välisijoittelun vaatimat valintaperusteet
         haku.getHakukohteet().forEach(hakukohde -> {
@@ -98,13 +91,9 @@ public class ValiSijoitteluResource {
                 });
             });
         });
-
-		LOGGER.info("Valintatiedot haettu serviceltä haussa {}!", hakuOid);
-
-		Timeout timeout = new Timeout(Duration.create(60, "minutes"));
-
-		Future<Object> future = Patterns.ask(master, haku, timeout);
-
+        LOGGER.info("Valintatiedot haettu serviceltä haussa {}!", hakuOid);
+        Timeout timeout = new Timeout(Duration.create(60, "minutes"));
+        Future<Object> future = Patterns.ask(master, haku, timeout);
         try {
             LOGGER.info("############### Odotellaan välisijoittelun valmistumista haussa {} ###############", hakuOid);
             List<HakukohdeDTO> onnistui = (List<HakukohdeDTO>) Await.result(future, timeout.duration());
@@ -114,7 +103,5 @@ public class ValiSijoitteluResource {
             e.printStackTrace();
             return new ArrayList<>();
         }
-
-	}
-
+    }
 }
