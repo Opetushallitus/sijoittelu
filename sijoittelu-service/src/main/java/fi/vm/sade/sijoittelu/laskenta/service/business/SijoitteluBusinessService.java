@@ -8,31 +8,22 @@ import fi.vm.sade.sijoittelu.domain.Valintatulos;
 import fi.vm.sade.sijoittelu.tulos.dto.HakukohdeDTO;
 import fi.vm.sade.valintalaskenta.domain.dto.valintatieto.HakuDTO;
 
-/**
- * 
- * @author Kari Kammonen
- * 
- */
 public interface SijoitteluBusinessService {
-
     void sijoittele(HakuDTO sijoitteluTyyppi);
 
     List<HakukohdeDTO> valisijoittele(HakuDTO sijoitteluTyyppi);
 
     long erillissijoittele(HakuDTO sijoitteluTyyppi);
 
-	Valintatulos haeHakemuksenTila(String hakuoid, String hakukohdeOid,
-			String valintatapajonoOid, String hakemusOid);
+    Valintatulos haeHakemuksenTila(String hakuoid, String hakukohdeOid, String valintatapajonoOid, String hakemusOid);
 
-	List<Valintatulos> haeHakemuksenTila(String hakemusOid);
+    List<Valintatulos> haeHakemuksenTila(String hakemusOid);
 
-	void vaihdaHakemuksenTila(String hakuoid, String hakukohdeOid,
-			String valintatapajonoOid, String hakemusOid,
-			ValintatuloksenTila tila, String selite,
-			IlmoittautumisTila ilmoittautumisTila, boolean julkaistavissa, boolean hyvaksyttyVarasijalta);
+    void vaihdaHakemuksenTila(String hakuoid, String hakukohdeOid, String valintatapajonoOid, String hakemusOid,
+                              ValintatuloksenTila tila, String selite, IlmoittautumisTila ilmoittautumisTila,
+                              boolean julkaistavissa, boolean hyvaksyttyVarasijalta);
 
-	List<Valintatulos> haeHakemustenTilat(String hakukohdeOid,
-			String valintatapajonoOid);
+    List<Valintatulos> haeHakemustenTilat(String hakukohdeOid, String valintatapajonoOid);
 
-	List<Valintatulos> haeHakukohteenTilat(String hakukohdeOid);
+    List<Valintatulos> haeHakukohteenTilat(String hakukohdeOid);
 }

@@ -11,7 +11,6 @@ import fi.vm.sade.valintalaskenta.domain.dto.valintatieto.HakuDTO;
 import java.util.List;
 
 public interface ActorService {
-
     ActorSystem getActorSystem();
 
     ActorRef getSiivousActor();
@@ -19,5 +18,4 @@ public interface ActorService {
     ActorRef getSijoitteluActor();
 
     ActorRef getErillisSijoitteluActor();
-
 }
