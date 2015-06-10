@@ -1,10 +1,6 @@
 package fi.vm.sade.sijoittelu.laskenta.external.resource.dto;
 
-/**
- * Created by kjsaila on 18/11/14.
- */
 public class ParametriDTO {
-
     private ParametriArvoDTO PH_VTSSV; // Valintatulokset siirrettävä sijoitteluun viimeistään
 
     private ParametriArvoDTO PH_VSSAV; // Varasijasäännöt astuvat voimaan

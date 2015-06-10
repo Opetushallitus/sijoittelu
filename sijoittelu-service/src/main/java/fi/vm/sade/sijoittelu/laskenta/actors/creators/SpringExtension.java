@@ -6,15 +6,7 @@ import akka.actor.Extension;
 import akka.actor.Props;
 import org.springframework.context.ApplicationContext;
 
-/**
- * Created with IntelliJ IDEA.
- * User: kjsaila
- * Date: 18/12/13
- * Time: 12:38
- * To change this template use File | Settings | File Templates.
- */
-public class SpringExtension extends
-        AbstractExtensionId<SpringExtension.SpringExt> {
+public class SpringExtension extends AbstractExtensionId<SpringExtension.SpringExt> {
 
     /**
      * The identifier used to access the SpringExtension.

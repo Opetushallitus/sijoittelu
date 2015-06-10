@@ -17,14 +17,10 @@ import javax.inject.Named;
 import java.util.Arrays;
 import java.util.List;
 
-/**
- * Created by kjsaila on 21/08/14.
- */
 @Named("ValiSijoitteluActor")
 @Component
 @Scope(value = "prototype")
 public class ValiSijoitteluActor extends AbstractActor {
-
     LoggingAdapter log = Logging.getLogger(getContext().system(), this);
 
     @Autowired
@@ -45,6 +41,4 @@ public class ValiSijoitteluActor extends AbstractActor {
             }
         }).build());
     }
-
-
 }

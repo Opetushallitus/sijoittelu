@@ -1,10 +1,6 @@
 package fi.vm.sade.sijoittelu.laskenta.external.resource.dto;
 
-/**
- * Created by kjsaila on 18/11/14.
- */
 public class ParametriArvoDTO {
-
     private Long date;
     private Long dateStart;
     private Long dateEnd;

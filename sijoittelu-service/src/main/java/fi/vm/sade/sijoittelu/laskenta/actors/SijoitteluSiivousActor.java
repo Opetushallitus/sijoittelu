@@ -25,14 +25,10 @@ import javax.inject.Named;
 import java.util.*;
 import java.util.stream.Collectors;
 
-/**
- * Created by kjsaila on 21/08/14.
- */
 @Named("SijoitteluSiivousActor")
 @Component
 @Scope(value = "prototype")
 public class SijoitteluSiivousActor extends AbstractActor {
-
     LoggingAdapter log = Logging.getLogger(getContext().system(), this);
 
     @Autowired

@@ -8,19 +8,10 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
-/**
- * 
- * @author Jussi Jartamo
- * 
- */
 @Path("/v1/haku")
 public interface HakuV1Resource {
-
-	@GET
-	@Path("/{oid}")
-	@Produces(MediaType.APPLICATION_JSON + ";charset=UTF-8")
-	// @ApiOperation(value = "Palauttaa haun annetulla oid:lla", notes =
-	// "Palauttaa haun annetulla oid:lla", response = HakuV1RDTO.class)
-	public ResultHakuDTO findByOid(@PathParam("oid") String oid);
-
+    @GET
+    @Path("/{oid}")
+    @Produces(MediaType.APPLICATION_JSON + ";charset=UTF-8")
+    public ResultHakuDTO findByOid(@PathParam("oid") String oid);
 }

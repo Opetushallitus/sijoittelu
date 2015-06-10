@@ -1,10 +1,6 @@
 package fi.vm.sade.sijoittelu.laskenta.actors.messages;
 
-/**
- * Created by kjsaila on 24/09/14.
- */
 public class PoistaVanhatAjotSijoittelulta {
-
     private final long sijoitteluId;
 
     private final int ajojenMaaraMax;

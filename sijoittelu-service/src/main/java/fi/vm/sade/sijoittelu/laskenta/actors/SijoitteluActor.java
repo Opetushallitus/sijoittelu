@@ -15,14 +15,10 @@ import org.springframework.stereotype.Component;
 import javax.inject.Named;
 import java.util.Arrays;
 
-/**
- * Created by kjsaila on 21/08/14.
- */
 @Named("SijoitteluActor")
 @Component
 @Scope(value = "prototype")
 public class SijoitteluActor extends AbstractActor {
-
     LoggingAdapter log = Logging.getLogger(getContext().system(), this);
 
     @Autowired
@@ -43,6 +39,4 @@ public class SijoitteluActor extends AbstractActor {
             }
         }).build());
     }
-
-
 }

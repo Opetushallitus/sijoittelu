@@ -2,9 +2,6 @@ package fi.vm.sade.sijoittelu.laskenta.actors.messages;
 
 import fi.vm.sade.sijoittelu.domain.Sijoittelu;
 
-/**
- * Created by kjsaila on 25/09/14.
- */
 public class PoistaHakukohteet {
     private final Sijoittelu sijoittelu;
 
