@@ -11,13 +11,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
-/**
- * Created by kjsaila on 16/12/14.
- */
-
 @Service
 public class TarjontaIntegrationServiceImpl implements TarjontaIntegrationService{
-
     @Autowired
     HakuV1Resource hakuV1Resource;
 
@@ -36,7 +31,6 @@ public class TarjontaIntegrationServiceImpl implements TarjontaIntegrationServic
             e.printStackTrace();
             throw new RuntimeException("Hakukohteelle " + hakukohdeOid + " ei löytynyt tarjoajaOidia");
         }
-
     }
 
     @Override
