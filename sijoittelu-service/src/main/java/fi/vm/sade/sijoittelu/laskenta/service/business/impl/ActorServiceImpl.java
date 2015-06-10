@@ -15,12 +15,8 @@ import java.util.UUID;
 
 import static fi.vm.sade.sijoittelu.laskenta.actors.creators.SpringExtension.SpringExtProvider;
 
-/**
- * Created by kjsaila on 25/09/14.
- */
 @Service
 public class ActorServiceImpl implements ActorService {
-
     @Autowired
     ApplicationContext applicationContext;
 
@@ -34,15 +30,10 @@ public class ActorServiceImpl implements ActorService {
     public void initActorSystem() {
         actorSystem = ActorSystem.create("SijoitteluActorSystem");
         SpringExtProvider.get(actorSystem).initialize(applicationContext);
-        router = actorSystem.actorOf(
-                SpringExtProvider.get(actorSystem).props("SijoitteluActor")
-                        .withRouter(new RoundRobinRouter(1)),
-                "SijoitteluRouter");
-        erillisRouter = actorSystem.actorOf(
-                SpringExtProvider.get(actorSystem).props("ErillisSijoitteluActor")
-                        .withRouter(new RoundRobinRouter(3)),
-                "ErillisSijoitteluRouter");
-
+        router = actorSystem.actorOf(SpringExtProvider.get(actorSystem).props("SijoitteluActor")
+                        .withRouter(new RoundRobinRouter(1)), "SijoitteluRouter");
+        erillisRouter = actorSystem.actorOf(SpringExtProvider.get(actorSystem).props("ErillisSijoitteluActor")
+                        .withRouter(new RoundRobinRouter(3)), "ErillisSijoitteluRouter");
     }
 
     @PreDestroy
@@ -58,8 +49,7 @@ public class ActorServiceImpl implements ActorService {
 
     @Override
     public ActorRef getSiivousActor() {
-        return actorSystem.actorOf(
-                SpringExtProvider.get(actorSystem).props("SijoitteluSiivousActor"), UUID.randomUUID().toString());
+        return actorSystem.actorOf(SpringExtProvider.get(actorSystem).props("SijoitteluSiivousActor"), UUID.randomUUID().toString());
     }
 
     @Override
