@@ -4,13 +4,6 @@ import org.mongodb.morphia.annotations.Converters;
 import org.mongodb.morphia.annotations.Embedded;
 import fi.vm.sade.sijoittelu.domain.converter.BigDecimalConverter;
 
-/**
- * Created with IntelliJ IDEA.
- * User: kkammone
- * Date: 27.9.2013
- * Time: 10:11
- * To change this template use File | Settings | File Templates.
- */
 @Embedded
 @Converters(BigDecimalConverter.class)
 public class Pistetieto {

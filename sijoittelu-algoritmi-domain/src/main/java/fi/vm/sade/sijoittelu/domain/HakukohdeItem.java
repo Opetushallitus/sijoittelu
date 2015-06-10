@@ -16,10 +16,6 @@ public class HakukohdeItem implements Serializable {
     //hakukohdeoid
     private String oid;
 
-
-   // @Reference(value = "Hakukohde", lazy = true)
-   // private Hakukohde hakukohde;
-
     public String getOid() {
         return oid;
     }
@@ -27,13 +23,4 @@ public class HakukohdeItem implements Serializable {
     public void setOid(String oid) {
         this.oid = oid;
     }
-
-   // public Hakukohde getHakukohde() {
-   //     return hakukohde;
-   // }
-
-   // public void setHakukohde(Hakukohde hakukohde) {
-   //     this.hakukohde = hakukohde;
-   // }
-
 }

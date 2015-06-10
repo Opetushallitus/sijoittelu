@@ -7,11 +7,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * 
- * @author Kari Kammonen
- * 
- */
 @Entity("Hakukohde")
 @Indexes( {
         @Index("oid, sijoitteluajoId"),
@@ -19,7 +14,6 @@ import java.util.List;
         @Index("sijoitteluajoId, valintatapajonot.hakemukset.hakemusOid")}
 )
 public class Hakukohde implements Serializable {
-
     @Id
     private ObjectId id;
 
@@ -38,7 +32,6 @@ public class Hakukohde implements Serializable {
     
     @Embedded
     private List<Hakijaryhma> hakijaryhmat = new ArrayList<Hakijaryhma>();
-
 
     public List<Valintatapajono> getValintatapajonot() {
         return valintatapajonot;

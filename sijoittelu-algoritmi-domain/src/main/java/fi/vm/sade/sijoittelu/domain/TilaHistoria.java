@@ -1,13 +1,5 @@
 package fi.vm.sade.sijoittelu.domain;
 
-/**
- * Created with IntelliJ IDEA.
- * User: jukais
- * Date: 14.8.2013
- * Time: 7.42
- * To change this template use File | Settings | File Templates.
- */
-
 import org.mongodb.morphia.annotations.Embedded;
 
 import java.io.Serializable;

@@ -10,9 +10,6 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 
-/**
- * @author Kari Kammonen
- */
 @Embedded
 @Converters(BigDecimalConverter.class)
 public class Valintatapajono implements Serializable {

@@ -11,12 +11,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-/**
- * @author Kari Kammonen
- */
 @Entity("ValiSijoittelu")
 public class ValiSijoittelu implements Serializable {
-
     @SuppressWarnings("unused")
     @Id
     private ObjectId id;

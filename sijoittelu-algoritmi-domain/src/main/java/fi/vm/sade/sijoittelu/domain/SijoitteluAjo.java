@@ -8,12 +8,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * 
- * @author Kari Kammonen
- * 
- */
-//@Entity("SijoitteluAjo")
 @Embedded
 public class SijoitteluAjo implements Serializable {
 

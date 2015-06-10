@@ -7,14 +7,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created with IntelliJ IDEA.
- * User: kkammone
- * Date: 20.5.2013
- * Time: 13:28
- * To change this template use File | Settings | File Templates.
- */
-
 @Entity("Valintatulos")
 @Indexes({
         @Index("hakukohdeOid, valintatapajonoOid, hakemusOid"),
@@ -36,24 +28,17 @@ public class Valintatulos implements Serializable {
     //Maarittaa 2 muun kanssa taman luokan hakemisen
     private String hakukohdeOid;
 
-
     private boolean julkaistavissa;
-
 
     private boolean hyvaksyttyVarasijalta;
 
-
     private String hakijaOid;
-
 
     private String hakuOid;
 
-
     private int hakutoive;
 
-
     private ValintatuloksenTila tila = ValintatuloksenTila.KESKEN;
-
 
     private IlmoittautumisTila ilmoittautumisTila = IlmoittautumisTila.EI_TEHTY;
 
