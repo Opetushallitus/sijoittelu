@@ -40,44 +40,34 @@ import static fi.vm.sade.valintalaskenta.tulos.roles.ValintojenToteuttaminenRole
 @PreAuthorize("isAuthenticated()")
 @Api(value = "/erillissijoittele", description = "Resurssi sijoitteluun")
 public class ErillisSijoitteluResource {
+    private final static Logger LOGGER = LoggerFactory.getLogger(ErillisSijoitteluResource.class);
 
-	private final static Logger LOGGER = LoggerFactory
-			.getLogger(ErillisSijoitteluResource.class);
+    @Autowired
+    private SijoitteluBusinessService sijoitteluBusinessService;
 
-	@Autowired
-	private SijoitteluBusinessService sijoitteluBusinessService;
+    @Autowired
+    private ValintalaskentaTulosService tulosService;
 
-	@Autowired
-	private ValintalaskentaTulosService tulosService;
+    @Autowired
+    private ValintatietoService valintatietoService;
 
-	@Autowired
-	private ValintatietoService valintatietoService;
-
-	@Autowired
-	private ApplicationContext applicationContext;
-
+    @Autowired
+    private ApplicationContext applicationContext;
 
     @Autowired
     private ActorService actorService;
 
-
-	@POST
+    @POST
     @Path("{hakuOid}")
     @Consumes("application/json")
-	@PreAuthorize(CRUD)
-	@ApiOperation(consumes = "application/json", value = "Valintatapajonon vienti taulukkolaskentaan", response = Long.class)
-	public Long sijoittele(@PathParam("hakuOid") String hakuOid, ValisijoitteluDTO hakukohteet) {
-
-		LOGGER.info("Valintatietoja valmistetaan valisijottelulle haussa {}", hakuOid);
-
-		HakuDTO haku = valintatietoService.haeValintatiedotJonoille(hakuOid, hakukohteet.getHakukohteet());
-
-		LOGGER.info("Valintatiedot haettu serviceltä haulle {}!", hakuOid);
-
-		Timeout timeout = new Timeout(Duration.create(60, "minutes"));
-
-		Future<Object> future = Patterns.ask(actorService.getErillisSijoitteluActor(), haku, timeout);
-
+    @PreAuthorize(CRUD)
+    @ApiOperation(consumes = "application/json", value = "Valintatapajonon vienti taulukkolaskentaan", response = Long.class)
+    public Long sijoittele(@PathParam("hakuOid") String hakuOid, ValisijoitteluDTO hakukohteet) {
+        LOGGER.info("Valintatietoja valmistetaan valisijottelulle haussa {}", hakuOid);
+        HakuDTO haku = valintatietoService.haeValintatiedotJonoille(hakuOid, hakukohteet.getHakukohteet());
+        LOGGER.info("Valintatiedot haettu serviceltä haulle {}!", hakuOid);
+        Timeout timeout = new Timeout(Duration.create(60, "minutes"));
+        Future<Object> future = Patterns.ask(actorService.getErillisSijoitteluActor(), haku, timeout);
         try {
             LOGGER.info("############### Odotellaan erillissijoittelun valmistumista haulle {} ###############", hakuOid);
             long onnistui = (long) Await.result(future, timeout.duration());
@@ -87,6 +77,5 @@ public class ErillisSijoitteluResource {
             e.printStackTrace();
             return null;
         }
-	}
-
+    }
 }
