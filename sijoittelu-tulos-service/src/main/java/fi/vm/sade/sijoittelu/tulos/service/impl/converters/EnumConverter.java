@@ -3,12 +3,6 @@ package fi.vm.sade.sijoittelu.tulos.service.impl.converters;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- *
- * @author Jussi Jartamo
- *
- *         Geneerinen enum convertteri
- */
 public class EnumConverter {
     public static <T extends Enum<T>> T convert(Class<T> e1, Enum<?> e2) {
         if (e2 == null) {

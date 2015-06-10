@@ -6,13 +6,6 @@ import fi.vm.sade.sijoittelu.tulos.dto.raportointi.HakijaDTO;
 
 import java.util.List;
 
-/**
- * Created with IntelliJ IDEA.
- * User: kkammone
- * Date: 17.9.2013
- * Time: 14:49
- * To change this template use File | Settings | File Templates.
- */
 public interface RaportointiConverter {
     List<HakijaDTO> convert(List<HakukohdeDTO> hakukohteet);
 

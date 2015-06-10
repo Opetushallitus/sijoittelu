@@ -30,47 +30,38 @@ import java.util.Optional;
 import static fi.vm.sade.sijoittelu.tulos.roles.SijoitteluRole.READ_UPDATE_CRUD;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 
-
 @Controller
 @PreAuthorize("isAuthenticated()")
 @Path("/erillissijoittelu")
 @Api(value = "/erillissijoittelu", description = "Resurssi erillissijoittelun tuloksien hakemiseen")
 public class ErillisSijoitteluResourceImpl {
-
-	private final static Logger LOGGER = LoggerFactory
-			.getLogger(ErillisSijoitteluResourceImpl.class);
-
-	@Autowired
-	private SijoitteluTulosService sijoitteluTulosService;
+    private final static Logger LOGGER = LoggerFactory.getLogger(ErillisSijoitteluResourceImpl.class);
 
     @Autowired
-	private RaportointiService raportointiService;
+    private SijoitteluTulosService sijoitteluTulosService;
 
+    @Autowired
+    private RaportointiService raportointiService;
 
-	@GET
-	@Produces(APPLICATION_JSON)
-	@PreAuthorize(READ_UPDATE_CRUD)
-	@ApiOperation(value = "Hakee hakukohteen tiedot tietyssa sijoitteluajossa.", response = HakukohdeDTO.class)
-	public Response getHakukohdeBySijoitteluajo(
-			@ApiParam(name="hakuOid", value = "Haun tunniste", required = true)
-			@PathParam("hakuOid") String hakuOid,
-			@ApiParam(name="sijoitteluajoId", value = "Sijoitteluajon tunniste", required = true)
-			@PathParam("sijoitteluajoId") String sijoitteluajoId,
-			@ApiParam(name="hakukohdeOid", value = "Hakukohteen tunniste", required = true)
-			@PathParam("hakukohdeOid") String hakukohdeOid) {
+    @GET
+    @Produces(APPLICATION_JSON)
+    @PreAuthorize(READ_UPDATE_CRUD)
+    @ApiOperation(value = "Hakee hakukohteen tiedot tietyssa sijoitteluajossa.", response = HakukohdeDTO.class)
+    public Response getHakukohdeBySijoitteluajo(
+            @ApiParam(name = "hakuOid", value = "Haun tunniste", required = true)
+            @PathParam("hakuOid") String hakuOid,
+            @ApiParam(name = "sijoitteluajoId", value = "Sijoitteluajon tunniste", required = true)
+            @PathParam("sijoitteluajoId") String sijoitteluajoId,
+            @ApiParam(name = "hakukohdeOid", value = "Hakukohteen tunniste", required = true)
+            @PathParam("hakukohdeOid") String hakukohdeOid) {
 
-        if(sijoitteluajoId == null) {
+        if (sijoitteluajoId == null) {
             return Response.ok().entity(new HakukohdeDTO()).build();
         }
-
         SijoitteluAjo ajo = new SijoitteluAjo();
-        ajo.setSijoitteluajoId(Long
-                .parseLong(sijoitteluajoId));
-
+        ajo.setSijoitteluajoId(Long.parseLong(sijoitteluajoId));
         HakukohdeDTO hakukohdeBySijoitteluajo = sijoitteluTulosService
                 .getHakukohdeBySijoitteluajo(ajo, hakukohdeOid);
         return Response.ok().entity(hakukohdeBySijoitteluajo).build();
-
-	}
-
+    }
 }

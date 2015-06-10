@@ -13,10 +13,6 @@ import fi.vm.sade.sijoittelu.tulos.dto.raportointi.HakijaDTO;
 import fi.vm.sade.sijoittelu.tulos.dto.raportointi.HakutoiveDTO;
 import fi.vm.sade.sijoittelu.tulos.dto.raportointi.HakutoiveenValintatapajonoDTO;
 
-/**
- * Created with IntelliJ IDEA. User: kkammone Date: 17.9.2013 Time: 14:49 To
- * change this template use File | Settings | File Templates.
- */
 @Component
 public class RaportointiConverterImpl implements RaportointiConverter {
     @Override

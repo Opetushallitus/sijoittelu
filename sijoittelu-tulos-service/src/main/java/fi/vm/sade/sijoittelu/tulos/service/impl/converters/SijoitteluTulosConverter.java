@@ -10,15 +10,7 @@ import fi.vm.sade.sijoittelu.tulos.dto.ValintatapajonoDTO;
 
 import java.util.List;
 
-/**
- * Created with IntelliJ IDEA.
- * User: kkammone
- * Date: 5.9.2013
- * Time: 14:27
- * To change this template use File | Settings | File Templates.
- */
 public interface SijoitteluTulosConverter {
-
     HakukohdeDTO convert(Hakukohde a);
 
     SijoitteluajoDTO convert(SijoitteluAjo a);
