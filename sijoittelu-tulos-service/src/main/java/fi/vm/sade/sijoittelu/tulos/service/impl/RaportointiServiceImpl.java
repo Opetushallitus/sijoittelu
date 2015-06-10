@@ -29,15 +29,11 @@ import fi.vm.sade.sijoittelu.tulos.service.impl.converters.SijoitteluTulosConver
 /**
  * Sijoittelun raportointiin liittyvat metodit. Erotettu varsinaisesta
  * tulosservicesta
- * 
- * Created with IntelliJ IDEA. User: kkammone Date: 16.9.2013 Time: 14:51 To
- * change this template use File | Settings | File Templates.
  */
 @Service
 public class RaportointiServiceImpl implements RaportointiService {
-
-	@Autowired
-	private ValintatulosDao valintatulosDao;
+    @Autowired
+    private ValintatulosDao valintatulosDao;
 
     @Autowired
     private HakukohdeDao hakukohdeDao;
@@ -45,133 +41,107 @@ public class RaportointiServiceImpl implements RaportointiService {
     @Autowired
     private SijoitteluDao sijoitteluDao;
 
-	@Autowired
-	private RaportointiConverter raportointiConverter;
+    @Autowired
+    private RaportointiConverter raportointiConverter;
 
-	@Autowired
-	private SijoitteluTulosConverter sijoitteluTulosConverter;
+    @Autowired
+    private SijoitteluTulosConverter sijoitteluTulosConverter;
 
-	@Override
-	public Optional<SijoitteluAjo> getSijoitteluAjo(Long SijoitteluajoId) {
-		return sijoitteluDao.getSijoitteluajo(SijoitteluajoId);
-	}
+    @Override
+    public Optional<SijoitteluAjo> getSijoitteluAjo(Long SijoitteluajoId) {
+        return sijoitteluDao.getSijoitteluajo(SijoitteluajoId);
+    }
 
-	@Override
-	public Optional<SijoitteluAjo> latestSijoitteluAjoForHaku(String hakuOid) {
-		return sijoitteluDao.getLatestSijoitteluajo(hakuOid);
-	}
+    @Override
+    public Optional<SijoitteluAjo> latestSijoitteluAjoForHaku(String hakuOid) {
+        return sijoitteluDao.getLatestSijoitteluajo(hakuOid);
+    }
 
-	@Override
-	public HakijaDTO hakemus(SijoitteluAjo sijoitteluAjo, String hakemusOid) {
-		List<Hakukohde> hakukohteetJoihinHakemusOsallistuu = hakukohdeDao
-				.haeHakukohteetJoihinHakemusOsallistuu(
-						sijoitteluAjo.getSijoitteluajoId(), hakemusOid);
-		List<Valintatulos> valintatulokset = valintatulosDao
-				.loadValintatuloksetForHakemus(hakemusOid);
-		List<HakukohdeDTO> hakukohdeDTOs = sijoitteluTulosConverter
-				.convert(hakukohteetJoihinHakemusOsallistuu);
+    @Override
+    public HakijaDTO hakemus(SijoitteluAjo sijoitteluAjo, String hakemusOid) {
+        List<Hakukohde> hakukohteetJoihinHakemusOsallistuu = hakukohdeDao.haeHakukohteetJoihinHakemusOsallistuu(sijoitteluAjo.getSijoitteluajoId(), hakemusOid);
+        List<Valintatulos> valintatulokset = valintatulosDao.loadValintatuloksetForHakemus(hakemusOid);
+        List<HakukohdeDTO> hakukohdeDTOs = sijoitteluTulosConverter.convert(hakukohteetJoihinHakemusOsallistuu);
+        List<HakijaDTO> hakijat = raportointiConverter.convert(hakukohdeDTOs, valintatulokset);
+        return filterHakemus(hakijat, hakemusOid);
+    }
 
-		List<HakijaDTO> hakijat = raportointiConverter.convert(hakukohdeDTOs,
-				valintatulokset);
-		return filterHakemus(hakijat, hakemusOid);
-	}
+    /**
+     * Unfortunately this has to be done like this, on the positive side, these
+     * results can be cached, only valintatulokset needs to be refreshed, EVER!
+     */
+    @Override
+    public HakijaPaginationObject hakemukset(SijoitteluAjo ajo, Boolean hyvaksytyt, Boolean ilmanHyvaksyntaa,
+                                             Boolean vastaanottaneet, List<String> hakukohdeOid, Integer count,
+                                             Integer index) {
 
-	/**
-	 * Unfortunately this has to be done like this, on the positive side, these
-	 * results can be cached, only valintatulokset needs to be refreshed, EVER!
-	 * 
-	 * @param ajo
-	 * @param hyvaksytyt
-	 * @param ilmanHyvaksyntaa
-	 * @param vastaanottaneet
-	 * @param hakukohdeOid
-	 * @param count
-	 * @param index
-	 * @return
-	 */
-	@Override
-	public HakijaPaginationObject hakemukset(SijoitteluAjo ajo,
-			Boolean hyvaksytyt, Boolean ilmanHyvaksyntaa,
-			Boolean vastaanottaneet, List<String> hakukohdeOid, Integer count,
-			Integer index) {
+        List<Valintatulos> valintatulokset = valintatulosDao.loadValintatulokset(ajo.getHakuOid());
+        List<Hakukohde> hakukohteet = hakukohdeDao.getHakukohdeForSijoitteluajo(ajo.getSijoitteluajoId());
+        List<HakukohdeDTO> hakukohdeDTOs = sijoitteluTulosConverter.convert(hakukohteet);
+        List<HakijaDTO> hakijat = raportointiConverter.convert(hakukohdeDTOs, valintatulokset);
+        Collections.sort(hakijat, new HakijaDTOComparator());
 
-		List<Valintatulos> valintatulokset = valintatulosDao.loadValintatulokset(ajo
-				.getHakuOid());
-		List<Hakukohde> hakukohteet = hakukohdeDao.getHakukohdeForSijoitteluajo(ajo.getSijoitteluajoId());
-		List<HakukohdeDTO> hakukohdeDTOs = sijoitteluTulosConverter
-				.convert(hakukohteet);
-		List<HakijaDTO> hakijat = raportointiConverter.convert(hakukohdeDTOs,
-				valintatulokset);
-		Collections.sort(hakijat, new HakijaDTOComparator());
+        // hakijat should be cached & set to non-mutable
+        // hakijat should be cached & set to non-mutable
+        if (hakukohdeOid == null) {
+            hakukohdeOid = new ArrayList<String>();
+        }
+        HakijaPaginationObject paginationObject = new HakijaPaginationObject();
+        List<HakijaDTO> result = new ArrayList<HakijaDTO>();
+        for (HakijaDTO hakija : hakijat) {
+            if (filter(hakija, hyvaksytyt, ilmanHyvaksyntaa, vastaanottaneet,
+                    hakukohdeOid)) {
+                result.add(hakija);
+            }
+        }
+        paginationObject.setTotalCount(result.size());
+        paginationObject.setResults(applyPagination(result, count, index));
+        return paginationObject;
+    }
 
-		// hakijat should be cached & set to non-mutable
-		// hakijat should be cached & set to non-mutable
-		if (hakukohdeOid == null) {
-			hakukohdeOid = new ArrayList<String>();
-		}
+    private boolean filter(HakijaDTO hakija, Boolean hyvaksytyt, Boolean ilmanHyvaksyntaa, Boolean vastaanottaneet, List<String> hakukohdeOid) {
+        boolean isPartOfHakukohdeList = false;
+        boolean isHyvaksytty = false;
+        boolean isVastaanottanut = false;
 
-		HakijaPaginationObject paginationObject = new HakijaPaginationObject();
+        for (HakutoiveDTO hakutoiveDTO : hakija.getHakutoiveet()) {
+            if (hakukohdeOid.contains(hakutoiveDTO.getHakukohdeOid())) {
+                isPartOfHakukohdeList = true;
+            }
+            for (HakutoiveenValintatapajonoDTO valintatapajono : hakutoiveDTO
+                    .getHakutoiveenValintatapajonot()) {
+                if (valintatapajono.getTila() == HakemuksenTila.HYVAKSYTTY || valintatapajono.getTila() == HakemuksenTila.VARASIJALTA_HYVAKSYTTY) {
+                    isHyvaksytty = true;
+                }
+                if (valintatapajono.getVastaanottotieto() == ValintatuloksenTila.VASTAANOTTANUT || valintatapajono.getVastaanottotieto() == ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI) {
+                    isVastaanottanut = true;
+                }
+            }
+        }
+        return ((hakukohdeOid == null || hakukohdeOid.size() <= 0) || isPartOfHakukohdeList)
+                && ((!Boolean.TRUE.equals(hyvaksytyt) || isHyvaksytty)
+                && (!Boolean.TRUE.equals(ilmanHyvaksyntaa) || !isHyvaksytty) && (!Boolean.TRUE
+                .equals(vastaanottaneet) || isVastaanottanut));
+    }
 
-		List<HakijaDTO> result = new ArrayList<HakijaDTO>();
-		for (HakijaDTO hakija : hakijat) {
-			if (filter(hakija, hyvaksytyt, ilmanHyvaksyntaa, vastaanottaneet,
-					hakukohdeOid)) {
-				result.add(hakija);
-			}
-		}
-		paginationObject.setTotalCount(result.size());
-		paginationObject.setResults(applyPagination(result, count, index));
-		return paginationObject;
-	}
+    private HakijaDTO filterHakemus(List<HakijaDTO> hakijat, String hakemusOid) {
+        for (HakijaDTO hakijaDTO : hakijat) {
+            if (hakemusOid.equals(hakijaDTO.getHakemusOid())) {
+                return hakijaDTO;
+            }
+        }
+        return null;
+    }
 
-	private boolean filter(HakijaDTO hakija, Boolean hyvaksytyt,
-			Boolean ilmanHyvaksyntaa, Boolean vastaanottaneet,
-			List<String> hakukohdeOid) {
-		boolean isPartOfHakukohdeList = false;
-		boolean isHyvaksytty = false;
-		boolean isVastaanottanut = false;
-
-		for (HakutoiveDTO hakutoiveDTO : hakija.getHakutoiveet()) {
-			if (hakukohdeOid.contains(hakutoiveDTO.getHakukohdeOid())) {
-				isPartOfHakukohdeList = true;
-			}
-			for (HakutoiveenValintatapajonoDTO valintatapajono : hakutoiveDTO
-					.getHakutoiveenValintatapajonot()) {
-				if (valintatapajono.getTila() == HakemuksenTila.HYVAKSYTTY || valintatapajono.getTila() == HakemuksenTila.VARASIJALTA_HYVAKSYTTY) {
-					isHyvaksytty = true;
-				}
-				if (valintatapajono.getVastaanottotieto() == ValintatuloksenTila.VASTAANOTTANUT || valintatapajono.getVastaanottotieto() == ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI) {
-					isVastaanottanut = true;
-				}
-			}
-		}
-		return ((hakukohdeOid == null || hakukohdeOid.size() <= 0) || isPartOfHakukohdeList)
-				&& ((!Boolean.TRUE.equals(hyvaksytyt) || isHyvaksytty)
-						&& (!Boolean.TRUE.equals(ilmanHyvaksyntaa) || !isHyvaksytty) && (!Boolean.TRUE
-						.equals(vastaanottaneet) || isVastaanottanut));
-
-	}
-
-	private HakijaDTO filterHakemus(List<HakijaDTO> hakijat, String hakemusOid) {
-		for (HakijaDTO hakijaDTO : hakijat) {
-			if (hakemusOid.equals(hakijaDTO.getHakemusOid())) {
-				return hakijaDTO;
-			}
-		}
-		return null;
-	}
-
-	private List<HakijaDTO> applyPagination(List<HakijaDTO> result,
-			Integer count, Integer index) {
-		if (index != null && count != null) {
-			return result.subList(index,
-					Math.min(index + count, result.size() - 1));
-		} else if (index != null) {
-			return result.subList(index, result.size() - 1);
-		} else if (count != null) {
-			return result.subList(0, Math.min(count, result.size() - 1));
-		}
-		return result;
-	}
-
+    private List<HakijaDTO> applyPagination(List<HakijaDTO> result,
+                                            Integer count, Integer index) {
+        if (index != null && count != null) {
+            return result.subList(index, Math.min(index + count, result.size() - 1));
+        } else if (index != null) {
+            return result.subList(index, result.size() - 1);
+        } else if (count != null) {
+            return result.subList(0, Math.min(count, result.size() - 1));
+        }
+        return result;
+    }
 }

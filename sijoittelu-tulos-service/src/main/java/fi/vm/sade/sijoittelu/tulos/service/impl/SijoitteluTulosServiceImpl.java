@@ -16,13 +16,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-/**
- * Created with IntelliJ IDEA. User: kkammone Date: 5.9.2013 Time: 14:24 To
- * change this template use File | Settings | File Templates.
- */
 @Service
 public class SijoitteluTulosServiceImpl implements SijoitteluTulosService {
-
     @Autowired
     private HakukohdeDao hakukohdeDao;
 
