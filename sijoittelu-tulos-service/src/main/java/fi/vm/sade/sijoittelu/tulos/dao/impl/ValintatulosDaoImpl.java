@@ -16,8 +16,6 @@ import fi.vm.sade.sijoittelu.tulos.dao.ValintatulosDao;
 
 @Repository
 public class ValintatulosDaoImpl implements ValintatulosDao {
-
-
     @Qualifier("datastore")
     @Autowired
     private Datastore morphiaDS;
@@ -30,8 +28,7 @@ public class ValintatulosDaoImpl implements ValintatulosDao {
     @Override
     public List<Valintatulos> loadValintatulos(String hakemusOid) {
         if (StringUtils.isBlank(hakemusOid)) {
-            throw new RuntimeException(
-                "Invalid search params, fix exception later");
+            throw new RuntimeException("Invalid search params, fix exception later");
         }
         Query<Valintatulos> q = morphiaDS.createQuery(Valintatulos.class);
         q.criteria("hakemusOid").equal(hakemusOid);
@@ -44,8 +41,7 @@ public class ValintatulosDaoImpl implements ValintatulosDao {
         if (StringUtils.isBlank(hakukohdeOid)
             || StringUtils.isBlank(hakukohdeOid)
             || StringUtils.isBlank(hakemusOid)) {
-            throw new RuntimeException(
-                "Invalid search params, fix exception later");
+            throw new RuntimeException("Invalid search params, fix exception later");
         }
         Query<Valintatulos> q = morphiaDS.createQuery(Valintatulos.class);
         q.criteria("hakukohdeOid").equal(hakukohdeOid);
@@ -59,8 +55,7 @@ public class ValintatulosDaoImpl implements ValintatulosDao {
                                                   String valintatapajonoOid) {
         if (StringUtils.isBlank(hakukohdeOid)
             || StringUtils.isBlank(valintatapajonoOid)) {
-            throw new RuntimeException(
-                "Invalid search params, fix exception later");
+            throw new RuntimeException("Invalid search params, fix exception later");
         }
         Query<Valintatulos> q = morphiaDS.createQuery(Valintatulos.class);
         q.and(
@@ -76,8 +71,7 @@ public class ValintatulosDaoImpl implements ValintatulosDao {
     public List<Valintatulos> loadValintatuloksetForHakukohde(
         String hakukohdeOid) {
         if (StringUtils.isBlank(hakukohdeOid)) {
-            throw new RuntimeException(
-                "Invalid search params, fix exception later");
+            throw new RuntimeException("Invalid search params, fix exception later");
         }
         Query<Valintatulos> q = morphiaDS.createQuery(Valintatulos.class);
         q.or(q.criteria("hakukohdeOid").equal(hakukohdeOid));
@@ -87,8 +81,7 @@ public class ValintatulosDaoImpl implements ValintatulosDao {
     @Override
     public List<Valintatulos> loadValintatulokset(String hakuOid) {
         if (StringUtils.isBlank(hakuOid)) {
-            throw new RuntimeException(
-                "Invalid search params, fix exception later");
+            throw new RuntimeException("Invalid search params, fix exception later");
         }
         Query<Valintatulos> q = morphiaDS.createQuery(Valintatulos.class);
         q.criteria("hakuOid").equal(hakuOid);
@@ -98,8 +91,7 @@ public class ValintatulosDaoImpl implements ValintatulosDao {
     @Override
     public List<Valintatulos> loadValintatuloksetForHakemus(String hakemusOid) {
         if (StringUtils.isBlank(hakemusOid)) {
-            throw new RuntimeException(
-                "Invalid search params, fix exception later");
+            throw new RuntimeException("Invalid search params, fix exception later");
         }
         Query<Valintatulos> q = morphiaDS.createQuery(Valintatulos.class);
         q.criteria("hakemusOid").equal(hakemusOid);
