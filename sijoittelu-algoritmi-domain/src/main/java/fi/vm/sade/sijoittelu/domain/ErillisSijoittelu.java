@@ -11,9 +11,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-/**
- * @author Kari Kammonen
- */
 @Entity("ErillisSijoittelu")
 public class ErillisSijoittelu implements Serializable {
 

@@ -9,15 +9,9 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.*;
 
-/**
- * 
- * @author Kari Kammonen
- * 
- */
 @Embedded
 @Converters(BigDecimalConverter.class)
 public class Hakemus implements Serializable {
-
     private String hakijaOid;
 
     @Indexed

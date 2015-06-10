@@ -1,12 +1,6 @@
 package fi.vm.sade.sijoittelu.domain;
 
-/**
- * 
- * @author Kari Kammonen
- *
- */
 public enum HakemuksenTila {
-
     HYLATTY, // hakija ei voi koskaan tulla valituksi kohteeseen
 
     VARALLA, // Hakija voi tulla kohteeseen valituksi (jossain vaiheessa)
