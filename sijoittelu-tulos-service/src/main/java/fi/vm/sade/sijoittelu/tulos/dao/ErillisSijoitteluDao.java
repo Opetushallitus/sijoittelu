@@ -7,11 +7,11 @@ import fi.vm.sade.sijoittelu.domain.ValiSijoittelu;
 import java.util.Optional;
 
 public interface ErillisSijoitteluDao {
-	void persistSijoittelu(ErillisSijoittelu sijoittelu);
+    void persistSijoittelu(ErillisSijoittelu sijoittelu);
 
-	Optional<ErillisSijoittelu> getSijoitteluByHakuOid(String hakuOid);
+    Optional<ErillisSijoittelu> getSijoitteluByHakuOid(String hakuOid);
 
-	Optional<SijoitteluAjo> getSijoitteluajo(Long sijoitteluajoId);
+    Optional<SijoitteluAjo> getSijoitteluajo(Long sijoitteluajoId);
 
     Optional<SijoitteluAjo> getLatestSijoitteluajo(String hakuOid);
 }
