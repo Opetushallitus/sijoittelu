@@ -1,6 +1,5 @@
 package fi.vm.sade.sijoittelu.batch.logic.impl;
 
-
 import fi.vm.sade.sijoittelu.domain.*;
 import fi.vm.sade.valintalaskenta.domain.dto.*;
 import fi.vm.sade.valintalaskenta.domain.dto.valintatieto.ValintatietoValintatapajonoDTO;
@@ -10,14 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-
-/**
- *
- * @author Kari Kammonen
- *
- */
 public class DomainConverter {
-
     public static Hakukohde convertToHakukohde(HakukohdeDTO hakukohdeTyyppi) {
         Hakukohde hakukohde = new Hakukohde();
         hakukohde.setOid(hakukohdeTyyppi.getOid());
@@ -52,7 +44,7 @@ public class DomainConverter {
 
             try {
                 valintatapajono.setTasasijasaanto(Tasasijasaanto.valueOf(valintatapajonoTyyppi.getTasasijasaanto().toString()));
-            } catch(Exception e) {
+            } catch (Exception e) {
                 System.out.println("Valintatapajonon tasasijasääntöä ei tunnistettu: " + valintatapajonoTyyppi.getTasasijasaanto());
                 valintatapajono.setTasasijasaanto(Tasasijasaanto.ARVONTA);
             }
@@ -122,13 +114,13 @@ public class DomainConverter {
         hakemus.setEtunimi(hakijaTyyppi.getEtunimi());
         hakemus.setSukunimi(hakijaTyyppi.getSukunimi());
 
-        if(hakijaTyyppi.getPisteet() != null) {
+        if (hakijaTyyppi.getPisteet() != null) {
             hakemus.setPisteet(hakijaTyyppi.getPisteet());
         }
 
-        applyPistetiedot(hakemus, hakijaTyyppi.getSyotettyArvo()) ;
+        applyPistetiedot(hakemus, hakijaTyyppi.getSyotettyArvo());
 
-        if(hakijaTyyppi.getTila() == JarjestyskriteerituloksenTilaDTO.HYVAKSYTTY_HARKINNANVARAISESTI)     {
+        if (hakijaTyyppi.getTila() == JarjestyskriteerituloksenTilaDTO.HYVAKSYTTY_HARKINNANVARAISESTI) {
             hakemus.setTila(HakemuksenTila.VARALLA);
             hakemus.setHyvaksyttyHarkinnanvaraisesti(true);
         } else if (hakijaTyyppi.getTila() == JarjestyskriteerituloksenTilaDTO.HYVAKSYTTAVISSA) {
@@ -136,7 +128,7 @@ public class DomainConverter {
         } else if (hakijaTyyppi.isHylattyValisijoittelussa()) {
             hakemus.setTila(HakemuksenTila.VARALLA);
         } else {
-            Map<String,String> tilanKuvaukset = hakijaTyyppi.getTilanKuvaus().parallelStream().collect(Collectors.toMap(AvainArvoDTO::getAvain, AvainArvoDTO::getArvo));
+            Map<String, String> tilanKuvaukset = hakijaTyyppi.getTilanKuvaus().parallelStream().collect(Collectors.toMap(AvainArvoDTO::getAvain, AvainArvoDTO::getArvo));
             hakemus.setTilanKuvaukset(tilanKuvaukset);
             hakemus.setTila(HakemuksenTila.HYLATTY);
         }
