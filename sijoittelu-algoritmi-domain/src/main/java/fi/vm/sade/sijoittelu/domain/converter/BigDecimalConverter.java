@@ -8,9 +8,6 @@ import org.mongodb.morphia.mapping.MappingException;
 import java.math.BigDecimal;
 
 /**
- *
- * @author Jussi Jartamo
- *
  *         https://code.google.com/p/morphia/issues/detail?id=411
  *         https://code.google.com/p/morphia/issues/detail?id=412
  */
@@ -36,5 +33,4 @@ public class BigDecimalConverter extends TypeConverter implements SimpleValueCon
         }
         return new BigDecimal(fromDBObject.toString());
     }
-
 }

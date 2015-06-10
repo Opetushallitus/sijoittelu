@@ -10,59 +10,55 @@ import fi.vm.sade.sijoittelu.domain.Valintatulos;
 
 import java.util.Optional;
 
-/**
- * 
- * @author Jussi Jartamo
- * 
- */
 @ApiModel("Erillishaunhakija")
 public class ErillishaunHakijaDTO {
-	@ApiModelProperty(value = "Valintatapajonon tunniste", required = true)
-	public  String valintatapajonoOid;
-	@ApiModelProperty(value = "Hakemuksen tunniste", required = false)
-    public  String hakemusOid;
-	@ApiModelProperty(value = "Hakukohteen tunniste", required = false)
-    public  String hakukohdeOid;
-	@ApiModelProperty(value = "Saako hakijan tulokset julkaista", required = false)
-    public  boolean julkaistavissa;
-	//public boolean hyvaksyttyVarasijalta;
-	@ApiModelProperty(value = "Hakijan tunniste", required = false)
-    public  String hakijaOid;
-	@ApiModelProperty(value = "Haun tunniste", required = false)
-    public  String hakuOid;
-	@ApiModelProperty(value = "Tarjoajan (organisaation) tunniste", required = false)
-    public  String tarjoajaOid;
-	//public int hakutoive; // aina ensimmainen?
-	@ApiModelProperty(value = "Valintatuloksen tila", required = false)
-    public  ValintatuloksenTila valintatuloksenTila;
-	@ApiModelProperty(value = "Ilmoittautumisen tila", required = false)
-    public  IlmoittautumisTila ilmoittautumisTila;
-	@ApiModelProperty(value = "Hakemuksen tila", required = false)
-    public  HakemuksenTila hakemuksenTila;
-	@ApiModelProperty(value = "Hakijan etunimi", required = false)
-    public  String etunimi;
-	@ApiModelProperty(value = "Hakijan sukunimi", required = false)
-    public  String sukunimi;
+    @ApiModelProperty(value = "Valintatapajonon tunniste", required = true)
+    public String valintatapajonoOid;
+    @ApiModelProperty(value = "Hakemuksen tunniste", required = false)
+    public String hakemusOid;
+    @ApiModelProperty(value = "Hakukohteen tunniste", required = false)
+    public String hakukohdeOid;
+    @ApiModelProperty(value = "Saako hakijan tulokset julkaista", required = false)
+    public boolean julkaistavissa;
+    //public boolean hyvaksyttyVarasijalta;
+    @ApiModelProperty(value = "Hakijan tunniste", required = false)
+    public String hakijaOid;
+    @ApiModelProperty(value = "Haun tunniste", required = false)
+    public String hakuOid;
+    @ApiModelProperty(value = "Tarjoajan (organisaation) tunniste", required = false)
+    public String tarjoajaOid;
+    //public int hakutoive; // aina ensimmainen?
+    @ApiModelProperty(value = "Valintatuloksen tila", required = false)
+    public ValintatuloksenTila valintatuloksenTila;
+    @ApiModelProperty(value = "Ilmoittautumisen tila", required = false)
+    public IlmoittautumisTila ilmoittautumisTila;
+    @ApiModelProperty(value = "Hakemuksen tila", required = false)
+    public HakemuksenTila hakemuksenTila;
+    @ApiModelProperty(value = "Hakijan etunimi", required = false)
+    public String etunimi;
+    @ApiModelProperty(value = "Hakijan sukunimi", required = false)
+    public String sukunimi;
 
     public boolean poistetaankoTulokset = false;
 
-	public ErillishaunHakijaDTO( String valintatapajonoOid,  String hakemusOid,  String hakukohdeOid,  boolean julkaistavissa,  String hakijaOid,  String hakuOid,  String tarjoajaOid,  ValintatuloksenTila valintatuloksenTila,  IlmoittautumisTila ilmoittautumisTila,  HakemuksenTila hakemuksenTila,  String etunimi,  String sukunimi, Optional<Boolean> poistetaankoTulokset) {
-		this.valintatapajonoOid = valintatapajonoOid;
-		this.hakemusOid = hakemusOid;
-		this.hakukohdeOid = hakukohdeOid;
-		this.julkaistavissa = julkaistavissa;
-		this.hakijaOid = hakijaOid;
-		this.hakuOid = hakuOid;
-		this.tarjoajaOid = tarjoajaOid;
-		this.valintatuloksenTila = valintatuloksenTila;
-		this.ilmoittautumisTila = ilmoittautumisTila;
-		this.hakemuksenTila = hakemuksenTila;
-		this.etunimi = etunimi;
-		this.sukunimi = sukunimi;
+    public ErillishaunHakijaDTO(String valintatapajonoOid, String hakemusOid, String hakukohdeOid, boolean julkaistavissa, String hakijaOid, String hakuOid, String tarjoajaOid, ValintatuloksenTila valintatuloksenTila, IlmoittautumisTila ilmoittautumisTila, HakemuksenTila hakemuksenTila, String etunimi, String sukunimi, Optional<Boolean> poistetaankoTulokset) {
+        this.valintatapajonoOid = valintatapajonoOid;
+        this.hakemusOid = hakemusOid;
+        this.hakukohdeOid = hakukohdeOid;
+        this.julkaistavissa = julkaistavissa;
+        this.hakijaOid = hakijaOid;
+        this.hakuOid = hakuOid;
+        this.tarjoajaOid = tarjoajaOid;
+        this.valintatuloksenTila = valintatuloksenTila;
+        this.ilmoittautumisTila = ilmoittautumisTila;
+        this.hakemuksenTila = hakemuksenTila;
+        this.etunimi = etunimi;
+        this.sukunimi = sukunimi;
         this.poistetaankoTulokset = poistetaankoTulokset.orElse(false);
-	}
+    }
 
-    public ErillishaunHakijaDTO() {}
+    public ErillishaunHakijaDTO() {
+    }
 
     public String getValintatapajonoOid() {
         return valintatapajonoOid;
@@ -169,17 +165,17 @@ public class ErillishaunHakijaDTO {
     }
 
     public Valintatulos asValintatulos() {
-		Valintatulos v = new Valintatulos();
-		v.setHakemusOid(hakemusOid);
-		v.setHakijaOid(hakijaOid);
-		v.setHakukohdeOid(hakukohdeOid);
-		v.setHakuOid(hakuOid);
-		v.setHakutoive(1);// aina ensimmainen?
-		v.setHyvaksyttyVarasijalta(HakemuksenTila.VARASIJALTA_HYVAKSYTTY.equals(hakemuksenTila));
-		v.setIlmoittautumisTila(ilmoittautumisTila);
-		v.setJulkaistavissa(julkaistavissa);
-		v.setTila(valintatuloksenTila);
-		v.setValintatapajonoOid(valintatapajonoOid);
-		return v;
-	}
+        Valintatulos v = new Valintatulos();
+        v.setHakemusOid(hakemusOid);
+        v.setHakijaOid(hakijaOid);
+        v.setHakukohdeOid(hakukohdeOid);
+        v.setHakuOid(hakuOid);
+        v.setHakutoive(1);// aina ensimmainen?
+        v.setHyvaksyttyVarasijalta(HakemuksenTila.VARASIJALTA_HYVAKSYTTY.equals(hakemuksenTila));
+        v.setIlmoittautumisTila(ilmoittautumisTila);
+        v.setJulkaistavissa(julkaistavissa);
+        v.setTila(valintatuloksenTila);
+        v.setValintatapajonoOid(valintatapajonoOid);
+        return v;
+    }
 }

@@ -4,11 +4,6 @@ import fi.vm.sade.sijoittelu.domain.Hakemus;
 
 import java.util.Comparator;
 
-/**
- *
- * @author Kari Kammonen
- *
- */
 public class HakemusComparator implements Comparator<Hakemus> {
 
     @Override
