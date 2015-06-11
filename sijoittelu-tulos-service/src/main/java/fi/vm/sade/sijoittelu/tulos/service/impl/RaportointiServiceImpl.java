@@ -1,5 +1,7 @@
 package fi.vm.sade.sijoittelu.tulos.service.impl;
 
+import static java.util.Arrays.asList;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -94,6 +96,27 @@ public class RaportointiServiceImpl implements RaportointiService {
         }
         paginationObject.setTotalCount(result.size());
         paginationObject.setResults(applyPagination(result, count, index));
+        return paginationObject;
+    }
+
+    @Override
+    public HakijaPaginationObject hakukohteenHakemukset(final SijoitteluAjo ajo, final String hakukohdeOid) {
+        List<Valintatulos> valintatulokset = valintatulosDao.loadValintatuloksetForHakukohde(hakukohdeOid);
+        Hakukohde hakukohde = hakukohdeDao.getHakukohdeForSijoitteluajo(ajo.getSijoitteluajoId(), hakukohdeOid);
+        if (hakukohde == null) return new HakijaPaginationObject();
+        List<HakukohdeDTO> hakukohdeDTOs = sijoitteluTulosConverter.convert(asList(hakukohde));
+        List<HakijaDTO> hakijat = raportointiConverter.convert(hakukohdeDTOs, valintatulokset);
+        Collections.sort(hakijat, new HakijaDTOComparator());
+
+        HakijaPaginationObject paginationObject = new HakijaPaginationObject();
+        List<HakijaDTO> result = new ArrayList<HakijaDTO>();
+        for (HakijaDTO hakija : hakijat) {
+            if (filter(hakija, true, null, null, null)) {
+                result.add(hakija);
+            }
+        }
+        paginationObject.setTotalCount(result.size());
+        paginationObject.setResults(result);
         return paginationObject;
     }
 
