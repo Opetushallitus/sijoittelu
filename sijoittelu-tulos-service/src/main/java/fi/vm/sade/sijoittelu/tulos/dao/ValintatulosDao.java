@@ -2,9 +2,6 @@ package fi.vm.sade.sijoittelu.tulos.dao;
 
 import java.util.List;
 
-import fi.vm.sade.sijoittelu.domain.Hakukohde;
-import fi.vm.sade.sijoittelu.domain.Sijoittelu;
-import fi.vm.sade.sijoittelu.domain.SijoitteluAjo;
 import fi.vm.sade.sijoittelu.domain.Valintatulos;
 
 public interface ValintatulosDao {

@@ -72,11 +72,11 @@ public class RaportointiServiceImpl implements RaportointiService {
      */
     @Override
     public HakijaPaginationObject hakemukset(SijoitteluAjo ajo, Boolean hyvaksytyt, Boolean ilmanHyvaksyntaa,
-                                             Boolean vastaanottaneet, List<String> hakukohdeOid, Integer count,
+                                             Boolean vastaanottaneet, List<String> hakukohdeOids, Integer count,
                                              Integer index) {
 
-        if (hakukohdeOid == null) {
-            hakukohdeOid = new ArrayList<String>();
+        if (hakukohdeOids == null) {
+            hakukohdeOids = new ArrayList<String>();
         }
 
         List<Valintatulos> valintatulokset = valintatulosDao.loadValintatulokset(ajo.getHakuOid());
@@ -88,7 +88,7 @@ public class RaportointiServiceImpl implements RaportointiService {
         HakijaPaginationObject paginationObject = new HakijaPaginationObject();
         List<HakijaDTO> result = new ArrayList<HakijaDTO>();
         for (HakijaDTO hakija : hakijat) {
-            if (filter(hakija, hyvaksytyt, ilmanHyvaksyntaa, vastaanottaneet, hakukohdeOid)) {
+            if (filter(hakija, hyvaksytyt, ilmanHyvaksyntaa, vastaanottaneet, hakukohdeOids)) {
                 result.add(hakija);
             }
         }
