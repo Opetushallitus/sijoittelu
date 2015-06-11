@@ -109,7 +109,7 @@ public class SijoitteluResourceImpl implements SijoitteluResource {
             @ApiParam(value = "Hakukohteen tunniste", required = true) @PathParam("hakukohdeOid") String hakukohdeOid) {
         try {
             Optional<SijoitteluAjo> sijoitteluAjo = raportointiService.latestSijoitteluAjoForHaku(hakuOid);
-            return sijoitteluAjo.map(ajo -> raportointiService.hakukohteenHakemukset(ajo, hakukohdeOid)).orElseGet(() -> new HakijaPaginationObject());
+            return sijoitteluAjo.map(ajo -> raportointiService.hakukohteenHyvaksytytHakemukset(ajo, hakukohdeOid)).orElseGet(() -> new HakijaPaginationObject());
 
         } catch (Exception e) {
             LOGGER.error("Sijoittelun hakemuksia ei saatu hakukohteelle {}! {}", hakukohdeOid, e.getMessage(), Arrays.toString(e.getStackTrace()));

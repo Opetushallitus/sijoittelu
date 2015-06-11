@@ -100,7 +100,7 @@ public class RaportointiServiceImpl implements RaportointiService {
     }
 
     @Override
-    public HakijaPaginationObject hakukohteenHakemukset(final SijoitteluAjo ajo, final String hakukohdeOid) {
+    public HakijaPaginationObject hakukohteenHyvaksytytHakemukset(final SijoitteluAjo ajo, final String hakukohdeOid) {
         List<Valintatulos> valintatulokset = valintatulosDao.loadValintatuloksetForHakukohde(hakukohdeOid);
         Hakukohde hakukohde = hakukohdeDao.getHakukohdeForSijoitteluajo(ajo.getSijoitteluajoId(), hakukohdeOid);
         if (hakukohde == null) return new HakijaPaginationObject();
