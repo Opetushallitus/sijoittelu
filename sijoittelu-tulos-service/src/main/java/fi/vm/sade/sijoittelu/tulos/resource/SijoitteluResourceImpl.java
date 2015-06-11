@@ -103,9 +103,27 @@ public class SijoitteluResourceImpl implements SijoitteluResource {
     @Produces(APPLICATION_JSON)
     @ApiOperation(position = 4, value = "Sivutettu listaus hakemuksien/hakijoiden listaukseen. Yksityiskohtainen listaus kaikista hakutoiveista ja niiden valintatapajonoista", response = HakijaPaginationObject.class)
     public HakijaPaginationObject hyvaksytytHakukohteeseen(
-            @ApiParam(value = "Haun tunniste", required = true) @PathParam("hakuOid") String hakuOid,
-            @ApiParam(value = "Hakukohteen tunniste", required = true) @PathParam("hakukohdeOid") String hakukohdeOid) {
-        return null;
+            @ApiParam(value = "Haun tunniste", required = true)
+            @PathParam("hakuOid") String hakuOid,
+            @PathParam("hakukohdeOid") String hakukohdeOid) {
+        try {
+            Optional<SijoitteluAjo> sijoitteluAjo = getSijoitteluAjo(SijoitteluResource.LATEST, hakuOid);
+            return sijoitteluAjo.map(ajo ->
+                            raportointiService.hakemukset(ajo, true,
+                                    null, null, Arrays.asList(hakukohdeOid), null,
+                                    null)
+            ).orElseGet(() -> {
+                HakijaPaginationObject vastaus = new HakijaPaginationObject();
+                vastaus.setTotalCount(0);
+                return vastaus;
+            });
+
+        } catch (Exception e) {
+            LOGGER.error("Sijoittelun hakemuksia ei saatu haulle {}! {}", hakuOid, e.getMessage(), Arrays.toString(e.getStackTrace()));
+            HakijaPaginationObject vastaus = new HakijaPaginationObject();
+            vastaus.setTotalCount(0);
+            return vastaus;
+        }
     }
 
     @Override
