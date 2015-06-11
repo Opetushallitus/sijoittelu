@@ -7,6 +7,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
+import fi.vm.sade.sijoittelu.tulos.dao.CachingRaportointiDao;
 import fi.vm.sade.sijoittelu.tulos.dao.HakukohdeDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -42,6 +43,9 @@ public class RaportointiServiceImpl implements RaportointiService {
 
     @Autowired
     private SijoitteluDao sijoitteluDao;
+
+    @Autowired
+    private CachingRaportointiDao cachingRaportointiDao;
 
     @Autowired
     private RaportointiConverter raportointiConverter;
@@ -80,7 +84,6 @@ public class RaportointiServiceImpl implements RaportointiService {
         if (hakukohdeOids == null) {
             hakukohdeOids = new ArrayList<String>();
         }
-
         List<Valintatulos> valintatulokset = valintatulosDao.loadValintatulokset(ajo.getHakuOid());
         List<Hakukohde> hakukohteet = hakukohdeDao.getHakukohdeForSijoitteluajo(ajo.getSijoitteluajoId());
         List<HakukohdeDTO> hakukohdeDTOs = sijoitteluTulosConverter.convert(hakukohteet);
@@ -100,18 +103,18 @@ public class RaportointiServiceImpl implements RaportointiService {
     }
 
     @Override
-    public HakijaPaginationObject hakukohteenHyvaksytytHakemukset(final SijoitteluAjo ajo, final String hakukohdeOid) {
-        List<Valintatulos> valintatulokset = valintatulosDao.loadValintatuloksetForHakukohde(hakukohdeOid);
-        Hakukohde hakukohde = hakukohdeDao.getHakukohdeForSijoitteluajo(ajo.getSijoitteluajoId(), hakukohdeOid);
-        if (hakukohde == null) return new HakijaPaginationObject();
-        List<HakukohdeDTO> hakukohdeDTOs = sijoitteluTulosConverter.convert(asList(hakukohde));
+    public HakijaPaginationObject cahetetutHakemukset(SijoitteluAjo ajo, Boolean hyvaksytyt, Boolean ilmanHyvaksyntaa, Boolean vastaanottaneet, List<String> hakukohdeOids, Integer count, Integer index) {
+        List<Valintatulos> valintatulokset = cachingRaportointiDao.getCachedValintatulokset(ajo.getHakuOid()).get();
+        List<Hakukohde> hakukohteet = cachingRaportointiDao.getCachedHakukohdesForSijoitteluajo(ajo.getSijoitteluajoId()).get();
+
+        List<HakukohdeDTO> hakukohdeDTOs = sijoitteluTulosConverter.convert(hakukohteet);
         List<HakijaDTO> hakijat = raportointiConverter.convert(hakukohdeDTOs, valintatulokset);
         Collections.sort(hakijat, new HakijaDTOComparator());
 
         HakijaPaginationObject paginationObject = new HakijaPaginationObject();
         List<HakijaDTO> result = new ArrayList<HakijaDTO>();
         for (HakijaDTO hakija : hakijat) {
-            if (filter(hakija, true, null, null, null)) {
+            if (filter(hakija, hyvaksytyt, ilmanHyvaksyntaa, vastaanottaneet, hakukohdeOids)) {
                 result.add(hakija);
             }
         }
