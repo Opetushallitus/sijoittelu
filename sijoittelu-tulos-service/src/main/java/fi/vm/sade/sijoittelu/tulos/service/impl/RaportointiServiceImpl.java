@@ -75,22 +75,20 @@ public class RaportointiServiceImpl implements RaportointiService {
                                              Boolean vastaanottaneet, List<String> hakukohdeOid, Integer count,
                                              Integer index) {
 
+        if (hakukohdeOid == null) {
+            hakukohdeOid = new ArrayList<String>();
+        }
+
         List<Valintatulos> valintatulokset = valintatulosDao.loadValintatulokset(ajo.getHakuOid());
         List<Hakukohde> hakukohteet = hakukohdeDao.getHakukohdeForSijoitteluajo(ajo.getSijoitteluajoId());
         List<HakukohdeDTO> hakukohdeDTOs = sijoitteluTulosConverter.convert(hakukohteet);
         List<HakijaDTO> hakijat = raportointiConverter.convert(hakukohdeDTOs, valintatulokset);
         Collections.sort(hakijat, new HakijaDTOComparator());
 
-        // hakijat should be cached & set to non-mutable
-        // hakijat should be cached & set to non-mutable
-        if (hakukohdeOid == null) {
-            hakukohdeOid = new ArrayList<String>();
-        }
         HakijaPaginationObject paginationObject = new HakijaPaginationObject();
         List<HakijaDTO> result = new ArrayList<HakijaDTO>();
         for (HakijaDTO hakija : hakijat) {
-            if (filter(hakija, hyvaksytyt, ilmanHyvaksyntaa, vastaanottaneet,
-                    hakukohdeOid)) {
+            if (filter(hakija, hyvaksytyt, ilmanHyvaksyntaa, vastaanottaneet, hakukohdeOid)) {
                 result.add(hakija);
             }
         }
@@ -108,8 +106,7 @@ public class RaportointiServiceImpl implements RaportointiService {
             if (hakukohdeOid.contains(hakutoiveDTO.getHakukohdeOid())) {
                 isPartOfHakukohdeList = true;
             }
-            for (HakutoiveenValintatapajonoDTO valintatapajono : hakutoiveDTO
-                    .getHakutoiveenValintatapajonot()) {
+            for (HakutoiveenValintatapajonoDTO valintatapajono : hakutoiveDTO.getHakutoiveenValintatapajonot()) {
                 if (valintatapajono.getTila() == HakemuksenTila.HYVAKSYTTY || valintatapajono.getTila() == HakemuksenTila.VARASIJALTA_HYVAKSYTTY) {
                     isHyvaksytty = true;
                 }

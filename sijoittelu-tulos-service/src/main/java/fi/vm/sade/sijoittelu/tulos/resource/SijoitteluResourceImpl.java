@@ -103,9 +103,8 @@ public class SijoitteluResourceImpl implements SijoitteluResource {
     @Produces(APPLICATION_JSON)
     @ApiOperation(position = 4, value = "Sivutettu listaus hakemuksien/hakijoiden listaukseen. Yksityiskohtainen listaus kaikista hakutoiveista ja niiden valintatapajonoista", response = HakijaPaginationObject.class)
     public HakijaPaginationObject hyvaksytytHakukohteeseen(
-            @ApiParam(value = "Haun tunniste", required = true)
-            @PathParam("hakuOid") String hakuOid,
-            @PathParam("hakukohdeOid") String hakukohdeOid) {
+            @ApiParam(value = "Haun tunniste", required = true) @PathParam("hakuOid") String hakuOid,
+            @ApiParam(value = "Hakukohteen tunniste", required = true) @PathParam("hakukohdeOid") String hakukohdeOid) {
         return null;
     }
 
@@ -121,7 +120,7 @@ public class SijoitteluResourceImpl implements SijoitteluResource {
             @ApiParam(value = "Listaa jossakin kohteessa hyvaksytyt", required = false) @QueryParam("hyvaksytyt") Boolean hyvaksytyt,
             @ApiParam(value = "Listaa henkilot jotka ovat taysin ilman hyvaksyntaa (missaan kohteessa) ", required = false) @QueryParam("ilmanHyvaksyntaa") Boolean ilmanHyvaksyntaa,
             @ApiParam(value = "Listaa henkilot jotka ovat ottaneet paikan lasna tai poissaolevana vastaan", required = false) @QueryParam("vastaanottaneet") Boolean vastaanottaneet,
-            @ApiParam(value = "Rajoita hakua niin etta naytetaan hakijat jotka ovat jollain toiveella hakeneet naihin kohetisiin", required = false) @QueryParam("hakukohdeOid") List<String> hakukohdeOid,
+            @ApiParam(value = "Rajoita hakua niin etta naytetaan hakijat jotka ovat jollain toiveella hakeneet naihin kohteisiin", required = false) @QueryParam("hakukohdeOid") List<String> hakukohdeOid,
             @ApiParam(value = "Nayta n kappaletta tuloksia. Kayta sivutuksessa", required = false) @QueryParam("count") Integer count,
             @ApiParam(value = "Aloita nayttaminen kohdasta n. Kayta sivutuksessa.", required = false) @QueryParam("index") Integer index) {
         try {
