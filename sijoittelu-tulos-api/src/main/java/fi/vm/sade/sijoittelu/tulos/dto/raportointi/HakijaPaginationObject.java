@@ -5,7 +5,7 @@ import java.util.List;
 
 public class HakijaPaginationObject {
     private int totalCount = 0;
-    private List<HakijaDTO> results = new ArrayList<HakijaDTO>(§);
+    private List<HakijaDTO> results = new ArrayList<HakijaDTO>();
 
     public Integer getTotalCount() {
         return totalCount;
