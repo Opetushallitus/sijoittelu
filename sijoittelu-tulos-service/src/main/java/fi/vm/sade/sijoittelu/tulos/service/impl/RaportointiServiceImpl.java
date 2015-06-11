@@ -126,7 +126,7 @@ public class RaportointiServiceImpl implements RaportointiService {
         boolean isVastaanottanut = false;
 
         for (HakutoiveDTO hakutoiveDTO : hakija.getHakutoiveet()) {
-            if (hakukohdeOid.contains(hakutoiveDTO.getHakukohdeOid())) {
+            if (hakukohdeOid != null && hakukohdeOid.contains(hakutoiveDTO.getHakukohdeOid())) {
                 isPartOfHakukohdeList = true;
             }
             for (HakutoiveenValintatapajonoDTO valintatapajono : hakutoiveDTO.getHakutoiveenValintatapajonot()) {
