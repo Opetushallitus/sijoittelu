@@ -96,6 +96,18 @@ public class SijoitteluResourceImpl implements SijoitteluResource {
         return ajo.map(a -> sijoitteluTulosService.getHakukohdeBySijoitteluajo(a, hakukohdeOid)).orElse(new HakukohdeDTO());
     }
 
+    @Override
+    @PreAuthorize(READ_UPDATE_CRUD)
+    @GET
+    @Path("/{hakuOid}/hyvaksytyt/hakukohde/{hakukohdeOid}")
+    @Produces(APPLICATION_JSON)
+    @ApiOperation(position = 4, value = "Sivutettu listaus hakemuksien/hakijoiden listaukseen. Yksityiskohtainen listaus kaikista hakutoiveista ja niiden valintatapajonoista", response = HakijaPaginationObject.class)
+    public HakijaPaginationObject hyvaksytytHakukohteeseen(
+            @ApiParam(value = "Haun tunniste", required = true)
+            @PathParam("hakuOid") String hakuOid,
+            @PathParam("hakukohdeOid") String hakukohdeOid) {
+        return null;
+    }
 
     @Override
     @PreAuthorize(READ_UPDATE_CRUD)

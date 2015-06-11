@@ -34,6 +34,14 @@ public interface SijoitteluResource {
 	static final String LATEST = "latest";
 
 	@GET
+	@Path("/{hakuOid}/hyvaksytyt/hakukohde/{hakukohdeOid}")
+	@Produces(APPLICATION_JSON)
+	HakijaPaginationObject hyvaksytytHakukohteeseen(
+			@ApiParam(value = "Haun tunniste", required = true)
+			@PathParam("hakuOid") String hakuOid,
+			@PathParam("hakukohdeOid") String hakukohdeOid);
+
+	@GET
 	@Produces(APPLICATION_JSON)
 	@Path("/{hakuOid}")
 	//@ApiOperation(position = 1, value = "Hakee sijoittelun tiedot haulle. Paa-asiallinen kaytto sijoitteluajojen tunnisteiden hakuun.", response = SijoitteluDTO.class)
