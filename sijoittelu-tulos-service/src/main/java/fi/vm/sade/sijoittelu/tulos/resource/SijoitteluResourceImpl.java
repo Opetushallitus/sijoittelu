@@ -129,17 +129,11 @@ public class SijoitteluResourceImpl implements SijoitteluResource {
                             raportointiService.hakemukset(ajo, hyvaksytyt,
                                     ilmanHyvaksyntaa, vastaanottaneet, hakukohdeOid, count,
                                     index)
-            ).orElseGet(() -> {
-                HakijaPaginationObject vastaus = new HakijaPaginationObject();
-                vastaus.setTotalCount(0);
-                return vastaus;
-            });
+            ).orElseGet(() -> new HakijaPaginationObject());
 
         } catch (Exception e) {
             LOGGER.error("Sijoittelun hakemuksia ei saatu haulle {}! {}", hakuOid, e.getMessage(), Arrays.toString(e.getStackTrace()));
-            HakijaPaginationObject vastaus = new HakijaPaginationObject();
-            vastaus.setTotalCount(0);
-            return vastaus;
+            return new HakijaPaginationObject();
         }
     }
 

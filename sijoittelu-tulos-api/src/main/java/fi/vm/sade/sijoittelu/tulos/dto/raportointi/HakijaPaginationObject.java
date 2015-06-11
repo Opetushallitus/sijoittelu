@@ -1,19 +1,11 @@
 package fi.vm.sade.sijoittelu.tulos.dto.raportointi;
 
+import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created with IntelliJ IDEA.
- * User: kkammone
- * Date: 21.11.2013
- * Time: 15:28
- * To change this template use File | Settings | File Templates.
- */
 public class HakijaPaginationObject {
-
-    private Integer totalCount;
-
-    private List<HakijaDTO> results;
+    private int totalCount = 0;
+    private List<HakijaDTO> results = new ArrayList<HakijaDTO>(§);
 
     public Integer getTotalCount() {
         return totalCount;
