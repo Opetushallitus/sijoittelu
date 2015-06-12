@@ -77,19 +77,23 @@ public class RaportointiServiceImpl implements RaportointiService {
      * results can be cached, only valintatulokset needs to be refreshed, EVER!
      */
     @Override
-    public HakijaPaginationObject hakemukset(SijoitteluAjo ajo, Boolean hyvaksytyt, Boolean ilmanHyvaksyntaa,
-                                             Boolean vastaanottaneet, List<String> hakukohdeOids, Integer count,
-                                             Integer index) {
-
-        if (hakukohdeOids == null) {
-            hakukohdeOids = new ArrayList<String>();
-        }
+    public HakijaPaginationObject hakemukset(SijoitteluAjo ajo, Boolean hyvaksytyt, Boolean ilmanHyvaksyntaa, Boolean vastaanottaneet, List<String> hakukohdeOids, Integer count, Integer index) {
         List<Valintatulos> valintatulokset = valintatulosDao.loadValintatulokset(ajo.getHakuOid());
         List<Hakukohde> hakukohteet = hakukohdeDao.getHakukohdeForSijoitteluajo(ajo.getSijoitteluajoId());
+        return konvertoiHakijat(hyvaksytyt, ilmanHyvaksyntaa, vastaanottaneet, hakukohdeOids, count, index, valintatulokset, hakukohteet);
+    }
+
+    @Override
+    public HakijaPaginationObject cachedHakemukset(SijoitteluAjo ajo, Boolean hyvaksytyt, Boolean ilmanHyvaksyntaa, Boolean vastaanottaneet, List<String> hakukohdeOids, Integer count, Integer index) {
+        List<Valintatulos> valintatulokset = cachingRaportointiDao.getCachedValintatulokset(ajo.getHakuOid()).get();
+        List<Hakukohde> hakukohteet = cachingRaportointiDao.getCachedHakukohdesForSijoitteluajo(ajo.getSijoitteluajoId()).get();
+        return konvertoiHakijat(hyvaksytyt, ilmanHyvaksyntaa, vastaanottaneet, hakukohdeOids, count, index, valintatulokset, hakukohteet);
+    }
+
+    private HakijaPaginationObject konvertoiHakijat(final Boolean hyvaksytyt, final Boolean ilmanHyvaksyntaa, final Boolean vastaanottaneet, final List<String> hakukohdeOids, final Integer count, final Integer index, final List<Valintatulos> valintatulokset, final List<Hakukohde> hakukohteet) {
         List<HakukohdeDTO> hakukohdeDTOs = sijoitteluTulosConverter.convert(hakukohteet);
         List<HakijaDTO> hakijat = raportointiConverter.convert(hakukohdeDTOs, valintatulokset);
         Collections.sort(hakijat, new HakijaDTOComparator());
-
         HakijaPaginationObject paginationObject = new HakijaPaginationObject();
         List<HakijaDTO> result = new ArrayList<HakijaDTO>();
         for (HakijaDTO hakija : hakijat) {
@@ -102,34 +106,13 @@ public class RaportointiServiceImpl implements RaportointiService {
         return paginationObject;
     }
 
-    @Override
-    public HakijaPaginationObject cahetetutHakemukset(SijoitteluAjo ajo, Boolean hyvaksytyt, Boolean ilmanHyvaksyntaa, Boolean vastaanottaneet, List<String> hakukohdeOids, Integer count, Integer index) {
-        List<Valintatulos> valintatulokset = cachingRaportointiDao.getCachedValintatulokset(ajo.getHakuOid()).get();
-        List<Hakukohde> hakukohteet = cachingRaportointiDao.getCachedHakukohdesForSijoitteluajo(ajo.getSijoitteluajoId()).get();
-
-        List<HakukohdeDTO> hakukohdeDTOs = sijoitteluTulosConverter.convert(hakukohteet);
-        List<HakijaDTO> hakijat = raportointiConverter.convert(hakukohdeDTOs, valintatulokset);
-        Collections.sort(hakijat, new HakijaDTOComparator());
-
-        HakijaPaginationObject paginationObject = new HakijaPaginationObject();
-        List<HakijaDTO> result = new ArrayList<HakijaDTO>();
-        for (HakijaDTO hakija : hakijat) {
-            if (filter(hakija, hyvaksytyt, ilmanHyvaksyntaa, vastaanottaneet, hakukohdeOids)) {
-                result.add(hakija);
-            }
-        }
-        paginationObject.setTotalCount(result.size());
-        paginationObject.setResults(result);
-        return paginationObject;
-    }
-
-    private boolean filter(HakijaDTO hakija, Boolean hyvaksytyt, Boolean ilmanHyvaksyntaa, Boolean vastaanottaneet, List<String> hakukohdeOid) {
+    private boolean filter(HakijaDTO hakija, Boolean hyvaksytyt, Boolean ilmanHyvaksyntaa, Boolean vastaanottaneet, List<String> hakukohdeOids) {
         boolean isPartOfHakukohdeList = false;
         boolean isHyvaksytty = false;
         boolean isVastaanottanut = false;
 
         for (HakutoiveDTO hakutoiveDTO : hakija.getHakutoiveet()) {
-            if (hakukohdeOid != null && hakukohdeOid.contains(hakutoiveDTO.getHakukohdeOid())) {
+            if (hakukohdeOids != null && hakukohdeOids.contains(hakutoiveDTO.getHakukohdeOid())) {
                 isPartOfHakukohdeList = true;
             }
             for (HakutoiveenValintatapajonoDTO valintatapajono : hakutoiveDTO.getHakutoiveenValintatapajonot()) {
@@ -141,7 +124,7 @@ public class RaportointiServiceImpl implements RaportointiService {
                 }
             }
         }
-        return ((hakukohdeOid == null || hakukohdeOid.size() <= 0) || isPartOfHakukohdeList)
+        return ((hakukohdeOids == null || hakukohdeOids.size() <= 0) || isPartOfHakukohdeList)
                 && ((!Boolean.TRUE.equals(hyvaksytyt) || isHyvaksytty)
                 && (!Boolean.TRUE.equals(ilmanHyvaksyntaa) || !isHyvaksytty) && (!Boolean.TRUE
                 .equals(vastaanottaneet) || isVastaanottanut));
