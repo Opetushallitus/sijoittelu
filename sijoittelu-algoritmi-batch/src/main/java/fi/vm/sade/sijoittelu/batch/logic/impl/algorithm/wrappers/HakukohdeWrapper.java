@@ -85,7 +85,7 @@ public class HakukohdeWrapper implements Comparable<HakukohdeWrapper> {
 
     public Stream<HenkiloWrapper> hakukohteenHakijat() {
         return concat(
-                valintatapajonot.stream().flatMap(v -> v.getHakemukset().stream()).map(h -> h.getHenkilo())
+                valintatapajonot.stream().flatMap(v -> v.getHakemukset().stream()).map(h -> h.getHenkilo()),
                 hakijaryhmaWrappers.stream().flatMap(h -> h.getHenkiloWrappers().stream())
         ).filter(Objects::nonNull).distinct();
     }
