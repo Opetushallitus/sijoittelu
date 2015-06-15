@@ -2,9 +2,6 @@ package fi.vm.sade.sijoittelu.tulos.dto;
 
 import java.util.Date;
 
-/**
- * Created by jukais on 11.2.2014.
- */
 public class TilaHistoriaDTO {
     private String tila;
 

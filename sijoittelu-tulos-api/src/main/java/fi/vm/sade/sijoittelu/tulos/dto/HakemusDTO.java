@@ -7,12 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Created with IntelliJ IDEA. User: kkammone Date: 2.9.2013 Time: 13:22 To
- * change this template use File | Settings | File Templates.
- */
 public class HakemusDTO implements Serializable {
-
     private String hakijaOid;
 
     private String hakemusOid;
@@ -33,7 +28,7 @@ public class HakemusDTO implements Serializable {
 
     private HakemuksenTila tila;
 
-    private Map<String,String> tilanKuvaukset = new HashMap<String,String>();
+    private Map<String, String> tilanKuvaukset = new HashMap<String, String>();
 
     private List<TilaHistoriaDTO> tilaHistoria = new ArrayList<TilaHistoriaDTO>();
 
@@ -52,26 +47,27 @@ public class HakemusDTO implements Serializable {
     private String hakuOid;
 
     public int getTodellinenJonosija() {
-    	if(jonosija == null) {
-    		return 0;
-    	} else {
-    		if(tasasijaJonosija == null) {
-    			return jonosija;
-    		}
-    		return jonosija + tasasijaJonosija - 1;
-    	}
-    }
-    
-    private List<PistetietoDTO> pistetiedot = new ArrayList<PistetietoDTO>();
-   /*
-    public String getValintatuloksenTila() {
-        return valintatuloksenTila;
+        if (jonosija == null) {
+            return 0;
+        } else {
+            if (tasasijaJonosija == null) {
+                return jonosija;
+            }
+            return jonosija + tasasijaJonosija - 1;
+        }
     }
 
-    public void setValintatuloksenTila(String valintatuloksenTila) {
-        this.valintatuloksenTila = valintatuloksenTila;
-    }
-     */
+    private List<PistetietoDTO> pistetiedot = new ArrayList<PistetietoDTO>();
+
+    /*
+     public String getValintatuloksenTila() {
+         return valintatuloksenTila;
+     }
+
+     public void setValintatuloksenTila(String valintatuloksenTila) {
+         this.valintatuloksenTila = valintatuloksenTila;
+     }
+      */
     public String getHakuOid() {
         return hakuOid;
     }

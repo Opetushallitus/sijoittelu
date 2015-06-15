@@ -5,9 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Created by kjsaila on 21/09/14.
- */
 public class ValisijoitteluDTO {
     private Map<String, List<String>> hakukohteet = new HashMap<String, List<String>>();
 

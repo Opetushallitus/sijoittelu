@@ -2,15 +2,7 @@ package fi.vm.sade.sijoittelu.tulos.dto;
 
 import java.io.Serializable;
 
-/**
- * Created with IntelliJ IDEA.
- * User: kkammone
- * Date: 27.9.2013
- * Time: 10:29
- * To change this template use File | Settings | File Templates.
- */
 public class PistetietoDTO implements Serializable {
-
     private String tunniste;
 
     private String arvo;

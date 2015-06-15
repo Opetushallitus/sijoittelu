@@ -4,12 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created with IntelliJ IDEA. User: kkammone Date: 5.9.2013 Time: 12:47 To
- * change this template use File | Settings | File Templates.
- */
 public class HakukohdeDTO implements Serializable {
-
     private Long sijoitteluajoId;
 
     private String oid;
@@ -21,9 +16,6 @@ public class HakukohdeDTO implements Serializable {
     private List<ValintatapajonoDTO> valintatapajonot = new ArrayList<ValintatapajonoDTO>();
 
     private boolean kaikkiJonotSijoiteltu = true;
-
-    // do not include jsut yet
-    // private List<Hakijaryhma> hakijaryhmat = new ArrayList<Hakijaryhma>();
 
     public Long getSijoitteluajoId() {
         return sijoitteluajoId;

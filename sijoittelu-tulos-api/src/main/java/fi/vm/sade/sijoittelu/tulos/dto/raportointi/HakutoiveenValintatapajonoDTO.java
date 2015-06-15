@@ -11,43 +11,43 @@ import fi.vm.sade.sijoittelu.tulos.dto.ValintatuloksenTila;
 import fi.vm.sade.sijoittelu.tulos.dto.HakemuksenTila;
 
 /**
- *  Hakemukseen liittyvän hakumuksen sijoittelutila yksittäisessä valintatapajonossa
+ * Hakemukseen liittyvän hakumuksen sijoittelutila yksittäisessä valintatapajonossa
  */
 public class HakutoiveenValintatapajonoDTO {
 
-	private Integer valintatapajonoPrioriteetti;
+    private Integer valintatapajonoPrioriteetti;
 
-	private String valintatapajonoOid;
+    private String valintatapajonoOid;
 
-	private String valintatapajonoNimi;
+    private String valintatapajonoNimi;
 
-	private Integer jonosija;
+    private Integer jonosija;
 
-	private BigDecimal paasyJaSoveltuvuusKokeenTulos;
+    private BigDecimal paasyJaSoveltuvuusKokeenTulos;
 
-	private Integer varasijanNumero;
+    private Integer varasijanNumero;
 
-	private HakemuksenTila tila;
+    private HakemuksenTila tila;
 
-	private Map<String, String> tilanKuvaukset = new HashMap<String, String>();
+    private Map<String, String> tilanKuvaukset = new HashMap<String, String>();
 
-	private ValintatuloksenTila vastaanottotieto = ValintatuloksenTila.KESKEN;
+    private ValintatuloksenTila vastaanottotieto = ValintatuloksenTila.KESKEN;
 
-	private IlmoittautumisTila ilmoittautumisTila = IlmoittautumisTila.EI_TEHTY;
+    private IlmoittautumisTila ilmoittautumisTila = IlmoittautumisTila.EI_TEHTY;
 
-	private boolean hyvaksyttyHarkinnanvaraisesti = false;
+    private boolean hyvaksyttyHarkinnanvaraisesti = false;
 
-	private Integer tasasijaJonosija;
+    private Integer tasasijaJonosija;
 
-	private BigDecimal pisteet;
+    private BigDecimal pisteet;
 
-	private BigDecimal alinHyvaksyttyPistemaara;
+    private BigDecimal alinHyvaksyttyPistemaara;
 
-	private Integer hakeneet;
+    private Integer hakeneet;
 
-	private Integer hyvaksytty;
+    private Integer hyvaksytty;
 
-	private Integer varalla;
+    private Integer varalla;
 
     private Integer varasijat = 0;
 
@@ -62,146 +62,146 @@ public class HakutoiveenValintatapajonoDTO {
     private boolean hyvaksyttyVarasijalta;
 
     private Date valintatuloksenViimeisinMuutos;
-	private Date hakemuksenTilanViimeisinMuutos;
+    private Date hakemuksenTilanViimeisinMuutos;
 
-	public IlmoittautumisTila getIlmoittautumisTila() {
-		return ilmoittautumisTila;
-	}
+    public IlmoittautumisTila getIlmoittautumisTila() {
+        return ilmoittautumisTila;
+    }
 
-	public void setIlmoittautumisTila(IlmoittautumisTila ilmoittautumisTila) {
-		this.ilmoittautumisTila = ilmoittautumisTila;
-	}
+    public void setIlmoittautumisTila(IlmoittautumisTila ilmoittautumisTila) {
+        this.ilmoittautumisTila = ilmoittautumisTila;
+    }
 
-	public String getValintatapajonoOid() {
-		return valintatapajonoOid;
-	}
+    public String getValintatapajonoOid() {
+        return valintatapajonoOid;
+    }
 
-	public void setValintatapajonoOid(String valintatapajonoOid) {
-		this.valintatapajonoOid = valintatapajonoOid;
-	}
+    public void setValintatapajonoOid(String valintatapajonoOid) {
+        this.valintatapajonoOid = valintatapajonoOid;
+    }
 
-	public String getValintatapajonoNimi() {
-		return valintatapajonoNimi;
-	}
+    public String getValintatapajonoNimi() {
+        return valintatapajonoNimi;
+    }
 
-	public void setValintatapajonoNimi(String valintatapajonoNimi) {
-		this.valintatapajonoNimi = valintatapajonoNimi;
-	}
+    public void setValintatapajonoNimi(String valintatapajonoNimi) {
+        this.valintatapajonoNimi = valintatapajonoNimi;
+    }
 
-	public Integer getJonosija() {
-		return jonosija;
-	}
+    public Integer getJonosija() {
+        return jonosija;
+    }
 
-	public void setJonosija(Integer jonosija) {
-		this.jonosija = jonosija;
-	}
+    public void setJonosija(Integer jonosija) {
+        this.jonosija = jonosija;
+    }
 
-	public Integer getVarasijanNumero() {
-		return varasijanNumero;
-	}
+    public Integer getVarasijanNumero() {
+        return varasijanNumero;
+    }
 
-	public void setVarasijanNumero(Integer varasijanNumero) {
-		this.varasijanNumero = varasijanNumero;
-	}
+    public void setVarasijanNumero(Integer varasijanNumero) {
+        this.varasijanNumero = varasijanNumero;
+    }
 
-	public BigDecimal getPaasyJaSoveltuvuusKokeenTulos() {
-		return paasyJaSoveltuvuusKokeenTulos;
-	}
+    public BigDecimal getPaasyJaSoveltuvuusKokeenTulos() {
+        return paasyJaSoveltuvuusKokeenTulos;
+    }
 
-	public void setPaasyJaSoveltuvuusKokeenTulos(
-			BigDecimal paasyJaSoveltuvuusKokeenTulos) {
-		this.paasyJaSoveltuvuusKokeenTulos = paasyJaSoveltuvuusKokeenTulos;
-	}
+    public void setPaasyJaSoveltuvuusKokeenTulos(
+            BigDecimal paasyJaSoveltuvuusKokeenTulos) {
+        this.paasyJaSoveltuvuusKokeenTulos = paasyJaSoveltuvuusKokeenTulos;
+    }
 
-	public HakemuksenTila getTila() {
-		return tila;
-	}
+    public HakemuksenTila getTila() {
+        return tila;
+    }
 
-	public void setTila(HakemuksenTila tila) {
-		this.tila = tila;
-	}
+    public void setTila(HakemuksenTila tila) {
+        this.tila = tila;
+    }
 
-	public boolean isHyvaksyttyHarkinnanvaraisesti() {
-		return hyvaksyttyHarkinnanvaraisesti;
-	}
+    public boolean isHyvaksyttyHarkinnanvaraisesti() {
+        return hyvaksyttyHarkinnanvaraisesti;
+    }
 
-	public void setHyvaksyttyHarkinnanvaraisesti(
-			boolean hyvaksyttyHarkinnanvaraisesti) {
-		this.hyvaksyttyHarkinnanvaraisesti = hyvaksyttyHarkinnanvaraisesti;
-	}
+    public void setHyvaksyttyHarkinnanvaraisesti(
+            boolean hyvaksyttyHarkinnanvaraisesti) {
+        this.hyvaksyttyHarkinnanvaraisesti = hyvaksyttyHarkinnanvaraisesti;
+    }
 
-	public Integer getTasasijaJonosija() {
-		return tasasijaJonosija;
-	}
+    public Integer getTasasijaJonosija() {
+        return tasasijaJonosija;
+    }
 
-	public void setTasasijaJonosija(Integer tasasijaJonosija) {
-		this.tasasijaJonosija = tasasijaJonosija;
-	}
+    public void setTasasijaJonosija(Integer tasasijaJonosija) {
+        this.tasasijaJonosija = tasasijaJonosija;
+    }
 
-	public BigDecimal getAlinHyvaksyttyPistemaara() {
-		return alinHyvaksyttyPistemaara;
-	}
+    public BigDecimal getAlinHyvaksyttyPistemaara() {
+        return alinHyvaksyttyPistemaara;
+    }
 
-	public void setAlinHyvaksyttyPistemaara(BigDecimal alinHyvaksyttyPistemaara) {
-		this.alinHyvaksyttyPistemaara = alinHyvaksyttyPistemaara;
-	}
+    public void setAlinHyvaksyttyPistemaara(BigDecimal alinHyvaksyttyPistemaara) {
+        this.alinHyvaksyttyPistemaara = alinHyvaksyttyPistemaara;
+    }
 
-	public Integer getVaralla() {
-		return varalla;
-	}
+    public Integer getVaralla() {
+        return varalla;
+    }
 
-	public void setVaralla(Integer varalla) {
-		this.varalla = varalla;
-	}
+    public void setVaralla(Integer varalla) {
+        this.varalla = varalla;
+    }
 
-	public Integer getHyvaksytty() {
-		return hyvaksytty;
-	}
+    public Integer getHyvaksytty() {
+        return hyvaksytty;
+    }
 
-	public void setHyvaksytty(Integer hyvaksytty) {
-		this.hyvaksytty = hyvaksytty;
-	}
+    public void setHyvaksytty(Integer hyvaksytty) {
+        this.hyvaksytty = hyvaksytty;
+    }
 
-	public Integer getHakeneet() {
-		return hakeneet;
-	}
+    public Integer getHakeneet() {
+        return hakeneet;
+    }
 
-	public void setHakeneet(Integer hakeneet) {
-		this.hakeneet = hakeneet;
-	}
+    public void setHakeneet(Integer hakeneet) {
+        this.hakeneet = hakeneet;
+    }
 
-	public BigDecimal getPisteet() {
-		return pisteet;
-	}
+    public BigDecimal getPisteet() {
+        return pisteet;
+    }
 
-	public void setPisteet(BigDecimal pisteet) {
-		this.pisteet = pisteet;
-	}
+    public void setPisteet(BigDecimal pisteet) {
+        this.pisteet = pisteet;
+    }
 
-	public ValintatuloksenTila getVastaanottotieto() {
-		return vastaanottotieto;
-	}
+    public ValintatuloksenTila getVastaanottotieto() {
+        return vastaanottotieto;
+    }
 
-	public void setVastaanottotieto(ValintatuloksenTila vastaanottotieto) {
-		this.vastaanottotieto = vastaanottotieto;
-	}
+    public void setVastaanottotieto(ValintatuloksenTila vastaanottotieto) {
+        this.vastaanottotieto = vastaanottotieto;
+    }
 
-	public Integer getValintatapajonoPrioriteetti() {
-		return valintatapajonoPrioriteetti;
-	}
+    public Integer getValintatapajonoPrioriteetti() {
+        return valintatapajonoPrioriteetti;
+    }
 
-	public void setValintatapajonoPrioriteetti(
-			Integer valintatapajonoPrioriteetti) {
-		this.valintatapajonoPrioriteetti = valintatapajonoPrioriteetti;
-	}
+    public void setValintatapajonoPrioriteetti(
+            Integer valintatapajonoPrioriteetti) {
+        this.valintatapajonoPrioriteetti = valintatapajonoPrioriteetti;
+    }
 
-	public Map<String, String> getTilanKuvaukset() {
-		return tilanKuvaukset;
-	}
+    public Map<String, String> getTilanKuvaukset() {
+        return tilanKuvaukset;
+    }
 
-	public void setTilanKuvaukset(Map<String, String> tilanKuvaukset) {
-		this.tilanKuvaukset = tilanKuvaukset;
-	}
+    public void setTilanKuvaukset(Map<String, String> tilanKuvaukset) {
+        this.tilanKuvaukset = tilanKuvaukset;
+    }
 
     public Integer getVarasijat() {
         return varasijat;
@@ -267,11 +267,11 @@ public class HakutoiveenValintatapajonoDTO {
         this.valintatuloksenViimeisinMuutos = valintatuloksenViimeisinMuutos;
     }
 
-	public Date getHakemuksenTilanViimeisinMuutos() {
-		return hakemuksenTilanViimeisinMuutos;
-	}
+    public Date getHakemuksenTilanViimeisinMuutos() {
+        return hakemuksenTilanViimeisinMuutos;
+    }
 
-	public void setHakemuksenTilanViimeisinMuutos(Date hakemuksenTilanViimeisinMuutos) {
-		this.hakemuksenTilanViimeisinMuutos = hakemuksenTilanViimeisinMuutos;
-	}
+    public void setHakemuksenTilanViimeisinMuutos(Date hakemuksenTilanViimeisinMuutos) {
+        this.hakemuksenTilanViimeisinMuutos = hakemuksenTilanViimeisinMuutos;
+    }
 }

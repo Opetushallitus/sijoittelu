@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- *  Hakemukseen liittyvän hakutoiveen tila sijoittelussa, hakujonoittain.
+ * Hakemukseen liittyvän hakutoiveen tila sijoittelussa, hakujonoittain.
  */
 public class HakutoiveDTO implements Comparable<HakutoiveDTO> {
 
@@ -32,13 +32,13 @@ public class HakutoiveDTO implements Comparable<HakutoiveDTO> {
     }
 
     private <T extends Comparable<T>> int nullAwareCompare(T o1, T o2) {
-        if(o1 == null){
-            if(o2 == null) {
+        if (o1 == null) {
+            if (o2 == null) {
                 return 0;
             }
             return 1;
         }
-        if(o2 == null) {
+        if (o2 == null) {
             return -1;
         }
         return o1.compareTo(o2);

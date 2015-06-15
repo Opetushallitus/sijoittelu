@@ -6,12 +6,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-/**
- * Created with IntelliJ IDEA. User: kkammone Date: 5.9.2013 Time: 15:35 To
- * change this template use File | Settings | File Templates.
- */
 public class SijoitteluDTO implements Serializable {
-
     private String hakuOid;
 
     private Long sijoitteluId;

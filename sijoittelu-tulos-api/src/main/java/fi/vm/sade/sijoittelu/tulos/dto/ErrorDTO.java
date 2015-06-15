@@ -1,9 +1,6 @@
 package fi.vm.sade.sijoittelu.tulos.dto;
 
 
-/**
- * Created by jukais on 6.2.2014.
- */
 public class ErrorDTO {
 
     private String message;

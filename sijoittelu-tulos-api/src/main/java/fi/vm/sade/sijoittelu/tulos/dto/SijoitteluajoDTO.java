@@ -5,10 +5,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created with IntelliJ IDEA. User: kkammone Date: 5.9.2013 Time: 14:32 To
- * change this template use File | Settings | File Templates.
- */
 public class SijoitteluajoDTO implements Serializable {
 
     private Long sijoitteluajoId;

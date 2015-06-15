@@ -6,12 +6,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-/**
- * Created with IntelliJ IDEA. User: kkammone Date: 5.9.2013 Time: 12:47 To
- * change this template use File | Settings | File Templates.
- */
 public class ValintatapajonoDTO implements Serializable {
-
     private Tasasijasaanto tasasijasaanto;
 
     private ValintatapajonoTila tila;

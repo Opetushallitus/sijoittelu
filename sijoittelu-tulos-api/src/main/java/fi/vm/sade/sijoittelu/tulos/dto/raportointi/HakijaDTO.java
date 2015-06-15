@@ -5,7 +5,7 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 /**
- *  Hakemuksen tilaa sijoittelussa, sisältäen kunkin hakutoiveen osalta hakujonokohtaisen tilan.
+ * Hakemuksen tilaa sijoittelussa, sisältäen kunkin hakutoiveen osalta hakujonokohtaisen tilan.
  */
 public class HakijaDTO {
 
