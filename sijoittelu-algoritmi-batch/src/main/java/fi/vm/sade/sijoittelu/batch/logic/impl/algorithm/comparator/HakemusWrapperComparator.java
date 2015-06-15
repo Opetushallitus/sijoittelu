@@ -5,14 +5,7 @@ import fi.vm.sade.sijoittelu.domain.comparator.HakemusComparator;
 
 import java.util.Comparator;
 
-/**
- *
- * @author Kari Kammonen
- *
- */
 public class HakemusWrapperComparator implements Comparator<HakemusWrapper> {
-
-    //no need to instantiate every time
     private static final HakemusComparator hc = new HakemusComparator();
 
     @Override
