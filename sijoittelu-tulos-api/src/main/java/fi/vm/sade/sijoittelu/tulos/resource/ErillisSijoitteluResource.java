@@ -11,13 +11,10 @@ import javax.ws.rs.core.Response;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 
 /**
- * @author Jussi Jartamo
- *         <p/>
  *         Autentikointi annotaatiot implementaatiossa!
  */
 @Path("erillissijoittelu")
 public interface ErillisSijoitteluResource {
-
 
     @GET
     @Produces(APPLICATION_JSON)
@@ -26,6 +23,4 @@ public interface ErillisSijoitteluResource {
             @PathParam("hakuOid") String hakuOid,
             @PathParam("sijoitteluajoId") String sijoitteluajoId,
             @PathParam("hakukohdeOid") String hakukohdeOid);
-
-
 }

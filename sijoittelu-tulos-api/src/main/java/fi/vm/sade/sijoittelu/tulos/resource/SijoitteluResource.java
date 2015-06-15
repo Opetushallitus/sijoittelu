@@ -22,8 +22,6 @@ import fi.vm.sade.sijoittelu.tulos.dto.raportointi.HakijaDTO;
 import fi.vm.sade.sijoittelu.tulos.dto.raportointi.HakijaPaginationObject;
 
 /**
- * @author Jussi Jartamo
- *         <p/>
  *         Autentikointi annotaatiot implementaatiossa!
  */
 @Path("sijoittelu")
