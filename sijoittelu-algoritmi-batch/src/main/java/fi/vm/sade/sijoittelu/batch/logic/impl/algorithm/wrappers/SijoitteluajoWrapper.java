@@ -20,15 +20,9 @@ import java.util.stream.Stream;
 
 import static java.util.Optional.ofNullable;
 
-/**
- * 
- * @author Kari Kammonen
- * 
- */
 public class SijoitteluajoWrapper {
     private static final Logger LOG = LoggerFactory.getLogger(SijoitteluajoWrapper.class);
     public static final String VALUE_FOR_HASH_FUNCTION_WHEN_UNDEFINED = "undefined"; // määrittelemättömän arvon syöte hash-funktioon
-    //private transient int hashcode = -1;
 
     private SijoitteluAjo sijoitteluajo;
 
@@ -138,9 +132,9 @@ public class SijoitteluajoWrapper {
     private HashCode asHash(HashFunction hashFunction) {
         return jarjestettyValivaiheellinenHashStrategia(hashFunction);
     }
+
     public Stream<Hakukohde> sijoitteluAjonHakukohteet() {
-        return hakukohteet.stream().map(v -> v.getHakukohde())
-                .filter(Objects::nonNull).distinct();
+        return hakukohteet.stream().map(v -> v.getHakukohde()).filter(Objects::nonNull).distinct();
     }
 
     private final String VALUE_DELIMETER_HAKUKOHDE = "_HAKUKOHDE_";
@@ -151,9 +145,7 @@ public class SijoitteluajoWrapper {
         final Hasher hasher = hashFunction.newHasher();
         // Jokaiselle hakukohteelle oma hasher ja yhdistetaan hash-arvot lopuksi
         // jolloin voidaan seurata yksittaisten hakukohteiden muuttumista
-        Supplier<Hasher> hashSupplier = () -> hashFunction.newHasher(); // hasher;
-
-        //Set<HashCode> hashOfEachHakukohde = Sets.new
+        Supplier<Hasher> hashSupplier = () -> hashFunction.newHasher();
         hakukohteet.stream().sorted().forEach(h -> {
             Hasher hakemuksetHasher = hashSupplier.get();
             hakemuksetHasher.putUnencodedChars(VALUE_DELIMETER_HAKUKOHDE);
@@ -163,8 +155,7 @@ public class SijoitteluajoWrapper {
             h.hakukohteenHakijat().forEach(hk -> hk.hash(valintatuloksetHasher));
             HashCode hakukohteenHakemustenHash = hakemuksetHasher.hash();
             HashCode hakukohteenValintatulostenHash = valintatuloksetHasher.hash();
-            LOG.trace("Hakukohde {}: Valintatulosten HASH = {}, hakemusten HASH = {}",
-                    h.getHakukohde().getOid(), hakukohteenValintatulostenHash, hakukohteenHakemustenHash);
+            LOG.trace("Hakukohde {}: Valintatulosten HASH = {}, hakemusten HASH = {}", h.getHakukohde().getOid(), hakukohteenValintatulostenHash, hakukohteenHakemustenHash);
             hasher.putBytes(hakukohteenHakemustenHash.asBytes());
             hasher.putBytes(hakukohteenValintatulostenHash.asBytes());
         });
@@ -172,16 +163,18 @@ public class SijoitteluajoWrapper {
         LOG.debug("Sijoitteluajon HASH {} (kesto {}ms)", hash, (System.currentTimeMillis() - t0));
         return hash;
     }
+
     public static <U> void ifPresentOrIfNotPresent(U u, Consumer<? super U> present, Supplier<Void> ifNotPresent,
-                                             Supplier<Void> delimeterSupplier) {
+                                                   Supplier<Void> delimeterSupplier) {
         Optional<U> u0 = ofNullable(u);
-        if(u0.isPresent()) {
+        if (u0.isPresent()) {
             present.accept(u0.get());
         } else {
             ifNotPresent.get();
             delimeterSupplier.get();
         }
     }
+
     // ei juuri yhtaan nopeampi ja epavarmempi
     private HashCode valivaiheetonHashStrategia(HashFunction hashFunction) {
         long t0 = System.currentTimeMillis();

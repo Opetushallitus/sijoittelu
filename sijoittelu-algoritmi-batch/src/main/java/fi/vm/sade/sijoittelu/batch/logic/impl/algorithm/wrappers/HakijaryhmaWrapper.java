@@ -5,11 +5,6 @@ import fi.vm.sade.sijoittelu.domain.Hakijaryhma;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * 
- * @author Kari Kammonen
- * 
- */
 public class HakijaryhmaWrapper {
 
     private Hakijaryhma hakijaryhma;

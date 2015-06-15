@@ -15,11 +15,7 @@ import java.util.function.Supplier;
 
 import static java.util.Optional.ofNullable;
 import static fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.SijoitteluajoWrapper.ifPresentOrIfNotPresent;
-/**
- * 
- * @author Kari Kammonen
- * 
- */
+
 public class HakemusWrapper {
     private static final Logger LOG = LoggerFactory.getLogger(HakemusWrapper.class);
     private Hakemus hakemus;
@@ -77,8 +73,6 @@ public class HakemusWrapper {
         this.hyvaksyttyHakijaryhmasta = hyvaksyttyHakijaryhmasta;
     }
 
-
-
     private final String VALUE_DELIMETER_HAKEMUS = "_HAKEMUS_";
     private final String VALUE_DELIMETER_EDELLINEN_TILA = "_EDELLINEN_TILA_";
     private final String VALUE_DELIMETER_HAKEMUSOID = "_HAKEMUSOID_";
@@ -96,8 +90,11 @@ public class HakemusWrapper {
     private final String VALUE_DELIMETER_VARASIJAN_NUMERO = "_VARASIJAN_NUMERO_";
 
     public void hash(Hasher hf) {
-        if(hakemus != null) {
-            Supplier<Void> undefined =  () -> {hf.putUnencodedChars(SijoitteluajoWrapper.VALUE_FOR_HASH_FUNCTION_WHEN_UNDEFINED); return null;};
+        if (hakemus != null) {
+            Supplier<Void> undefined = () -> {
+                hf.putUnencodedChars(SijoitteluajoWrapper.VALUE_FOR_HASH_FUNCTION_WHEN_UNDEFINED);
+                return null;
+            };
             Function<String, Supplier<Void>> delimeter = dm -> {
                 return () -> {
                     hf.putUnencodedChars(dm);
@@ -106,14 +103,12 @@ public class HakemusWrapper {
             };
             delimeter.apply(VALUE_DELIMETER_HAKEMUS).get(); // Uuden hakemuksen alkuun delimeter
             ifPresentOrIfNotPresent(hakemus.getEdellinenTila(), t -> hf.putInt(t.ordinal()), undefined, delimeter.apply(VALUE_DELIMETER_EDELLINEN_TILA));
-            //hakemus.getEtunimi(); // ei yksiloi ja yksiloiva tieto saadaan jo hakemusoidista
-            //hakemus.getHakijaOid(); // sama yksiloiva tieto jo hakemusoidissa
             ifPresentOrIfNotPresent(hakemus.getHakemusOid(), t -> hf.putUnencodedChars(t), undefined, delimeter.apply(VALUE_DELIMETER_HAKEMUSOID));
             ifPresentOrIfNotPresent(hakemus.getIlmoittautumisTila(), t -> hf.putInt(t.ordinal()), undefined, delimeter.apply(VALUE_DELIMETER_ILMOITTAUTUMISTILA));
             ifPresentOrIfNotPresent(hakemus.getJonosija(), t -> hf.putInt(t), undefined, delimeter.apply(VALUE_DELIMETER_JONOSIJA));
             ifPresentOrIfNotPresent(hakemus.getPisteet(), t -> hf.putUnencodedChars(t.toString()), undefined, delimeter.apply(VALUE_DELIMETER_PISTEET));
-            List<Pistetieto> pistetietoList= ofNullable(hakemus.getPistetiedot()).orElse(Collections.<Pistetieto>emptyList());
-            if(pistetietoList.isEmpty()) {
+            List<Pistetieto> pistetietoList = ofNullable(hakemus.getPistetiedot()).orElse(Collections.<Pistetieto>emptyList());
+            if (pistetietoList.isEmpty()) {
                 undefined.get();
             } else {
                 pistetietoList.forEach(p -> {
@@ -125,11 +120,8 @@ public class HakemusWrapper {
             }
             delimeter.apply(VALUE_DELIMETER_PISTETIETO).get(); // Pistetietojen jalkeen delimeter
             ifPresentOrIfNotPresent(hakemus.getPrioriteetti(), t -> hf.putInt(t), undefined, delimeter.apply(VALUE_DELIMETER_PRIORITEETTI));
-            //hakemus.getSukunimi();
             ifPresentOrIfNotPresent(hakemus.getTasasijaJonosija(), t -> hf.putInt(t), undefined, delimeter.apply(VALUE_DELIMETER_TASASIJAJONOSIJA));
             ifPresentOrIfNotPresent(hakemus.getTila(), t -> hf.putInt(t.ordinal()), undefined, delimeter.apply(VALUE_DELIMETER_TILA));
-            //hakemus.getTilaHistoria(); onko tilahistorialla merkitystä?
-            //hakemus.getTilanKuvaukset();
             ifPresentOrIfNotPresent(hakemus.getVarasijanNumero(), t -> hf.putInt(t), undefined, delimeter.apply(VALUE_DELIMETER_VARASIJAN_NUMERO));
         } else {
             LOG.error("Hakemuswrapperilla ei ole hakemusta!");

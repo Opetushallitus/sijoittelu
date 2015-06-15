@@ -16,13 +16,8 @@ import java.util.function.Supplier;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static java.util.Optional.*;
 import static fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.SijoitteluajoWrapper.ifPresentOrIfNotPresent;
-/**
- * 
- * @author Kari Kammonen
- * 
- */
-public class HenkiloWrapper {
 
+public class HenkiloWrapper {
     private List<HakemusWrapper> hakemukset = new ArrayList<HakemusWrapper>();
 
     private String hakijaOid;
@@ -72,7 +67,10 @@ public class HenkiloWrapper {
 
     public void hash(Hasher hf) {
         valintatulos.stream().forEach(v -> {
-            Supplier<Void> undefined =  () -> {hf.putUnencodedChars(SijoitteluajoWrapper.VALUE_FOR_HASH_FUNCTION_WHEN_UNDEFINED); return null;};
+            Supplier<Void> undefined = () -> {
+                hf.putUnencodedChars(SijoitteluajoWrapper.VALUE_FOR_HASH_FUNCTION_WHEN_UNDEFINED);
+                return null;
+            };
             Function<String, Supplier<Void>> delimeter = dm -> {
                 return () -> {
                     hf.putUnencodedChars(dm);
@@ -81,15 +79,12 @@ public class HenkiloWrapper {
             };
             delimeter.apply(VALUE_DELIMETER_VALINTATULOS).get();
             ifPresentOrIfNotPresent(v.getHakemusOid(), t -> hf.putUnencodedChars(t), undefined, delimeter.apply(VALUE_DELIMETER_HAKEMUSOID));
-            // hakijaoidin tieto sisaltyy jo hakemusoidiin, ei muutoksia sijoittelunaikana, ei yksiloi enempaa jos lisataan
-            //ofNullable(v.getHakijaOid()).ifPresent(t -> hf.putUnencodedChars(t));
             ifPresentOrIfNotPresent(v.getHakukohdeOid(), t -> hf.putUnencodedChars(t), undefined, delimeter.apply(VALUE_DELIMETER_HAKUKOHDE));
-            //v.getHakuOid(); ei tarvita hakuOid on kaikilla sama samassa haussa. ei yksiloi.
             hf.putInt(v.getHakutoive());
             delimeter.apply(VALUE_DELIMETER_HAKUTOIVE).get();
             hf.putBoolean(v.getHyvaksyttyVarasijalta());
             delimeter.apply(VALUE_DELIMETER_HYVAKSYTTY_VARASIJALTA).get();
-            if(v.getIlmoittautumisTila() != null) {
+            if (v.getIlmoittautumisTila() != null) {
                 hf.putInt(v.getIlmoittautumisTila().ordinal());
             } else {
                 // hf.putInt(-1); // jotain milla erotetaan null jostain arvosta
@@ -98,7 +93,7 @@ public class HenkiloWrapper {
             delimeter.apply(VALUE_DELIMETER_IlMOITTAUTUMISTILA).get();
             hf.putBoolean(v.getJulkaistavissa());
             delimeter.apply(VALUE_DELIMETER_JULKAISTAVISSA).get();
-            if(v.getTila() != null) {
+            if (v.getTila() != null) {
                 hf.putInt(v.getTila().ordinal());
             } else {
                 // hf.putInt(-1); // jotain milla erotetaan null jostain arvosta
@@ -107,5 +102,4 @@ public class HenkiloWrapper {
             ifPresentOrIfNotPresent(v.getValintatapajonoOid(), t -> hf.putUnencodedChars(t), undefined, delimeter.apply(VALUE_DELIMETER_VALINTATAPAJONOOID));
         });
     }
-
 }

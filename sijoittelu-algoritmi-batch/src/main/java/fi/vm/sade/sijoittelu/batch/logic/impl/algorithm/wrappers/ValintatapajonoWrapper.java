@@ -5,11 +5,6 @@ import fi.vm.sade.sijoittelu.domain.Valintatapajono;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * 
- * @author Kari Kammonen
- * 
- */
 public class ValintatapajonoWrapper {
 
     private Valintatapajono valintatapajono;

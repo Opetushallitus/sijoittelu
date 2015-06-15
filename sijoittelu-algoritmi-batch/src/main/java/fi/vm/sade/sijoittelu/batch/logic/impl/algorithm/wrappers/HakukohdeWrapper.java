@@ -19,12 +19,9 @@ import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Stream;
+
 import static java.util.stream.Stream.concat;
-/**
- * 
- * @author Kari Kammonen
- * 
- */
+
 public class HakukohdeWrapper implements Comparable<HakukohdeWrapper> {
     private static final Logger LOG = LoggerFactory.getLogger(HakukohdeWrapper.class);
     private Hakukohde hakukohde;
@@ -61,9 +58,9 @@ public class HakukohdeWrapper implements Comparable<HakukohdeWrapper> {
 
     @Override
     public int compareTo(HakukohdeWrapper o) {
-        if(hakukohde == null) {
+        if (hakukohde == null) {
             return -1; // null:t alkuun
-        } else if(o == null || o.getHakukohde()==null) {
+        } else if (o == null || o.getHakukohde() == null) {
             return 1;
         }
         return hakukohde.getOid().compareTo(o.getHakukohde().getOid());
@@ -71,7 +68,7 @@ public class HakukohdeWrapper implements Comparable<HakukohdeWrapper> {
 
     @Override
     public int hashCode() {
-        if(hakukohde==null) {
+        if (hakukohde == null) {
             return 0;
         }
         return hakukohde.getOid().hashCode();
@@ -85,15 +82,11 @@ public class HakukohdeWrapper implements Comparable<HakukohdeWrapper> {
         return valintatapajonot.stream().flatMap(v -> v.getHakemukset().stream())
                 .filter(Objects::nonNull).distinct();
     }
+
     public Stream<HenkiloWrapper> hakukohteenHakijat() {
         return concat(
-                //henkilotJonoista
                 valintatapajonot.stream().flatMap(v -> v.getHakemukset().stream()).map(h -> h.getHenkilo())
-                ,
-                //henkilotHakijaryhmista
                 hakijaryhmaWrappers.stream().flatMap(h -> h.getHenkiloWrappers().stream())
-        )
-                .filter(Objects::nonNull)
-                .distinct();
+        ).filter(Objects::nonNull).distinct();
     }
 }
