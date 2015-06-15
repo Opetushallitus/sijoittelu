@@ -1,10 +1,5 @@
 package fi.vm.sade.sijoittelu.batch.logic.impl.algorithm;
 
-/**
- * 
- * @author Kari Kammonen
- * 
- */
 public class SijoitteluFailedException extends RuntimeException {
 
     private static final long serialVersionUID = 1L;

@@ -41,40 +41,33 @@ public class DomainConverter {
             valintatapajono.setNimi(valintatapajonoTyyppi.getNimi());
             valintatapajono.setPrioriteetti(valintatapajonoTyyppi.getPrioriteetti());
             valintatapajono.setAloituspaikat(valintatapajonoTyyppi.getAloituspaikat());
-
             try {
                 valintatapajono.setTasasijasaanto(Tasasijasaanto.valueOf(valintatapajonoTyyppi.getTasasijasaanto().toString()));
             } catch (Exception e) {
                 System.out.println("Valintatapajonon tasasijasääntöä ei tunnistettu: " + valintatapajonoTyyppi.getTasasijasaanto());
                 valintatapajono.setTasasijasaanto(Tasasijasaanto.ARVONTA);
             }
-
             if (valintatapajonoTyyppi.getEiVarasijatayttoa() != null && valintatapajonoTyyppi.getEiVarasijatayttoa()) {
                 valintatapajono.setEiVarasijatayttoa(true);
             } else {
                 valintatapajono.setEiVarasijatayttoa(false);
             }
-
             if (valintatapajonoTyyppi.getKaikkiEhdonTayttavatHyvaksytaan() != null && valintatapajonoTyyppi.getKaikkiEhdonTayttavatHyvaksytaan()) {
                 valintatapajono.setKaikkiEhdonTayttavatHyvaksytaan(true);
             } else {
                 valintatapajono.setKaikkiEhdonTayttavatHyvaksytaan(false);
             }
-
             if (valintatapajonoTyyppi.getPoissaOlevaTaytto() != null && valintatapajonoTyyppi.getPoissaOlevaTaytto()) {
                 valintatapajono.setPoissaOlevaTaytto(true);
             } else {
                 valintatapajono.setPoissaOlevaTaytto(false);
             }
-
             valintatapajono.setTayttojono(valintatapajonoTyyppi.getTayttojono());
             valintatapajono.setVarasijat(valintatapajonoTyyppi.getVarasijat());
             valintatapajono.setVarasijaTayttoPaivat(valintatapajonoTyyppi.getVarasijaTayttoPaivat());
             valintatapajono.setVarasijojaKaytetaanAlkaen(valintatapajonoTyyppi.getVarasijojaKaytetaanAlkaen());
             valintatapajono.setVarasijojaTaytetaanAsti(valintatapajonoTyyppi.getVarasijojaTaytetaanAsti());
-
             hakukohde.getValintatapajonot().add(valintatapajono);
-
             valintatapajonoTyyppi.getHakija().forEach(hakija -> addHakemus(hakija, valintatapajono));
         });
     }
@@ -113,13 +106,10 @@ public class DomainConverter {
         hakemus.setPrioriteetti(hakijaTyyppi.getPrioriteetti());
         hakemus.setEtunimi(hakijaTyyppi.getEtunimi());
         hakemus.setSukunimi(hakijaTyyppi.getSukunimi());
-
         if (hakijaTyyppi.getPisteet() != null) {
             hakemus.setPisteet(hakijaTyyppi.getPisteet());
         }
-
         applyPistetiedot(hakemus, hakijaTyyppi.getSyotettyArvo());
-
         if (hakijaTyyppi.getTila() == JarjestyskriteerituloksenTilaDTO.HYVAKSYTTY_HARKINNANVARAISESTI) {
             hakemus.setTila(HakemuksenTila.VARALLA);
             hakemus.setHyvaksyttyHarkinnanvaraisesti(true);
@@ -132,7 +122,6 @@ public class DomainConverter {
             hakemus.setTilanKuvaukset(tilanKuvaukset);
             hakemus.setTila(HakemuksenTila.HYLATTY);
         }
-
         valintatapajono.getHakemukset().add(hakemus);
     }
 
@@ -146,5 +135,4 @@ public class DomainConverter {
             hakemus.getPistetiedot().add(pistetieto);
         });
     }
-
 }
