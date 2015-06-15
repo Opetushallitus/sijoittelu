@@ -10,11 +10,6 @@ import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.Valintatapajono
 
 import java.util.Collections;
 
-/**
- * 
- * @author Kari Kammonen
- * 
- */
 public class PreSijoitteluProcessorSort implements PreSijoitteluProcessor {
 
     @Override
@@ -26,8 +21,6 @@ public class PreSijoitteluProcessorSort implements PreSijoitteluProcessor {
     /**
      * jarjestelee sijoittelun domainin. Ilman tata algoritmin toimintaan ei voi
      * luottaaa (XML data voi olla vaarassa jarjestyksessa)
-     * 
-     * @param hakukohteet
      */
     private void sortDomain(SijoitteluajoWrapper sijoitteluajoWrapper) {
         for (HakukohdeWrapper hakukohde : sijoitteluajoWrapper.getHakukohteet()) {
@@ -39,5 +32,4 @@ public class PreSijoitteluProcessorSort implements PreSijoitteluProcessor {
         }
         Collections.sort(sijoitteluajoWrapper.getHakukohteet(), new HakukohdeWrapperComparator());
     }
-
 }

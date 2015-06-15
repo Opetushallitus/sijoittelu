@@ -9,11 +9,6 @@ import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.Valintatapajono
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
-/**
- * 
- * @author Kari Kammonen
- * 
- */
 public class PreSijoitteluProcessorTasasijaArvonta implements PreSijoitteluProcessor {
 
     @Override
@@ -35,29 +30,25 @@ public class PreSijoitteluProcessorTasasijaArvonta implements PreSijoitteluProce
     }
 
     private void randomize(List<HakemusWrapper> tasasijaHakemukset) {
-
         Collections.shuffle(tasasijaHakemukset);
         List<HakemusWrapper> jonosija = new ArrayList<HakemusWrapper>();
         for (HakemusWrapper hakemusWrapper : tasasijaHakemukset) {
-            if(hakemusWrapper.getHakemus().getTasasijaJonosija() != null) {
+            if (hakemusWrapper.getHakemus().getTasasijaJonosija() != null) {
                 jonosija.add(hakemusWrapper);
             }
         }
-
         Collections.sort(jonosija, new Comparator<HakemusWrapper>() {
             @Override
             public int compare(HakemusWrapper hakemusWrapper, HakemusWrapper hakemusWrapper2) {
                 return hakemusWrapper.getHakemus().getTasasijaJonosija().compareTo(hakemusWrapper2.getHakemus().getTasasijaJonosija());
             }
         });
-
         for (int i = 0; tasasijaHakemukset.size() > i; i++) {
-            if(tasasijaHakemukset.get(i).getHakemus().getTasasijaJonosija() != null) {
+            if (tasasijaHakemukset.get(i).getHakemus().getTasasijaJonosija() != null) {
                 tasasijaHakemukset.remove(i);
                 tasasijaHakemukset.add(i, jonosija.remove(0));
             }
             tasasijaHakemukset.get(i).getHakemus().setTasasijaJonosija(i + 1);
         }
-
     }
 }

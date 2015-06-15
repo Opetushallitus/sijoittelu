@@ -9,11 +9,6 @@ import fi.vm.sade.sijoittelu.domain.HakemuksenTila;
 import java.util.List;
 import java.util.stream.Collectors;
 
-/**
- * 
- * @author Kari Kammonen
- * 
- */
 public class PreSijoitteluProcessorHylkaaHakijaRyhmaanKuulumattomat implements PreSijoitteluProcessor {
 
     @Override
@@ -22,7 +17,6 @@ public class PreSijoitteluProcessorHylkaaHakijaRyhmaanKuulumattomat implements P
 
     }
 
-
     private void hylkaaHakijaryhmiinKuulumattomat(SijoitteluajoWrapper sijoitteluajoWrapper) {
         sijoitteluajoWrapper.getHakukohteet().forEach(hakukohde -> {
             List<HakijaryhmaWrapper> vainRyhmaanKuuluvatHyvaksytaan = hakukohde
@@ -30,7 +24,6 @@ public class PreSijoitteluProcessorHylkaaHakijaRyhmaanKuulumattomat implements P
                     .stream()
                     .filter(h -> h.getHakijaryhma().isKaytaKaikki())
                     .collect(Collectors.toList());
-
             // Hylätään hakijat, jotka eivät kuulu hakijaryhmään
             vainRyhmaanKuuluvatHyvaksytaan.forEach(h -> {
                 String jonoOid = h.getHakijaryhma().getValintatapajonoOid();
@@ -49,13 +42,11 @@ public class PreSijoitteluProcessorHylkaaHakijaRyhmaanKuulumattomat implements P
 
     private void hylkaaRyhmaanKuulumattomat(HakijaryhmaWrapper h, ValintatapajonoWrapper v) {
         v.getHakemukset().forEach(hakemus -> {
-            if(!h.getHenkiloWrappers().contains(hakemus.getHenkilo()) && hakemus.isTilaVoidaanVaihtaa()) {
+            if (!h.getHenkiloWrappers().contains(hakemus.getHenkilo()) && hakemus.isTilaVoidaanVaihtaa()) {
                 hakemus.setTilaVoidaanVaihtaa(false);
                 hakemus.getHakemus().setTila(HakemuksenTila.HYLATTY);
-                hakemus.getHakemus()
-                        .setTilanKuvaukset(TilanKuvaukset.hylattyHakijaryhmaanKuulumattomana(h.getHakijaryhma().getNimi()));
+                hakemus.getHakemus().setTilanKuvaukset(TilanKuvaukset.hylattyHakijaryhmaanKuulumattomana(h.getHakijaryhma().getNimi()));
             }
         });
     }
-
 }
