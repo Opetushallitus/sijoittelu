@@ -9,11 +9,6 @@ import org.springframework.stereotype.Component;
 
 import java.util.*;
 
-/**
- *
- * @author Kari Kammonen
- *
- */
 @Component
 public class SijoitteluAlgorithmFactoryImpl implements SijoitteluAlgorithmFactory {
 
@@ -21,21 +16,14 @@ public class SijoitteluAlgorithmFactoryImpl implements SijoitteluAlgorithmFactor
 
     }
 
-    /**
-     * Luo sijoittelualgoritmi.
-     */
     @Override
     public SijoitteluAlgorithm constructAlgorithm(List<Hakukohde> hakukohteet, List<Valintatulos> valintatulokset) {
-
         List<PreSijoitteluProcessor> preSijoitteluProcessors = new ArrayList<PreSijoitteluProcessor>();
         preSijoitteluProcessors.add(new PreSijoitteluProcessorTasasijaArvonta());
         preSijoitteluProcessors.add(new PreSijoitteluProcessorSort());
         preSijoitteluProcessors.add(new PreSijoitteluProcessorPeruutaAlemmatPeruneetJaHyvaksytyt());
         preSijoitteluProcessors.add(new PreSijoitteluProcessorHylkaaHakijaRyhmaanKuulumattomat());
-
-
         List<PostSijoitteluProcessor> postSijoitteluProcessors = new ArrayList<PostSijoitteluProcessor>();
-
         SijoitteluAlgorithmImpl algorithm = new SijoitteluAlgorithmImpl();
         algorithm.preSijoitteluProcessors = preSijoitteluProcessors;
         algorithm.postSijoitteluProcessors = postSijoitteluProcessors;
@@ -43,43 +31,29 @@ public class SijoitteluAlgorithmFactoryImpl implements SijoitteluAlgorithmFactor
         return algorithm;
     }
 
-    /**
-     * Luo sijoittelun tarvitsema domaini
-     *
-     * @param hakukohteet
-     * @return
-     */
     private SijoitteluajoWrapper wrapDomain(List<Hakukohde> hakukohteet, List<Valintatulos> valintatulokset) {
         SijoitteluajoWrapper sijoitteluajoWrapper = new SijoitteluajoWrapper();
-
         Map<String, HenkiloWrapper> hakemusOidMap = new HashMap<String, HenkiloWrapper>();
-
         hakukohteet.forEach(hakukohde -> {
             HakukohdeWrapper hakukohdeWrapper = new HakukohdeWrapper();
             hakukohdeWrapper.setHakukohde(hakukohde);
             sijoitteluajoWrapper.getHakukohteet().add(hakukohdeWrapper);
             hakukohdeWrapper.setSijoitteluajoWrapper(sijoitteluajoWrapper);
-
             hakukohde.getValintatapajonot().forEach(valintatapajono -> {
                 ValintatapajonoWrapper valintatapajonoWrapper = new ValintatapajonoWrapper();
                 valintatapajonoWrapper.setValintatapajono(valintatapajono);
                 hakukohdeWrapper.getValintatapajonot().add(valintatapajonoWrapper);
                 valintatapajonoWrapper.setHakukohdeWrapper(hakukohdeWrapper);
-
                 valintatapajono.getHakemukset().forEach(hakemus -> {
                     HakemusWrapper hakemusWrapper = new HakemusWrapper();
                     hakemusWrapper.setHakemus(hakemus);
                     valintatapajonoWrapper.getHakemukset().add(hakemusWrapper);
                     hakemusWrapper.setValintatapajono(valintatapajonoWrapper);
-
                     HenkiloWrapper henkiloWrapper = getOrCreateHenkilo(hakemus, hakemusOidMap);
                     henkiloWrapper.getHakemukset().add(hakemusWrapper);
                     hakemusWrapper.setHenkilo(henkiloWrapper);
-
                     Valintatulos valintatulos = getValintatulos(hakukohde, valintatapajono, hakemus, valintatulokset);
-
                     List<ValintatuloksenTila> hyvaksyttylista = Arrays.asList(ValintatuloksenTila.ILMOITETTU, ValintatuloksenTila.VASTAANOTTANUT, ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI);
-
                     if (valintatulos != null && valintatulos.getTila() != null) {
                         ValintatuloksenTila tila = valintatulos.getTila();
                         boolean voidaanVaihtaa = true;
@@ -125,19 +99,18 @@ public class SijoitteluAlgorithmFactoryImpl implements SijoitteluAlgorithmFactor
                             hakemus.setTila(HakemuksenTila.VARASIJALTA_HYVAKSYTTY);
                             hakemus.setIlmoittautumisTila(valintatulos.getIlmoittautumisTila());
                             voidaanVaihtaa = false;
-                        } else if(hakemus.getTila().equals(HakemuksenTila.HYLATTY)) {
+                        } else if (hakemus.getTila().equals(HakemuksenTila.HYLATTY)) {
                             hakemusWrapper.setTilaVoidaanVaihtaa(false);
                             voidaanVaihtaa = false;
                         }
                         hakemusWrapper.setTilaVoidaanVaihtaa(voidaanVaihtaa);
                         henkiloWrapper.getValintatulos().add(valintatulos);
-                    } else if(hakemus.getTila().equals(HakemuksenTila.HYLATTY)) {
+                    } else if (hakemus.getTila().equals(HakemuksenTila.HYLATTY)) {
                         hakemusWrapper.setTilaVoidaanVaihtaa(false);
                     }
                 });
 
             });
-
             for (Hakijaryhma hakijaryhma : hakukohde.getHakijaryhmat()) {
                 HakijaryhmaWrapper hakijaryhmaWrapper = new HakijaryhmaWrapper();
                 hakijaryhmaWrapper.setHakijaryhma(hakijaryhma);
@@ -149,34 +122,29 @@ public class SijoitteluAlgorithmFactoryImpl implements SijoitteluAlgorithmFactor
                 }
             }
         });
-
         return sijoitteluajoWrapper;
     }
 
     private HenkiloWrapper getOrCreateHenkilo(Hakemus hakemus, Map<String, HenkiloWrapper> hakemusOidMap) {
         HenkiloWrapper henkiloWrapper = null;
-
-        if(hakemus.getHakemusOid() != null && !hakemus.getHakemusOid().isEmpty()) {
+        if (hakemus.getHakemusOid() != null && !hakemus.getHakemusOid().isEmpty()) {
             henkiloWrapper = hakemusOidMap.get(hakemus.getHakemusOid());
         }
-
-        if(henkiloWrapper == null) {
+        if (henkiloWrapper == null) {
             henkiloWrapper = new HenkiloWrapper();
             henkiloWrapper.setHakemusOid(hakemus.getHakemusOid());
-            if(hakemus.getHakemusOid() != null && !hakemus.getHakemusOid().isEmpty()) {
+            if (hakemus.getHakemusOid() != null && !hakemus.getHakemusOid().isEmpty()) {
                 hakemusOidMap.put(hakemus.getHakemusOid(), henkiloWrapper);
             }
         }
         return henkiloWrapper;
-
-
     }
 
     private Valintatulos getValintatulos(Hakukohde hakukohde, Valintatapajono valintatapajono, Hakemus hakemus, List<Valintatulos> valintatulokset) {
-        if(valintatulokset != null) {
-            for(Valintatulos vt : valintatulokset) {
-                if(vt.getHakukohdeOid().equals(hakukohde.getOid()) && vt.getValintatapajonoOid().equals(valintatapajono.getOid()) ) {
-                    if( vt.getHakemusOid() != null && !vt.getHakemusOid().isEmpty() && vt.getHakemusOid().equals(hakemus.getHakemusOid()) ) {
+        if (valintatulokset != null) {
+            for (Valintatulos vt : valintatulokset) {
+                if (vt.getHakukohdeOid().equals(hakukohde.getOid()) && vt.getValintatapajonoOid().equals(valintatapajono.getOid())) {
+                    if (vt.getHakemusOid() != null && !vt.getHakemusOid().isEmpty() && vt.getHakemusOid().equals(hakemus.getHakemusOid())) {
                         return vt;
                     }
                 }
@@ -186,9 +154,7 @@ public class SijoitteluAlgorithmFactoryImpl implements SijoitteluAlgorithmFactor
     }
 
 
-    private HenkiloWrapper getHenkilo(String hakijaOid,  Map<String, HenkiloWrapper> hakijaOidMap ) {
+    private HenkiloWrapper getHenkilo(String hakijaOid, Map<String, HenkiloWrapper> hakijaOidMap) {
         return hakijaOidMap.get(hakijaOid);
     }
-
-
 }

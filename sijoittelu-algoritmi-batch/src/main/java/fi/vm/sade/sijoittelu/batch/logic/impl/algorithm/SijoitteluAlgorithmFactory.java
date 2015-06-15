@@ -5,13 +5,6 @@ import fi.vm.sade.sijoittelu.domain.Valintatulos;
 
 import java.util.List;
 
-/**
- * 
- * @author Kari Kammonen
- *
- */
 public interface SijoitteluAlgorithmFactory {
-
     public SijoitteluAlgorithm constructAlgorithm(List<Hakukohde> hakukohteet, List<Valintatulos> valintatulokset);
-    
 }
