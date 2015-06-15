@@ -3,9 +3,6 @@ package fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.util;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * Created by kjsaila on 04/11/14.
- */
 public class TilanKuvaukset {
 
     public static Map<String, String> peruuntunutYlempiToive() {
@@ -26,7 +23,7 @@ public class TilanKuvaukset {
 
     public static Map<String, String> peruuntunutHyvaksyttyToisessaJonossa() {
         return new HashMap<String, String>() {{
-            put("FI","Peruuntunut, hyväksytty toisessa valintatapajonossa");
+            put("FI", "Peruuntunut, hyväksytty toisessa valintatapajonossa");
             put("EN", "Cancelled, accepted in another selection method queue");
         }};
     }

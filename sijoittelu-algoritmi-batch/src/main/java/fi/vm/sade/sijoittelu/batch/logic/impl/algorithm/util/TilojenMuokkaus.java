@@ -5,9 +5,6 @@ import fi.vm.sade.sijoittelu.domain.*;
 
 import java.util.Optional;
 
-/**
- * Created by kjsaila on 18/02/15.
- */
 public class TilojenMuokkaus {
 
     public static void asetaTilaksiVaralla(HakemusWrapper hakemusWrapper) {
@@ -52,7 +49,7 @@ public class TilojenMuokkaus {
     public static Valintatulos muokkaaValintatulos(HakemusWrapper hakemus, HakemusWrapper h, Valintatapajono hyvaksyttyJono, Valintatulos muokattava) {
         Optional<Valintatulos> nykyinenTulos = h.getHenkilo().getValintatulos().stream().filter(v -> v.getValintatapajonoOid().equals(hyvaksyttyJono.getOid())).findFirst();
         Valintatulos nykyinen;
-        if(nykyinenTulos.isPresent()) {
+        if (nykyinenTulos.isPresent()) {
             nykyinen = nykyinenTulos.get();
             nykyinen.setHyvaksyttyVarasijalta(muokattava.getHyvaksyttyVarasijalta());
             nykyinen.setIlmoittautumisTila(muokattava.getIlmoittautumisTila());
@@ -74,7 +71,6 @@ public class TilojenMuokkaus {
             nykyinen.setHakutoive(muokattava.getHakutoive());
             hakemus.getHenkilo().getValintatulos().add(nykyinen);
         }
-
         muokattava.setTila(ValintatuloksenTila.KESKEN);
         muokattava.setIlmoittautumisTila(IlmoittautumisTila.EI_TEHTY);
         muokattava.setHyvaksyttyVarasijalta(false);
