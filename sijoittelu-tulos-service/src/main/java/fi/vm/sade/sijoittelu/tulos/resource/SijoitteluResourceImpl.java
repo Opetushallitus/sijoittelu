@@ -112,11 +112,27 @@ public class SijoitteluResourceImpl implements SijoitteluResource {
 
             return sijoitteluAjo.map(ajo -> raportointiService.cachedHakemukset(ajo, true, null, null, Arrays.asList(hakukohdeOid), null, null)).orElseGet(() -> new HakijaPaginationObject());
         } catch (Exception e) {
-            LOGGER.error("Sijoittelun hakemuksia ei saatu hakukohteelle {}! {}", hakukohdeOid, e.getMessage(), Arrays.toString(e.getStackTrace()));
+            LOGGER.error("Sijoittelun hakemuksia ei saatu hakukohteelle {}!", hakukohdeOid, e);
             return new HakijaPaginationObject();
         }
     }
+    @Override
+    @PreAuthorize(READ_UPDATE_CRUD)
+    @GET
+    @Path("/{hakuOid}/hyvaksytyt/")
+    @Produces(APPLICATION_JSON)
+    @ApiOperation(position = 4, value = "Sivutettu listaus hakemuksien/hakijoiden listaukseen. Yksityiskohtainen listaus kaikista hakutoiveista ja niiden valintatapajonoista", response = HakijaPaginationObject.class)
+    public HakijaPaginationObject hyvaksytytHakuun(
+            @ApiParam(value = "Haun tunniste", required = true) @PathParam("hakuOid") String hakuOid) {
+        try {
+            Optional<SijoitteluAjo> sijoitteluAjo = raportointiService.latestSijoitteluAjoForHaku(hakuOid);
 
+            return sijoitteluAjo.map(ajo -> raportointiService.cachedHakemukset(ajo, true, null, null, null, null, null)).orElseGet(() -> new HakijaPaginationObject());
+        } catch (Exception e) {
+            LOGGER.error("Sijoittelun hakemuksia ei saatu haulle {}!", hakuOid, e);
+            return new HakijaPaginationObject();
+        }
+    }
     @Override
     @PreAuthorize(READ_UPDATE_CRUD)
     @GET
