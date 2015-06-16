@@ -342,17 +342,25 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
     }
 
     // nykyisellaan vain korvaa hakukohteet, mietittava toiminta tarkemmin
-    private List<Hakukohde> merge(SijoitteluAjo uusiSijoitteluajo,
-                                  List<Hakukohde> olemassaolevatHakukohteet,
-                                  List<Hakukohde> uudetHakukohteet) {
+    private List<Hakukohde> merge(SijoitteluAjo uusiSijoitteluajo, List<Hakukohde> olemassaolevatHakukohteet, List<Hakukohde> uudetHakukohteet) {
         Map<String, Hakukohde> kaikkiHakukohteet = new ConcurrentHashMap<>();
         olemassaolevatHakukohteet.parallelStream().forEach(hakukohde -> {
-            hakukohde.setId(null); // poista id vanhoilta hakukohteilta, niin
-            // etta ne voidaan peristoida uusina
-            // dokumentteina
+            // poista id vanhoilta hakukohteilta, niin etta ne voidaan peristoida uusina dokumentteina
+            hakukohde.setId(null);
             kaikkiHakukohteet.put(hakukohde.getOid(), hakukohde);
         });
-        // vanhat tasasijajonosijat ja edellisen sijoittelun tilat talteen
+        talletaTasasijajonosijatJaEdellisenSijoittelunTilat(uudetHakukohteet, kaikkiHakukohteet);
+        kaikkiHakukohteet.values().forEach(hakukohde -> {
+                    HakukohdeItem hki = new HakukohdeItem();
+                    hki.setOid(hakukohde.getOid());
+                    uusiSijoitteluajo.getHakukohteet().add(hki);
+                    hakukohde.setSijoitteluajoId(uusiSijoitteluajo.getSijoitteluajoId());
+                }
+        );
+        return new ArrayList<>(kaikkiHakukohteet.values());
+    }
+
+    private void talletaTasasijajonosijatJaEdellisenSijoittelunTilat(List<Hakukohde> uudetHakukohteet, Map<String, Hakukohde> kaikkiHakukohteet) {
         uudetHakukohteet.parallelStream().forEach(hakukohde -> {
             Map<String, Integer> tasasijaHashMap = new ConcurrentHashMap<>();
             Map<String, HakemuksenTila> tilaHashMap = new ConcurrentHashMap<>();
@@ -368,27 +376,18 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
                                 })
                 );
                 hakukohde.getValintatapajonot().forEach(valintatapajono ->
-                                valintatapajono.getHakemukset()
-                                        .forEach(hakemus -> {
-                                            if (tasasijaHashMap.get(valintatapajono.getOid() + hakemus.getHakemusOid()) != null) {
-                                                hakemus.setTasasijaJonosija(tasasijaHashMap.get(valintatapajono.getOid() + hakemus.getHakemusOid()));
-                                            }
-                                            if (tilaHashMap.get(valintatapajono.getOid() + hakemus.getHakemusOid()) != null) {
-                                                hakemus.setEdellinenTila(tilaHashMap.get(valintatapajono.getOid() + hakemus.getHakemusOid()));
-                                            }
-                                        })
+                                valintatapajono.getHakemukset().forEach(hakemus -> {
+                                    if (tasasijaHashMap.get(valintatapajono.getOid() + hakemus.getHakemusOid()) != null) {
+                                        hakemus.setTasasijaJonosija(tasasijaHashMap.get(valintatapajono.getOid() + hakemus.getHakemusOid()));
+                                    }
+                                    if (tilaHashMap.get(valintatapajono.getOid() + hakemus.getHakemusOid()) != null) {
+                                        hakemus.setEdellinenTila(tilaHashMap.get(valintatapajono.getOid() + hakemus.getHakemusOid()));
+                                    }
+                                })
                 );
             }
             kaikkiHakukohteet.put(hakukohde.getOid(), hakukohde);
         });
-        kaikkiHakukohteet.values().forEach(hakukohde -> {
-                    HakukohdeItem hki = new HakukohdeItem();
-                    hki.setOid(hakukohde.getOid());
-                    uusiSijoitteluajo.getHakukohteet().add(hki);
-                    hakukohde.setSijoitteluajoId(uusiSijoitteluajo.getSijoitteluajoId());
-                }
-        );
-        return new ArrayList<>(kaikkiHakukohteet.values());
     }
 
     private SijoitteluAjo createSijoitteluAjo(Sijoittelu sijoittelu) {
