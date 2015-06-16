@@ -8,7 +8,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 import akka.actor.ActorRef;
-import com.google.common.collect.Sets;
 import com.google.common.collect.Sets.SetView;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.SijoitteluajoWrapper;
 import fi.vm.sade.sijoittelu.domain.*;
@@ -171,20 +170,7 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
     private void asetaSijoittelunParametrit(String hakuOid, SijoitteluAlgorithm sijoitteluAlgorithm) {
         // Asetetaan haun tiedot tarjonnasta ja ohjausparametreista
         SijoitteluajoWrapper sijoitteluAjo = sijoitteluAlgorithm.getSijoitteluAjo();
-        try {
-            Optional<String> kohdejoukko = tarjontaIntegrationService.getHaunKohdejoukko(hakuOid);
-            if (kohdejoukko.isPresent()) {
-                if (kohdejoukko.get().equals(KK_KOHDEJOUKKO)) {
-                    sijoitteluAjo.setKKHaku(true);
-                }
-            } else {
-                throw new RuntimeException("Sijoittelua haulle " + hakuOid + " ei voida suorittaa, koska tarjonnasta ei saatu haun tietoja");
-            }
-        } catch (Exception e) { // Heitetään poikkeus koska ei voida tietää onko kk-haku
-            LOG.error("############## Haun hakeminen tarjonnasta epäonnistui ##############");
-            e.printStackTrace();
-            throw new RuntimeException("Sijoittelua haulle " + hakuOid + " ei voida suorittaa, koska tarjonnasta ei saatu haun tietoja");
-        }
+        setOptionalKorkeakouluHakuStatus(hakuOid, sijoitteluAjo);
         try {
             ParametriDTO parametri = tarjontaIntegrationService.getHaunParametrit(hakuOid);
             if (parametri == null || parametri.getPH_HKP() == null || parametri.getPH_HKP().getDate() == null) {
@@ -226,6 +212,23 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
         }
         LOG.info("Sijoittelun ohjausparametrit asetettu haulle {}. onko korkeakouluhaku: {}, kaikki kohteet sijoittelussa: {}, hakukierros päätty: {}, varasijasäännöt astuvat voimaan: {}, varasijasäännöt voimassa: {}",
                 hakuOid, sijoitteluAjo.isKKHaku(), sijoitteluAjo.getKaikkiKohteetSijoittelussa(), sijoitteluAjo.getHakuKierrosPaattyy(), sijoitteluAjo.getVarasijaSaannotAstuvatVoimaan(), sijoitteluAjo.varasijaSaannotVoimassa());
+    }
+
+    private void setOptionalKorkeakouluHakuStatus(String hakuOid, SijoitteluajoWrapper sijoitteluAjo) {
+        try {
+            Optional<String> kohdejoukko = tarjontaIntegrationService.getHaunKohdejoukko(hakuOid);
+            if (kohdejoukko.isPresent()) {
+                if (kohdejoukko.get().equals(KK_KOHDEJOUKKO)) {
+                    sijoitteluAjo.setKKHaku(true);
+                }
+            } else {
+                throw new RuntimeException("Sijoittelua haulle " + hakuOid + " ei voida suorittaa, koska tarjonnasta ei saatu haun tietoja");
+            }
+        } catch (Exception e) {
+            LOG.error("############## Haun hakeminen tarjonnasta epäonnistui ##############");
+            e.printStackTrace();
+            throw new RuntimeException("Sijoittelua haulle " + hakuOid + " ei voida suorittaa, koska tarjonnasta ei saatu haun tietoja");
+        }
     }
 
     private LocalDateTime fromTimestamp(Long timestamp) {
