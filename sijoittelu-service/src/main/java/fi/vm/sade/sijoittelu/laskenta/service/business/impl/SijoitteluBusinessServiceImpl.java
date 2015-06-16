@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import akka.actor.ActorRef;
@@ -60,7 +61,6 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
     @Autowired
     private HakukohdeDao hakukohdeDao;
 
-
     @Autowired
     private SijoitteluDao sijoitteluDao;
 
@@ -94,8 +94,6 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
     /**
      * ei versioi sijoittelua, tekeee uuden sijoittelun olemassaoleville
      * kohteille ei kayteta viela mihinkaan
-     *
-     * @param hakuOid
      */
     public void sijoittele(String hakuOid) {
         Sijoittelu sijoittelu = getOrCreateSijoittelu(hakuOid);
@@ -279,50 +277,55 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
     }
 
     private void processOldApplications(final List<Hakukohde> olemassaolevatHakukohteet, final List<Hakukohde> kaikkiHakukohteet) {
+        Map<String, Hakemus> hakemusHashMap = getStringHakemusMap(olemassaolevatHakukohteet);
+        kaikkiHakukohteet.parallelStream().forEach(hakukohde -> {
+                    hakukohde.getValintatapajonot().forEach(processValintatapaJono(hakemusHashMap, hakukohde));
+                    hakukohdeDao.persistHakukohde(hakukohde);
+                }
+        );
+    }
+
+    private Consumer<Valintatapajono> processValintatapaJono(Map<String, Hakemus> hakemusHashMap, Hakukohde hakukohde) {
+        return valintatapajono -> {
+                    valintatapajono.setAlinHyvaksyttyPistemaara(alinHyvaksyttyPistemaara(valintatapajono.getHakemukset()).orElse(null));
+                    valintatapajono.setHyvaksytty(getMaara(valintatapajono.getHakemukset(), Arrays.asList(HakemuksenTila.HYVAKSYTTY, HakemuksenTila.VARASIJALTA_HYVAKSYTTY)));
+                    valintatapajono.setVaralla(getMaara(valintatapajono.getHakemukset(), Arrays.asList(HakemuksenTila.VARALLA)));
+                    Collections.sort(valintatapajono.getHakemukset(), hakemusComparator);
+                    int varasija = 0;
+                    for (Hakemus hakemus : valintatapajono.getHakemukset()) {
+                        Hakemus edellinen = hakemusHashMap.get(hakukohde.getOid() + valintatapajono.getOid() + hakemus.getHakemusOid());
+                        if (edellinen != null && edellinen.getTilaHistoria() != null && !edellinen.getTilaHistoria().isEmpty()) {
+                            hakemus.setTilaHistoria(edellinen.getTilaHistoria());
+                            if (hakemus.getTila() != edellinen.getTila()) {
+                                TilaHistoria th = new TilaHistoria();
+                                th.setLuotu(new Date());
+                                th.setTila(hakemus.getTila());
+                                hakemus.getTilaHistoria().add(th);
+                            }
+                        } else {
+                            TilaHistoria th = new TilaHistoria();
+                            th.setLuotu(new Date());
+                            th.setTila(hakemus.getTila());
+                            hakemus.getTilaHistoria().add(th);
+                        }
+                        if (hakemus.getTila() == HakemuksenTila.VARALLA) {
+                            varasija++;
+                            hakemus.setVarasijanNumero(varasija);
+                        }
+                    }
+                };
+    }
+
+    private Map<String, Hakemus> getStringHakemusMap(List<Hakukohde> olemassaolevatHakukohteet) {
         Map<String, Hakemus> hakemusHashMap = new ConcurrentHashMap<>();
         olemassaolevatHakukohteet.parallelStream().forEach(hakukohde ->
                         hakukohde.getValintatapajonot().parallelStream().forEach(valintatapajono ->
                                         valintatapajono.getHakemukset().parallelStream().forEach(hakemus ->
-                                                        hakemusHashMap.put(
-                                                                hakukohde.getOid() + valintatapajono.getOid()
-                                                                        + hakemus.getHakemusOid(), hakemus)
+                                                        hakemusHashMap.put(hakukohde.getOid() + valintatapajono.getOid() + hakemus.getHakemusOid(), hakemus)
                                         )
                         )
         );
-
-        kaikkiHakukohteet.parallelStream().forEach(hakukohde -> {
-                    hakukohde.getValintatapajonot().forEach(valintatapajono -> {
-                                valintatapajono.setAlinHyvaksyttyPistemaara(alinHyvaksyttyPistemaara(valintatapajono.getHakemukset()).orElse(null));
-                                valintatapajono.setHyvaksytty(getMaara(valintatapajono.getHakemukset(), Arrays.asList(HakemuksenTila.HYVAKSYTTY, HakemuksenTila.VARASIJALTA_HYVAKSYTTY)));
-                                valintatapajono.setVaralla(getMaara(valintatapajono.getHakemukset(), Arrays.asList(HakemuksenTila.VARALLA)));
-                                Collections.sort(valintatapajono.getHakemukset(), hakemusComparator);
-                                int varasija = 0;
-                                for (Hakemus hakemus : valintatapajono.getHakemukset()) {
-                                    Hakemus edellinen = hakemusHashMap.get(hakukohde.getOid() + valintatapajono.getOid() + hakemus.getHakemusOid());
-                                    if (edellinen != null && edellinen.getTilaHistoria() != null && !edellinen.getTilaHistoria().isEmpty()) {
-                                        hakemus.setTilaHistoria(edellinen.getTilaHistoria());
-                                        if (hakemus.getTila() != edellinen.getTila()) {
-                                            TilaHistoria th = new TilaHistoria();
-                                            th.setLuotu(new Date());
-                                            th.setTila(hakemus.getTila());
-                                            hakemus.getTilaHistoria().add(th);
-                                        }
-                                    } else {
-                                        TilaHistoria th = new TilaHistoria();
-                                        th.setLuotu(new Date());
-                                        th.setTila(hakemus.getTila());
-                                        hakemus.getTilaHistoria().add(th);
-                                    }
-                                    if (hakemus.getTila() == HakemuksenTila.VARALLA) {
-                                        varasija++;
-                                        hakemus.setVarasijanNumero(varasija);
-                                    }
-                                }
-                            }
-                    );
-                    hakukohdeDao.persistHakukohde(hakukohde);
-                }
-        );
+        return hakemusHashMap;
     }
 
     private int getMaara(List<Hakemus> hakemukset, List<HakemuksenTila> tilat) {
