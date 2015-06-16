@@ -506,13 +506,7 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
         SijoitteluAjo ajo = sijoittelu.getLatestSijoitteluajo();
         Long ajoId = ajo.getSijoitteluajoId();
         Hakukohde hakukohde = hakukohdeDao.getHakukohdeForSijoitteluajo(ajoId, hakukohdeOid);
-        Valintatapajono valintatapajono = null;
-        for (Valintatapajono v : hakukohde.getValintatapajonot()) {
-            if (valintatapajonoOid.equals(v.getOid())) {
-                valintatapajono = v;
-                break;
-            }
-        }
+        Valintatapajono valintatapajono = getValintatapajono(valintatapajonoOid, hakukohde);
         if (valintatapajono == null) {
             throw new ValintatapajonoaEiLoytynytException("Valintatapajonoa " + valintatapajonoOid + "ei löytynyt hakukohteelle " + hakukohdeOid + " haussa " + hakuoid);
         }
@@ -567,6 +561,17 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
         }
         v.getLogEntries().add(logEntry);
         valintatulosDao.createOrUpdateValintatulos(v);
+    }
+
+    private Valintatapajono getValintatapajono(String valintatapajonoOid, Hakukohde hakukohde) {
+        Valintatapajono valintatapajono = null;
+        for (Valintatapajono v : hakukohde.getValintatapajonot()) {
+            if (valintatapajonoOid.equals(v.getOid())) {
+                valintatapajono = v;
+                break;
+            }
+        }
+        return valintatapajono;
     }
 
     private boolean checkIfOphAdmin(final Hakemus hakemus) {
