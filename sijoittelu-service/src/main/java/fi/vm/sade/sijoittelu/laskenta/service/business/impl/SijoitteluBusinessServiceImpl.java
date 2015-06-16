@@ -515,18 +515,7 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
         // organisaatio updater voi muokata, jos hyväksytty
         String tarjoajaOid = hakukohde.getTarjoajaOid();
         if (tarjoajaOid == null || StringUtils.isBlank(tarjoajaOid)) {
-            try {
-                Optional<String> tOid = tarjontaIntegrationService.getTarjoajaOid(hakukohde.getOid());
-                if (tOid.isPresent()) {
-                    hakukohde.setTarjoajaOid(tOid.get());
-                    hakukohdeDao.persistHakukohde(hakukohde);
-                } else {
-                    throw new RuntimeException("Hakukohteelle " + hakukohdeOid + " ei löytynyt tarjoajaOidia sijoitteluajosta: " + ajoId);
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-                throw new RuntimeException("Hakukohteelle " + hakukohdeOid + " ei löytynyt tarjoajaOidia sijoitteluajosta: " + ajoId);
-            }
+            updateMissingTarjoajaOidFromTarjonta(hakukohdeOid, ajoId, hakukohde);
 
         }
         authorizer.checkOrganisationAccess(tarjoajaOid, SijoitteluRole.UPDATE_ROLE, SijoitteluRole.CRUD_ROLE);
@@ -561,6 +550,21 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
         }
         v.getLogEntries().add(logEntry);
         valintatulosDao.createOrUpdateValintatulos(v);
+    }
+
+    private void updateMissingTarjoajaOidFromTarjonta(String hakukohdeOid, Long ajoId, Hakukohde hakukohde) {
+        try {
+            Optional<String> tOid = tarjontaIntegrationService.getTarjoajaOid(hakukohde.getOid());
+            if (tOid.isPresent()) {
+                hakukohde.setTarjoajaOid(tOid.get());
+                hakukohdeDao.persistHakukohde(hakukohde);
+            } else {
+                throw new RuntimeException("Hakukohteelle " + hakukohdeOid + " ei löytynyt tarjoajaOidia sijoitteluajosta: " + ajoId);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("Hakukohteelle " + hakukohdeOid + " ei löytynyt tarjoajaOidia sijoitteluajosta: " + ajoId);
+        }
     }
 
     private Valintatapajono getValintatapajono(String valintatapajonoOid, Hakukohde hakukohde) {
