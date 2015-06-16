@@ -168,13 +168,23 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
     }
 
     private void asetaSijoittelunParametrit(String hakuOid, SijoitteluAlgorithm sijoitteluAlgorithm) {
-        // Asetetaan haun tiedot tarjonnasta ja ohjausparametreista
         SijoitteluajoWrapper sijoitteluAjo = sijoitteluAlgorithm.getSijoitteluAjo();
         setOptionalKorkeakouluHakuStatus(hakuOid, sijoitteluAjo);
+        setParametersFromTarjonta(hakuOid, sijoitteluAjo);
+        if (sijoitteluAjo.getHakuKierrosPaattyy().isBefore(sijoitteluAjo.getKaikkiKohteetSijoittelussa())) {
+            throw new RuntimeException("Sijoittelua haulle " + hakuOid + " ei voida suorittaa, koska hakukierros on asetettu päättymään ennen kuin kaikkien kohteiden tulee olla sijoittelussa.");
+        }
+        if (sijoitteluAjo.isKKHaku() && sijoitteluAjo.getHakuKierrosPaattyy().isBefore(sijoitteluAjo.getVarasijaSaannotAstuvatVoimaan())) {
+            throw new RuntimeException("Sijoittelua haulle " + hakuOid + " ei voida suorittaa, koska hakukierros on asetettu päättymään ennen kuin varasija säännöt astuvat voimaan");
+        }
+        LOG.info("Sijoittelun ohjausparametrit asetettu haulle {}. onko korkeakouluhaku: {}, kaikki kohteet sijoittelussa: {}, hakukierros päätty: {}, varasijasäännöt astuvat voimaan: {}, varasijasäännöt voimassa: {}",
+                hakuOid, sijoitteluAjo.isKKHaku(), sijoitteluAjo.getKaikkiKohteetSijoittelussa(), sijoitteluAjo.getHakuKierrosPaattyy(), sijoitteluAjo.getVarasijaSaannotAstuvatVoimaan(), sijoitteluAjo.varasijaSaannotVoimassa());
+    }
+
+    private void setParametersFromTarjonta(String hakuOid, SijoitteluajoWrapper sijoitteluAjo) {
         try {
             ParametriDTO parametri = tarjontaIntegrationService.getHaunParametrit(hakuOid);
             if (parametri == null || parametri.getPH_HKP() == null || parametri.getPH_HKP().getDate() == null) {
-                // Ei tiedetä koska hakukierros päättyy, heitetään poikkeus
                 throw new RuntimeException("Sijoittelua haulle " + hakuOid + " ei voida suorittaa, koska hakukierroksen päättymispäivä parametria ei saatu.");
             } else {
                 sijoitteluAjo.setHakuKierrosPaattyy(fromTimestamp(parametri.getPH_HKP().getDate()));
@@ -202,16 +212,7 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
             } else {
                 throw new RuntimeException("Sijoittelua haulle " + hakuOid + " ei voida suorittaa, koska hakukierroksen päättymispäivää ei saatu haettua tai asetettua.");
             }
-
         }
-        if (sijoitteluAjo.getHakuKierrosPaattyy().isBefore(sijoitteluAjo.getKaikkiKohteetSijoittelussa())) {
-            throw new RuntimeException("Sijoittelua haulle " + hakuOid + " ei voida suorittaa, koska hakukierros on asetettu päättymään ennen kuin kaikkien kohteiden tulee olla sijoittelussa.");
-        }
-        if (sijoitteluAjo.isKKHaku() && sijoitteluAjo.getHakuKierrosPaattyy().isBefore(sijoitteluAjo.getVarasijaSaannotAstuvatVoimaan())) {
-            throw new RuntimeException("Sijoittelua haulle " + hakuOid + " ei voida suorittaa, koska hakukierros on asetettu päättymään ennen kuin varasija säännöt astuvat voimaan");
-        }
-        LOG.info("Sijoittelun ohjausparametrit asetettu haulle {}. onko korkeakouluhaku: {}, kaikki kohteet sijoittelussa: {}, hakukierros päätty: {}, varasijasäännöt astuvat voimaan: {}, varasijasäännöt voimassa: {}",
-                hakuOid, sijoitteluAjo.isKKHaku(), sijoitteluAjo.getKaikkiKohteetSijoittelussa(), sijoitteluAjo.getHakuKierrosPaattyy(), sijoitteluAjo.getVarasijaSaannotAstuvatVoimaan(), sijoitteluAjo.varasijaSaannotVoimassa());
     }
 
     private void setOptionalKorkeakouluHakuStatus(String hakuOid, SijoitteluajoWrapper sijoitteluAjo) {
