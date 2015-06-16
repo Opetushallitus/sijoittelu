@@ -395,7 +395,6 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
         Long now = System.currentTimeMillis();
         sijoitteluAjo.setSijoitteluajoId(now);
         sijoitteluAjo.setHakuOid(sijoittelu.getHakuOid());
-        // silta varalta etta tehdaan omaksi entityksi
         sijoittelu.getSijoitteluajot().add(sijoitteluAjo);
         return sijoitteluAjo;
     }
@@ -405,7 +404,6 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
         Long now = System.currentTimeMillis();
         sijoitteluAjo.setSijoitteluajoId(now);
         sijoitteluAjo.setHakuOid(sijoittelu.getHakuOid());
-        // silta varalta etta tehdaan omaksi entityksi
         sijoittelu.getSijoitteluajot().add(sijoitteluAjo);
         return sijoitteluAjo;
     }
@@ -415,7 +413,6 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
         Long now = System.currentTimeMillis();
         sijoitteluAjo.setSijoitteluajoId(now);
         sijoitteluAjo.setHakuOid(sijoittelu.getHakuOid());
-        // silta varalta etta tehdaan omaksi entityksi
         sijoittelu.getSijoitteluajot().add(sijoitteluAjo);
         return sijoitteluAjo;
     }
@@ -435,7 +432,6 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
 
     private ValiSijoittelu getOrCreateValiSijoittelu(String hakuoid) {
         Optional<ValiSijoittelu> sijoitteluOpt = valisijoitteluDao.getSijoitteluByHakuOid(hakuoid);
-
         if (sijoitteluOpt.isPresent()) {
             return sijoitteluOpt.get();
         } else {
@@ -458,12 +454,10 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
             sijoittelu.setHakuOid(hakuoid);
             return sijoittelu;
         }
-
     }
 
     @Override
-    public Valintatulos haeHakemuksenTila(String hakuoid, String hakukohdeOid,
-                                          String valintatapajonoOid, String hakemusOid) {
+    public Valintatulos haeHakemuksenTila(String hakuoid, String hakukohdeOid, String valintatapajonoOid, String hakemusOid) {
         if (StringUtils.isBlank(hakukohdeOid) || StringUtils.isBlank(hakemusOid)) {
             throw new RuntimeException("Invalid search params, fix exception later");
         }
