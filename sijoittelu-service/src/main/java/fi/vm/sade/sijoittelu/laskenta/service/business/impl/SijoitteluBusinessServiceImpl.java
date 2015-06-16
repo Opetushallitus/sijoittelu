@@ -539,6 +539,12 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
         v.setHyvaksyttyVarasijalta(hyvaksyttyVarasijalta);
         LOG.info("Asetetaan valintatuloksen tila - hakukohdeoid {}, valintatapajonooid {}, hakemusoid {}", new Object[]{hakukohdeOid, valintatapajonoOid, hakemusOid});
         LOG.info("Valintatuloksen uusi tila {}", tila);
+        LogEntry logEntry = createLogEntry(tila, selite);
+        v.getLogEntries().add(logEntry);
+        valintatulosDao.createOrUpdateValintatulos(v);
+    }
+
+    private LogEntry createLogEntry(ValintatuloksenTila tila, String selite) {
         LogEntry logEntry = new LogEntry();
         logEntry.setLuotu(new Date());
         logEntry.setMuokkaaja(AuthorizationUtil.getCurrentUser());
@@ -548,8 +554,7 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
         } else {
             logEntry.setMuutos(tila.name());
         }
-        v.getLogEntries().add(logEntry);
-        valintatulosDao.createOrUpdateValintatulos(v);
+        return logEntry;
     }
 
     private void updateMissingTarjoajaOidFromTarjonta(String hakukohdeOid, Long ajoId, Hakukohde hakukohde) {
