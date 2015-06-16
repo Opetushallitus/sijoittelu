@@ -54,60 +54,7 @@ public class SijoitteluAlgorithmFactoryImpl implements SijoitteluAlgorithmFactor
                     hakemusWrapper.setHenkilo(henkiloWrapper);
                     Valintatulos valintatulos = getValintatulos(hakukohde, valintatapajono, hakemus, valintatulokset);
                     List<ValintatuloksenTila> hyvaksyttylista = Arrays.asList(ValintatuloksenTila.ILMOITETTU, ValintatuloksenTila.VASTAANOTTANUT, ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI);
-                    if (valintatulos != null && valintatulos.getTila() != null) {
-                        ValintatuloksenTila tila = valintatulos.getTila();
-                        boolean voidaanVaihtaa = true;
-                        if (tila == ValintatuloksenTila.PERUNUT) {
-                            hakemus.setTila(HakemuksenTila.PERUNUT);
-                            voidaanVaihtaa = false;
-                        } else if (tila == ValintatuloksenTila.EHDOLLISESTI_VASTAANOTTANUT) {
-                            if (hakemus.getEdellinenTila() == HakemuksenTila.VARALLA || hakemus.getEdellinenTila() == HakemuksenTila.VARASIJALTA_HYVAKSYTTY) {
-                                hakemus.setTilanKuvaukset(TilanKuvaukset.varasijaltaHyvaksytty());
-                                hakemus.setTila(HakemuksenTila.VARASIJALTA_HYVAKSYTTY);
-                            } else {
-                                hakemus.setTila(HakemuksenTila.HYVAKSYTTY);
-                            }
-                            hakemus.setIlmoittautumisTila(valintatulos.getIlmoittautumisTila());
-                            voidaanVaihtaa = false;
-                        } else if (tila == ValintatuloksenTila.EI_VASTAANOTETTU_MAARA_AIKANA) {
-                            hakemus.setTila(HakemuksenTila.PERUNUT);
-                            hakemus.setTilanKuvaukset(TilanKuvaukset.peruuntunutEiVastaanottanutMaaraaikana());
-                            voidaanVaihtaa = false;
-                        } else if (tila == ValintatuloksenTila.PERUUTETTU) {
-                            hakemus.setTila(HakemuksenTila.PERUUTETTU);
-                            voidaanVaihtaa = false;
-                        } else if (hyvaksyttylista.contains(tila)) {
-                            if (hakemus.getEdellinenTila() == HakemuksenTila.VARALLA || hakemus.getEdellinenTila() == HakemuksenTila.VARASIJALTA_HYVAKSYTTY) {
-                                hakemus.setTilanKuvaukset(TilanKuvaukset.varasijaltaHyvaksytty());
-                                hakemus.setTila(HakemuksenTila.VARASIJALTA_HYVAKSYTTY);
-                            } else {
-                                hakemus.setTila(HakemuksenTila.HYVAKSYTTY);
-                            }
-                            voidaanVaihtaa = false;
-                            hakemus.setIlmoittautumisTila(valintatulos.getIlmoittautumisTila());
-                        } else if (valintatulos.getJulkaistavissa() && (hakemus.getEdellinenTila() == HakemuksenTila.HYVAKSYTTY || hakemus.getEdellinenTila() == HakemuksenTila.VARASIJALTA_HYVAKSYTTY)) {
-                            if (hakemus.getEdellinenTila() == HakemuksenTila.VARASIJALTA_HYVAKSYTTY) {
-                                hakemus.setTilanKuvaukset(TilanKuvaukset.varasijaltaHyvaksytty());
-                                hakemus.setTila(HakemuksenTila.VARASIJALTA_HYVAKSYTTY);
-                            } else {
-                                hakemus.setTila(HakemuksenTila.HYVAKSYTTY);
-                            }
-                            voidaanVaihtaa = false;
-                            hakemus.setIlmoittautumisTila(valintatulos.getIlmoittautumisTila());
-                        } else if (valintatulos.getHyvaksyttyVarasijalta()) {
-                            hakemus.setTilanKuvaukset(TilanKuvaukset.varasijaltaHyvaksytty());
-                            hakemus.setTila(HakemuksenTila.VARASIJALTA_HYVAKSYTTY);
-                            hakemus.setIlmoittautumisTila(valintatulos.getIlmoittautumisTila());
-                            voidaanVaihtaa = false;
-                        } else if (hakemus.getTila().equals(HakemuksenTila.HYLATTY)) {
-                            hakemusWrapper.setTilaVoidaanVaihtaa(false);
-                            voidaanVaihtaa = false;
-                        }
-                        hakemusWrapper.setTilaVoidaanVaihtaa(voidaanVaihtaa);
-                        henkiloWrapper.getValintatulos().add(valintatulos);
-                    } else if (hakemus.getTila().equals(HakemuksenTila.HYLATTY)) {
-                        hakemusWrapper.setTilaVoidaanVaihtaa(false);
-                    }
+                    setTilaRelatedInformation(hakemus, hakemusWrapper, henkiloWrapper, valintatulos, hyvaksyttylista);
                 });
 
             });
@@ -123,6 +70,63 @@ public class SijoitteluAlgorithmFactoryImpl implements SijoitteluAlgorithmFactor
             }
         });
         return sijoitteluajoWrapper;
+    }
+
+    private void setTilaRelatedInformation(Hakemus hakemus, HakemusWrapper hakemusWrapper, HenkiloWrapper henkiloWrapper, Valintatulos valintatulos, List<ValintatuloksenTila> hyvaksyttylista) {
+        if (valintatulos != null && valintatulos.getTila() != null) {
+            ValintatuloksenTila tila = valintatulos.getTila();
+            boolean voidaanVaihtaa = true;
+            if (tila == ValintatuloksenTila.PERUNUT) {
+                hakemus.setTila(HakemuksenTila.PERUNUT);
+                voidaanVaihtaa = false;
+            } else if (tila == ValintatuloksenTila.EHDOLLISESTI_VASTAANOTTANUT) {
+                if (hakemus.getEdellinenTila() == HakemuksenTila.VARALLA || hakemus.getEdellinenTila() == HakemuksenTila.VARASIJALTA_HYVAKSYTTY) {
+                    hakemus.setTilanKuvaukset(TilanKuvaukset.varasijaltaHyvaksytty());
+                    hakemus.setTila(HakemuksenTila.VARASIJALTA_HYVAKSYTTY);
+                } else {
+                    hakemus.setTila(HakemuksenTila.HYVAKSYTTY);
+                }
+                hakemus.setIlmoittautumisTila(valintatulos.getIlmoittautumisTila());
+                voidaanVaihtaa = false;
+            } else if (tila == ValintatuloksenTila.EI_VASTAANOTETTU_MAARA_AIKANA) {
+                hakemus.setTila(HakemuksenTila.PERUNUT);
+                hakemus.setTilanKuvaukset(TilanKuvaukset.peruuntunutEiVastaanottanutMaaraaikana());
+                voidaanVaihtaa = false;
+            } else if (tila == ValintatuloksenTila.PERUUTETTU) {
+                hakemus.setTila(HakemuksenTila.PERUUTETTU);
+                voidaanVaihtaa = false;
+            } else if (hyvaksyttylista.contains(tila)) {
+                if (hakemus.getEdellinenTila() == HakemuksenTila.VARALLA || hakemus.getEdellinenTila() == HakemuksenTila.VARASIJALTA_HYVAKSYTTY) {
+                    hakemus.setTilanKuvaukset(TilanKuvaukset.varasijaltaHyvaksytty());
+                    hakemus.setTila(HakemuksenTila.VARASIJALTA_HYVAKSYTTY);
+                } else {
+                    hakemus.setTila(HakemuksenTila.HYVAKSYTTY);
+                }
+                voidaanVaihtaa = false;
+                hakemus.setIlmoittautumisTila(valintatulos.getIlmoittautumisTila());
+            } else if (valintatulos.getJulkaistavissa() && (hakemus.getEdellinenTila() == HakemuksenTila.HYVAKSYTTY || hakemus.getEdellinenTila() == HakemuksenTila.VARASIJALTA_HYVAKSYTTY)) {
+                if (hakemus.getEdellinenTila() == HakemuksenTila.VARASIJALTA_HYVAKSYTTY) {
+                    hakemus.setTilanKuvaukset(TilanKuvaukset.varasijaltaHyvaksytty());
+                    hakemus.setTila(HakemuksenTila.VARASIJALTA_HYVAKSYTTY);
+                } else {
+                    hakemus.setTila(HakemuksenTila.HYVAKSYTTY);
+                }
+                voidaanVaihtaa = false;
+                hakemus.setIlmoittautumisTila(valintatulos.getIlmoittautumisTila());
+            } else if (valintatulos.getHyvaksyttyVarasijalta()) {
+                hakemus.setTilanKuvaukset(TilanKuvaukset.varasijaltaHyvaksytty());
+                hakemus.setTila(HakemuksenTila.VARASIJALTA_HYVAKSYTTY);
+                hakemus.setIlmoittautumisTila(valintatulos.getIlmoittautumisTila());
+                voidaanVaihtaa = false;
+            } else if (hakemus.getTila().equals(HakemuksenTila.HYLATTY)) {
+                hakemusWrapper.setTilaVoidaanVaihtaa(false);
+                voidaanVaihtaa = false;
+            }
+            hakemusWrapper.setTilaVoidaanVaihtaa(voidaanVaihtaa);
+            henkiloWrapper.getValintatulos().add(valintatulos);
+        } else if (hakemus.getTila().equals(HakemuksenTila.HYLATTY)) {
+            hakemusWrapper.setTilaVoidaanVaihtaa(false);
+        }
     }
 
     private HenkiloWrapper getOrCreateHenkilo(Hakemus hakemus, Map<String, HenkiloWrapper> hakemusOidMap) {
@@ -152,7 +156,6 @@ public class SijoitteluAlgorithmFactoryImpl implements SijoitteluAlgorithmFactor
         }
         return null;
     }
-
 
     private HenkiloWrapper getHenkilo(String hakijaOid, Map<String, HenkiloWrapper> hakijaOidMap) {
         return hakijaOidMap.get(hakijaOid);
