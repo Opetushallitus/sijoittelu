@@ -34,7 +34,7 @@ import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 @PreAuthorize("isAuthenticated()")
 @Path("/erillissijoittelu")
 @Api(value = "/erillissijoittelu", description = "Resurssi erillissijoittelun tuloksien hakemiseen")
-public class ErillisSijoitteluResourceImpl {
+public class ErillisSijoitteluResourceImpl implements ErillisSijoitteluResource {
     private final static Logger LOGGER = LoggerFactory.getLogger(ErillisSijoitteluResourceImpl.class);
 
     @Autowired
@@ -45,6 +45,7 @@ public class ErillisSijoitteluResourceImpl {
 
     @GET
     @Produces(APPLICATION_JSON)
+    @Path("/{hakuOid}/sijoitteluajo/{sijoitteluajoId}/hakukohde/{hakukohdeOid}")
     @PreAuthorize(READ_UPDATE_CRUD)
     @ApiOperation(value = "Hakee hakukohteen tiedot tietyssa sijoitteluajossa.", response = HakukohdeDTO.class)
     public Response getHakukohdeBySijoitteluajo(
