@@ -273,7 +273,6 @@ public class SijoitteluAlgorithmImpl implements SijoitteluAlgorithm {
             // Hakijaryhmäkäsittelyssä alitäyttösääntö käytetty
             return muuttuneetHakukohteet;
         }
-        Tasasijasaanto saanto = jononTasasijasaanto(valintatapajono);
         List<HakemusWrapper> eiKorvattavissaOlevatHyvaksytytHakemukset = valintatapajononHyvaksytytHakemuksetJoitaEiVoiKorvata(valintatapajono);
         List<HakemusWrapper> valituksiHaluavatHakemukset =
                 valintatapajono.getHakemukset().stream()
@@ -303,19 +302,10 @@ public class SijoitteluAlgorithmImpl implements SijoitteluAlgorithm {
         if (tilaa <= 0) {
             return muuttuneetHakukohteet;
         }
-        List<HakemusWrapper> kaikkiTasasijaHakemukset;
-        HakemusWrapper paras = valituksiHaluavatHakemukset.get(0);
-        if (saanto.equals(Tasasijasaanto.ARVONTA)) {
-            kaikkiTasasijaHakemukset = Arrays.asList(paras);
-        } else {
-            kaikkiTasasijaHakemukset = valituksiHaluavatHakemukset
-                    .stream()
-                    .filter(h -> h.getHakemus().getJonosija().equals(paras.getHakemus().getJonosija()))
-                    .collect(Collectors.toList());
-        }
+        Tasasijasaanto saanto = jononTasasijasaanto(valintatapajono);
+        List<HakemusWrapper> kaikkiTasasijaHakemukset = getTasasijaHakemus(valituksiHaluavatHakemukset, saanto);
 
         List<HakemusWrapper> muuttuneet = new ArrayList<>();
-
         if (tilaa - kaikkiTasasijaHakemukset.size() >= 0) {
             muuttuneetHyvaksytyt(kaikkiTasasijaHakemukset).forEach(h -> {
                 muuttuneet.addAll(hyvaksyHakemus(h));
@@ -333,6 +323,20 @@ public class SijoitteluAlgorithmImpl implements SijoitteluAlgorithm {
             muuttuneetHakukohteet.addAll(uudelleenSijoiteltavatHakukohteet(muuttuneet));
         }
         return muuttuneetHakukohteet;
+    }
+
+    private List<HakemusWrapper> getTasasijaHakemus(List<HakemusWrapper> valituksiHaluavatHakemukset, Tasasijasaanto saanto) {
+        List<HakemusWrapper> kaikkiTasasijaHakemukset;
+        HakemusWrapper paras = valituksiHaluavatHakemukset.get(0);
+        if (saanto.equals(Tasasijasaanto.ARVONTA)) {
+            kaikkiTasasijaHakemukset = Arrays.asList(paras);
+        } else {
+            kaikkiTasasijaHakemukset = valituksiHaluavatHakemukset
+                    .stream()
+                    .filter(h -> h.getHakemus().getJonosija().equals(paras.getHakemus().getJonosija()))
+                    .collect(Collectors.toList());
+        }
+        return kaikkiTasasijaHakemukset;
     }
 
     private List<ValintatapajonoWrapper> hakijaryhmaanLiittyvatJonot(HakijaryhmaWrapper hakijaryhmaWrapper) {
