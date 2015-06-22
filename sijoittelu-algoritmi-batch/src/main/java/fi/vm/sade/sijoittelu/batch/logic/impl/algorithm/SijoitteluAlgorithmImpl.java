@@ -6,6 +6,7 @@ import com.google.common.hash.HashCode;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.comparator.HakemusWrapperComparator;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.postsijoitteluprocessor.PostSijoitteluProcessor;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.presijoitteluprocessor.PreSijoitteluProcessor;
+import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.util.TilanKuvaukset;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.*;
 import fi.vm.sade.sijoittelu.domain.*;
 import org.apache.commons.lang3.tuple.Pair;
@@ -613,7 +614,15 @@ public class SijoitteluAlgorithmImpl implements SijoitteluAlgorithm {
             } else {
                 asetaTilaksiHyvaksytty(hakemus);
             }
+
+            List<HakemuksenTila> yliajettavat = Arrays.asList(
+                    HakemuksenTila.HYVAKSYTTY,
+                    HakemuksenTila.VARALLA,
+                    HakemuksenTila.VARASIJALTA_HYVAKSYTTY
+            );
+
             for (HakemusWrapper h : hakemus.getHenkilo().getHakemukset()) {
+
                 // Alemmat toiveet
                 if (h != hakemus && hakemuksenPrioriteetti(hakemus) < hakemuksenPrioriteetti(h)) {
                     if (h.isTilaVoidaanVaihtaa()) {
@@ -626,7 +635,15 @@ public class SijoitteluAlgorithmImpl implements SijoitteluAlgorithm {
                             }
                         }
                     }
+
+                    // Kaikki jonot ei vielä sijoittelussa, yliajetaan tylysti kaikki alemmat hyväksytyt ja varalla olot
+                    if(!sijoitteluAjo.paivamaaraOhitettu() && yliajettavat.contains(hakemuksenTila(h))) {
+                        asetaTilaksiPeruuntunutYlempiToive(h);
+                        hakemus.setTilaVoidaanVaihtaa(false);
+                        uudelleenSijoiteltavatHakukohteet.add(h);
+                    }
                 }
+
                 // Saman toiveen muut jonot
                 if (h != hakemus && hakemuksenPrioriteetti(hakemus).equals(hakemuksenPrioriteetti(h))) {
                     Valintatapajono current = h.getValintatapajono().getValintatapajono();
@@ -666,6 +683,23 @@ public class SijoitteluAlgorithmImpl implements SijoitteluAlgorithm {
             }
         }
         return uudelleenSijoiteltavatHakukohteet;
+    }
+
+    private HakemusWrapper parasHyvaksyttyTaiPeruttuHakutoive(HenkiloWrapper wrapper) {
+        HakemusWrapper parasHyvaksyttyHakutoive = null;
+        for (HakemusWrapper hakemusWrapper : wrapper.getHakemukset()) {
+            if (hakemusWrapper.getHakemus().getTila() == HakemuksenTila.HYVAKSYTTY
+                    || hakemusWrapper.getHakemus().getTila() == HakemuksenTila.PERUNUT
+                    || hakemusWrapper.getHakemus().getTila() == HakemuksenTila.VARASIJALTA_HYVAKSYTTY) {
+                if (parasHyvaksyttyHakutoive == null || parasHyvaksyttyHakutoive.getHakemus().getPrioriteetti() > hakemusWrapper.getHakemus().getPrioriteetti()) {
+                    parasHyvaksyttyHakutoive = hakemusWrapper;
+                } else if (parasHyvaksyttyHakutoive.getHakemus().getPrioriteetti().equals(hakemusWrapper.getHakemus().getPrioriteetti()) && hakemusWrapper.getHakemus().getTila() == HakemuksenTila.PERUNUT) {
+                    // PERUNUT tila yliajaa hyväksynnät
+                    parasHyvaksyttyHakutoive = hakemusWrapper;
+                }
+            }
+        }
+        return parasHyvaksyttyHakutoive;
     }
 
     private boolean saannotSallii(HakemusWrapper hakemusWrapper) {
