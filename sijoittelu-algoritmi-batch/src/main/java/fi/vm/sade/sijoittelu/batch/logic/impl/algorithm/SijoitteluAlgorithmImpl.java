@@ -138,10 +138,10 @@ public class SijoitteluAlgorithmImpl implements SijoitteluAlgorithm {
     private Set<HakukohdeWrapper> sijoitteleHakukohde(HakukohdeWrapper hakukohde) {
         Set<HakukohdeWrapper> muuttuneetHakukohteet = Sets.newHashSet();
         for (HakijaryhmaWrapper hakijaryhmaWrapper : hakukohde.getHakijaryhmaWrappers()) {
-            muuttuneetHakukohteet.addAll(this.sijoitteleHakijaryhma(hakijaryhmaWrapper));
+            muuttuneetHakukohteet.addAll(sijoitteleHakijaryhma(hakijaryhmaWrapper));
         }
         for (ValintatapajonoWrapper valintatapajono : hakukohde.getValintatapajonot()) {
-            muuttuneetHakukohteet.addAll(this.sijoitteleValintatapajono(valintatapajono));
+            muuttuneetHakukohteet.addAll(sijoitteleValintatapajono(valintatapajono));
         }
         // Otetaan pois kunnes tiedetään pitääkö hakijaryhmät huomioida
 //        // Tayttöjonot
