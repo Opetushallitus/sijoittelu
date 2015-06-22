@@ -6,21 +6,11 @@ import fi.vm.sade.sijoittelu.domain.*;
 
 import java.util.*;
 
-/**
- * Created with IntelliJ IDEA.
- * User: kkammone
- * Date: 14.11.2013
- * Time: 9:03
- * To change this template use File | Settings | File Templates.
- */
 public class PreSijoitteluProcessorPeruutaAlemmatPeruneetJaHyvaksytyt implements PreSijoitteluProcessor {
     /**
      * Peruutetaan jo jonnekkin hyväksyttyjen alemmat hakemukset.
      * Kaytannossa tata tarvitaan jos algoritmi on tyytyvainen nykytilanteeseeen eika koskaan muuta henkilon tilaa, jolloin varalla olevat jaavat koskemattomiksi.
-     *
-     * @param sijoitteluajoWrapper
      */
-
     private final List<ValintatuloksenTila> vastaanotot = Arrays.asList(ValintatuloksenTila.EHDOLLISESTI_VASTAANOTTANUT, ValintatuloksenTila.VASTAANOTTANUT, ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI);
 
     @Override
