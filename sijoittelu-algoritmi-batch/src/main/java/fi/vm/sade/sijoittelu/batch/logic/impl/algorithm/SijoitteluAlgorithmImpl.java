@@ -193,7 +193,11 @@ public class SijoitteluAlgorithmImpl implements SijoitteluAlgorithm {
 //        });
 //        muuttuneetHakukohteet.addAll(uudelleenSijoiteltavatHakukohteet(muuttuneetHakemukset));
 
-        // Poistetaan ajokierroksen lukot
+        poistaAjokierroksenLukot(hakukohde);
+        return muuttuneetHakukohteet;
+    }
+
+    private void poistaAjokierroksenLukot(HakukohdeWrapper hakukohde) {
         hakukohde.getValintatapajonot().forEach(v -> {
             v.setAlitayttoLukko(false);
             v.getHakemukset().forEach(h -> {
@@ -201,7 +205,6 @@ public class SijoitteluAlgorithmImpl implements SijoitteluAlgorithm {
                 h.setHyvaksyttavissaHakijaryhmanJalkeen(true);
             });
         });
-        return muuttuneetHakukohteet;
     }
 
     private List<HakemusWrapper> muodostaVarasijaJono(List<HakemusWrapper> hakemukset) {
