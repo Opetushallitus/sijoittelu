@@ -41,9 +41,7 @@ public class PreSijoitteluProcessorPeruutaAlemmatPeruneetJaHyvaksytyt implements
                                 lisaaMuokattavaValintatulos(sijoitteluajoWrapper, nykyinenTulos.get());
                             }
                         } else if (sitovaHakemus.getValintatapajono().getValintatapajono().getPrioriteetti() < hakemus.getValintatapajono().getValintatapajono().getPrioriteetti()) {
-                            h.setTilanKuvaukset(TilanKuvaukset.peruuntunutHyvaksyttyToisessaJonossa());
-                            h.setTila(HakemuksenTila.PERUUNTUNUT);
-                            hakemus.setTilaVoidaanVaihtaa(false);
+                            peruutaHakemusKoskaHyvaksyttyToisessJonossa(hakemus, h);
                             Optional<Valintatulos> nykyinenTulos = henkilo.getValintatulos().stream().filter(v -> v.getValintatapajonoOid().equals(hakemus.getValintatapajono().getValintatapajono().getOid())).findFirst();
                             if (nykyinenTulos.isPresent()) {
                                 lisaaMuokattavaValintatulos(sijoitteluajoWrapper, nykyinenTulos.get());
@@ -90,9 +88,7 @@ public class PreSijoitteluProcessorPeruutaAlemmatPeruneetJaHyvaksytyt implements
                             }
                             // Hyväksytyltä laitetaan peruuntuneiksi huonomman prioriteetin jonot
                             else if (parasHyvaksyttyHakutoive.getValintatapajono().getValintatapajono().getPrioriteetti() < hakemus.getValintatapajono().getValintatapajono().getPrioriteetti()) {
-                                h.setTilanKuvaukset(TilanKuvaukset.peruuntunutHyvaksyttyToisessaJonossa());
-                                h.setTila(HakemuksenTila.PERUUNTUNUT);
-                                hakemus.setTilaVoidaanVaihtaa(false);
+                                peruutaHakemusKoskaHyvaksyttyToisessJonossa(hakemus, h);
                             }
                         }
                         // Paras toive PERUNUT, toisessa jonossa hyväksytty
@@ -144,9 +140,7 @@ public class PreSijoitteluProcessorPeruutaAlemmatPeruneetJaHyvaksytyt implements
                             }
                             // Hyväksytyltä laitetaan peruuntuneiksi huonomman prioriteetin jonot
                             else if (parasHyvaksyttyHakutoive.getValintatapajono().getValintatapajono().getPrioriteetti() < hakemus.getValintatapajono().getValintatapajono().getPrioriteetti()) {
-                                h.setTilanKuvaukset(TilanKuvaukset.peruuntunutHyvaksyttyToisessaJonossa());
-                                h.setTila(HakemuksenTila.PERUUNTUNUT);
-                                hakemus.setTilaVoidaanVaihtaa(false);
+                                peruutaHakemusKoskaHyvaksyttyToisessJonossa(hakemus, h);
                             }
                         }
                     }
@@ -154,6 +148,12 @@ public class PreSijoitteluProcessorPeruutaAlemmatPeruneetJaHyvaksytyt implements
             }
         });
 
+    }
+
+    private void peruutaHakemusKoskaHyvaksyttyToisessJonossa(HakemusWrapper hakemus, Hakemus h) {
+        h.setTilanKuvaukset(TilanKuvaukset.peruuntunutHyvaksyttyToisessaJonossa());
+        h.setTila(HakemuksenTila.PERUUNTUNUT);
+        hakemus.setTilaVoidaanVaihtaa(false);
     }
 
     private Set<HenkiloWrapper> getHenkiloWrappers(SijoitteluajoWrapper sijoitteluajoWrapper) {
