@@ -269,8 +269,8 @@ public class SijoitteluAlgorithmImpl implements SijoitteluAlgorithm {
             muutaEhdollisetVastaanototSitoviksi(valintatapajono);
         }
         Set<HakukohdeWrapper> muuttuneetHakukohteet = new HashSet<>();
-        // Hakijaryhmäkäsittelyssä alitäyttösääntö käytetty
         if (valintatapajono.isAlitayttoLukko()) {
+            // Hakijaryhmäkäsittelyssä alitäyttösääntö käytetty
             return muuttuneetHakukohteet;
         }
         Tasasijasaanto saanto = jononTasasijasaanto(valintatapajono);
