@@ -497,33 +497,35 @@ public class SijoitteluAlgorithmImpl implements SijoitteluAlgorithm {
         if (tarkkaKiintio && hyvaksyttyjenMaara >= kiintio) {
             asetaEiHyvaksyttavissaHakijaryhmanJalkeen(ryhmaanKuuluvat);
         } else if (hyvaksyttyjenMaara < kiintio) {
-            // Hakijaryhmän valituksi haluavat
-            List<HakemusWrapper> valituksiHaluavat = ryhmaanKuuluvat
-                    .stream()
-                    .filter(h -> hakemuksenTila(h).equals(HakemuksenTila.VARALLA))
-                    .filter(h -> hakijaHaluaa(h) && saannotSallii(h))
-                    .collect(Collectors.toList());
-            if (!valituksiHaluavat.isEmpty()) {
-                Pair<List<HakemusWrapper>, List<HakemusWrapper>> valittavat
-                        = seuraavaksiParhaatHakijaryhmasta(valituksiHaluavat, hakijaryhmaWrapper);
-                // Aloituspaikat täynnä ylitäytöllä, joten tiputetaan varalle
-                valittavat.getRight().forEach(v -> {
-                    muuttuneetHakemukset.addAll(asetaVaralleHakemus(v));
-                });
-                // Hyväksytään valittavat
-                valittavat.getLeft().forEach(h -> {
-                    h.setHyvaksyttyHakijaryhmasta(true);
-                    muuttuneetHakemukset.addAll(hyvaksyHakemus(h));
-                });
-                boolean lukko = liittyvatJonot.stream().anyMatch(ValintatapajonoWrapper::isAlitayttoLukko);
-                // Kiintiö ei täyty, koska alitäyttö
-                if (!lukko && (!valittavat.getLeft().isEmpty() || !valittavat.getRight().isEmpty())) {
-                    muuttuneet.addAll(sijoitteleHakijaryhma(hakijaryhmaWrapper));
-                }
-            }
+            kasitteleValituksiHaluavat(hakijaryhmaWrapper, liittyvatJonot, ryhmaanKuuluvat, muuttuneet, muuttuneetHakemukset);
         }
         muuttuneet.addAll(uudelleenSijoiteltavatHakukohteet(muuttuneetHakemukset));
         return muuttuneet;
+    }
+
+    private void kasitteleValituksiHaluavat(HakijaryhmaWrapper hakijaryhmaWrapper, List<ValintatapajonoWrapper> liittyvatJonot, List<HakemusWrapper> ryhmaanKuuluvat, Set<HakukohdeWrapper> muuttuneet, List<HakemusWrapper> muuttuneetHakemukset) {
+        List<HakemusWrapper> valituksiHaluavat = ryhmaanKuuluvat
+                .stream()
+                .filter(h -> hakemuksenTila(h).equals(HakemuksenTila.VARALLA))
+                .filter(h -> hakijaHaluaa(h) && saannotSallii(h))
+                .collect(Collectors.toList());
+        if (!valituksiHaluavat.isEmpty()) {
+            Pair<List<HakemusWrapper>, List<HakemusWrapper>> valittavat = seuraavaksiParhaatHakijaryhmasta(valituksiHaluavat, hakijaryhmaWrapper);
+            // Aloituspaikat täynnä ylitäytöllä, joten tiputetaan varalle
+            valittavat.getRight().forEach(v -> {
+                muuttuneetHakemukset.addAll(asetaVaralleHakemus(v));
+            });
+            // Hyväksytään valittavat
+            valittavat.getLeft().forEach(h -> {
+                h.setHyvaksyttyHakijaryhmasta(true);
+                muuttuneetHakemukset.addAll(hyvaksyHakemus(h));
+            });
+            boolean lukko = liittyvatJonot.stream().anyMatch(ValintatapajonoWrapper::isAlitayttoLukko);
+            // Kiintiö ei täyty, koska alitäyttö
+            if (!lukko && (!valittavat.getLeft().isEmpty() || !valittavat.getRight().isEmpty())) {
+                muuttuneet.addAll(sijoitteleHakijaryhma(hakijaryhmaWrapper));
+            }
+        }
     }
 
     private void asetaEiHyvaksyttavissaHakijaryhmanJalkeen(List<HakemusWrapper> ryhmaanKuuluvat) {
