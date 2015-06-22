@@ -479,36 +479,23 @@ public class SijoitteluAlgorithmImpl implements SijoitteluAlgorithm {
     }
 
     private Set<HakukohdeWrapper> sijoitteleHakijaryhma(HakijaryhmaWrapper hakijaryhmaWrapper) {
-        Set<HakukohdeWrapper> muuttuneet = new HashSet<>();
-        // Tähän hakijaryhmään liittyvät valintatapajonot
-        List<ValintatapajonoWrapper> liittyvatJonot = hakijaryhmaanLiittyvatJonot(hakijaryhmaWrapper);
-        // Näiden jonojen HakemusWrapperit, jotka kuuluvat tähän hakijaryhmään
-        List<HakemusWrapper> ryhmaanKuuluvat = hakijaRyhmaanKuuluvat(
-                liittyvatJonot
-                        .stream()
-                        .flatMap(j -> j.getHakemukset().stream())
-                        .collect(Collectors.toList()),
-                hakijaryhmaWrapper);
-        // Hakijaryhmään kuuluvien hyväksyttyjen määrä
-        int hyvaksyttyjenMaara = ryhmaanKuuluvat
-                .stream()
-                .filter(h -> kuuluuHyvaksyttyihinTiloihin(hakemuksenTila(h)))
-                .collect(Collectors.toList()).size();
-        int kiintio = hakijaryhmaWrapper.getHakijaryhma().getKiintio();
-        int alotuspaikat = liittyvatJonot
-                .stream()
-                .map(v -> jononAloituspaikat(v))
-                .reduce(0, (a, b) -> a + b);
+        final List<ValintatapajonoWrapper> liittyvatJonot = hakijaryhmaanLiittyvatJonot(hakijaryhmaWrapper);
+        final List<HakemusWrapper> hakemusWrappers = liittyvatJonot.stream().flatMap(j -> j.getHakemukset().stream()).collect(Collectors.toList());
+        final List<HakemusWrapper> ryhmaanKuuluvat = hakijaRyhmaanKuuluvat(hakemusWrappers, hakijaryhmaWrapper);
+        final int hyvaksyttyjenMaara = ryhmaanKuuluvat.stream().filter(h -> kuuluuHyvaksyttyihinTiloihin(hakemuksenTila(h))).collect(Collectors.toList()).size();
+        final boolean tarkkaKiintio = hakijaryhmaWrapper.getHakijaryhma().isTarkkaKiintio();
+        final int aloituspaikat = liittyvatJonot.stream().map(v -> jononAloituspaikat(v)).reduce(0, (a, b) -> a + b);
 
-        // Jos hakijaryhmän kiintiö on suurempi kuin mahdolliset aloituspaikat niin asetetaan kiintiöksi aloituspaikka määrä
-        if (kiintio > alotuspaikat) {
-            kiintio = alotuspaikat;
+        int kiintio = hakijaryhmaWrapper.getHakijaryhma().getKiintio();
+        if (kiintio > aloituspaikat) {
+            // hakijaryhmän kiintiö on suurempi kuin mahdolliset aloituspaikat, asetetaan kiintiöksi aloituspaikka määrä
+            kiintio = aloituspaikat;
         }
-        boolean tarkkaKiintio = hakijaryhmaWrapper.getHakijaryhma().isTarkkaKiintio();
+        Set<HakukohdeWrapper> muuttuneet = new HashSet<>();
         List<HakemusWrapper> muuttuneetHakemukset = new ArrayList<>();
+
         if (tarkkaKiintio && hyvaksyttyjenMaara >= kiintio) {
             asetaEiHyvaksyttavissaHakijaryhmanJalkeen(ryhmaanKuuluvat);
-
         } else if (hyvaksyttyjenMaara < kiintio) {
             // Hakijaryhmän valituksi haluavat
             List<HakemusWrapper> valituksiHaluavat = ryhmaanKuuluvat
