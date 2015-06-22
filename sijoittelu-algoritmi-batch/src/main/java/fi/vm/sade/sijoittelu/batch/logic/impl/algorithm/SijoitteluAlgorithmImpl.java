@@ -304,25 +304,25 @@ public class SijoitteluAlgorithmImpl implements SijoitteluAlgorithm {
         }
         Tasasijasaanto saanto = jononTasasijasaanto(valintatapajono);
         List<HakemusWrapper> kaikkiTasasijaHakemukset = getTasasijaHakemus(valituksiHaluavatHakemukset, saanto);
-
         List<HakemusWrapper> muuttuneet = new ArrayList<>();
         if (tilaa - kaikkiTasasijaHakemukset.size() >= 0) {
-            muuttuneetHyvaksytyt(kaikkiTasasijaHakemukset).forEach(h -> {
-                muuttuneet.addAll(hyvaksyHakemus(h));
-            });
+            hyvaksyKaikkiTasasijaHakemukset(kaikkiTasasijaHakemukset, muuttuneet);
             muuttuneetHakukohteet.addAll(uudelleenSijoiteltavatHakukohteet(muuttuneet));
             muuttuneetHakukohteet.addAll(sijoitteleValintatapajono(valintatapajono));
-        }
-        // Tasasijavertailu
-        else {
+        } else {
+            // Tasasijavertailu
             if (saanto.equals(Tasasijasaanto.YLITAYTTO)) {
-                muuttuneetHyvaksytyt(kaikkiTasasijaHakemukset).forEach(h -> {
-                    muuttuneet.addAll(hyvaksyHakemus(h));
-                });
+                hyvaksyKaikkiTasasijaHakemukset(kaikkiTasasijaHakemukset, muuttuneet);
             }
             muuttuneetHakukohteet.addAll(uudelleenSijoiteltavatHakukohteet(muuttuneet));
         }
         return muuttuneetHakukohteet;
+    }
+
+    private void hyvaksyKaikkiTasasijaHakemukset(List<HakemusWrapper> kaikkiTasasijaHakemukset, List<HakemusWrapper> muuttuneet) {
+        muuttuneetHyvaksytyt(kaikkiTasasijaHakemukset).forEach(h -> {
+            muuttuneet.addAll(hyvaksyHakemus(h));
+        });
     }
 
     private List<HakemusWrapper> getTasasijaHakemus(List<HakemusWrapper> valituksiHaluavatHakemukset, Tasasijasaanto saanto) {
