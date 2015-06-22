@@ -685,23 +685,6 @@ public class SijoitteluAlgorithmImpl implements SijoitteluAlgorithm {
         return uudelleenSijoiteltavatHakukohteet;
     }
 
-    private HakemusWrapper parasHyvaksyttyTaiPeruttuHakutoive(HenkiloWrapper wrapper) {
-        HakemusWrapper parasHyvaksyttyHakutoive = null;
-        for (HakemusWrapper hakemusWrapper : wrapper.getHakemukset()) {
-            if (hakemusWrapper.getHakemus().getTila() == HakemuksenTila.HYVAKSYTTY
-                    || hakemusWrapper.getHakemus().getTila() == HakemuksenTila.PERUNUT
-                    || hakemusWrapper.getHakemus().getTila() == HakemuksenTila.VARASIJALTA_HYVAKSYTTY) {
-                if (parasHyvaksyttyHakutoive == null || parasHyvaksyttyHakutoive.getHakemus().getPrioriteetti() > hakemusWrapper.getHakemus().getPrioriteetti()) {
-                    parasHyvaksyttyHakutoive = hakemusWrapper;
-                } else if (parasHyvaksyttyHakutoive.getHakemus().getPrioriteetti().equals(hakemusWrapper.getHakemus().getPrioriteetti()) && hakemusWrapper.getHakemus().getTila() == HakemuksenTila.PERUNUT) {
-                    // PERUNUT tila yliajaa hyväksynnät
-                    parasHyvaksyttyHakutoive = hakemusWrapper;
-                }
-            }
-        }
-        return parasHyvaksyttyHakutoive;
-    }
-
     private boolean saannotSallii(HakemusWrapper hakemusWrapper) {
         boolean hakemuksenTila = !kuuluuHylattyihinTiloihin(hakemuksenTila(hakemusWrapper));
         boolean hakijaAloistuspaikkojenSisallaTaiVarasijataytto = true;
