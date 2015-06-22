@@ -510,19 +510,19 @@ public class SijoitteluAlgorithmImpl implements SijoitteluAlgorithm {
                 .filter(h -> hakijaHaluaa(h) && saannotSallii(h))
                 .collect(Collectors.toList());
         if (!valituksiHaluavat.isEmpty()) {
-            Pair<List<HakemusWrapper>, List<HakemusWrapper>> valittavat = seuraavaksiParhaatHakijaryhmasta(valituksiHaluavat, hakijaryhmaWrapper);
+            Pair<List<HakemusWrapper>, List<HakemusWrapper>> valittavatJaVarasijat = seuraavaksiParhaatHakijaryhmasta(valituksiHaluavat, hakijaryhmaWrapper);
             // Aloituspaikat täynnä ylitäytöllä, joten tiputetaan varalle
-            valittavat.getRight().forEach(v -> {
+            valittavatJaVarasijat.getRight().forEach(v -> {
                 muuttuneetHakemukset.addAll(asetaVaralleHakemus(v));
             });
             // Hyväksytään valittavat
-            valittavat.getLeft().forEach(h -> {
+            valittavatJaVarasijat.getLeft().forEach(h -> {
                 h.setHyvaksyttyHakijaryhmasta(true);
                 muuttuneetHakemukset.addAll(hyvaksyHakemus(h));
             });
             boolean lukko = liittyvatJonot.stream().anyMatch(ValintatapajonoWrapper::isAlitayttoLukko);
             // Kiintiö ei täyty, koska alitäyttö
-            if (!lukko && (!valittavat.getLeft().isEmpty() || !valittavat.getRight().isEmpty())) {
+            if (!lukko && (!valittavatJaVarasijat.getLeft().isEmpty() || !valittavatJaVarasijat.getRight().isEmpty())) {
                 muuttuneet.addAll(sijoitteleHakijaryhma(hakijaryhmaWrapper));
             }
         }
