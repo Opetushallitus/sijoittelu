@@ -15,16 +15,7 @@ public class PreSijoitteluProcessorPeruutaAlemmatPeruneetJaHyvaksytyt implements
 
     @Override
     public void process(SijoitteluajoWrapper sijoitteluajoWrapper) {
-        Set<HenkiloWrapper> henkilot = new HashSet<>();
-        sijoitteluajoWrapper.getHakukohteet().forEach(hakukohdeWrapper -> {
-            hakukohdeWrapper.getValintatapajonot().forEach(valintatapajonoWrapper -> {
-                valintatapajonoWrapper.getHakemukset().forEach(hakemusWrapper -> {
-                    if (!henkilot.contains(hakemusWrapper.getHenkilo())) {
-                        henkilot.add(hakemusWrapper.getHenkilo());
-                    }
-                });
-            });
-        });
+        Set<HenkiloWrapper> henkilot = getHenkiloWrappers(sijoitteluajoWrapper);
         henkilot.forEach(henkilo -> {
             Optional<Valintatulos> sitovaOpt = sitovastiVastaanottanut(henkilo);
             HakemusWrapper parasHyvaksyttyHakutoive = parasHyvaksyttyTaiPeruttuHakutoive(henkilo);
@@ -163,6 +154,20 @@ public class PreSijoitteluProcessorPeruutaAlemmatPeruneetJaHyvaksytyt implements
             }
         });
 
+    }
+
+    private Set<HenkiloWrapper> getHenkiloWrappers(SijoitteluajoWrapper sijoitteluajoWrapper) {
+        Set<HenkiloWrapper> henkilot = new HashSet<>();
+        sijoitteluajoWrapper.getHakukohteet().forEach(hakukohdeWrapper -> {
+            hakukohdeWrapper.getValintatapajonot().forEach(valintatapajonoWrapper -> {
+                valintatapajonoWrapper.getHakemukset().forEach(hakemusWrapper -> {
+                    if (!henkilot.contains(hakemusWrapper.getHenkilo())) {
+                        henkilot.add(hakemusWrapper.getHenkilo());
+                    }
+                });
+            });
+        });
+        return henkilot;
     }
 
     private void lisaaMuokattavaValintatulos(SijoitteluajoWrapper sijoitteluajoWrapper, Valintatulos nykyinen) {
