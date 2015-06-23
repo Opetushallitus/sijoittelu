@@ -98,7 +98,7 @@ public class SijoitteluAlgorithmFactoryImpl implements SijoitteluAlgorithmFactor
             } else if (tila == ValintatuloksenTila.PERUUTETTU) {
                 hakemus.setTila(HakemuksenTila.PERUUTETTU);
                 voidaanVaihtaa = false;
-            } else if (isHyvaksyttyTila(tila)) {
+            } else if (isHyvaksyttyValintatuloksenTila(tila)) {
                 if (hakemus.getEdellinenTila() == HakemuksenTila.VARALLA || hakemus.getEdellinenTila() == HakemuksenTila.VARASIJALTA_HYVAKSYTTY) {
                     hyvaksyVarasijalta(hakemus);
                 } else {
@@ -129,7 +129,7 @@ public class SijoitteluAlgorithmFactoryImpl implements SijoitteluAlgorithmFactor
         }
     }
 
-    private boolean isHyvaksyttyTila(ValintatuloksenTila tila) {
+    private boolean isHyvaksyttyValintatuloksenTila(ValintatuloksenTila tila) {
         return hyvaksyttylista.contains(tila);
     }
 
