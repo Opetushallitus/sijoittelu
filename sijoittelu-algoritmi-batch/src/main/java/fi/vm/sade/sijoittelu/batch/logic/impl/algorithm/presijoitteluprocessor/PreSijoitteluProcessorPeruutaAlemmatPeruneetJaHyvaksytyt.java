@@ -6,12 +6,13 @@ import fi.vm.sade.sijoittelu.domain.*;
 
 import java.util.*;
 
+/**
+ * Peruutetaan jo jonnekkin hyväksyttyjen alemmat hakemukset.
+ * Kaytannossa tata tarvitaan jos algoritmi on tyytyvainen nykytilanteeseeen eika koskaan muuta henkilon tilaa, jolloin varalla olevat jaavat koskemattomiksi.
+ */
 public class PreSijoitteluProcessorPeruutaAlemmatPeruneetJaHyvaksytyt implements PreSijoitteluProcessor {
-    /**
-     * Peruutetaan jo jonnekkin hyväksyttyjen alemmat hakemukset.
-     * Kaytannossa tata tarvitaan jos algoritmi on tyytyvainen nykytilanteeseeen eika koskaan muuta henkilon tilaa, jolloin varalla olevat jaavat koskemattomiksi.
-     */
     private final List<ValintatuloksenTila> vastaanotot = Arrays.asList(ValintatuloksenTila.EHDOLLISESTI_VASTAANOTTANUT, ValintatuloksenTila.VASTAANOTTANUT, ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI);
+    private final List<HakemuksenTila> yliajettavat = Arrays.asList(HakemuksenTila.HYVAKSYTTY, HakemuksenTila.VARALLA, HakemuksenTila.VARASIJALTA_HYVAKSYTTY);
 
     @Override
     public void process(SijoitteluajoWrapper sijoitteluajoWrapper) {
@@ -20,7 +21,6 @@ public class PreSijoitteluProcessorPeruutaAlemmatPeruneetJaHyvaksytyt implements
             Optional<Valintatulos> sitovaOpt = sitovastiVastaanottanut(henkilo);
             HakemusWrapper parasHyvaksyttyHakutoive = parasHyvaksyttyTaiPeruttuHakutoive(henkilo);
             Optional<Valintatulos> ehdollinenOpt = ehdollisestiVastaanottanut(henkilo);
-            List<HakemuksenTila> yliajettavat = Arrays.asList(HakemuksenTila.HYVAKSYTTY, HakemuksenTila.VARALLA, HakemuksenTila.VARASIJALTA_HYVAKSYTTY);
             // Vastaanotanut sitovasti, perutaan kaikki muut
             if (sitovaOpt.isPresent()) {
                 Valintatulos sitova = sitovaOpt.get();
