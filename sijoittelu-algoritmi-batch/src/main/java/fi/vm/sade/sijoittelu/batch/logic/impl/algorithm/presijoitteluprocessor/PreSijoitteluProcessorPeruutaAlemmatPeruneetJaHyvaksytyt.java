@@ -24,21 +24,8 @@ public class PreSijoitteluProcessorPeruutaAlemmatPeruneetJaHyvaksytyt implements
             if (sitovaOpt.isPresent()) {
                 peruutaMuutKuinSitovastiVastaanotettuHakemus(sijoitteluajoWrapper, henkilo, sitovaOpt.get());
             }
-            // Ehdollinen vastaanotto, perutaan alemmat
             else if (ehdollinenOpt.isPresent()) {
-                Valintatulos ehdollinen = ehdollinenOpt.get();
-                henkilo.getHakemukset().forEach(hakemus -> {
-                    Hakemus h = hakemus.getHakemus();
-                    if (yliajettavat.contains(h.getTila())
-                            && !hakemus.getValintatapajono().getValintatapajono().getOid().equals(ehdollinen.getValintatapajonoOid())
-                            && h.getPrioriteetti() > parasHyvaksyttyHakutoive.getHakemus().getPrioriteetti()) {
-                        peruutaHakemusKoskaPeruuntunutYlempiToive(hakemus, h);
-                        Optional<Valintatulos> nykyinenTulos = henkilo.getValintatulos().stream().filter(v -> v.getValintatapajonoOid().equals(hakemus.getValintatapajono().getValintatapajono().getOid())).findFirst();
-                        if (nykyinenTulos.isPresent()) {
-                            lisaaMuokattavaValintatulos(sijoitteluajoWrapper, nykyinenTulos.get());
-                        }
-                    }
-                });
+                peruutaAlemmatHakemukset(sijoitteluajoWrapper, henkilo, parasHyvaksyttyHakutoive, ehdollinenOpt);
             }
             // Päivämäärä jolloin kaikki tulokset pitää olla siirrettynä sijoitteluun on ohitettu
             // Ei peruta enää hyväksyttyjä ja julkaistavissa olevia
@@ -113,6 +100,22 @@ public class PreSijoitteluProcessorPeruutaAlemmatPeruneetJaHyvaksytyt implements
             }
         });
 
+    }
+
+    private void peruutaAlemmatHakemukset(SijoitteluajoWrapper sijoitteluajoWrapper, HenkiloWrapper henkilo, HakemusWrapper parasHyvaksyttyHakutoive, Optional<Valintatulos> ehdollinenOpt) {
+        Valintatulos ehdollinen = ehdollinenOpt.get();
+        henkilo.getHakemukset().forEach(hakemus -> {
+            Hakemus h = hakemus.getHakemus();
+            if (yliajettavat.contains(h.getTila())
+                    && !hakemus.getValintatapajono().getValintatapajono().getOid().equals(ehdollinen.getValintatapajonoOid())
+                    && h.getPrioriteetti() > parasHyvaksyttyHakutoive.getHakemus().getPrioriteetti()) {
+                peruutaHakemusKoskaPeruuntunutYlempiToive(hakemus, h);
+                Optional<Valintatulos> nykyinenTulos = henkilo.getValintatulos().stream().filter(v -> v.getValintatapajonoOid().equals(hakemus.getValintatapajono().getValintatapajono().getOid())).findFirst();
+                if (nykyinenTulos.isPresent()) {
+                    lisaaMuokattavaValintatulos(sijoitteluajoWrapper, nykyinenTulos.get());
+                }
+            }
+        });
     }
 
     private void peruutaMuutKuinSitovastiVastaanotettuHakemus(SijoitteluajoWrapper sijoitteluajoWrapper, HenkiloWrapper henkilo, Valintatulos sitova) {
