@@ -58,18 +58,22 @@ public class SijoitteluAlgorithmFactoryImpl implements SijoitteluAlgorithmFactor
                 });
 
             });
-            for (Hakijaryhma hakijaryhma : hakukohde.getHakijaryhmat()) {
-                HakijaryhmaWrapper hakijaryhmaWrapper = new HakijaryhmaWrapper();
-                hakijaryhmaWrapper.setHakijaryhma(hakijaryhma);
-                hakijaryhmaWrapper.setHakukohdeWrapper(hakukohdeWrapper);
-                hakukohdeWrapper.getHakijaryhmaWrappers().add(hakijaryhmaWrapper);
-                for (String oid : hakijaryhma.getHakemusOid()) {
-                    HenkiloWrapper henkilo = getHenkilo(oid, hakemusOidMap);
-                    hakijaryhmaWrapper.getHenkiloWrappers().add(henkilo);
-                }
-            }
+            addHakijaRyhmatToHakijaRyhmaWrapper(hakemusOidMap, hakukohde, hakukohdeWrapper);
         });
         return sijoitteluajoWrapper;
+    }
+
+    private void addHakijaRyhmatToHakijaRyhmaWrapper(Map<String, HenkiloWrapper> hakemusOidMap, Hakukohde hakukohde, HakukohdeWrapper hakukohdeWrapper) {
+        for (Hakijaryhma hakijaryhma : hakukohde.getHakijaryhmat()) {
+            HakijaryhmaWrapper hakijaryhmaWrapper = new HakijaryhmaWrapper();
+            hakijaryhmaWrapper.setHakijaryhma(hakijaryhma);
+            hakijaryhmaWrapper.setHakukohdeWrapper(hakukohdeWrapper);
+            hakukohdeWrapper.getHakijaryhmaWrappers().add(hakijaryhmaWrapper);
+            for (String oid : hakijaryhma.getHakemusOid()) {
+                HenkiloWrapper henkilo = getHenkilo(oid, hakemusOidMap);
+                hakijaryhmaWrapper.getHenkiloWrappers().add(henkilo);
+            }
+        }
     }
 
     private void setTilaRelatedInformation(Hakemus hakemus, HakemusWrapper hakemusWrapper, HenkiloWrapper henkiloWrapper, Valintatulos valintatulos, List<ValintatuloksenTila> hyvaksyttylista) {
