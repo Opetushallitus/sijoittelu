@@ -22,7 +22,7 @@ public class PreSijoitteluProcessorPeruutaAlemmatPeruneetJaHyvaksytyt implements
             HakemusWrapper parasHyvaksyttyHakutoive = parasHyvaksyttyTaiPeruttuHakutoive(henkilo);
             Optional<Valintatulos> ehdollinenOpt = ehdollisestiVastaanottanut(henkilo);
             if (sitovaOpt.isPresent()) {
-                peruutaMuutKuinSitovastiVastaanotettuHakemus(sijoitteluajoWrapper, henkilo, sitovaOpt);
+                peruutaMuutKuinSitovastiVastaanotettuHakemus(sijoitteluajoWrapper, henkilo, sitovaOpt.get());
             }
             // Ehdollinen vastaanotto, perutaan alemmat
             else if (ehdollinenOpt.isPresent()) {
@@ -115,8 +115,7 @@ public class PreSijoitteluProcessorPeruutaAlemmatPeruneetJaHyvaksytyt implements
 
     }
 
-    private void peruutaMuutKuinSitovastiVastaanotettuHakemus(SijoitteluajoWrapper sijoitteluajoWrapper, HenkiloWrapper henkilo, Optional<Valintatulos> sitovaOpt) {
-        Valintatulos sitova = sitovaOpt.get();
+    private void peruutaMuutKuinSitovastiVastaanotettuHakemus(SijoitteluajoWrapper sijoitteluajoWrapper, HenkiloWrapper henkilo, Valintatulos sitova) {
         HakemusWrapper sitovaHakemus = henkilo.getHakemukset()
                 .stream()
                 .filter(h -> h.getValintatapajono().getValintatapajono().getOid().equals(sitova.getValintatapajonoOid()))
