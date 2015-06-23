@@ -6,7 +6,6 @@ import com.google.common.hash.HashCode;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.comparator.HakemusWrapperComparator;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.postsijoitteluprocessor.PostSijoitteluProcessor;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.presijoitteluprocessor.PreSijoitteluProcessor;
-import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.util.TilanKuvaukset;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.*;
 import fi.vm.sade.sijoittelu.domain.*;
 import org.apache.commons.lang3.tuple.Pair;
@@ -611,14 +610,7 @@ public class SijoitteluAlgorithmImpl implements SijoitteluAlgorithm {
                 asetaTilaksiHyvaksytty(hakemus);
             }
 
-            List<HakemuksenTila> yliajettavat = Arrays.asList(
-                    HakemuksenTila.HYVAKSYTTY,
-                    HakemuksenTila.VARALLA,
-                    HakemuksenTila.VARASIJALTA_HYVAKSYTTY
-            );
-
             for (HakemusWrapper h : hakemus.getHenkilo().getHakemukset()) {
-
                 // Alemmat toiveet
                 if (h != hakemus && hakemuksenPrioriteetti(hakemus) < hakemuksenPrioriteetti(h)) {
                     if (h.isTilaVoidaanVaihtaa()) {
@@ -633,7 +625,7 @@ public class SijoitteluAlgorithmImpl implements SijoitteluAlgorithm {
                     }
 
                     // Kaikki jonot ei vielä sijoittelussa, yliajetaan tylysti kaikki alemmat hyväksytyt ja varalla olot
-                    if(!sijoitteluAjo.paivamaaraOhitettu() && yliajettavat.contains(hakemuksenTila(h))) {
+                    if(!sijoitteluAjo.paivamaaraOhitettu() && kuuluuYliajettaviinHakemuksenTiloihin(hakemuksenTila(h))) {
                         asetaTilaksiPeruuntunutYlempiToive(h);
                         hakemus.setTilaVoidaanVaihtaa(false);
                         uudelleenSijoiteltavatHakukohteet.add(h);
