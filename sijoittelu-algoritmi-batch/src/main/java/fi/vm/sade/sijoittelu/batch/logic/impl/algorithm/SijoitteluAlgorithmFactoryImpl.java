@@ -85,8 +85,7 @@ public class SijoitteluAlgorithmFactoryImpl implements SijoitteluAlgorithmFactor
                 voidaanVaihtaa = false;
             } else if (tila == ValintatuloksenTila.EHDOLLISESTI_VASTAANOTTANUT) {
                 if (hakemus.getEdellinenTila() == HakemuksenTila.VARALLA || hakemus.getEdellinenTila() == HakemuksenTila.VARASIJALTA_HYVAKSYTTY) {
-                    hakemus.setTilanKuvaukset(TilanKuvaukset.varasijaltaHyvaksytty());
-                    hakemus.setTila(HakemuksenTila.VARASIJALTA_HYVAKSYTTY);
+                    hyvaksyVarasijalta(hakemus);
                 } else {
                     hakemus.setTila(HakemuksenTila.HYVAKSYTTY);
                 }
@@ -101,8 +100,7 @@ public class SijoitteluAlgorithmFactoryImpl implements SijoitteluAlgorithmFactor
                 voidaanVaihtaa = false;
             } else if (hyvaksyttylista.contains(tila)) {
                 if (hakemus.getEdellinenTila() == HakemuksenTila.VARALLA || hakemus.getEdellinenTila() == HakemuksenTila.VARASIJALTA_HYVAKSYTTY) {
-                    hakemus.setTilanKuvaukset(TilanKuvaukset.varasijaltaHyvaksytty());
-                    hakemus.setTila(HakemuksenTila.VARASIJALTA_HYVAKSYTTY);
+                    hyvaksyVarasijalta(hakemus);
                 } else {
                     hakemus.setTila(HakemuksenTila.HYVAKSYTTY);
                 }
@@ -113,13 +111,11 @@ public class SijoitteluAlgorithmFactoryImpl implements SijoitteluAlgorithmFactor
                 voidaanVaihtaa = false;
                 hakemus.setIlmoittautumisTila(valintatulos.getIlmoittautumisTila());
             } else if (valintatulos.getJulkaistavissa() && hakemus.getEdellinenTila() == HakemuksenTila.VARASIJALTA_HYVAKSYTTY) {
-                hakemus.setTila(HakemuksenTila.VARASIJALTA_HYVAKSYTTY);
-                hakemus.setTilanKuvaukset(TilanKuvaukset.varasijaltaHyvaksytty());
+                hyvaksyVarasijalta(hakemus);
                 voidaanVaihtaa = false;
                 hakemus.setIlmoittautumisTila(valintatulos.getIlmoittautumisTila());
             } else if (valintatulos.getHyvaksyttyVarasijalta()) {
-                hakemus.setTilanKuvaukset(TilanKuvaukset.varasijaltaHyvaksytty());
-                hakemus.setTila(HakemuksenTila.VARASIJALTA_HYVAKSYTTY);
+                hyvaksyVarasijalta(hakemus);
                 hakemus.setIlmoittautumisTila(valintatulos.getIlmoittautumisTila());
                 voidaanVaihtaa = false;
             } else if (hakemus.getTila().equals(HakemuksenTila.HYLATTY)) {
@@ -131,6 +127,11 @@ public class SijoitteluAlgorithmFactoryImpl implements SijoitteluAlgorithmFactor
         } else if (hakemus.getTila().equals(HakemuksenTila.HYLATTY)) {
             hakemusWrapper.setTilaVoidaanVaihtaa(false);
         }
+    }
+
+    private void hyvaksyVarasijalta(Hakemus hakemus) {
+        hakemus.setTilanKuvaukset(TilanKuvaukset.varasijaltaHyvaksytty());
+        hakemus.setTila(HakemuksenTila.VARASIJALTA_HYVAKSYTTY);
     }
 
     private HenkiloWrapper getOrCreateHenkilo(Hakemus hakemus, Map<String, HenkiloWrapper> hakemusOidMap) {
