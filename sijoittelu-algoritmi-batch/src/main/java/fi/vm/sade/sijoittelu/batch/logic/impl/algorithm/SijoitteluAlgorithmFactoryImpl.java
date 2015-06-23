@@ -11,6 +11,7 @@ import java.util.*;
 
 @Component
 public class SijoitteluAlgorithmFactoryImpl implements SijoitteluAlgorithmFactory {
+    private final List<ValintatuloksenTila> hyvaksyttylista = Arrays.asList(ValintatuloksenTila.ILMOITETTU, ValintatuloksenTila.VASTAANOTTANUT, ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI);
 
     public SijoitteluAlgorithmFactoryImpl() {
 
@@ -53,8 +54,7 @@ public class SijoitteluAlgorithmFactoryImpl implements SijoitteluAlgorithmFactor
                     henkiloWrapper.getHakemukset().add(hakemusWrapper);
                     hakemusWrapper.setHenkilo(henkiloWrapper);
                     Valintatulos valintatulos = getValintatulos(hakukohde, valintatapajono, hakemus, valintatulokset);
-                    List<ValintatuloksenTila> hyvaksyttylista = Arrays.asList(ValintatuloksenTila.ILMOITETTU, ValintatuloksenTila.VASTAANOTTANUT, ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI);
-                    setHakemuksenValintatuloksenTila(hakemus, hakemusWrapper, henkiloWrapper, valintatulos, hyvaksyttylista);
+                    setHakemuksenValintatuloksenTila(hakemus, hakemusWrapper, henkiloWrapper, valintatulos);
                 });
 
             });
@@ -76,7 +76,7 @@ public class SijoitteluAlgorithmFactoryImpl implements SijoitteluAlgorithmFactor
         }
     }
 
-    private void setHakemuksenValintatuloksenTila(Hakemus hakemus, HakemusWrapper hakemusWrapper, HenkiloWrapper henkiloWrapper, Valintatulos valintatulos, List<ValintatuloksenTila> hyvaksyttylista) {
+    private void setHakemuksenValintatuloksenTila(Hakemus hakemus, HakemusWrapper hakemusWrapper, HenkiloWrapper henkiloWrapper, Valintatulos valintatulos) {
         if (valintatulos != null && valintatulos.getTila() != null) {
             ValintatuloksenTila tila = valintatulos.getTila();
             boolean voidaanVaihtaa = true;
@@ -98,7 +98,7 @@ public class SijoitteluAlgorithmFactoryImpl implements SijoitteluAlgorithmFactor
             } else if (tila == ValintatuloksenTila.PERUUTETTU) {
                 hakemus.setTila(HakemuksenTila.PERUUTETTU);
                 voidaanVaihtaa = false;
-            } else if (hyvaksyttylista.contains(tila)) {
+            } else if (isHyvaksyttyTila(tila)) {
                 if (hakemus.getEdellinenTila() == HakemuksenTila.VARALLA || hakemus.getEdellinenTila() == HakemuksenTila.VARASIJALTA_HYVAKSYTTY) {
                     hyvaksyVarasijalta(hakemus);
                 } else {
@@ -127,6 +127,10 @@ public class SijoitteluAlgorithmFactoryImpl implements SijoitteluAlgorithmFactor
         } else if (hakemus.getTila().equals(HakemuksenTila.HYLATTY)) {
             hakemusWrapper.setTilaVoidaanVaihtaa(false);
         }
+    }
+
+    private boolean isHyvaksyttyTila(ValintatuloksenTila tila) {
+        return hyvaksyttylista.contains(tila);
     }
 
     private void hyvaksyVarasijalta(Hakemus hakemus) {
