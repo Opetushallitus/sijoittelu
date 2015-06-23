@@ -137,6 +137,10 @@ public class SijoitteluajoWrapper {
         return hakukohteet.stream().map(v -> v.getHakukohde()).filter(Objects::nonNull).distinct();
     }
 
+    public String getSijoitteluAjoId() {
+        return (sijoitteluajo == null) ? "?" : sijoitteluajo.getSijoitteluajoId().toString();
+    }
+
     private final String VALUE_DELIMETER_HAKUKOHDE = "_HAKUKOHDE_";
     private final String VALUE_DELIMETER_VALINTATULOKSET = "_VALINTATULOKSET_";
 

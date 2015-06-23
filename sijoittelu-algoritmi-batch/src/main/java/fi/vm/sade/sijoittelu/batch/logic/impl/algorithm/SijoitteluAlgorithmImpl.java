@@ -40,6 +40,7 @@ public class SijoitteluAlgorithmImpl implements SijoitteluAlgorithm {
 
     @Override
     public void start() {
+        LOG.info("Starting sijoitteluajo " + sijoitteluAjo.getSijoitteluAjoId());
         runPreProcessors();
         sijoittele();
         runPostProcessors();
@@ -47,12 +48,14 @@ public class SijoitteluAlgorithmImpl implements SijoitteluAlgorithm {
 
     private void runPostProcessors() {
         for (PostSijoitteluProcessor processor : postSijoitteluProcessors) {
+            LOG.info("Starting postprocessor {} for sijoitteluAjo {}",  processor.name(), sijoitteluAjo.getSijoitteluAjoId());
             processor.process(sijoitteluAjo);
         }
     }
 
     private void runPreProcessors() {
         for (PreSijoitteluProcessor processor : preSijoitteluProcessors) {
+            LOG.info("Starting preprocessor {} for sijoitteluAjo {}",  processor.name(), sijoitteluAjo.getSijoitteluAjoId());
             processor.process(sijoitteluAjo);
         }
     }

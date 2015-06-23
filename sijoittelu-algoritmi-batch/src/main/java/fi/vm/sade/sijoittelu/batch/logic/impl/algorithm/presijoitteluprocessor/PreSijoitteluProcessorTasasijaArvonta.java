@@ -10,6 +10,10 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class PreSijoitteluProcessorTasasijaArvonta implements PreSijoitteluProcessor {
+    @Override
+    public String name() {
+        return getClass().getSimpleName();
+    }
 
     @Override
     public void process(SijoitteluajoWrapper sijoitteluajoWrapper) {

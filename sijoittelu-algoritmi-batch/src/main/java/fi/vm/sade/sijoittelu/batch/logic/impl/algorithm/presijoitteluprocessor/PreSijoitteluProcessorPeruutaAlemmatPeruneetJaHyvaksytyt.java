@@ -16,6 +16,11 @@ public class PreSijoitteluProcessorPeruutaAlemmatPeruneetJaHyvaksytyt implements
     private final List<HakemuksenTila> yliajettavat = Arrays.asList(HakemuksenTila.HYVAKSYTTY, HakemuksenTila.VARALLA, HakemuksenTila.VARASIJALTA_HYVAKSYTTY);
 
     @Override
+    public String name() {
+        return getClass().getSimpleName();
+    }
+
+    @Override
     public void process(SijoitteluajoWrapper sijoitteluajoWrapper) {
         Set<HenkiloWrapper> henkilot = getHenkiloWrappers(sijoitteluajoWrapper);
         henkilot.forEach(henkilo -> {
