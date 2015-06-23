@@ -54,7 +54,7 @@ public class SijoitteluAlgorithmFactoryImpl implements SijoitteluAlgorithmFactor
                     hakemusWrapper.setHenkilo(henkiloWrapper);
                     Valintatulos valintatulos = getValintatulos(hakukohde, valintatapajono, hakemus, valintatulokset);
                     List<ValintatuloksenTila> hyvaksyttylista = Arrays.asList(ValintatuloksenTila.ILMOITETTU, ValintatuloksenTila.VASTAANOTTANUT, ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI);
-                    setTilaRelatedInformation(hakemus, hakemusWrapper, henkiloWrapper, valintatulos, hyvaksyttylista);
+                    setHakemuksenValintatuloksenTila(hakemus, hakemusWrapper, henkiloWrapper, valintatulos, hyvaksyttylista);
                 });
 
             });
@@ -76,7 +76,7 @@ public class SijoitteluAlgorithmFactoryImpl implements SijoitteluAlgorithmFactor
         }
     }
 
-    private void setTilaRelatedInformation(Hakemus hakemus, HakemusWrapper hakemusWrapper, HenkiloWrapper henkiloWrapper, Valintatulos valintatulos, List<ValintatuloksenTila> hyvaksyttylista) {
+    private void setHakemuksenValintatuloksenTila(Hakemus hakemus, HakemusWrapper hakemusWrapper, HenkiloWrapper henkiloWrapper, Valintatulos valintatulos, List<ValintatuloksenTila> hyvaksyttylista) {
         if (valintatulos != null && valintatulos.getTila() != null) {
             ValintatuloksenTila tila = valintatulos.getTila();
             boolean voidaanVaihtaa = true;
