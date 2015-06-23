@@ -108,13 +108,13 @@ public class SijoitteluAlgorithmFactoryImpl implements SijoitteluAlgorithmFactor
                 }
                 voidaanVaihtaa = false;
                 hakemus.setIlmoittautumisTila(valintatulos.getIlmoittautumisTila());
-            } else if (valintatulos.getJulkaistavissa() && (hakemus.getEdellinenTila() == HakemuksenTila.HYVAKSYTTY || hakemus.getEdellinenTila() == HakemuksenTila.VARASIJALTA_HYVAKSYTTY)) {
-                if (hakemus.getEdellinenTila() == HakemuksenTila.VARASIJALTA_HYVAKSYTTY) {
-                    hakemus.setTilanKuvaukset(TilanKuvaukset.varasijaltaHyvaksytty());
-                    hakemus.setTila(HakemuksenTila.VARASIJALTA_HYVAKSYTTY);
-                } else {
-                    hakemus.setTila(HakemuksenTila.HYVAKSYTTY);
-                }
+            } else if (valintatulos.getJulkaistavissa() && hakemus.getEdellinenTila() == HakemuksenTila.HYVAKSYTTY) {
+                hakemus.setTila(HakemuksenTila.HYVAKSYTTY);
+                voidaanVaihtaa = false;
+                hakemus.setIlmoittautumisTila(valintatulos.getIlmoittautumisTila());
+            } else if (valintatulos.getJulkaistavissa() && hakemus.getEdellinenTila() == HakemuksenTila.VARASIJALTA_HYVAKSYTTY) {
+                hakemus.setTila(HakemuksenTila.VARASIJALTA_HYVAKSYTTY);
+                hakemus.setTilanKuvaukset(TilanKuvaukset.varasijaltaHyvaksytty());
                 voidaanVaihtaa = false;
                 hakemus.setIlmoittautumisTila(valintatulos.getIlmoittautumisTila());
             } else if (valintatulos.getHyvaksyttyVarasijalta()) {
