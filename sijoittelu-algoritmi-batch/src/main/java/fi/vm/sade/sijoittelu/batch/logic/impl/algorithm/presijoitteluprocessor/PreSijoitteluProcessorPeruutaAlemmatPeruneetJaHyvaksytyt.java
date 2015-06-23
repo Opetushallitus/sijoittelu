@@ -25,7 +25,7 @@ public class PreSijoitteluProcessorPeruutaAlemmatPeruneetJaHyvaksytyt implements
                 peruutaMuutKuinSitovastiVastaanotettuHakemus(sijoitteluajoWrapper, henkilo, sitovaOpt.get());
             }
             else if (ehdollinenOpt.isPresent()) {
-                peruutaAlemmatHakemukset(sijoitteluajoWrapper, henkilo, parasHyvaksyttyHakutoive, ehdollinenOpt);
+                peruutaAlemmatHakemukset(sijoitteluajoWrapper, henkilo, parasHyvaksyttyHakutoive, ehdollinenOpt.get());
             }
             // Päivämäärä jolloin kaikki tulokset pitää olla siirrettynä sijoitteluun on ohitettu
             // Ei peruta enää hyväksyttyjä ja julkaistavissa olevia
@@ -102,8 +102,7 @@ public class PreSijoitteluProcessorPeruutaAlemmatPeruneetJaHyvaksytyt implements
 
     }
 
-    private void peruutaAlemmatHakemukset(SijoitteluajoWrapper sijoitteluajoWrapper, HenkiloWrapper henkilo, HakemusWrapper parasHyvaksyttyHakutoive, Optional<Valintatulos> ehdollinenOpt) {
-        Valintatulos ehdollinen = ehdollinenOpt.get();
+    private void peruutaAlemmatHakemukset(SijoitteluajoWrapper sijoitteluajoWrapper, HenkiloWrapper henkilo, HakemusWrapper parasHyvaksyttyHakutoive, Valintatulos ehdollinen) {
         henkilo.getHakemukset().forEach(hakemus -> {
             Hakemus h = hakemus.getHakemus();
             if (yliajettavat.contains(h.getTila())
