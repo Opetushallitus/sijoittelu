@@ -10,7 +10,7 @@ import fi.vm.sade.sijoittelu.domain.Valintatulos;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class PostSijoitteluProcessorEhdollisenVastaanotonPeriytyminenYlemmalleHakutoiveelle implements PostSijoitteluProcessor {
+public class PostSijoitteluProcessorEhdollisenVastaanotonSiirtyminenYlemmalleHakutoiveelle implements PostSijoitteluProcessor {
     @Override
     public String name() {
         return getClass().getSimpleName();
