@@ -30,9 +30,9 @@ public class PostSijoitteluProcessorEhdollisenVastaanotonSiirtyminenYlemmalleHak
 
             if (hasPeruuntunutHakemusJonkaValintatulosEhdollisestiHyvaksytty(hakijanAlemmatHakemukset, hakijanAlemmatValintatulokset)) {
                 if (hakemuksenValintatulos.getHakutoive() == 0) {
-                    vastaanOtaEhdollisesti(hakemuksenValintatulos);
-                } else {
                     vastaanOtaSitovasti(hakemuksenValintatulos);
+                } else {
+                    vastaanOtaEhdollisesti(hakemuksenValintatulos);
                 }
                 poistaAlemmatEhdollisetVastaanotot(hakemus, hakijanAlemmatValintatulokset);
             }
