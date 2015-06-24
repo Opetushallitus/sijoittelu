@@ -38,79 +38,66 @@ public final class TestHelper {
     private static Hakukohde hakukohde(String endsWith, SijoitteluajoWrapper ajo) {
         return ajo.sijoitteluAjonHakukohteet().filter(h -> h.getOid().endsWith(endsWith)).findFirst().get();
     }
+
     public static Function<SijoitteluajoWrapper, Hakukohde> hakukohde(String endsWith) {
-        return (ajo) -> hakukohde(endsWith,ajo);
+        return (ajo) -> hakukohde(endsWith, ajo);
     }
+
     public static Function<Hakukohde, Valintatapajono> valintatapajono(String endsWith) {
         return (hakukohde) -> hakukohde.getValintatapajonot().stream().filter(v -> v.getOid().endsWith(endsWith)).findFirst().get();
     }
-    public static Function<Valintatapajono, Void> hyvaksyttyjaHakemuksiaAinoastaan(String ... endsWith) {
+
+    public static Function<Valintatapajono, Void> hyvaksyttyjaHakemuksiaAinoastaan(String... endsWith) {
         final Set<String> endings = Sets.newHashSet(endsWith);
         return (valintatapajono) -> {
-            List<Hakemus> ylimaaraisetHyvaksytytHakemukset =
-            valintatapajono.getHakemukset().stream().filter(h -> HakemuksenTila.HYVAKSYTTY.equals(h.getTila()) && !endings.stream().anyMatch(e -> h.getHakemusOid().endsWith(e))).collect(Collectors.toList());
-
-            List<Hakemus> puuttuneetHakemukset =
-                    valintatapajono.getHakemukset().stream().filter(h -> endings.stream().anyMatch(e -> h.getHakemusOid().endsWith(e) && !HakemuksenTila.HYVAKSYTTY.equals(h.getTila()))).collect(Collectors.toList());
-            if(!ylimaaraisetHyvaksytytHakemukset.isEmpty() && !puuttuneetHakemukset.isEmpty()) {
+            List<Hakemus> ylimaaraisetHyvaksytytHakemukset = valintatapajono.getHakemukset().stream()
+                    .filter(h -> HakemuksenTila.HYVAKSYTTY.equals(h.getTila()) && !endings.stream().anyMatch(e -> h.getHakemusOid().endsWith(e)))
+                    .collect(Collectors.toList());
+            List<Hakemus> puuttuneetHakemukset = valintatapajono.getHakemukset().stream()
+                    .filter(h -> endings.stream().anyMatch(e -> h.getHakemusOid().endsWith(e) && !HakemuksenTila.HYVAKSYTTY.equals(h.getTila())))
+                    .collect(Collectors.toList());
+            if (!ylimaaraisetHyvaksytytHakemukset.isEmpty() && !puuttuneetHakemukset.isEmpty()) {
                 Assert.fail("Valintatapajonossa oli ylimääräisiä hyväksyttyjä hakemuksia " + toString(ylimaaraisetHyvaksytytHakemukset) + " ja puuttuvia hyväksytyksi odotettuja hakemuksia " + toString(puuttuneetHakemukset));
             } else {
-                if(!ylimaaraisetHyvaksytytHakemukset.isEmpty()) {
+                if (!ylimaaraisetHyvaksytytHakemukset.isEmpty()) {
                     Assert.fail("Valintatapajonossa oli ylimääräisiä hyväksyttyjä hakemuksia " + toString(ylimaaraisetHyvaksytytHakemukset));
-                } else if(!puuttuneetHakemukset.isEmpty()) {
+                } else if (!puuttuneetHakemukset.isEmpty()) {
                     Assert.fail("Valintatapajonossa oli puuttuvia hyväksytyksi odotettuja hakemuksia " + toString(puuttuneetHakemukset));
                 }
             }
-
             return null;
         };
     }
 
     public static Function<Valintatapajono, Void> eiHyvaksyttyja() {
         return (valintatapajono) -> {
-            List<Hakemus> hyvaksytytHakemukset =
-                    valintatapajono.getHakemukset().stream().filter(h -> HakemuksenTila.HYVAKSYTTY.equals(h.getTila())).collect(Collectors.toList());
-
-            if(!hyvaksytytHakemukset.isEmpty()) {
+            List<Hakemus> hyvaksytytHakemukset = valintatapajono.getHakemukset().stream().filter(h -> HakemuksenTila.HYVAKSYTTY.equals(h.getTila())).collect(Collectors.toList());
+            if (!hyvaksytytHakemukset.isEmpty()) {
                 Assert.fail("Valintatapajonossa oli hyväksyttyjä hakemuksia " + toString(hyvaksytytHakemukset));
             }
-
             return null;
         };
     }
 
-    private final static String toString(List<Hakemus> h) {
+    private static String toString(List<Hakemus> h) {
         return Arrays.toString(h.stream().map(h0 -> h0.getHakemusOid()).toArray());
     }
-    public final static void assertoi(SijoitteluajoWrapper ajo, Function<SijoitteluajoWrapper, Hakukohde> hakukohdeFunction, Function<Hakukohde, Valintatapajono> valintatapajonoFunction,
-                                      Function<Valintatapajono, Void> hakemuksetFunction
-    ) {
+
+    public static void assertoi(SijoitteluajoWrapper ajo, Function<SijoitteluajoWrapper, Hakukohde> hakukohdeFunction, Function<Hakukohde, Valintatapajono> valintatapajonoFunction, Function<Valintatapajono, Void> hakemuksetFunction) {
         hakukohdeFunction.andThen(valintatapajonoFunction).andThen(hakemuksetFunction).apply(ajo);
     }
 
     public static String objectsToXml(HakuDTO sijoitteluTyyppi) {
         try {
-//            JAXBContext jc = JAXBContext.newInstance("fi.vm.sade.service.sijoittelu.types");
-//            Marshaller m = jc.createMarshaller();
-//            m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-//            StringWriter sw = new StringWriter();
-//            m.marshal(sijoitteluTyyppi, sw);
             ObjectMapper xmlMapper = new XmlMapper();
-            String xml = xmlMapper.writeValueAsString(sijoitteluTyyppi);
-            return xml;
+            return xmlMapper.writeValueAsString(sijoitteluTyyppi);
         } catch (Exception e) {
             e.printStackTrace();
             throw new RuntimeException(e);
         }
     }
 
-    /**
-     * Assertoi sijoittelultulokset
-     *
-     * @param h
-     * @param oids
-     */
-    public final static void assertoiAinoastaanValittu(Valintatapajono h, String... oids) {
+    public static void assertoiAinoastaanValittu(Valintatapajono h, String... oids) {
         List<String> wanted = Arrays.asList(oids);
         List<String> actual = new ArrayList<String>();
         for (Hakemus hakemus : h.getHakemukset()) {
@@ -122,7 +109,7 @@ public final class TestHelper {
         Assert.assertTrue("Wanted result contains more approved OIDs than actual", wanted.containsAll(actual));
     }
 
-    public final static void assertoiAinakinValittu(Valintatapajono h, String... oids) {
+    public static void assertoiAinakinValittu(Valintatapajono h, String... oids) {
         List<String> wanted = Arrays.asList(oids);
         List<String> actual = new ArrayList<String>();
         for (Hakemus hakemus : h.getHakemukset()) {
@@ -135,7 +122,6 @@ public final class TestHelper {
 
     public static void assertoiVainYksiJoukostaValittu(Valintatapajono valintatapajono, String... string) {
         List<Hakemus> hyvaksytty = new ArrayList<Hakemus>();
-
         for (String s : string) {
             for (Hakemus hakemus : valintatapajono.getHakemukset()) {
                 if (hakemus.getHakemusOid().equals(s) && hakemus.getTila() == HakemuksenTila.HYVAKSYTTY) {
@@ -143,10 +129,7 @@ public final class TestHelper {
                 }
             }
         }
-
-        Assert.assertTrue("From list of OIDS: [...] was in hyvaksytty state[" + hyvaksytty.size() + "]",
-                hyvaksytty.size() == 1);
-
+        Assert.assertTrue("From list of OIDS: [...] was in hyvaksytty state[" + hyvaksytty.size() + "]", hyvaksytty.size() == 1);
     }
 
     public static void assertoiKukaanEiValittu(Valintatapajono valintatapajono) {
@@ -159,14 +142,11 @@ public final class TestHelper {
 
     public static void assertoi(Valintatapajono valintatapajono, String oid, HakemuksenTila tila) {
         Hakemus check = null;
-
         for (Hakemus hakemus : valintatapajono.getHakemukset()) {
-            if(hakemus.getHakemusOid().equals(oid)) {
+            if (hakemus.getHakemusOid().equals(oid)) {
                 check = hakemus;
             }
         }
-
         Assert.assertTrue(check.getTila().equals(tila));
-
     }
 }
