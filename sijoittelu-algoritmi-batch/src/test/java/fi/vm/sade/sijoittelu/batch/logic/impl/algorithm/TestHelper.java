@@ -23,18 +23,18 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public final class TestHelper {
-    public static HakuDTO xmlToObjects(String filename) {
+    public static HakuDTO readHakuDTOFromJson(String filename) {
         try {
             ObjectMapper xmlMapper = new ObjectMapper();
             xmlMapper.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
             xmlMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-            HakuDTO dto = xmlMapper.readValue(Thread.currentThread().getContextClassLoader().getResourceAsStream(filename), HakuDTO.class);
-            return dto;
+            return xmlMapper.readValue(Thread.currentThread().getContextClassLoader().getResourceAsStream(filename), HakuDTO.class);
         } catch (Exception e) {
             e.printStackTrace();
             throw new RuntimeException(e);
         }
     }
+
     private static Hakukohde hakukohde(String endsWith, SijoitteluajoWrapper ajo) {
         return ajo.sijoitteluAjonHakukohteet().filter(h -> h.getOid().endsWith(endsWith)).findFirst().get();
     }
@@ -106,7 +106,7 @@ public final class TestHelper {
 
     /**
      * Assertoi sijoittelultulokset
-     * 
+     *
      * @param h
      * @param oids
      */

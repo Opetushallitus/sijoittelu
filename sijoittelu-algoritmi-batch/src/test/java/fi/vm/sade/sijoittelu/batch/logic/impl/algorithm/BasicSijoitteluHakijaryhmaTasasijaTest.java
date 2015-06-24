@@ -5,7 +5,6 @@ import fi.vm.sade.sijoittelu.batch.logic.impl.DomainConverter;
 import fi.vm.sade.sijoittelu.domain.Hakukohde;
 import fi.vm.sade.sijoittelu.domain.Valintatulos;
 import fi.vm.sade.valintalaskenta.domain.dto.valintatieto.HakuDTO;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,7 +36,7 @@ public class BasicSijoitteluHakijaryhmaTasasijaTest {
     @Test
     public void testSijoittelu() throws IOException {
         // tee sijoittelu
-        HakuDTO t = TestHelper.xmlToObjects("testdata/sijoittelu_basic_hakijaryhma_tasasija_case.json");
+        HakuDTO t = TestHelper.readHakuDTOFromJson("testdata/sijoittelu_basic_hakijaryhma_tasasija_case.json");
 
         List<Hakukohde> hakukohteet = t.getHakukohteet().parallelStream().map(DomainConverter::convertToHakukohde).collect(Collectors.toList());
 

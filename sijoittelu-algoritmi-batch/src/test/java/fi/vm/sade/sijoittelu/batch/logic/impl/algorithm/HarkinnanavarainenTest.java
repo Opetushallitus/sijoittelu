@@ -29,7 +29,7 @@ public class HarkinnanavarainenTest {
     @Test
     public void testSijoittelu() throws IOException {
         // tee sijoittelu
-        HakuDTO t = TestHelper.xmlToObjects("testdata/sijoittelu_harkinnanvarainen.json");
+        HakuDTO t = TestHelper.readHakuDTOFromJson("testdata/sijoittelu_harkinnanvarainen.json");
 
 
         List<Hakukohde> hakukohteet = t.getHakukohteet().parallelStream().map(DomainConverter::convertToHakukohde).collect(Collectors.toList());

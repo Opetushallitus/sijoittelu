@@ -31,12 +31,12 @@ public abstract class SijoitteluTestSpec {
     }
 
     public SijoitteluajoWrapper kaksiJonoaJaHakijaryhmaKolmenKiintiolla() {
-        HakuDTO t = TestHelper.xmlToObjects("testdata_erikoistapaukset/sijoittelu_2jonoa_ja_hakijaryhma_3kiintiolla.json");
+        HakuDTO t = TestHelper.readHakuDTOFromJson("testdata_erikoistapaukset/sijoittelu_2jonoa_ja_hakijaryhma_3kiintiolla.json");
         return algoritmi().apply(t);
     }
 
     public SijoitteluajoWrapper ajaSijoittelu(String filename) {
-        HakuDTO t = TestHelper.xmlToObjects(filename);
+        HakuDTO t = TestHelper.readHakuDTOFromJson(filename);
         return algoritmi().apply(t);
     }
 

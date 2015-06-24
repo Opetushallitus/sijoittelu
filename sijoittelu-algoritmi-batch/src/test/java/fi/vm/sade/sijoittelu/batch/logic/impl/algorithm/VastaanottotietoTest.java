@@ -29,7 +29,7 @@ public class VastaanottotietoTest {
     @Test
     public void testVastaanottotilaPeruutettu() throws IOException {
         // tee sijoittelu
-        HakuDTO t = TestHelper.xmlToObjects("testdata/sijoittelu_vastaanottotieto_case.json");
+        HakuDTO t = TestHelper.readHakuDTOFromJson("testdata/sijoittelu_vastaanottotieto_case.json");
 
 
         List<Hakukohde> hakukohteet = t.getHakukohteet().parallelStream().map(DomainConverter::convertToHakukohde).collect(Collectors.toList());
@@ -80,7 +80,7 @@ public class VastaanottotietoTest {
     @Test
     public void testVastaanottotilaVastaanottanutSitovasti() throws IOException {
         // tee sijoittelu
-        HakuDTO t = TestHelper.xmlToObjects("testdata/sijoittelu_vastaanottotieto_case.json");
+        HakuDTO t = TestHelper.readHakuDTOFromJson("testdata/sijoittelu_vastaanottotieto_case.json");
 
 
         List<Hakukohde> hakukohteet = t.getHakukohteet().parallelStream().map(DomainConverter::convertToHakukohde).collect(Collectors.toList());
@@ -216,7 +216,7 @@ public class VastaanottotietoTest {
     @Test
     public void testVastaanottotilaVastaanottanutEhdollisesti() throws IOException {
         // tee sijoittelu
-        HakuDTO t = TestHelper.xmlToObjects("testdata/sijoittelu_vastaanottotieto_case.json");
+        HakuDTO t = TestHelper.readHakuDTOFromJson("testdata/sijoittelu_vastaanottotieto_case.json");
 
 
         List<Hakukohde> hakukohteet = t.getHakukohteet().parallelStream().map(DomainConverter::convertToHakukohde).collect(Collectors.toList());

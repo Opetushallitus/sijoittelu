@@ -24,7 +24,7 @@ public class Sijoitteludata_2011S_ALPATTest {
 
 	@Test   	@Ignore
 	public void testSijoittele() throws IOException {
-		HakuDTO t = TestHelper.xmlToObjects("testdata/sijoitteludata_2011S_ALPAT.xml");
+		HakuDTO t = TestHelper.readHakuDTOFromJson("testdata/sijoitteludata_2011S_ALPAT.xml");
 
         List<Hakukohde> hakukohteet = new ArrayList<Hakukohde>() ;
         for(HakukohdeDTO hkt : t.getHakukohteet()) {
