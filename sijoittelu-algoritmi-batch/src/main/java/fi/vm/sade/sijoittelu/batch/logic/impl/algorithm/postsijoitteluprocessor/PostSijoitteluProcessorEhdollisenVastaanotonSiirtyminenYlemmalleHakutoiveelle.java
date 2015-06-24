@@ -19,12 +19,16 @@ public class PostSijoitteluProcessorEhdollisenVastaanotonSiirtyminenYlemmalleHak
     @Override
     public void process(SijoitteluajoWrapper sijoitteluajoWrapper) {
         final List<Hakemus> varasijaltaHyvaksytytHakemukset = sijoitteluAjossaVarasijaltaHyvaksytyt(sijoitteluajoWrapper);
+        final List<String> varasijaltaHyvaksytytHakijat = varasijaltaHyvaksytytHakemukset.stream().map(Hakemus::getHakijaOid).collect(Collectors.toList());
+        final Map<String, List<Hakemus>> varasijaltaHyvaksyttyjenHakijoidenKaikkiHakemukset = varasijaltaHyvaksyttyjenHakijoidenKaikkiHakemukset(sijoitteluajoWrapper, varasijaltaHyvaksytytHakijat);
         varasijaltaHyvaksytytHakemukset.forEach(hakemus -> {
+            final List<Hakemus> hakijanKaikkiHakemukset = varasijaltaHyvaksyttyjenHakijoidenKaikkiHakemukset.get(hakemus.getHakijaOid());
+            final List<Hakemus> hakijanAlemmatHakemukset = hakijanAlemmatHakemukset(hakemus, hakijanKaikkiHakemukset);
             final List<Valintatulos> hakijanKaikkiValintatulokset = hakijanKaikkiValintatulokset(sijoitteluajoWrapper, hakemus);
             final Valintatulos hakemuksenValintatulos = hakemuksenValintatulos(hakemus, hakijanKaikkiValintatulokset);
             final List<Valintatulos> hakijanAlemmatValintatulokset = hakijanAlemmatValintatulokset(hakemus, hakijanKaikkiValintatulokset);
 
-            if (hasEhdollisestiVastaanotettuAlempiHakutoive(hakijanAlemmatValintatulokset)) {
+            if (hasPeruuntunutHakemusJonkaValintatulosEhdollisestiHyvaksytty(hakijanAlemmatHakemukset, hakijanAlemmatValintatulokset)) {
                 if (hakemuksenValintatulos.getHakutoive() == 0) {
                     vastaanOtaEhdollisesti(hakemuksenValintatulos);
                 } else {
@@ -33,6 +37,32 @@ public class PostSijoitteluProcessorEhdollisenVastaanotonSiirtyminenYlemmalleHak
                 poistaAlemmatEhdollisetVastaanotot(hakemus, hakijanAlemmatValintatulokset);
             }
         });
+    }
+
+    private boolean hasPeruuntunutHakemusJonkaValintatulosEhdollisestiHyvaksytty(List<Hakemus> hakijanAlemmatHakemukset, List<Valintatulos> hakijanAlemmatValintatulokset) {
+        final Optional<Hakemus> alempiPeruuntunutHakemus = hakijanAlemmatHakemukset.stream().filter(alempiHakemus -> alempiHakemus.getTila().equals(HakemuksenTila.PERUUNTUNUT)).findFirst();
+        if (alempiPeruuntunutHakemus.isPresent()) {
+            final Valintatulos vastaavaValintatulos = hakijanAlemmatValintatulokset.stream().filter(alempiValintatulos -> alempiValintatulos.getHakutoive() == alempiPeruuntunutHakemus.get().getPrioriteetti()).findFirst().get();
+            return vastaavaValintatulos.getTila().equals(ValintatuloksenTila.EHDOLLISESTI_VASTAANOTTANUT);
+        }
+        return false;
+    }
+
+    private List<Hakemus> hakijanAlemmatHakemukset(Hakemus hakemus, List<Hakemus> hakijanKaikkiHakemukset) {
+        return hakijanKaikkiHakemukset.stream().filter(muuHakemus -> muuHakemus.getPrioriteetti() > hakemus.getPrioriteetti()).collect(Collectors.toList());
+    }
+
+    private Map<String, List<Hakemus>> varasijaltaHyvaksyttyjenHakijoidenKaikkiHakemukset(SijoitteluajoWrapper sijoitteluajoWrapper, List<String> varasijaltaHyvaksytytHakijat) {
+        final Map<String, List<Hakemus>> hakijanKaikkiHakemukset = new HashMap<>();
+        sijoitteluajoWrapper.sijoitteluAjonHakukohteet()
+                .flatMap(hakukohde -> hakukohde.getValintatapajonot().stream())
+                .flatMap(valintatapajono -> valintatapajono.getHakemukset().stream())
+                .forEach(hakemus -> {
+                    if (varasijaltaHyvaksytytHakijat.contains(hakemus.getHakijaOid())) {
+                        hakijanKaikkiHakemukset.getOrDefault(hakemus.getHakijaOid(), new LinkedList<>()).add(hakemus);
+                    }
+                });
+        return hakijanKaikkiHakemukset;
     }
 
     private void poistaAlemmatEhdollisetVastaanotot(Hakemus hakemus, List<Valintatulos> hakijanAlemmatValintatulokset) {
@@ -60,10 +90,6 @@ public class PostSijoitteluProcessorEhdollisenVastaanotonSiirtyminenYlemmalleHak
         return hakijanKaikkiValintatulokset.stream()
                 .filter(valintatulos -> valintatulos.getHakemusOid().equals(hakemus.getHakemusOid()))
                 .findFirst().get();
-    }
-
-    private boolean hasEhdollisestiVastaanotettuAlempiHakutoive(List<Valintatulos> hakijanAlemmatValintatulokset) {
-        return hakijanAlemmatValintatulokset.stream().anyMatch(valintatulos -> valintatulos.getTila().equals(ValintatuloksenTila.EHDOLLISESTI_VASTAANOTTANUT));
     }
 
     private List<Hakemus> sijoitteluAjossaVarasijaltaHyvaksytyt(SijoitteluajoWrapper sijoitteluajoWrapper) {
