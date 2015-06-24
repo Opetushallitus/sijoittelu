@@ -22,16 +22,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-/**
- * 
- * @author Kari Kammonen
- * 
- */
 public final class TestHelper {
-
-    private TestHelper() {
-    }
-
     public static HakuDTO xmlToObjects(String filename) {
         try {
             ObjectMapper xmlMapper = new ObjectMapper();
