@@ -6,11 +6,15 @@ import fi.vm.sade.sijoittelu.domain.HakemuksenTila;
 import fi.vm.sade.sijoittelu.domain.Hakemus;
 import fi.vm.sade.sijoittelu.domain.ValintatuloksenTila;
 import fi.vm.sade.sijoittelu.domain.Valintatulos;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
 public class PostSijoitteluProcessorEhdollisenVastaanotonSiirtyminenYlemmalleHakutoiveelle implements PostSijoitteluProcessor {
+    private static final Logger LOG = LoggerFactory.getLogger(PostSijoitteluProcessorEhdollisenVastaanotonSiirtyminenYlemmalleHakutoiveelle.class);
+
     @Override
     public String name() {
         return getClass().getSimpleName();
@@ -21,19 +25,25 @@ public class PostSijoitteluProcessorEhdollisenVastaanotonSiirtyminenYlemmalleHak
         final List<Hakemus> varasijaltaHyvaksytytHakemukset = sijoitteluAjossaVarasijaltaHyvaksytyt(sijoitteluajoWrapper);
         final Map<String, List<Hakemus>> varasijaltaHyvaksyttyjenHakijoidenKaikkiHakemukset = varasijaltaHyvaksyttyjenHakijoidenKaikkiHakemukset(sijoitteluajoWrapper, varasijaltaHyvaksytytHakemukset);
         varasijaltaHyvaksytytHakemukset.forEach(hakemus -> {
-            final List<Hakemus> hakijanKaikkiHakemukset = varasijaltaHyvaksyttyjenHakijoidenKaikkiHakemukset.get(hakemus.getHakijaOid());
-            final List<Hakemus> hakijanAlemmatHakemukset = hakijanAlemmatHakemukset(hakemus, hakijanKaikkiHakemukset);
             final List<Valintatulos> hakijanKaikkiValintatulokset = hakijanKaikkiValintatulokset(sijoitteluajoWrapper, hakemus);
-            final Valintatulos hakemuksenValintatulos = hakemuksenValintatulos(hakemus, hakijanKaikkiValintatulokset);
-            final List<Valintatulos> hakijanAlemmatValintatulokset = hakijanAlemmatValintatulokset(hakemus, hakijanKaikkiValintatulokset);
+            final Optional<Valintatulos> hakemuksenValintatulos = hakemuksenValintatulos(hakemus, hakijanKaikkiValintatulokset);
+            if (hakemuksenValintatulos.isPresent()) {
+                final List<Hakemus> hakijanKaikkiHakemukset = varasijaltaHyvaksyttyjenHakijoidenKaikkiHakemukset.get(hakemus.getHakijaOid());
+                final List<Hakemus> hakijanAlemmatHakemukset = hakijanAlemmatHakemukset(hakemus, hakijanKaikkiHakemukset);
+                final List<Valintatulos> hakijanAlemmatValintatulokset = hakijanAlemmatValintatulokset(hakemus, hakijanKaikkiValintatulokset);
 
-            if (hasPeruuntunutHakemusJonkaValintatulosEhdollisestiHyvaksytty(hakijanAlemmatHakemukset, hakijanAlemmatValintatulokset)) {
-                if (hakemuksenValintatulos.getHakutoive() == 0) {
-                    vastaanOtaSitovasti(hakemuksenValintatulos);
-                } else {
-                    vastaanOtaEhdollisesti(hakemuksenValintatulos);
+                if (hasPeruuntunutHakemusJonkaValintatulosEhdollisestiHyvaksytty(hakijanAlemmatHakemukset, hakijanAlemmatValintatulokset)) {
+                    if (hakemuksenValintatulos.get().getHakutoive() == 0) {
+                        LOG.info("Hakijalta {} löytynyt peruutunut alempi ehdollisesti hyväksytty hakemus, joten muutetaan korkeimman prioriteetin hakemus {} vastaanotetuksi sitovasti.",
+                                hakemus.getHakijaOid(), hakemus.getHakemusOid());
+                        vastaanOtaSitovasti(hakemuksenValintatulos.get());
+                    } else {
+                        LOG.info("Hakijalta {} löytynyt peruutunut alempi ehdollisesti hyväksytty hakemus, joten muutetaan hakemus {} ehdollisesti vastaanotetuksi.",
+                                hakemus.getHakijaOid(), hakemus.getHakemusOid());
+                        vastaanOtaEhdollisesti(hakemuksenValintatulos.get());
+                    }
+                    poistaAlemmatEhdollisetVastaanotot(hakemus, hakijanAlemmatValintatulokset);
                 }
-                poistaAlemmatEhdollisetVastaanotot(hakemus, hakijanAlemmatValintatulokset);
             }
         });
     }
@@ -61,7 +71,11 @@ public class PostSijoitteluProcessorEhdollisenVastaanotonSiirtyminenYlemmalleHak
                 .flatMap(valintatapajono -> valintatapajono.getHakemukset().stream())
                 .forEach(hakemus -> {
                     if (varasijaltaHyvaksytytHakijat.contains(hakemus.getHakijaOid())) {
-                        hakijanKaikkiHakemukset.getOrDefault(hakemus.getHakijaOid(), new LinkedList<>()).add(hakemus);
+                        if (hakijanKaikkiHakemukset.containsKey(hakemus.getHakijaOid())) {
+                            hakijanKaikkiHakemukset.get(hakemus.getHakijaOid()).add(hakemus);
+                        } else {
+                            hakijanKaikkiHakemukset.put(hakemus.getHakijaOid(), new LinkedList<Hakemus>() {{ add(hakemus); }});
+                        }
                     }
                 });
         return hakijanKaikkiHakemukset;
@@ -88,10 +102,10 @@ public class PostSijoitteluProcessorEhdollisenVastaanotonSiirtyminenYlemmalleHak
         return hakijanKaikkiValintatulokset.stream().filter(valintatulos -> valintatulos.getHakutoive() > hakemus.getPrioriteetti()).collect(Collectors.toList());
     }
 
-    private Valintatulos hakemuksenValintatulos(Hakemus hakemus, List<Valintatulos> hakijanKaikkiValintatulokset) {
+    private Optional<Valintatulos> hakemuksenValintatulos(Hakemus hakemus, List<Valintatulos> hakijanKaikkiValintatulokset) {
         return hakijanKaikkiValintatulokset.stream()
                 .filter(valintatulos -> valintatulos.getHakemusOid().equals(hakemus.getHakemusOid()))
-                .findFirst().get();
+                .findFirst();
     }
 
     private List<Hakemus> sijoitteluAjossaVarasijaltaHyvaksytyt(SijoitteluajoWrapper sijoitteluajoWrapper) {
