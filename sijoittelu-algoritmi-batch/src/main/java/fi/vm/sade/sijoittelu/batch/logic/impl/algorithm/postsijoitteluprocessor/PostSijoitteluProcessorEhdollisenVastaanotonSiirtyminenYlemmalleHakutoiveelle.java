@@ -19,8 +19,7 @@ public class PostSijoitteluProcessorEhdollisenVastaanotonSiirtyminenYlemmalleHak
     @Override
     public void process(SijoitteluajoWrapper sijoitteluajoWrapper) {
         final List<Hakemus> varasijaltaHyvaksytytHakemukset = sijoitteluAjossaVarasijaltaHyvaksytyt(sijoitteluajoWrapper);
-        final List<String> varasijaltaHyvaksytytHakijat = varasijaltaHyvaksytytHakemukset.stream().map(Hakemus::getHakijaOid).collect(Collectors.toList());
-        final Map<String, List<Hakemus>> varasijaltaHyvaksyttyjenHakijoidenKaikkiHakemukset = varasijaltaHyvaksyttyjenHakijoidenKaikkiHakemukset(sijoitteluajoWrapper, varasijaltaHyvaksytytHakijat);
+        final Map<String, List<Hakemus>> varasijaltaHyvaksyttyjenHakijoidenKaikkiHakemukset = varasijaltaHyvaksyttyjenHakijoidenKaikkiHakemukset(sijoitteluajoWrapper, varasijaltaHyvaksytytHakemukset);
         varasijaltaHyvaksytytHakemukset.forEach(hakemus -> {
             final List<Hakemus> hakijanKaikkiHakemukset = varasijaltaHyvaksyttyjenHakijoidenKaikkiHakemukset.get(hakemus.getHakijaOid());
             final List<Hakemus> hakijanAlemmatHakemukset = hakijanAlemmatHakemukset(hakemus, hakijanKaikkiHakemukset);
@@ -52,7 +51,8 @@ public class PostSijoitteluProcessorEhdollisenVastaanotonSiirtyminenYlemmalleHak
         return hakijanKaikkiHakemukset.stream().filter(muuHakemus -> muuHakemus.getPrioriteetti() > hakemus.getPrioriteetti()).collect(Collectors.toList());
     }
 
-    private Map<String, List<Hakemus>> varasijaltaHyvaksyttyjenHakijoidenKaikkiHakemukset(SijoitteluajoWrapper sijoitteluajoWrapper, List<String> varasijaltaHyvaksytytHakijat) {
+    private Map<String, List<Hakemus>> varasijaltaHyvaksyttyjenHakijoidenKaikkiHakemukset(SijoitteluajoWrapper sijoitteluajoWrapper, List<Hakemus> varasijaltaHyvaksytytHakemukset) {
+        final List<String> varasijaltaHyvaksytytHakijat = varasijaltaHyvaksytytHakemukset.stream().map(Hakemus::getHakijaOid).collect(Collectors.toList());
         final Map<String, List<Hakemus>> hakijanKaikkiHakemukset = new HashMap<>();
         sijoitteluajoWrapper.sijoitteluAjonHakukohteet()
                 .flatMap(hakukohde -> hakukohde.getValintatapajonot().stream())
