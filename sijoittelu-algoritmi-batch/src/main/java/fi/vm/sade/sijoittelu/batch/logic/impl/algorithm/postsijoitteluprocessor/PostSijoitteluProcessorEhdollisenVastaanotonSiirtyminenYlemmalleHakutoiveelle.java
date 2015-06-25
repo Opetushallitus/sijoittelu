@@ -41,8 +41,10 @@ public class PostSijoitteluProcessorEhdollisenVastaanotonSiirtyminenYlemmalleHak
     private boolean hasPeruuntunutHakemusJonkaValintatulosEhdollisestiHyvaksytty(List<Hakemus> hakijanAlemmatHakemukset, List<Valintatulos> hakijanAlemmatValintatulokset) {
         final Optional<Hakemus> alempiPeruuntunutHakemus = hakijanAlemmatHakemukset.stream().filter(alempiHakemus -> alempiHakemus.getTila().equals(HakemuksenTila.PERUUNTUNUT)).findFirst();
         if (alempiPeruuntunutHakemus.isPresent()) {
-            final Valintatulos vastaavaValintatulos = hakijanAlemmatValintatulokset.stream().filter(alempiValintatulos -> alempiValintatulos.getHakutoive() == alempiPeruuntunutHakemus.get().getPrioriteetti()).findFirst().get();
-            return vastaavaValintatulos.getTila().equals(ValintatuloksenTila.EHDOLLISESTI_VASTAANOTTANUT);
+            final Optional<Valintatulos> vastaavaValintatulos = hakijanAlemmatValintatulokset.stream().filter(alempiValintatulos -> alempiValintatulos.getHakutoive() == alempiPeruuntunutHakemus.get().getPrioriteetti()).findFirst();
+            if (vastaavaValintatulos.isPresent()) {
+                return vastaavaValintatulos.get().getTila().equals(ValintatuloksenTila.EHDOLLISESTI_VASTAANOTTANUT);
+            }
         }
         return false;
     }
