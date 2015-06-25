@@ -17,38 +17,41 @@ import java.util.stream.Collectors;
 public final class TestHelper {
     public static HakuDTO readHakuDTOFromJson(String filename) {
         try {
-            ObjectMapper xmlMapper = new ObjectMapper();
-            xmlMapper.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
-            xmlMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-            return xmlMapper.readValue(Thread.currentThread().getContextClassLoader().getResourceAsStream(filename), HakuDTO.class);
+            return getDTO(filename, HakuDTO.class);
         } catch (Exception e) {
-            e.printStackTrace();
             throw new RuntimeException(e);
         }
     }
 
+
     public static List<Hakukohde> readHakukohteetListFromJson(String filename) {
         try {
-            ObjectMapper xmlMapper = new ObjectMapper();
-            xmlMapper.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
-            xmlMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-            return xmlMapper.readValue(Thread.currentThread().getContextClassLoader().getResourceAsStream(filename), new TypeReference<List<Hakukohde>>(){});
+            return getDTO(filename, new TypeReference<List<Hakukohde>>(){});
         } catch (Exception e) {
-            e.printStackTrace();
             throw new RuntimeException(e);
         }
     }
 
     public static List<Valintatulos> readValintatulosListFromJson(String filename) {
         try {
-            ObjectMapper xmlMapper = new ObjectMapper();
-            xmlMapper.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
-            xmlMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-            return xmlMapper.readValue(Thread.currentThread().getContextClassLoader().getResourceAsStream(filename), new TypeReference<List<Valintatulos>>(){});
+            return getDTO(filename, new TypeReference<List<Valintatulos>>(){});
         } catch (Exception e) {
-            e.printStackTrace();
             throw new RuntimeException(e);
         }
+    }
+
+    static <T> T getDTO(String filename, Class<T> valueType) throws java.io.IOException {
+        ObjectMapper xmlMapper = new ObjectMapper();
+        xmlMapper.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
+        xmlMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        return xmlMapper.readValue(Thread.currentThread().getContextClassLoader().getResourceAsStream(filename), valueType);
+    }
+
+    static <T> T getDTO(String filename, TypeReference valueTypeRef) throws java.io.IOException {
+        ObjectMapper xmlMapper = new ObjectMapper();
+        xmlMapper.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
+        xmlMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        return xmlMapper.readValue(Thread.currentThread().getContextClassLoader().getResourceAsStream(filename), valueTypeRef);
     }
 
     private static Hakukohde hakukohde(String endsWith, SijoitteluajoWrapper ajo) {
