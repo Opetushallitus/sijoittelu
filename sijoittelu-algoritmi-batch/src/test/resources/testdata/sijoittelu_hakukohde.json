@@ -1,0 +1,109 @@
+[
+  {
+    "sijoitteluajoId": 1435217952742,
+    "oid": "1.2.246.562.20.87061484132",
+    "tarjoajaOid": "1.2.246.562.10.72985435253",
+    "kaikkiJonotSijoiteltu": true,
+    "valintatapajonot": [
+      {
+        "tasasijasaanto": "YLITAYTTO",
+        "oid": "14345398388996844110591962067735",
+        "nimi": "Koejono",
+        "prioriteetti": 0,
+        "aloituspaikat": 1,
+        "eiVarasijatayttoa": false,
+        "kaikkiEhdonTayttavatHyvaksytaan": true,
+        "poissaOlevaTaytto": false,
+        "varasijat": 0,
+        "varasijaTayttoPaivat": 0,
+        "hyvaksytty": 4,
+        "varalla": 0,
+        "alinHyvaksyttyPistemaara": "4",
+        "hakemukset": [
+          {
+            "hakijaOid": "1.2.246.562.24.70419457928",
+            "hakemusOid": "1.2.246.562.11.00003933268",
+            "etunimi": "Mr",
+            "sukunimi": "Shield",
+            "prioriteetti": 1,
+            "jonosija": 1,
+            "pisteet": "10.00",
+            "tasasijaJonosija": 1,
+            "tila": "VARASIJALTA_HYVAKSYTTY",
+            "edellinenTila": "VARALLA",
+            "tilaHistoria": [
+              {
+                "luotu": "2015-06-25T07:39:12.817Z",
+                "tila": "HYVAKSYTTY"
+              }
+            ],
+            "hyvaksyttyHarkinnanvaraisesti": false,
+            "pistetiedot": [
+              {
+                "tunniste": "f3684054-df0f-0424-dcd6-6917aea3b8f3",
+                "arvo": "10.00",
+                "laskennallinenArvo": "10.00",
+                "osallistuminen": "OSALLISTUI"
+              },
+              {
+                "tunniste": "d2693544-b51b-4241-6fc1-dd2815eebd1c",
+                "arvo": "1",
+                "laskennallinenArvo": "1",
+                "osallistuminen": "OSALLISTUI"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "tasasijasaanto": "YLITAYTTO",
+        "oid": "14345398388996844110591962067736",
+        "nimi": "Koejono",
+        "prioriteetti": 0,
+        "aloituspaikat": 1,
+        "eiVarasijatayttoa": false,
+        "kaikkiEhdonTayttavatHyvaksytaan": true,
+        "poissaOlevaTaytto": false,
+        "varasijat": 0,
+        "varasijaTayttoPaivat": 0,
+        "hyvaksytty": 4,
+        "varalla": 0,
+        "alinHyvaksyttyPistemaara": "4",
+        "hakemukset": [
+          {
+            "hakijaOid": "1.2.246.562.24.70419457928",
+            "hakemusOid": "1.2.246.562.11.00003933269",
+            "etunimi": "Mr",
+            "sukunimi": "Shield",
+            "prioriteetti": 2,
+            "jonosija": 1,
+            "pisteet": "10.00",
+            "tasasijaJonosija": 1,
+            "tila": "PERUUNTUNUT",
+            "tilaHistoria": [
+              {
+                "luotu": "2015-06-25T07:39:12.817Z",
+                "tila": "HYVAKSYTTY"
+              }
+            ],
+            "hyvaksyttyHarkinnanvaraisesti": false,
+            "pistetiedot": [
+              {
+                "tunniste": "f3684054-df0f-0424-dcd6-6917aea3b8f3",
+                "arvo": "10.00",
+                "laskennallinenArvo": "10.00",
+                "osallistuminen": "OSALLISTUI"
+              },
+              {
+                "tunniste": "d2693544-b51b-4241-6fc1-dd2815eebd1c",
+                "arvo": "1",
+                "laskennallinenArvo": "1",
+                "osallistuminen": "OSALLISTUI"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+]

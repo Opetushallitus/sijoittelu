@@ -33,13 +33,11 @@ public class PostSijoitteluProcessorEhdollisenVastaanotonSiirtyminenYlemmalleHak
                 final List<Valintatulos> hakijanAlemmatValintatulokset = hakijanAlemmatValintatulokset(hakemus, hakijanKaikkiValintatulokset);
 
                 if (hasPeruuntunutHakemusJonkaValintatulosEhdollisestiHyvaksytty(hakijanAlemmatHakemukset, hakijanAlemmatValintatulokset)) {
-                    if (hakemuksenValintatulos.get().getHakutoive() == 0) {
-                        LOG.info("Hakijalta {} löytynyt peruutunut alempi ehdollisesti hyväksytty hakemus, joten muutetaan korkeimman prioriteetin hakemus {} vastaanotetuksi sitovasti.",
-                                hakemus.getHakijaOid(), hakemus.getHakemusOid());
+                    if (hakemuksenValintatulos.get().getHakutoive() == 1) {
+                        LOG.info("Hakijalta {} löytynyt peruutunut alempi ehdollisesti hyväksytty hakemus, joten muutetaan korkeimman prioriteetin hakemus {} vastaanotetuksi sitovasti.", hakemus.getHakijaOid(), hakemus.getHakemusOid());
                         vastaanOtaSitovasti(hakemuksenValintatulos.get());
                     } else {
-                        LOG.info("Hakijalta {} löytynyt peruutunut alempi ehdollisesti hyväksytty hakemus, joten muutetaan hakemus {} ehdollisesti vastaanotetuksi.",
-                                hakemus.getHakijaOid(), hakemus.getHakemusOid());
+                        LOG.info("Hakijalta {} löytynyt peruutunut alempi ehdollisesti hyväksytty hakemus, joten muutetaan hakemus {} ehdollisesti vastaanotetuksi.", hakemus.getHakijaOid(), hakemus.getHakemusOid());
                         vastaanOtaEhdollisesti(hakemuksenValintatulos.get());
                     }
                     poistaAlemmatEhdollisetVastaanotot(hakemus, hakijanAlemmatValintatulokset);

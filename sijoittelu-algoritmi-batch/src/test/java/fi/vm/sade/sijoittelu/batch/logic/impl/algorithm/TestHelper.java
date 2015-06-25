@@ -1,26 +1,18 @@
 package fi.vm.sade.sijoittelu.batch.logic.impl.algorithm;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.google.common.collect.Sets;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.SijoitteluajoWrapper;
-import fi.vm.sade.sijoittelu.domain.HakemuksenTila;
-import fi.vm.sade.sijoittelu.domain.Hakemus;
-import fi.vm.sade.sijoittelu.domain.Hakukohde;
-import fi.vm.sade.sijoittelu.domain.Valintatapajono;
+import fi.vm.sade.sijoittelu.domain.*;
 import fi.vm.sade.valintalaskenta.domain.dto.valintatieto.HakuDTO;
 import junit.framework.Assert;
-import org.codehaus.jackson.map.DeserializationConfig;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.Marshaller;
-import java.io.StringWriter;
 import java.util.*;
-import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public final class TestHelper {
     public static HakuDTO readHakuDTOFromJson(String filename) {
@@ -29,6 +21,30 @@ public final class TestHelper {
             xmlMapper.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
             xmlMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
             return xmlMapper.readValue(Thread.currentThread().getContextClassLoader().getResourceAsStream(filename), HakuDTO.class);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static List<Hakukohde> readHakukohteetListFromJson(String filename) {
+        try {
+            ObjectMapper xmlMapper = new ObjectMapper();
+            xmlMapper.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
+            xmlMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+            return xmlMapper.readValue(Thread.currentThread().getContextClassLoader().getResourceAsStream(filename), new TypeReference<List<Hakukohde>>(){});
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static List<Valintatulos> readValintatulosListFromJson(String filename) {
+        try {
+            ObjectMapper xmlMapper = new ObjectMapper();
+            xmlMapper.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
+            xmlMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+            return xmlMapper.readValue(Thread.currentThread().getContextClassLoader().getResourceAsStream(filename), new TypeReference<List<Valintatulos>>(){});
         } catch (Exception e) {
             e.printStackTrace();
             throw new RuntimeException(e);
