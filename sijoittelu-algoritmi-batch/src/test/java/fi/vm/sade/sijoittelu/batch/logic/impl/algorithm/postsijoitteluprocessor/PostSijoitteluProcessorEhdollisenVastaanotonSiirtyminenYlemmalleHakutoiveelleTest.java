@@ -7,9 +7,11 @@ import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoitteluAlgorithmFacto
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.TestHelper;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.SijoitteluajoWrapper;
 import fi.vm.sade.sijoittelu.domain.Hakukohde;
+import fi.vm.sade.sijoittelu.domain.ValintatuloksenTila;
 import fi.vm.sade.sijoittelu.domain.Valintatulos;
 import fi.vm.sade.valintalaskenta.domain.dto.valintatieto.HakuDTO;
 import org.junit.Test;
+import static junit.framework.Assert.*;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -21,11 +23,22 @@ public class PostSijoitteluProcessorEhdollisenVastaanotonSiirtyminenYlemmalleHak
             new PostSijoitteluProcessorEhdollisenVastaanotonSiirtyminenYlemmalleHakutoiveelle();
 
     @Test
-    public void testEhdollisenVastaanotonSiirtyminenYlospain() {
+    public void testEhdollisenVastaanotonSiirtyminenYlospainKorkeimmalleHakemukselleSitovaksiVastaanotoksi() {
+        final SijoitteluajoWrapper sijoitteluAjo = luoSijoitteluAjonTulokset();
+        postProcessor.process(sijoitteluAjo);
+        assertEquals(ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI, haeValintatulosHakemukselle("1.2.246.562.11.00003933268", sijoitteluAjo).getTila());
+        assertEquals(ValintatuloksenTila.PERUUTETTU, haeValintatulosHakemukselle("1.2.246.562.11.00003933269", sijoitteluAjo).getTila());
+    }
+
+    private Valintatulos haeValintatulosHakemukselle(String hakemusOid, SijoitteluajoWrapper sijoitteluAjo) {
+        return sijoitteluAjo.getMuuttuneetValintatulokset().stream().filter(valintatulos -> valintatulos.getHakemusOid().equals(hakemusOid)).findFirst().get();
+    }
+
+    private SijoitteluajoWrapper luoSijoitteluAjonTulokset() {
         SijoitteluAlgorithmFactoryImpl factory = new SijoitteluAlgorithmFactoryImpl();
         SijoitteluAlgorithm algorithm = factory.constructAlgorithm(hakukohdeList, valintatulosList);
         final SijoitteluajoWrapper sijoitteluAjo = algorithm.getSijoitteluAjo();
         sijoitteluAjo.getMuuttuneetValintatulokset().addAll(valintatulosList);
-        postProcessor.process(sijoitteluAjo);
+        return sijoitteluAjo;
     }
 }
