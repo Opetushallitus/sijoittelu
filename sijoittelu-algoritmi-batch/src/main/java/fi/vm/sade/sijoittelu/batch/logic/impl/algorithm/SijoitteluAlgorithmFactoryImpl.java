@@ -19,12 +19,12 @@ public class SijoitteluAlgorithmFactoryImpl implements SijoitteluAlgorithmFactor
 
     @Override
     public SijoitteluAlgorithm constructAlgorithm(List<Hakukohde> hakukohteet, List<Valintatulos> valintatulokset) {
-        List<PreSijoitteluProcessor> preSijoitteluProcessors = new ArrayList<PreSijoitteluProcessor>();
+        List<PreSijoitteluProcessor> preSijoitteluProcessors = new ArrayList<>();
         preSijoitteluProcessors.add(new PreSijoitteluProcessorTasasijaArvonta());
         preSijoitteluProcessors.add(new PreSijoitteluProcessorSort());
         preSijoitteluProcessors.add(new PreSijoitteluProcessorPeruutaAlemmatPeruneetJaHyvaksytyt());
         preSijoitteluProcessors.add(new PreSijoitteluProcessorHylkaaHakijaRyhmaanKuulumattomat());
-        List<PostSijoitteluProcessor> postSijoitteluProcessors = new ArrayList<PostSijoitteluProcessor>();
+        List<PostSijoitteluProcessor> postSijoitteluProcessors = new ArrayList<>();
         SijoitteluAlgorithmImpl algorithm = new SijoitteluAlgorithmImpl();
         algorithm.preSijoitteluProcessors = preSijoitteluProcessors;
         algorithm.postSijoitteluProcessors = postSijoitteluProcessors;

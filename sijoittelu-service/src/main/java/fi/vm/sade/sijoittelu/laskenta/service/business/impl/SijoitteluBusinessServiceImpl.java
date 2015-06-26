@@ -117,13 +117,11 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
                 .collect(toSet()));
     }
 
-    /**
-     * versioi sijoittelun ja tuo uudet kohteet
-     */
     @Override
     public void sijoittele(HakuDTO sijoitteluTyyppi, Set<String> valintaperusteidenJonot) {
         long startTime = System.currentTimeMillis();
         String hakuOid = sijoitteluTyyppi.getHakuOid();
+        LOG.info("SijoitteluBusinessServiceImpl:n sijoittelu haulle {} alkaa.", hakuOid);
         Sijoittelu sijoittelu = getOrCreateSijoittelu(hakuOid);
         SijoitteluAjo viimeisinSijoitteluajo = sijoittelu.getLatestSijoitteluajo();
         List<Hakukohde> uudetHakukohteet = sijoitteluTyyppi.getHakukohteet().stream().map(DomainConverter::convertToHakukohde).collect(Collectors.toList());
@@ -142,17 +140,19 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
         SijoitteluAjo uusiSijoitteluajo = createSijoitteluAjo(sijoittelu);
         List<Hakukohde> kaikkiHakukohteet = merge(uusiSijoitteluajo, olemassaolevatHakukohteet, uudetHakukohteet);
         List<Valintatulos> valintatulokset = valintatulosDao.loadValintatulokset(hakuOid);
-        System.out.println("Sijoittelun valintatulosten määrä: " + valintatulokset.size());
+        LOG.info("Haun {} sijoittelun koko: {} olemassaolevaa, {} uutta, {} valintatulosta", hakuOid, olemassaolevatHakukohteet.size(), uudetHakukohteet.size(), valintatulokset.size());
         SijoitteluAlgorithm sijoitteluAlgorithm = algorithmFactory.constructAlgorithm(kaikkiHakukohteet, valintatulokset);
         asetaSijoittelunParametrit(hakuOid, sijoitteluAlgorithm);
         uusiSijoitteluajo.setStartMils(startTime);
+        LOG.info("Suoritetaan sijoittelu haulle {}", hakuOid);
         sijoitteluAlgorithm.start();
         uusiSijoitteluajo.setEndMils(System.currentTimeMillis());
         processOldApplications(olemassaolevatHakukohteet, kaikkiHakukohteet);
-        // VT-18 tallennetaan sijoittelualgoritmin muplaanmat valintatiedot
-        sijoitteluAlgorithm.getSijoitteluAjo().getMuuttuneetValintatulokset().forEach(valintatulosDao::createOrUpdateValintatulos);
-        System.out.println("Pomppuja: " + sijoitteluAlgorithm.getSijoitteluAjo().getVarasijapomput().size());
-        sijoitteluAlgorithm.getSijoitteluAjo().getVarasijapomput().forEach(System.out::println);
+        List<Valintatulos> muuttuneetValintatulokset = sijoitteluAlgorithm.getSijoitteluAjo().getMuuttuneetValintatulokset();
+        muuttuneetValintatulokset.forEach(valintatulosDao::createOrUpdateValintatulos);
+        List<String> varasijapomput = sijoitteluAlgorithm.getSijoitteluAjo().getVarasijapomput();
+        varasijapomput.forEach(LOG::info);
+        LOG.info("Haun {} sijoittelussa muuttui {} kpl valintatuloksia, pomppuja {} kpl", muuttuneetValintatulokset.size(), varasijapomput.size());
         ActorRef siivoaja = actorService.getSiivousActor();
         try {
             sijoitteluDao.persistSijoittelu(sijoittelu);
