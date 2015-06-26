@@ -52,6 +52,39 @@
                 "osallistuminen": "OSALLISTUI"
               }
             ]
+          },
+          {
+            "hakijaOid" : "1.2.246.562.24.29600404317",
+            "hakemusOid" : "1.2.246.562.11.00003933242",
+            "etunimi" : "Bertil",
+            "sukunimi" : "Bergström",
+            "prioriteetti" : 2,
+            "jonosija" : 2,
+            "pisteet" : "8",
+            "tasasijaJonosija" : 1,
+            "tila": "VARASIJALTA_HYVAKSYTTY",
+            "edellinenTila": "VARALLA",
+            "tilaHistoria" : [
+              {
+                "luotu" : "2015-06-25T07:39:12.817Z",
+                "tila" : "HYVAKSYTTY"
+              }
+            ],
+            "hyvaksyttyHarkinnanvaraisesti" : false,
+            "pistetiedot" : [
+              {
+                "tunniste" : "f3684054-df0f-0424-dcd6-6917aea3b8f3",
+                "arvo" : "8",
+                "laskennallinenArvo" : "8",
+                "osallistuminen" : "OSALLISTUI"
+              },
+              {
+                "tunniste" : "d2693544-b51b-4241-6fc1-dd2815eebd1c",
+                "arvo" : "2.00",
+                "laskennallinenArvo" : "2.00",
+                "osallistuminen" : "OSALLISTUI"
+              }
+            ]
           }
         ]
       },
@@ -99,6 +132,38 @@
                 "arvo": "1",
                 "laskennallinenArvo": "1",
                 "osallistuminen": "OSALLISTUI"
+              }
+            ]
+          },
+          {
+            "hakijaOid" : "1.2.246.562.24.29600404317",
+            "hakemusOid" : "1.2.246.562.11.00003933243",
+            "etunimi" : "Bertil",
+            "sukunimi" : "Bergström",
+            "prioriteetti" : 3,
+            "jonosija" : 2,
+            "pisteet" : "8",
+            "tasasijaJonosija" : 1,
+            "tila" : "PERUUNTUNUT",
+            "tilaHistoria" : [
+              {
+                "luotu" : "2015-06-25T07:39:12.817Z",
+                "tila" : "HYVAKSYTTY"
+              }
+            ],
+            "hyvaksyttyHarkinnanvaraisesti" : false,
+            "pistetiedot" : [
+              {
+                "tunniste" : "f3684054-df0f-0424-dcd6-6917aea3b8f3",
+                "arvo" : "8",
+                "laskennallinenArvo" : "8",
+                "osallistuminen" : "OSALLISTUI"
+              },
+              {
+                "tunniste" : "d2693544-b51b-4241-6fc1-dd2815eebd1c",
+                "arvo" : "2.00",
+                "laskennallinenArvo" : "2.00",
+                "osallistuminen" : "OSALLISTUI"
               }
             ]
           }

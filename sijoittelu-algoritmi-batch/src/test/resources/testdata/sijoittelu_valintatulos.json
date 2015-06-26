@@ -38,5 +38,45 @@
         "selite": "Massamuokkaus"
       }
     ]
+  },
+  {
+    "valintatapajonoOid": "14345398388996844110591962067735",
+    "hakemusOid": "1.2.246.562.11.00003933242",
+    "hakukohdeOid": "1.2.246.562.20.87061484132",
+    "julkaistavissa": true,
+    "hyvaksyttyVarasijalta": false,
+    "hakijaOid": "1.2.246.562.24.29600404317",
+    "hakuOid": "1.2.246.562.29.99705397646",
+    "hakutoive": 2,
+    "tila": "KESKEN",
+    "ilmoittautumisTila": "EI_TEHTY",
+    "logEntries": [
+      {
+        "luotu": "2015-06-25T10:38:52.915Z",
+        "muokkaaja": "1.2.246.562.24.41327169638",
+        "muutos": "KESKEN",
+        "selite": "Massamuokkaus"
+      }
+    ]
+  },
+  {
+    "valintatapajonoOid": "14345398388996844110591962067736",
+    "hakemusOid": "1.2.246.562.11.00003933243",
+    "hakukohdeOid": "1.2.246.562.20.8706148413X",
+    "julkaistavissa": true,
+    "hyvaksyttyVarasijalta": false,
+    "hakijaOid": "1.2.246.562.24.29600404317",
+    "hakuOid": "1.2.246.562.29.99705397646",
+    "hakutoive": 3,
+    "tila": "EHDOLLISESTI_VASTAANOTTANUT",
+    "ilmoittautumisTila": "EI_TEHTY",
+    "logEntries": [
+      {
+        "luotu": "2015-06-25T10:38:52.915Z",
+        "muokkaaja": "1.2.246.562.24.41327169638",
+        "muutos": "EHDOLLISESTI_VASTAANOTTANUT",
+        "selite": "Massamuokkaus"
+      }
+    ]
   }
 ]
