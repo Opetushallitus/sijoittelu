@@ -152,7 +152,7 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
         muuttuneetValintatulokset.forEach(valintatulosDao::createOrUpdateValintatulos);
         List<String> varasijapomput = sijoitteluAlgorithm.getSijoitteluAjo().getVarasijapomput();
         varasijapomput.forEach(LOG::info);
-        LOG.info("Haun {} sijoittelussa muuttui {} kpl valintatuloksia, pomppuja {} kpl", muuttuneetValintatulokset.size(), varasijapomput.size());
+        LOG.info("Haun {} sijoittelussa muuttui {} kpl valintatuloksia, pomppuja {} kpl", hakuOid, muuttuneetValintatulokset.size(), varasijapomput.size());
         ActorRef siivoaja = actorService.getSiivousActor();
         try {
             sijoitteluDao.persistSijoittelu(sijoittelu);
