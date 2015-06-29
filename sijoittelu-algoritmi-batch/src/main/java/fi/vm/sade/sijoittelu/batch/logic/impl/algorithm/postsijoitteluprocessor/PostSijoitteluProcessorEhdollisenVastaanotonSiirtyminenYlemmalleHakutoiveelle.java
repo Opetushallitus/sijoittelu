@@ -82,6 +82,7 @@ public class PostSijoitteluProcessorEhdollisenVastaanotonSiirtyminenYlemmalleHak
     private void poistaAlemmatEhdollisetVastaanotot(Hakemus hakemus, List<Valintatulos> hakijanAlemmatValintatulokset) {
         hakijanAlemmatValintatulokset.forEach(alempiValintatulos -> {
             if (alempiValintatulos.getTila().equals(ValintatuloksenTila.EHDOLLISESTI_VASTAANOTTANUT)) {
+                LOG.info("Poistetaan hakijalta {} alempi ehdollinen vastaanotto hakemukselta {}", alempiValintatulos.getHakijaOid(), alempiValintatulos.getHakemusOid());
                 alempiValintatulos.setTila(ValintatuloksenTila.PERUUTETTU);
                 hakemus.setTilanKuvaukset(TilanKuvaukset.peruuntunutYlempiToive());
             }
