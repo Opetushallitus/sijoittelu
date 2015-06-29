@@ -34,11 +34,11 @@ public class PostSijoitteluProcessorEhdollisenVastaanotonSiirtyminenYlemmalleHak
 
                 if (hasPeruuntunutHakemusJonkaValintatulosEhdollisestiHyvaksytty(hakijanAlemmatHakemukset, hakijanAlemmatValintatulokset)) {
                     if (hakemuksenValintatulos.get().getHakutoive() == 1) {
-                        LOG.info("Hakijalta {} löytynyt peruutunut alempi ehdollisesti hyväksytty hakemus, joten muutetaan korkeimman prioriteetin hakemus {} vastaanotetuksi sitovasti.", hakemus.getHakijaOid(), hakemus.getHakemusOid());
-                        vastaanOtaSitovasti(hakemuksenValintatulos.get());
+                        LOG.info("DRYRUN: Hakijalta {} löytynyt peruutunut alempi ehdollisesti hyväksytty hakemus, joten muutetaan korkeimman prioriteetin hakemus {} vastaanotetuksi sitovasti.", hakemus.getHakijaOid(), hakemus.getHakemusOid());
+                        //vastaanOtaSitovasti(hakemuksenValintatulos.get());
                     } else {
-                        LOG.info("Hakijalta {} löytynyt peruutunut alempi ehdollisesti hyväksytty hakemus, joten muutetaan hakemus {} ehdollisesti vastaanotetuksi.", hakemus.getHakijaOid(), hakemus.getHakemusOid());
-                        vastaanOtaEhdollisesti(hakemuksenValintatulos.get());
+                        LOG.info("DRYRUN: Hakijalta {} löytynyt peruutunut alempi ehdollisesti hyväksytty hakemus, joten muutetaan hakemus {} ehdollisesti vastaanotetuksi.", hakemus.getHakijaOid(), hakemus.getHakemusOid());
+                        //vastaanOtaEhdollisesti(hakemuksenValintatulos.get());
                     }
                     poistaAlemmatEhdollisetVastaanotot(hakemus, hakijanAlemmatValintatulokset);
                 }
@@ -82,9 +82,9 @@ public class PostSijoitteluProcessorEhdollisenVastaanotonSiirtyminenYlemmalleHak
     private void poistaAlemmatEhdollisetVastaanotot(Hakemus hakemus, List<Valintatulos> hakijanAlemmatValintatulokset) {
         hakijanAlemmatValintatulokset.forEach(alempiValintatulos -> {
             if (alempiValintatulos.getTila().equals(ValintatuloksenTila.EHDOLLISESTI_VASTAANOTTANUT)) {
-                LOG.info("Poistetaan hakijalta {} alempi ehdollinen vastaanotto hakemukselta {}", alempiValintatulos.getHakijaOid(), alempiValintatulos.getHakemusOid());
-                alempiValintatulos.setTila(ValintatuloksenTila.PERUUTETTU);
-                hakemus.setTilanKuvaukset(TilanKuvaukset.peruuntunutYlempiToive());
+                LOG.info("DRYRUN: Poistetaan hakijalta {} alempi ehdollinen vastaanotto hakemukselta {}", alempiValintatulos.getHakijaOid(), alempiValintatulos.getHakemusOid());
+                //alempiValintatulos.setTila(ValintatuloksenTila.PERUUTETTU);
+                //hakemus.setTilanKuvaukset(TilanKuvaukset.peruuntunutYlempiToive());
             }
         });
     }
