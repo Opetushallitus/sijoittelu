@@ -119,8 +119,12 @@ public class PostSijoitteluProcessorEhdollisenVastaanotonSiirtyminenYlemmalleHak
     }
 
     private List<Valintatulos> hakijanKaikkiValintatulokset(SijoitteluajoWrapper sijoitteluajoWrapper, Hakemus hakemus) {
-        return sijoitteluajoWrapper.getMuuttuneetValintatulokset().stream()
-                .filter(vt -> vt.getHakijaOid().equals(hakemus.getHakijaOid()))
-                .collect(Collectors.toList());
+        if (sijoitteluajoWrapper.getMuuttuneetValintatulokset() == null) {
+            return new LinkedList<>();
+        } else {
+            return sijoitteluajoWrapper.getMuuttuneetValintatulokset().stream()
+                    .filter(vt -> vt.getHakijaOid() != null && vt.getHakijaOid().equals(hakemus.getHakijaOid()))
+                    .collect(Collectors.toList());
+        }
     }
 }
