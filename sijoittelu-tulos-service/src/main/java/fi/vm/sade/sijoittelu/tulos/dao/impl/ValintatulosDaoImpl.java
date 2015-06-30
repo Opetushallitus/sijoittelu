@@ -1,9 +1,11 @@
 package fi.vm.sade.sijoittelu.tulos.dao.impl;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 
+import fi.vm.sade.sijoittelu.domain.ValintatuloksenTila;
 import org.apache.commons.lang.StringUtils;
 import org.mongodb.morphia.Datastore;
 import org.mongodb.morphia.query.Query;
@@ -106,5 +108,18 @@ public class ValintatulosDaoImpl implements ValintatulosDao {
     @Override
     public void createOrUpdateValintatulos(Valintatulos tulos) {
         morphiaDS.save(tulos);
+    }
+
+    @Override
+    public List<Valintatulos> mergaaValintatulos(List<Valintatulos> sijoittelunTulokset) {
+        return sijoittelunTulokset.stream().map(valintatulos -> {
+            final Valintatulos mongoTulos = loadValintatulos(valintatulos.getHakukohdeOid(), valintatulos.getValintatapajonoOid(), valintatulos.getHakemusOid());
+            if (!mongoTulos.getTila().equals(ValintatuloksenTila.KESKEN)) {
+                valintatulos.setTila(mongoTulos.getTila());
+                valintatulos.setIlmoittautumisTila(mongoTulos.getIlmoittautumisTila());
+                valintatulos.setJulkaistavissa(mongoTulos.getJulkaistavissa());
+            }
+            return valintatulos;
+        }).collect(Collectors.toList());
     }
 }

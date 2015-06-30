@@ -9,6 +9,8 @@ public interface ValintatulosDao {
 
     void createOrUpdateValintatulos(Valintatulos tulos);
 
+    List<Valintatulos> mergaaValintatulos(List<Valintatulos> sijoittelunTulokset);
+
     List<Valintatulos> loadValintatulokset(String hakuOid);
 
     List<Valintatulos> loadValintatuloksetForHakukohde(String hakukohdeOid);

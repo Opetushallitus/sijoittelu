@@ -149,10 +149,12 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
         uusiSijoitteluajo.setEndMils(System.currentTimeMillis());
         processOldApplications(olemassaolevatHakukohteet, kaikkiHakukohteet);
         List<Valintatulos> muuttuneetValintatulokset = sijoitteluAlgorithm.getSijoitteluAjo().getMuuttuneetValintatulokset();
-        muuttuneetValintatulokset.forEach(valintatulosDao::createOrUpdateValintatulos);
+        List<Valintatulos> mergatut = valintatulosDao.mergaaValintatulos(muuttuneetValintatulokset);
+        mergatut.forEach(valintatulosDao::createOrUpdateValintatulos);
+        sijoitteluAlgorithm.getSijoitteluAjo().setMuuttuneetValintatulokset(mergatut);
         List<String> varasijapomput = sijoitteluAlgorithm.getSijoitteluAjo().getVarasijapomput();
         varasijapomput.forEach(LOG::info);
-        LOG.info("Haun {} sijoittelussa muuttui {} kpl valintatuloksia, pomppuja {} kpl", hakuOid, muuttuneetValintatulokset.size(), varasijapomput.size());
+        LOG.info("Haun {} sijoittelussa muuttui {} kpl valintatuloksia, pomppuja {} kpl", hakuOid, mergatut.size(), varasijapomput.size());
         ActorRef siivoaja = actorService.getSiivousActor();
         try {
             sijoitteluDao.persistSijoittelu(sijoittelu);
