@@ -12,6 +12,8 @@ import fi.vm.sade.sijoittelu.domain.ValintatuloksenTila;
 import org.apache.commons.lang.StringUtils;
 import org.mongodb.morphia.Datastore;
 import org.mongodb.morphia.query.Query;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
@@ -21,6 +23,8 @@ import fi.vm.sade.sijoittelu.tulos.dao.ValintatulosDao;
 
 @Repository
 public class ValintatulosDaoImpl implements ValintatulosDao {
+    private static final Logger LOG = LoggerFactory.getLogger(ValintatulosDaoImpl.class);
+
     @Qualifier("datastore")
     @Autowired
     private Datastore morphiaDS;
@@ -120,6 +124,8 @@ public class ValintatulosDaoImpl implements ValintatulosDao {
         return sijoittelunTulokset.stream().map(valintatulos -> {
             final Valintatulos mongoTulos = haeOlemassaolevaValintatulosMongosta(hakukohteidenValintatuloksetMongo, valintatulos);
             if (!mongoTulos.getTila().equals(ValintatuloksenTila.KESKEN)) {
+                LOG.info("Ohitetaan sijoittelun ulkopuolella muutettu valintatulos: hakija {}, hakemus {}, hakutoive {}",
+                        valintatulos.getHakijaOid(), valintatulos.getHakemusOid(), valintatulos.getHakutoive());
                 paivitaArvotMongosta(valintatulos, mongoTulos);
             }
             return valintatulos;
