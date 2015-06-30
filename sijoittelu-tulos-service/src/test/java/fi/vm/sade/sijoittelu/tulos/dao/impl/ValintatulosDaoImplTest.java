@@ -1,0 +1,67 @@
+package fi.vm.sade.sijoittelu.tulos.dao.impl;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.lordofthejars.nosqlunit.annotation.UsingDataSet;
+import com.lordofthejars.nosqlunit.core.LoadStrategyEnum;
+import com.lordofthejars.nosqlunit.mongodb.MongoDbRule;
+import fi.vm.sade.sijoittelu.domain.Hakukohde;
+import fi.vm.sade.sijoittelu.domain.IlmoittautumisTila;
+import fi.vm.sade.sijoittelu.domain.ValintatuloksenTila;
+import fi.vm.sade.sijoittelu.domain.Valintatulos;
+import fi.vm.sade.sijoittelu.tulos.dao.ValintatulosDao;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import java.util.Arrays;
+import java.util.List;
+
+import static com.lordofthejars.nosqlunit.mongodb.MongoDbRule.MongoDbRuleBuilder.newMongoDbRule;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations = {"classpath:test-context.xml"})
+public class ValintatulosDaoImplTest {
+    @Rule
+    public MongoDbRule mongoDbRule = newMongoDbRule().defaultSpringMongoDb("sijoittelu");
+
+    ObjectMapper objectMapper = new ObjectMapper();
+
+    String hakuOid = "1.2.246.562.5.2013080813081926341928";
+    String sijoitteluAjoId = "latest";
+    String hakemusOid = "1.2.246.562.11.00000441369";
+
+    @Autowired
+    ApplicationContext applicationContext;
+
+    @Autowired
+    ValintatulosDao valintatulosDao;
+
+    @Test
+    @UsingDataSet(locations = {"/fi/vm/sade/sijoittelu/tulos/resource/sijoittelu-basedata.json", "/fi/vm/sade/sijoittelu/tulos/resource/hyvaksytty-ilmoitettu.json"}, loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
+    public void mergeValintatulosWithMongoValintatulos() {
+        Hakukohde kohde = new Hakukohde() {{
+            setOid("1.2.246.562.5.72607738902");
+        }};
+        Valintatulos tulos = new Valintatulos() {{
+            setHakuOid(hakuOid);
+            setHakukohdeOid("1.2.246.562.5.72607738902");
+            setHakemusOid("1.2.246.562.11.00000441369");
+            setTila(ValintatuloksenTila.KESKEN);
+            setIlmoittautumisTila(IlmoittautumisTila.LASNA);
+            setValintatapajonoOid("14090336922663576781797489829886");
+            setJulkaistavissa(true);
+        }};
+
+        final List<Valintatulos> mergattu = valintatulosDao.mergaaValintatulos(Arrays.asList(kohde), Arrays.asList(tulos));
+        assertNotNull(mergattu);
+        assertEquals(ValintatuloksenTila.ILMOITETTU, mergattu.get(0).getTila());
+        assertEquals(IlmoittautumisTila.EI_TEHTY, mergattu.get(0).getIlmoittautumisTila());
+        assertEquals(false, mergattu.get(0).getJulkaistavissa());
+    }
+}
