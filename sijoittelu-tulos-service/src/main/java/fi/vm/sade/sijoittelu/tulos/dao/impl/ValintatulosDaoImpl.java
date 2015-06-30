@@ -1,10 +1,13 @@
 package fi.vm.sade.sijoittelu.tulos.dao.impl;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 
+import fi.vm.sade.sijoittelu.domain.Hakukohde;
 import fi.vm.sade.sijoittelu.domain.ValintatuloksenTila;
 import org.apache.commons.lang.StringUtils;
 import org.mongodb.morphia.Datastore;
@@ -111,15 +114,35 @@ public class ValintatulosDaoImpl implements ValintatulosDao {
     }
 
     @Override
-    public List<Valintatulos> mergaaValintatulos(List<Valintatulos> sijoittelunTulokset) {
+    public List<Valintatulos> mergaaValintatulos(List<Hakukohde> kaikkiHakukohteet, List<Valintatulos> sijoittelunTulokset) {
+        final Map<String, List<Valintatulos>> hakukohteidenValintatuloksetMongo = hakukohteidenValintatuloksetMongo(kaikkiHakukohteet);
+
         return sijoittelunTulokset.stream().map(valintatulos -> {
-            final Valintatulos mongoTulos = loadValintatulos(valintatulos.getHakukohdeOid(), valintatulos.getValintatapajonoOid(), valintatulos.getHakemusOid());
+            final Valintatulos mongoTulos = haeOlemassaolevaValintatulosMongosta(hakukohteidenValintatuloksetMongo, valintatulos);
             if (!mongoTulos.getTila().equals(ValintatuloksenTila.KESKEN)) {
-                valintatulos.setTila(mongoTulos.getTila());
-                valintatulos.setIlmoittautumisTila(mongoTulos.getIlmoittautumisTila());
-                valintatulos.setJulkaistavissa(mongoTulos.getJulkaistavissa());
+                paivitaArvotMongosta(valintatulos, mongoTulos);
             }
             return valintatulos;
         }).collect(Collectors.toList());
+    }
+
+    private void paivitaArvotMongosta(Valintatulos valintatulos, Valintatulos mongoTulos) {
+        valintatulos.setTila(mongoTulos.getTila());
+        valintatulos.setIlmoittautumisTila(mongoTulos.getIlmoittautumisTila());
+        valintatulos.setJulkaistavissa(mongoTulos.getJulkaistavissa());
+    }
+
+    private Valintatulos haeOlemassaolevaValintatulosMongosta(Map<String, List<Valintatulos>> hakukohteidenValintatuloksetMongo, Valintatulos valintatulos) {
+        return hakukohteidenValintatuloksetMongo.get(valintatulos.getHakukohdeOid()).stream()
+                .filter(v -> v.getHakemusOid().equals(valintatulos.getHakemusOid()) && v.getValintatapajonoOid().equals(valintatulos.getValintatapajonoOid()))
+                .findFirst().orElse(new Valintatulos());
+    }
+
+    private Map<String, List<Valintatulos>> hakukohteidenValintatuloksetMongo(List<Hakukohde> kaikkiHakukohteet) {
+        final Map<String, List<Valintatulos>> hakukohdeValintatulokset = new HashMap<>();
+        kaikkiHakukohteet.forEach(hakukohde -> {
+            hakukohdeValintatulokset.put(hakukohde.getOid(), loadValintatuloksetForHakukohde(hakukohde.getOid()));
+        });
+        return hakukohdeValintatulokset;
     }
 }
