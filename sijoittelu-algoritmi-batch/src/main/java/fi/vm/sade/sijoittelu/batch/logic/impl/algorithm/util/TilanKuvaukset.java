@@ -24,6 +24,7 @@ public class TilanKuvaukset {
     public static Map<String, String> peruuntunutHyvaksyttyToisessaJonossa() {
         return new HashMap<String, String>() {{
             put("FI", "Peruuntunut, hyväksytty toisessa valintatapajonossa");
+            put("SV", "Annullerad, godkänd i en annan urvalsmetodskö");
             put("EN", "Cancelled, accepted in another selection method queue");
         }};
     }
@@ -55,6 +56,7 @@ public class TilanKuvaukset {
     public static Map<String, String> peruuntunutEiMahduKasiteltavienVarasijojenMaaraan() {
         return new HashMap<String, String>() {{
             put("FI", "Peruuntunut, varasija ei mahdu käsiteltävien varasijojen määrään");
+            put("SV", "Annullerad, reservplatsen ryms inte med i antalet reservplatser");
             put("EN", "Cancelled, the reserve place does not fit into the amount of processed reserve places");
         }};
     }
@@ -70,6 +72,7 @@ public class TilanKuvaukset {
     public static Map<String, String> peruuntunutEiVarasijaTayttoa() {
         return new HashMap<String, String>() {{
             put("FI", "Peruuntunut, ei varasijatäyttöä");
+            put("SV", "Annullerad, ingen antagning från reservplats");
             put("EN", "Cancelled, no reserve place practice");
         }};
     }
@@ -77,6 +80,7 @@ public class TilanKuvaukset {
     public static Map<String, String> hyvaksyttyTayttojonoSaannolla(String jono) {
         return new HashMap<String, String>() {{
             put("FI", "Hyväksytty täyttöjonosäännöllä valintatapajonosta: " + jono);
+            put("SV", "Godkänd med köpåfyllningsregel från urvalsmetodskö: " + jono);
             put("EN", "Accepted from selection method queue: " + jono);
         }};
     }
@@ -84,6 +88,8 @@ public class TilanKuvaukset {
     public static Map<String, String> hylattyHakijaryhmaanKuulumattomana(String hakijaryhma) {
         return new HashMap<String, String>() {{
             put("FI", "Hylätty, ei kuulu hakijaryhmään: " + hakijaryhma);
+            put("SV", "Annullerad, hör inte till gruppen för sökande: " + hakijaryhma);
+            put("EN", "Cancelled, is not included in the applicant group: " + hakijaryhma);
         }};
     }
 }
