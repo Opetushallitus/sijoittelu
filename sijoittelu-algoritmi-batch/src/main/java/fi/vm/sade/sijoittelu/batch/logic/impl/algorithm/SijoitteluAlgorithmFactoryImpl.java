@@ -10,6 +10,8 @@ import org.springframework.stereotype.Component;
 
 import java.util.*;
 
+import static java.util.Collections.emptyMap;
+
 @Component
 public class SijoitteluAlgorithmFactoryImpl implements SijoitteluAlgorithmFactory {
     private final List<ValintatuloksenTila> hyvaksyttylista = Arrays.asList(ValintatuloksenTila.ILMOITETTU, ValintatuloksenTila.VASTAANOTTANUT, ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI);
@@ -30,11 +32,30 @@ public class SijoitteluAlgorithmFactoryImpl implements SijoitteluAlgorithmFactor
         SijoitteluAlgorithmImpl algorithm = new SijoitteluAlgorithmImpl();
         algorithm.preSijoitteluProcessors = preSijoitteluProcessors;
         algorithm.postSijoitteluProcessors = postSijoitteluProcessors;
-        algorithm.sijoitteluAjo = wrapDomain(hakukohteet, valintatulokset);
+        algorithm.sijoitteluAjo = wrapDomain(hakukohteet, indexValintatulokset(valintatulokset));
         return algorithm;
     }
 
-    private SijoitteluajoWrapper wrapDomain(List<Hakukohde> hakukohteet, List<Valintatulos> valintatulokset) {
+    // hakukohde : valintatapajonot : hakemukset
+    private static Map<String, Map<String, Map<String, Valintatulos>>> indexValintatulokset(List<Valintatulos> valintatulokset) {
+        Map<String, Map<String, Map<String, Valintatulos>>> hakukohdeIndex = new HashMap<>();
+
+        valintatulokset.stream().filter(vt -> !(vt.getHakemusOid() == null || vt.getHakemusOid().isEmpty())).forEach(vt -> {
+            final String hakukohdeOid = vt.getHakukohdeOid();
+            final String valintatapajonoOid = vt.getValintatapajonoOid();
+            final String hakemusOid = vt.getHakemusOid();
+
+            Map<String, Map<String, Valintatulos>> jonoIndex = hakukohdeIndex.getOrDefault(hakukohdeOid, new HashMap<>());
+            Map<String, Valintatulos> hakemusIndex = jonoIndex.getOrDefault(valintatapajonoOid, new HashMap<>());
+            hakemusIndex.put(hakemusOid, vt);
+            jonoIndex.put(valintatapajonoOid, hakemusIndex);
+            hakukohdeIndex.put(hakukohdeOid, jonoIndex);
+        });
+
+        return hakukohdeIndex;
+    }
+
+    private SijoitteluajoWrapper wrapDomain(List<Hakukohde> hakukohteet, Map<String, Map<String, Map<String, Valintatulos>>> valintatulokset) {
         SijoitteluajoWrapper sijoitteluajoWrapper = new SijoitteluajoWrapper();
         Map<String, HenkiloWrapper> hakemusOidMap = new HashMap<String, HenkiloWrapper>();
         hakukohteet.forEach(hakukohde -> {
@@ -42,11 +63,15 @@ public class SijoitteluAlgorithmFactoryImpl implements SijoitteluAlgorithmFactor
             hakukohdeWrapper.setHakukohde(hakukohde);
             sijoitteluajoWrapper.getHakukohteet().add(hakukohdeWrapper);
             hakukohdeWrapper.setSijoitteluajoWrapper(sijoitteluajoWrapper);
+
+            Map<String, Map<String, Valintatulos>> jonoIndex = valintatulokset.getOrDefault(hakukohde.getOid(), emptyMap());
             hakukohde.getValintatapajonot().forEach(valintatapajono -> {
                 ValintatapajonoWrapper valintatapajonoWrapper = new ValintatapajonoWrapper();
                 valintatapajonoWrapper.setValintatapajono(valintatapajono);
                 hakukohdeWrapper.getValintatapajonot().add(valintatapajonoWrapper);
                 valintatapajonoWrapper.setHakukohdeWrapper(hakukohdeWrapper);
+
+                Map<String, Valintatulos> hakemusIndex = jonoIndex.getOrDefault(valintatapajono.getOid(), emptyMap());
                 valintatapajono.getHakemukset().forEach(hakemus -> {
                     HakemusWrapper hakemusWrapper = new HakemusWrapper();
                     hakemusWrapper.setHakemus(hakemus);
@@ -55,8 +80,7 @@ public class SijoitteluAlgorithmFactoryImpl implements SijoitteluAlgorithmFactor
                     HenkiloWrapper henkiloWrapper = getOrCreateHenkilo(hakemus, hakemusOidMap);
                     henkiloWrapper.getHakemukset().add(hakemusWrapper);
                     hakemusWrapper.setHenkilo(henkiloWrapper);
-                    Valintatulos valintatulos = getValintatulos(hakukohde, valintatapajono, hakemus, valintatulokset);
-                    setHakemuksenValintatuloksenTila(hakemus, hakemusWrapper, henkiloWrapper, valintatulos);
+                    setHakemuksenValintatuloksenTila(hakemus, hakemusWrapper, henkiloWrapper, hakemusIndex.get(hakemus.getHakemusOid()));
                 });
 
             });
@@ -153,19 +177,6 @@ public class SijoitteluAlgorithmFactoryImpl implements SijoitteluAlgorithmFactor
             }
         }
         return henkiloWrapper;
-    }
-
-    private Valintatulos getValintatulos(Hakukohde hakukohde, Valintatapajono valintatapajono, Hakemus hakemus, List<Valintatulos> valintatulokset) {
-        if (valintatulokset != null) {
-            for (Valintatulos vt : valintatulokset) {
-                if (vt.getHakukohdeOid().equals(hakukohde.getOid()) && vt.getValintatapajonoOid().equals(valintatapajono.getOid())) {
-                    if (vt.getHakemusOid() != null && !vt.getHakemusOid().isEmpty() && vt.getHakemusOid().equals(hakemus.getHakemusOid())) {
-                        return vt;
-                    }
-                }
-            }
-        }
-        return null;
     }
 
     private HenkiloWrapper getHenkilo(String hakijaOid, Map<String, HenkiloWrapper> hakijaOidMap) {
