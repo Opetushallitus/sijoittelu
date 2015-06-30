@@ -223,4 +223,11 @@ public class HakemusDTO implements Serializable {
     public void setTilanKuvaukset(Map<String, String> tilanKuvaukset) {
         this.tilanKuvaukset = tilanKuvaukset;
     }
+
+    public boolean equals(Object o) {
+        if (o instanceof HakemusDTO) {
+            return this.getHakemusOid().equals(((HakemusDTO) o).getHakemusOid());
+        }
+        return false;
+    }
 }
