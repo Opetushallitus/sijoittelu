@@ -3,6 +3,7 @@ package fi.vm.sade.sijoittelu.tulos.dao.impl;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
@@ -122,11 +123,11 @@ public class ValintatulosDaoImpl implements ValintatulosDao {
         final Map<String, List<Valintatulos>> hakukohteidenValintatuloksetMongo = hakukohteidenValintatuloksetMongo(kaikkiHakukohteet);
 
         return sijoittelunTulokset.stream().map(valintatulos -> {
-            final Valintatulos mongoTulos = haeOlemassaolevaValintatulosMongosta(hakukohteidenValintatuloksetMongo, valintatulos);
-            if (!mongoTulos.getTila().equals(ValintatuloksenTila.KESKEN)) {
+            final Optional<Valintatulos> valintatulosMongosta = haeOlemassaolevaValintatulosMongosta(hakukohteidenValintatuloksetMongo, valintatulos);
+            if (valintatulosMongosta.isPresent() && !valintatulosMongosta.get().getTila().equals(ValintatuloksenTila.KESKEN)) {
                 LOG.info("Ohitetaan sijoittelun ulkopuolella muutettu valintatulos: hakija {}, hakemus {}, hakutoive {}",
                         valintatulos.getHakijaOid(), valintatulos.getHakemusOid(), valintatulos.getHakutoive());
-                paivitaArvotMongosta(valintatulos, mongoTulos);
+                paivitaArvotMongosta(valintatulos, valintatulosMongosta.get());
             }
             return valintatulos;
         }).collect(Collectors.toList());
@@ -138,10 +139,10 @@ public class ValintatulosDaoImpl implements ValintatulosDao {
         valintatulos.setJulkaistavissa(mongoTulos.getJulkaistavissa());
     }
 
-    private Valintatulos haeOlemassaolevaValintatulosMongosta(Map<String, List<Valintatulos>> hakukohteidenValintatuloksetMongo, Valintatulos valintatulos) {
+    private Optional<Valintatulos> haeOlemassaolevaValintatulosMongosta(Map<String, List<Valintatulos>> hakukohteidenValintatuloksetMongo, Valintatulos valintatulos) {
         return hakukohteidenValintatuloksetMongo.get(valintatulos.getHakukohdeOid()).stream()
                 .filter(v -> v.getHakemusOid().equals(valintatulos.getHakemusOid()) && v.getValintatapajonoOid().equals(valintatulos.getValintatapajonoOid()))
-                .findFirst().orElse(new Valintatulos());
+                .findFirst();
     }
 
     private Map<String, List<Valintatulos>> hakukohteidenValintatuloksetMongo(List<Hakukohde> kaikkiHakukohteet) {
