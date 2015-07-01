@@ -483,10 +483,10 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
     }
 
     @Override
-    public boolean muutoksetOvatAjantasaisia(List<Valintatulos> valintatulokset) {
+    public boolean muutoksetOvatAjantasaisia(String hakukohdeOid, List<Valintatulos> valintatulokset) {
         return !valintatulokset.stream()
                 .anyMatch(valintatulos -> {
-                    Valintatulos saved = valintatulosDao.loadValintatulos(valintatulos.getHakukohdeOid(), valintatulos.getValintatapajonoOid(), valintatulos.getHakemusOid());
+                    Valintatulos saved = valintatulosDao.loadValintatulos(hakukohdeOid, valintatulos.getValintatapajonoOid(), valintatulos.getHakemusOid());
                     Interval interval = new Interval(new DateTime(valintatulos.getRead()), DateTime.now());
                     return saved.getLogEntries() != null &&
                             saved.getLogEntries().stream().anyMatch(entry -> interval.contains(entry.getLuotu().getTime()));
