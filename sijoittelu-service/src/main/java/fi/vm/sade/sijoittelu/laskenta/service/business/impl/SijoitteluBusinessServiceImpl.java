@@ -489,23 +489,24 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
     }
 
     @Override
-    public void vaihdaHakemuksenTila(String hakuoid, String hakukohdeOid,
+    public Hakukohde getHakukohde(String hakuOid, String hakukohdeOid) {
+        return sijoitteluDao.getSijoitteluByHakuOid(hakuOid)
+                .map(sijoittelu -> hakukohdeDao.getHakukohdeForSijoitteluajo(sijoittelu.getLatestSijoitteluajo().getSijoitteluajoId(), hakukohdeOid))
+                .orElseThrow(() -> new RuntimeException("Sijoittelua ei löytynyt haulle: " + hakuOid));
+    }
+
+    @Override
+    public void vaihdaHakemuksenTila(String hakuoid, Hakukohde hakukohde,
                                      String valintatapajonoOid, String hakemusOid,
                                      ValintatuloksenTila tila, String selite,
-                                     IlmoittautumisTila ilmoittautumisTila, boolean julkaistavissa, boolean hyvaksyttyVarasijalta) {
-        if (StringUtils.isBlank(hakuoid) || StringUtils.isBlank(hakukohdeOid)
-                || StringUtils.isBlank(valintatapajonoOid)
-                || StringUtils.isBlank(hakemusOid)) {
-            throw new RuntimeException("Osa parametreista puuttuu. hakuoid: " + hakuoid + " - hakukohdeoid: " + hakukohdeOid + " - valintatapajonoOid: " + valintatapajonoOid + " - hakemusOid: " + hakemusOid);
+                                     IlmoittautumisTila ilmoittautumisTila,
+                                     boolean julkaistavissa,
+                                     boolean hyvaksyttyVarasijalta) {
+        if (StringUtils.isBlank(hakuoid) || StringUtils.isBlank(valintatapajonoOid) || StringUtils.isBlank(hakemusOid)) {
+            throw new RuntimeException("Osa parametreista puuttuu. hakuoid: " + hakuoid + " - valintatapajonoOid: " + valintatapajonoOid + " - hakemusOid: " + hakemusOid);
         }
-        Optional<Sijoittelu> sijoitteluOpt = sijoitteluDao.getSijoitteluByHakuOid(hakuoid);
-        if (!sijoitteluOpt.isPresent()) {
-            throw new RuntimeException("Sijoittelua ei löytynyt haulle: " + hakuoid);
-        }
-        Sijoittelu sijoittelu = sijoitteluOpt.get();
-        SijoitteluAjo ajo = sijoittelu.getLatestSijoitteluajo();
-        Long ajoId = ajo.getSijoitteluajoId();
-        Hakukohde hakukohde = hakukohdeDao.getHakukohdeForSijoitteluajo(ajoId, hakukohdeOid);
+        final Long ajoId = hakukohde.getSijoitteluajoId();
+        final String hakukohdeOid = hakukohde.getOid();
         Valintatapajono valintatapajono = getValintatapajono(valintatapajonoOid, hakukohde);
         if (valintatapajono == null) {
             throw new ValintatapajonoaEiLoytynytException("Valintatapajonoa " + valintatapajonoOid + "ei löytynyt hakukohteelle " + hakukohdeOid + " haussa " + hakuoid);
@@ -572,7 +573,7 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
         }
     }
 
-    private Valintatapajono getValintatapajono(String valintatapajonoOid, Hakukohde hakukohde) {
+    private static Valintatapajono getValintatapajono(String valintatapajonoOid, Hakukohde hakukohde) {
         Valintatapajono valintatapajono = null;
         for (Valintatapajono v : hakukohde.getValintatapajonot()) {
             if (valintatapajonoOid.equals(v.getOid())) {
@@ -594,7 +595,7 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
         return ophAdmin;
     }
 
-    private Hakemus getHakemus(final String hakemusOid, final Valintatapajono valintatapajono) {
+    private static Hakemus getHakemus(final String hakemusOid, final Valintatapajono valintatapajono) {
         Hakemus hakemus = null;
         for (Hakemus h : valintatapajono.getHakemukset()) {
             if (hakemusOid.equals(h.getHakemusOid())) {

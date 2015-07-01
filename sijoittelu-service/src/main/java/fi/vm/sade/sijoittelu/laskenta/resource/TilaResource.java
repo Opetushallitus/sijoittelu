@@ -135,11 +135,12 @@ public class TilaResource {
                                          @QueryParam("selite") String selite) {
 
         try {
+            Hakukohde hakukohde = sijoitteluBusinessService.getHakukohde(hakuOid, hakukohdeOid);
             for (Valintatulos v : valintatulokset) {
                 ValintatuloksenTila tila = v.getTila();
                 IlmoittautumisTila ilmoittautumisTila = v.getIlmoittautumisTila();
                 sijoitteluBusinessService.vaihdaHakemuksenTila(hakuOid,
-                        hakukohdeOid, v.getValintatapajonoOid(),
+                        hakukohde, v.getValintatapajonoOid(),
                         v.getHakemusOid(), tila, selite, ilmoittautumisTila,
                         v.getJulkaistavissa(), v.getHyvaksyttyVarasijalta());
             }
@@ -199,7 +200,8 @@ public class TilaResource {
                                 IlmoittautumisTila ilmoittautumisTila = v
                                         .getIlmoittautumisTila();
                                 sijoitteluBusinessService.vaihdaHakemuksenTila(
-                                        v.getHakuOid(), v.getHakukohdeOid(),
+                                        v.getHakuOid(),
+                                        sijoitteluBusinessService.getHakukohde(v.getHakuOid(), v.getHakukohdeOid()),
                                         v.getValintatapajonoOid(),
                                         v.getHakemusOid(), tila,
                                         "Erillishauntuonti",
