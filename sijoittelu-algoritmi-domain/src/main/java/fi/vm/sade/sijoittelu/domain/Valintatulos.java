@@ -146,4 +146,8 @@ public class Valintatulos implements Serializable {
     public void setHyvaksyttyVarasijalta(boolean hyvaksyttyVarasijalta) {
         this.hyvaksyttyVarasijalta = hyvaksyttyVarasijalta;
     }
+
+    public Date getRead() {
+        return read;
+    }
 }
