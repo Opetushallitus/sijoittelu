@@ -23,6 +23,7 @@ public class MongoMockData {
 
     public static List<DBObject> collectionElements(DBObject data, String collection) {
         final List objects = Arrays.asList(((BasicDBList) data.get(collection)).toArray());
+        //noinspection unchecked
         return (List<DBObject>) objects;
     }
 

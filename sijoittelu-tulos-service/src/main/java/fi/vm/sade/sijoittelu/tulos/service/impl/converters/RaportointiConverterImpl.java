@@ -145,7 +145,6 @@ public class RaportointiConverterImpl implements RaportointiConverter {
                 for (PistetietoDTO lpto : dto.getPistetiedot()) {
                     if (pistetieto.getTunniste().equals(lpto.getTunniste())) {
                         pt = lpto;
-                        continue;
                     }
                 }
                 if (pt == null) {

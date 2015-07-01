@@ -29,7 +29,7 @@ public class TulosGenerator {
     final static OidGen valintatapajonoOids = new OidGen("1.2.246.262.10");
     final static ObjectTemplate template = new ObjectTemplate("fi/vm/sade/sijoittelu/tulos/generator/generator-templates.json");
 
-    public final static void main(String... args) {
+    public static void main(String... args) {
         List<Hakukohde> hakukohteet = createHakukohteet(10);
         List<Valintatulos> tulokset = createTulokset(hakukohteet, 10);
     }

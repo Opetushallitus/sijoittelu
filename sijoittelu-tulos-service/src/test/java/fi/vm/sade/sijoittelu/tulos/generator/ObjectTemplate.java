@@ -21,7 +21,7 @@ public class ObjectTemplate {
     }
 
     public <T extends Serializable> T getTemplate(String collection, Class<T> clazz) {
-        T result = (T) templates.get(clazz);
+        @SuppressWarnings("unchecked") T result = (T) templates.get(clazz);
         if (result == null) {
             final DBObject mongoObject = MongoMockData.collectionElements(templateData, collection).get(0);
             result = new Mapper().fromDBObject(clazz, mongoObject, new DefaultEntityCache());
