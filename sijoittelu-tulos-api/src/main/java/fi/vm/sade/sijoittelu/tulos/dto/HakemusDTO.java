@@ -224,7 +224,6 @@ public class HakemusDTO implements Serializable {
         this.tilanKuvaukset = tilanKuvaukset;
     }
 
-    @Override
     public boolean equals(Object o) {
         if (o instanceof HakemusDTO) {
             return this.getHakemusOid().equals(((HakemusDTO) o).getHakemusOid());
