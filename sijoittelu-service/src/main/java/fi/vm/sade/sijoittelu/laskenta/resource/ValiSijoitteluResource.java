@@ -100,7 +100,7 @@ public class ValiSijoitteluResource {
             LOGGER.info("############### Välisijoittelu valmis haussa {} ###############", hakuOid);
             return onnistui;
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("Välisijoittelu epäonnistui haulle " + hakuOid, e);
             return new ArrayList<>();
         }
     }

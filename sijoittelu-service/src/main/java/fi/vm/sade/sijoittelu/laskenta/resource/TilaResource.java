@@ -320,7 +320,7 @@ public class TilaResource {
                             throw new RuntimeException("Hakukohteelle " + hakukohdeOid + " ei löytynyt tarjoajaOidia sijoitteluajosta");
                         }
                     } catch (Exception e) {
-                        e.printStackTrace();
+                        LOGGER.error("Tilan muuttamisessa virhetilanne!", e);
                         throw new RuntimeException("Hakukohteelle " + hakukohdeOid + " ei löytynyt tarjoajaOidia sijoitteluajosta");
                     }
                 } else {

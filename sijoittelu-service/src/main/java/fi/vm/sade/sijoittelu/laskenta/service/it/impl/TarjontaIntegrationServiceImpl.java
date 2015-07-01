@@ -6,6 +6,8 @@ import fi.vm.sade.sijoittelu.laskenta.external.resource.HakukohdeV1Resource;
 import fi.vm.sade.sijoittelu.laskenta.external.resource.OhjausparametriResource;
 import fi.vm.sade.sijoittelu.laskenta.external.resource.dto.*;
 import fi.vm.sade.sijoittelu.laskenta.service.it.TarjontaIntegrationService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -13,6 +15,8 @@ import java.util.Optional;
 
 @Service
 public class TarjontaIntegrationServiceImpl implements TarjontaIntegrationService{
+    private static final Logger LOG = LoggerFactory.getLogger(TarjontaIntegrationServiceImpl.class);
+
     @Autowired
     HakuV1Resource hakuV1Resource;
 
@@ -28,8 +32,9 @@ public class TarjontaIntegrationServiceImpl implements TarjontaIntegrationServic
             ResultHakukohdeDTO tarjonnanHakukohde = hakukohdeV1Resource.findByOid(hakukohdeOid);
             return tarjonnanHakukohde.getResult().getTarjoajaOids().stream().findFirst();
         } catch(Exception e) {
-            e.printStackTrace();
-            throw new RuntimeException("Hakukohteelle " + hakukohdeOid + " ei löytynyt tarjoajaOidia");
+            final String message = "Hakukohteelle " + hakukohdeOid + " ei löytynyt tarjoajaOidia";
+            LOG.error(message, e);
+            throw new RuntimeException(message);
         }
     }
 
@@ -39,8 +44,9 @@ public class TarjontaIntegrationServiceImpl implements TarjontaIntegrationServic
             ResultHakuDTO tarjonnanHaku = hakuV1Resource.findByOid(hakuOid);
             return Optional.ofNullable(tarjonnanHaku.getResult().getKohdejoukkoUri().split("#")[0]);
         } catch (Exception e) {
-            e.printStackTrace();
-            throw new RuntimeException("Haulle " + hakuOid + " ei saatu kohdejoukkoa");
+            final String message = "Haulle " + hakuOid + " ei saatu kohdejoukkoa";
+            LOG.error(message, e);
+            throw new RuntimeException(message);
         }
     }
 

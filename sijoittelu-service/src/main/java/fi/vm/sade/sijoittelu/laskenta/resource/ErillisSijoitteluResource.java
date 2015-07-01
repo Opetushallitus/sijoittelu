@@ -74,7 +74,7 @@ public class ErillisSijoitteluResource {
             LOGGER.info("############### Erillissijoittelu valmis haulle {} ###############", hakuOid);
             return onnistui;
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("Erillissijoittelu haulle " + haku.getHakuOid() + " epäonnistui.", e);
             return null;
         }
     }

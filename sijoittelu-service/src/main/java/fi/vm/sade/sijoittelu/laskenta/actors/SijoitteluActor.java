@@ -33,9 +33,7 @@ public class SijoitteluActor extends AbstractActor {
                 log.info("Sijoittelu haulle {} suoritettu onnistuneesti!", haku.getHakuOid());
                 sender().tell(true, self());
             } catch (Exception e) {
-                e.printStackTrace();
-                log.error("Sijoittelu haulle {} epäonnistui syystä {}!\r\n{}", haku.getHakuOid(),
-                        e.getMessage(), Arrays.toString(e.getStackTrace()));
+                log.error("Sijoittelu haulle " + haku.getHakuOid() + " epäonnistui", e);
                 sender().tell(new Status.Failure(e), ActorRef.noSender());
             }
         }).build());

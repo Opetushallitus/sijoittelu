@@ -32,9 +32,7 @@ public class ErillisSijoitteluActor extends AbstractActor {
                 log.info("Erillissijoittelu haulle {} suoritettu onnistuneesti!", haku.getHakuOid());
                 sender().tell(ajo, self());
             } catch (Exception e) {
-                e.printStackTrace();
-                log.error("Erillissijoittelu haulle {} epäonnistui syystä {}!\r\n{}", haku.getHakuOid(),
-                        e.getMessage(), Arrays.toString(e.getStackTrace()));
+                log.error("Erillissijoittelu haulle " + haku.getHakuOid() + " epäonnistui", e);
                 sender().tell(new Status.Failure(e), ActorRef.noSender());
             }
         }).build());

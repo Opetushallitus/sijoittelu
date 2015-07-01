@@ -34,9 +34,7 @@ public class ValiSijoitteluActor extends AbstractActor {
                 log.info("Välisijoittelu haulle {} suoritettu onnistuneesti!", haku.getHakuOid());
                 sender().tell(tulokset, self());
             } catch (Exception e) {
-                e.printStackTrace();
-                log.error("Välisijoittelu haulle {} epäonnistui syystä {}!\r\n{}", haku.getHakuOid(),
-                        e.getMessage(), Arrays.toString(e.getStackTrace()));
+                log.error("Välisijoittelu haulle " + haku.getHakuOid() + " epäonnistui", e);
                 sender().tell(new Status.Failure(e), ActorRef.noSender());
             }
         }).build());

@@ -111,7 +111,6 @@ public final class TestHelper {
             ObjectMapper xmlMapper = new XmlMapper();
             return xmlMapper.writeValueAsString(sijoitteluTyyppi);
         } catch (Exception e) {
-            e.printStackTrace();
             throw new RuntimeException(e);
         }
     }

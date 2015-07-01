@@ -205,8 +205,7 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
                 sijoitteluAjo.setVarasijaSaannotAstuvatVoimaan(fromTimestamp(parametri.getPH_VSSAV().getDate()));
             }
         } catch (Exception e) {
-            LOG.error("############## Ohjausparametrin muuntaminen LocalDateksi epäonnistui ##############");
-            e.printStackTrace();
+            LOG.error("############## Ohjausparametrin muuntaminen LocalDateksi epäonnistui ##############", e);
             if (sijoitteluAjo.isKKHaku()) {
                 throw new RuntimeException("Sijoittelua haulle " + hakuOid + " ei voida suorittaa, koska kyseessä on korkeakouluhaku ja vaadittavia ohjausparametrejä (PH_VTSSV, PH_VSSAV) ei saatu haettua tai asetettua.");
             } else {
@@ -226,8 +225,7 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
                 throw new RuntimeException("Sijoittelua haulle " + hakuOid + " ei voida suorittaa, koska tarjonnasta ei saatu haun tietoja");
             }
         } catch (Exception e) {
-            LOG.error("############## Haun hakeminen tarjonnasta epäonnistui ##############");
-            e.printStackTrace();
+            LOG.error("############## Haun hakeminen tarjonnasta epäonnistui ##############", e);
             throw new RuntimeException("Sijoittelua haulle " + hakuOid + " ei voida suorittaa, koska tarjonnasta ei saatu haun tietoja");
         }
     }
@@ -569,7 +567,7 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
                 throw new RuntimeException("Hakukohteelle " + hakukohdeOid + " ei löytynyt tarjoajaOidia sijoitteluajosta: " + ajoId);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            LOG.error("Tarjoajaoidin päivitys tarjonnasta epäonnistui", e);
             throw new RuntimeException("Hakukohteelle " + hakukohdeOid + " ei löytynyt tarjoajaOidia sijoitteluajosta: " + ajoId);
         }
     }
