@@ -25,6 +25,8 @@ import fi.vm.sade.sijoittelu.tulos.dto.HakukohdeDTO;
 import fi.vm.sade.sijoittelu.tulos.service.impl.converters.SijoitteluTulosConverter;
 import fi.vm.sade.valintalaskenta.domain.dto.valintatieto.HakuDTO;
 import org.apache.commons.lang.StringUtils;
+import org.joda.time.DateTime;
+import org.joda.time.Interval;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -478,6 +480,17 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
             throw new RuntimeException("Invalid search params, fix exception later");
         }
         return valintatulosDao.loadValintatuloksetForHakukohde(hakukohdeOid);
+    }
+
+    @Override
+    public boolean muutoksetOvatAjantasaisia(List<Valintatulos> valintatulokset) {
+        return !valintatulokset.stream()
+                .anyMatch(valintatulos -> {
+                    Valintatulos saved = valintatulosDao.loadValintatulos(valintatulos.getHakukohdeOid(), valintatulos.getValintatapajonoOid(), valintatulos.getHakemusOid());
+                    Interval interval = new Interval(new DateTime(valintatulos.getRead()), DateTime.now());
+                    return saved.getLogEntries() != null &&
+                            saved.getLogEntries().stream().anyMatch(entry -> interval.contains(entry.getLuotu().getTime()));
+                });
     }
 
     @Override

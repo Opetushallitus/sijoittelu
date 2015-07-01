@@ -30,4 +30,6 @@ public interface SijoitteluBusinessService {
     List<Valintatulos> haeHakemustenTilat(String hakukohdeOid, String valintatapajonoOid);
 
     List<Valintatulos> haeHakukohteenTilat(String hakukohdeOid);
+
+    boolean muutoksetOvatAjantasaisia(List<Valintatulos> valintatulokset);
 }

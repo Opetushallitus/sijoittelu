@@ -134,6 +134,10 @@ public class TilaResource {
                                          List<Valintatulos> valintatulokset,
                                          @QueryParam("selite") String selite) {
 
+        if(valintatulokset != null && !sijoitteluBusinessService.muutoksetOvatAjantasaisia(valintatulokset)) {
+            return Response.status(Response.Status.CONFLICT).build();
+        }
+
         try {
             Hakukohde hakukohde = sijoitteluBusinessService.getHakukohde(hakuOid, hakukohdeOid);
             for (Valintatulos v : valintatulokset) {
