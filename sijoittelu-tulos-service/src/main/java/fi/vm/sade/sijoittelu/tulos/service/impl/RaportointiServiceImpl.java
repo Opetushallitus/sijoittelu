@@ -96,7 +96,7 @@ public class RaportointiServiceImpl implements RaportointiService {
         List<HakijaDTO> hakijat = raportointiConverter.convert(hakukohdeDTOs, valintatulokset);
         Collections.sort(hakijat, new HakijaDTOComparator());
         HakijaPaginationObject paginationObject = new HakijaPaginationObject();
-        List<HakijaDTO> result = new ArrayList<HakijaDTO>();
+        List<HakijaDTO> result = new ArrayList<>();
         for (HakijaDTO hakija : hakijat) {
             if (filter(hakija, hyvaksytyt, ilmanHyvaksyntaa, vastaanottaneet, hakukohdeOids)) {
                 result.add(hakija);
