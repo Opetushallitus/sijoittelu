@@ -4,9 +4,12 @@ import fi.vm.sade.sijoittelu.domain.*;
 import fi.vm.sade.sijoittelu.laskenta.external.resource.dto.HakukohdeDTO;
 import fi.vm.sade.sijoittelu.tulos.dao.HakukohdeDao;
 import fi.vm.sade.sijoittelu.tulos.dao.SijoitteluDao;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
+import org.mockito.internal.matchers.CapturingMatcher;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import fi.vm.sade.authentication.business.service.Authorizer;
@@ -17,6 +20,10 @@ import fi.vm.sade.sijoittelu.tulos.dao.ValintatulosDao;
 import fi.vm.sade.sijoittelu.tulos.roles.SijoitteluRole;
 
 import java.util.Optional;
+
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Matchers.argThat;
+import static org.mockito.Mockito.verify;
 
 /**
  * Created with IntelliJ IDEA. User: jukais Date: 3.9.2013 Time: 10.50 To change
@@ -159,6 +166,12 @@ public class SijoitteluBusinessServiceImplTest {
 				VALINTATAPAJONO_OID, HAKEMUS_OID,
 				ValintatuloksenTila.ILMOITETTU, SELITE,
 				IlmoittautumisTila.EI_TEHTY, false, false);
+
+		ArgumentCaptor<Valintatulos> argument = ArgumentCaptor.forClass(Valintatulos.class);
+		verify(valintatulosDaoMock).createOrUpdateValintatulos(argument.capture());
+		Valintatulos valintatulos = argument.getValue();
+		assertEquals(ValintatuloksenTila.ILMOITETTU, valintatulos.getTila());
+		assertEquals(IlmoittautumisTila.EI_TEHTY, valintatulos.getIlmoittautumisTila());
 	}
 
 	@Test
@@ -185,6 +198,12 @@ public class SijoitteluBusinessServiceImplTest {
 				sijoitteluBusinessService.getHakukohde(HAKU_OID, HAKUKOHDE_OID),
 				VALINTATAPAJONO_OID, HAKEMUS_OID, ValintatuloksenTila.PERUNUT,
 				SELITE, IlmoittautumisTila.EI_TEHTY, false, false);
+
+		ArgumentCaptor<Valintatulos> argument = ArgumentCaptor.forClass(Valintatulos.class);
+		verify(valintatulosDaoMock).createOrUpdateValintatulos(argument.capture());
+		Valintatulos valintatulos = argument.getValue();
+		assertEquals(ValintatuloksenTila.PERUNUT, valintatulos.getTila());
+		assertEquals(IlmoittautumisTila.EI_TEHTY, valintatulos.getIlmoittautumisTila());
 	}
 
 	@Test
@@ -206,6 +225,12 @@ public class SijoitteluBusinessServiceImplTest {
 				sijoitteluBusinessService.getHakukohde(HAKU_OID, HAKUKOHDE_OID),
 				VALINTATAPAJONO_OID, HAKEMUS_OID, ValintatuloksenTila.PERUNUT,
 				SELITE, IlmoittautumisTila.EI_TEHTY, false, false);
+
+		ArgumentCaptor<Valintatulos> argument = ArgumentCaptor.forClass(Valintatulos.class);
+		verify(valintatulosDaoMock).createOrUpdateValintatulos(argument.capture());
+		Valintatulos valintatulos = argument.getValue();
+		assertEquals(ValintatuloksenTila.PERUNUT, valintatulos.getTila());
+		assertEquals(IlmoittautumisTila.EI_TEHTY, valintatulos.getIlmoittautumisTila());
 	}
 
 	@Test
@@ -228,6 +253,12 @@ public class SijoitteluBusinessServiceImplTest {
 				VALINTATAPAJONO_OID, HAKEMUS_OID_2,
 				ValintatuloksenTila.VASTAANOTTANUT, SELITE,
 				IlmoittautumisTila.EI_TEHTY, false, false);
+
+		ArgumentCaptor<Valintatulos> argument = ArgumentCaptor.forClass(Valintatulos.class);
+		verify(valintatulosDaoMock).createOrUpdateValintatulos(argument.capture());
+		Valintatulos valintatulos = argument.getValue();
+		assertEquals(ValintatuloksenTila.VASTAANOTTANUT, valintatulos.getTila());
+		assertEquals(IlmoittautumisTila.EI_TEHTY, valintatulos.getIlmoittautumisTila());
 	}
 
 	private Valintatulos getValintatulos(ValintatuloksenTila tila) {
@@ -267,6 +298,12 @@ public class SijoitteluBusinessServiceImplTest {
 				VALINTATAPAJONO_OID, HAKEMUS_OID,
 				ValintatuloksenTila.VASTAANOTTANUT, SELITE,
 				IlmoittautumisTila.LASNA_KOKO_LUKUVUOSI, false, false);
+
+		ArgumentCaptor<Valintatulos> argument = ArgumentCaptor.forClass(Valintatulos.class);
+		verify(valintatulosDaoMock).createOrUpdateValintatulos(argument.capture());
+		Valintatulos valintatulos = argument.getValue();
+		assertEquals(ValintatuloksenTila.VASTAANOTTANUT, valintatulos.getTila());
+		assertEquals(IlmoittautumisTila.LASNA_KOKO_LUKUVUOSI, valintatulos.getIlmoittautumisTila());
 	}
 
 	@Test
@@ -294,6 +331,12 @@ public class SijoitteluBusinessServiceImplTest {
 				VALINTATAPAJONO_OID, HAKEMUS_OID,
 				ValintatuloksenTila.VASTAANOTTANUT, SELITE,
 				IlmoittautumisTila.POISSA_KOKO_LUKUVUOSI, false, false);
+
+		ArgumentCaptor<Valintatulos> argument = ArgumentCaptor.forClass(Valintatulos.class);
+		verify(valintatulosDaoMock).createOrUpdateValintatulos(argument.capture());
+		Valintatulos valintatulos = argument.getValue();
+		assertEquals(ValintatuloksenTila.VASTAANOTTANUT, valintatulos.getTila());
+		assertEquals(IlmoittautumisTila.POISSA_KOKO_LUKUVUOSI, valintatulos.getIlmoittautumisTila());
 	}
 
 	@Test
@@ -320,6 +363,12 @@ public class SijoitteluBusinessServiceImplTest {
 				VALINTATAPAJONO_OID, HAKEMUS_OID,
 				ValintatuloksenTila.VASTAANOTTANUT, SELITE,
 				IlmoittautumisTila.EI_ILMOITTAUTUNUT, false, false);
+
+		ArgumentCaptor<Valintatulos> argument = ArgumentCaptor.forClass(Valintatulos.class);
+		verify(valintatulosDaoMock).createOrUpdateValintatulos(argument.capture());
+		Valintatulos valintatulos = argument.getValue();
+		assertEquals(ValintatuloksenTila.VASTAANOTTANUT, valintatulos.getTila());
+		assertEquals(IlmoittautumisTila.EI_ILMOITTAUTUNUT, valintatulos.getIlmoittautumisTila());
 	}
 
 	@Test
@@ -346,6 +395,12 @@ public class SijoitteluBusinessServiceImplTest {
 				VALINTATAPAJONO_OID, HAKEMUS_OID,
 				ValintatuloksenTila.VASTAANOTTANUT, SELITE,
 				IlmoittautumisTila.LASNA_SYKSY, false, false);
+
+		ArgumentCaptor<Valintatulos> argument = ArgumentCaptor.forClass(Valintatulos.class);
+		verify(valintatulosDaoMock).createOrUpdateValintatulos(argument.capture());
+		Valintatulos valintatulos = argument.getValue();
+		assertEquals(ValintatuloksenTila.VASTAANOTTANUT, valintatulos.getTila());
+		assertEquals(IlmoittautumisTila.LASNA_SYKSY, valintatulos.getIlmoittautumisTila());
 	}
 
 	@Test
@@ -372,6 +427,12 @@ public class SijoitteluBusinessServiceImplTest {
 				VALINTATAPAJONO_OID, HAKEMUS_OID,
 				ValintatuloksenTila.VASTAANOTTANUT, SELITE,
 				IlmoittautumisTila.POISSA_SYKSY, false, false);
+
+		ArgumentCaptor<Valintatulos> argument = ArgumentCaptor.forClass(Valintatulos.class);
+		verify(valintatulosDaoMock).createOrUpdateValintatulos(argument.capture());
+		Valintatulos valintatulos = argument.getValue();
+		assertEquals(ValintatuloksenTila.VASTAANOTTANUT, valintatulos.getTila());
+		assertEquals(IlmoittautumisTila.POISSA_SYKSY, valintatulos.getIlmoittautumisTila());
 	}
 
 	@Test
@@ -398,6 +459,12 @@ public class SijoitteluBusinessServiceImplTest {
 				VALINTATAPAJONO_OID, HAKEMUS_OID,
 				ValintatuloksenTila.VASTAANOTTANUT, SELITE,
 				IlmoittautumisTila.LASNA, false, false);
+
+		ArgumentCaptor<Valintatulos> argument = ArgumentCaptor.forClass(Valintatulos.class);
+		verify(valintatulosDaoMock).createOrUpdateValintatulos(argument.capture());
+		Valintatulos valintatulos = argument.getValue();
+		assertEquals(ValintatuloksenTila.VASTAANOTTANUT, valintatulos.getTila());
+		assertEquals(IlmoittautumisTila.LASNA, valintatulos.getIlmoittautumisTila());
 	}
 
 	@Test
@@ -424,5 +491,11 @@ public class SijoitteluBusinessServiceImplTest {
 				VALINTATAPAJONO_OID, HAKEMUS_OID,
 				ValintatuloksenTila.VASTAANOTTANUT, SELITE,
 				IlmoittautumisTila.POISSA, false, false);
+
+		ArgumentCaptor<Valintatulos> argument = ArgumentCaptor.forClass(Valintatulos.class);
+		verify(valintatulosDaoMock).createOrUpdateValintatulos(argument.capture());
+		Valintatulos valintatulos = argument.getValue();
+		assertEquals(ValintatuloksenTila.VASTAANOTTANUT, valintatulos.getTila());
+		assertEquals(IlmoittautumisTila.POISSA, valintatulos.getIlmoittautumisTila());
 	}
 }
