@@ -1,10 +1,11 @@
 package fi.vm.sade.sijoittelu.domain;
 
-import org.mongodb.morphia.annotations.*;
 import org.bson.types.ObjectId;
+import org.mongodb.morphia.annotations.*;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Entity("Valintatulos")
@@ -41,6 +42,9 @@ public class Valintatulos implements Serializable {
     private ValintatuloksenTila tila = ValintatuloksenTila.KESKEN;
 
     private IlmoittautumisTila ilmoittautumisTila = IlmoittautumisTila.EI_TEHTY;
+
+    @Transient
+    private Date read = new Date();
 
     @Embedded
     private List<LogEntry> logEntries = new ArrayList<LogEntry>();
