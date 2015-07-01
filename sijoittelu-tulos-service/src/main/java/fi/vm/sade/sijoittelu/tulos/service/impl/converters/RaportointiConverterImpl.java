@@ -17,7 +17,7 @@ import fi.vm.sade.sijoittelu.tulos.dto.raportointi.HakutoiveenValintatapajonoDTO
 public class RaportointiConverterImpl implements RaportointiConverter {
     @Override
     public List<HakijaDTO> convert(List<HakukohdeDTO> hakukohteet) {
-        HashMap<String, HakijaDTO> hakijat = new HashMap<String, HakijaDTO>();
+        HashMap<String, HakijaDTO> hakijat = new HashMap<>();
         for (HakukohdeDTO hakukohde : hakukohteet) {
             for (ValintatapajonoDTO valintatapajono : hakukohde.getValintatapajonot()) {
                 for (HakemusDTO hakemusDTO : valintatapajono.getHakemukset()) {
@@ -53,7 +53,7 @@ public class RaportointiConverterImpl implements RaportointiConverter {
                 }
             }
         }
-        return new ArrayList<HakijaDTO>(hakijat.values());
+        return new ArrayList<>(hakijat.values());
     }
 
     private Map<String, HakukohdeDTO> mapHakukohteet(List<HakukohdeDTO> hakukohteet) {
@@ -125,7 +125,7 @@ public class RaportointiConverterImpl implements RaportointiConverter {
     }
 
     private Map<String, List<Valintatulos>> mapValintatulokset(List<Valintatulos> valintatulokset) {
-        Map<String, List<Valintatulos>> map = new HashMap<String, List<Valintatulos>>();
+        Map<String, List<Valintatulos>> map = new HashMap<>();
         for (Valintatulos valintatulos : valintatulokset) {
             if (map.containsKey(valintatulos.getHakemusOid())) {
                 map.get(valintatulos.getHakemusOid()).add(valintatulos);

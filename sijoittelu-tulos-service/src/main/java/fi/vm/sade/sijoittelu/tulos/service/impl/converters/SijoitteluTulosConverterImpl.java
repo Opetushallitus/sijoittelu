@@ -20,7 +20,7 @@ public class SijoitteluTulosConverterImpl implements SijoitteluTulosConverter {
 
     @Override
     public List<HakukohdeDTO> convert(List<Hakukohde> hakukohdeList) {
-        List<HakukohdeDTO> hakemusDTOList = new ArrayList<HakukohdeDTO>();
+        List<HakukohdeDTO> hakemusDTOList = new ArrayList<>();
         for (Hakukohde h : hakukohdeList) {
             hakemusDTOList.add(convert(h));
         }

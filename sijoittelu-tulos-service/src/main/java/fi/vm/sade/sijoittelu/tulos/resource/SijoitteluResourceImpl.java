@@ -110,7 +110,7 @@ public class SijoitteluResourceImpl implements SijoitteluResource {
         try {
             Optional<SijoitteluAjo> sijoitteluAjo = raportointiService.latestSijoitteluAjoForHaku(hakuOid);
 
-            return sijoitteluAjo.map(ajo -> raportointiService.cachedHakemukset(ajo, true, null, null, Arrays.asList(hakukohdeOid), null, null)).orElseGet(() -> new HakijaPaginationObject());
+            return sijoitteluAjo.map(ajo -> raportointiService.cachedHakemukset(ajo, true, null, null, Arrays.asList(hakukohdeOid), null, null)).orElseGet(HakijaPaginationObject::new);
         } catch (Exception e) {
             LOGGER.error("Sijoittelun hakemuksia ei saatu hakukohteelle {}!", hakukohdeOid, e);
             return new HakijaPaginationObject();
@@ -127,7 +127,7 @@ public class SijoitteluResourceImpl implements SijoitteluResource {
         try {
             Optional<SijoitteluAjo> sijoitteluAjo = raportointiService.latestSijoitteluAjoForHaku(hakuOid);
 
-            return sijoitteluAjo.map(ajo -> raportointiService.cachedHakemukset(ajo, true, null, null, null, null, null)).orElseGet(() -> new HakijaPaginationObject());
+            return sijoitteluAjo.map(ajo -> raportointiService.cachedHakemukset(ajo, true, null, null, null, null, null)).orElseGet(HakijaPaginationObject::new);
         } catch (Exception e) {
             LOGGER.error("Sijoittelun hakemuksia ei saatu haulle {}!", hakuOid, e);
             return new HakijaPaginationObject();
@@ -154,7 +154,7 @@ public class SijoitteluResourceImpl implements SijoitteluResource {
                             raportointiService.hakemukset(ajo, hyvaksytyt,
                                     ilmanHyvaksyntaa, vastaanottaneet, hakukohdeOid, count,
                                     index)
-            ).orElseGet(() -> new HakijaPaginationObject());
+            ).orElseGet(HakijaPaginationObject::new);
 
         } catch (Exception e) {
             LOGGER.error("Sijoittelun hakemuksia ei saatu haulle {}! {}", hakuOid, e.getMessage(), Arrays.toString(e.getStackTrace()));

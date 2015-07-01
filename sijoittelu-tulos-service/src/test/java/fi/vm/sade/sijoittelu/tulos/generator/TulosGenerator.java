@@ -46,9 +46,7 @@ public class TulosGenerator {
 
     private static <T> void saveAll(String collection, List<T> objects, DB db) {
         final Mapper mapper = new Mapper();
-        final List<DBObject> dbObjects = objects.stream().map(object -> {
-            return mapper.toDBObject(object);
-        }).collect(Collectors.toList());
+        final List<DBObject> dbObjects = objects.stream().map(mapper::toDBObject).collect(Collectors.toList());
         db.getCollection(collection).insert(dbObjects);
     }
 

@@ -8,11 +8,11 @@ public class EnumConverter {
         if (e2 == null) {
             return null;
         }
-        return Enum.<T> valueOf(e1, e2.toString());
+        return Enum.valueOf(e1, e2.toString());
     }
 
     public static <T extends Enum<T>> List<T> convert(Class<T> e1, List<Enum<?>> e2) {
-        List<T> list = new ArrayList<T>();
+        List<T> list = new ArrayList<>();
         for(Enum e : e2) {
             list.add(convert(e1, e));
         }
@@ -20,7 +20,7 @@ public class EnumConverter {
     }
 
     public static <T extends Enum<T>> List<T> convertStringListToEnum(Class<T> e1, List<String> e2) {
-        List<T> list = new ArrayList<T>();
+        List<T> list = new ArrayList<>();
         for(String s : e2) {
             list.add(T.valueOf(e1, s));
         }

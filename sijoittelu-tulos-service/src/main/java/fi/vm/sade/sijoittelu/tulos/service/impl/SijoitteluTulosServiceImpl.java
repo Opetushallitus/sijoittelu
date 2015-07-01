@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Function;
 
 @Service
 public class SijoitteluTulosServiceImpl implements SijoitteluTulosService {
@@ -48,7 +49,7 @@ public class SijoitteluTulosServiceImpl implements SijoitteluTulosService {
     public SijoitteluDTO getSijoitteluByHakuOid(String hakuOid) {
         Optional<Sijoittelu> s = sijoitteluDao.getSijoitteluByHakuOid(hakuOid);
 
-        return s.map(sijoittelu -> sijoitteluTulosConverter.convert(sijoittelu)).orElse(new SijoitteluDTO());
+        return s.map(sijoitteluTulosConverter::convert).orElse(new SijoitteluDTO());
 
     }
 }
