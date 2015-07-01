@@ -488,7 +488,7 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
                 .anyMatch(valintatulos -> {
                     Valintatulos saved = valintatulosDao.loadValintatulos(hakukohdeOid, valintatulos.getValintatapajonoOid(), valintatulos.getHakemusOid());
                     Interval interval = new Interval(new DateTime(valintatulos.getRead()), DateTime.now());
-                    return saved.getLogEntries() != null &&
+                    return saved != null && saved.getLogEntries() != null &&
                             saved.getLogEntries().stream().anyMatch(entry -> interval.contains(entry.getLuotu().getTime()));
                 });
     }
