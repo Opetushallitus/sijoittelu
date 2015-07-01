@@ -227,7 +227,7 @@ public class HakemusDTO implements Serializable {
     @Override
     public boolean equals(Object o) {
         if (o instanceof HakemusDTO) {
-            return this.getHakemusOid().equals(((HakemusDTO) o).getHakemusOid());
+            return this.hakemusOid.equals(((HakemusDTO) o).getHakemusOid());
         }
         return false;
     }
