@@ -1,36 +1,27 @@
 package fi.vm.sade.sijoittelu.laskenta.service.business.impl;
 
-import fi.vm.sade.sijoittelu.domain.*;
-import fi.vm.sade.sijoittelu.laskenta.external.resource.dto.HakukohdeDTO;
+import fi.vm.sade.authentication.business.service.Authorizer;
+import fi.vm.sade.generic.service.exception.NotAuthorizedException;
+import fi.vm.sade.sijoittelu.domain.IlmoittautumisTila;
+import fi.vm.sade.sijoittelu.domain.Sijoittelu;
+import fi.vm.sade.sijoittelu.domain.ValintatuloksenTila;
+import fi.vm.sade.sijoittelu.domain.Valintatulos;
 import fi.vm.sade.sijoittelu.tulos.dao.HakukohdeDao;
 import fi.vm.sade.sijoittelu.tulos.dao.SijoitteluDao;
-import org.junit.Assert;
+import fi.vm.sade.sijoittelu.tulos.dao.ValintatulosDao;
+import fi.vm.sade.sijoittelu.tulos.roles.SijoitteluRole;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
-import org.mockito.internal.matchers.CapturingMatcher;
 import org.springframework.test.util.ReflectionTestUtils;
-
-import fi.vm.sade.authentication.business.service.Authorizer;
-import fi.vm.sade.generic.service.exception.NotAuthorizedException;
-import fi.vm.sade.sijoittelu.laskenta.service.exception.HakemusEiOleHyvaksyttyException;
-import fi.vm.sade.sijoittelu.laskenta.service.exception.ValintatulostaEiOleIlmoitettuException;
-import fi.vm.sade.sijoittelu.tulos.dao.ValintatulosDao;
-import fi.vm.sade.sijoittelu.tulos.roles.SijoitteluRole;
 
 import java.util.Optional;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Matchers.argThat;
 import static org.mockito.Mockito.verify;
 
-/**
- * Created with IntelliJ IDEA. User: jukais Date: 3.9.2013 Time: 10.50 To change
- * this template use File | Settings | File Templates.
- */
 public class SijoitteluBusinessServiceImplTest {
-
 	final String HAKU_OID = TestDataGenerator.HAKU_OID;
 	final String HAKUKOHDE_OID = TestDataGenerator.HAKUKOHDE_OID_1;
 	final String VALINTATAPAJONO_OID = TestDataGenerator.VALINTATAPAJONO_OID_1;
@@ -64,83 +55,6 @@ public class SijoitteluBusinessServiceImplTest {
 		testDataGenerator = new TestDataGenerator();
 
 	}
-
-    // Toiminnallisuus poistettu käytöstä
-//	@Test(expected = ValintatulostaEiOleIlmoitettuException.class)
-//	public void testVaihdTilaSuoraanPeruuntuneeksi() throws Exception {
-//
-//		Sijoittelu sijoittelu = testDataGenerator.generateTestData();
-//
-//		Mockito.when(sijoitteluDao.getSijoitteluByHakuOid(HAKU_OID)).thenReturn(
-//                Optional.of(sijoittelu));
-//		Mockito.when(
-//				hakukohdeDao.getHakukohdeForSijoitteluajo(
-//						TestDataGenerator.SIJOITTELU_AJO_ID_2, HAKUKOHDE_OID))
-//				.thenReturn(testDataGenerator.createHakukohdes(1).get(0));
-//		Mockito.doThrow(new NotAuthorizedException())
-//				.when(authorizer)
-//				.checkOrganisationAccess(ROOT_ORG_OID, SijoitteluRole.CRUD_ROLE);
-//
-//		Mockito.when(
-//				valintatulosDaoMock.loadValintatulos(HAKUKOHDE_OID, VALINTATAPAJONO_OID,
-//						HAKEMUS_OID)).thenReturn(getValintatulos(null));
-//
-//		sijoitteluBusinessService.vaihdaHakemuksenTila(HAKU_OID, HAKUKOHDE_OID,
-//				VALINTATAPAJONO_OID, HAKEMUS_OID, ValintatuloksenTila.PERUNUT,
-//				SELITE, IlmoittautumisTila.EI_TEHTY, false);
-//	}
-
-    // Toiminnallisuus poistettu käytöstä
-//	@Test(expected = ValintatulosOnJoVastaanotettuException.class)
-//	public void testVaihdaVahvistettuIlmoitetuksi() throws Exception {
-//
-//		Sijoittelu sijoittelu = testDataGenerator.generateTestData();
-//
-//		Mockito.when(sijoitteluDao.getSijoitteluByHakuOid(HAKU_OID)).thenReturn(
-//				sijoittelu);
-//		Mockito.when(
-//				daoMock.getHakukohdeForSijoitteluajo(
-//						TestDataGenerator.SIJOITTELU_AJO_ID_2, HAKUKOHDE_OID))
-//				.thenReturn(testDataGenerator.createHakukohdes(1).get(0));
-//		Mockito.doThrow(new NotAuthorizedException())
-//				.when(authorizer)
-//				.checkOrganisationAccess(ROOT_ORG_OID, SijoitteluRole.CRUD_ROLE);
-//
-//		Mockito.when(
-//				daoMock.loadValintatulos(HAKUKOHDE_OID, VALINTATAPAJONO_OID,
-//						HAKEMUS_OID)).thenReturn(
-//				getValintatulos(ValintatuloksenTila.PERUNUT));
-//
-//		sijoitteluBusinessService.vaihdaHakemuksenTila(HAKU_OID, HAKUKOHDE_OID,
-//				VALINTATAPAJONO_OID, HAKEMUS_OID, ValintatuloksenTila.PERUNUT,
-//				SELITE, IlmoittautumisTila.EI_TEHTY);
-//	}
-
-//	@Test(expected = HakemusEiOleHyvaksyttyException.class)
-//	public void testVaihdaHyvaksymattomanHakemuksenTilaIlmoitetuksi()
-//			throws Exception {
-//
-//		Sijoittelu sijoittelu = testDataGenerator.generateTestData();
-//
-//		Mockito.when(sijoitteluDao.getSijoitteluByHakuOid(HAKU_OID)).thenReturn(
-//                Optional.of(sijoittelu));
-//		Mockito.when(
-//				hakukohdeDao.getHakukohdeForSijoitteluajo(
-//						TestDataGenerator.SIJOITTELU_AJO_ID_2, HAKUKOHDE_OID))
-//				.thenReturn(testDataGenerator.createHakukohdes(1).get(0));
-//		Mockito.doThrow(new NotAuthorizedException())
-//				.when(authorizer)
-//				.checkOrganisationAccess(ROOT_ORG_OID, SijoitteluRole.CRUD_ROLE);
-//
-//		Mockito.when(
-//				valintatulosDaoMock.loadValintatulos(HAKUKOHDE_OID, VALINTATAPAJONO_OID,
-//						HAKEMUS_OID_2)).thenReturn(getValintatulos(null));
-//
-//		sijoitteluBusinessService.vaihdaHakemuksenTila(HAKU_OID, HAKUKOHDE_OID,
-//				VALINTATAPAJONO_OID, HAKEMUS_OID_2,
-//				ValintatuloksenTila.ILMOITETTU, SELITE,
-//				IlmoittautumisTila.EI_TEHTY, false);
-//	}
 
 	@Test
 	public void testVaihdaTilaIlmoitetuksi() throws Exception {
