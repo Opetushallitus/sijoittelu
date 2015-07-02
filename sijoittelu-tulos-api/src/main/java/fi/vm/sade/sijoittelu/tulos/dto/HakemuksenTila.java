@@ -16,7 +16,11 @@ public enum HakemuksenTila {
         return Arrays.asList(HakemuksenTila.HYVAKSYTTY, HakemuksenTila.HARKINNANVARAISESTI_HYVAKSYTTY, HakemuksenTila.VARASIJALTA_HYVAKSYTTY).contains(this);
     }
 
+    public boolean isVaralla() {
+        return this == VARALLA;
+    }
+
     public boolean isHyvaksyttyOrVaralla() {
-        return isHyvaksytty() || (this == VARALLA);
+        return isHyvaksytty() || isVaralla();
     }
 }
