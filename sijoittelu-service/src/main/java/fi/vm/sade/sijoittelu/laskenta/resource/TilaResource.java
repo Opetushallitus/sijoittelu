@@ -159,6 +159,40 @@ public class TilaResource {
     }
 
     @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("erillishaku/haku/{hakuOid}/hakukohde/{hakukohdeOid}")
+    @PreAuthorize(UPDATE_CRUD)
+    @ApiOperation(value = "Valintatulosten tuonti erillishaun hakukohteelle")
+    public Response muutaErillishaunHakemustenTilaa(@PathParam("hakuOid") String hakuOid,
+                                         @PathParam("hakukohdeOid") String hakukohdeOid,
+                                         List<Valintatulos> valintatulokset,
+                                         @QueryParam("selite") String selite) {
+
+        if(valintatulokset != null && !sijoitteluBusinessService.muutoksetOvatAjantasaisia(hakukohdeOid, valintatulokset)) {
+            return Response.status(Response.Status.CONFLICT).build();
+        }
+
+        try {
+            Hakukohde hakukohde = sijoitteluBusinessService.getErillishaunHakukohde(hakuOid, hakukohdeOid);
+            for (Valintatulos v : valintatulokset) {
+                ValintatuloksenTila tila = v.getTila();
+                IlmoittautumisTila ilmoittautumisTila = v.getIlmoittautumisTila();
+                sijoitteluBusinessService.vaihdaHakemuksenTila(hakuOid,
+                        hakukohde, v.getValintatapajonoOid(),
+                        v.getHakemusOid(), tila, selite, ilmoittautumisTila,
+                        v.getJulkaistavissa(), v.getHyvaksyttyVarasijalta());
+            }
+            return Response.status(Response.Status.ACCEPTED).build();
+        } catch (Exception e) {
+            LOGGER.error("Valintatulosten tallenus epäonnistui haussa {} hakukohteelle {}. {}\r\n{}",
+                    hakuOid, hakukohdeOid, e.getMessage(), Arrays.toString(e.getStackTrace()));
+            Map error = new HashMap();
+            error.put("message", e.getMessage());
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(error).build();
+        }
+    }
+
+    @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Path("/erillishaku/{hakuOid}/hakukohde/{hakukohdeOid}")
     @PreAuthorize(UPDATE_CRUD)

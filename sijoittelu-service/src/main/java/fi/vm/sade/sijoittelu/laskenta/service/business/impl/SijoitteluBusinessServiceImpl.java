@@ -509,6 +509,13 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
     }
 
     @Override
+    public Hakukohde getErillishaunHakukohde(String hakuOid, String hakukohdeOid) {
+        return erillisSijoitteluDao.getSijoitteluByHakuOid(hakuOid)
+                .map(sijoittelu -> hakukohdeDao.getHakukohdeForSijoitteluajo(sijoittelu.getLatestSijoitteluajo().getSijoitteluajoId(), hakukohdeOid))
+                .orElseThrow(() -> new RuntimeException("Erillissijoittelua ei löytynyt haulle: " + hakuOid));
+    }
+
+    @Override
     public void vaihdaHakemuksenTila(String hakuoid, Hakukohde hakukohde,
                                      String valintatapajonoOid, String hakemusOid,
                                      ValintatuloksenTila tila, String selite,

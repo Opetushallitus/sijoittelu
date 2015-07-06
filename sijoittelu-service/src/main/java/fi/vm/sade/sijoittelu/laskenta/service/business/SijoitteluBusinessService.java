@@ -23,6 +23,8 @@ public interface SijoitteluBusinessService {
 
     Hakukohde getHakukohde(String hakuOid, String hakukohdeOid);
 
+    Hakukohde getErillishaunHakukohde(String hakuOid, String hakukohdeOid);
+
     void vaihdaHakemuksenTila(String hakuoid, Hakukohde hakukohde, String valintatapajonoOid, String hakemusOid,
                               ValintatuloksenTila tila, String selite, IlmoittautumisTila ilmoittautumisTila,
                               boolean julkaistavissa, boolean hyvaksyttyVarasijalta);
