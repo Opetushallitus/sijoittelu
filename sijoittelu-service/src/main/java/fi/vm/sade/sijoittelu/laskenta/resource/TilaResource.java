@@ -150,8 +150,7 @@ public class TilaResource {
             }
             return Response.status(Response.Status.ACCEPTED).build();
         } catch (Exception e) {
-            LOGGER.error("Valintatulosten tallenus epäonnistui haussa {} hakukohteelle {}. {}\r\n{}",
-                    hakuOid, hakukohdeOid, e.getMessage(), Arrays.toString(e.getStackTrace()));
+            LOGGER.error("Valintatulosten tallenus epäonnistui haussa " + hakuOid + " hakukohteelle " + hakukohdeOid, e);
             Map error = new HashMap();
             error.put("message", e.getMessage());
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(error).build();
@@ -184,8 +183,7 @@ public class TilaResource {
             }
             return Response.status(Response.Status.ACCEPTED).build();
         } catch (Exception e) {
-            LOGGER.error("Valintatulosten tallenus epäonnistui haussa {} hakukohteelle {}. {}\r\n{}",
-                    hakuOid, hakukohdeOid, e.getMessage(), Arrays.toString(e.getStackTrace()));
+            LOGGER.error("Valintatulosten tallenus epäonnistui haussa " + hakuOid + " hakukohteelle " + hakukohdeOid, e);
             Map error = new HashMap();
             error.put("message", e.getMessage());
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(error).build();
@@ -251,8 +249,7 @@ public class TilaResource {
                     erillishaunHakijaDtos.iterator().next().valintatapajonoOid, hakuOid, hakukohdeOid);
             return Response.status(Response.Status.ACCEPTED).build();
         } catch (Exception e) {
-            LOGGER.error("Error in erillishaunhakijat tuonti haussa {} hakukohteelle {}! {}\r\n{}",
-                    e.getMessage(), Arrays.toString(e.getStackTrace()), hakuOid, hakukohdeOid);
+            LOGGER.error("Error in erillishaunhakijat tuonti haussa " + hakuOid + " hakukohteelle " + hakukohdeOid, e);
             Map error = new HashMap();
             error.put("message", e.getMessage());
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(error).build();

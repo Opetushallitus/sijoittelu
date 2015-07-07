@@ -157,7 +157,7 @@ public class SijoitteluResourceImpl implements SijoitteluResource {
             ).orElseGet(HakijaPaginationObject::new);
 
         } catch (Exception e) {
-            LOGGER.error("Sijoittelun hakemuksia ei saatu haulle {}! {}", hakuOid, e.getMessage(), Arrays.toString(e.getStackTrace()));
+            LOGGER.error("Sijoittelun hakemuksia ei saatu haulle " + hakuOid, e);
             return new HakijaPaginationObject();
         }
     }
