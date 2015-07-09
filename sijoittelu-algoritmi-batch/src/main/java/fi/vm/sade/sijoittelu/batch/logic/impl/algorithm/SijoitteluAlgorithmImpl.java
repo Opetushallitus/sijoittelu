@@ -659,6 +659,7 @@ public class SijoitteluAlgorithmImpl implements SijoitteluAlgorithm {
                                 if (jononTulos.isPresent() && !jononTulos.get().getTila().equals(ValintatuloksenTila.KESKEN)) {
                                     Valintatulos muokattava = jononTulos.get();
                                     Valintatulos nykyinen = muokkaaValintatulos(hakemus, h, hyvaksyttyJono, muokattava);
+                                    poistaVastaanottoTietoKunPeruuntunut(muokattava);
                                     // Lisää muokatut valintatulokset listaan tallennusta varten
                                     sijoitteluAjo.getMuuttuneetValintatulokset().addAll(Arrays.asList(muokattava, nykyinen));
                                 }

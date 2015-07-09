@@ -20,13 +20,11 @@ public class TilojenMuokkaus {
     public static void asetaTilaksiPeruuntunutToinenJono(HakemusWrapper h) {
         h.getHakemus().setTila(HakemuksenTila.PERUUNTUNUT);
         h.getHakemus().setTilanKuvaukset(TilanKuvaukset.peruuntunutHyvaksyttyToisessaJonossa());
-        poistaVastaanottoTietoKunPeruuntunut(h);
     }
 
     public static void asetaTilaksiPeruuntunutYlempiToive(HakemusWrapper h) {
         h.getHakemus().setTila(HakemuksenTila.PERUUNTUNUT);
         h.getHakemus().setTilanKuvaukset(TilanKuvaukset.peruuntunutYlempiToive());
-        poistaVastaanottoTietoKunPeruuntunut(h);
     }
 
     public static void asetaTilaksiVarasijaltaHyvaksytty(HakemusWrapper hakemus) {
@@ -37,19 +35,16 @@ public class TilojenMuokkaus {
     public static void asetaTilaksiPeruuntunutEiMahduKasiteltaviinSijoihin(HakemusWrapper hakemusWrapper) {
         hakemusWrapper.getHakemus().setTila(HakemuksenTila.PERUUNTUNUT);
         hakemusWrapper.getHakemus().setTilanKuvaukset(TilanKuvaukset.peruuntunutEiMahduKasiteltavienVarasijojenMaaraan());
-        poistaVastaanottoTietoKunPeruuntunut(hakemusWrapper);
     }
 
     public static void asetaTilaksiPeruuntunutAloituspaikatTaynna(HakemusWrapper hakemusWrapper) {
         hakemusWrapper.getHakemus().setTila(HakemuksenTila.PERUUNTUNUT);
         hakemusWrapper.getHakemus().setTilanKuvaukset(TilanKuvaukset.peruuntunutAloituspaikatTaynna());
-        poistaVastaanottoTietoKunPeruuntunut(hakemusWrapper);
     }
 
     public static void asetaTilaksiPeruuntunutHakukierrosPaattynyt(HakemusWrapper hk) {
         hk.getHakemus().setTila(HakemuksenTila.PERUUNTUNUT);
         hk.getHakemus().setTilanKuvaukset(TilanKuvaukset.peruuntunutHakukierrosOnPaattynyt());
-        poistaVastaanottoTietoKunPeruuntunut(hk);
     }
 
     public static Valintatulos muokkaaValintatulos(HakemusWrapper hakemus, HakemusWrapper h, Valintatapajono hyvaksyttyJono, Valintatulos muokattava) {
@@ -83,18 +78,12 @@ public class TilojenMuokkaus {
         return nykyinen;
     }
 
-    private static void poistaVastaanottoTietoKunPeruuntunut(HakemusWrapper h) {
-        Optional<Valintatulos> valintaTulosOpt = h.getHenkilo().getValintatulos().stream()
-                .filter(v -> v.getValintatapajonoOid().equals(h.getValintatapajono().getValintatapajono().getOid()))
-                .findFirst();
+    public static void poistaVastaanottoTietoKunPeruuntunut(Valintatulos valintatulos) {
 
-        if(valintaTulosOpt.isPresent()) {
-            Valintatulos valintatulos = valintaTulosOpt.get();
             if(!ValintatuloksenTila.KESKEN.equals(valintatulos.getTila())) {
                 valintatulos.setTila(ValintatuloksenTila.KESKEN);
                 valintatulos.getLogEntries().add(createLogEntry(ValintatuloksenTila.KESKEN, "Poistettu vastaanottotieto koska peruuntunut"));
             }
-        }
     }
 
     private static LogEntry createLogEntry(ValintatuloksenTila tila, String selite) {
