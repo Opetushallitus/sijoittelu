@@ -89,8 +89,7 @@ public class CachingErillisSijoitteluDao implements ErillisSijoitteluDao {
                     () -> morphiaDS.find(ErillisSijoittelu.class).field("hakuOid")
                             .equal(hakuOid).get()));
         } catch (Exception e) {
-            LOG.error("Ei saatu sijoittelua haulle {}: {}", hakuOid,
-                    e.getMessage());
+            LOG.error("Ei saatu sijoittelua haulle!"+ hakuOid, e);
             return Optional.empty();
         }
     }

@@ -81,7 +81,7 @@ public class SijoitteluResource {
             LOGGER.info("Sijoittelu suoritettu onnistuneesti haulle {}", hakuOid);
             return "true";
         } catch (Exception e) {
-            LOGGER.error("Sijoittelu epäonnistui haulle " + hakuOid + " syystä " + e.getMessage(), e);
+            LOGGER.error("Sijoittelu epäonnistui haulle " + hakuOid, e);
             return "false";
         }
     }
@@ -152,7 +152,7 @@ public class SijoitteluResource {
                                 .filter(v -> TRUE.equals(v.getAktiivinen()))
                                 .collect(Collectors.toMap(v -> v.getOid(), v -> v));
             } catch (Exception e) {
-                LOGGER.error("Hakijaryhmien hakeminen epäonnistui virheeseen " +  e.getMessage(), e);
+                LOGGER.error("Hakijaryhmien hakeminen epäonnistui virheeseen!", e);
                 throw e;
             }
             LOGGER.info("Saatiin hakukohteille {} yhteensä {} aktiivista hakijaryhmää", Arrays.toString(hakukohdeOidsWithHakijaryhma.toArray()),
@@ -185,7 +185,7 @@ public class SijoitteluResource {
                             return jonot;
                         }));
             } catch (Exception e) {
-                LOGGER.error("Valintatapajonojen hakeminen epäonnistui virheeseen " + e.getMessage(), e);
+                LOGGER.error("Valintatapajonojen hakeminen epäonnistui virheeseen!", e);
                 throw e;
             }
         } else {

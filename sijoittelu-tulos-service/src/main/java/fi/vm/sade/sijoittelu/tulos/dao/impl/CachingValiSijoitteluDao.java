@@ -87,7 +87,7 @@ public class CachingValiSijoitteluDao implements ValiSijoitteluDao {
                     () -> morphiaDS.find(ValiSijoittelu.class).field("hakuOid")
                             .equal(hakuOid).get()));
         } catch (Exception e) {
-            LOG.error("Ei saatu sijoittelua haulle {}: {}", hakuOid, e.getMessage());
+            LOG.error("Ei saatu sijoittelua haulle " + hakuOid, e);
             return Optional.empty();
         }
 

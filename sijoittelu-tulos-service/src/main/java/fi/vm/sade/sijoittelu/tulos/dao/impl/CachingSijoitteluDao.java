@@ -92,8 +92,7 @@ public class CachingSijoitteluDao implements SijoitteluDao {
                     () -> morphiaDS.find(Sijoittelu.class).field("hakuOid")
                             .equal(hakuOid).get()));
         } catch (Exception e) {
-            LOG.debug("Ei saatu sijoittelua haulle {}: {}", hakuOid,
-                    e.getMessage());
+            LOG.debug("Ei saatu sijoittelua haulle" + hakuOid, e);
             return Optional.empty();
         }
     }
@@ -103,7 +102,7 @@ public class CachingSijoitteluDao implements SijoitteluDao {
         try {
             return Optional.ofNullable(morphiaDS.find(Sijoittelu.class).field("sijoitteluId").equal(id).get());
         } catch (Exception e) {
-            LOG.debug("Ei saatu sijoittelua {}: {}", id, e.getMessage());
+            LOG.debug("Ei saatu sijoittelua " + id, e);
             return Optional.empty();
         }
     }
