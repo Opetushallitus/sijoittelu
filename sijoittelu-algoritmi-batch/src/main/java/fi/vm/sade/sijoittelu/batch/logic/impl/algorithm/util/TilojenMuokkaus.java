@@ -1,6 +1,7 @@
 package fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.util;
 
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.HakemusWrapper;
+import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.SijoitteluajoWrapper;
 import fi.vm.sade.sijoittelu.domain.*;
 
 import java.util.Date;
@@ -76,6 +77,15 @@ public class TilojenMuokkaus {
         muokattava.setIlmoittautumisTila(IlmoittautumisTila.EI_TEHTY);
         muokattava.setHyvaksyttyVarasijalta(false);
         return nykyinen;
+    }
+
+    public static void poistaVastaanottoTietoKunPeruuntunut(HakemusWrapper hakemus, SijoitteluajoWrapper sijoitteluAjo) {
+        Optional<Valintatulos> valintatulosOptional = hakemus.getHenkilo().getValintatulos().stream().filter(vt -> vt.getValintatapajonoOid().equals(hakemus.getValintatapajono().getValintatapajono().getOid())).findFirst();
+        if(valintatulosOptional.isPresent()) {
+            Valintatulos valintatulos = valintatulosOptional.get();
+            poistaVastaanottoTietoKunPeruuntunut(valintatulos);
+            sijoitteluAjo.getMuuttuneetValintatulokset().add(valintatulos);
+        }
     }
 
     public static void poistaVastaanottoTietoKunPeruuntunut(Valintatulos valintatulos) {
