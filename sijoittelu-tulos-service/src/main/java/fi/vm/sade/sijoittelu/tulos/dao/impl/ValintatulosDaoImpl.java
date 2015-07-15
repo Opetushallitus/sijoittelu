@@ -146,8 +146,6 @@ public class ValintatulosDaoImpl implements ValintatulosDao {
     }
 
     private Map<String, List<Valintatulos>> hakukohteidenValintatuloksetMongo(List<Hakukohde> kaikkiHakukohteet) {
-        final Map<String, List<Valintatulos>> hakukohdeValintatulokset = new HashMap<>();
-        kaikkiHakukohteet.forEach(hakukohde -> hakukohdeValintatulokset.put(hakukohde.getOid(), loadValintatuloksetForHakukohde(hakukohde.getOid())));
-        return hakukohdeValintatulokset;
+        return kaikkiHakukohteet.stream().collect(Collectors.toMap(Hakukohde::getOid, h -> loadValintatuloksetForHakukohde(h.getOid())));
     }
 }
