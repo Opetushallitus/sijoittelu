@@ -1,15 +1,11 @@
 package fi.vm.sade.sijoittelu.tulos.dao.impl;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 
-import fi.vm.sade.sijoittelu.domain.Hakukohde;
-import fi.vm.sade.sijoittelu.domain.ValintatuloksenTila;
+import fi.vm.sade.sijoittelu.domain.*;
 import org.apache.commons.lang.StringUtils;
 import org.mongodb.morphia.Datastore;
 import org.mongodb.morphia.query.Query;
@@ -19,7 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
 
-import fi.vm.sade.sijoittelu.domain.Valintatulos;
 import fi.vm.sade.sijoittelu.tulos.dao.ValintatulosDao;
 
 @Repository
@@ -69,10 +64,10 @@ public class ValintatulosDaoImpl implements ValintatulosDao {
         }
         Query<Valintatulos> q = morphiaDS.createQuery(Valintatulos.class);
         q.and(
-            //
-            q.criteria("hakukohdeOid").equal(hakukohdeOid),
-            //
-            q.criteria("valintatapajonoOid").equal(valintatapajonoOid));
+                //
+                q.criteria("hakukohdeOid").equal(hakukohdeOid),
+                //
+                q.criteria("valintatapajonoOid").equal(valintatapajonoOid));
 
         return q.asList();
     }
@@ -121,13 +116,20 @@ public class ValintatulosDaoImpl implements ValintatulosDao {
     @Override
     public List<Valintatulos> mergaaValintatulos(List<Hakukohde> kaikkiHakukohteet, List<Valintatulos> sijoittelunTulokset) {
         final Map<String, List<Valintatulos>> hakukohteidenValintatuloksetMongo = hakukohteidenValintatuloksetMongo(kaikkiHakukohteet);
+        final Set<String> peruuntuneetHakemukset = kaikkiHakukohteet.stream()
+                .flatMap(s -> s.getValintatapajonot().stream())
+                .flatMap(j -> j.getHakemukset().stream().filter(h -> h.getTila().equals(HakemuksenTila.PERUUNTUNUT)))
+                .map(Hakemus::getHakemusOid)
+                .collect(Collectors.toSet());
 
         return sijoittelunTulokset.stream().map(valintatulos -> {
-            final Optional<Valintatulos> valintatulosMongosta = haeOlemassaolevaValintatulosMongosta(hakukohteidenValintatuloksetMongo, valintatulos);
-            if (valintatulosMongosta.isPresent() && !valintatulosMongosta.get().getTila().equals(ValintatuloksenTila.KESKEN)) {
-                LOG.info("Ohitetaan sijoittelun ulkopuolella muutettu valintatulos: hakija {}, hakemus {}, hakutoive {}",
-                        valintatulos.getHakijaOid(), valintatulos.getHakemusOid(), valintatulos.getHakutoive());
-                paivitaArvotMongosta(valintatulos, valintatulosMongosta.get());
+            if (!peruuntuneetHakemukset.contains(valintatulos.getHakemusOid())) {
+                final Optional<Valintatulos> valintatulosMongosta = haeOlemassaolevaValintatulosMongosta(hakukohteidenValintatuloksetMongo, valintatulos);
+                if (valintatulosMongosta.isPresent() && !valintatulosMongosta.get().getTila().equals(ValintatuloksenTila.KESKEN)) {
+                    LOG.info("Ohitetaan sijoittelun ulkopuolella muutettu valintatulos: hakija {}, hakemus {}, hakutoive {}",
+                            valintatulos.getHakijaOid(), valintatulos.getHakemusOid(), valintatulos.getHakutoive());
+                    paivitaArvotMongosta(valintatulos, valintatulosMongosta.get());
+                }
             }
             return valintatulos;
         }).collect(Collectors.toList());
