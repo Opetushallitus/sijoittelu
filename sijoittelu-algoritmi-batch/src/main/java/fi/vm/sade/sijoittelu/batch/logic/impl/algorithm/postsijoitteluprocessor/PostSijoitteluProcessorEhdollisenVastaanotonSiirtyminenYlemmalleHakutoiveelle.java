@@ -35,12 +35,12 @@ public class PostSijoitteluProcessorEhdollisenVastaanotonSiirtyminenYlemmalleHak
                 if (hasPeruuntunutHakemusJonkaValintatulosEhdollisestiHyvaksytty(hakijanAlemmatHakemukset, hakijanAlemmatValintatulokset)) {
                     if (hakemuksenValintatulos.get().getHakutoive() == 1) {
                         LOG.info("DRYRUN: Hakijalta {} löytynyt peruutunut alempi ehdollisesti hyväksytty hakemus, joten muutetaan korkeimman prioriteetin hakemus {} vastaanotetuksi sitovasti.", hakemus.getHakijaOid(), hakemus.getHakemusOid());
-                        //vastaanOtaSitovasti(hakemuksenValintatulos.get());
+                        vastaanOtaSitovasti(hakemuksenValintatulos.get());
                     } else {
                         LOG.info("DRYRUN: Hakijalta {} löytynyt peruutunut alempi ehdollisesti hyväksytty hakemus, joten muutetaan hakemus {} ehdollisesti vastaanotetuksi.", hakemus.getHakijaOid(), hakemus.getHakemusOid());
-                        //vastaanOtaEhdollisesti(hakemuksenValintatulos.get());
+                        vastaanOtaEhdollisesti(hakemuksenValintatulos.get());
                     }
-                    poistaAlemmatEhdollisetVastaanotot(hakemus, hakijanAlemmatValintatulokset);
+                    //poistaAlemmatEhdollisetVastaanotot(hakemus, hakijanAlemmatValintatulokset);
                 }
             }
         });
@@ -79,6 +79,8 @@ public class PostSijoitteluProcessorEhdollisenVastaanotonSiirtyminenYlemmalleHak
         return hakijanKaikkiHakemukset;
     }
 
+    // PostSijoitteluProcessorPeruuntuneetHakemuksenVastaanotonMuokkaus tekee tämän
+    /*
     private void poistaAlemmatEhdollisetVastaanotot(Hakemus hakemus, List<Valintatulos> hakijanAlemmatValintatulokset) {
         hakijanAlemmatValintatulokset.forEach(alempiValintatulos -> {
             if (alempiValintatulos.getTila().equals(ValintatuloksenTila.EHDOLLISESTI_VASTAANOTTANUT)) {
@@ -88,6 +90,7 @@ public class PostSijoitteluProcessorEhdollisenVastaanotonSiirtyminenYlemmalleHak
             }
         });
     }
+    */
 
     private void vastaanOtaEhdollisesti(Valintatulos hakemuksenValintatulos) {
         hakemuksenValintatulos.setTila(ValintatuloksenTila.EHDOLLISESTI_VASTAANOTTANUT);
