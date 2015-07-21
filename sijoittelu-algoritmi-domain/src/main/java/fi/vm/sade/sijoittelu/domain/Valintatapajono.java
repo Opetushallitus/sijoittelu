@@ -9,6 +9,7 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 @Embedded
 @Converters(BigDecimalConverter.class)
@@ -49,11 +50,8 @@ public class Valintatapajono implements Serializable {
 
     private BigDecimal alinHyvaksyttyPistemaara;
 
-    //@Embedded
-    //private List<Saanto> saannot = new ArrayList<Saanto>();
-
     @Embedded
-    private ArrayList<Hakemus> hakemukset = new ArrayList<Hakemus>();
+    private List<Hakemus> hakemukset = new ArrayList<Hakemus>();
 
     public ValintatapajonoTila getTila() {
         return tila;
@@ -95,16 +93,13 @@ public class Valintatapajono implements Serializable {
         this.aloituspaikat = aloituspaikat;
     }
 
-    public ArrayList<Hakemus> getHakemukset() {
+    public List<Hakemus> getHakemukset() {
         return hakemukset;
     }
 
-    public void setHakemukset(ArrayList<Hakemus> hakemukset) {
+    public void setHakemukset(List<Hakemus> hakemukset) {
         this.hakemukset = hakemukset;
     }
-//public List<Saanto> getSaannot() {
-//		return saannot;
-    //}
 
     public Tasasijasaanto getTasasijasaanto() {
         return tasasijasaanto;
