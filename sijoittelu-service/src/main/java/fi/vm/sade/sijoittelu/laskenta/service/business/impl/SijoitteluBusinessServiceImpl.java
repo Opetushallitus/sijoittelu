@@ -24,7 +24,6 @@ import fi.vm.sade.sijoittelu.laskenta.service.exception.*;
 import fi.vm.sade.sijoittelu.tulos.dto.HakukohdeDTO;
 import fi.vm.sade.sijoittelu.tulos.service.impl.converters.SijoitteluTulosConverter;
 import fi.vm.sade.valintalaskenta.domain.dto.valintatieto.HakuDTO;
-import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
 import org.joda.time.Interval;
 import org.slf4j.Logger;
@@ -34,7 +33,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import fi.vm.sade.authentication.business.service.Authorizer;
-import fi.vm.sade.generic.service.exception.NotAuthorizedException;
 import fi.vm.sade.security.service.authz.util.AuthorizationUtil;
 import fi.vm.sade.sijoittelu.batch.logic.impl.DomainConverter;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoitteluAlgorithm;
@@ -46,6 +44,7 @@ import static com.google.common.collect.Sets.difference;
 import static com.google.common.collect.Sets.intersection;
 import static java.util.Collections.unmodifiableSet;
 import static java.util.stream.Collectors.toSet;
+import static org.apache.commons.lang.StringUtils.isBlank;
 import static org.apache.commons.lang.StringUtils.join;
 
 @Service
@@ -460,7 +459,7 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
 
     @Override
     public Valintatulos haeHakemuksenTila(String hakuoid, String hakukohdeOid, String valintatapajonoOid, String hakemusOid) {
-        if (StringUtils.isBlank(hakukohdeOid) || StringUtils.isBlank(hakemusOid)) {
+        if (isBlank(hakukohdeOid) || isBlank(hakemusOid)) {
             throw new RuntimeException("Invalid search params, fix exception later");
         }
         return valintatulosDao.loadValintatulos(hakukohdeOid, valintatapajonoOid, hakemusOid);
@@ -468,7 +467,7 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
 
     @Override
     public List<Valintatulos> haeHakemustenTilat(String hakukohdeOid, String valintatapajonoOid) {
-        if (StringUtils.isBlank(hakukohdeOid)) {
+        if (isBlank(hakukohdeOid)) {
             throw new RuntimeException("Invalid search params, fix exception later");
         }
         return valintatulosDao.loadValintatulokset(hakukohdeOid, valintatapajonoOid);
@@ -476,7 +475,7 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
 
     @Override
     public List<Valintatulos> haeHakukohteenTilat(String hakukohdeOid) {
-        if (StringUtils.isBlank(hakukohdeOid)) {
+        if (isBlank(hakukohdeOid)) {
             throw new RuntimeException("Invalid search params, fix exception later");
         }
         return valintatulosDao.loadValintatuloksetForHakukohde(hakukohdeOid);
@@ -495,7 +494,7 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
 
     @Override
     public List<Valintatulos> haeHakemuksenTila(String hakemusOid) {
-        if (StringUtils.isBlank(hakemusOid)) {
+        if (isBlank(hakemusOid)) {
             throw new RuntimeException("Invalid search params, fix exception later");
         }
         return valintatulosDao.loadValintatulos(hakemusOid);
@@ -516,53 +515,55 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
     }
 
     @Override
-    public void vaihdaHakemuksenTila(String hakuoid, Hakukohde hakukohde,
-                                     String valintatapajonoOid, String hakemusOid,
-                                     ValintatuloksenTila tila, String selite,
+    public void vaihdaHakemuksenTila(String hakuoid,
+                                     Hakukohde hakukohde,
+                                     String valintatapajonoOid,
+                                     String hakemusOid,
+                                     ValintatuloksenTila tila,
+                                     String selite,
                                      IlmoittautumisTila ilmoittautumisTila,
                                      boolean julkaistavissa,
                                      boolean hyvaksyttyVarasijalta) {
-        if (StringUtils.isBlank(hakuoid) || StringUtils.isBlank(valintatapajonoOid) || StringUtils.isBlank(hakemusOid)) {
-            throw new RuntimeException("Osa parametreista puuttuu. hakuoid: " + hakuoid + " - valintatapajonoOid: " + valintatapajonoOid + " - hakemusOid: " + hakemusOid);
+        if (tila == null || isBlank(hakuoid) || isBlank(valintatapajonoOid) || isBlank(hakemusOid)) {
+            throw new IllegalArgumentException(String.format("tila: %s, hakuoid: %s, valintatapajonoOid: %s, hakemusOid: %s", tila, hakuoid, valintatapajonoOid, hakemusOid));
         }
-        final Long ajoId = hakukohde.getSijoitteluajoId();
-        final String hakukohdeOid = hakukohde.getOid();
-        Valintatapajono valintatapajono = getValintatapajono(valintatapajonoOid, hakukohde);
-        if (valintatapajono == null) {
-            throw new ValintatapajonoaEiLoytynytException("Valintatapajonoa " + valintatapajonoOid + "ei löytynyt hakukohteelle " + hakukohdeOid + " haussa " + hakuoid);
+        String tarjoajaOid = hakukohde.getTarjoajaOid();
+        if (isBlank(tarjoajaOid)) {
+            updateMissingTarjoajaOidFromTarjonta(hakukohde);
         }
-        Hakemus hakemus = getHakemus(hakemusOid, valintatapajono);
         // Oph-admin voi muokata aina
         // organisaatio updater voi muokata, jos hyväksytty
-        String tarjoajaOid = hakukohde.getTarjoajaOid();
-        if (tarjoajaOid == null || StringUtils.isBlank(tarjoajaOid)) {
-            updateMissingTarjoajaOidFromTarjonta(hakukohdeOid, ajoId, hakukohde);
-
-        }
         authorizer.checkOrganisationAccess(tarjoajaOid, SijoitteluRole.UPDATE_ROLE, SijoitteluRole.CRUD_ROLE);
-        Valintatulos v = valintatulosDao.loadValintatulos(hakukohdeOid, valintatapajonoOid, hakemusOid);
-        if (v != null && v.getTila().equals(tila) && v.getIlmoittautumisTila().equals(ilmoittautumisTila)
-                && v.getJulkaistavissa() == julkaistavissa && v.getHyvaksyttyVarasijalta() == hyvaksyttyVarasijalta) {
+        Valintatapajono valintatapajono = getValintatapajono(valintatapajonoOid, hakukohde);
+        Hakemus hakemus = getHakemus(hakemusOid, valintatapajono);
+        String hakukohdeOid = hakukohde.getOid();
+        Valintatulos v = Optional.ofNullable(valintatulosDao.loadValintatulos(hakukohdeOid, valintatapajonoOid, hakemusOid))
+                .orElse(buildValintatulos(hakuoid, hakukohde, valintatapajono, hakemus));
+        if (notModifying(tila, ilmoittautumisTila, julkaistavissa, hyvaksyttyVarasijalta, v)) {
             return;
-        }
-        if (v == null) {
-            v = new Valintatulos();
-            v.setHakemusOid(hakemus.getHakemusOid());
-            v.setValintatapajonoOid(valintatapajono.getOid());
-            v.setHakukohdeOid(hakukohde.getOid());
-            v.setHakijaOid(hakemus.getHakijaOid());
-            v.setHakutoive(hakemus.getPrioriteetti());
-            v.setHakuOid(hakuoid);
         }
         v.setTila(tila);
         v.setIlmoittautumisTila(ilmoittautumisTila);
         v.setJulkaistavissa(julkaistavissa);
         v.setHyvaksyttyVarasijalta(hyvaksyttyVarasijalta);
-        LOG.info("Asetetaan valintatuloksen tila - hakukohdeoid {}, valintatapajonooid {}, hakemusoid {}", new Object[]{hakukohdeOid, valintatapajonoOid, hakemusOid});
-        LOG.info("Valintatuloksen uusi tila {}", tila);
-        LogEntry logEntry = createLogEntry(tila, selite);
-        v.getLogEntries().add(logEntry);
+        v.getLogEntries().add(createLogEntry(tila, selite));
+        LOG.info("Asetetaan valintatuloksen hakukohdeoid {}, valintatapajonooid {}, hakemusoid {} tilaksi {}", hakukohdeOid, valintatapajonoOid, hakemusOid, tila);
         valintatulosDao.createOrUpdateValintatulos(v);
+    }
+
+    private static Valintatulos buildValintatulos(String hakuoid, Hakukohde hakukohde, Valintatapajono valintatapajono, Hakemus hakemus) {
+        Valintatulos v = new Valintatulos();
+        v.setHakemusOid(hakemus.getHakemusOid());
+        v.setValintatapajonoOid(valintatapajono.getOid());
+        v.setHakukohdeOid(hakukohde.getOid());
+        v.setHakijaOid(hakemus.getHakijaOid());
+        v.setHakutoive(hakemus.getPrioriteetti());
+        v.setHakuOid(hakuoid);
+        return v;
+    }
+
+    private static boolean notModifying(ValintatuloksenTila tila, IlmoittautumisTila ilmoittautumisTila, boolean julkaistavissa, boolean hyvaksyttyVarasijalta, Valintatulos v) {
+        return v.getTila() == tila && v.getIlmoittautumisTila() == ilmoittautumisTila && v.getJulkaistavissa() == julkaistavissa && v.getHyvaksyttyVarasijalta() == hyvaksyttyVarasijalta;
     }
 
     private LogEntry createLogEntry(ValintatuloksenTila tila, String selite) {
@@ -570,61 +571,28 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
         logEntry.setLuotu(new Date());
         logEntry.setMuokkaaja(AuthorizationUtil.getCurrentUser());
         logEntry.setSelite(selite);
-        if (tila == null) {
-            logEntry.setMuutos("");
-        } else {
-            logEntry.setMuutos(tila.name());
-        }
+        logEntry.setMuutos(tila.name());
         return logEntry;
     }
 
-    private void updateMissingTarjoajaOidFromTarjonta(String hakukohdeOid, Long ajoId, Hakukohde hakukohde) {
-        try {
-            Optional<String> tOid = tarjontaIntegrationService.getTarjoajaOid(hakukohde.getOid());
-            if (tOid.isPresent()) {
-                hakukohde.setTarjoajaOid(tOid.get());
-                hakukohdeDao.persistHakukohde(hakukohde);
-            } else {
-                throw new RuntimeException("Hakukohteelle " + hakukohdeOid + " ei löytynyt tarjoajaOidia sijoitteluajosta: " + ajoId);
-            }
-        } catch (Exception e) {
-            LOG.error("Tarjoajaoidin päivitys tarjonnasta epäonnistui", e);
-            throw new RuntimeException("Hakukohteelle " + hakukohdeOid + " ei löytynyt tarjoajaOidia sijoitteluajosta: " + ajoId);
-        }
+    private void updateMissingTarjoajaOidFromTarjonta(Hakukohde hakukohde) {
+        String oid = tarjontaIntegrationService.getTarjoajaOid(hakukohde.getOid())
+                .orElseThrow(() -> new RuntimeException("Hakukohteelle " + hakukohde.getOid() + " ei löytynyt tarjoajaOidia sijoitteluajosta: " + hakukohde.getSijoitteluajoId()));
+        hakukohde.setTarjoajaOid(oid);
+        hakukohdeDao.persistHakukohde(hakukohde);
     }
 
     private static Valintatapajono getValintatapajono(String valintatapajonoOid, Hakukohde hakukohde) {
-        Valintatapajono valintatapajono = null;
-        for (Valintatapajono v : hakukohde.getValintatapajonot()) {
-            if (valintatapajonoOid.equals(v.getOid())) {
-                valintatapajono = v;
-                break;
-            }
-        }
-        return valintatapajono;
-    }
-
-    private boolean checkIfOphAdmin(final Hakemus hakemus) {
-        boolean ophAdmin = false;
-        try {
-            authorizer.checkOrganisationAccess(rootOrgOid, SijoitteluRole.CRUD_ROLE);
-            ophAdmin = true;
-        } catch (NotAuthorizedException nae) {
-            LOG.info("Ei ophadmin");
-        }
-        return ophAdmin;
+        return hakukohde.getValintatapajonot().stream()
+                .filter(v -> valintatapajonoOid.equals(v.getOid()))
+                .findFirst()
+                .orElseThrow(() -> new ValintatapajonoaEiLoytynytException(String.format("Valintatapajonoa %sei löytynyt hakukohteelle %s", valintatapajonoOid, hakukohde.getOid())));
     }
 
     private static Hakemus getHakemus(final String hakemusOid, final Valintatapajono valintatapajono) {
-        Hakemus hakemus = null;
-        for (Hakemus h : valintatapajono.getHakemukset()) {
-            if (hakemusOid.equals(h.getHakemusOid())) {
-                hakemus = h;
-            }
-        }
-        if (hakemus == null) {
-            throw new HakemustaEiLoytynytException("Hakemusta ei löytynyt.");
-        }
-        return hakemus;
+        return valintatapajono.getHakemukset().stream()
+                .filter(h -> hakemusOid.equals(h.getHakemusOid()))
+                .findFirst()
+                .orElseThrow(() -> new HakemustaEiLoytynytException("Hakemusta ei löytynyt."));
     }
 }

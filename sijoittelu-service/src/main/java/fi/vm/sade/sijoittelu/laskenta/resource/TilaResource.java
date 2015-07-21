@@ -15,6 +15,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 
 import fi.vm.sade.sijoittelu.domain.*;
 import fi.vm.sade.sijoittelu.domain.dto.ErillishaunHakijaDTO;
@@ -135,25 +136,22 @@ public class TilaResource {
                                          @QueryParam("selite") String selite) {
 
         if(valintatulokset != null && !sijoitteluBusinessService.muutoksetOvatAjantasaisia(hakukohdeOid, valintatulokset)) {
-            return Response.status(Response.Status.CONFLICT).build();
+            return Response.status(Status.CONFLICT).build();
         }
 
         try {
             Hakukohde hakukohde = sijoitteluBusinessService.getHakukohde(hakuOid, hakukohdeOid);
             for (Valintatulos v : valintatulokset) {
-                ValintatuloksenTila tila = v.getTila();
-                IlmoittautumisTila ilmoittautumisTila = v.getIlmoittautumisTila();
-                sijoitteluBusinessService.vaihdaHakemuksenTila(hakuOid,
-                        hakukohde, v.getValintatapajonoOid(),
-                        v.getHakemusOid(), tila, selite, ilmoittautumisTila,
-                        v.getJulkaistavissa(), v.getHyvaksyttyVarasijalta());
+                sijoitteluBusinessService.vaihdaHakemuksenTila(hakuOid, hakukohde, v.getValintatapajonoOid(),
+                        v.getHakemusOid(), v.getTila(), selite, v.getIlmoittautumisTila(), v.getJulkaistavissa(),
+                        v.getHyvaksyttyVarasijalta());
             }
-            return Response.status(Response.Status.ACCEPTED).build();
+            return Response.status(Status.ACCEPTED).build();
         } catch (Exception e) {
-            LOGGER.error("Valintatulosten tallenus epäonnistui haussa " + hakuOid + " hakukohteelle " + hakukohdeOid, e);
-            Map error = new HashMap();
+            LOGGER.error("Valintatulosten tallenus epäonnistui haussa {} hakukohteelle {}", hakuOid, hakukohdeOid, e);
+            Map<String, String> error = new HashMap<>();
             error.put("message", e.getMessage());
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(error).build();
+            return Response.status(Status.INTERNAL_SERVER_ERROR).entity(error).build();
         }
     }
 
