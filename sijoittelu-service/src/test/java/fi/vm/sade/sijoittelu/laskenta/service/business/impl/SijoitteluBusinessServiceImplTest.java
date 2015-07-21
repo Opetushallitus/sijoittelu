@@ -13,12 +13,11 @@ import fi.vm.sade.sijoittelu.tulos.roles.SijoitteluRole;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
-import org.mockito.Mockito;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.Optional;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 public class SijoitteluBusinessServiceImplTest {
@@ -171,6 +170,12 @@ public class SijoitteluBusinessServiceImplTest {
         valintatulos.setHakutoive(0);
         valintatulos.setValintatapajonoOid(VALINTATAPAJONO_OID);
         valintatulos.setTila(tila);
+        return valintatulos;
+    }
+
+    private Valintatulos getValintatulos(ValintatuloksenTila tila, boolean hyvaksyPeruuntunut) {
+        Valintatulos valintatulos = getValintatulos(tila);
+        valintatulos.setHyvaksyPeruuntunut(hyvaksyPeruuntunut);
         return valintatulos;
     }
 
@@ -368,5 +373,28 @@ public class SijoitteluBusinessServiceImplTest {
         Valintatulos valintatulos = argument.getValue();
         assertEquals(ValintatuloksenTila.VASTAANOTTANUT, valintatulos.getTila());
         assertEquals(IlmoittautumisTila.POISSA, valintatulos.getIlmoittautumisTila());
+    }
+
+    @Test
+    public void testHyvaksyPeruuntunutCanBeSet() {
+        assertTrue(vaihdaHakemuksenHyvaksyPeruuntunut(true).getHyvaksyPeruuntunut());
+    }
+
+    @Test
+    public void testHyvaksyPeruuntunutCanBeUnset() {
+        assertFalse(vaihdaHakemuksenHyvaksyPeruuntunut(false).getHyvaksyPeruuntunut());
+    }
+
+    private Valintatulos vaihdaHakemuksenHyvaksyPeruuntunut(boolean hyvaksyPeruuntunut) {
+        when(valintatulosDaoMock.loadValintatulos(HAKUKOHDE_OID, VALINTATAPAJONO_OID, HAKEMUS_OID))
+                .thenReturn(getValintatulos(ValintatuloksenTila.ILMOITETTU));
+        sijoitteluBusinessService.vaihdaHakemuksenTila(HAKU_OID,
+                testDataGenerator.createHakukohdes(1).get(0),
+                VALINTATAPAJONO_OID, HAKEMUS_OID,
+                ValintatuloksenTila.VASTAANOTTANUT, SELITE,
+                IlmoittautumisTila.POISSA, false, false, hyvaksyPeruuntunut);
+        ArgumentCaptor<Valintatulos> argument = ArgumentCaptor.forClass(Valintatulos.class);
+        verify(valintatulosDaoMock).createOrUpdateValintatulos(argument.capture());
+        return argument.getValue();
     }
 }
