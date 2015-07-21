@@ -568,12 +568,10 @@ public class SijoitteluAlgorithmImpl implements SijoitteluAlgorithm {
                     if (h.isTilaVoidaanVaihtaa()) {
                         if (kuuluuHyvaksyttyihinTiloihin(hakemuksenTila(h))) {
                             asetaTilaksiPeruuntunutYlempiToive(h);
-                            poistaVastaanottoTietoKunPeruuntunut(h, sijoitteluAjo);
                             uudelleenSijoiteltavatHakukohteet.add(h);
                         } else {
                             if (!kuuluuHylattyihinTiloihin(hakemuksenTila(h))) {
                                 asetaTilaksiPeruuntunutYlempiToive(h);
-                                poistaVastaanottoTietoKunPeruuntunut(h, sijoitteluAjo);
                             }
                         }
                     }
@@ -581,7 +579,6 @@ public class SijoitteluAlgorithmImpl implements SijoitteluAlgorithm {
                     // Kaikki jonot ei vielä sijoittelussa, yliajetaan tylysti kaikki alemmat hyväksytyt ja varalla olot
                     if(!sijoitteluAjo.paivamaaraOhitettu() && kuuluuYliajettaviinHakemuksenTiloihin(hakemuksenTila(h))) {
                         asetaTilaksiPeruuntunutYlempiToive(h);
-                        poistaVastaanottoTietoKunPeruuntunut(h, sijoitteluAjo);
                         hakemus.setTilaVoidaanVaihtaa(false);
                         uudelleenSijoiteltavatHakukohteet.add(h);
                     }
@@ -598,7 +595,6 @@ public class SijoitteluAlgorithmImpl implements SijoitteluAlgorithm {
                             if (!kuuluuHylattyihinTiloihin(hakemuksenTila(h))) {
                                 HakemuksenTila vanhaTila = hakemuksenTila(h);
                                 asetaTilaksiPeruuntunutToinenJono(h);
-                                poistaVastaanottoTietoKunPeruuntunut(h, sijoitteluAjo);
                                 if (kuuluuHyvaksyttyihinTiloihin(vanhaTila)) {
                                     uudelleenSijoiteltavatHakukohteet.add(h);
                                 }
@@ -612,7 +608,6 @@ public class SijoitteluAlgorithmImpl implements SijoitteluAlgorithm {
                                 if (jononTulos.isPresent() && !jononTulos.get().getTila().equals(ValintatuloksenTila.KESKEN)) {
                                     Valintatulos muokattava = jononTulos.get();
                                     Valintatulos nykyinen = muokkaaValintatulos(hakemus, h, hyvaksyttyJono, muokattava);
-                                    poistaVastaanottoTietoKunPeruuntunut(muokattava);
                                     // Lisää muokatut valintatulokset listaan tallennusta varten
                                     sijoitteluAjo.getMuuttuneetValintatulokset().addAll(Arrays.asList(muokattava, nykyinen));
                                 }

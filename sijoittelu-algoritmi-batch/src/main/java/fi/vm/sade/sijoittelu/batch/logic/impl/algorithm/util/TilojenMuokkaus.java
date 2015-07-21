@@ -73,39 +73,7 @@ public class TilojenMuokkaus {
             nykyinen.setHakutoive(muokattava.getHakutoive());
             hakemus.getHenkilo().getValintatulos().add(nykyinen);
         }
-        muokattava.setTila(ValintatuloksenTila.KESKEN);
-        muokattava.setIlmoittautumisTila(IlmoittautumisTila.EI_TEHTY);
-        muokattava.setHyvaksyttyVarasijalta(false);
         return nykyinen;
     }
-
-    public static void poistaVastaanottoTietoKunPeruuntunut(HakemusWrapper hakemus, SijoitteluajoWrapper sijoitteluAjo) {
-        Optional<Valintatulos> valintatulosOptional = hakemus.getHenkilo().getValintatulos().stream().filter(vt -> vt.getValintatapajonoOid().equals(hakemus.getValintatapajono().getValintatapajono().getOid())).findFirst();
-        if(valintatulosOptional.isPresent()) {
-            Valintatulos valintatulos = valintatulosOptional.get();
-            poistaVastaanottoTietoKunPeruuntunut(valintatulos);
-            sijoitteluAjo.getMuuttuneetValintatulokset().add(valintatulos);
-        }
-    }
-
-    public static void poistaVastaanottoTietoKunPeruuntunut(Valintatulos valintatulos) {
-
-            if(!ValintatuloksenTila.KESKEN.equals(valintatulos.getTila())) {
-                valintatulos.setTila(ValintatuloksenTila.KESKEN);
-                valintatulos.getLogEntries().add(createLogEntry(ValintatuloksenTila.KESKEN, "Poistettu vastaanottotieto koska peruuntunut"));
-            }
-    }
-
-    private static LogEntry createLogEntry(ValintatuloksenTila tila, String selite) {
-        LogEntry logEntry = new LogEntry();
-        logEntry.setLuotu(new Date());
-        logEntry.setMuokkaaja("sijoittelu");
-        logEntry.setSelite(selite);
-        if (tila == null) {
-            logEntry.setMuutos("");
-        } else {
-            logEntry.setMuutos(tila.name());
-        }
-        return logEntry;
-    }
+    
 }
