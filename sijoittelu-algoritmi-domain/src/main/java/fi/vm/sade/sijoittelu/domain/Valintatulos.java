@@ -64,7 +64,7 @@ public class Valintatulos implements Serializable {
                     .stream()
                     .filter(e -> e.getLuotu() != null)
                     .map(e -> e.getLuotu())
-                    .sorted((e1,e2) -> e1.compareTo(e2)).findFirst().orElse(null);
+                    .sorted((e1,e2) -> e2.compareTo(e1)).findFirst().orElse(null);
     }
 
     public int getHakutoive() {
