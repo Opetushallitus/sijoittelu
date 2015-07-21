@@ -117,7 +117,7 @@ public class VastaanottoTest {
 
         System.out.println(PrintHelper.tulostaSijoittelu(s));
 
-        Assert.assertEquals(s.getSijoitteluAjo().getMuuttuneetValintatulokset().size(), 1);
+        Assert.assertEquals(s.getSijoitteluAjo().getMuuttuneetValintatulokset().size(), 2);
         Valintatulos t = s.getSijoitteluAjo().getMuuttuneetValintatulokset().get(0);
         Assert.assertEquals(t.getHakemusOid(), "oid4");
         Assert.assertEquals(t.getValintatapajonoOid(), "jono2");
@@ -140,7 +140,7 @@ public class VastaanottoTest {
             if(hak.getHakemusOid().equals("oid1")) {
                 Assert.assertEquals(hak.getTila(), HakemuksenTila.HYVAKSYTTY);
             } else if(hak.getHakemusOid().equals("oid2")) {
-                Assert.assertEquals(hak.getTila(), HakemuksenTila.HYVAKSYTTY);
+                Assert.assertEquals(hak.getTila(), HakemuksenTila.PERUUNTUNUT);
             } else if(hak.getHakemusOid().equals("oid3")) {
                 Assert.assertEquals(hak.getTila(), HakemuksenTila.PERUUNTUNUT);
             } else {

@@ -563,7 +563,7 @@ public class SijoitteluAlgorithmImpl implements SijoitteluAlgorithm {
             }
 
             Optional<Valintatulos> ehdollinenOpt = hakemus.getHenkilo().getValintatulos().stream()
-                    .filter(v -> v.getHakukohdeOid().equals(hakemus.getHakemus().getHakemusOid()) && v.getTila().equals(ValintatuloksenTila.EHDOLLISESTI_VASTAANOTTANUT))
+                    .filter(v -> v.getHakemusOid().equals(hakemus.getHakemus().getHakemusOid()) && v.getTila().equals(ValintatuloksenTila.EHDOLLISESTI_VASTAANOTTANUT))
                     .findFirst();
 
             for (HakemusWrapper h : hakemus.getHenkilo().getHakemukset()) {
