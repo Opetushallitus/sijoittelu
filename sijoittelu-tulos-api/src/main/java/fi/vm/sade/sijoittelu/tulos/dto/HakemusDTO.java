@@ -46,6 +46,8 @@ public class HakemusDTO implements Serializable {
 
     private String hakuOid;
 
+    private boolean onkoMuuttunutViimeSijoittelussa = false;
+
     public int getTodellinenJonosija() {
         if (jonosija == null) {
             return 0;
@@ -55,6 +57,14 @@ public class HakemusDTO implements Serializable {
             }
             return jonosija + tasasijaJonosija - 1;
         }
+    }
+
+    public boolean isOnkoMuuttunutViimeSijoittelussa() {
+        return onkoMuuttunutViimeSijoittelussa;
+    }
+
+    public void setOnkoMuuttunutViimeSijoittelussa(boolean onkoMuuttunutViimeSijoittelussa) {
+        this.onkoMuuttunutViimeSijoittelussa = onkoMuuttunutViimeSijoittelussa;
     }
 
     private List<PistetietoDTO> pistetiedot = new ArrayList<PistetietoDTO>();

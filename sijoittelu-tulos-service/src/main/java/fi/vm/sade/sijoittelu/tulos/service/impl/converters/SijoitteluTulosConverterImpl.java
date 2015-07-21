@@ -69,6 +69,7 @@ public class SijoitteluTulosConverterImpl implements SijoitteluTulosConverter {
 
     private HakemusDTO convert(Hakemus ha, Valintatapajono valintatapajono, Hakukohde hakukohde) {
         HakemusDTO dto = new HakemusDTO();
+        dto.setOnkoMuuttunutViimeSijoittelussa(ha.isOnkoMuuttunutViimeSijoittelussa());
         dto.setEtunimi(ha.getEtunimi());
         dto.setHakemusOid(ha.getHakemusOid());
         dto.setHakijaOid(ha.getHakijaOid());
