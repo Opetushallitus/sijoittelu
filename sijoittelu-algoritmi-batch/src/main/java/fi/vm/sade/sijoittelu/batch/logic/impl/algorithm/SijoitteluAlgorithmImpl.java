@@ -562,10 +562,14 @@ public class SijoitteluAlgorithmImpl implements SijoitteluAlgorithm {
                 asetaTilaksiHyvaksytty(hakemus);
             }
 
+            Optional<Valintatulos> ehdollinenOpt = hakemus.getHenkilo().getValintatulos().stream()
+                    .filter(v -> v.getHakukohdeOid().equals(hakemus.getHakemus().getHakemusOid()) && v.getTila().equals(ValintatuloksenTila.EHDOLLISESTI_VASTAANOTTANUT))
+                    .findFirst();
+
             for (HakemusWrapper h : hakemus.getHenkilo().getHakemukset()) {
                 // Alemmat toiveet
                 if (h != hakemus && hakemuksenPrioriteetti(hakemus) < hakemuksenPrioriteetti(h)) {
-                    if (h.isTilaVoidaanVaihtaa()) {
+                    if (h.isTilaVoidaanVaihtaa() || ehdollinenOpt.isPresent()) {
                         if (kuuluuHyvaksyttyihinTiloihin(hakemuksenTila(h))) {
                             asetaTilaksiPeruuntunutYlempiToive(h);
                             uudelleenSijoiteltavatHakukohteet.add(h);
