@@ -542,12 +542,13 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
         if (notModifying(tila, ilmoittautumisTila, julkaistavissa, hyvaksyttyVarasijalta, v)) {
             return;
         }
+        String muutos = muutos(v, tila, ilmoittautumisTila, julkaistavissa, hyvaksyttyVarasijalta);
+        v.getLogEntries().add(createLogEntry(selite, muutos));
         v.setTila(tila);
         v.setIlmoittautumisTila(ilmoittautumisTila);
         v.setJulkaistavissa(julkaistavissa);
         v.setHyvaksyttyVarasijalta(hyvaksyttyVarasijalta);
-        v.getLogEntries().add(createLogEntry(tila, selite));
-        LOG.info("Asetetaan valintatuloksen hakukohdeoid {}, valintatapajonooid {}, hakemusoid {} tilaksi {}", hakukohdeOid, valintatapajonoOid, hakemusOid, tila);
+        LOG.info("Muutetaan valintatulosta hakukohdeoid {}, valintatapajonooid {}, hakemusoid {}: {}", hakukohdeOid, valintatapajonoOid, hakemusOid, muutos);
         valintatulosDao.createOrUpdateValintatulos(v);
     }
 
@@ -562,16 +563,37 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
         return v;
     }
 
+    private static String muutos(Valintatulos v,
+                                 ValintatuloksenTila tila,
+                                 IlmoittautumisTila ilmoittautumisTila,
+                                 boolean julkaistavissa,
+                                 boolean hyvaksyttyVarasijalta) {
+        List<String> muutos = new ArrayList<>();
+        if (tila != v.getTila()) {
+            muutos.add(Optional.ofNullable(v.getTila()).map(Enum::name).orElse("") + " -> " + tila.name());
+        }
+        if (ilmoittautumisTila != v.getIlmoittautumisTila()) {
+            muutos.add(Optional.ofNullable(v.getIlmoittautumisTila()).map(Enum::name).orElse("") + " -> " + ilmoittautumisTila.name());
+        }
+        if (julkaistavissa != v.getJulkaistavissa()) {
+            muutos.add((v.getJulkaistavissa() ? "JULKAISTAVISSA" : "EI JULKAISTAVISSA") + " -> " + (julkaistavissa ? "JULKAISTAVISSA" : "EI JULKAISTAVISSA"));
+        }
+        if (hyvaksyttyVarasijalta != v.getHyvaksyttyVarasijalta()) {
+            muutos.add((v.getHyvaksyttyVarasijalta() ? "HYVÄKSYTTY VARASIJALTA" : "") + " -> " + (hyvaksyttyVarasijalta ? "HYVÄKSYTTY VARASIJALTA" : ""));
+        }
+        return muutos.stream().collect(Collectors.joining(", "));
+    }
+
     private static boolean notModifying(ValintatuloksenTila tila, IlmoittautumisTila ilmoittautumisTila, boolean julkaistavissa, boolean hyvaksyttyVarasijalta, Valintatulos v) {
         return v.getTila() == tila && v.getIlmoittautumisTila() == ilmoittautumisTila && v.getJulkaistavissa() == julkaistavissa && v.getHyvaksyttyVarasijalta() == hyvaksyttyVarasijalta;
     }
 
-    private LogEntry createLogEntry(ValintatuloksenTila tila, String selite) {
+    private LogEntry createLogEntry(String selite, String muutos) {
         LogEntry logEntry = new LogEntry();
         logEntry.setLuotu(new Date());
         logEntry.setMuokkaaja(AuthorizationUtil.getCurrentUser());
         logEntry.setSelite(selite);
-        logEntry.setMuutos(tila.name());
+        logEntry.setMuutos(muutos);
         return logEntry;
     }
 
