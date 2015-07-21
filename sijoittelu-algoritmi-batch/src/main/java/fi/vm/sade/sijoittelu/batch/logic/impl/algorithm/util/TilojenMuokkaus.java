@@ -5,6 +5,7 @@ import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.SijoitteluajoWr
 import fi.vm.sade.sijoittelu.domain.*;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Optional;
 
 public class TilojenMuokkaus {
@@ -16,6 +17,7 @@ public class TilojenMuokkaus {
 
     public static void asetaTilaksiHyvaksytty(HakemusWrapper hakemus) {
         hakemus.getHakemus().setTila(HakemuksenTila.HYVAKSYTTY);
+        hakemus.getHakemus().getTilanKuvaukset().clear();
     }
 
     public static void asetaTilaksiPeruuntunutToinenJono(HakemusWrapper h) {
