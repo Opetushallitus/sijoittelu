@@ -5,10 +5,7 @@ import fi.vm.sade.sijoittelu.domain.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class PostSijoitteluProcessorPeruuntuneetHakemuksenVastaanotonMuokkaus implements PostSijoitteluProcessor {
@@ -30,6 +27,7 @@ public class PostSijoitteluProcessorPeruuntuneetHakemuksenVastaanotonMuokkaus im
                     LOG.info("Hakemus {} on PERUUNTUNUT ja valintatuloksentilassa {}, asetetaan valintatuloksentila KESKEN",
                             hakemus.getHakemusOid(), valintatulosOpt.get().getTila());
                     valintatulosOpt.get().setTila(ValintatuloksenTila.KESKEN);
+                    poistaVastaanottoTieto(valintatulosOpt.get());
                 }
             });
         });
@@ -71,6 +69,29 @@ public class PostSijoitteluProcessorPeruuntuneetHakemuksenVastaanotonMuokkaus im
                     .filter(vt -> vt.getHakemusOid() != null && vt.getHakemusOid().equals(hakemus.getHakemusOid()) && vt.getValintatapajonoOid().equals(valintatapajonoOid))
                     .findFirst();
         }
+    }
+
+    private void poistaVastaanottoTieto(Valintatulos valintatulos) {
+
+        if(!ValintatuloksenTila.KESKEN.equals(valintatulos.getTila())) {
+            valintatulos.setTila(ValintatuloksenTila.KESKEN);
+            valintatulos.setIlmoittautumisTila(IlmoittautumisTila.EI_TEHTY);
+            valintatulos.setHyvaksyttyVarasijalta(false);
+            valintatulos.getLogEntries().add(createLogEntry(ValintatuloksenTila.KESKEN, "Poistettu vastaanottotieto koska peruuntunut"));
+        }
+    }
+
+    private LogEntry createLogEntry(ValintatuloksenTila tila, String selite) {
+        LogEntry logEntry = new LogEntry();
+        logEntry.setLuotu(new Date());
+        logEntry.setMuokkaaja("sijoittelu");
+        logEntry.setSelite(selite);
+        if (tila == null) {
+            logEntry.setMuutos("");
+        } else {
+            logEntry.setMuutos(tila.name());
+        }
+        return logEntry;
     }
 }
 
