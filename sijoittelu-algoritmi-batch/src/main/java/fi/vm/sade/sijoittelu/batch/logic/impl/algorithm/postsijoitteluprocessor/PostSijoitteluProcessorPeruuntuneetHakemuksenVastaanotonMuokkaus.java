@@ -26,7 +26,6 @@ public class PostSijoitteluProcessorPeruuntuneetHakemuksenVastaanotonMuokkaus im
                 if (isValintatuloksentilaVastaanottanutTila(valintatulosOpt)) {
                     LOG.info("Hakemus {} on PERUUNTUNUT ja valintatuloksentilassa {}, asetetaan valintatuloksentila KESKEN",
                             hakemus.getHakemusOid(), valintatulosOpt.get().getTila());
-                    valintatulosOpt.get().setTila(ValintatuloksenTila.KESKEN);
                     poistaVastaanottoTieto(valintatulosOpt.get());
                 }
             });
