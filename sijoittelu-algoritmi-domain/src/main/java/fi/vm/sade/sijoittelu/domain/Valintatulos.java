@@ -31,6 +31,8 @@ public class Valintatulos implements Serializable {
 
     private boolean hyvaksyttyVarasijalta;
 
+    private boolean hyvaksyPeruuntunut;
+
     private String hakijaOid;
 
     private String hakuOid;
@@ -161,6 +163,14 @@ public class Valintatulos implements Serializable {
 
     public void setHyvaksyttyVarasijalta(boolean hyvaksyttyVarasijalta) {
         this.hyvaksyttyVarasijalta = hyvaksyttyVarasijalta;
+    }
+
+    public boolean getHyvaksyPeruuntunut() {
+        return this.hyvaksyPeruuntunut;
+    }
+
+    public void setHyvaksyPeruuntunut(boolean hyvaksyPeruuntunut) {
+        this.hyvaksyPeruuntunut = hyvaksyPeruuntunut;
     }
 
     public Date getRead() {

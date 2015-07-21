@@ -523,7 +523,8 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
                                      String selite,
                                      IlmoittautumisTila ilmoittautumisTila,
                                      boolean julkaistavissa,
-                                     boolean hyvaksyttyVarasijalta) {
+                                     boolean hyvaksyttyVarasijalta,
+                                     boolean hyvaksyPeruuntunut) {
         if (tila == null || isBlank(hakuoid) || isBlank(valintatapajonoOid) || isBlank(hakemusOid)) {
             throw new IllegalArgumentException(String.format("tila: %s, hakuoid: %s, valintatapajonoOid: %s, hakemusOid: %s", tila, hakuoid, valintatapajonoOid, hakemusOid));
         }
@@ -539,15 +540,16 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
         String hakukohdeOid = hakukohde.getOid();
         Valintatulos v = Optional.ofNullable(valintatulosDao.loadValintatulos(hakukohdeOid, valintatapajonoOid, hakemusOid))
                 .orElse(buildValintatulos(hakuoid, hakukohde, valintatapajono, hakemus));
-        if (notModifying(tila, ilmoittautumisTila, julkaistavissa, hyvaksyttyVarasijalta, v)) {
+        if (notModifying(tila, ilmoittautumisTila, julkaistavissa, hyvaksyttyVarasijalta, hyvaksyPeruuntunut, v)) {
             return;
         }
-        String muutos = muutos(v, tila, ilmoittautumisTila, julkaistavissa, hyvaksyttyVarasijalta);
+        String muutos = muutos(v, tila, ilmoittautumisTila, julkaistavissa, hyvaksyttyVarasijalta, hyvaksyPeruuntunut);
         v.getLogEntries().add(createLogEntry(selite, muutos));
         v.setTila(tila);
         v.setIlmoittautumisTila(ilmoittautumisTila);
         v.setJulkaistavissa(julkaistavissa);
         v.setHyvaksyttyVarasijalta(hyvaksyttyVarasijalta);
+        v.setHyvaksyPeruuntunut(hyvaksyPeruuntunut);
         LOG.info("Muutetaan valintatulosta hakukohdeoid {}, valintatapajonooid {}, hakemusoid {}: {}", hakukohdeOid, valintatapajonoOid, hakemusOid, muutos);
         valintatulosDao.createOrUpdateValintatulos(v);
     }
@@ -567,7 +569,8 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
                                  ValintatuloksenTila tila,
                                  IlmoittautumisTila ilmoittautumisTila,
                                  boolean julkaistavissa,
-                                 boolean hyvaksyttyVarasijalta) {
+                                 boolean hyvaksyttyVarasijalta,
+                                 boolean hyvaksyPeruuntunut) {
         List<String> muutos = new ArrayList<>();
         if (tila != v.getTila()) {
             muutos.add(Optional.ofNullable(v.getTila()).map(Enum::name).orElse("") + " -> " + tila.name());
@@ -581,11 +584,23 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
         if (hyvaksyttyVarasijalta != v.getHyvaksyttyVarasijalta()) {
             muutos.add((v.getHyvaksyttyVarasijalta() ? "HYVÄKSYTTY VARASIJALTA" : "") + " -> " + (hyvaksyttyVarasijalta ? "HYVÄKSYTTY VARASIJALTA" : ""));
         }
+        if (hyvaksyPeruuntunut != v.getHyvaksyPeruuntunut()) {
+            muutos.add((v.getHyvaksyPeruuntunut() ? "HYVÄKSYTTY PERUUNTUNUT" : "") + " -> " + (hyvaksyPeruuntunut ? "HYVÄKSYTTY PERUUNTUNUT" : ""));
+        }
         return muutos.stream().collect(Collectors.joining(", "));
     }
 
-    private static boolean notModifying(ValintatuloksenTila tila, IlmoittautumisTila ilmoittautumisTila, boolean julkaistavissa, boolean hyvaksyttyVarasijalta, Valintatulos v) {
-        return v.getTila() == tila && v.getIlmoittautumisTila() == ilmoittautumisTila && v.getJulkaistavissa() == julkaistavissa && v.getHyvaksyttyVarasijalta() == hyvaksyttyVarasijalta;
+    private static boolean notModifying(ValintatuloksenTila tila,
+                                        IlmoittautumisTila ilmoittautumisTila,
+                                        boolean julkaistavissa,
+                                        boolean hyvaksyttyVarasijalta,
+                                        boolean hyvaksyPeruuntunut,
+                                        Valintatulos v) {
+        return v.getTila() == tila &&
+                v.getIlmoittautumisTila() == ilmoittautumisTila &&
+                v.getJulkaistavissa() == julkaistavissa &&
+                v.getHyvaksyttyVarasijalta() == hyvaksyttyVarasijalta &&
+                v.getHyvaksyPeruuntunut() == hyvaksyPeruuntunut;
     }
 
     private LogEntry createLogEntry(String selite, String muutos) {

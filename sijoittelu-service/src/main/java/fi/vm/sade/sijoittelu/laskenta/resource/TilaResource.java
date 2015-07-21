@@ -144,7 +144,7 @@ public class TilaResource {
             for (Valintatulos v : valintatulokset) {
                 sijoitteluBusinessService.vaihdaHakemuksenTila(hakuOid, hakukohde, v.getValintatapajonoOid(),
                         v.getHakemusOid(), v.getTila(), selite, v.getIlmoittautumisTila(), v.getJulkaistavissa(),
-                        v.getHyvaksyttyVarasijalta());
+                        v.getHyvaksyttyVarasijalta(), v.getHyvaksyPeruuntunut());
             }
             return Response.status(Status.ACCEPTED).build();
         } catch (Exception e) {
@@ -177,7 +177,7 @@ public class TilaResource {
                 sijoitteluBusinessService.vaihdaHakemuksenTila(hakuOid,
                         hakukohde, v.getValintatapajonoOid(),
                         v.getHakemusOid(), tila, selite, ilmoittautumisTila,
-                        v.getJulkaistavissa(), v.getHyvaksyttyVarasijalta());
+                        v.getJulkaistavissa(), v.getHyvaksyttyVarasijalta(), v.getHyvaksyPeruuntunut());
             }
             return Response.status(Response.Status.ACCEPTED).build();
         } catch (Exception e) {
@@ -228,21 +228,17 @@ public class TilaResource {
             ryhmitelty.getOrDefault(false, new ArrayList<>())
                     .stream()
                     .map(e -> e.asValintatulos())
-                    .forEach(
-                            v -> {
-                                ValintatuloksenTila tila = v.getTila();
-                                IlmoittautumisTila ilmoittautumisTila = v
-                                        .getIlmoittautumisTila();
-                                sijoitteluBusinessService.vaihdaHakemuksenTila(
-                                        v.getHakuOid(),
-                                        sijoitteluBusinessService.getHakukohde(v.getHakuOid(), v.getHakukohdeOid()),
-                                        v.getValintatapajonoOid(),
-                                        v.getHakemusOid(), tila,
-                                        "Erillishauntuonti",
-                                        ilmoittautumisTila,
-                                        v.getJulkaistavissa(),
-                                        v.getHyvaksyttyVarasijalta());
-                            });
+                    .forEach(v -> sijoitteluBusinessService.vaihdaHakemuksenTila(
+                            v.getHakuOid(),
+                            sijoitteluBusinessService.getHakukohde(v.getHakuOid(), v.getHakukohdeOid()),
+                            v.getValintatapajonoOid(),
+                            v.getHakemusOid(),
+                            v.getTila(),
+                            "Erillishauntuonti",
+                            v.getIlmoittautumisTila(),
+                            v.getJulkaistavissa(),
+                            v.getHyvaksyttyVarasijalta(),
+                            v.getHyvaksyPeruuntunut()));
             LOGGER.info("Erillishaun tietojen tuonti onnistui jonolle {} haussa {} hakukohteelle {}",
                     erillishaunHakijaDtos.iterator().next().valintatapajonoOid, hakuOid, hakukohdeOid);
             return Response.status(Response.Status.ACCEPTED).build();
