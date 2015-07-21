@@ -92,8 +92,23 @@ public class SijoitteluAlgorithmFactoryTest {
         assertFalse(hakemusWrapper.isTilaVoidaanVaihtaa());
     }
 
+    @Test
+    public void testconstructAlgorithm_PERUUNTUNUT() {
+        Valintatulos valintatulos = valintatulosWithTila(ValintatuloksenTila.KESKEN);
+        valintatulos.setHyvaksyPeruuntunut(true);
+        SijoitteluAlgorithm sijoitteluAlgorithm = sijoitteluAlgorithm(valintatulos, HakemuksenTila.PERUUNTUNUT);
+
+        HakemusWrapper hakemusWrapper = sijoitteluAlgorithm.sijoitteluAjo.getHakukohteet().get(0).getValintatapajonot().get(0).getHakemukset().get(0);
+        assertEquals(hakemusWrapper.getHakemus().getTila(), HakemuksenTila.HYVAKSYTTY);
+        assertFalse(hakemusWrapper.isTilaVoidaanVaihtaa());
+    }
+
     private SijoitteluAlgorithm sijoitteluAlgorithm(Valintatulos valintatulos) {
-        return sijoitteluAlgorithmFactory.constructAlgorithm(generateHakukohteet(), Collections.singletonList(valintatulos));
+        return sijoitteluAlgorithm(valintatulos, HakemuksenTila.HYVAKSYTTY);
+    }
+
+    private SijoitteluAlgorithm sijoitteluAlgorithm(Valintatulos valintatulos, HakemuksenTila tila) {
+        return sijoitteluAlgorithmFactory.constructAlgorithm(generateHakukohteet(tila), Collections.singletonList(valintatulos));
     }
 
     private Valintatulos valintatulosWithTila(ValintatuloksenTila tila) {
@@ -105,24 +120,25 @@ public class SijoitteluAlgorithmFactoryTest {
         return valintatulos;
     }
 
-    private List<Hakukohde> generateHakukohteet() {
+    private List<Hakukohde> generateHakukohteet(HakemuksenTila tila) {
         Hakukohde hakukohde = new Hakukohde();
-        hakukohde.setValintatapajonot(generateValintatapajono());
+        hakukohde.setValintatapajonot(generateValintatapajono(tila));
         hakukohde.setOid("123");
         return Collections.singletonList(hakukohde);
     }
 
-    private List<Valintatapajono> generateValintatapajono() {
+    private List<Valintatapajono> generateValintatapajono(HakemuksenTila tila) {
         Valintatapajono valintatapajono = new Valintatapajono();
         valintatapajono.setOid("123");
-        List<Hakemus> hakemukset = generateHakemukset();
+        List<Hakemus> hakemukset = generateHakemukset(tila);
         valintatapajono.setHakemukset(hakemukset);
         return Collections.singletonList(valintatapajono);
     }
 
-    private List<Hakemus> generateHakemukset() {
+    private List<Hakemus> generateHakemukset(HakemuksenTila tila) {
         Hakemus hakemus = new Hakemus();
         hakemus.setHakemusOid("123");
+        hakemus.setTila(tila);
         return Collections.singletonList(hakemus);
     }
 }
