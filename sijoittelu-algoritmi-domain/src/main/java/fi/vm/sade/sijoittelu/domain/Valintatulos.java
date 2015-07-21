@@ -4,9 +4,7 @@ import org.bson.types.ObjectId;
 import org.mongodb.morphia.annotations.*;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @Entity("Valintatulos")
 @Indexes({
@@ -46,10 +44,28 @@ public class Valintatulos implements Serializable {
     @Transient
     private Date read = new Date();
 
+    @Transient
+    private Date viimeinenMuutos;
+
     @Embedded
     private List<LogEntry> logEntries = new ArrayList<LogEntry>();
 
     private ValintatulosMailStatus mailStatus = new ValintatulosMailStatus();
+
+
+    public Date getViimeinenMuutos() {
+        return viimeinenMuutos;
+    }
+
+    @PostLoad
+    public void setViimeinenMuutos() {
+        viimeinenMuutos =
+            Optional.ofNullable(getLogEntries()).orElse(Collections.emptyList())
+                    .stream()
+                    .filter(e -> e.getLuotu() != null)
+                    .map(e -> e.getLuotu())
+                    .sorted((e1,e2) -> e1.compareTo(e2)).findFirst().orElse(null);
+    }
 
     public int getHakutoive() {
         return hakutoive;

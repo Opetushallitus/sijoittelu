@@ -2,6 +2,7 @@ package fi.vm.sade.sijoittelu.batch.logic.impl.algorithm;
 
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.postsijoitteluprocessor.PostSijoitteluProcessor;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.postsijoitteluprocessor.PostSijoitteluProcessorEhdollisenVastaanotonSiirtyminenYlemmalleHakutoiveelle;
+import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.postsijoitteluprocessor.PostSijoitteluProcessorMuutostiedonAsetus;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.presijoitteluprocessor.*;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.util.TilanKuvaukset;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.*;
@@ -23,12 +24,14 @@ public class SijoitteluAlgorithmFactoryImpl implements SijoitteluAlgorithmFactor
     @Override
     public SijoitteluAlgorithm constructAlgorithm(List<Hakukohde> hakukohteet, List<Valintatulos> valintatulokset) {
         List<PreSijoitteluProcessor> preSijoitteluProcessors = new ArrayList<>();
+        preSijoitteluProcessors.add(new PreSijoitteluProcessorLahtotilanteenHash());
         preSijoitteluProcessors.add(new PreSijoitteluProcessorTasasijaArvonta());
         preSijoitteluProcessors.add(new PreSijoitteluProcessorSort());
         preSijoitteluProcessors.add(new PreSijoitteluProcessorPeruutaAlemmatPeruneetJaHyvaksytyt());
         preSijoitteluProcessors.add(new PreSijoitteluProcessorHylkaaHakijaRyhmaanKuulumattomat());
         List<PostSijoitteluProcessor> postSijoitteluProcessors = new ArrayList<>();
         postSijoitteluProcessors.add(new PostSijoitteluProcessorEhdollisenVastaanotonSiirtyminenYlemmalleHakutoiveelle());
+        postSijoitteluProcessors.add(new PostSijoitteluProcessorMuutostiedonAsetus());
         SijoitteluAlgorithmImpl algorithm = new SijoitteluAlgorithmImpl();
         algorithm.preSijoitteluProcessors = preSijoitteluProcessors;
         algorithm.postSijoitteluProcessors = postSijoitteluProcessors;

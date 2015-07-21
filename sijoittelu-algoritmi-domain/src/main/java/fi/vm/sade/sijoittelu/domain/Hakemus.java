@@ -28,6 +28,7 @@ public class Hakemus implements Serializable {
 
     private Integer jonosija;
 
+    private boolean onkoMuuttunutViimeSijoittelussa = false;
     // ensimmaisen jarjestyskriteerin pisteet
     private BigDecimal pisteet;
 
@@ -87,6 +88,14 @@ public class Hakemus implements Serializable {
 
     public void setTasasijaJonosija(Integer tasasijaJonosija) {
         this.tasasijaJonosija = tasasijaJonosija;
+    }
+
+    public boolean isOnkoMuuttunutViimeSijoittelussa() {
+        return onkoMuuttunutViimeSijoittelussa;
+    }
+
+    public void setOnkoMuuttunutViimeSijoittelussa(boolean onkoMuuttunutViimeSijoittelussa) {
+        this.onkoMuuttunutViimeSijoittelussa = onkoMuuttunutViimeSijoittelussa;
     }
 
     public String getHakemusOid() {

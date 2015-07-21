@@ -1,6 +1,8 @@
 package fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers;
 
+import com.google.common.hash.HashCode;
 import com.google.common.hash.Hasher;
+import com.google.common.hash.Hashing;
 import fi.vm.sade.sijoittelu.domain.Hakemus;
 import fi.vm.sade.sijoittelu.domain.Pistetieto;
 import org.slf4j.Logger;
@@ -24,6 +26,8 @@ public class HakemusWrapper {
 
     private HenkiloWrapper henkilo;
 
+    private HashCode lahtotilanteenHash;
+
     // Yhden hakukohderekursion aikainen lippu, jolla katsotaan voidaanko korvata
     private boolean hyvaksyttyHakijaryhmasta = false;
 
@@ -31,6 +35,14 @@ public class HakemusWrapper {
 
     //jos hakemuksen tilaa ei voida muuttaa, esm. ilmoitettu hakijalle jo
     private boolean tilaVoidaanVaihtaa = true;
+
+    public HashCode getLahtotilanteenHash() {
+        return lahtotilanteenHash;
+    }
+
+    public void setLahtotilanteenHash(HashCode lahtotilanteenHash) {
+        this.lahtotilanteenHash = lahtotilanteenHash;
+    }
 
     public HenkiloWrapper getHenkilo() {
         return henkilo;
@@ -88,6 +100,12 @@ public class HakemusWrapper {
     private final String VALUE_DELIMETER_TASASIJAJONOSIJA = "_TASASIJAJONOSIJA_";
     private final String VALUE_DELIMETER_TILA = "_TILA_";
     private final String VALUE_DELIMETER_VARASIJAN_NUMERO = "_VARASIJAN_NUMERO_";
+
+    public HashCode luoHash() {
+        Hasher hasher = Hashing.md5().newHasher();
+        hash(hasher);
+        return hasher.hash();
+    }
 
     public void hash(Hasher hf) {
         if (hakemus != null) {
