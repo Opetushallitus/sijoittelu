@@ -1,11 +1,9 @@
 package fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.postsijoitteluprocessor;
 
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.util.TilanKuvaukset;
+import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.HenkiloWrapper;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.SijoitteluajoWrapper;
-import fi.vm.sade.sijoittelu.domain.HakemuksenTila;
-import fi.vm.sade.sijoittelu.domain.Hakemus;
-import fi.vm.sade.sijoittelu.domain.ValintatuloksenTila;
-import fi.vm.sade.sijoittelu.domain.Valintatulos;
+import fi.vm.sade.sijoittelu.domain.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,21 +24,30 @@ public class PostSijoitteluProcessorEhdollisenVastaanotonSiirtyminenYlemmalleHak
         final Map<String, List<Hakemus>> varasijaltaHyvaksyttyjenHakijoidenKaikkiHakemukset = varasijaltaHyvaksyttyjenHakijoidenKaikkiHakemukset(sijoitteluajoWrapper, varasijaltaHyvaksytytHakemukset);
         varasijaltaHyvaksytytHakemukset.forEach(hakemus -> {
             final List<Valintatulos> hakijanKaikkiValintatulokset = hakijanKaikkiValintatulokset(sijoitteluajoWrapper, hakemus);
-            final Optional<Valintatulos> hakemuksenValintatulos = hakemuksenValintatulos(hakemus, hakijanKaikkiValintatulokset);
-            if (hakemuksenValintatulos.isPresent()) {
-                final List<Hakemus> hakijanKaikkiHakemukset = varasijaltaHyvaksyttyjenHakijoidenKaikkiHakemukset.get(hakemus.getHakijaOid());
-                final List<Hakemus> hakijanAlemmatHakemukset = hakijanAlemmatHakemukset(hakemus, hakijanKaikkiHakemukset);
-                final List<Valintatulos> hakijanAlemmatValintatulokset = hakijanAlemmatValintatulokset(hakemus, hakijanKaikkiValintatulokset);
+            final Optional<Valintatulos> hakemuksenValintatulosOpt = hakemuksenValintatulos(hakemus, hakijanKaikkiValintatulokset);
 
-                if (hasPeruuntunutHakemusJonkaValintatulosEhdollisestiHyvaksytty(hakijanAlemmatHakemukset, hakijanAlemmatValintatulokset)) {
-                    if (hakemuksenValintatulos.get().getHakutoive() == 1) {
+            final List<Hakemus> hakijanKaikkiHakemukset = varasijaltaHyvaksyttyjenHakijoidenKaikkiHakemukset.get(hakemus.getHakijaOid());
+            final List<Hakemus> hakijanAlemmatHakemukset = hakijanAlemmatHakemukset(hakemus, hakijanKaikkiHakemukset);
+            final List<Valintatulos> hakijanAlemmatValintatulokset = hakijanAlemmatValintatulokset(hakemus, hakijanKaikkiValintatulokset);
+
+            if (hasPeruuntunutHakemusJonkaValintatulosEhdollisestiHyvaksytty(hakijanAlemmatHakemukset, hakijanAlemmatValintatulokset)) {
+
+                // TODO: Jos valintatulosta ei löydy, pitäisi luoda uusi
+                if(hakemuksenValintatulosOpt.isPresent()) {
+
+                    Valintatulos hakemuksenValintatulos = hakemuksenValintatulosOpt.get();
+
+                    if (hakemuksenValintatulos.getHakutoive() == 1) {
                         LOG.info("DRYRUN: Hakijalta {} löytynyt peruutunut alempi ehdollisesti hyväksytty hakemus, joten muutetaan korkeimman prioriteetin hakemus {} vastaanotetuksi sitovasti.", hakemus.getHakijaOid(), hakemus.getHakemusOid());
-                        vastaanOtaSitovasti(hakemuksenValintatulos.get());
+                        vastaanOtaSitovasti(hakemuksenValintatulos);
                     } else {
                         LOG.info("DRYRUN: Hakijalta {} löytynyt peruutunut alempi ehdollisesti hyväksytty hakemus, joten muutetaan hakemus {} ehdollisesti vastaanotetuksi.", hakemus.getHakijaOid(), hakemus.getHakemusOid());
-                        vastaanOtaEhdollisesti(hakemuksenValintatulos.get());
+                        vastaanOtaEhdollisesti(hakemuksenValintatulos);
                     }
-                    //poistaAlemmatEhdollisetVastaanotot(hakemus, hakijanAlemmatValintatulokset);
+                    if (!sijoitteluajoWrapper.getMuuttuneetValintatulokset().contains(hakemuksenValintatulos)) {
+                        sijoitteluajoWrapper.getMuuttuneetValintatulokset().add(hakemuksenValintatulos);
+                    }
+
                 }
             }
         });
@@ -79,25 +86,12 @@ public class PostSijoitteluProcessorEhdollisenVastaanotonSiirtyminenYlemmalleHak
         return hakijanKaikkiHakemukset;
     }
 
-    // PostSijoitteluProcessorPeruuntuneetHakemuksenVastaanotonMuokkaus tekee tämän
-    /*
-    private void poistaAlemmatEhdollisetVastaanotot(Hakemus hakemus, List<Valintatulos> hakijanAlemmatValintatulokset) {
-        hakijanAlemmatValintatulokset.forEach(alempiValintatulos -> {
-            if (alempiValintatulos.getTila().equals(ValintatuloksenTila.EHDOLLISESTI_VASTAANOTTANUT)) {
-                LOG.info("DRYRUN: Poistetaan hakijalta {} alempi ehdollinen vastaanotto hakemukselta {}", alempiValintatulos.getHakijaOid(), alempiValintatulos.getHakemusOid());
-                //alempiValintatulos.setTila(ValintatuloksenTila.PERUUTETTU);
-                //hakemus.setTilanKuvaukset(TilanKuvaukset.peruuntunutYlempiToive());
-            }
-        });
-    }
-    */
-
     private void vastaanOtaEhdollisesti(Valintatulos hakemuksenValintatulos) {
-        hakemuksenValintatulos.setTila(ValintatuloksenTila.EHDOLLISESTI_VASTAANOTTANUT);
+        paivitaVastaanottotieto(hakemuksenValintatulos, ValintatuloksenTila.EHDOLLISESTI_VASTAANOTTANUT);
     }
 
     private void vastaanOtaSitovasti(Valintatulos hakemuksenValintatulos) {
-        hakemuksenValintatulos.setTila(ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI);
+        paivitaVastaanottotieto(hakemuksenValintatulos, ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI);
     }
 
     private List<Valintatulos> hakijanAlemmatValintatulokset(Hakemus hakemus, List<Valintatulos> hakijanKaikkiValintatulokset) {
@@ -122,12 +116,53 @@ public class PostSijoitteluProcessorEhdollisenVastaanotonSiirtyminenYlemmalleHak
     }
 
     private List<Valintatulos> hakijanKaikkiValintatulokset(SijoitteluajoWrapper sijoitteluajoWrapper, Hakemus hakemus) {
-        if (sijoitteluajoWrapper.getMuuttuneetValintatulokset() == null) {
-            return new LinkedList<>();
+
+        Optional<HenkiloWrapper> henkiloWrapperOpt = sijoitteluajoWrapper.getHakukohteet().stream()
+                .flatMap(hk -> hk.hakukohteenHakijat())
+                .filter(h -> hakemus.getHakijaOid().equals(h.getHakijaOid())).findFirst();
+
+        if(henkiloWrapperOpt.isPresent()) {
+            return henkiloWrapperOpt.get().getValintatulos();
         } else {
-            return sijoitteluajoWrapper.getMuuttuneetValintatulokset().stream()
-                    .filter(vt -> vt.getHakijaOid() != null && vt.getHakijaOid().equals(hakemus.getHakijaOid()))
-                    .collect(Collectors.toList());
+            return new LinkedList<>();
         }
     }
+
+    private void paivitaVastaanottotieto(Valintatulos valintatulos, ValintatuloksenTila tila) {
+        valintatulos.setTila(tila);
+        valintatulos.getLogEntries().add(createLogEntry(tila, "Vastaanottotieto peritynyt alemmalta hakutoiveelta"));
+    }
+
+    private LogEntry createLogEntry(ValintatuloksenTila tila, String selite) {
+        LogEntry logEntry = new LogEntry();
+        logEntry.setLuotu(new Date());
+        logEntry.setMuokkaaja("sijoittelu");
+        logEntry.setSelite(selite);
+        if (tila == null) {
+            logEntry.setMuutos("");
+        } else {
+            logEntry.setMuutos(tila.name());
+        }
+        return logEntry;
+    }
+
+    /*
+    private Valintatulos createNewValintaTulos(Hakemus hakemus, SijoitteluajoWrapper sijoitteluajoWrapper) {
+
+        Valintatulos v = new Valintatulos();
+
+        v.setHakemusOid(hakemus.getHakemusOid());
+        v.setValintatapajonoOid(valintatapajono.getOid());
+        v.setHakukohdeOid(hakukohde.getOid());
+        v.setHakijaOid(hakemus.getHakijaOid());
+        v.setHakutoive(hakemus.getPrioriteetti());
+        v.setHakuOid(sijoitteluajoWrapper.getSijoitteluajo().getHakuOid());
+        v.setTila(ValintatuloksenTila.KESKEN);
+        v.setIlmoittautumisTila(IlmoittautumisTila.EI_TEHTY);
+        v.setJulkaistavissa(false);
+        v.setHyvaksyttyVarasijalta(false);
+
+        return v;
+    };
+    */
 }

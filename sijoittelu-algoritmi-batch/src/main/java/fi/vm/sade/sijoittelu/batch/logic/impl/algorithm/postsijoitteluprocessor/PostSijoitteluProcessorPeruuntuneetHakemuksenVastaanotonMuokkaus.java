@@ -1,5 +1,6 @@
 package fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.postsijoitteluprocessor;
 
+import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.HenkiloWrapper;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.SijoitteluajoWrapper;
 import fi.vm.sade.sijoittelu.domain.*;
 import org.slf4j.Logger;
@@ -27,6 +28,9 @@ public class PostSijoitteluProcessorPeruuntuneetHakemuksenVastaanotonMuokkaus im
                     LOG.info("Hakemus {} on PERUUNTUNUT ja valintatuloksentilassa {}, asetetaan valintatuloksentila KESKEN",
                             hakemus.getHakemusOid(), valintatulosOpt.get().getTila());
                     poistaVastaanottoTieto(valintatulosOpt.get());
+                    if(!sijoitteluajoWrapper.getMuuttuneetValintatulokset().contains(valintatulosOpt.get())) {
+                        sijoitteluajoWrapper.getMuuttuneetValintatulokset().add(valintatulosOpt.get());
+                    }
                 }
             });
         });
@@ -61,12 +65,22 @@ public class PostSijoitteluProcessorPeruuntuneetHakemuksenVastaanotonMuokkaus im
     }
 
     private Optional<Valintatulos> hakemuksenValintatulos(SijoitteluajoWrapper sijoitteluajoWrapper, Hakemus hakemus, String valintatapajonoOid) {
-        if (sijoitteluajoWrapper.getMuuttuneetValintatulokset() == null) {
-            return Optional.empty();
+
+        List<Valintatulos> hakijanValintatulokset = hakijanValintatulokset(sijoitteluajoWrapper, hakemus);
+        return hakijanValintatulokset.stream()
+                .filter(vt -> vt.getHakemusOid() != null && vt.getHakemusOid().equals(hakemus.getHakemusOid()) && vt.getValintatapajonoOid().equals(valintatapajonoOid))
+                .findFirst();
+    }
+
+    private List<Valintatulos> hakijanValintatulokset(SijoitteluajoWrapper sijoitteluajoWrapper, Hakemus hakemus) {
+        Optional<HenkiloWrapper> henkiloWrapperOpt = sijoitteluajoWrapper.getHakukohteet().stream()
+                .flatMap(hk -> hk.hakukohteenHakijat())
+                .filter(h -> hakemus.getHakijaOid() != null && hakemus.getHakijaOid().equals(h.getHakijaOid())).findFirst();
+
+        if(henkiloWrapperOpt.isPresent()) {
+            return henkiloWrapperOpt.get().getValintatulos();
         } else {
-            return sijoitteluajoWrapper.getMuuttuneetValintatulokset().stream()
-                    .filter(vt -> vt.getHakemusOid() != null && vt.getHakemusOid().equals(hakemus.getHakemusOid()) && vt.getValintatapajonoOid().equals(valintatapajonoOid))
-                    .findFirst();
+            return new LinkedList<>();
         }
     }
 

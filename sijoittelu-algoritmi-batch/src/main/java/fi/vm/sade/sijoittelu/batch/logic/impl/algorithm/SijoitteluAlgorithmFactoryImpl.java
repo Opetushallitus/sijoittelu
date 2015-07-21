@@ -178,6 +178,7 @@ public class SijoitteluAlgorithmFactoryImpl implements SijoitteluAlgorithmFactor
         if (henkiloWrapper == null) {
             henkiloWrapper = new HenkiloWrapper();
             henkiloWrapper.setHakemusOid(hakemus.getHakemusOid());
+            henkiloWrapper.setHakijaOid(hakemus.getHakijaOid());
             if (hakemus.getHakemusOid() != null && !hakemus.getHakemusOid().isEmpty()) {
                 hakemusOidMap.put(hakemus.getHakemusOid(), henkiloWrapper);
             }
