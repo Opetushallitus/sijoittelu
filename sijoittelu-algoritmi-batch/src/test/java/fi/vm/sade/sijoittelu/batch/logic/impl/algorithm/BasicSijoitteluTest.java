@@ -44,13 +44,7 @@ public class BasicSijoitteluTest {
         SijoitteluAlgorithm s = h.constructAlgorithm(hakukohteet, Collections.<Valintatulos>newArrayList());
         s.start();
 
-        // tulosta
-        FileWriter fstream = new FileWriter("target/sijoittelu_basic_case.sijoitteluresult");
-        fstream.write(PrintHelper.tulostaSijoittelu(s));
-        fstream.flush();
-        fstream.close();
-
-        System.out.println(PrintHelper.tulostaSijoittelu(s));
+        PrintHelper.tallennaSijoitteluTiedostoon(s, "target/sijoittelu_basic_case.sijoitteluresult");
 
         // assertoi
         TestHelper.assertoiAinoastaanValittu(hakukohteet.get(0).getValintatapajonot()

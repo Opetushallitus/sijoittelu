@@ -14,6 +14,8 @@ import fi.vm.sade.valintalaskenta.domain.dto.valintatieto.HakuDTO;
 import fi.vm.sade.valintalaskenta.domain.dto.valintatieto.ValintatietoValinnanvaiheDTO;
 import fi.vm.sade.valintalaskenta.domain.dto.valintatieto.ValintatietoValintatapajonoDTO;
 
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -87,4 +89,13 @@ public final class PrintHelper {
         sb.append("===================================================\n");
         return sb.toString();
     }
+
+    public static void tallennaSijoitteluTiedostoon(final SijoitteluAlgorithm s, final String fileName) throws IOException {
+        System.out.println(PrintHelper.tulostaSijoittelu(s));
+        FileWriter fstream = new FileWriter(fileName);
+        fstream.write(PrintHelper.tulostaSijoittelu(s));
+        fstream.flush();
+        fstream.close();
+    }
+
 }

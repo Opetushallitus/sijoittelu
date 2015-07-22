@@ -36,14 +36,9 @@ public class SijoitteluCase023Test {
         SijoitteluAlgorithm s = h.constructAlgorithm(hakukohteet, Collections.<Valintatulos>newArrayList());
         s.start();
 
-        // tulosta
-        FileWriter fstream = new FileWriter("target/sijoittelu_case_023.sijoitteluresult");
-        fstream.write(PrintHelper.tulostaSijoittelu(s));
-        fstream.flush();
-        fstream.close();
+        PrintHelper.tallennaSijoitteluTiedostoon(s, "target/sijoittelu_case_023.sijoitteluresult");
 
         // lisaa assertointi
-
     }
 
 }

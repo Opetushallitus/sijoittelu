@@ -42,13 +42,7 @@ public class BasicSijoitteluHakijaryhmaTest {
         SijoitteluAlgorithm s = h.constructAlgorithm(hakukohteet, Collections.<Valintatulos>newArrayList());
         s.start();
 
-        System.out.println(PrintHelper.tulostaSijoittelu(s));
-
-		// tulosta
-		FileWriter fstream = new FileWriter("target/sijoittelu_basic_hakijaryhma_case.sijoitteluresult");
-		fstream.write(PrintHelper.tulostaSijoittelu(s));
-		fstream.flush();
-		fstream.close();
+		PrintHelper.tallennaSijoitteluTiedostoon(s, "target/sijoittelu_basic_hakijaryhma_case.sijoitteluresult");
 
 		System.err.println(new GsonBuilder().setPrettyPrinting().create().toJson(hakukohteet));
 		TestHelper.assertoiAinoastaanValittu(hakukohteet.get(0).getValintatapajonot().get(0), "1.2.246.562.24.00000000001", "1.2.246.562.24.00000000007");
@@ -67,13 +61,8 @@ public class BasicSijoitteluHakijaryhmaTest {
 		SijoitteluAlgorithm s = h.constructAlgorithm(hakukohteet, Collections.<Valintatulos>newArrayList());
 		s.start();
 
-		System.out.println(PrintHelper.tulostaSijoittelu(s));
+		PrintHelper.tallennaSijoitteluTiedostoon(s, "target/sijoittelu_basic_hakijaryhma_ei_ryhmaan_kuuluvia_case.sijoitteluresult");
 
-		// tulosta
-		FileWriter fstream = new FileWriter("target/sijoittelu_basic_hakijaryhma_ei_ryhmaan_kuuluvia_case.sijoitteluresult");
-		fstream.write(PrintHelper.tulostaSijoittelu(s));
-		fstream.flush();
-		fstream.close();
 		System.err.println(new GsonBuilder().setPrettyPrinting().create().toJson(hakukohteet));
 		TestHelper.assertoiAinoastaanValittu(hakukohteet.get(0).getValintatapajonot().get(0), "1.2.246.562.24.00000000001", "1.2.246.562.24.00000000007");
 		TestHelper.assertoiAinoastaanValittu(hakukohteet.get(0).getValintatapajonot().get(1), "1.2.246.562.24.00000000008", "1.2.246.562.24.00000000002", "1.2.246.562.24.00000000003", "1.2.246.562.24.00000000004");

@@ -37,13 +37,7 @@ public class BasicSijoitteluTasasijaTest {
         SijoitteluAlgorithm s = h.constructAlgorithm(hakukohteet, Collections.<Valintatulos>newArrayList());
         s.start();
 
-        System.out.println(PrintHelper.tulostaSijoittelu(s));
-
-        // tulosta
-        FileWriter fstream = new FileWriter("target/sijoittelu_basic_tasasija_case.sijoitteluresult");
-        fstream.write(PrintHelper.tulostaSijoittelu(s));
-        fstream.flush();
-        fstream.close();
+        PrintHelper.tallennaSijoitteluTiedostoon(s, "target/sijoittelu_basic_tasasija_case.sijoitteluresult");
 
         // assertoi
 

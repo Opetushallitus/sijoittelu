@@ -50,12 +50,7 @@ public class Sijoitteludata_2011K_ALPATTest {
 		// tassa pitaisi assertoida jotain, mut odotetaan etta saadaan Sepolta
 		// datat.
 
-		// persist result to target
-		FileWriter fstream = new FileWriter("target/sijoittelu_2011K_ALPAT.sijoitteluresult");
-		fstream.write(PrintHelper.tulostaSijoittelu(sa));
-		fstream.write(kesto);
-		fstream.flush();
-		fstream.close();
+		PrintHelper.tallennaSijoitteluTiedostoon(sa, "target/sijoittelu_2011K_ALPAT.sijoitteluresult");
 	}
 
 	/**

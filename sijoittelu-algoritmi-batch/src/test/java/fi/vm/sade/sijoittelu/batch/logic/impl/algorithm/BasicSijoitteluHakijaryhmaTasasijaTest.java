@@ -43,15 +43,7 @@ public class BasicSijoitteluHakijaryhmaTasasijaTest {
         SijoitteluAlgorithmFactoryImpl h = new SijoitteluAlgorithmFactoryImpl();
         SijoitteluAlgorithm s = h.constructAlgorithm(hakukohteet, Collections.<Valintatulos>newArrayList());
         s.start();
-
-
-        // tulosta
-        System.out.println(PrintHelper.tulostaSijoittelu(s));
-        FileWriter fstream = new FileWriter("target/sijoittelu_basic_hakijaryhma_tasasija_case.sijoitteluresult");
-        fstream.write(PrintHelper.tulostaSijoittelu(s));
-        fstream.flush();
-        fstream.close();
-
+        PrintHelper.tallennaSijoitteluTiedostoon(s, "target/sijoittelu_basic_hakijaryhma_tasasija_case.sijoitteluresult");
         // Pitäiskö olla näin???
         //TestHelper.assertoiAinoastaanValittu(hakukohteet.get(0).getValintatapajonot().get(0), "1.2.246.562.24.00000000001", "1.2.246.562.24.00000000002");
 
@@ -60,5 +52,4 @@ public class BasicSijoitteluHakijaryhmaTasasijaTest {
         TestHelper.assertoiAinoastaanValittu(hakukohteet.get(0).getValintatapajonot().get(1), "1.2.246.562.24.00000000002", "1.2.246.562.24.00000000003", "1.2.246.562.24.00000000004", "1.2.246.562.24.00000000005","1.2.246.562.24.00000000007", "1.2.246.562.24.00000000008");
 
     }
-
 }

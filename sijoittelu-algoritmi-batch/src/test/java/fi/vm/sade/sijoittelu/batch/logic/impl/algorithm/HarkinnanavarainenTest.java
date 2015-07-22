@@ -38,12 +38,7 @@ public class HarkinnanavarainenTest {
         SijoitteluAlgorithm s = h.constructAlgorithm(hakukohteet, Collections.<Valintatulos>newArrayList());
         s.start();
 
-        System.out.println(PrintHelper.tulostaSijoittelu(s));
-        // tulosta
-        FileWriter fstream = new FileWriter("target/sijoittelu_harkinnanvarainen.sijoitteluresult");
-        fstream.write(PrintHelper.tulostaSijoittelu(s));
-        fstream.flush();
-        fstream.close();
+        PrintHelper.tallennaSijoitteluTiedostoon(s, "target/sijoittelu_harkinnanvarainen.sijoitteluresult");
 
         // assertoi
         TestHelper.assertoi(hakukohteet.get(0).getValintatapajonot()

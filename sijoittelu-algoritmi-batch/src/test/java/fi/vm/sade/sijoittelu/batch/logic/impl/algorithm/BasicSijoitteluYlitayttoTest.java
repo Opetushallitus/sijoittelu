@@ -41,12 +41,7 @@ public class BasicSijoitteluYlitayttoTest {
         SijoitteluAlgorithm s = h.constructAlgorithm(hakukohteet, Collections.<Valintatulos>newArrayList());
         s.start();
 
-
-        // tulosta
-		FileWriter fstream = new FileWriter("target/sijoittelu_basic_ylitaytto_case.sijoitteluresult");
-		fstream.write(PrintHelper.tulostaSijoittelu(s));
-		fstream.flush();
-		fstream.close();
+		PrintHelper.tallennaSijoitteluTiedostoon(s, "target/sijoittelu_basic_ylitaytto_case.sijoitteluresult");
 
 		// assertoi
 
