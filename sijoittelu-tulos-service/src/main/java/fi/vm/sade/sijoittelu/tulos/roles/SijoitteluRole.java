@@ -7,4 +7,6 @@ public class SijoitteluRole {
 
     public static final String CRUD_ROLE = "ROLE_APP_SIJOITTELU_CRUD";
     public static final String UPDATE_ROLE = "ROLE_APP_SIJOITTELU_READ_UPDATE";
+
+    public static final String PERUUNTUNEIDEN_HYVAKSYNTA = "PERUUNTUNEIDEN_HYVAKSYNTA";
 }

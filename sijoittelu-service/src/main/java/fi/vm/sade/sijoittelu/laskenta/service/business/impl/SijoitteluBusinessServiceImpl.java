@@ -535,6 +535,7 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
         // Oph-admin voi muokata aina
         // organisaatio updater voi muokata, jos hyväksytty
         authorizer.checkOrganisationAccess(tarjoajaOid, SijoitteluRole.UPDATE_ROLE, SijoitteluRole.CRUD_ROLE);
+
         Valintatapajono valintatapajono = getValintatapajono(valintatapajonoOid, hakukohde);
         Hakemus hakemus = getHakemus(hakemusOid, valintatapajono);
         String hakukohdeOid = hakukohde.getOid();
@@ -543,6 +544,9 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
         if (notModifying(tila, ilmoittautumisTila, julkaistavissa, hyvaksyttyVarasijalta, hyvaksyPeruuntunut, v)) {
             return;
         }
+
+        authorizeHyvaksyPeruuntunutModification(tarjoajaOid, hyvaksyPeruuntunut, v);
+
         String muutos = muutos(v, tila, ilmoittautumisTila, julkaistavissa, hyvaksyttyVarasijalta, hyvaksyPeruuntunut);
         v.getLogEntries().add(createLogEntry(selite, muutos));
         v.setTila(tila);
@@ -552,6 +556,12 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
         v.setHyvaksyPeruuntunut(hyvaksyPeruuntunut);
         LOG.info("Muutetaan valintatulosta hakukohdeoid {}, valintatapajonooid {}, hakemusoid {}: {}", hakukohdeOid, valintatapajonoOid, hakemusOid, muutos);
         valintatulosDao.createOrUpdateValintatulos(v);
+    }
+
+    private void authorizeHyvaksyPeruuntunutModification(String tarjoajaOid, boolean hyvaksyPeruuntunut, Valintatulos v) {
+        if (v.getHyvaksyPeruuntunut() != hyvaksyPeruuntunut) {
+            authorizer.checkOrganisationAccess(tarjoajaOid, SijoitteluRole.PERUUNTUNEIDEN_HYVAKSYNTA);
+        }
     }
 
     private static Valintatulos buildValintatulos(String hakuoid, Hakukohde hakukohde, Valintatapajono valintatapajono, Hakemus hakemus) {
