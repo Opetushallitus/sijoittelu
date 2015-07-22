@@ -14,7 +14,7 @@ import org.junit.Test;
  * Time: 16:31
  * To change this template use File | Settings | File Templates.
  */
-public class SijoitteluAlgorithmImplTest {
+public class SijoitteluAlgorithmTest {
 
     @Test
     public void eiPeruttuaKorkeampaaTaiSamaaHakutoivettaTest() {
@@ -54,7 +54,7 @@ public class SijoitteluAlgorithmImplTest {
         hakemus4.setTila(HakemuksenTila.VARALLA);
 
 
-        SijoitteluAlgorithmImpl impl = new SijoitteluAlgorithmImpl();
+        SijoitteluAlgorithm impl = new SijoitteluAlgorithm();
 
         Assert.assertTrue(impl.eiPeruttuaKorkeampaaTaiSamaaHakutoivetta(hakemusWrapper1));
         //ok koska kakkonen on sama instanssi kuin verrattava kohde

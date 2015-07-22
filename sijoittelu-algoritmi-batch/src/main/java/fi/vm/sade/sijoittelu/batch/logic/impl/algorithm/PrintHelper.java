@@ -25,7 +25,7 @@ public final class PrintHelper {
     }
 
     public final static String tulostaSijoittelu(SijoitteluAlgorithm a) {
-        SijoitteluajoWrapper s = ((SijoitteluAlgorithmImpl) a).sijoitteluAjo;
+        SijoitteluajoWrapper s = a.sijoitteluAjo;
         StringBuilder sb = new StringBuilder();
         Set<String> henkilot = new HashSet<String>();
         int hakemukset = 0;
@@ -48,7 +48,7 @@ public final class PrintHelper {
         sb.append("Valintatapajonot: " + valintatapajonot + "\n");
         sb.append("Hakijat:          " + henkilot.size() + "\n");
         sb.append("Hakemukset:       " + hakemukset + "\n");
-        sb.append("Rekursio syvyys:  " + ((SijoitteluAlgorithmImpl) a).depth + "\n");
+        sb.append("Rekursio syvyys:  " + a.depth + "\n");
         sb.append("===================================================\n");
         for (HakukohdeWrapper hki : s.getHakukohteet()) {
             sb.append("HAKUKOHDE: [" + hki.getHakukohde().getOid() + "]\n");

@@ -34,7 +34,7 @@ public class SijoitteluAlgorithmFactoryImpl implements SijoitteluAlgorithmFactor
         postSijoitteluProcessors.add(new PostSijoitteluProcessorEhdollisenVastaanotonSiirtyminenYlemmalleHakutoiveelle());
         postSijoitteluProcessors.add(new PostSijoitteluProcessorPeruuntuneetHakemuksenVastaanotonMuokkaus());
         postSijoitteluProcessors.add(new PostSijoitteluProcessorMuutostiedonAsetus());
-        SijoitteluAlgorithmImpl algorithm = new SijoitteluAlgorithmImpl();
+        SijoitteluAlgorithm algorithm = new SijoitteluAlgorithm();
         algorithm.preSijoitteluProcessors = preSijoitteluProcessors;
         algorithm.postSijoitteluProcessors = postSijoitteluProcessors;
         algorithm.sijoitteluAjo = wrapDomain(hakukohteet, indexValintatulokset(valintatulokset));

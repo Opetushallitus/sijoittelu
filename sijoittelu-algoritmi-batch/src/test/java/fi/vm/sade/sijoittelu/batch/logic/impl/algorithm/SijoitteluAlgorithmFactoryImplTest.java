@@ -22,8 +22,7 @@ public class SijoitteluAlgorithmFactoryImplTest {
 
         valintatulokset.add(valintatulos);
 
-        SijoitteluAlgorithmImpl  sijoitteluAlgorithm = (SijoitteluAlgorithmImpl) sijoitteluAlgorithmFactory.constructAlgorithm(
-                generateHakukohteet(), valintatulokset);
+        SijoitteluAlgorithm  sijoitteluAlgorithm = sijoitteluAlgorithmFactory.constructAlgorithm(generateHakukohteet(), valintatulokset);
 
         Assert.assertEquals(sijoitteluAlgorithm.sijoitteluAjo.getHakukohteet().size(), 1);
         Assert.assertEquals(sijoitteluAlgorithm.sijoitteluAjo.getHakukohteet().get(0).getValintatapajonot().
@@ -47,8 +46,7 @@ public class SijoitteluAlgorithmFactoryImplTest {
 
         valintatulokset.add(valintatulos);
 
-        SijoitteluAlgorithmImpl  sijoitteluAlgorithm = (SijoitteluAlgorithmImpl) sijoitteluAlgorithmFactory.constructAlgorithm(
-                generateHakukohteet(), valintatulokset);
+        SijoitteluAlgorithm  sijoitteluAlgorithm = sijoitteluAlgorithmFactory.constructAlgorithm(generateHakukohteet(), valintatulokset);
 
         Assert.assertEquals(sijoitteluAlgorithm.sijoitteluAjo.getHakukohteet().size(), 1);
         Assert.assertEquals(sijoitteluAlgorithm.sijoitteluAjo.getHakukohteet().get(0).getValintatapajonot().
@@ -74,7 +72,7 @@ public class SijoitteluAlgorithmFactoryImplTest {
 
         valintatulokset.add(valintatulos);
 
-        SijoitteluAlgorithmImpl  sijoitteluAlgorithm = (SijoitteluAlgorithmImpl) sijoitteluAlgorithmFactory.constructAlgorithm(
+        SijoitteluAlgorithm  sijoitteluAlgorithm = sijoitteluAlgorithmFactory.constructAlgorithm(
                 generateHakukohteet(), valintatulokset);
 
         Assert.assertEquals(sijoitteluAlgorithm.sijoitteluAjo.getHakukohteet().size(), 1);
@@ -100,7 +98,7 @@ public class SijoitteluAlgorithmFactoryImplTest {
 
         valintatulokset.add(valintatulos);
 
-        SijoitteluAlgorithmImpl  sijoitteluAlgorithm = (SijoitteluAlgorithmImpl) sijoitteluAlgorithmFactory.constructAlgorithm(
+        SijoitteluAlgorithm  sijoitteluAlgorithm = sijoitteluAlgorithmFactory.constructAlgorithm(
                 generateHakukohteet(), valintatulokset);
 
         Assert.assertEquals(sijoitteluAlgorithm.sijoitteluAjo.getHakukohteet().size(), 1);
@@ -125,7 +123,7 @@ public class SijoitteluAlgorithmFactoryImplTest {
 
         valintatulokset.add(valintatulos);
 
-        SijoitteluAlgorithmImpl  sijoitteluAlgorithm = (SijoitteluAlgorithmImpl) sijoitteluAlgorithmFactory.constructAlgorithm(
+        SijoitteluAlgorithm  sijoitteluAlgorithm = sijoitteluAlgorithmFactory.constructAlgorithm(
                 generateHakukohteet(), valintatulokset);
 
         Assert.assertEquals(sijoitteluAlgorithm.sijoitteluAjo.getHakukohteet().size(), 1);
@@ -155,7 +153,7 @@ public class SijoitteluAlgorithmFactoryImplTest {
 
         valintatulokset.add(valintatulos);
 
-        SijoitteluAlgorithmImpl  sijoitteluAlgorithm = (SijoitteluAlgorithmImpl) sijoitteluAlgorithmFactory.constructAlgorithm(
+        SijoitteluAlgorithm  sijoitteluAlgorithm = sijoitteluAlgorithmFactory.constructAlgorithm(
                 generateHakukohteet(), valintatulokset);
 
         Assert.assertEquals(sijoitteluAlgorithm.sijoitteluAjo.getHakukohteet().size(), 1);
@@ -181,7 +179,7 @@ public class SijoitteluAlgorithmFactoryImplTest {
 
         valintatulokset.add(valintatulos);
 
-        SijoitteluAlgorithmImpl  sijoitteluAlgorithm = (SijoitteluAlgorithmImpl) sijoitteluAlgorithmFactory.constructAlgorithm(
+        SijoitteluAlgorithm  sijoitteluAlgorithm = sijoitteluAlgorithmFactory.constructAlgorithm(
                 generateHakukohteet(), valintatulokset);
 
         Assert.assertEquals(sijoitteluAlgorithm.sijoitteluAjo.getHakukohteet().size(), 1);
