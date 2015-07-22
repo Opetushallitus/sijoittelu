@@ -8,6 +8,7 @@ import fi.vm.sade.sijoittelu.batch.logic.impl.DomainConverter;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.PrintHelper;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoitteluAjoCreator;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoitteluAlgorithm;
+import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoittelunTila;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.util.TilanKuvaukset;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.SijoitteluajoWrapper;
 import fi.vm.sade.sijoittelu.domain.*;
@@ -68,7 +69,7 @@ public class SijoitteluMontaJonoaTest {
         tulos.setTila(ValintatuloksenTila.VASTAANOTTANUT);
         tulos.setValintatapajonoOid("oid2");
         final SijoitteluajoWrapper sijoitteluAjo = SijoitteluAjoCreator.createSijoitteluAjo(hakukohteet, Arrays.asList(tulos));
-        final SijoitteluAlgorithm s = SijoitteluAlgorithm.sijoittele(sijoitteluAjo);
+        final SijoittelunTila s = SijoitteluAlgorithm.sijoittele(sijoitteluAjo);
 
         assertoiAinoastaanValittu(hakukohteet.get(0).getValintatapajonot().get(0), "1.2.246.562.11.00001068863");
         assertoiAinoastaanValittu(hakukohteet.get(0).getValintatapajonot().get(1), "1.2.246.562.11.00001090792");
@@ -109,7 +110,7 @@ public class SijoitteluMontaJonoaTest {
 
         List<Hakukohde> hakukohteet = haku.getHakukohteet().parallelStream().map(DomainConverter::convertToHakukohde).collect(Collectors.toList());
 
-        SijoitteluAlgorithm s = SijoitteluAlgorithm.sijoittele(hakukohteet, Collections.newArrayList());
+        SijoittelunTila s = SijoitteluAlgorithm.sijoittele(hakukohteet, Collections.newArrayList());
 
         System.out.println(PrintHelper.tulostaSijoittelu(s));
 
@@ -149,7 +150,7 @@ public class SijoitteluMontaJonoaTest {
         tulos.setTila(ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI);
         tulos.setValintatapajonoOid("oid1");
 
-        SijoitteluAlgorithm s = SijoitteluAlgorithm.sijoittele(hakukohteet, Arrays.asList(tulos));
+        SijoittelunTila s = SijoitteluAlgorithm.sijoittele(hakukohteet, Arrays.asList(tulos));
 
         System.out.println(PrintHelper.tulostaSijoittelu(s));
 
@@ -177,7 +178,7 @@ public class SijoitteluMontaJonoaTest {
         tulos.setTila(ValintatuloksenTila.EI_VASTAANOTETTU_MAARA_AIKANA);
         tulos.setValintatapajonoOid("oid1");
 
-        SijoitteluAlgorithm s = SijoitteluAlgorithm.sijoittele(hakukohteet, Arrays.asList(tulos));
+        SijoittelunTila s = SijoitteluAlgorithm.sijoittele(hakukohteet, Arrays.asList(tulos));
 
         System.out.println(PrintHelper.tulostaSijoittelu(s));
 
@@ -263,7 +264,7 @@ public class SijoitteluMontaJonoaTest {
         List<Hakukohde> hakukohteet = haku.getHakukohteet().parallelStream().map(DomainConverter::convertToHakukohde).collect(Collectors.toList());
         final SijoitteluajoWrapper sijoitteluAjo = SijoitteluAjoCreator.createSijoitteluAjo(hakukohteet, Collections.newArrayList());
         sijoitteluAjo.setVarasijaSaannotAstuvatVoimaan(LocalDateTime.now().plusDays(1));
-        SijoitteluAlgorithm s = SijoitteluAlgorithm.sijoittele(sijoitteluAjo);
+        SijoittelunTila s = SijoitteluAlgorithm.sijoittele(sijoitteluAjo);
 
         System.out.println(PrintHelper.tulostaSijoittelu(s));
 
@@ -412,7 +413,7 @@ public class SijoitteluMontaJonoaTest {
 
         List<Hakukohde> hakukohteet = haku.getHakukohteet().parallelStream().map(DomainConverter::convertToHakukohde).collect(Collectors.toList());
 
-        SijoitteluAlgorithm s = SijoitteluAlgorithm.sijoittele(hakukohteet, Collections.newArrayList());
+        SijoittelunTila s = SijoitteluAlgorithm.sijoittele(hakukohteet, Collections.newArrayList());
 
         System.out.println(PrintHelper.tulostaSijoittelu(s));
 
@@ -456,7 +457,7 @@ public class SijoitteluMontaJonoaTest {
         tulos1.setTila(ValintatuloksenTila.EHDOLLISESTI_VASTAANOTTANUT);
         final SijoitteluajoWrapper sijoitteluAjo = SijoitteluAjoCreator.createSijoitteluAjo(hakukohteet, Arrays.asList(tulos1, tulos2));
         sijoitteluAjo.setKKHaku(true);
-        SijoitteluAlgorithm s = SijoitteluAlgorithm.sijoittele(sijoitteluAjo);
+        SijoittelunTila s = SijoitteluAlgorithm.sijoittele(sijoitteluAjo);
 
         System.out.println(PrintHelper.tulostaSijoittelu(s));
 
@@ -479,7 +480,7 @@ public class SijoitteluMontaJonoaTest {
 
         List<Hakukohde> hakukohteet = haku.getHakukohteet().parallelStream().map(DomainConverter::convertToHakukohde).collect(Collectors.toList());
 
-        SijoitteluAlgorithm s = SijoitteluAlgorithm.sijoittele(hakukohteet, Collections.newArrayList());
+        SijoittelunTila s = SijoitteluAlgorithm.sijoittele(hakukohteet, Collections.newArrayList());
 
         System.out.println(PrintHelper.tulostaSijoittelu(s));
 
@@ -501,7 +502,7 @@ public class SijoitteluMontaJonoaTest {
 
         List<Hakukohde> hakukohteet = haku.getHakukohteet().parallelStream().map(DomainConverter::convertToHakukohde).collect(Collectors.toList());
 
-        SijoitteluAlgorithm s = SijoitteluAlgorithm.sijoittele(hakukohteet, Collections.newArrayList());
+        SijoittelunTila s = SijoitteluAlgorithm.sijoittele(hakukohteet, Collections.newArrayList());
 
         System.out.println(PrintHelper.tulostaSijoittelu(s));
 
@@ -524,7 +525,7 @@ public class SijoitteluMontaJonoaTest {
 
         List<Hakukohde> hakukohteet = haku.getHakukohteet().parallelStream().map(DomainConverter::convertToHakukohde).collect(Collectors.toList());
 
-        SijoitteluAlgorithm s = SijoitteluAlgorithm.sijoittele(hakukohteet, Collections.newArrayList());
+        SijoittelunTila s = SijoitteluAlgorithm.sijoittele(hakukohteet, Collections.newArrayList());
 
         Valintatulos tulos11 = createTulos("oid1", "hakukohde1", "oid1");
         Valintatulos tulos12 = createTulos("oid1", "hakukohde1", "oid2");
@@ -571,7 +572,7 @@ public class SijoitteluMontaJonoaTest {
 
         List<Hakukohde> hakukohteet = haku.getHakukohteet().parallelStream().map(DomainConverter::convertToHakukohde).collect(Collectors.toList());
 
-        SijoitteluAlgorithm s = SijoitteluAlgorithm.sijoittele(hakukohteet, Collections.newArrayList());
+        SijoittelunTila s = SijoitteluAlgorithm.sijoittele(hakukohteet, Collections.newArrayList());
 
         System.out.println(PrintHelper.tulostaSijoittelu(s));
 
@@ -626,7 +627,7 @@ public class SijoitteluMontaJonoaTest {
 
         List<Hakukohde> hakukohteet = haku.getHakukohteet().parallelStream().map(DomainConverter::convertToHakukohde).collect(Collectors.toList());
 
-        SijoitteluAlgorithm s = SijoitteluAlgorithm.sijoittele(hakukohteet, Collections.newArrayList());
+        SijoittelunTila s = SijoitteluAlgorithm.sijoittele(hakukohteet, Collections.newArrayList());
 
         Valintatulos tulos1 = createTulos("oid1", "hakukohde1", "jono1");
         Valintatulos tulos2 = createTulos("oid2", "hakukohde1", "jono1");
@@ -693,7 +694,7 @@ public class SijoitteluMontaJonoaTest {
 
         List<Hakukohde> hakukohteet = haku.getHakukohteet().parallelStream().map(DomainConverter::convertToHakukohde).collect(Collectors.toList());
 
-        SijoitteluAlgorithm s = SijoitteluAlgorithm.sijoittele(hakukohteet, Collections.newArrayList());
+        SijoittelunTila s = SijoitteluAlgorithm.sijoittele(hakukohteet, Collections.newArrayList());
 
         Valintatulos tulos1 = createTulos("oid1", "hakukohde1", "jono1");
         Valintatulos tulos2 = createTulos("oid2", "hakukohde1", "jono1");

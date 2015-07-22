@@ -9,6 +9,7 @@ import org.junit.Test;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.PrintHelper;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoitteluAjoCreator;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoitteluAlgorithm;
+import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoittelunTila;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.TestHelper;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.SijoitteluajoWrapper;
 import fi.vm.sade.sijoittelu.domain.Hakukohde;
@@ -35,7 +36,7 @@ public class PostSijoitteluProcessorPeruuntuneetHakemuksenVastaanotonMuokkausTes
 
     private SijoitteluajoWrapper luoSijoitteluAjonTulokset() {
         final SijoitteluajoWrapper sijoitteluajoWrapper = SijoitteluAjoCreator.createSijoitteluAjo(hakukohdeList, valintatulosList);
-        SijoitteluAlgorithm algorithm = SijoitteluAlgorithm.sijoittele(sijoitteluajoWrapper);
+        SijoittelunTila algorithm = SijoitteluAlgorithm.sijoittele(sijoitteluajoWrapper);
         System.out.println(PrintHelper.tulostaSijoittelu(algorithm));
         final SijoitteluajoWrapper sijoitteluAjo = sijoitteluajoWrapper;
         return sijoitteluAjo;

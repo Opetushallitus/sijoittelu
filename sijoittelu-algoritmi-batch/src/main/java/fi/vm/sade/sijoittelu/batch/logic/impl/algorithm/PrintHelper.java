@@ -24,7 +24,7 @@ public final class PrintHelper {
     private PrintHelper() {
     }
 
-    public final static String tulostaSijoittelu(SijoitteluAlgorithm a) {
+    public final static String tulostaSijoittelu(SijoittelunTila a) {
         SijoitteluajoWrapper s = a.sijoitteluAjo;
         StringBuilder sb = new StringBuilder();
         Set<String> henkilot = new HashSet<String>();
@@ -90,7 +90,7 @@ public final class PrintHelper {
         return sb.toString();
     }
 
-    public static void tallennaSijoitteluTiedostoon(final SijoitteluAlgorithm s, final String fileName) throws IOException {
+    public static void tallennaSijoitteluTiedostoon(final SijoittelunTila s, final String fileName) throws IOException {
         System.out.println(PrintHelper.tulostaSijoittelu(s));
         FileWriter fstream = new FileWriter(fileName);
         fstream.write(PrintHelper.tulostaSijoittelu(s));

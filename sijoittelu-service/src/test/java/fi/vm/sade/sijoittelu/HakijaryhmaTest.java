@@ -8,6 +8,7 @@ import fi.vm.sade.sijoittelu.batch.logic.impl.DomainConverter;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.PrintHelper;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoitteluAjoCreator;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoitteluAlgorithm;
+import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoittelunTila;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.SijoitteluajoWrapper;
 import fi.vm.sade.sijoittelu.domain.*;
 import fi.vm.sade.valintalaskenta.domain.dto.valintatieto.HakuDTO;
@@ -32,6 +33,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.lordofthejars.nosqlunit.mongodb.MongoDbRule.MongoDbRuleBuilder.newMongoDbRule;
+import static fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.PrintHelper.tulostaSijoittelu;
 
 @ContextConfiguration(locations = "classpath:test-sijoittelu-batch-mongo.xml")
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -55,9 +57,9 @@ public class HakijaryhmaTest {
 
         List<Hakukohde> hakukohteet = haku.getHakukohteet().parallelStream().map(DomainConverter::convertToHakukohde).collect(Collectors.toList());
 
-        SijoitteluAlgorithm s = SijoitteluAlgorithm.sijoittele(hakukohteet, Collections.<Valintatulos>newArrayList());
+        SijoittelunTila s = SijoitteluAlgorithm.sijoittele(hakukohteet, Collections.<Valintatulos>newArrayList());
 
-        System.out.println(PrintHelper.tulostaSijoittelu(s));
+        System.out.println(tulostaSijoittelu(s));
 
         assertoiAinoastaanValittu(hakukohteet.get(0).getValintatapajonot().get(0), "1.2.246.562.11.00001067411", "1.2.246.562.11.00001068863");
 
@@ -72,9 +74,9 @@ public class HakijaryhmaTest {
 
         List<Hakukohde> hakukohteet = haku.getHakukohteet().parallelStream().map(DomainConverter::convertToHakukohde).collect(Collectors.toList());
 
-        SijoitteluAlgorithm s = SijoitteluAlgorithm.sijoittele(hakukohteet, Collections.<Valintatulos>newArrayList());
+        SijoittelunTila s = SijoitteluAlgorithm.sijoittele(hakukohteet, Collections.<Valintatulos>newArrayList());
 
-        System.out.println(PrintHelper.tulostaSijoittelu(s));
+        System.out.println(tulostaSijoittelu(s));
 
         assertoiAinoastaanValittu(hakukohteet.get(0).getValintatapajonot().get(0), "1.2.246.562.11.00001067411", "1.2.246.562.11.00001090792");
 
@@ -89,9 +91,9 @@ public class HakijaryhmaTest {
 
         List<Hakukohde> hakukohteet = haku.getHakukohteet().parallelStream().map(DomainConverter::convertToHakukohde).collect(Collectors.toList());
 
-        SijoitteluAlgorithm s = SijoitteluAlgorithm.sijoittele(hakukohteet, Collections.<Valintatulos>newArrayList());
+        SijoittelunTila s = SijoitteluAlgorithm.sijoittele(hakukohteet, Collections.<Valintatulos>newArrayList());
 
-        System.out.println(PrintHelper.tulostaSijoittelu(s));
+        System.out.println(tulostaSijoittelu(s));
 
         assertoiAinoastaanValittu(hakukohteet.get(0).getValintatapajonot().get(0), "1.2.246.562.11.00001068863", "1.2.246.562.11.00001067411");
     }
@@ -104,9 +106,9 @@ public class HakijaryhmaTest {
 
         List<Hakukohde> hakukohteet = haku.getHakukohteet().parallelStream().map(DomainConverter::convertToHakukohde).collect(Collectors.toList());
 
-        SijoitteluAlgorithm s = SijoitteluAlgorithm.sijoittele(hakukohteet, Collections.<Valintatulos>newArrayList());
+        SijoittelunTila s = SijoitteluAlgorithm.sijoittele(hakukohteet, Collections.<Valintatulos>newArrayList());
 
-        System.out.println(PrintHelper.tulostaSijoittelu(s));
+        System.out.println(tulostaSijoittelu(s));
 
         assertoiAinoastaanValittu(hakukohteet.get(0).getValintatapajonot().get(0), "1.2.246.562.11.00001068863", "1.2.246.562.11.00001090792", "1.2.246.562.11.00001067411");
     }
@@ -121,10 +123,10 @@ public class HakijaryhmaTest {
 
         List<Hakukohde> hakukohteet = haku.getHakukohteet().parallelStream().map(DomainConverter::convertToHakukohde).collect(Collectors.toList());
         final SijoitteluajoWrapper sijoitteluAjo = SijoitteluAjoCreator.createSijoitteluAjo(hakukohteet, Collections.<Valintatulos>newArrayList());
-        SijoitteluAlgorithm s = SijoitteluAlgorithm.sijoittele(sijoitteluAjo);
+        SijoittelunTila s = SijoitteluAlgorithm.sijoittele(sijoitteluAjo);
         sijoitteluAjo.setKaikkiKohteetSijoittelussa(LocalDateTime.now().plusDays(10));
 
-        LOG.info("\r\n{}",PrintHelper.tulostaSijoittelu(s));
+        LOG.info("\r\n{}", tulostaSijoittelu(s));
         assertoiAinoastaanValittu(hakukohteet.get(0).getValintatapajonot().get(0), "hakija1");
 
     }
@@ -138,9 +140,9 @@ public class HakijaryhmaTest {
         List<Hakukohde> hakukohteet = haku.getHakukohteet().parallelStream().map(DomainConverter::convertToHakukohde).collect(Collectors.toList());
         final SijoitteluajoWrapper sijoitteluAjo = SijoitteluAjoCreator.createSijoitteluAjo(hakukohteet, Collections.<Valintatulos>newArrayList());
         sijoitteluAjo.setKaikkiKohteetSijoittelussa(LocalDateTime.now().plusDays(10));
-        SijoitteluAlgorithm s = SijoitteluAlgorithm.sijoittele(sijoitteluAjo);
+        SijoittelunTila s = SijoitteluAlgorithm.sijoittele(sijoitteluAjo);
 
-        LOG.info("\r\n{}",PrintHelper.tulostaSijoittelu(s));
+        LOG.info("\r\n{}", tulostaSijoittelu(s));
 
         assertoiAinoastaanValittu(hakukohteet.get(0).getValintatapajonot().get(0), "hakija3", "hakija4", "hakija5");
 
@@ -156,9 +158,9 @@ public class HakijaryhmaTest {
         List<Hakukohde> hakukohteet = haku.getHakukohteet().parallelStream().map(DomainConverter::convertToHakukohde).collect(Collectors.toList());
         final SijoitteluajoWrapper sijoitteluAjo = SijoitteluAjoCreator.createSijoitteluAjo(hakukohteet, Collections.<Valintatulos>newArrayList());
         sijoitteluAjo.setKaikkiKohteetSijoittelussa(LocalDateTime.now().plusDays(10));
-        SijoitteluAlgorithm s = SijoitteluAlgorithm.sijoittele(sijoitteluAjo);
+        SijoittelunTila s = SijoitteluAlgorithm.sijoittele(sijoitteluAjo);
 
-        System.out.println(PrintHelper.tulostaSijoittelu(s));
+        System.out.println(tulostaSijoittelu(s));
 
 //        assertoiAinoastaanValittu(hakukohteet.get(0).getValintatapajonot().get(0), "hakija1", "hakija3", "hakija4", "hakija5");
 
@@ -172,9 +174,10 @@ public class HakijaryhmaTest {
 
         List<Hakukohde> hakukohteet = haku.getHakukohteet().parallelStream().map(DomainConverter::convertToHakukohde).collect(Collectors.toList());
 
-        SijoitteluAlgorithm s = SijoitteluAlgorithm.sijoittele(hakukohteet, Collections.<Valintatulos>newArrayList());
 
-        System.out.println(PrintHelper.tulostaSijoittelu(s));
+        SijoittelunTila s = SijoitteluAlgorithm.sijoittele(hakukohteet, Collections.<Valintatulos>newArrayList());
+
+        System.out.println(tulostaSijoittelu(s));
 
         assertoiAinoastaanValittu(hakukohteet.get(0).getValintatapajonot().get(0), "hakemus1", "hakemus2");
         assertoiAinoastaanValittu(hakukohteet.get(0).getValintatapajonot().get(1), "hakemus3");
@@ -190,9 +193,9 @@ public class HakijaryhmaTest {
 
         List<Hakukohde> hakukohteet = haku.getHakukohteet().parallelStream().map(DomainConverter::convertToHakukohde).collect(Collectors.toList());
 
-        SijoitteluAlgorithm s = SijoitteluAlgorithm.sijoittele(hakukohteet, Collections.<Valintatulos>newArrayList());
+        SijoittelunTila s = SijoitteluAlgorithm.sijoittele(hakukohteet, Collections.<Valintatulos>newArrayList());
 
-        System.out.println(PrintHelper.tulostaSijoittelu(s));
+        System.out.println(tulostaSijoittelu(s));
 
         List<Hakemus> hyvaksytyt = hakukohteet.get(0)
                 .getValintatapajonot()

@@ -31,7 +31,7 @@ public class SijoitteluCase023Test {
 
         List<Hakukohde> hakukohteet = t.getHakukohteet().parallelStream().map(DomainConverter::convertToHakukohde).collect(Collectors.toList());
 
-        SijoitteluAlgorithm s = SijoitteluAlgorithm.sijoittele(hakukohteet, Collections.<Valintatulos>newArrayList());
+        SijoittelunTila s = SijoitteluAlgorithm.sijoittele(hakukohteet, Collections.<Valintatulos>newArrayList());
 
         PrintHelper.tallennaSijoitteluTiedostoon(s, "target/sijoittelu_case_023.sijoitteluresult");
 

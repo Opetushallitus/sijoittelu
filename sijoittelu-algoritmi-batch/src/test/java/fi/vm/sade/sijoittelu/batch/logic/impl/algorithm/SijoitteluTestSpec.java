@@ -24,7 +24,7 @@ public abstract class SijoitteluTestSpec {
         return (haku) -> {
             List<Hakukohde> hakukohteet = haku.getHakukohteet().parallelStream().map(DomainConverter::convertToHakukohde).collect(Collectors.toList());
             final SijoitteluajoWrapper sijoitteluAjo = SijoitteluAjoCreator.createSijoitteluAjo(hakukohteet, new ArrayList());
-            SijoitteluAlgorithm s = SijoitteluAlgorithm.sijoittele(sijoitteluAjo);
+            SijoittelunTila s = SijoitteluAlgorithm.sijoittele(sijoitteluAjo);
             LOG.debug("\r\n{}", PrintHelper.tulostaSijoittelu(s));
             return sijoitteluAjo;
         };

@@ -3,6 +3,7 @@ package fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.postsijoitteluprocessor
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.PrintHelper;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoitteluAjoCreator;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoitteluAlgorithm;
+import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoittelunTila;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.TestHelper;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.SijoitteluajoWrapper;
 import fi.vm.sade.sijoittelu.domain.*;
@@ -46,7 +47,7 @@ public class PostSijoitteluProcessorEhdollisenVastaanotonSiirtyminenYlemmalleHak
 
     private SijoitteluajoWrapper luoSijoitteluAjonTulokset() {
         final SijoitteluajoWrapper sijoitteluajoWrapper = SijoitteluAjoCreator.createSijoitteluAjo(hakukohdeList, valintatulosList);
-        SijoitteluAlgorithm algorithm = SijoitteluAlgorithm.sijoittele(sijoitteluajoWrapper);
+        SijoittelunTila algorithm = SijoitteluAlgorithm.sijoittele(sijoitteluajoWrapper);
         final SijoitteluajoWrapper sijoitteluAjo = sijoitteluajoWrapper;
         System.out.println("sijoitteluAjo.getMuuttuneetValintatulokset().size(): " + sijoitteluAjo.getMuuttuneetValintatulokset().size());
         sijoitteluAjo.getMuuttuneetValintatulokset().forEach(vt -> {

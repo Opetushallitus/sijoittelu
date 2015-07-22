@@ -8,6 +8,7 @@ import fi.vm.sade.sijoittelu.batch.logic.impl.DomainConverter;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.PrintHelper;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoitteluAjoCreator;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoitteluAlgorithm;
+import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoittelunTila;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.SijoitteluajoWrapper;
 import fi.vm.sade.sijoittelu.domain.*;
 import fi.vm.sade.valintalaskenta.domain.dto.valintatieto.HakuDTO;
@@ -111,7 +112,7 @@ public class VastaanottoTest {
         ehdollinenPoistettava.setValintatapajonoOid("jono2");
         final SijoitteluajoWrapper sijoitteluAjo = SijoitteluAjoCreator.createSijoitteluAjo(hakukohteet, Arrays.asList(sitova, ehdollinen, perunut, ehdollinenPidettava, ehdollinenPoistettava));
 
-        SijoitteluAlgorithm s = SijoitteluAlgorithm.sijoittele(sijoitteluAjo);
+        SijoittelunTila s = SijoitteluAlgorithm.sijoittele(sijoitteluAjo);
 
         System.out.println(PrintHelper.tulostaSijoittelu(s));
 
