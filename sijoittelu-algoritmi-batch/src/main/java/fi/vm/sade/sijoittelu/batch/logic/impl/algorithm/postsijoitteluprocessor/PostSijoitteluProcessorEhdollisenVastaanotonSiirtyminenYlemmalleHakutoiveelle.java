@@ -20,11 +20,18 @@ public class PostSijoitteluProcessorEhdollisenVastaanotonSiirtyminenYlemmalleHak
 
     @Override
     public void process(SijoitteluajoWrapper sijoitteluajoWrapper) {
+
+        LOG.info("Aloitetaan ehdollisten vastaanottojen siirtäminen ylemmille hakutoiveille.");
         final Map<String, List<Hakemus>> varasijaltaHyvaksytytHakemuksetValintatapajonoittain = sijoitteluAjossaVarasijaltaHyvaksytytValintapajonoittain(sijoitteluajoWrapper);
         final Map<String, List<Hakemus>> varasijaltaHyvaksyttyjenHakijoidenKaikkiHakemukset = varasijaltaHyvaksyttyjenHakijoidenKaikkiHakemukset(sijoitteluajoWrapper, sijoitteluAjossaVarasijaltaHyvaksytyt(sijoitteluajoWrapper));
 
         varasijaltaHyvaksytytHakemuksetValintatapajonoittain.keySet().forEach(valintatapajonoOid -> {
             List<Hakemus> varasijaltaHyvaksytytHakemukset = varasijaltaHyvaksytytHakemuksetValintatapajonoittain.get(valintatapajonoOid);
+
+            if(varasijaltaHyvaksytytHakemukset.size() > 0) {
+                String oidit = varasijaltaHyvaksytytHakemukset.stream().map(Hakemus::getHakemusOid).collect(Collectors.joining(", "));
+                LOG.debug("Jonosta {} löytyi varasijalta hyväksyttyjä hakemuksia {} kpl ( {} )", valintatapajonoOid, varasijaltaHyvaksytytHakemukset.size(), oidit);
+            }
 
             varasijaltaHyvaksytytHakemukset.forEach(hakemus -> {
                 final List<Valintatulos> hakijanKaikkiValintatulokset = hakijanKaikkiValintatulokset(sijoitteluajoWrapper, hakemus);
@@ -62,6 +69,8 @@ public class PostSijoitteluProcessorEhdollisenVastaanotonSiirtyminenYlemmalleHak
             });
 
         });
+
+        LOG.info("Lopetetaan ehdollisten vastaanottojen siirtäminen ylemmille hakutoiveille.");
 
     }
 

@@ -29,7 +29,7 @@ public class PostSijoitteluProcessorEhdollisenVastaanotonSiirtyminenYlemmalleHak
         assertHakemuksenTila(sijoitteluAjo, "1.2.246.562.20.87061484133", "14345398388996844110591962067736", "1.2.246.562.11.00003933242", HakemuksenTila.VARASIJALTA_HYVAKSYTTY);
         assertHakemuksenTila(sijoitteluAjo, "1.2.246.562.20.87061484132", "14345398388996844110591962067735", "1.2.246.562.11.00003933242", HakemuksenTila.PERUUNTUNUT);
 
-        assertEquals(ValintatuloksenTila.EHDOLLISESTI_VASTAANOTTANUT, haeValintatulosHakemukselle("1.2.246.562.11.00003933242", "14345398388996844110591962067736", sijoitteluAjo).getTila());
+        assertEquals(ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI, haeValintatulosHakemukselle("1.2.246.562.11.00003933242", "14345398388996844110591962067736", sijoitteluAjo).getTila());
         assertEquals(ValintatuloksenTila.KESKEN, haeValintatulosHakemukselle("1.2.246.562.11.00003933242", "14345398388996844110591962067735", sijoitteluAjo).getTila());
     }
 
@@ -55,7 +55,7 @@ public class PostSijoitteluProcessorEhdollisenVastaanotonSiirtyminenYlemmalleHak
         final SijoitteluajoWrapper sijoitteluAjo = algorithm.getSijoitteluAjo();
         System.out.println("sijoitteluAjo.getMuuttuneetValintatulokset().size(): " + sijoitteluAjo.getMuuttuneetValintatulokset().size());
         sijoitteluAjo.getMuuttuneetValintatulokset().forEach(vt -> {
-            System.out.println("Valintatulos: " + vt.getHakemusOid() + " | " + vt.getValintatapajonoOid() + " | " + vt.getTila());
+            System.out.println("Valintatulos: " + vt.getHakemusOid() + " | " + vt.getValintatapajonoOid() + " | " + vt.getTila() + " | " + vt.getLogEntries().size());
         });
         //sijoitteluAjo.getMuuttuneetValintatulokset().addAll(valintatulosList);
         System.out.println(PrintHelper.tulostaSijoittelu(algorithm));

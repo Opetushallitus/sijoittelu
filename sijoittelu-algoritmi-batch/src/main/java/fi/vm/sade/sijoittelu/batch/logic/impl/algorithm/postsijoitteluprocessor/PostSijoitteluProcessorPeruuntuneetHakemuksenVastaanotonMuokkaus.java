@@ -19,6 +19,9 @@ public class PostSijoitteluProcessorPeruuntuneetHakemuksenVastaanotonMuokkaus im
 
     @Override
     public void process(SijoitteluajoWrapper sijoitteluajoWrapper) {
+
+        LOG.info("Aloitetaan peruuntuneiden hakemusten vastaanottojen muokkaus.");
+
         final Map<String, List<Hakemus>> peruuntuneetHakemuksetValintapajonoittain = sijoittelunJalkeenPeruuntuneetHakemuksetValintapajonoittain(sijoitteluajoWrapper);
 
         peruuntuneetHakemuksetValintapajonoittain.keySet().forEach(valintatapajonoOid -> {
@@ -34,6 +37,8 @@ public class PostSijoitteluProcessorPeruuntuneetHakemuksenVastaanotonMuokkaus im
                 }
             });
         });
+
+        LOG.info("Lopetetaan peruuntuneiden hakemusten vastaanottojen muokkaus.");
 
     }
 
