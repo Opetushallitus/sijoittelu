@@ -6,7 +6,7 @@ import com.lordofthejars.nosqlunit.mongodb.MongoDbRule;
 import de.flapdoodle.embed.process.collections.Collections;
 import fi.vm.sade.sijoittelu.batch.logic.impl.DomainConverter;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.PrintHelper;
-import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoitteluAjoCreator;
+import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoitteluajoWrapperFactory;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoitteluAlgorithm;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoittelunTila;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.util.TilanKuvaukset;
@@ -68,7 +68,7 @@ public class SijoitteluMontaJonoaTest {
         tulos.setJulkaistavissa(true);
         tulos.setTila(ValintatuloksenTila.VASTAANOTTANUT);
         tulos.setValintatapajonoOid("oid2");
-        final SijoitteluajoWrapper sijoitteluAjo = SijoitteluAjoCreator.createSijoitteluAjo(hakukohteet, Arrays.asList(tulos));
+        final SijoitteluajoWrapper sijoitteluAjo = SijoitteluajoWrapperFactory.createSijoitteluAjo(hakukohteet, Arrays.asList(tulos));
         final SijoittelunTila s = SijoitteluAlgorithm.sijoittele(sijoitteluAjo);
 
         assertoiAinoastaanValittu(hakukohteet.get(0).getValintatapajonot().get(0), "1.2.246.562.11.00001068863");
@@ -262,7 +262,7 @@ public class SijoitteluMontaJonoaTest {
         HakuDTO haku = valintatietoService.haeValintatiedot("1.2.246.562.29.173465377510");
 
         List<Hakukohde> hakukohteet = haku.getHakukohteet().parallelStream().map(DomainConverter::convertToHakukohde).collect(Collectors.toList());
-        final SijoitteluajoWrapper sijoitteluAjo = SijoitteluAjoCreator.createSijoitteluAjo(hakukohteet, Collections.newArrayList());
+        final SijoitteluajoWrapper sijoitteluAjo = SijoitteluajoWrapperFactory.createSijoitteluAjo(hakukohteet, Collections.newArrayList());
         sijoitteluAjo.setVarasijaSaannotAstuvatVoimaan(LocalDateTime.now().plusDays(1));
         SijoittelunTila s = SijoitteluAlgorithm.sijoittele(sijoitteluAjo);
 
@@ -312,7 +312,7 @@ public class SijoitteluMontaJonoaTest {
         tulos2.setJulkaistavissa(true);
         tulos2.setValintatapajonoOid("oid1");
         
-        SijoitteluajoWrapper sijoitteluajoWrapper = SijoitteluAjoCreator.createSijoitteluAjo(hakukohteet, Arrays.asList(tulos));
+        SijoitteluajoWrapper sijoitteluajoWrapper = SijoitteluajoWrapperFactory.createSijoitteluAjo(hakukohteet, Arrays.asList(tulos));
         sijoitteluajoWrapper.setVarasijaSaannotAstuvatVoimaan(LocalDateTime.now().plusDays(1));
         s = SijoitteluAlgorithm.sijoittele(sijoitteluajoWrapper);
 
@@ -370,7 +370,7 @@ public class SijoitteluMontaJonoaTest {
             }
         });
 
-        sijoitteluajoWrapper = SijoitteluAjoCreator.createSijoitteluAjo(hakukohteet, Arrays.asList(tulos, tulos2));
+        sijoitteluajoWrapper = SijoitteluajoWrapperFactory.createSijoitteluAjo(hakukohteet, Arrays.asList(tulos, tulos2));
         sijoitteluajoWrapper.setKKHaku(true);
         s = SijoitteluAlgorithm.sijoittele(sijoitteluajoWrapper);
 
@@ -455,7 +455,7 @@ public class SijoitteluMontaJonoaTest {
 
         Valintatulos tulos2 = createTulos("hakemus3", "hakukohde1", "oid2");
         tulos1.setTila(ValintatuloksenTila.EHDOLLISESTI_VASTAANOTTANUT);
-        final SijoitteluajoWrapper sijoitteluAjo = SijoitteluAjoCreator.createSijoitteluAjo(hakukohteet, Arrays.asList(tulos1, tulos2));
+        final SijoitteluajoWrapper sijoitteluAjo = SijoitteluajoWrapperFactory.createSijoitteluAjo(hakukohteet, Arrays.asList(tulos1, tulos2));
         sijoitteluAjo.setKKHaku(true);
         SijoittelunTila s = SijoitteluAlgorithm.sijoittele(sijoitteluAjo);
 
@@ -712,7 +712,7 @@ public class SijoitteluMontaJonoaTest {
 
         s = SijoitteluAlgorithm.sijoittele(hakukohteet, Arrays.asList(tulos1, tulos2, tulos3, tulos4, tulos6, tulos7, tulos8, tulos9, tulos10));
 
-        final SijoitteluajoWrapper sijoitteluAjo = SijoitteluAjoCreator.createSijoitteluAjo(hakukohteet, Arrays.asList(tulos1, tulos2, tulos3, tulos4, tulos6, tulos7, tulos8, tulos9, tulos10));
+        final SijoitteluajoWrapper sijoitteluAjo = SijoitteluajoWrapperFactory.createSijoitteluAjo(hakukohteet, Arrays.asList(tulos1, tulos2, tulos3, tulos4, tulos6, tulos7, tulos8, tulos9, tulos10));
         sijoitteluAjo.getHakukohteet().get(0).getValintatapajonot().get(0).getHakemukset().stream().filter(hak->hak.getHakemus().getHakemusOid().equals("oid1") || hak.getHakemus().getHakemusOid().equals("oid2")).forEach(hak -> {
             hak.setTilaVoidaanVaihtaa(false);
             hak.getHakemus().setTila(HakemuksenTila.PERUUNTUNUT);

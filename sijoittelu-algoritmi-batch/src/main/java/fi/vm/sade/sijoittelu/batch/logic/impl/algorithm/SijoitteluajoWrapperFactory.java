@@ -21,14 +21,11 @@ import fi.vm.sade.sijoittelu.domain.Hakukohde;
 import fi.vm.sade.sijoittelu.domain.ValintatuloksenTila;
 import fi.vm.sade.sijoittelu.domain.Valintatulos;
 
-public class SijoitteluAjoCreator {
+public class SijoitteluajoWrapperFactory {
     private final static List<ValintatuloksenTila> hyvaksyttylista = Arrays.asList(ValintatuloksenTila.ILMOITETTU, ValintatuloksenTila.VASTAANOTTANUT, ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI);
 
     public static SijoitteluajoWrapper createSijoitteluAjo(List<Hakukohde> hakukohteet, List<Valintatulos> valintatulokset) {
-        return createSijoitteluAjo(hakukohteet, indexValintatulokset(valintatulokset));
-    }
-
-    private static SijoitteluajoWrapper createSijoitteluAjo(List<Hakukohde> hakukohteet, Map<String, Map<String, Map<String, Valintatulos>>> valintatulokset) {
+        final Map<String, Map<String, Map<String, Valintatulos>>> indeksoidutTulokset = indexValintatulokset(valintatulokset);
         SijoitteluajoWrapper sijoitteluajoWrapper = new SijoitteluajoWrapper();
         Map<String, HenkiloWrapper> hakemusOidMap = new HashMap<String, HenkiloWrapper>();
         hakukohteet.forEach(hakukohde -> {
@@ -36,14 +33,12 @@ public class SijoitteluAjoCreator {
             hakukohdeWrapper.setHakukohde(hakukohde);
             sijoitteluajoWrapper.getHakukohteet().add(hakukohdeWrapper);
             hakukohdeWrapper.setSijoitteluajoWrapper(sijoitteluajoWrapper);
-
-            Map<String, Map<String, Valintatulos>> jonoIndex = valintatulokset.getOrDefault(hakukohde.getOid(), emptyMap());
+            Map<String, Map<String, Valintatulos>> jonoIndex = indeksoidutTulokset.getOrDefault(hakukohde.getOid(), emptyMap());
             hakukohde.getValintatapajonot().forEach(valintatapajono -> {
                 ValintatapajonoWrapper valintatapajonoWrapper = new ValintatapajonoWrapper();
                 valintatapajonoWrapper.setValintatapajono(valintatapajono);
                 hakukohdeWrapper.getValintatapajonot().add(valintatapajonoWrapper);
                 valintatapajonoWrapper.setHakukohdeWrapper(hakukohdeWrapper);
-
                 Map<String, Valintatulos> hakemusIndex = jonoIndex.getOrDefault(valintatapajono.getOid(), emptyMap());
                 valintatapajono.getHakemukset().forEach(hakemus -> {
                     HakemusWrapper hakemusWrapper = new HakemusWrapper();
@@ -55,7 +50,6 @@ public class SijoitteluAjoCreator {
                     hakemusWrapper.setHenkilo(henkiloWrapper);
                     setHakemuksenValintatuloksenTila(hakemus, hakemusWrapper, henkiloWrapper, hakemusIndex.get(hakemus.getHakemusOid()));
                 });
-
             });
             addHakijaRyhmatToHakijaRyhmaWrapper(hakemusOidMap, hakukohde, hakukohdeWrapper);
         });

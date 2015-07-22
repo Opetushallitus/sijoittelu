@@ -47,7 +47,7 @@ public abstract class SijoitteluAlgorithm {
     );
 
     public static SijoittelunTila sijoittele(List<Hakukohde> hakukohteet, List<Valintatulos> valintatulokset) {
-        return sijoittele(SijoitteluAjoCreator.createSijoitteluAjo(hakukohteet, valintatulokset));
+        return sijoittele(SijoitteluajoWrapperFactory.createSijoitteluAjo(hakukohteet, valintatulokset));
     }
 
     public static SijoittelunTila sijoittele(SijoitteluajoWrapper sijoitteluAjo) {

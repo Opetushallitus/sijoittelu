@@ -10,7 +10,7 @@ import java.util.List;
 
 import static org.junit.Assert.*;
 
-public class SijoitteluAjoCreatorTest {
+public class SijoitteluajoWrapperFactoryTest {
     @Test
     public void testconstructAlgorithm_PERUNUT() {
         SijoitteluajoWrapper sijoitteluAjo = sijoitteluAjo(valintatulosWithTila(ValintatuloksenTila.PERUNUT));
@@ -112,7 +112,7 @@ public class SijoitteluAjoCreatorTest {
         List<Valintatapajono> valintatapajonot = generateValintatapajono(hakemukset);
         final List<Hakukohde> hakukohteet = generateHakukohteet(valintatapajonot);
         final List<Valintatulos> valintatulokset = Collections.singletonList(valintatulos);
-        return SijoitteluAjoCreator.createSijoitteluAjo(hakukohteet, valintatulokset);
+        return SijoitteluajoWrapperFactory.createSijoitteluAjo(hakukohteet, valintatulokset);
     }
 
     private Valintatulos valintatulosWithTila(ValintatuloksenTila tila) {
