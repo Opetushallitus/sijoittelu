@@ -1,17 +1,19 @@
 package fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.postsijoitteluprocessor;
 
+import static junit.framework.Assert.assertEquals;
+
+import java.util.List;
+
+import org.junit.Test;
+
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.PrintHelper;
+import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoitteluAjoCreator;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoitteluAlgorithm;
-import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoitteluAlgorithmFactory;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.TestHelper;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.SijoitteluajoWrapper;
 import fi.vm.sade.sijoittelu.domain.Hakukohde;
 import fi.vm.sade.sijoittelu.domain.ValintatuloksenTila;
 import fi.vm.sade.sijoittelu.domain.Valintatulos;
-import org.junit.Test;
-import static junit.framework.Assert.*;
-
-import java.util.List;
 
 public class PostSijoitteluProcessorPeruuntuneetHakemuksenVastaanotonMuokkausTest {
     List<Hakukohde> hakukohdeList = TestHelper.readHakukohteetListFromJson("testdata/sijoittelu_hakukohde_peruuntunut.json");
@@ -32,11 +34,10 @@ public class PostSijoitteluProcessorPeruuntuneetHakemuksenVastaanotonMuokkausTes
     }
 
     private SijoitteluajoWrapper luoSijoitteluAjonTulokset() {
-        SijoitteluAlgorithmFactory factory = new SijoitteluAlgorithmFactory();
-        SijoitteluAlgorithm algorithm = factory.constructAlgorithm(hakukohdeList, valintatulosList);
-        algorithm.start();
+        final SijoitteluajoWrapper sijoitteluajoWrapper = SijoitteluAjoCreator.createSijoitteluAjo(hakukohdeList, valintatulosList);
+        SijoitteluAlgorithm algorithm = SijoitteluAlgorithm.sijoittele(sijoitteluajoWrapper);
         System.out.println(PrintHelper.tulostaSijoittelu(algorithm));
-        final SijoitteluajoWrapper sijoitteluAjo = algorithm.getSijoitteluAjo();
+        final SijoitteluajoWrapper sijoitteluAjo = sijoitteluajoWrapper;
         return sijoitteluAjo;
     }
 }

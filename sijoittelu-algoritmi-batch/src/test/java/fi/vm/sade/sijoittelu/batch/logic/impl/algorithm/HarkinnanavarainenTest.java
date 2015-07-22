@@ -33,9 +33,7 @@ public class HarkinnanavarainenTest {
 
         List<Hakukohde> hakukohteet = t.getHakukohteet().parallelStream().map(DomainConverter::convertToHakukohde).collect(Collectors.toList());
 
-        SijoitteluAlgorithmFactory h = new SijoitteluAlgorithmFactory();
-        SijoitteluAlgorithm s = h.constructAlgorithm(hakukohteet, Collections.<Valintatulos>newArrayList());
-        s.start();
+        SijoitteluAlgorithm s = SijoitteluAlgorithm.sijoittele(hakukohteet, Collections.<Valintatulos>newArrayList());
 
         PrintHelper.tallennaSijoitteluTiedostoon(s, "target/sijoittelu_harkinnanvarainen.sijoitteluresult");
 

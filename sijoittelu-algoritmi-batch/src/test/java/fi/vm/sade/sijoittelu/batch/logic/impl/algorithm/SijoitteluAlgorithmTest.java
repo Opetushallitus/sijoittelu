@@ -54,15 +54,10 @@ public class SijoitteluAlgorithmTest {
         hakemus4.setTila(HakemuksenTila.VARALLA);
 
 
-        SijoitteluAlgorithm impl = new SijoitteluAlgorithm();
-
-        Assert.assertTrue(impl.eiPeruttuaKorkeampaaTaiSamaaHakutoivetta(hakemusWrapper1));
+        Assert.assertTrue(SijoitteluAlgorithm.eiPeruttuaKorkeampaaTaiSamaaHakutoivetta(hakemusWrapper1));
         //ok koska kakkonen on sama instanssi kuin verrattava kohde
-        Assert.assertTrue(impl.eiPeruttuaKorkeampaaTaiSamaaHakutoivetta(hakemusWrapper2));
-        Assert.assertFalse(impl.eiPeruttuaKorkeampaaTaiSamaaHakutoivetta(hakemusWrapper3));
-        Assert.assertFalse(impl.eiPeruttuaKorkeampaaTaiSamaaHakutoivetta(hakemusWrapper4));
-
-
+        Assert.assertTrue(SijoitteluAlgorithm.eiPeruttuaKorkeampaaTaiSamaaHakutoivetta(hakemusWrapper2));
+        Assert.assertFalse(SijoitteluAlgorithm.eiPeruttuaKorkeampaaTaiSamaaHakutoivetta(hakemusWrapper3));
+        Assert.assertFalse(SijoitteluAlgorithm.eiPeruttuaKorkeampaaTaiSamaaHakutoivetta(hakemusWrapper4));
     }
-
 }

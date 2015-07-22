@@ -1,6 +1,5 @@
 package fi.vm.sade.sijoittelu.batch.logic.impl.algorithm;
 
-import de.flapdoodle.embed.process.collections.Collections;
 import fi.vm.sade.sijoittelu.batch.logic.impl.DomainConverter;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.SijoitteluajoWrapper;
 import fi.vm.sade.sijoittelu.domain.Hakukohde;
@@ -9,6 +8,8 @@ import fi.vm.sade.valintalaskenta.domain.dto.valintatieto.HakuDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -22,23 +23,15 @@ public abstract class SijoitteluTestSpec {
     public Function<HakuDTO,SijoitteluajoWrapper> algoritmi() {
         return (haku) -> {
             List<Hakukohde> hakukohteet = haku.getHakukohteet().parallelStream().map(DomainConverter::convertToHakukohde).collect(Collectors.toList());
-            SijoitteluAlgorithmFactory h = new SijoitteluAlgorithmFactory();
-            SijoitteluAlgorithm s = h.constructAlgorithm(hakukohteet, Collections.<Valintatulos>newArrayList());
-            s.start();
+            final SijoitteluajoWrapper sijoitteluAjo = SijoitteluAjoCreator.createSijoitteluAjo(hakukohteet, new ArrayList());
+            SijoitteluAlgorithm s = SijoitteluAlgorithm.sijoittele(sijoitteluAjo);
             LOG.debug("\r\n{}", PrintHelper.tulostaSijoittelu(s));
-            return s.getSijoitteluAjo();
+            return sijoitteluAjo;
         };
-    }
-
-    public SijoitteluajoWrapper kaksiJonoaJaHakijaryhmaKolmenKiintiolla() {
-        HakuDTO t = TestHelper.readHakuDTOFromJson("testdata_erikoistapaukset/sijoittelu_2jonoa_ja_hakijaryhma_3kiintiolla.json");
-        return algoritmi().apply(t);
     }
 
     public SijoitteluajoWrapper ajaSijoittelu(String filename) {
         HakuDTO t = TestHelper.readHakuDTOFromJson(filename);
         return algoritmi().apply(t);
     }
-
-
 }

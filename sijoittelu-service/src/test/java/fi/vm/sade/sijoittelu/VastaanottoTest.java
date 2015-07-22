@@ -6,8 +6,9 @@ import com.lordofthejars.nosqlunit.mongodb.MongoDbRule;
 
 import fi.vm.sade.sijoittelu.batch.logic.impl.DomainConverter;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.PrintHelper;
+import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoitteluAjoCreator;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoitteluAlgorithm;
-import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoitteluAlgorithmFactory;
+import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.SijoitteluajoWrapper;
 import fi.vm.sade.sijoittelu.domain.*;
 import fi.vm.sade.valintalaskenta.domain.dto.valintatieto.HakuDTO;
 import fi.vm.sade.valintalaskenta.tulos.service.impl.ValintatietoService;
@@ -48,8 +49,6 @@ public class VastaanottoTest {
         HakuDTO haku = valintatietoService.haeValintatiedot("1.2.246.562.29.173465377510");
 
         List<Hakukohde> hakukohteet = haku.getHakukohteet().parallelStream().map(DomainConverter::convertToHakukohde).collect(Collectors.toList());
-
-        SijoitteluAlgorithmFactory h = new SijoitteluAlgorithmFactory();
 
         Valintatulos sitova = new Valintatulos();
         sitova.setHakemusOid("oid1");
@@ -110,14 +109,14 @@ public class VastaanottoTest {
         ehdollinenPoistettava.setIlmoittautumisTila(IlmoittautumisTila.EI_TEHTY);
         ehdollinenPoistettava.setTila(ValintatuloksenTila.EHDOLLISESTI_VASTAANOTTANUT);
         ehdollinenPoistettava.setValintatapajonoOid("jono2");
+        final SijoitteluajoWrapper sijoitteluAjo = SijoitteluAjoCreator.createSijoitteluAjo(hakukohteet, Arrays.asList(sitova, ehdollinen, perunut, ehdollinenPidettava, ehdollinenPoistettava));
 
-        SijoitteluAlgorithm s = h.constructAlgorithm(hakukohteet, Arrays.asList(sitova,ehdollinen,perunut,ehdollinenPidettava,ehdollinenPoistettava));
-        s.start();
+        SijoitteluAlgorithm s = SijoitteluAlgorithm.sijoittele(sijoitteluAjo);
 
         System.out.println(PrintHelper.tulostaSijoittelu(s));
 
-        Assert.assertEquals(s.getSijoitteluAjo().getMuuttuneetValintatulokset().size(), 2);
-        Valintatulos t = s.getSijoitteluAjo().getMuuttuneetValintatulokset().get(0);
+        Assert.assertEquals(sijoitteluAjo.getMuuttuneetValintatulokset().size(), 2);
+        Valintatulos t = sijoitteluAjo.getMuuttuneetValintatulokset().get(0);
         Assert.assertEquals(t.getHakemusOid(), "oid4");
         Assert.assertEquals(t.getValintatapajonoOid(), "jono2");
         Assert.assertEquals(t.getHakukohdeOid(), "hakukohde2");

@@ -1,65 +1,34 @@
 package fi.vm.sade.sijoittelu.batch.logic.impl.algorithm;
 
-import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.postsijoitteluprocessor.PostSijoitteluProcessor;
-import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.postsijoitteluprocessor.PostSijoitteluProcessorEhdollisenVastaanotonSiirtyminenYlemmalleHakutoiveelle;
-import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.postsijoitteluprocessor.PostSijoitteluProcessorMuutostiedonAsetus;
-import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.postsijoitteluprocessor.PostSijoitteluProcessorPeruuntuneetHakemuksenVastaanotonMuokkaus;
-import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.presijoitteluprocessor.*;
-import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.util.TilanKuvaukset;
-import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.*;
-import fi.vm.sade.sijoittelu.domain.*;
-import org.springframework.stereotype.Component;
-
-import java.util.*;
-
 import static java.util.Collections.emptyMap;
 
-@Component
-public class SijoitteluAlgorithmFactory {
-    private final List<ValintatuloksenTila> hyvaksyttylista = Arrays.asList(ValintatuloksenTila.ILMOITETTU, ValintatuloksenTila.VASTAANOTTANUT, ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI);
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-    public SijoitteluAlgorithmFactory() {
+import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.util.TilanKuvaukset;
+import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.HakemusWrapper;
+import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.HakijaryhmaWrapper;
+import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.HakukohdeWrapper;
+import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.HenkiloWrapper;
+import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.SijoitteluajoWrapper;
+import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.ValintatapajonoWrapper;
+import fi.vm.sade.sijoittelu.domain.HakemuksenTila;
+import fi.vm.sade.sijoittelu.domain.Hakemus;
+import fi.vm.sade.sijoittelu.domain.Hakijaryhma;
+import fi.vm.sade.sijoittelu.domain.Hakukohde;
+import fi.vm.sade.sijoittelu.domain.ValintatuloksenTila;
+import fi.vm.sade.sijoittelu.domain.Valintatulos;
 
+public class SijoitteluAjoCreator {
+    private final static List<ValintatuloksenTila> hyvaksyttylista = Arrays.asList(ValintatuloksenTila.ILMOITETTU, ValintatuloksenTila.VASTAANOTTANUT, ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI);
+
+    public static SijoitteluajoWrapper createSijoitteluAjo(List<Hakukohde> hakukohteet, List<Valintatulos> valintatulokset) {
+        return createSijoitteluAjo(hakukohteet, indexValintatulokset(valintatulokset));
     }
 
-    public SijoitteluAlgorithm constructAlgorithm(List<Hakukohde> hakukohteet, List<Valintatulos> valintatulokset) {
-        List<PreSijoitteluProcessor> preSijoitteluProcessors = new ArrayList<>();
-        preSijoitteluProcessors.add(new PreSijoitteluProcessorTasasijaArvonta());
-        preSijoitteluProcessors.add(new PreSijoitteluProcessorSort());
-        preSijoitteluProcessors.add(new PreSijoitteluProcessorPeruutaAlemmatPeruneetJaHyvaksytyt());
-        preSijoitteluProcessors.add(new PreSijoitteluProcessorHylkaaHakijaRyhmaanKuulumattomat());
-        preSijoitteluProcessors.add(new PreSijoitteluProcessorLahtotilanteenHash());
-        List<PostSijoitteluProcessor> postSijoitteluProcessors = new ArrayList<>();
-        //postSijoitteluProcessors.add(new PostSijoitteluProcessorEhdollisenVastaanotonSiirtyminenYlemmalleHakutoiveelle());
-        postSijoitteluProcessors.add(new PostSijoitteluProcessorPeruuntuneetHakemuksenVastaanotonMuokkaus());
-        postSijoitteluProcessors.add(new PostSijoitteluProcessorMuutostiedonAsetus());
-        SijoitteluAlgorithm algorithm = new SijoitteluAlgorithm();
-        algorithm.preSijoitteluProcessors = preSijoitteluProcessors;
-        algorithm.postSijoitteluProcessors = postSijoitteluProcessors;
-        algorithm.sijoitteluAjo = wrapDomain(hakukohteet, indexValintatulokset(valintatulokset));
-        return algorithm;
-    }
-
-    // hakukohde : valintatapajonot : hakemukset
-    private static Map<String, Map<String, Map<String, Valintatulos>>> indexValintatulokset(List<Valintatulos> valintatulokset) {
-        Map<String, Map<String, Map<String, Valintatulos>>> hakukohdeIndex = new HashMap<>();
-
-        valintatulokset.stream().filter(vt -> !(vt.getHakemusOid() == null || vt.getHakemusOid().isEmpty())).forEach(vt -> {
-            final String hakukohdeOid = vt.getHakukohdeOid();
-            final String valintatapajonoOid = vt.getValintatapajonoOid();
-            final String hakemusOid = vt.getHakemusOid();
-
-            Map<String, Map<String, Valintatulos>> jonoIndex = hakukohdeIndex.getOrDefault(hakukohdeOid, new HashMap<>());
-            Map<String, Valintatulos> hakemusIndex = jonoIndex.getOrDefault(valintatapajonoOid, new HashMap<>());
-            hakemusIndex.put(hakemusOid, vt);
-            jonoIndex.put(valintatapajonoOid, hakemusIndex);
-            hakukohdeIndex.put(hakukohdeOid, jonoIndex);
-        });
-
-        return hakukohdeIndex;
-    }
-
-    private SijoitteluajoWrapper wrapDomain(List<Hakukohde> hakukohteet, Map<String, Map<String, Map<String, Valintatulos>>> valintatulokset) {
+    private static SijoitteluajoWrapper createSijoitteluAjo(List<Hakukohde> hakukohteet, Map<String, Map<String, Map<String, Valintatulos>>> valintatulokset) {
         SijoitteluajoWrapper sijoitteluajoWrapper = new SijoitteluajoWrapper();
         Map<String, HenkiloWrapper> hakemusOidMap = new HashMap<String, HenkiloWrapper>();
         hakukohteet.forEach(hakukohde -> {
@@ -93,7 +62,25 @@ public class SijoitteluAlgorithmFactory {
         return sijoitteluajoWrapper;
     }
 
-    private void addHakijaRyhmatToHakijaRyhmaWrapper(Map<String, HenkiloWrapper> hakemusOidMap, Hakukohde hakukohde, HakukohdeWrapper hakukohdeWrapper) {
+    // hakukohde : valintatapajonot : hakemukset
+    private static Map<String, Map<String, Map<String, Valintatulos>>> indexValintatulokset(List<Valintatulos> valintatulokset) {
+        Map<String, Map<String, Map<String, Valintatulos>>> hakukohdeIndex = new HashMap<>();
+
+        valintatulokset.stream().filter(vt -> !(vt.getHakemusOid() == null || vt.getHakemusOid().isEmpty())).forEach(vt -> {
+            final String hakukohdeOid = vt.getHakukohdeOid();
+            final String valintatapajonoOid = vt.getValintatapajonoOid();
+            final String hakemusOid = vt.getHakemusOid();
+
+            Map<String, Map<String, Valintatulos>> jonoIndex = hakukohdeIndex.getOrDefault(hakukohdeOid, new HashMap<>());
+            Map<String, Valintatulos> hakemusIndex = jonoIndex.getOrDefault(valintatapajonoOid, new HashMap<>());
+            hakemusIndex.put(hakemusOid, vt);
+            jonoIndex.put(valintatapajonoOid, hakemusIndex);
+            hakukohdeIndex.put(hakukohdeOid, jonoIndex);
+        });
+
+        return hakukohdeIndex;
+    }
+    private static void addHakijaRyhmatToHakijaRyhmaWrapper(Map<String, HenkiloWrapper> hakemusOidMap, Hakukohde hakukohde, HakukohdeWrapper hakukohdeWrapper) {
         for (Hakijaryhma hakijaryhma : hakukohde.getHakijaryhmat()) {
             HakijaryhmaWrapper hakijaryhmaWrapper = new HakijaryhmaWrapper();
             hakijaryhmaWrapper.setHakijaryhma(hakijaryhma);
@@ -106,7 +93,7 @@ public class SijoitteluAlgorithmFactory {
         }
     }
 
-    private void setHakemuksenValintatuloksenTila(Hakemus hakemus, HakemusWrapper hakemusWrapper, HenkiloWrapper henkiloWrapper, Valintatulos valintatulos) {
+    private static void setHakemuksenValintatuloksenTila(Hakemus hakemus, HakemusWrapper hakemusWrapper, HenkiloWrapper henkiloWrapper, Valintatulos valintatulos) {
         if (valintatulos != null && valintatulos.getTila() != null) {
             ValintatuloksenTila tila = valintatulos.getTila();
             boolean voidaanVaihtaa = false;
@@ -156,16 +143,16 @@ public class SijoitteluAlgorithmFactory {
         }
     }
 
-    private boolean isHyvaksyttyValintatuloksenTila(ValintatuloksenTila tila) {
+    private static boolean isHyvaksyttyValintatuloksenTila(ValintatuloksenTila tila) {
         return hyvaksyttylista.contains(tila);
     }
 
-    private void hyvaksyVarasijalta(Hakemus hakemus) {
+    private static void hyvaksyVarasijalta(Hakemus hakemus) {
         hakemus.setTilanKuvaukset(TilanKuvaukset.varasijaltaHyvaksytty());
         hakemus.setTila(HakemuksenTila.VARASIJALTA_HYVAKSYTTY);
     }
 
-    private HenkiloWrapper getOrCreateHenkilo(Hakemus hakemus, Map<String, HenkiloWrapper> hakemusOidMap) {
+    private static HenkiloWrapper getOrCreateHenkilo(Hakemus hakemus, Map<String, HenkiloWrapper> hakemusOidMap) {
         HenkiloWrapper henkiloWrapper = null;
         if (hakemus.getHakemusOid() != null && !hakemus.getHakemusOid().isEmpty()) {
             henkiloWrapper = hakemusOidMap.get(hakemus.getHakemusOid());
@@ -181,7 +168,8 @@ public class SijoitteluAlgorithmFactory {
         return henkiloWrapper;
     }
 
-    private HenkiloWrapper getHenkilo(String hakijaOid, Map<String, HenkiloWrapper> hakijaOidMap) {
+    private static HenkiloWrapper getHenkilo(String hakijaOid, Map<String, HenkiloWrapper> hakijaOidMap) {
         return hakijaOidMap.get(hakijaOid);
     }
+
 }

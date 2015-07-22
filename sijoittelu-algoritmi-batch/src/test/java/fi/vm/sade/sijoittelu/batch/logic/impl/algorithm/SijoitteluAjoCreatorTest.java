@@ -1,6 +1,7 @@
 package fi.vm.sade.sijoittelu.batch.logic.impl.algorithm;
 
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.HakemusWrapper;
+import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.SijoitteluajoWrapper;
 import fi.vm.sade.sijoittelu.domain.*;
 import org.junit.Test;
 
@@ -9,16 +10,13 @@ import java.util.List;
 
 import static org.junit.Assert.*;
 
-public class SijoitteluAlgorithmFactoryTest {
-
-    private final SijoitteluAlgorithmFactory sijoitteluAlgorithmFactory = new SijoitteluAlgorithmFactory();
-
+public class SijoitteluAjoCreatorTest {
     @Test
     public void testconstructAlgorithm_PERUNUT() {
-        SijoitteluAlgorithm sijoitteluAlgorithm = sijoitteluAlgorithm(valintatulosWithTila(ValintatuloksenTila.PERUNUT));
+        SijoitteluajoWrapper sijoitteluAjo = sijoitteluAjo(valintatulosWithTila(ValintatuloksenTila.PERUNUT));
 
-        assertEquals(sijoitteluAlgorithm.sijoitteluAjo.getHakukohteet().size(), 1);
-        HakemusWrapper hakemusWrapper = sijoitteluAlgorithm.sijoitteluAjo.getHakukohteet().get(0).getValintatapajonot().get(0).getHakemukset().get(0);
+        assertEquals(sijoitteluAjo.getHakukohteet().size(), 1);
+        HakemusWrapper hakemusWrapper = sijoitteluAjo.getHakukohteet().get(0).getValintatapajonot().get(0).getHakemukset().get(0);
         assertEquals(hakemusWrapper.getHakemus().getTila(), HakemuksenTila.PERUNUT);
         assertFalse(hakemusWrapper.isTilaVoidaanVaihtaa());
     }
@@ -26,10 +24,10 @@ public class SijoitteluAlgorithmFactoryTest {
     @Test
     public void testconstructAlgorithm_EHDOLLISESTI_VASTAANOTTANUT() {
         Valintatulos valintatulos = valintatulosWithTila(ValintatuloksenTila.EHDOLLISESTI_VASTAANOTTANUT);
-        SijoitteluAlgorithm sijoitteluAlgorithm = sijoitteluAlgorithm(valintatulos);
+        SijoitteluajoWrapper sijoitteluAjo = sijoitteluAjo(valintatulos);
 
-        assertEquals(sijoitteluAlgorithm.sijoitteluAjo.getHakukohteet().size(), 1);
-        HakemusWrapper hakemusWrapper = sijoitteluAlgorithm.sijoitteluAjo.getHakukohteet().get(0).getValintatapajonot().get(0).getHakemukset().get(0);
+        assertEquals(sijoitteluAjo.getHakukohteet().size(), 1);
+        HakemusWrapper hakemusWrapper = sijoitteluAjo.getHakukohteet().get(0).getValintatapajonot().get(0).getHakemukset().get(0);
         assertEquals(hakemusWrapper.getHakemus().getTila(), HakemuksenTila.HYVAKSYTTY);
         assertEquals(hakemusWrapper.getHakemus().getIlmoittautumisTila(), valintatulos.getIlmoittautumisTila());
         assertTrue(!hakemusWrapper.isTilaVoidaanVaihtaa());
@@ -37,20 +35,20 @@ public class SijoitteluAlgorithmFactoryTest {
 
     @Test
     public void testconstructAlgorithm_EI_VASTAANOTETTU_MAARA_AIKANA() {
-        SijoitteluAlgorithm sijoitteluAlgorithm = sijoitteluAlgorithm(valintatulosWithTila(ValintatuloksenTila.EI_VASTAANOTETTU_MAARA_AIKANA));
+        SijoitteluajoWrapper sijoitteluAjo = sijoitteluAjo(valintatulosWithTila(ValintatuloksenTila.EI_VASTAANOTETTU_MAARA_AIKANA));
 
-        assertEquals(sijoitteluAlgorithm.sijoitteluAjo.getHakukohteet().size(), 1);
-        HakemusWrapper hakemusWrapper = sijoitteluAlgorithm.sijoitteluAjo.getHakukohteet().get(0).getValintatapajonot().get(0).getHakemukset().get(0);
+        assertEquals(sijoitteluAjo.getHakukohteet().size(), 1);
+        HakemusWrapper hakemusWrapper = sijoitteluAjo.getHakukohteet().get(0).getValintatapajonot().get(0).getHakemukset().get(0);
         assertEquals(hakemusWrapper.getHakemus().getTila(), HakemuksenTila.PERUNUT);
         assertFalse(hakemusWrapper.isTilaVoidaanVaihtaa());
     }
 
     @Test
     public void testconstructAlgorithm_PERUUTETTU() {
-        SijoitteluAlgorithm sijoitteluAlgorithm = sijoitteluAlgorithm(valintatulosWithTila(ValintatuloksenTila.PERUUTETTU));
+        SijoitteluajoWrapper sijoitteluAjo = sijoitteluAjo(valintatulosWithTila(ValintatuloksenTila.PERUUTETTU));
 
-        assertEquals(sijoitteluAlgorithm.sijoitteluAjo.getHakukohteet().size(), 1);
-        HakemusWrapper hakemusWrapper = sijoitteluAlgorithm.sijoitteluAjo.getHakukohteet().get(0).getValintatapajonot().get(0).getHakemukset().get(0);
+        assertEquals(sijoitteluAjo.getHakukohteet().size(), 1);
+        HakemusWrapper hakemusWrapper = sijoitteluAjo.getHakukohteet().get(0).getValintatapajonot().get(0).getHakemukset().get(0);
         assertEquals(hakemusWrapper.getHakemus().getTila(), HakemuksenTila.PERUUTETTU);
         assertTrue(!hakemusWrapper.isTilaVoidaanVaihtaa());
     }
@@ -59,10 +57,10 @@ public class SijoitteluAlgorithmFactoryTest {
     public void testconstructAlgorithm_VASTAANOTTANUT_SITOVASTI() {
         Valintatulos valintatulos = valintatulosWithTila(ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI);
         valintatulos.setJulkaistavissa(true);
-        SijoitteluAlgorithm sijoitteluAlgorithm = sijoitteluAlgorithm(valintatulos);
+        SijoitteluajoWrapper sijoitteluAjo = sijoitteluAjo(valintatulos);
 
-        assertEquals(sijoitteluAlgorithm.sijoitteluAjo.getHakukohteet().size(), 1);
-        HakemusWrapper hakemusWrapper = sijoitteluAlgorithm.sijoitteluAjo.getHakukohteet().get(0).getValintatapajonot().get(0).getHakemukset().get(0);
+        assertEquals(sijoitteluAjo.getHakukohteet().size(), 1);
+        HakemusWrapper hakemusWrapper = sijoitteluAjo.getHakukohteet().get(0).getValintatapajonot().get(0).getHakemukset().get(0);
         assertEquals(hakemusWrapper.getHakemus().getTila(), HakemuksenTila.HYVAKSYTTY);
         assertEquals(hakemusWrapper.getHakemus().getIlmoittautumisTila(), valintatulos.getIlmoittautumisTila());
         assertFalse(hakemusWrapper.isTilaVoidaanVaihtaa());
@@ -72,10 +70,10 @@ public class SijoitteluAlgorithmFactoryTest {
     public void testconstructAlgorithm_ILMOITETTU() {
         Valintatulos valintatulos = valintatulosWithTila(ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI);
         valintatulos.setJulkaistavissa(true);
-        SijoitteluAlgorithm sijoitteluAlgorithm = sijoitteluAlgorithm(valintatulos);
+        SijoitteluajoWrapper sijoitteluAjo = sijoitteluAjo(valintatulos);
 
-        assertEquals(sijoitteluAlgorithm.sijoitteluAjo.getHakukohteet().size(), 1);
-        HakemusWrapper hakemusWrapper = sijoitteluAlgorithm.sijoitteluAjo.getHakukohteet().get(0).getValintatapajonot().get(0).getHakemukset().get(0);
+        assertEquals(sijoitteluAjo.getHakukohteet().size(), 1);
+        HakemusWrapper hakemusWrapper = sijoitteluAjo.getHakukohteet().get(0).getValintatapajonot().get(0).getHakemukset().get(0);
         assertEquals(hakemusWrapper.getHakemus().getTila(), HakemuksenTila.HYVAKSYTTY);
         assertFalse(hakemusWrapper.isTilaVoidaanVaihtaa());
     }
@@ -84,10 +82,10 @@ public class SijoitteluAlgorithmFactoryTest {
     public void testconstructAlgorithm_VASTAANOTTANUT() {
         Valintatulos valintatulos = valintatulosWithTila(ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI);
         valintatulos.setJulkaistavissa(true);
-        SijoitteluAlgorithm sijoitteluAlgorithm = sijoitteluAlgorithm(valintatulos);
+        SijoitteluajoWrapper sijoitteluAjo = sijoitteluAjo(valintatulos);
 
-        assertEquals(sijoitteluAlgorithm.sijoitteluAjo.getHakukohteet().size(), 1);
-        HakemusWrapper hakemusWrapper = sijoitteluAlgorithm.sijoitteluAjo.getHakukohteet().get(0).getValintatapajonot().get(0).getHakemukset().get(0);
+        assertEquals(sijoitteluAjo.getHakukohteet().size(), 1);
+        HakemusWrapper hakemusWrapper = sijoitteluAjo.getHakukohteet().get(0).getValintatapajonot().get(0).getHakemukset().get(0);
         assertEquals(hakemusWrapper.getHakemus().getTila(), HakemuksenTila.HYVAKSYTTY);
         assertFalse(hakemusWrapper.isTilaVoidaanVaihtaa());
     }
@@ -97,24 +95,24 @@ public class SijoitteluAlgorithmFactoryTest {
         Valintatulos valintatulos = valintatulosWithTila(ValintatuloksenTila.KESKEN);
         valintatulos.setHyvaksyPeruuntunut(true);
         List<Hakemus> hakemukset = generateHakemukset(HakemuksenTila.PERUUNTUNUT, HakemuksenTila.PERUUNTUNUT);
-        SijoitteluAlgorithm sijoitteluAlgorithm = sijoitteluAlgorithm(valintatulos, hakemukset);
+        SijoitteluajoWrapper sijoitteluAjo = sijoitteluAjo(valintatulos, hakemukset);
 
-        HakemusWrapper hakemusWrapper = sijoitteluAlgorithm.sijoitteluAjo.getHakukohteet().get(0).getValintatapajonot().get(0).getHakemukset().get(0);
+        HakemusWrapper hakemusWrapper = sijoitteluAjo.getHakukohteet().get(0).getValintatapajonot().get(0).getHakemukset().get(0);
         assertEquals(HakemuksenTila.HYVAKSYTTY, hakemusWrapper.getHakemus().getTila());
         assertFalse(hakemusWrapper.isTilaVoidaanVaihtaa());
     }
 
-    private SijoitteluAlgorithm sijoitteluAlgorithm(Valintatulos valintatulos) {
+    private SijoitteluajoWrapper sijoitteluAjo(Valintatulos valintatulos) {
         final Hakemus hakemus = new Hakemus();
         hakemus.setHakemusOid("123");
-        return sijoitteluAlgorithm(valintatulos, Collections.singletonList(hakemus));
+        return sijoitteluAjo(valintatulos, Collections.singletonList(hakemus));
     }
 
-    private SijoitteluAlgorithm sijoitteluAlgorithm(Valintatulos valintatulos, List<Hakemus> hakemukset) {
+    private SijoitteluajoWrapper sijoitteluAjo(Valintatulos valintatulos, List<Hakemus> hakemukset) {
         List<Valintatapajono> valintatapajonot = generateValintatapajono(hakemukset);
         final List<Hakukohde> hakukohteet = generateHakukohteet(valintatapajonot);
         final List<Valintatulos> valintatulokset = Collections.singletonList(valintatulos);
-        return sijoitteluAlgorithmFactory.constructAlgorithm(hakukohteet, valintatulokset);
+        return SijoitteluAjoCreator.createSijoitteluAjo(hakukohteet, valintatulokset);
     }
 
     private Valintatulos valintatulosWithTila(ValintatuloksenTila tila) {

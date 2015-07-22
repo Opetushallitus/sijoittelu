@@ -5,7 +5,6 @@ import com.lordofthejars.nosqlunit.annotation.UsingDataSet;
 import com.lordofthejars.nosqlunit.core.LoadStrategyEnum;
 import com.lordofthejars.nosqlunit.mongodb.MongoDbRule;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoitteluAlgorithm;
-import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoitteluAlgorithmFactory;
 import fi.vm.sade.sijoittelu.domain.HakemuksenTila;
 import fi.vm.sade.sijoittelu.domain.Hakemus;
 import fi.vm.sade.sijoittelu.domain.Hakukohde;
@@ -48,9 +47,6 @@ public class SijoitteluTest {
     @Autowired
     private ApplicationContext applicationContext;
 
-    @Autowired
-    private SijoitteluAlgorithmFactory algorithmFactory;
-
     @Rule
     public MongoDbRule mongoDbRule = newMongoDbRule().defaultSpringMongoDb("sijoittelu");
 
@@ -80,8 +76,7 @@ public class SijoitteluTest {
             }
         }
 
-        SijoitteluAlgorithm sijoitteluAlgorithm = algorithmFactory.constructAlgorithm(hakukohteet, ImmutableList.of());
-        sijoitteluAlgorithm.start();
+        SijoitteluAlgorithm sijoitteluAlgorithm = SijoitteluAlgorithm.sijoittele(hakukohteet, ImmutableList.of());
 
         ass(hakemusMapByHakemusOid, "1.2.246.562.11.00000011992", 1, getHakukohde(hakukohteet, "1.2.246.562.14.2013082908162538927436"), HakemuksenTila.HYVAKSYTTY);
         ass(hakemusMapByHakemusOid, "1.2.246.562.11.00000011992", 2, getHakukohde(hakukohteet, "1.2.246.562.5.02563_04_873_0530"), HakemuksenTila.PERUUNTUNUT);
@@ -114,8 +109,7 @@ public class SijoitteluTest {
         ass(hakemusMapByHakemusOid, "1.2.246.562.11.00000011992", 1, getHakukohde(hakukohteet, "1.2.246.562.14.2013082908162538927436"), HakemuksenTila.HYVAKSYTTY);
         ass(hakemusMapByHakemusOid, "1.2.246.562.11.00000011992", 2, getHakukohde(hakukohteet, "1.2.246.562.5.02563_04_873_0530"), HakemuksenTila.VARALLA);
 
-        SijoitteluAlgorithm sijoitteluAlgorithm = algorithmFactory.constructAlgorithm(hakukohteet, ImmutableList.of());
-        sijoitteluAlgorithm.start();
+        SijoitteluAlgorithm sijoitteluAlgorithm = SijoitteluAlgorithm.sijoittele(hakukohteet, ImmutableList.of());
 
         ass(hakemusMapByHakemusOid, "1.2.246.562.11.00000011992", 1, getHakukohde(hakukohteet, "1.2.246.562.14.2013082908162538927436"), HakemuksenTila.HYVAKSYTTY);
         ass(hakemusMapByHakemusOid, "1.2.246.562.11.00000011992", 2, getHakukohde(hakukohteet, "1.2.246.562.5.02563_04_873_0530"), HakemuksenTila.PERUUNTUNUT);

@@ -38,11 +38,9 @@ public class Sijoitteludata_2011K_ALPATTest {
 
         List<Hakukohde> hakukohteet = t.getHakukohteet().parallelStream().map(DomainConverter::convertToHakukohde).collect(Collectors.toList());
 
-        SijoitteluAlgorithmFactory h = new SijoitteluAlgorithmFactory();
-        SijoitteluAlgorithm sa = h.constructAlgorithm(hakukohteet, Collections.<Valintatulos>newArrayList());
+        SijoitteluAlgorithm sa = SijoitteluAlgorithm.sijoittele(hakukohteet, Collections.<Valintatulos>newArrayList());
 
         long timestart = System.currentTimeMillis();
-		sa.start();
 		long timeend = System.currentTimeMillis();
 
 		String kesto = "Sijoittelu kesti: " + (timeend - timestart) + " milliseconds = " + (((float) (timeend - timestart)) / (((float) 1000))) + " seconds";

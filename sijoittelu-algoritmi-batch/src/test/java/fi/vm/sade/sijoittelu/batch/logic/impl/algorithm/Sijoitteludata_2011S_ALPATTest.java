@@ -31,15 +31,10 @@ public class Sijoitteludata_2011S_ALPATTest {
             Hakukohde hakukohde = DomainConverter.convertToHakukohde(hkt);
             hakukohteet.add(hakukohde);
         }
-        System.out.println("algoritmi ennen");
-        SijoitteluAlgorithmFactory h = new SijoitteluAlgorithmFactory();
-        SijoitteluAlgorithm alg = h.constructAlgorithm(hakukohteet, Collections.<Valintatulos>newArrayList());
-
-        System.out.println("algoritmi kassassa");
+        SijoitteluAlgorithm alg = SijoitteluAlgorithm.sijoittele(hakukohteet, Collections.<Valintatulos>newArrayList());
 
 		long timestart = System.currentTimeMillis();
 		long freeMemBefore = Runtime.getRuntime().freeMemory();
-		alg.start();
 		long timeend = System.currentTimeMillis();
 		long freeMemAfter = Runtime.getRuntime().freeMemory();
 

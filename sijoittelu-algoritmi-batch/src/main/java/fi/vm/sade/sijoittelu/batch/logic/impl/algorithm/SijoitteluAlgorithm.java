@@ -5,7 +5,15 @@ import com.google.common.collect.Sets;
 import com.google.common.hash.HashCode;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.comparator.HakemusWrapperComparator;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.postsijoitteluprocessor.PostSijoitteluProcessor;
+import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.postsijoitteluprocessor.PostSijoitteluProcessorEhdollisenVastaanotonSiirtyminenYlemmalleHakutoiveelle;
+import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.postsijoitteluprocessor.PostSijoitteluProcessorMuutostiedonAsetus;
+import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.postsijoitteluprocessor.PostSijoitteluProcessorPeruuntuneetHakemuksenVastaanotonMuokkaus;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.presijoitteluprocessor.PreSijoitteluProcessor;
+import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.presijoitteluprocessor.PreSijoitteluProcessorHylkaaHakijaRyhmaanKuulumattomat;
+import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.presijoitteluprocessor.PreSijoitteluProcessorLahtotilanteenHash;
+import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.presijoitteluprocessor.PreSijoitteluProcessorPeruutaAlemmatPeruneetJaHyvaksytyt;
+import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.presijoitteluprocessor.PreSijoitteluProcessorSort;
+import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.presijoitteluprocessor.PreSijoitteluProcessorTasasijaArvonta;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.*;
 import fi.vm.sade.sijoittelu.domain.*;
 import org.apache.commons.lang3.tuple.Pair;
@@ -25,23 +33,41 @@ import static fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.WrapperH
 public class SijoitteluAlgorithm {
     private static final Logger LOG = LoggerFactory.getLogger(SijoitteluAlgorithm.class);
 
-    protected SijoitteluAlgorithm() {
+    public static SijoitteluAlgorithm sijoittele(List<Hakukohde> hakukohteet, List<Valintatulos> valintatulokset) {
+        return sijoittele(SijoitteluAjoCreator.createSijoitteluAjo(hakukohteet, valintatulokset));
+    }
+
+    public static SijoitteluAlgorithm sijoittele(SijoitteluajoWrapper sijoitteluAjo) {
+        return new SijoitteluAlgorithm(sijoitteluAjo).run();
+    }
+
+    private SijoitteluAlgorithm(SijoitteluajoWrapper sijoitteluAjo) {
+        List<PreSijoitteluProcessor> preSijoitteluProcessors = new ArrayList<>();
+        preSijoitteluProcessors.add(new PreSijoitteluProcessorTasasijaArvonta());
+        preSijoitteluProcessors.add(new PreSijoitteluProcessorSort());
+        preSijoitteluProcessors.add(new PreSijoitteluProcessorPeruutaAlemmatPeruneetJaHyvaksytyt());
+        preSijoitteluProcessors.add(new PreSijoitteluProcessorHylkaaHakijaRyhmaanKuulumattomat());
+        preSijoitteluProcessors.add(new PreSijoitteluProcessorLahtotilanteenHash());
+        List<PostSijoitteluProcessor> postSijoitteluProcessors = new ArrayList<>();
+        //postSijoitteluProcessors.add(new PostSijoitteluProcessorEhdollisenVastaanotonSiirtyminenYlemmalleHakutoiveelle());
+        postSijoitteluProcessors.add(new PostSijoitteluProcessorPeruuntuneetHakemuksenVastaanotonMuokkaus());
+        postSijoitteluProcessors.add(new PostSijoitteluProcessorMuutostiedonAsetus());
+        this.preSijoitteluProcessors = preSijoitteluProcessors;
+        this.postSijoitteluProcessors = postSijoitteluProcessors;
+        this.sijoitteluAjo = sijoitteluAjo;
     }
 
     protected SijoitteluajoWrapper sijoitteluAjo;
-    protected List<PreSijoitteluProcessor> preSijoitteluProcessors;
-    protected List<PostSijoitteluProcessor> postSijoitteluProcessors;
+    private List<PreSijoitteluProcessor> preSijoitteluProcessors;
+    private List<PostSijoitteluProcessor> postSijoitteluProcessors;
     protected int depth = 0;
 
-    public SijoitteluajoWrapper getSijoitteluAjo() {
-        return sijoitteluAjo;
-    }
-
-    public void start() {
+    public SijoitteluAlgorithm run() {
         LOG.info("Starting sijoitteluajo " + sijoitteluAjo.getSijoitteluAjoId());
         runPreProcessors();
         sijoittele();
         runPostProcessors();
+        return this;
     }
 
     private void runPostProcessors() {
@@ -662,7 +688,7 @@ public class SijoitteluAlgorithm {
             && hakemusWrapper.isHyvaksyttavissaHakijaryhmanJalkeen();
     }
 
-    protected boolean eiPeruttuaKorkeampaaTaiSamaaHakutoivetta(HakemusWrapper hakemusWrapper) {
+    protected static boolean eiPeruttuaKorkeampaaTaiSamaaHakutoivetta(HakemusWrapper hakemusWrapper) {
         return hakemusWrapper.getHenkilo().getHakemukset()
             .stream()
             .filter(h -> h != hakemusWrapper)

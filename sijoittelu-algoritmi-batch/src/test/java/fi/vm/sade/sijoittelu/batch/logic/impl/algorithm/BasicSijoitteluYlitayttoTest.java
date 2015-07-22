@@ -36,9 +36,7 @@ public class BasicSijoitteluYlitayttoTest {
             hakukohteet.add(hakukohde);
         }
 
-        SijoitteluAlgorithmFactory h = new SijoitteluAlgorithmFactory();
-        SijoitteluAlgorithm s = h.constructAlgorithm(hakukohteet, Collections.<Valintatulos>newArrayList());
-        s.start();
+        SijoitteluAlgorithm s = SijoitteluAlgorithm.sijoittele(hakukohteet, Collections.<Valintatulos>newArrayList());
 
 		PrintHelper.tallennaSijoitteluTiedostoon(s, "target/sijoittelu_basic_ylitaytto_case.sijoitteluresult");
 
