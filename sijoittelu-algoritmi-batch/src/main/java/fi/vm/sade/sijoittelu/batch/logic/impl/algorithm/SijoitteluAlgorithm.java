@@ -32,19 +32,19 @@ import static fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.WrapperH
 
 public abstract class SijoitteluAlgorithm {
     private static final Logger LOG = LoggerFactory.getLogger(SijoitteluAlgorithm.class);
-    private final static List<PreSijoitteluProcessor> preSijoitteluProcessors = new ArrayList<>();
-    private final static List<PostSijoitteluProcessor> postSijoitteluProcessors = new ArrayList<>();
 
-    static {
-        preSijoitteluProcessors.add(new PreSijoitteluProcessorTasasijaArvonta());
-        preSijoitteluProcessors.add(new PreSijoitteluProcessorSort());
-        preSijoitteluProcessors.add(new PreSijoitteluProcessorPeruutaAlemmatPeruneetJaHyvaksytyt());
-        preSijoitteluProcessors.add(new PreSijoitteluProcessorHylkaaHakijaRyhmaanKuulumattomat());
-        preSijoitteluProcessors.add(new PreSijoitteluProcessorLahtotilanteenHash());
-        //postSijoitteluProcessors.add(new PostSijoitteluProcessorEhdollisenVastaanotonSiirtyminenYlemmalleHakutoiveelle());
-        postSijoitteluProcessors.add(new PostSijoitteluProcessorPeruuntuneetHakemuksenVastaanotonMuokkaus());
-        postSijoitteluProcessors.add(new PostSijoitteluProcessorMuutostiedonAsetus());
-    }
+    private final static List<PreSijoitteluProcessor> preSijoitteluProcessors = Arrays.asList(
+        new PreSijoitteluProcessorTasasijaArvonta(),
+        new PreSijoitteluProcessorSort(),
+        new PreSijoitteluProcessorPeruutaAlemmatPeruneetJaHyvaksytyt(),
+        new PreSijoitteluProcessorHylkaaHakijaRyhmaanKuulumattomat(),
+        new PreSijoitteluProcessorLahtotilanteenHash()
+    );
+    private final static List<PostSijoitteluProcessor> postSijoitteluProcessors = Arrays.asList(
+        //new PostSijoitteluProcessorEhdollisenVastaanotonSiirtyminenYlemmalleHakutoiveelle(),
+        new PostSijoitteluProcessorPeruuntuneetHakemuksenVastaanotonMuokkaus(),
+        new PostSijoitteluProcessorMuutostiedonAsetus()
+    );
 
     public static SijoittelunTila sijoittele(List<Hakukohde> hakukohteet, List<Valintatulos> valintatulokset) {
         return sijoittele(SijoitteluAjoCreator.createSijoitteluAjo(hakukohteet, valintatulokset));
