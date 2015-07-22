@@ -66,7 +66,7 @@ public class SijoitteluAlgorithmImpl implements SijoitteluAlgorithm {
             sijoittelunIterointi.sijoittele();
         } catch (SijoitteluSilmukkaException s) {
             new SijoitteleKunnesTavoiteHashTuleeVastaanTaiHeitaPoikkeus().sijoittele(
-                    sijoittelunIterointi.edellinenHash, sijoittelunIterointi.iteraationHakukohteet
+                    sijoittelunIterointi.edellinenHash.get(), sijoittelunIterointi.iteraationHakukohteet
             );
         }
     }
@@ -108,30 +108,29 @@ public class SijoitteluAlgorithmImpl implements SijoitteluAlgorithm {
     }
 
     private class SijoitteleKunnesValmisTaiSilmukkaHavaittu {
-        private final Set<HashCode> hashset = Sets.newHashSet();
-        private HashCode edellinenHash = null;
-        private Set<HakukohdeWrapper> iteraationHakukohteet = null;
-
+        private Optional<HashCode> edellinenHash = Optional.empty();
+        private Set<HakukohdeWrapper> iteraationHakukohteet;
         public void sijoittele() {
-            Set<HakukohdeWrapper> muuttuneetHakukohteet = Sets.newHashSet(SijoitteluAlgorithmImpl.this.sijoitteluAjo.getHakukohteet());
-            HashCode hash = null;
+            final Set<HashCode> hashset = Sets.newHashSet();
+            iteraationHakukohteet = Sets.newHashSet(SijoitteluAlgorithmImpl.this.sijoitteluAjo.getHakukohteet());
+            boolean jatkuukoSijoittelu;
             do {
-                iteraationHakukohteet = muuttuneetHakukohteet;
-                muuttuneetHakukohteet = Sets.newHashSet();
+                Set<HakukohdeWrapper> muuttuneetHakukohteet = Sets.newHashSet();
                 for (HakukohdeWrapper hakukohde : iteraationHakukohteet) {
                     muuttuneetHakukohteet.addAll(sijoitteleHakukohde(hakukohde));
                 }
-                edellinenHash = hash;
-                hash = SijoitteluAlgorithmImpl.this.sijoitteluAjo.asHash();
-                if (hashset.contains(hash)) {
-                    LOG.error("Sijoittelu on iteraatiolla {} uudelleen aikaisemmassa tilassa (tila {})", depth, hash);
-                    throw new SijoitteluSilmukkaException("Sijoittelu on iteraatiolla " + depth + " uudelleen aikaisemmassa tilassa (tila " + hash + ")");
-                } else {
-                    LOG.debug("Iteraatio {} HASH {}", depth, hash);
-                    hashset.add(hash);
-                }
+                HashCode iteraationHash = SijoitteluAlgorithmImpl.this.sijoitteluAjo.asHash();
                 ++depth;
-            } while (!muuttuneetHakukohteet.isEmpty());
+                iteraationHakukohteet = muuttuneetHakukohteet;
+                jatkuukoSijoittelu = !muuttuneetHakukohteet.isEmpty();
+                edellinenHash = Optional.ofNullable(iteraationHash);
+                LOG.debug("Iteraatio {} HASH {} ja muuttuneet hakukohteet {}", depth, iteraationHash, muuttuneetHakukohteet.size());
+                if (jatkuukoSijoittelu && hashset.contains(iteraationHash)) {
+                    LOG.error("Sijoittelu on iteraatiolla {} uudelleen aikaisemmassa tilassa (tila {})", depth, iteraationHash);
+                    throw new SijoitteluSilmukkaException("Sijoittelu on iteraatiolla " + depth + " uudelleen aikaisemmassa tilassa (tila " + iteraationHash + ")");
+                }
+                hashset.add(iteraationHash);
+            } while (jatkuukoSijoittelu);
             --depth;
         }
 
