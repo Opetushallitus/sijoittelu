@@ -137,6 +137,7 @@ public class SijoitteluAlgorithmFactoryImpl implements SijoitteluAlgorithmFactor
                 hakemus.setIlmoittautumisTila(valintatulos.getIlmoittautumisTila());
             } else if (valintatulos.getJulkaistavissa() && hakemus.getEdellinenTila() == HakemuksenTila.HYVAKSYTTY) {
                 hakemus.setTila(HakemuksenTila.HYVAKSYTTY);
+                hakemus.setTilanKuvaukset(TilanKuvaukset.tyhja);
                 voidaanVaihtaa = false;
                 hakemus.setIlmoittautumisTila(valintatulos.getIlmoittautumisTila());
             } else if (valintatulos.getJulkaistavissa() && hakemus.getEdellinenTila() == HakemuksenTila.VARASIJALTA_HYVAKSYTTY) {

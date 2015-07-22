@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class TilanKuvaukset {
+    public static Map<String, String> tyhja = new HashMap<>();
 
     public static Map<String, String> peruuntunutYlempiToive() {
         return new HashMap<String, String>() {{
