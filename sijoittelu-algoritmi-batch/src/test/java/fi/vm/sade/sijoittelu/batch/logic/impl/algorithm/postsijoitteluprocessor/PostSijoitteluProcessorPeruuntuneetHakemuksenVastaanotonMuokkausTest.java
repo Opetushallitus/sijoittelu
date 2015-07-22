@@ -36,8 +36,8 @@ public class PostSijoitteluProcessorPeruuntuneetHakemuksenVastaanotonMuokkausTes
 
     private SijoitteluajoWrapper luoSijoitteluAjonTulokset() {
         final SijoitteluajoWrapper sijoitteluajoWrapper = SijoitteluAjoCreator.createSijoitteluAjo(hakukohdeList, valintatulosList);
-        SijoittelunTila algorithm = SijoitteluAlgorithm.sijoittele(sijoitteluajoWrapper);
-        System.out.println(PrintHelper.tulostaSijoittelu(algorithm));
+        SijoittelunTila tila = SijoitteluAlgorithm.sijoittele(sijoitteluajoWrapper);
+        System.out.println(PrintHelper.tulostaSijoittelu(tila));
         final SijoitteluajoWrapper sijoitteluAjo = sijoitteluajoWrapper;
         return sijoitteluAjo;
     }

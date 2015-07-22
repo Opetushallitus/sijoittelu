@@ -31,7 +31,7 @@ public class Sijoitteludata_2011S_ALPATTest {
             Hakukohde hakukohde = DomainConverter.convertToHakukohde(hkt);
             hakukohteet.add(hakukohde);
         }
-        SijoittelunTila alg = SijoitteluAlgorithm.sijoittele(hakukohteet, Collections.<Valintatulos>newArrayList());
+        SijoittelunTila s = SijoitteluAlgorithm.sijoittele(hakukohteet, Collections.<Valintatulos>newArrayList());
 
 		long timestart = System.currentTimeMillis();
 		long freeMemBefore = Runtime.getRuntime().freeMemory();
@@ -47,7 +47,7 @@ public class Sijoitteludata_2011S_ALPATTest {
 
 		// persist result to target
 		FileWriter fstream = new FileWriter("target/sijoittelu_2011S_ALPAT.sijoitteluresult");
-		fstream.write(PrintHelper.tulostaSijoittelu(alg));
+		fstream.write(PrintHelper.tulostaSijoittelu(s));
 		fstream.write(kesto);
 		fstream.write(muisti);
 		fstream.flush();

@@ -101,7 +101,7 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
         List<Hakukohde> hakukohteet = hakukohdeDao.getHakukohdeForSijoitteluajo(viimeisinSijoitteluajo.getSijoitteluajoId());
         List<Valintatulos> valintatulokset = valintatulosDao.loadValintatulokset(hakuOid);
         viimeisinSijoitteluajo.setStartMils(System.currentTimeMillis());
-        SijoittelunTila sijoitteluAlgorithm = SijoitteluAlgorithm.sijoittele(hakukohteet, valintatulokset);
+        SijoitteluAlgorithm.sijoittele(hakukohteet, valintatulokset);
         viimeisinSijoitteluajo.setEndMils(System.currentTimeMillis());
         // and after
         sijoitteluDao.persistSijoittelu(sijoittelu);
@@ -144,7 +144,7 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
         asetaSijoittelunParametrit(hakuOid, sijoitteluajoWrapper);
         uusiSijoitteluajo.setStartMils(startTime);
         LOG.info("Suoritetaan sijoittelu haulle {}", hakuOid);
-        SijoittelunTila sijoitteluAlgorithm = SijoitteluAlgorithm.sijoittele(sijoitteluajoWrapper);
+        SijoitteluAlgorithm.sijoittele(sijoitteluajoWrapper);
         uusiSijoitteluajo.setEndMils(System.currentTimeMillis());
         processOldApplications(olemassaolevatHakukohteet, kaikkiHakukohteet);
         List<Valintatulos> muuttuneetValintatulokset = sijoitteluajoWrapper.getMuuttuneetValintatulokset();
@@ -243,7 +243,7 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
         List<Hakukohde> kaikkiHakukohteet = merge(uusiSijoitteluajo, olemassaolevatHakukohteet, uudetHakukohteet);
         List<Valintatulos> valintatulokset = Collections.emptyList();
         uusiSijoitteluajo.setStartMils(startTime);
-        SijoittelunTila sijoitteluAlgorithm = SijoitteluAlgorithm.sijoittele(SijoitteluAjoCreator.createSijoitteluAjo(kaikkiHakukohteet, valintatulokset));
+        SijoitteluAlgorithm.sijoittele(SijoitteluAjoCreator.createSijoitteluAjo(kaikkiHakukohteet, valintatulokset));
         uusiSijoitteluajo.setEndMils(System.currentTimeMillis());
         processOldApplications(olemassaolevatHakukohteet, kaikkiHakukohteet);
         valisijoitteluDao.persistSijoittelu(sijoittelu);
@@ -265,7 +265,7 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
                 .flatMap(list -> list.stream())
                 .collect(Collectors.toList());
         uusiSijoitteluajo.setStartMils(startTime);
-        SijoittelunTila sijoitteluAlgorithm = SijoitteluAlgorithm.sijoittele(SijoitteluAjoCreator.createSijoitteluAjo(kaikkiHakukohteet, valintatulokset));
+        SijoitteluAlgorithm.sijoittele(SijoitteluAjoCreator.createSijoitteluAjo(kaikkiHakukohteet, valintatulokset));
         uusiSijoitteluajo.setEndMils(System.currentTimeMillis());
         processOldApplications(olemassaolevatHakukohteet, kaikkiHakukohteet);
         erillisSijoitteluDao.persistSijoittelu(sijoittelu);

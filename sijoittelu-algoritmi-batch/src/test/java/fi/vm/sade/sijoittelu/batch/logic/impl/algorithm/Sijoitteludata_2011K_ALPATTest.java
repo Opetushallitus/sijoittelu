@@ -38,7 +38,7 @@ public class Sijoitteludata_2011K_ALPATTest {
 
         List<Hakukohde> hakukohteet = t.getHakukohteet().parallelStream().map(DomainConverter::convertToHakukohde).collect(Collectors.toList());
 
-        SijoittelunTila sa = SijoitteluAlgorithm.sijoittele(hakukohteet, Collections.<Valintatulos>newArrayList());
+        SijoittelunTila s = SijoitteluAlgorithm.sijoittele(hakukohteet, Collections.<Valintatulos>newArrayList());
 
         long timestart = System.currentTimeMillis();
 		long timeend = System.currentTimeMillis();
@@ -48,7 +48,7 @@ public class Sijoitteludata_2011K_ALPATTest {
 		// tassa pitaisi assertoida jotain, mut odotetaan etta saadaan Sepolta
 		// datat.
 
-		PrintHelper.tallennaSijoitteluTiedostoon(sa, "target/sijoittelu_2011K_ALPAT.sijoitteluresult");
+		PrintHelper.tallennaSijoitteluTiedostoon(s, "target/sijoittelu_2011K_ALPAT.sijoitteluresult");
 	}
 
 	/**

@@ -77,7 +77,7 @@ public class SijoitteluTest {
             }
         }
 
-        SijoittelunTila sijoitteluAlgorithm = SijoitteluAlgorithm.sijoittele(hakukohteet, ImmutableList.of());
+        SijoitteluAlgorithm.sijoittele(hakukohteet, ImmutableList.of());
 
         ass(hakemusMapByHakemusOid, "1.2.246.562.11.00000011992", 1, getHakukohde(hakukohteet, "1.2.246.562.14.2013082908162538927436"), HakemuksenTila.HYVAKSYTTY);
         ass(hakemusMapByHakemusOid, "1.2.246.562.11.00000011992", 2, getHakukohde(hakukohteet, "1.2.246.562.5.02563_04_873_0530"), HakemuksenTila.PERUUNTUNUT);
@@ -110,7 +110,7 @@ public class SijoitteluTest {
         ass(hakemusMapByHakemusOid, "1.2.246.562.11.00000011992", 1, getHakukohde(hakukohteet, "1.2.246.562.14.2013082908162538927436"), HakemuksenTila.HYVAKSYTTY);
         ass(hakemusMapByHakemusOid, "1.2.246.562.11.00000011992", 2, getHakukohde(hakukohteet, "1.2.246.562.5.02563_04_873_0530"), HakemuksenTila.VARALLA);
 
-        SijoittelunTila sijoitteluAlgorithm = SijoitteluAlgorithm.sijoittele(hakukohteet, ImmutableList.of());
+        SijoitteluAlgorithm.sijoittele(hakukohteet, ImmutableList.of());
 
         ass(hakemusMapByHakemusOid, "1.2.246.562.11.00000011992", 1, getHakukohde(hakukohteet, "1.2.246.562.14.2013082908162538927436"), HakemuksenTila.HYVAKSYTTY);
         ass(hakemusMapByHakemusOid, "1.2.246.562.11.00000011992", 2, getHakukohde(hakukohteet, "1.2.246.562.5.02563_04_873_0530"), HakemuksenTila.PERUUNTUNUT);
