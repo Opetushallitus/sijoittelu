@@ -32,7 +32,7 @@ public class Sijoitteludata_2011S_ALPATTest {
             hakukohteet.add(hakukohde);
         }
         System.out.println("algoritmi ennen");
-        SijoitteluAlgorithmFactoryImpl h = new SijoitteluAlgorithmFactoryImpl();
+        SijoitteluAlgorithmFactory h = new SijoitteluAlgorithmFactory();
         SijoitteluAlgorithm alg = h.constructAlgorithm(hakukohteet, Collections.<Valintatulos>newArrayList());
 
         System.out.println("algoritmi kassassa");

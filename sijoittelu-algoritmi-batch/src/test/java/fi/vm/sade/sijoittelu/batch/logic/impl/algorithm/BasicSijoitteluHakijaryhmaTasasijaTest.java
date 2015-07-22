@@ -9,7 +9,6 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.FileWriter;
 import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -40,7 +39,7 @@ public class BasicSijoitteluHakijaryhmaTasasijaTest {
 
         List<Hakukohde> hakukohteet = t.getHakukohteet().parallelStream().map(DomainConverter::convertToHakukohde).collect(Collectors.toList());
 
-        SijoitteluAlgorithmFactoryImpl h = new SijoitteluAlgorithmFactoryImpl();
+        SijoitteluAlgorithmFactory h = new SijoitteluAlgorithmFactory();
         SijoitteluAlgorithm s = h.constructAlgorithm(hakukohteet, Collections.<Valintatulos>newArrayList());
         s.start();
         PrintHelper.tallennaSijoitteluTiedostoon(s, "target/sijoittelu_basic_hakijaryhma_tasasija_case.sijoitteluresult");

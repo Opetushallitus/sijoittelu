@@ -8,10 +8,10 @@ import org.junit.Test;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SijoitteluAlgorithmFactoryImplTest {
+public class SijoitteluAlgorithmFactoryTest {
     @Test
     public void testconstructAlgorithm_PERUNUT() {
-        SijoitteluAlgorithmFactory sijoitteluAlgorithmFactory = new SijoitteluAlgorithmFactoryImpl();
+        SijoitteluAlgorithmFactory sijoitteluAlgorithmFactory = new SijoitteluAlgorithmFactory();
 
         List<Valintatulos> valintatulokset = new ArrayList<>();
         Valintatulos valintatulos = new Valintatulos();
@@ -35,7 +35,7 @@ public class SijoitteluAlgorithmFactoryImplTest {
 
     @Test
     public void testconstructAlgorithm_EHDOLLISESTI_VASTAANOTTANUT() {
-        SijoitteluAlgorithmFactory sijoitteluAlgorithmFactory = new SijoitteluAlgorithmFactoryImpl();
+        SijoitteluAlgorithmFactory sijoitteluAlgorithmFactory = new SijoitteluAlgorithmFactory();
 
         List<Valintatulos> valintatulokset = new ArrayList<>();
         Valintatulos valintatulos = new Valintatulos();
@@ -61,7 +61,7 @@ public class SijoitteluAlgorithmFactoryImplTest {
 
     @Test
     public void testconstructAlgorithm_EI_VASTAANOTETTU_MAARA_AIKANA() {
-        SijoitteluAlgorithmFactory sijoitteluAlgorithmFactory = new SijoitteluAlgorithmFactoryImpl();
+        SijoitteluAlgorithmFactory sijoitteluAlgorithmFactory = new SijoitteluAlgorithmFactory();
 
         List<Valintatulos> valintatulokset = new ArrayList<>();
         Valintatulos valintatulos = new Valintatulos();
@@ -87,7 +87,7 @@ public class SijoitteluAlgorithmFactoryImplTest {
 
     @Test
     public void testconstructAlgorithm_PERUUTETTU() {
-        SijoitteluAlgorithmFactory sijoitteluAlgorithmFactory = new SijoitteluAlgorithmFactoryImpl();
+        SijoitteluAlgorithmFactory sijoitteluAlgorithmFactory = new SijoitteluAlgorithmFactory();
 
         List<Valintatulos> valintatulokset = new ArrayList<>();
         Valintatulos valintatulos = new Valintatulos();
@@ -111,7 +111,7 @@ public class SijoitteluAlgorithmFactoryImplTest {
 
     @Test
     public void testconstructAlgorithm_VASTAANOTTANUT_SITOVASTI() {
-        SijoitteluAlgorithmFactory sijoitteluAlgorithmFactory = new SijoitteluAlgorithmFactoryImpl();
+        SijoitteluAlgorithmFactory sijoitteluAlgorithmFactory = new SijoitteluAlgorithmFactory();
 
         List<Valintatulos> valintatulokset = new ArrayList<>();
         Valintatulos valintatulos = new Valintatulos();
@@ -140,7 +140,7 @@ public class SijoitteluAlgorithmFactoryImplTest {
 
     @Test
     public void testconstructAlgorithm_ILMOITETTU() {
-        SijoitteluAlgorithmFactory sijoitteluAlgorithmFactory = new SijoitteluAlgorithmFactoryImpl();
+        SijoitteluAlgorithmFactory sijoitteluAlgorithmFactory = new SijoitteluAlgorithmFactory();
 
         List<Valintatulos> valintatulokset = new ArrayList<>();
         Valintatulos valintatulos = new Valintatulos();
@@ -166,7 +166,7 @@ public class SijoitteluAlgorithmFactoryImplTest {
 
     @Test
     public void testconstructAlgorithm_VASTAANOTTANUT() {
-        SijoitteluAlgorithmFactory sijoitteluAlgorithmFactory = new SijoitteluAlgorithmFactoryImpl();
+        SijoitteluAlgorithmFactory sijoitteluAlgorithmFactory = new SijoitteluAlgorithmFactory();
 
         List<Valintatulos> valintatulokset = new ArrayList<>();
         Valintatulos valintatulos = new Valintatulos();

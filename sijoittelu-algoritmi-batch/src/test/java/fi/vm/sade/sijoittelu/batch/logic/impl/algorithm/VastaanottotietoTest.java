@@ -57,7 +57,7 @@ public class VastaanottotietoTest {
 
         valintatuloses.add(valintatulos);
 
-        SijoitteluAlgorithmFactoryImpl h = new SijoitteluAlgorithmFactoryImpl();
+        SijoitteluAlgorithmFactory h = new SijoitteluAlgorithmFactory();
         SijoitteluAlgorithm s = h.constructAlgorithm(hakukohteet, valintatuloses);
         s.start();
 
@@ -110,7 +110,7 @@ public class VastaanottotietoTest {
 
         valintatuloses.add(valintatulos);
 
-        SijoitteluAlgorithmFactoryImpl h = new SijoitteluAlgorithmFactoryImpl();
+        SijoitteluAlgorithmFactory h = new SijoitteluAlgorithmFactory();
         SijoitteluAlgorithm s = h.constructAlgorithm(hakukohteet, valintatuloses);
         s.start();
 
@@ -153,7 +153,7 @@ public class VastaanottotietoTest {
 //        valintatuloses.add(valintatulos);
 
 
-        h = new SijoitteluAlgorithmFactoryImpl();
+        h = new SijoitteluAlgorithmFactory();
         s = h.constructAlgorithm(hakukohteet, valintatuloses);
         s.start();
 
@@ -196,7 +196,7 @@ public class VastaanottotietoTest {
 
         valintatuloses.add(valintatulos);
 
-        h = new SijoitteluAlgorithmFactoryImpl();
+        h = new SijoitteluAlgorithmFactory();
         s = h.constructAlgorithm(hakukohteet, valintatuloses);
         s.start();
 
@@ -246,7 +246,7 @@ public class VastaanottotietoTest {
 
         valintatuloses.add(valintatulos);
 
-        SijoitteluAlgorithmFactoryImpl h = new SijoitteluAlgorithmFactoryImpl();
+        SijoitteluAlgorithmFactory h = new SijoitteluAlgorithmFactory();
         SijoitteluAlgorithm s = h.constructAlgorithm(hakukohteet, valintatuloses);
         s.start();
 
@@ -283,7 +283,7 @@ public class VastaanottotietoTest {
 
         valintatuloses.add(valintatulos);
 
-        h = new SijoitteluAlgorithmFactoryImpl();
+        h = new SijoitteluAlgorithmFactory();
         s = h.constructAlgorithm(hakukohteet, valintatuloses);
         s.start();
 
@@ -319,7 +319,7 @@ public class VastaanottotietoTest {
 
         valintatuloses.add(valintatulos);
 
-        h = new SijoitteluAlgorithmFactoryImpl();
+        h = new SijoitteluAlgorithmFactory();
         s = h.constructAlgorithm(hakukohteet, valintatuloses);
         s.start();
 
@@ -355,7 +355,7 @@ public class VastaanottotietoTest {
 
         valintatuloses.add(valintatulos);
 
-        h = new SijoitteluAlgorithmFactoryImpl();
+        h = new SijoitteluAlgorithmFactory();
         s = h.constructAlgorithm(hakukohteet, valintatuloses);
         s.start();
 

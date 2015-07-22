@@ -7,7 +7,7 @@ import de.flapdoodle.embed.process.collections.Collections;
 import fi.vm.sade.sijoittelu.batch.logic.impl.DomainConverter;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.PrintHelper;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoitteluAlgorithm;
-import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoitteluAlgorithmFactoryImpl;
+import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoitteluAlgorithmFactory;
 import fi.vm.sade.sijoittelu.domain.*;
 import fi.vm.sade.valintalaskenta.domain.dto.valintatieto.HakuDTO;
 import fi.vm.sade.valintalaskenta.tulos.service.impl.ValintatietoService;
@@ -50,7 +50,7 @@ public class KaikkiEhdonTayttavatHyvaksytaanTest {
 
         List<Hakukohde> hakukohteet = haku.getHakukohteet().parallelStream().map(DomainConverter::convertToHakukohde).collect(Collectors.toList());
 
-        SijoitteluAlgorithmFactoryImpl h = new SijoitteluAlgorithmFactoryImpl();
+        SijoitteluAlgorithmFactory h = new SijoitteluAlgorithmFactory();
         SijoitteluAlgorithm s = h.constructAlgorithm(hakukohteet, Collections.newArrayList());
         s.start();
 

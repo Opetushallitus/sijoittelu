@@ -2,7 +2,7 @@ package fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.postsijoitteluprocessor
 
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.PrintHelper;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoitteluAlgorithm;
-import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoitteluAlgorithmFactoryImpl;
+import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoitteluAlgorithmFactory;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.TestHelper;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.SijoitteluajoWrapper;
 import fi.vm.sade.sijoittelu.domain.Hakukohde;
@@ -32,7 +32,7 @@ public class PostSijoitteluProcessorPeruuntuneetHakemuksenVastaanotonMuokkausTes
     }
 
     private SijoitteluajoWrapper luoSijoitteluAjonTulokset() {
-        SijoitteluAlgorithmFactoryImpl factory = new SijoitteluAlgorithmFactoryImpl();
+        SijoitteluAlgorithmFactory factory = new SijoitteluAlgorithmFactory();
         SijoitteluAlgorithm algorithm = factory.constructAlgorithm(hakukohdeList, valintatulosList);
         algorithm.start();
         System.out.println(PrintHelper.tulostaSijoittelu(algorithm));

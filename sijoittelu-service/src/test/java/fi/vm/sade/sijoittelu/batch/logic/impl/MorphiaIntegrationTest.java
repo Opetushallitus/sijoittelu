@@ -2,17 +2,8 @@ package fi.vm.sade.sijoittelu.batch.logic.impl;
 
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
-import com.lordofthejars.nosqlunit.annotation.UsingDataSet;
-import com.lordofthejars.nosqlunit.core.LoadStrategyEnum;
 import com.lordofthejars.nosqlunit.mongodb.MongoDbRule;
-import de.flapdoodle.embed.process.collections.Collections;
-import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.PrintHelper;
-import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoitteluAlgorithm;
-import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoitteluAlgorithmFactoryImpl;
-import fi.vm.sade.sijoittelu.domain.Hakukohde;
-import fi.vm.sade.sijoittelu.domain.SijoitteluAjo;
-import fi.vm.sade.sijoittelu.laskenta.external.resource.HakuV1Resource;
-import fi.vm.sade.sijoittelu.laskenta.external.resource.OhjausparametriResource;
+
 import fi.vm.sade.sijoittelu.laskenta.external.resource.dto.ParametriDTO;
 import fi.vm.sade.sijoittelu.laskenta.service.business.SijoitteluBusinessService;
 import fi.vm.sade.sijoittelu.laskenta.service.it.TarjontaIntegrationService;
@@ -22,7 +13,6 @@ import fi.vm.sade.sijoittelu.tulos.dao.ValiSijoitteluDao;
 import fi.vm.sade.sijoittelu.tulos.dao.ValintatulosDao;
 import fi.vm.sade.tarjonta.service.resources.v1.dto.HakuV1RDTO;
 import fi.vm.sade.tarjonta.service.resources.v1.dto.ResultV1RDTO;
-import fi.vm.sade.valintalaskenta.domain.dto.HakukohdeDTO;
 import fi.vm.sade.valintalaskenta.domain.dto.valintatieto.HakuDTO;
 import fi.vm.sade.valintalaskenta.tulos.service.impl.ValintatietoService;
 import junit.framework.Assert;
@@ -44,11 +34,8 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import fi.vm.sade.sijoittelu.domain.Sijoittelu;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import java.io.IOException;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import static com.lordofthejars.nosqlunit.mongodb.MongoDbRule.MongoDbRuleBuilder.newMongoDbRule;
 import static org.mockito.Matchers.*;

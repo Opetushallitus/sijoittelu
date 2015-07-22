@@ -8,7 +8,6 @@ import fi.vm.sade.sijoittelu.domain.Valintatulos;
 import fi.vm.sade.valintalaskenta.domain.dto.valintatieto.HakuDTO;
 import org.junit.Test;
 
-import java.io.FileWriter;
 import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -34,7 +33,7 @@ public class HarkinnanavarainenTest {
 
         List<Hakukohde> hakukohteet = t.getHakukohteet().parallelStream().map(DomainConverter::convertToHakukohde).collect(Collectors.toList());
 
-        SijoitteluAlgorithmFactoryImpl h = new SijoitteluAlgorithmFactoryImpl();
+        SijoitteluAlgorithmFactory h = new SijoitteluAlgorithmFactory();
         SijoitteluAlgorithm s = h.constructAlgorithm(hakukohteet, Collections.<Valintatulos>newArrayList());
         s.start();
 

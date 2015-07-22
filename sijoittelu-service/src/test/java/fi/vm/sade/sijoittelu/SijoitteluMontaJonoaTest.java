@@ -7,7 +7,7 @@ import de.flapdoodle.embed.process.collections.Collections;
 import fi.vm.sade.sijoittelu.batch.logic.impl.DomainConverter;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.PrintHelper;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoitteluAlgorithm;
-import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoitteluAlgorithmFactoryImpl;
+import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoitteluAlgorithmFactory;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.util.TilanKuvaukset;
 import fi.vm.sade.sijoittelu.domain.*;
 import fi.vm.sade.valintalaskenta.domain.dto.valintatieto.HakuDTO;
@@ -67,7 +67,7 @@ public class SijoitteluMontaJonoaTest {
         tulos.setTila(ValintatuloksenTila.VASTAANOTTANUT);
         tulos.setValintatapajonoOid("oid2");
 
-        SijoitteluAlgorithmFactoryImpl h = new SijoitteluAlgorithmFactoryImpl();
+        SijoitteluAlgorithmFactory h = new SijoitteluAlgorithmFactory();
         SijoitteluAlgorithm s = h.constructAlgorithm(hakukohteet, Arrays.asList(tulos));
         s.start();
 
@@ -112,7 +112,7 @@ public class SijoitteluMontaJonoaTest {
 
         List<Hakukohde> hakukohteet = haku.getHakukohteet().parallelStream().map(DomainConverter::convertToHakukohde).collect(Collectors.toList());
 
-        SijoitteluAlgorithmFactoryImpl h = new SijoitteluAlgorithmFactoryImpl();
+        SijoitteluAlgorithmFactory h = new SijoitteluAlgorithmFactory();
         SijoitteluAlgorithm s = h.constructAlgorithm(hakukohteet, Collections.newArrayList());
         s.start();
 
@@ -154,7 +154,7 @@ public class SijoitteluMontaJonoaTest {
         tulos.setTila(ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI);
         tulos.setValintatapajonoOid("oid1");
 
-        SijoitteluAlgorithmFactoryImpl h = new SijoitteluAlgorithmFactoryImpl();
+        SijoitteluAlgorithmFactory h = new SijoitteluAlgorithmFactory();
         SijoitteluAlgorithm s = h.constructAlgorithm(hakukohteet, Arrays.asList(tulos));
         s.start();
 
@@ -184,7 +184,7 @@ public class SijoitteluMontaJonoaTest {
         tulos.setTila(ValintatuloksenTila.EI_VASTAANOTETTU_MAARA_AIKANA);
         tulos.setValintatapajonoOid("oid1");
 
-        SijoitteluAlgorithmFactoryImpl h = new SijoitteluAlgorithmFactoryImpl();
+        SijoitteluAlgorithmFactory h = new SijoitteluAlgorithmFactory();
         SijoitteluAlgorithm s = h.constructAlgorithm(hakukohteet, Arrays.asList(tulos));
         s.start();
 
@@ -273,7 +273,7 @@ public class SijoitteluMontaJonoaTest {
 
         List<Hakukohde> hakukohteet = haku.getHakukohteet().parallelStream().map(DomainConverter::convertToHakukohde).collect(Collectors.toList());
 
-        SijoitteluAlgorithmFactoryImpl h = new SijoitteluAlgorithmFactoryImpl();
+        SijoitteluAlgorithmFactory h = new SijoitteluAlgorithmFactory();
         SijoitteluAlgorithm s = h.constructAlgorithm(hakukohteet, Collections.newArrayList());
         s.getSijoitteluAjo().setVarasijaSaannotAstuvatVoimaan(LocalDateTime.now().plusDays(1));
         s.start();
@@ -426,7 +426,7 @@ public class SijoitteluMontaJonoaTest {
 
         List<Hakukohde> hakukohteet = haku.getHakukohteet().parallelStream().map(DomainConverter::convertToHakukohde).collect(Collectors.toList());
 
-        SijoitteluAlgorithmFactoryImpl h = new SijoitteluAlgorithmFactoryImpl();
+        SijoitteluAlgorithmFactory h = new SijoitteluAlgorithmFactory();
         SijoitteluAlgorithm s = h.constructAlgorithm(hakukohteet, Collections.newArrayList());
         s.start();
 
@@ -471,7 +471,7 @@ public class SijoitteluMontaJonoaTest {
         Valintatulos tulos2 = createTulos("hakemus3", "hakukohde1", "oid2");
         tulos1.setTila(ValintatuloksenTila.EHDOLLISESTI_VASTAANOTTANUT);
 
-        SijoitteluAlgorithmFactoryImpl h = new SijoitteluAlgorithmFactoryImpl();
+        SijoitteluAlgorithmFactory h = new SijoitteluAlgorithmFactory();
         SijoitteluAlgorithm s = h.constructAlgorithm(hakukohteet, Arrays.asList(tulos1, tulos2));
         s.getSijoitteluAjo().setKKHaku(true);
         s.start();
@@ -497,7 +497,7 @@ public class SijoitteluMontaJonoaTest {
 
         List<Hakukohde> hakukohteet = haku.getHakukohteet().parallelStream().map(DomainConverter::convertToHakukohde).collect(Collectors.toList());
 
-        SijoitteluAlgorithmFactoryImpl h = new SijoitteluAlgorithmFactoryImpl();
+        SijoitteluAlgorithmFactory h = new SijoitteluAlgorithmFactory();
         SijoitteluAlgorithm s = h.constructAlgorithm(hakukohteet, Collections.newArrayList());
         s.start();
 
@@ -521,7 +521,7 @@ public class SijoitteluMontaJonoaTest {
 
         List<Hakukohde> hakukohteet = haku.getHakukohteet().parallelStream().map(DomainConverter::convertToHakukohde).collect(Collectors.toList());
 
-        SijoitteluAlgorithmFactoryImpl h = new SijoitteluAlgorithmFactoryImpl();
+        SijoitteluAlgorithmFactory h = new SijoitteluAlgorithmFactory();
         SijoitteluAlgorithm s = h.constructAlgorithm(hakukohteet, Collections.newArrayList());
         s.start();
 
@@ -529,7 +529,7 @@ public class SijoitteluMontaJonoaTest {
 
         hakukohteet.remove(2);
 
-        h = new SijoitteluAlgorithmFactoryImpl();
+        h = new SijoitteluAlgorithmFactory();
         s = h.constructAlgorithm(hakukohteet, Collections.newArrayList());
         s.start();
 
@@ -548,7 +548,7 @@ public class SijoitteluMontaJonoaTest {
 
         List<Hakukohde> hakukohteet = haku.getHakukohteet().parallelStream().map(DomainConverter::convertToHakukohde).collect(Collectors.toList());
 
-        SijoitteluAlgorithmFactoryImpl h = new SijoitteluAlgorithmFactoryImpl();
+        SijoitteluAlgorithmFactory h = new SijoitteluAlgorithmFactory();
         SijoitteluAlgorithm s = h.constructAlgorithm(hakukohteet, Collections.newArrayList());
         s.start();
 
@@ -599,7 +599,7 @@ public class SijoitteluMontaJonoaTest {
 
         List<Hakukohde> hakukohteet = haku.getHakukohteet().parallelStream().map(DomainConverter::convertToHakukohde).collect(Collectors.toList());
 
-        SijoitteluAlgorithmFactoryImpl h = new SijoitteluAlgorithmFactoryImpl();
+        SijoitteluAlgorithmFactory h = new SijoitteluAlgorithmFactory();
         SijoitteluAlgorithm s = h.constructAlgorithm(hakukohteet, Collections.newArrayList());
         s.start();
 
@@ -658,7 +658,7 @@ public class SijoitteluMontaJonoaTest {
 
         List<Hakukohde> hakukohteet = haku.getHakukohteet().parallelStream().map(DomainConverter::convertToHakukohde).collect(Collectors.toList());
 
-        SijoitteluAlgorithmFactoryImpl h = new SijoitteluAlgorithmFactoryImpl();
+        SijoitteluAlgorithmFactory h = new SijoitteluAlgorithmFactory();
         SijoitteluAlgorithm s = h.constructAlgorithm(hakukohteet, Collections.newArrayList());
         s.start();
 
@@ -729,7 +729,7 @@ public class SijoitteluMontaJonoaTest {
 
         List<Hakukohde> hakukohteet = haku.getHakukohteet().parallelStream().map(DomainConverter::convertToHakukohde).collect(Collectors.toList());
 
-        SijoitteluAlgorithmFactoryImpl h = new SijoitteluAlgorithmFactoryImpl();
+        SijoitteluAlgorithmFactory h = new SijoitteluAlgorithmFactory();
         SijoitteluAlgorithm s = h.constructAlgorithm(hakukohteet, Collections.newArrayList());
         s.start();
 

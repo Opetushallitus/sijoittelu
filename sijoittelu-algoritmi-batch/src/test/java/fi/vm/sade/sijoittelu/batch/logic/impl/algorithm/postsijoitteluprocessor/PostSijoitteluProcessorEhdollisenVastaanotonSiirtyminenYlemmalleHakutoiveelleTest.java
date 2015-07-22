@@ -1,20 +1,16 @@
 package fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.postsijoitteluprocessor;
 
-import de.flapdoodle.embed.process.collections.Collections;
-import fi.vm.sade.sijoittelu.batch.logic.impl.DomainConverter;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.PrintHelper;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoitteluAlgorithm;
-import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoitteluAlgorithmFactoryImpl;
+import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoitteluAlgorithmFactory;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.TestHelper;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.SijoitteluajoWrapper;
 import fi.vm.sade.sijoittelu.domain.*;
-import fi.vm.sade.valintalaskenta.domain.dto.valintatieto.HakuDTO;
-import org.junit.Ignore;
+
 import org.junit.Test;
 import static junit.framework.Assert.*;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class PostSijoitteluProcessorEhdollisenVastaanotonSiirtyminenYlemmalleHakutoiveelleTest {
     List<Hakukohde> hakukohdeList = TestHelper.readHakukohteetListFromJson("testdata/sijoittelu_hakukohde.json");
@@ -49,7 +45,7 @@ public class PostSijoitteluProcessorEhdollisenVastaanotonSiirtyminenYlemmalleHak
     }
 
     private SijoitteluajoWrapper luoSijoitteluAjonTulokset() {
-        SijoitteluAlgorithmFactoryImpl factory = new SijoitteluAlgorithmFactoryImpl();
+        SijoitteluAlgorithmFactory factory = new SijoitteluAlgorithmFactory();
         SijoitteluAlgorithm algorithm = factory.constructAlgorithm(hakukohdeList, valintatulosList);
         algorithm.start();
         final SijoitteluajoWrapper sijoitteluAjo = algorithm.getSijoitteluAjo();

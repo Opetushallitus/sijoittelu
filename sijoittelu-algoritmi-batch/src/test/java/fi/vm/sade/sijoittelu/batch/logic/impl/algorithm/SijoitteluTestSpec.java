@@ -22,7 +22,7 @@ public abstract class SijoitteluTestSpec {
     public Function<HakuDTO,SijoitteluajoWrapper> algoritmi() {
         return (haku) -> {
             List<Hakukohde> hakukohteet = haku.getHakukohteet().parallelStream().map(DomainConverter::convertToHakukohde).collect(Collectors.toList());
-            SijoitteluAlgorithmFactoryImpl h = new SijoitteluAlgorithmFactoryImpl();
+            SijoitteluAlgorithmFactory h = new SijoitteluAlgorithmFactory();
             SijoitteluAlgorithm s = h.constructAlgorithm(hakukohteet, Collections.<Valintatulos>newArrayList());
             s.start();
             LOG.debug("\r\n{}", PrintHelper.tulostaSijoittelu(s));

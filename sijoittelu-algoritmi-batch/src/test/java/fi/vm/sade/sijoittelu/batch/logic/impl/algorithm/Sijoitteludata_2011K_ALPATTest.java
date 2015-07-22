@@ -38,7 +38,7 @@ public class Sijoitteludata_2011K_ALPATTest {
 
         List<Hakukohde> hakukohteet = t.getHakukohteet().parallelStream().map(DomainConverter::convertToHakukohde).collect(Collectors.toList());
 
-        SijoitteluAlgorithmFactoryImpl h = new SijoitteluAlgorithmFactoryImpl();
+        SijoitteluAlgorithmFactory h = new SijoitteluAlgorithmFactory();
         SijoitteluAlgorithm sa = h.constructAlgorithm(hakukohteet, Collections.<Valintatulos>newArrayList());
 
         long timestart = System.currentTimeMillis();
