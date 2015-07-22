@@ -158,7 +158,7 @@ public class PostSijoitteluProcessorEhdollisenVastaanotonSiirtyminenYlemmalleHak
 
         Optional<HenkiloWrapper> henkiloWrapperOpt = sijoitteluajoWrapper.getHakukohteet().stream()
                 .flatMap(hk -> hk.hakukohteenHakijat())
-                .filter(h -> h.getHakijaOid() != null && h.getHakijaOid().equals(hakemus.getHakijaOid())).findFirst();
+                .filter(h -> h.getHakemusOid() != null && h.getHakemusOid().equals(hakemus.getHakemusOid())).findFirst();
 
         if(henkiloWrapperOpt.isPresent()) {
             return henkiloWrapperOpt.get().getValintatulos();

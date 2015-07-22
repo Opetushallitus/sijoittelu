@@ -80,7 +80,7 @@ public class PostSijoitteluProcessorPeruuntuneetHakemuksenVastaanotonMuokkaus im
     private List<Valintatulos> hakijanValintatulokset(SijoitteluajoWrapper sijoitteluajoWrapper, Hakemus hakemus) {
         Optional<HenkiloWrapper> henkiloWrapperOpt = sijoitteluajoWrapper.getHakukohteet().stream()
                 .flatMap(hk -> hk.hakukohteenHakijat())
-                .filter(h -> hakemus.getHakijaOid() != null && hakemus.getHakijaOid().equals(h.getHakijaOid())).findFirst();
+                .filter(h -> hakemus.getHakemusOid() != null && hakemus.getHakemusOid().equals(h.getHakemusOid())).findFirst();
 
         if(henkiloWrapperOpt.isPresent()) {
             return henkiloWrapperOpt.get().getValintatulos();
