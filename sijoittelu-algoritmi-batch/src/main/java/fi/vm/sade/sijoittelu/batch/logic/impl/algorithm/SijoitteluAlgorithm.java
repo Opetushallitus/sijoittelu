@@ -173,25 +173,6 @@ public abstract class SijoitteluAlgorithm {
         });
     }
 
-    private static List<HakemusWrapper> muodostaVarasijaJono(SijoitteluajoWrapper sijoitteluAjo, List<HakemusWrapper> hakemukset) {
-        return hakemukset.stream()
-            .filter(h -> !kuuluuHyvaksyttyihinTiloihin(hakemuksenTila(h))
-                && hakijaHaluaa(h)
-                && saannotSallii(sijoitteluAjo, h))
-            .collect(Collectors.toList());
-    }
-
-
-    private static boolean onHylattyJonossa(ValintatapajonoWrapper valintatapajonoWrapper, HakemusWrapper hakija) {
-        return valintatapajonoWrapper.getHakemukset()
-            .stream()
-            .anyMatch(h -> hakemuksenHakemusOid(h).equals(hakemuksenHakemusOid(hakija)) && hakemuksenTila(h).equals(HakemuksenTila.HYLATTY));
-    }
-
-    private static boolean onkoVarasijaisia(ValintatapajonoWrapper valintatapajonoWrapper) {
-        return valintatapajonoWrapper.getHakemukset().parallelStream().anyMatch(h -> hakemuksenTila(h).equals(HakemuksenTila.VARALLA));
-    }
-
     private static LocalDateTime varasijaTayttoPaattyy(SijoitteluajoWrapper sijoitteluAjo, ValintatapajonoWrapper valintatapajono) {
         Date varasijojaTaytetaanAsti = valintatapajono.getValintatapajono().getVarasijojaTaytetaanAsti();
         LocalDateTime varasijaTayttoPaattyy = sijoitteluAjo.getHakuKierrosPaattyy();
