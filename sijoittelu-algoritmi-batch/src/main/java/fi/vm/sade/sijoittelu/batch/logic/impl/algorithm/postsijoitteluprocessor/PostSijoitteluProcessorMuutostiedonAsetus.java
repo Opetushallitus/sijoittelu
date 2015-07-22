@@ -25,7 +25,7 @@ public class PostSijoitteluProcessorMuutostiedonAsetus implements PostSijoittelu
                 .flatMap(v -> v.getHakemukset().stream())
                 .forEach(h -> {
                     HashCode hc = null;
-                    h.getHakemus().setOnkoMuuttunutViimeSijoittelussa((hc = h.luoHash()).equals(h.getLahtotilanteenHash()));
+                    h.getHakemus().setOnkoMuuttunutViimeSijoittelussa(!(hc = h.luoHash()).equals(h.getLahtotilanteenHash()));
                     //LOG.error("## {} {}", h.getHakemus().getHakemusOid(), hc);
                 });
     }

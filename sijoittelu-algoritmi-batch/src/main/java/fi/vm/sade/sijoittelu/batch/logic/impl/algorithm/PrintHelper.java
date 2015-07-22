@@ -59,7 +59,7 @@ public final class PrintHelper {
                 }
                 sb.append("  JONO [" + jono.getValintatapajono().getOid() + "], prioriteetti [" + jono.getValintatapajono().getPrioriteetti() + "] aloituspaikat [" + jono.getValintatapajono().getAloituspaikat() + "], hyvaksytty[" + hyvaksytty + "] tasasijasaanto [" + jono.getValintatapajono().getTasasijasaanto() + "]\n");
                 for (HakemusWrapper hakemus : jono.getHakemukset()) {
-                    sb.append("          " + hakemus.getHakemus().getJonosija() + "." + hakemus.getHakemus().getTasasijaJonosija() + "  " + hakemus.getHakemus().getHakemusOid() + " " + hakemus.getHakemus().getTila() + " hakijan prijo:" + hakemus.getHakemus().getPrioriteetti() + "\n");
+                    sb.append("          " + hakemus.getHakemus().getJonosija() + "." + hakemus.getHakemus().getTasasijaJonosija() + "  " + hakemus.getHakemus().getHakemusOid() + " " + hakemus.getHakemus().getTila() + " hakijan prijo:" + hakemus.getHakemus().getPrioriteetti() + " muuttunut sijoittelussa = " + hakemus.getHakemus().isOnkoMuuttunutViimeSijoittelussa() + "\n");
                 }
             }
         }
