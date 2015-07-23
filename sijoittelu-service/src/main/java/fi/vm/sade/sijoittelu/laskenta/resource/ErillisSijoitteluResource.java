@@ -1,39 +1,29 @@
 package fi.vm.sade.sijoittelu.laskenta.resource;
 
-import akka.actor.ActorRef;
-import akka.actor.ActorSystem;
 import akka.pattern.Patterns;
-import akka.routing.RoundRobinRouter;
 import akka.util.Timeout;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 import fi.vm.sade.sijoittelu.laskenta.service.business.ActorService;
-import fi.vm.sade.sijoittelu.laskenta.service.business.SijoitteluBusinessService;
-import fi.vm.sade.sijoittelu.tulos.dto.HakukohdeDTO;
 import fi.vm.sade.sijoittelu.tulos.dto.ValisijoitteluDTO;
-import fi.vm.sade.valintalaskenta.domain.dto.valintakoe.Tasasijasaanto;
 import fi.vm.sade.valintalaskenta.domain.dto.valintatieto.HakuDTO;
-import fi.vm.sade.valintalaskenta.tulos.service.ValintalaskentaTulosService;
 import fi.vm.sade.valintalaskenta.tulos.service.impl.ValintatietoService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;
 import scala.concurrent.Await;
 import scala.concurrent.Future;
 import scala.concurrent.duration.Duration;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
-import javax.ws.rs.*;
-import java.util.ArrayList;
-import java.util.List;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 
-import static fi.vm.sade.sijoittelu.laskenta.actors.creators.SpringExtension.SpringExtProvider;
 import static fi.vm.sade.valintalaskenta.tulos.roles.ValintojenToteuttaminenRole.CRUD;
+
 
 @Path("erillissijoittele")
 @Controller
@@ -43,16 +33,7 @@ public class ErillisSijoitteluResource {
     private final static Logger LOGGER = LoggerFactory.getLogger(ErillisSijoitteluResource.class);
 
     @Autowired
-    private SijoitteluBusinessService sijoitteluBusinessService;
-
-    @Autowired
-    private ValintalaskentaTulosService tulosService;
-
-    @Autowired
     private ValintatietoService valintatietoService;
-
-    @Autowired
-    private ApplicationContext applicationContext;
 
     @Autowired
     private ActorService actorService;
