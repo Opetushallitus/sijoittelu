@@ -140,7 +140,7 @@ public class SijoitteluajoWrapper {
     }
 
     public String getSijoitteluAjoId() {
-        return (sijoitteluajo == null) ? "?" : sijoitteluajo.getSijoitteluajoId().toString();
+        return (sijoitteluajo.getSijoitteluajoId() == null) ? "?" : sijoitteluajo.getSijoitteluajoId().toString();
     }
 
     private final String VALUE_DELIMETER_HAKUKOHDE = "_HAKUKOHDE_";
