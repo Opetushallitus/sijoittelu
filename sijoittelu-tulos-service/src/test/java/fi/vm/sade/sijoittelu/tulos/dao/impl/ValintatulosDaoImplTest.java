@@ -1,11 +1,13 @@
 package fi.vm.sade.sijoittelu.tulos.dao.impl;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.lordofthejars.nosqlunit.annotation.UsingDataSet;
-import com.lordofthejars.nosqlunit.core.LoadStrategyEnum;
-import com.lordofthejars.nosqlunit.mongodb.MongoDbRule;
-import fi.vm.sade.sijoittelu.domain.*;
-import fi.vm.sade.sijoittelu.tulos.dao.ValintatulosDao;
+import static com.lordofthejars.nosqlunit.mongodb.MongoDbRule.MongoDbRuleBuilder.newMongoDbRule;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -14,14 +16,18 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
+import com.lordofthejars.nosqlunit.annotation.UsingDataSet;
+import com.lordofthejars.nosqlunit.core.LoadStrategyEnum;
+import com.lordofthejars.nosqlunit.mongodb.MongoDbRule;
 
-import static com.lordofthejars.nosqlunit.mongodb.MongoDbRule.MongoDbRuleBuilder.newMongoDbRule;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import fi.vm.sade.sijoittelu.domain.HakemuksenTila;
+import fi.vm.sade.sijoittelu.domain.Hakemus;
+import fi.vm.sade.sijoittelu.domain.Hakukohde;
+import fi.vm.sade.sijoittelu.domain.IlmoittautumisTila;
+import fi.vm.sade.sijoittelu.domain.Valintatapajono;
+import fi.vm.sade.sijoittelu.domain.ValintatuloksenTila;
+import fi.vm.sade.sijoittelu.domain.Valintatulos;
+import fi.vm.sade.sijoittelu.tulos.dao.ValintatulosDao;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"classpath:test-context.xml"})
@@ -29,11 +35,7 @@ public class ValintatulosDaoImplTest {
     @Rule
     public MongoDbRule mongoDbRule = newMongoDbRule().defaultSpringMongoDb("sijoittelu");
 
-    ObjectMapper objectMapper = new ObjectMapper();
-
     String hakuOid = "1.2.246.562.5.2013080813081926341928";
-    String sijoitteluAjoId = "latest";
-    String hakemusOid = "1.2.246.562.11.00000441369";
 
     @Autowired
     ApplicationContext applicationContext;
