@@ -102,8 +102,9 @@ public class Hakemus implements Serializable {
         return hakemusOid;
     }
 
-    public void setHakemusOid(String hakemusOid) {
+    public Hakemus setHakemusOid(String hakemusOid) {
         this.hakemusOid = hakemusOid;
+        return this;
     }
 
     @Override
