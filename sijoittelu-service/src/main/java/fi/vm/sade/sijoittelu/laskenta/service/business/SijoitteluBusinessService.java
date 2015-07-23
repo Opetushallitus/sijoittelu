@@ -30,6 +30,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import fi.vm.sade.authentication.business.service.Authorizer;
@@ -44,6 +45,7 @@ import static java.util.Collections.unmodifiableSet;
 import static java.util.stream.Collectors.toSet;
 import static org.apache.commons.lang.StringUtils.isBlank;
 import static org.apache.commons.lang.StringUtils.join;
+import static org.springframework.security.core.context.SecurityContextHolder.getContext;
 
 
 @Service
@@ -538,8 +540,14 @@ public class SijoitteluBusinessService {
 
     private void authorizeHyvaksyPeruuntunutModification(String tarjoajaOid, boolean hyvaksyPeruuntunut, Valintatulos v) {
         if (v.getHyvaksyPeruuntunut() != hyvaksyPeruuntunut) {
+            LOG.info(getUsernameFromSession() + " hyväksyi peruuntuneen " + v.getHakijaOid() + " hakemuksen " + v.getHakemusOid());
             authorizer.checkOrganisationAccess(tarjoajaOid, SijoitteluRole.PERUUNTUNEIDEN_HYVAKSYNTA);
         }
+    }
+
+    private String getUsernameFromSession() {
+        Authentication authentication = getContext().getAuthentication();
+        return authentication == null ? "[No user defined in session]" : authentication.getName();
     }
 
     private static Valintatulos buildValintatulos(String hakuoid, Hakukohde hakukohde, Valintatapajono valintatapajono, Hakemus hakemus) {
