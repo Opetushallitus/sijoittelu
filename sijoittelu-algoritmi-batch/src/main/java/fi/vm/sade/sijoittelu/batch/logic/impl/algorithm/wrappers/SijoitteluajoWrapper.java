@@ -1,24 +1,27 @@
 package fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers;
 
-import com.google.common.collect.Sets;
-import com.google.common.hash.HashCode;
-import com.google.common.hash.HashFunction;
-import com.google.common.hash.Hasher;
-import com.google.common.hash.Hashing;
-import fi.vm.sade.sijoittelu.domain.Hakukohde;
-import fi.vm.sade.sijoittelu.domain.SijoitteluAjo;
-import fi.vm.sade.sijoittelu.domain.Valintatulos;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static java.util.Optional.ofNullable;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
-import static java.util.Optional.ofNullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.google.common.hash.HashCode;
+import com.google.common.hash.HashFunction;
+import com.google.common.hash.Hasher;
+import com.google.common.hash.Hashing;
+
+import fi.vm.sade.sijoittelu.domain.Hakukohde;
+import fi.vm.sade.sijoittelu.domain.SijoitteluAjo;
+import fi.vm.sade.sijoittelu.domain.Valintatulos;
 
 public class SijoitteluajoWrapper {
     private static final Logger LOG = LoggerFactory.getLogger(SijoitteluajoWrapper.class);
@@ -42,10 +45,13 @@ public class SijoitteluajoWrapper {
 
     private List<String> varasijapomput = new ArrayList<>();
 
+    public SijoitteluajoWrapper(final SijoitteluAjo sijoitteluAjo) {
+        this.sijoitteluajo = sijoitteluAjo;
+    }
+
     public List<HakukohdeWrapper> getHakukohteet() {
         return hakukohteet;
     }
-
 
     public void setHakukohteet(List<HakukohdeWrapper> hakukohteet) {
         this.hakukohteet = hakukohteet;
@@ -53,10 +59,6 @@ public class SijoitteluajoWrapper {
 
     public SijoitteluAjo getSijoitteluajo() {
         return sijoitteluajo;
-    }
-
-    public void setSijoitteluajo(SijoitteluAjo sijoitteluajo) {
-        this.sijoitteluajo = sijoitteluajo;
     }
 
     public List<Valintatulos> getMuuttuneetValintatulokset() {

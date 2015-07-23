@@ -18,15 +18,16 @@ import fi.vm.sade.sijoittelu.domain.HakemuksenTila;
 import fi.vm.sade.sijoittelu.domain.Hakemus;
 import fi.vm.sade.sijoittelu.domain.Hakijaryhma;
 import fi.vm.sade.sijoittelu.domain.Hakukohde;
+import fi.vm.sade.sijoittelu.domain.SijoitteluAjo;
 import fi.vm.sade.sijoittelu.domain.ValintatuloksenTila;
 import fi.vm.sade.sijoittelu.domain.Valintatulos;
 
 public class SijoitteluajoWrapperFactory {
     private final static List<ValintatuloksenTila> hyvaksyttylista = Arrays.asList(ValintatuloksenTila.ILMOITETTU, ValintatuloksenTila.VASTAANOTTANUT, ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI);
 
-    public static SijoitteluajoWrapper createSijoitteluAjo(List<Hakukohde> hakukohteet, List<Valintatulos> valintatulokset) {
+    public static SijoitteluajoWrapper createSijoitteluAjoWrapper(SijoitteluAjo sijoitteluAjo, List<Hakukohde> hakukohteet, List<Valintatulos> valintatulokset) {
         final Map<String, Map<String, Map<String, Valintatulos>>> indeksoidutTulokset = indexValintatulokset(valintatulokset);
-        SijoitteluajoWrapper sijoitteluajoWrapper = new SijoitteluajoWrapper();
+        SijoitteluajoWrapper sijoitteluajoWrapper = new SijoitteluajoWrapper(sijoitteluAjo);
         Map<String, HenkiloWrapper> hakemusOidMap = new HashMap<String, HenkiloWrapper>();
         hakukohteet.forEach(hakukohde -> {
             HakukohdeWrapper hakukohdeWrapper = new HakukohdeWrapper();

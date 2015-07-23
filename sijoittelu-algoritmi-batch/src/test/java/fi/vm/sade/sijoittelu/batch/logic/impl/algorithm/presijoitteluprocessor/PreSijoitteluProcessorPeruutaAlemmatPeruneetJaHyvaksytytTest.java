@@ -376,7 +376,7 @@ public class PreSijoitteluProcessorPeruutaAlemmatPeruneetJaHyvaksytytTest {
     }
 
     private SijoitteluajoWrapper generateSijoitteluajoWrapper() {
-        SijoitteluajoWrapper sijoitteluajo = new SijoitteluajoWrapper();
+        SijoitteluajoWrapper sijoitteluajo = new SijoitteluajoWrapper(new SijoitteluAjo());
         List<HakukohdeWrapper> hakukohdeWrapper = generateHakukohdeWrapper();
 
         sijoitteluajo.setHakukohteet(hakukohdeWrapper);

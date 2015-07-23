@@ -55,8 +55,7 @@ public class HakijaryhmaTest {
         HakuDTO haku = valintatietoService.haeValintatiedot("1.2.246.562.29.173465377510");
 
         List<Hakukohde> hakukohteet = haku.getHakukohteet().parallelStream().map(DomainConverter::convertToHakukohde).collect(Collectors.toList());
-
-        SijoittelunTila s = SijoitteluAlgorithm.sijoittele(hakukohteet, Collections.<Valintatulos>newArrayList());
+        SijoittelunTila s = SijoitteluAlgorithm.sijoittele(new SijoitteluAjo(), hakukohteet, new ArrayList());
 
         System.out.println(tulostaSijoittelu(s));
 
@@ -72,8 +71,7 @@ public class HakijaryhmaTest {
         HakuDTO haku = valintatietoService.haeValintatiedot("1.2.246.562.29.173465377510");
 
         List<Hakukohde> hakukohteet = haku.getHakukohteet().parallelStream().map(DomainConverter::convertToHakukohde).collect(Collectors.toList());
-
-        SijoittelunTila s = SijoitteluAlgorithm.sijoittele(hakukohteet, Collections.<Valintatulos>newArrayList());
+        SijoittelunTila s = SijoitteluAlgorithm.sijoittele(new SijoitteluAjo(), hakukohteet, new ArrayList());
 
         System.out.println(tulostaSijoittelu(s));
 
@@ -89,8 +87,7 @@ public class HakijaryhmaTest {
         HakuDTO haku = valintatietoService.haeValintatiedot("1.2.246.562.29.173465377510");
 
         List<Hakukohde> hakukohteet = haku.getHakukohteet().parallelStream().map(DomainConverter::convertToHakukohde).collect(Collectors.toList());
-
-        SijoittelunTila s = SijoitteluAlgorithm.sijoittele(hakukohteet, Collections.<Valintatulos>newArrayList());
+        SijoittelunTila s = SijoitteluAlgorithm.sijoittele(new SijoitteluAjo(), hakukohteet, new ArrayList());
 
         System.out.println(tulostaSijoittelu(s));
 
@@ -104,8 +101,7 @@ public class HakijaryhmaTest {
         HakuDTO haku = valintatietoService.haeValintatiedot("1.2.246.562.29.173465377510");
 
         List<Hakukohde> hakukohteet = haku.getHakukohteet().parallelStream().map(DomainConverter::convertToHakukohde).collect(Collectors.toList());
-
-        SijoittelunTila s = SijoitteluAlgorithm.sijoittele(hakukohteet, Collections.<Valintatulos>newArrayList());
+        SijoittelunTila s = SijoitteluAlgorithm.sijoittele(new SijoitteluAjo(), hakukohteet, new ArrayList());
 
         System.out.println(tulostaSijoittelu(s));
 
@@ -121,7 +117,7 @@ public class HakijaryhmaTest {
         HakuDTO haku = valintatietoService.haeValintatiedot("1.2.246.562.29.173465377510");
 
         List<Hakukohde> hakukohteet = haku.getHakukohteet().parallelStream().map(DomainConverter::convertToHakukohde).collect(Collectors.toList());
-        final SijoitteluajoWrapper sijoitteluAjo = SijoitteluajoWrapperFactory.createSijoitteluAjo(hakukohteet, Collections.<Valintatulos>newArrayList());
+        final SijoitteluajoWrapper sijoitteluAjo = SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(new SijoitteluAjo(), hakukohteet, Collections.<Valintatulos>newArrayList());
         SijoittelunTila s = SijoitteluAlgorithm.sijoittele(sijoitteluAjo);
         sijoitteluAjo.setKaikkiKohteetSijoittelussa(LocalDateTime.now().plusDays(10));
 
@@ -137,7 +133,7 @@ public class HakijaryhmaTest {
         HakuDTO haku = valintatietoService.haeValintatiedot("1.2.246.562.29.173465377510");
 
         List<Hakukohde> hakukohteet = haku.getHakukohteet().parallelStream().map(DomainConverter::convertToHakukohde).collect(Collectors.toList());
-        final SijoitteluajoWrapper sijoitteluAjo = SijoitteluajoWrapperFactory.createSijoitteluAjo(hakukohteet, Collections.<Valintatulos>newArrayList());
+        final SijoitteluajoWrapper sijoitteluAjo = SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(new SijoitteluAjo(), hakukohteet, Collections.<Valintatulos>newArrayList());
         sijoitteluAjo.setKaikkiKohteetSijoittelussa(LocalDateTime.now().plusDays(10));
         SijoittelunTila s = SijoitteluAlgorithm.sijoittele(sijoitteluAjo);
 
@@ -155,7 +151,7 @@ public class HakijaryhmaTest {
         HakuDTO haku = valintatietoService.haeValintatiedot("1.2.246.562.29.173465377510");
 
         List<Hakukohde> hakukohteet = haku.getHakukohteet().parallelStream().map(DomainConverter::convertToHakukohde).collect(Collectors.toList());
-        final SijoitteluajoWrapper sijoitteluAjo = SijoitteluajoWrapperFactory.createSijoitteluAjo(hakukohteet, Collections.<Valintatulos>newArrayList());
+        final SijoitteluajoWrapper sijoitteluAjo = SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(new SijoitteluAjo(), hakukohteet, Collections.<Valintatulos>newArrayList());
         sijoitteluAjo.setKaikkiKohteetSijoittelussa(LocalDateTime.now().plusDays(10));
         SijoittelunTila s = SijoitteluAlgorithm.sijoittele(sijoitteluAjo);
 
@@ -172,9 +168,7 @@ public class HakijaryhmaTest {
         HakuDTO haku = valintatietoService.haeValintatiedot("haku1");
 
         List<Hakukohde> hakukohteet = haku.getHakukohteet().parallelStream().map(DomainConverter::convertToHakukohde).collect(Collectors.toList());
-
-
-        SijoittelunTila s = SijoitteluAlgorithm.sijoittele(hakukohteet, Collections.<Valintatulos>newArrayList());
+        SijoittelunTila s = SijoitteluAlgorithm.sijoittele(new SijoitteluAjo(), hakukohteet, new ArrayList());
 
         System.out.println(tulostaSijoittelu(s));
 
@@ -191,8 +185,7 @@ public class HakijaryhmaTest {
         HakuDTO haku = valintatietoService.haeValintatiedot("haku1");
 
         List<Hakukohde> hakukohteet = haku.getHakukohteet().parallelStream().map(DomainConverter::convertToHakukohde).collect(Collectors.toList());
-
-        SijoittelunTila s = SijoitteluAlgorithm.sijoittele(hakukohteet, Collections.<Valintatulos>newArrayList());
+        SijoittelunTila s = SijoitteluAlgorithm.sijoittele(new SijoitteluAjo(), hakukohteet, new ArrayList());
 
         System.out.println(tulostaSijoittelu(s));
 

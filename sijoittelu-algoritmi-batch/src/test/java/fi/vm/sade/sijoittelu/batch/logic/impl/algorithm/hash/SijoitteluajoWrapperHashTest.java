@@ -8,6 +8,7 @@ import com.google.common.hash.Hashing;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.*;
 import fi.vm.sade.sijoittelu.domain.Hakemus;
 import fi.vm.sade.sijoittelu.domain.Hakukohde;
+import fi.vm.sade.sijoittelu.domain.SijoitteluAjo;
 import fi.vm.sade.sijoittelu.domain.ValintatuloksenTila;
 import fi.vm.sade.sijoittelu.domain.Valintatulos;
 import junit.framework.Assert;
@@ -68,7 +69,7 @@ public class SijoitteluajoWrapperHashTest {
     }
 
     private SijoitteluajoWrapper createSijoitteluAjoHashTestiin() {
-        SijoitteluajoWrapper ajo = new SijoitteluajoWrapper();
+        SijoitteluajoWrapper ajo = new SijoitteluajoWrapper(new SijoitteluAjo());
         HenkiloWrapper henkilo1 = new HenkiloWrapper();
         HakemusWrapper hakemus1 = new HakemusWrapper();
         Hakemus hakemus = new Hakemus();

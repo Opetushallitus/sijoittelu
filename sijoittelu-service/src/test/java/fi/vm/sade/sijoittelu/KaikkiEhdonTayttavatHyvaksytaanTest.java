@@ -3,7 +3,7 @@ package fi.vm.sade.sijoittelu;
 import com.lordofthejars.nosqlunit.annotation.UsingDataSet;
 import com.lordofthejars.nosqlunit.core.LoadStrategyEnum;
 import com.lordofthejars.nosqlunit.mongodb.MongoDbRule;
-import de.flapdoodle.embed.process.collections.Collections;
+
 import fi.vm.sade.sijoittelu.batch.logic.impl.DomainConverter;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.PrintHelper;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoitteluAlgorithm;
@@ -49,8 +49,7 @@ public class KaikkiEhdonTayttavatHyvaksytaanTest {
         HakuDTO haku = valintatietoService.haeValintatiedot("1.2.246.562.29.173465377510");
 
         List<Hakukohde> hakukohteet = haku.getHakukohteet().parallelStream().map(DomainConverter::convertToHakukohde).collect(Collectors.toList());
-
-        SijoittelunTila s = SijoitteluAlgorithm.sijoittele(hakukohteet, Collections.newArrayList());
+        SijoittelunTila s = SijoitteluAlgorithm.sijoittele(new SijoitteluAjo(), hakukohteet, new ArrayList());
 
         System.out.println(PrintHelper.tulostaSijoittelu(s));
 

@@ -3,14 +3,16 @@ package fi.vm.sade.sijoittelu.batch.logic.impl.algorithm;
 import static fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoitteluAlgorithm.sijoittele;
 
 import com.google.gson.GsonBuilder;
-import de.flapdoodle.embed.process.collections.Collections;
+
 import fi.vm.sade.sijoittelu.batch.logic.impl.DomainConverter;
 import fi.vm.sade.sijoittelu.domain.Hakukohde;
+import fi.vm.sade.sijoittelu.domain.SijoitteluAjo;
 import fi.vm.sade.sijoittelu.domain.Valintatulos;
 import fi.vm.sade.valintalaskenta.domain.dto.valintatieto.HakuDTO;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -38,8 +40,7 @@ public class BasicSijoitteluHakijaryhmaTest {
 
 
         List<Hakukohde> hakukohteet = t.getHakukohteet().parallelStream().map(DomainConverter::convertToHakukohde).collect(Collectors.toList());
-
-        SijoittelunTila s = sijoittele(hakukohteet, Collections.<Valintatulos>newArrayList());
+		SijoittelunTila s = sijoittele(new SijoitteluAjo(), hakukohteet, new ArrayList());
 
 		PrintHelper.tallennaSijoitteluTiedostoon(s, "target/sijoittelu_basic_hakijaryhma_case.sijoitteluresult");
 
@@ -55,8 +56,7 @@ public class BasicSijoitteluHakijaryhmaTest {
 
 
 		List<Hakukohde> hakukohteet = t.getHakukohteet().parallelStream().map(DomainConverter::convertToHakukohde).collect(Collectors.toList());
-
-		SijoittelunTila s = sijoittele(hakukohteet, Collections.<Valintatulos>newArrayList());
+		SijoittelunTila s = sijoittele(new SijoitteluAjo(), hakukohteet, new ArrayList());
 
 		PrintHelper.tallennaSijoitteluTiedostoon(s, "target/sijoittelu_basic_hakijaryhma_ei_ryhmaan_kuuluvia_case.sijoitteluresult");
 

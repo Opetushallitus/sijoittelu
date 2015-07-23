@@ -110,7 +110,7 @@ public class VastaanottoTest {
         ehdollinenPoistettava.setIlmoittautumisTila(IlmoittautumisTila.EI_TEHTY);
         ehdollinenPoistettava.setTila(ValintatuloksenTila.EHDOLLISESTI_VASTAANOTTANUT);
         ehdollinenPoistettava.setValintatapajonoOid("jono2");
-        final SijoitteluajoWrapper sijoitteluAjo = SijoitteluajoWrapperFactory.createSijoitteluAjo(hakukohteet, Arrays.asList(sitova, ehdollinen, perunut, ehdollinenPidettava, ehdollinenPoistettava));
+        final SijoitteluajoWrapper sijoitteluAjo = SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(new SijoitteluAjo(), hakukohteet, Arrays.asList(sitova, ehdollinen, perunut, ehdollinenPidettava, ehdollinenPoistettava));
 
         SijoittelunTila s = SijoitteluAlgorithm.sijoittele(sijoitteluAjo);
 

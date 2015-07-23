@@ -5,7 +5,6 @@ import com.google.common.collect.Sets;
 import com.google.common.hash.HashCode;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.comparator.HakemusWrapperComparator;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.postsijoitteluprocessor.PostSijoitteluProcessor;
-import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.postsijoitteluprocessor.PostSijoitteluProcessorEhdollisenVastaanotonSiirtyminenYlemmalleHakutoiveelle;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.postsijoitteluprocessor.PostSijoitteluProcessorMuutostiedonAsetus;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.postsijoitteluprocessor.PostSijoitteluProcessorPeruuntuneetHakemuksenVastaanotonMuokkaus;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.presijoitteluprocessor.PreSijoitteluProcessor;
@@ -46,8 +45,8 @@ public abstract class SijoitteluAlgorithm {
         new PostSijoitteluProcessorMuutostiedonAsetus()
     );
 
-    public static SijoittelunTila sijoittele(List<Hakukohde> hakukohteet, List<Valintatulos> valintatulokset) {
-        return sijoittele(SijoitteluajoWrapperFactory.createSijoitteluAjo(hakukohteet, valintatulokset));
+    public static SijoittelunTila sijoittele(SijoitteluAjo sijoitteluAjo, List<Hakukohde> hakukohteet, List<Valintatulos> valintatulokset) {
+        return sijoittele(SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(sijoitteluAjo, hakukohteet, valintatulokset));
     }
 
     public static SijoittelunTila sijoittele(SijoitteluajoWrapper sijoitteluAjo) {

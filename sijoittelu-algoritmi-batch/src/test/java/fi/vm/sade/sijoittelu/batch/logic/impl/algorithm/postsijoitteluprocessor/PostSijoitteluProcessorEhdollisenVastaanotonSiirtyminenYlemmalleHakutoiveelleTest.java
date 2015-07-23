@@ -46,7 +46,7 @@ public class PostSijoitteluProcessorEhdollisenVastaanotonSiirtyminenYlemmalleHak
     }
 
     private SijoitteluajoWrapper luoSijoitteluAjonTulokset() {
-        final SijoitteluajoWrapper sijoitteluajoWrapper = SijoitteluajoWrapperFactory.createSijoitteluAjo(hakukohdeList, valintatulosList);
+        final SijoitteluajoWrapper sijoitteluajoWrapper = SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(new SijoitteluAjo(), hakukohdeList, valintatulosList);
         SijoittelunTila algorithm = SijoitteluAlgorithm.sijoittele(sijoitteluajoWrapper);
         final SijoitteluajoWrapper sijoitteluAjo = sijoitteluajoWrapper;
         System.out.println("sijoitteluAjo.getMuuttuneetValintatulokset().size(): " + sijoitteluAjo.getMuuttuneetValintatulokset().size());

@@ -13,6 +13,7 @@ import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoittelunTila;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.TestHelper;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.SijoitteluajoWrapper;
 import fi.vm.sade.sijoittelu.domain.Hakukohde;
+import fi.vm.sade.sijoittelu.domain.SijoitteluAjo;
 import fi.vm.sade.sijoittelu.domain.ValintatuloksenTila;
 import fi.vm.sade.sijoittelu.domain.Valintatulos;
 
@@ -35,7 +36,7 @@ public class PostSijoitteluProcessorPeruuntuneetHakemuksenVastaanotonMuokkausTes
     }
 
     private SijoitteluajoWrapper luoSijoitteluAjonTulokset() {
-        final SijoitteluajoWrapper sijoitteluajoWrapper = SijoitteluajoWrapperFactory.createSijoitteluAjo(hakukohdeList, valintatulosList);
+        final SijoitteluajoWrapper sijoitteluajoWrapper = SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(new SijoitteluAjo(), hakukohdeList, valintatulosList);
         SijoittelunTila tila = SijoitteluAlgorithm.sijoittele(sijoitteluajoWrapper);
         System.out.println(PrintHelper.tulostaSijoittelu(tila));
         final SijoitteluajoWrapper sijoitteluAjo = sijoitteluajoWrapper;
