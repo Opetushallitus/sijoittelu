@@ -91,7 +91,7 @@ public class TilojenMuokkaus {
             nykyinen.setHakemusOid(h.getHakemus().getHakemusOid());
             nykyinen.setHakijaOid(h.getHenkilo().getHakijaOid());
             nykyinen.setHakukohdeOid(h.getValintatapajono().getHakukohdeWrapper().getHakukohde().getOid());
-            nykyinen.setHakuOid(sijoitteluajoWrapper.getSijoitteluajo().getHakuOid());
+            nykyinen.setHakuOid(Optional.ofNullable(sijoitteluajoWrapper.getSijoitteluajo()).orElse(new SijoitteluAjo()).getHakuOid());
             nykyinen.setHakutoive(h.getHakemus().getPrioriteetti());
             h.getHenkilo().getValintatulos().add(nykyinen);
         } else {

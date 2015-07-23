@@ -116,7 +116,7 @@ public class VastaanottoTest {
 
         System.out.println(PrintHelper.tulostaSijoittelu(s));
 
-        Assert.assertEquals(sijoitteluAjo.getMuuttuneetValintatulokset().size(), 2);
+        Assert.assertEquals(4, sijoitteluAjo.getMuuttuneetValintatulokset().size());
         Valintatulos t = sijoitteluAjo.getMuuttuneetValintatulokset().get(0);
         Assert.assertEquals(t.getHakemusOid(), "oid4");
         Assert.assertEquals(t.getValintatapajonoOid(), "jono2");
