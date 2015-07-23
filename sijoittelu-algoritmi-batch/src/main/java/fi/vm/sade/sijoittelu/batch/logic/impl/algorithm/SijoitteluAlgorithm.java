@@ -272,17 +272,15 @@ public abstract class SijoitteluAlgorithm {
     }
 
     private static List<HakemusWrapper> getTasasijaHakemus(List<HakemusWrapper> valituksiHaluavatHakemukset, Tasasijasaanto saanto) {
-        List<HakemusWrapper> kaikkiTasasijaHakemukset;
         HakemusWrapper paras = valituksiHaluavatHakemukset.get(0);
         if (saanto.equals(Tasasijasaanto.ARVONTA)) {
-            kaikkiTasasijaHakemukset = Arrays.asList(paras);
+            return Arrays.asList(paras);
         } else {
-            kaikkiTasasijaHakemukset = valituksiHaluavatHakemukset
+            return valituksiHaluavatHakemukset
                 .stream()
                 .filter(h -> h.getHakemus().getJonosija().equals(paras.getHakemus().getJonosija()))
                 .collect(Collectors.toList());
         }
-        return kaikkiTasasijaHakemukset;
     }
 
     private static List<ValintatapajonoWrapper> hakijaryhmaanLiittyvatJonot(HakijaryhmaWrapper hakijaryhmaWrapper) {
