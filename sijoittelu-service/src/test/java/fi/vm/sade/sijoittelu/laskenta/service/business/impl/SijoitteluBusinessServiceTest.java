@@ -6,6 +6,7 @@ import fi.vm.sade.sijoittelu.domain.IlmoittautumisTila;
 import fi.vm.sade.sijoittelu.domain.Sijoittelu;
 import fi.vm.sade.sijoittelu.domain.ValintatuloksenTila;
 import fi.vm.sade.sijoittelu.domain.Valintatulos;
+import fi.vm.sade.sijoittelu.laskenta.service.business.SijoitteluBusinessService;
 import fi.vm.sade.sijoittelu.tulos.dao.HakukohdeDao;
 import fi.vm.sade.sijoittelu.tulos.dao.SijoitteluDao;
 import fi.vm.sade.sijoittelu.tulos.dao.ValintatulosDao;
@@ -20,7 +21,7 @@ import java.util.Optional;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
-public class SijoitteluBusinessServiceImplTest {
+public class SijoitteluBusinessServiceTest {
     final String HAKU_OID = TestDataGenerator.HAKU_OID;
     final String HAKUKOHDE_OID = TestDataGenerator.HAKUKOHDE_OID_1;
     final String VALINTATAPAJONO_OID = TestDataGenerator.VALINTATAPAJONO_OID_1;
@@ -29,7 +30,7 @@ public class SijoitteluBusinessServiceImplTest {
     final String SELITE = "selite";
     final String ROOT_ORG_OID = "rootOrgOid";
 
-    private SijoitteluBusinessServiceImpl sijoitteluBusinessService;
+    private SijoitteluBusinessService sijoitteluBusinessService;
     private ValintatulosDao valintatulosDaoMock;
     private HakukohdeDao hakukohdeDao;
     private SijoitteluDao sijoitteluDao;
@@ -38,7 +39,7 @@ public class SijoitteluBusinessServiceImplTest {
 
     @Before
     public void setUp() throws Exception {
-        sijoitteluBusinessService = new SijoitteluBusinessServiceImpl();
+        sijoitteluBusinessService = new SijoitteluBusinessService();
 
         valintatulosDaoMock = mock(ValintatulosDao.class);
         sijoitteluDao = mock(SijoitteluDao.class);
