@@ -113,7 +113,7 @@ public class SijoitteluBusinessService {
     public void sijoittele(HakuDTO sijoitteluTyyppi, Set<String> valintaperusteidenJonot) {
         long startTime = System.currentTimeMillis();
         String hakuOid = sijoitteluTyyppi.getHakuOid();
-        LOG.info("SijoitteluBusinessServiceImpl:n sijoittelu haulle {} alkaa.", hakuOid);
+        LOG.info("Sijoittelu haulle {} alkaa.", hakuOid);
         Sijoittelu sijoittelu = getOrCreateSijoittelu(hakuOid);
         SijoitteluAjo viimeisinSijoitteluajo = sijoittelu.getLatestSijoitteluajo();
         List<Hakukohde> uudetHakukohteet = sijoitteluTyyppi.getHakukohteet().stream().map(DomainConverter::convertToHakukohde).collect(Collectors.toList());
