@@ -111,8 +111,6 @@ public class SijoitteluajoWrapperFactoryTest {
             HakemusWrapper hakemusWrapper = sijoitteluAjo.getHakukohteet().get(0).getValintatapajonot().get(0).getHakemukset().get(0);
             assertHyvaksytty(hakemusWrapper);
         }
-
-        // TODO: muut keissit missä HYVÄKSYTTY lopputulos
     }
 
     private static List<Hakemus> asetaRandomTilanKuvaus(final List<Hakemus> hakemukset) {
