@@ -13,7 +13,6 @@ import fi.vm.sade.sijoittelu.domain.comparator.HakemusComparator;
 import fi.vm.sade.sijoittelu.laskenta.actors.messages.PoistaHakukohteet;
 import fi.vm.sade.sijoittelu.laskenta.actors.messages.PoistaVanhatAjotSijoittelulta;
 import fi.vm.sade.sijoittelu.laskenta.external.resource.dto.ParametriDTO;
-import fi.vm.sade.sijoittelu.laskenta.mapping.SijoitteluModelMapper;
 import fi.vm.sade.sijoittelu.laskenta.service.business.ActorService;
 import fi.vm.sade.sijoittelu.laskenta.service.business.SijoitteluBusinessService;
 import fi.vm.sade.sijoittelu.laskenta.service.exception.HakemustaEiLoytynytException;
@@ -49,6 +48,7 @@ import static org.apache.commons.lang.StringUtils.isBlank;
 import static org.apache.commons.lang.StringUtils.join;
 import static org.springframework.security.core.context.SecurityContextHolder.getContext;
 
+
 @Service
 public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService {
     private static final Logger LOG = LoggerFactory.getLogger(SijoitteluBusinessServiceImpl.class);
@@ -72,9 +72,6 @@ public class SijoitteluBusinessServiceImpl implements SijoitteluBusinessService 
 
     @Autowired
     private Authorizer authorizer;
-
-    @Autowired
-    private SijoitteluModelMapper modelMapper;
 
     @Autowired
     private SijoitteluTulosConverter sijoitteluTulosConverter;
