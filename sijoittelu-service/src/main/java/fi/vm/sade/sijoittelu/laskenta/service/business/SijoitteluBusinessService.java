@@ -539,7 +539,7 @@ public class SijoitteluBusinessService {
 
     private void authorizeHyvaksyPeruuntunutModification(String tarjoajaOid, boolean hyvaksyPeruuntunut, Valintatulos v) {
         if (v.getHyvaksyPeruuntunut() != hyvaksyPeruuntunut) {
-            String hyvaksymisTila = hyvaksyPeruuntunut ? " hyvaksyi peruuntuneen " : " perui hyvaksynnan peruuntuneelta";
+            String hyvaksymisTila = hyvaksyPeruuntunut ? " hyvaksyi peruuntuneen " : " perui hyvaksynnan peruuntuneelta ";
             LOG.info(getUsernameFromSession() + hyvaksymisTila + v.getHakijaOid() + " hakemuksen " + v.getHakemusOid());
             authorizer.checkOrganisationAccess(tarjoajaOid, SijoitteluRole.PERUUNTUNEIDEN_HYVAKSYNTA);
         }
