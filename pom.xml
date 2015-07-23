@@ -17,7 +17,6 @@
 
     <modules>
         <module>sijoittelu-tulos-api</module>
-        <module>sijoittelu-algoritmi-api</module>
 
         <module>sijoittelu-algoritmi-domain</module>
         <module>sijoittelu-algoritmi-batch</module>
