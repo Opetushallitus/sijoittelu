@@ -570,10 +570,12 @@ public class SijoitteluAlgorithm {
                     if (h.isTilaVoidaanVaihtaa() || ehdollinenOpt.isPresent()) {
                         if (kuuluuHyvaksyttyihinTiloihin(hakemuksenTila(h))) {
                             asetaTilaksiPeruuntunutYlempiToive(h);
+                            ehdollinenOpt.ifPresent(e -> siirraVastaanottotilaYlemmalleHakutoiveelle(sijoitteluAjo, hakemus));
                             uudelleenSijoiteltavatHakukohteet.add(h);
                         } else {
                             if (!kuuluuHylattyihinTiloihin(hakemuksenTila(h))) {
                                 asetaTilaksiPeruuntunutYlempiToive(h);
+                                ehdollinenOpt.ifPresent(e -> siirraVastaanottotilaYlemmalleHakutoiveelle(sijoitteluAjo, hakemus));
                             }
                         }
                     }
@@ -581,6 +583,7 @@ public class SijoitteluAlgorithm {
                     // Kaikki jonot ei vielä sijoittelussa, yliajetaan tylysti kaikki alemmat hyväksytyt ja varalla olot
                     if(!sijoitteluAjo.paivamaaraOhitettu() && kuuluuYliajettaviinHakemuksenTiloihin(hakemuksenTila(h))) {
                         asetaTilaksiPeruuntunutYlempiToive(h);
+                        ehdollinenOpt.ifPresent(e -> siirraVastaanottotilaYlemmalleHakutoiveelle(sijoitteluAjo, hakemus));
                         hakemus.setTilaVoidaanVaihtaa(false);
                         uudelleenSijoiteltavatHakukohteet.add(h);
                     }

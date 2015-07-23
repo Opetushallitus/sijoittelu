@@ -30,7 +30,7 @@ public class SijoitteluAlgorithmFactory {
         preSijoitteluProcessors.add(new PreSijoitteluProcessorHylkaaHakijaRyhmaanKuulumattomat());
         preSijoitteluProcessors.add(new PreSijoitteluProcessorLahtotilanteenHash());
         List<PostSijoitteluProcessor> postSijoitteluProcessors = new ArrayList<>();
-        postSijoitteluProcessors.add(new PostSijoitteluProcessorEhdollisenVastaanotonSiirtyminenYlemmalleHakutoiveelle());
+        //postSijoitteluProcessors.add(new PostSijoitteluProcessorEhdollisenVastaanotonSiirtyminenYlemmalleHakutoiveelle());
         postSijoitteluProcessors.add(new PostSijoitteluProcessorPeruuntuneetHakemuksenVastaanotonMuokkaus());
         postSijoitteluProcessors.add(new PostSijoitteluProcessorMuutostiedonAsetus());
         SijoitteluAlgorithm algorithm = new SijoitteluAlgorithm();

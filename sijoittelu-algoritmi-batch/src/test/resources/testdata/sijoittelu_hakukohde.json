@@ -79,12 +79,12 @@
             "jonosija" : 2,
             "pisteet" : "8",
             "tasasijaJonosija" : 1,
-            "tila": "VARALLA",
-            "edellinenTila": "VARALLA",
+            "tila": "HYLATTY",
+            "edellinenTila": "HYLATTY",
             "tilaHistoria" : [
               {
                 "luotu" : "2015-06-25T07:39:12.817Z",
-                "tila" : "VARALLA"
+                "tila" : "HYLATTY"
               }
             ],
             "hyvaksyttyHarkinnanvaraisesti" : false,
@@ -187,12 +187,12 @@
             "jonosija" : 2,
             "pisteet" : "8",
             "tasasijaJonosija" : 1,
-            "tila": "VARALLA",
-            "edellinenTila": "VARALLA",
+            "tila": "HYLATTY",
+            "edellinenTila": "HYLATTY",
             "tilaHistoria" : [
               {
                 "luotu" : "2015-06-25T07:39:12.817Z",
-                "tila" : "VARALLA"
+                "tila" : "HYLATTY"
               }
             ],
             "hyvaksyttyHarkinnanvaraisesti" : false,

@@ -77,5 +77,46 @@ public class TilojenMuokkaus {
         }
         return nykyinen;
     }
-    
+
+    public static void siirraVastaanottotilaYlemmalleHakutoiveelle(SijoitteluajoWrapper sijoitteluajoWrapper, HakemusWrapper h) {
+
+        Optional<Valintatulos> jononTulos = h.getHenkilo().getValintatulos().stream().filter(v -> v.getValintatapajonoOid().equals(h.getValintatapajono().getValintatapajono().getOid())).findFirst();
+        Valintatulos nykyinen;
+        if (!jononTulos.isPresent()) {
+            nykyinen = new Valintatulos();
+            nykyinen.setHyvaksyttyVarasijalta(false);
+            nykyinen.setIlmoittautumisTila(IlmoittautumisTila.EI_TEHTY);
+            nykyinen.setJulkaistavissa(false);
+            nykyinen.setValintatapajonoOid(h.getValintatapajono().getValintatapajono().getOid());
+            nykyinen.setHakemusOid(h.getHakemus().getHakemusOid());
+            nykyinen.setHakijaOid(h.getHenkilo().getHakijaOid());
+            nykyinen.setHakukohdeOid(h.getValintatapajono().getHakukohdeWrapper().getHakukohde().getOid());
+            nykyinen.setHakuOid(sijoitteluajoWrapper.getSijoitteluajo().getHakuOid());
+            nykyinen.setHakutoive(h.getHakemus().getPrioriteetti());
+            h.getHenkilo().getValintatulos().add(nykyinen);
+        } else {
+            nykyinen = jononTulos.get();
+        }
+        if(h.getHakemus().getPrioriteetti() == 1) {
+            nykyinen.setTila(ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI);
+        } else {
+            nykyinen.setTila(ValintatuloksenTila.EHDOLLISESTI_VASTAANOTTANUT);
+        }
+        nykyinen.getLogEntries().add(createLogEntry(nykyinen.getTila(), "Vastaanottotieto peritynyt alemmalta hakutoiveelta"));
+        sijoitteluajoWrapper.getMuuttuneetValintatulokset().add(nykyinen);
+
+    }
+
+    private static LogEntry createLogEntry(ValintatuloksenTila tila, String selite) {
+        LogEntry logEntry = new LogEntry();
+        logEntry.setLuotu(new Date());
+        logEntry.setMuokkaaja("sijoittelu");
+        logEntry.setSelite(selite);
+        if (tila == null) {
+            logEntry.setMuutos("");
+        } else {
+            logEntry.setMuutos(tila.name());
+        }
+        return logEntry;
+    }
 }
