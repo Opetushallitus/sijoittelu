@@ -132,14 +132,6 @@ public class SijoitteluajoWrapperFactory {
         }
     }
 
-    private static void pow(final Hakemus hakemus, final Valintatulos valintatulos) {
-        if (hakemus.getEdellinenTila() == HakemuksenTila.VARALLA || hakemus.getEdellinenTila() == HakemuksenTila.VARASIJALTA_HYVAKSYTTY) {
-            hyvaksyVarasijalta(hakemus, valintatulos);
-        } else {
-            hyvaksy(hakemus, valintatulos);
-        }
-    }
-
     private static void hyvaksyVarasijalta(final Hakemus hakemus, final Valintatulos valintatulos) {
         hakemus.setTilanKuvaukset(TilanKuvaukset.varasijaltaHyvaksytty());
         hakemus.setTila(HakemuksenTila.VARASIJALTA_HYVAKSYTTY);
