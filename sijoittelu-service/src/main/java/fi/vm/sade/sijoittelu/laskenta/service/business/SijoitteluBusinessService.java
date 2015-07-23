@@ -1,16 +1,11 @@
 package fi.vm.sade.sijoittelu.laskenta.service.business;
 
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Consumer;
-import java.util.stream.Collectors;
-
 import akka.actor.ActorRef;
 import com.google.common.collect.Sets.SetView;
-
+import fi.vm.sade.authentication.business.service.Authorizer;
+import fi.vm.sade.security.service.authz.util.AuthorizationUtil;
+import fi.vm.sade.sijoittelu.batch.logic.impl.DomainConverter;
+import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoitteluAlgorithm;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoitteluajoWrapperFactory;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.SijoitteluajoWrapper;
 import fi.vm.sade.sijoittelu.domain.*;
@@ -18,10 +13,12 @@ import fi.vm.sade.sijoittelu.domain.comparator.HakemusComparator;
 import fi.vm.sade.sijoittelu.laskenta.actors.messages.PoistaHakukohteet;
 import fi.vm.sade.sijoittelu.laskenta.actors.messages.PoistaVanhatAjotSijoittelulta;
 import fi.vm.sade.sijoittelu.laskenta.external.resource.dto.ParametriDTO;
+import fi.vm.sade.sijoittelu.laskenta.service.exception.HakemustaEiLoytynytException;
+import fi.vm.sade.sijoittelu.laskenta.service.exception.ValintatapajonoaEiLoytynytException;
 import fi.vm.sade.sijoittelu.laskenta.service.it.TarjontaIntegrationService;
 import fi.vm.sade.sijoittelu.tulos.dao.*;
-import fi.vm.sade.sijoittelu.laskenta.service.exception.*;
 import fi.vm.sade.sijoittelu.tulos.dto.HakukohdeDTO;
+import fi.vm.sade.sijoittelu.tulos.roles.SijoitteluRole;
 import fi.vm.sade.sijoittelu.tulos.service.impl.converters.SijoitteluTulosConverter;
 import fi.vm.sade.valintalaskenta.domain.dto.valintatieto.HakuDTO;
 import org.joda.time.DateTime;
@@ -33,11 +30,13 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
-import fi.vm.sade.authentication.business.service.Authorizer;
-import fi.vm.sade.security.service.authz.util.AuthorizationUtil;
-import fi.vm.sade.sijoittelu.batch.logic.impl.DomainConverter;
-import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoitteluAlgorithm;
-import fi.vm.sade.sijoittelu.tulos.roles.SijoitteluRole;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import static com.google.common.collect.Sets.difference;
 import static com.google.common.collect.Sets.intersection;
@@ -540,7 +539,8 @@ public class SijoitteluBusinessService {
 
     private void authorizeHyvaksyPeruuntunutModification(String tarjoajaOid, boolean hyvaksyPeruuntunut, Valintatulos v) {
         if (v.getHyvaksyPeruuntunut() != hyvaksyPeruuntunut) {
-            LOG.info(getUsernameFromSession() + " hyväksyi peruuntuneen " + v.getHakijaOid() + " hakemuksen " + v.getHakemusOid());
+            String hyvaksymisTila = hyvaksyPeruuntunut ? " hyvaksyi peruuntuneen " : " perui hyvaksynnan peruuntuneelta";
+            LOG.info(getUsernameFromSession() + hyvaksymisTila + v.getHakijaOid() + " hakemuksen " + v.getHakemusOid());
             authorizer.checkOrganisationAccess(tarjoajaOid, SijoitteluRole.PERUUNTUNEIDEN_HYVAKSYNTA);
         }
     }
