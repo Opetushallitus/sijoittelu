@@ -10,6 +10,7 @@ public class HakemusWrapperComparator implements Comparator<HakemusWrapper> {
 
     @Override
     public int compare(HakemusWrapper o1, HakemusWrapper o2) {
-        return hc.compare(o1.getHakemus(), o2.getHakemus());
+        int byHyvaksyPeruuntunut = Boolean.compare(o2.getHyvaksyPeruuntunut(), o1.getHyvaksyPeruuntunut());
+        return byHyvaksyPeruuntunut != 0 ? byHyvaksyPeruuntunut : hc.compare(o1.getHakemus(), o2.getHakemus());
     }
 }

@@ -119,6 +119,7 @@ public class SijoitteluajoWrapperFactory {
                     hyvaksyVarasijalta(hakemus, valintatulos);
                 } else if (HakemuksenTila.PERUUNTUNUT == hakemus.getEdellinenTila() && valintatulos.getHyvaksyPeruuntunut()) {
                     hyvaksy(hakemus, valintatulos);
+                    hakemusWrapper.hyvaksyPeruuntunut();
                 } else if (HakemuksenTila.HYLATTY == hakemus.getTila()) {
                     // NOOP
                 } else {
