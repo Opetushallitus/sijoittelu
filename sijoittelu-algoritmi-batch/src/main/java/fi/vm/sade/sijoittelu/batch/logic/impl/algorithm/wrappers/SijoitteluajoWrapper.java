@@ -3,10 +3,8 @@ package fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers;
 import static java.util.Optional.ofNullable;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.time.ZoneId;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
@@ -192,5 +190,14 @@ public class SijoitteluajoWrapper {
         HashCode hash = hasher.hash();
         LOG.debug("Sijoitteluajon HASH {} (kesto {}ms)", hash, (System.currentTimeMillis() - t0));
         return hash;
+    }
+
+    public boolean onkoVarasijaTayttoPaattynyt(ValintatapajonoWrapper valintatapajono) {
+        Date varasijojaTaytetaanAsti = valintatapajono.getValintatapajono().getVarasijojaTaytetaanAsti();
+        LocalDateTime varasijaTayttoPaattyy = this.getHakuKierrosPaattyy();
+        if (varasijojaTaytetaanAsti != null) {
+            varasijaTayttoPaattyy = LocalDateTime.ofInstant(varasijojaTaytetaanAsti.toInstant(), ZoneId.systemDefault());
+        }
+        return getToday().isAfter(varasijaTayttoPaattyy);
     }
 }

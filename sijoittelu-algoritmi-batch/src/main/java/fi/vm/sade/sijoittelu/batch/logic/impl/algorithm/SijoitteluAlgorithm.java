@@ -172,30 +172,24 @@ public abstract class SijoitteluAlgorithm {
         });
     }
 
-    private static LocalDateTime varasijaTayttoPaattyy(SijoitteluajoWrapper sijoitteluAjo, ValintatapajonoWrapper valintatapajono) {
-        Date varasijojaTaytetaanAsti = valintatapajono.getValintatapajono().getVarasijojaTaytetaanAsti();
-        LocalDateTime varasijaTayttoPaattyy = sijoitteluAjo.getHakuKierrosPaattyy();
-        if (varasijojaTaytetaanAsti != null) {
-            varasijaTayttoPaattyy = LocalDateTime.ofInstant(varasijojaTaytetaanAsti.toInstant(), ZoneId.systemDefault());
-        }
-        return varasijaTayttoPaattyy;
-    }
-
     private static List<HakemusWrapper> muuttuneetHyvaksytyt(List<HakemusWrapper> hakemukset) {
         return hakemukset.stream().filter(h -> !kuuluuHyvaksyttyihinTiloihin(hakemuksenTila(h))).collect(Collectors.toList());
     }
 
-    // TODO: tämä ei toimi oikein, jos päivämäärät vaihtelee. Muutetaan postprocessoriksi
     private static void muutaEhdollisetVastaanototSitoviksi(SijoitteluajoWrapper sijoitteluAjo, ValintatapajonoWrapper valintatapajono) {
-        valintatapajono.getHakemukset()
-            .stream()
-            .flatMap(h -> h.getHenkilo().getValintatulos().stream())
-            .filter(v -> v.getValintatapajonoOid().equals(valintatapajono.getValintatapajono().getOid())
-                && v.getTila() == ValintatuloksenTila.EHDOLLISESTI_VASTAANOTTANUT)
-            .forEach(v -> {
-                v.setTila(ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI);
-                sijoitteluAjo.getMuuttuneetValintatulokset().add(v);
-            });
+        valintatapajono.ehdollisestiVastaanottaneetJonossa()
+                .forEach(h -> {
+                    if(!h.getYlemmatTaiSamanarvoisetMuttaKorkeammallaJonoPrioriteetillaOlevatHakutoiveet()
+                            // On varalla olevia ylempiarvoisia hakutoiveita
+                            .filter(HakemusWrapper::isVaralla)
+                            // eika varasijataytto ole viela paattynyt niissa
+                            .filter(h0 -> !sijoitteluAjo.onkoVarasijaTayttoPaattynyt(h0.getValintatapajono()))
+                            .findAny().isPresent()) {
+                        Valintatulos v = h.getValintatulos();
+                        v.setTila(ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI);
+                        sijoitteluAjo.getMuuttuneetValintatulokset().add(v);
+                    }
+                });
     }
 
     private static void hakukierrosPaattynyt(List<HakemusWrapper> hakemukset) {
@@ -208,10 +202,9 @@ public abstract class SijoitteluAlgorithm {
     }
 
     private static Set<HakukohdeWrapper> sijoitteleValintatapajono(SijoitteluajoWrapper sijoitteluAjo, ValintatapajonoWrapper valintatapajono) {
-        LocalDateTime varasijaTayttoPaattyy = varasijaTayttoPaattyy(sijoitteluAjo, valintatapajono);
+        final boolean varasijaTayttoPaattyy = sijoitteluAjo.onkoVarasijaTayttoPaattynyt(valintatapajono);
         // Muutetaan ehdolliset vastaanotot sitoviksi jos jonon varasijatäyttö on päättynyt
-        // TODO: tämä toimii väärin!!! Pitäisi katsoa ylemmän hakutoiveen päivämääriä. Oma PostProcessor os paikallaan
-        if (sijoitteluAjo.getToday().isAfter(varasijaTayttoPaattyy) && sijoitteluAjo.isKKHaku()) {
+        if (sijoitteluAjo.isKKHaku() && varasijaTayttoPaattyy) {
             muutaEhdollisetVastaanototSitoviksi(sijoitteluAjo, valintatapajono);
         }
         Set<HakukohdeWrapper> muuttuneetHakukohteet = new HashSet<>();
@@ -232,7 +225,7 @@ public abstract class SijoitteluAlgorithm {
         }
         // Hakukierros on päättynyt tai käsiteltävän jonon varasijasäännöt eivät ole enää voimassa.
         // Asetetaan kaikki hakemukset joiden tila voidaan vaihtaa tilaan peruuntunut
-        if (sijoitteluAjo.hakukierrosOnPaattynyt() || sijoitteluAjo.getToday().isAfter(varasijaTayttoPaattyy)) {
+        if (sijoitteluAjo.hakukierrosOnPaattynyt() || varasijaTayttoPaattyy) {
             hakukierrosPaattynyt(valituksiHaluavatHakemukset);
             return muuttuneetHakukohteet;
         }

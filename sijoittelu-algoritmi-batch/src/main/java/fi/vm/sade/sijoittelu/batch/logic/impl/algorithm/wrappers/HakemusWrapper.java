@@ -3,8 +3,10 @@ package fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers;
 import com.google.common.hash.HashCode;
 import com.google.common.hash.Hasher;
 import com.google.common.hash.Hashing;
+import fi.vm.sade.sijoittelu.domain.HakemuksenTila;
 import fi.vm.sade.sijoittelu.domain.Hakemus;
 import fi.vm.sade.sijoittelu.domain.Pistetieto;
+import fi.vm.sade.sijoittelu.domain.Valintatulos;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,6 +16,7 @@ import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import java.util.stream.Stream;
 
 import static java.util.Optional.ofNullable;
 import static fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.SijoitteluajoWrapper.ifPresentOrIfNotPresent;
@@ -55,7 +58,23 @@ public class HakemusWrapper {
     public Hakemus getHakemus() {
         return hakemus;
     }
+    public boolean isVaralla() {
+        return HakemuksenTila.VARALLA.equals(hakemus.getTila());
+    }
 
+    public Valintatulos getValintatulos() {
+        return henkilo.getValintatulos().stream().filter(v -> hakemus.getHakemusOid().equals(v.getHakemusOid())).findAny().get();
+    }
+
+    public Stream<HakemusWrapper> getYlemmatTaiSamanarvoisetMuttaKorkeammallaJonoPrioriteetillaOlevatHakutoiveet() {
+        return henkilo.getHakemukset().stream().filter(h -> {
+            if(h.hakemus.getPrioriteetti() == this.hakemus.getPrioriteetti()) {
+                return h.valintatapajono.getValintatapajono().getPrioriteetti() < this.valintatapajono.getValintatapajono().getPrioriteetti();
+            } else {
+                return h.hakemus.getPrioriteetti() < this.hakemus.getPrioriteetti();
+            }
+        });
+    }
     public void setHakemus(Hakemus hakemus) {
         this.hakemus = hakemus;
     }

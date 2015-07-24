@@ -1,9 +1,11 @@
 package fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers;
 
 import fi.vm.sade.sijoittelu.domain.Valintatapajono;
+import fi.vm.sade.sijoittelu.domain.ValintatuloksenTila;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
 
 public class ValintatapajonoWrapper {
 
@@ -22,6 +24,12 @@ public class ValintatapajonoWrapper {
 
     public List<HakemusWrapper> getHakemukset() {
         return hakemukset;
+    }
+
+    public Stream<HakemusWrapper> ehdollisestiVastaanottaneetJonossa() {
+        return hakemukset.stream().filter(h -> h.getHenkilo().getValintatulos().stream()
+                .anyMatch(v -> v.getValintatapajonoOid().equals(valintatapajono.getOid())
+                        && v.getTila() == ValintatuloksenTila.EHDOLLISESTI_VASTAANOTTANUT));
     }
 
     public Valintatapajono getValintatapajono() {
