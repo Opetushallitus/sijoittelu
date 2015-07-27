@@ -82,9 +82,9 @@ public class TilaResourceTest {
             .accept(MediaType.APPLICATION_JSON_TYPE)
             .post(Entity.entity(hakijat, MediaType.APPLICATION_JSON));
         assertEquals(202, response.getStatus());
-
+        List<Valintatulos> valintatuloses = haeTulokset(hakemusOid);
         // Tarkistetaan, että tila meni kantaan
-        assertEquals(ValintatuloksenTila.EHDOLLISESTI_VASTAANOTTANUT, haeTulokset(hakemusOid).get(0).getTila());
+        assertEquals(ValintatuloksenTila.EHDOLLISESTI_VASTAANOTTANUT, valintatuloses.get(0).getTila());
     }
 
     @Test

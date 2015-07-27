@@ -1,5 +1,7 @@
 package fi.vm.sade.sijoittelu.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.google.common.collect.ImmutableList;
 import org.bson.types.ObjectId;
 import org.mongodb.morphia.annotations.*;
 
@@ -49,18 +51,26 @@ public class Valintatulos implements Serializable {
     @Transient
     private Date viimeinenMuutos;
 
+    @JsonIgnore
+    @Transient
+    private List<LogEntry> originalLogEntries = Collections.emptyList();
+
+    public List<LogEntry> getOriginalLogEntries() {
+        return originalLogEntries;
+    }
+
     @Embedded
     private List<LogEntry> logEntries = new ArrayList<LogEntry>();
 
     private ValintatulosMailStatus mailStatus = new ValintatulosMailStatus();
-
 
     public Date getViimeinenMuutos() {
         return viimeinenMuutos;
     }
 
     @PostLoad
-    public void setViimeinenMuutos() {
+    public void postLoad() {
+        originalLogEntries = ImmutableList.copyOf(logEntries);
         viimeinenMuutos =
             Optional.ofNullable(getLogEntries()).orElse(Collections.emptyList())
                     .stream()

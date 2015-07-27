@@ -40,6 +40,8 @@
                  ReceiveTimeout="0" AllowChunking="false" />
   </http:conduit>
 
+
+
   <jaxrs-client:client id="ValintaperusteetLaskentaRestClient"
                        address="${valintalaskentakoostepalvelu.valintaperusteet.rest.url}"
                        serviceClass="fi.vm.sade.service.valintaperusteet.resource.ValintaperusteetResource"
