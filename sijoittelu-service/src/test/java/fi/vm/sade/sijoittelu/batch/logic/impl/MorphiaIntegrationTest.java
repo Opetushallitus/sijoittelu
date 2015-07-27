@@ -4,6 +4,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import com.lordofthejars.nosqlunit.mongodb.MongoDbRule;
 
+import fi.vm.sade.sijoittelu.domain.*;
 import fi.vm.sade.sijoittelu.laskenta.external.resource.dto.ParametriDTO;
 import fi.vm.sade.sijoittelu.laskenta.service.business.SijoitteluBusinessService;
 import fi.vm.sade.sijoittelu.laskenta.service.it.TarjontaIntegrationService;
@@ -17,6 +18,7 @@ import fi.vm.sade.valintalaskenta.domain.dto.valintatieto.HakuDTO;
 import fi.vm.sade.valintalaskenta.tulos.service.impl.ValintatietoService;
 import junit.framework.Assert;
 
+import org.joda.time.DateTime;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -31,9 +33,12 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import fi.vm.sade.sijoittelu.domain.Sijoittelu;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.Arrays;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Optional;
 
@@ -77,6 +82,74 @@ public class MorphiaIntegrationTest {
 
     @Rule
     public MongoDbRule mongoDbRule = newMongoDbRule().defaultSpringMongoDb("test");
+
+    @Test
+    public void testValintatuloksenPersistointi() {
+        final String hakemusOid = "HAKEMUSOID";
+        final String hakijaOid = "HAKIJAOID";
+        final String hakukohdeOid = "HAKUKOHDEOID";
+        final int hakutoive = 5;
+        final boolean hyvaksyPeruuntunut = true;
+        final boolean hyvaksyttyVarasijalta = true;
+        final IlmoittautumisTila ilmoittautumistila = IlmoittautumisTila.LASNA;
+        final boolean julkaistavissa = true;
+        final ValintatuloksenTila tila = ValintatuloksenTila.EHDOLLISESTI_VASTAANOTTANUT;
+        final String jonoOid = "JONOOID";
+        final LogEntry log = new LogEntry();
+        final String muokkaaja = "MUOKKAAJA";
+        final String selite = "SELITE";
+        final String muutos = "MUUTOS";
+        final Date now = DateTime.now().toDate();
+        log.setLuotu(now);
+        log.setMuokkaaja(muokkaaja);
+        log.setMuutos(muutos);
+        log.setSelite(selite);
+        Valintatulos v0 = new Valintatulos();
+        v0.setHakemusOid(hakemusOid);
+        v0.setHakijaOid(hakijaOid);
+        v0.setHakukohdeOid(hakukohdeOid);
+        v0.setHakutoive(hakutoive);
+        v0.setHyvaksyPeruuntunut(hyvaksyPeruuntunut);
+        v0.setHyvaksyttyVarasijalta(hyvaksyttyVarasijalta);
+        v0.setIlmoittautumisTila(ilmoittautumistila);
+        v0.setJulkaistavissa(julkaistavissa);
+        v0.setLogEntries(Arrays.asList(log));
+        v0.setTila(tila);
+        v0.setValintatapajonoOid(jonoOid);
+        valintatulosDao.createOrUpdateValintatulos(v0);
+
+        Valintatulos vx = valintatulosDao.loadValintatulos(hakukohdeOid,jonoOid,hakemusOid);
+        Assert.assertEquals(vx.getId(), v0.getId());
+        Assert.assertEquals(vx.getHakemusOid(), v0.getHakemusOid());
+        Assert.assertEquals(vx.getHakijaOid(), v0.getHakijaOid());
+        Assert.assertEquals(vx.getHakuOid(), v0.getHakuOid());
+        Assert.assertEquals(vx.getValintatapajonoOid(), v0.getValintatapajonoOid());
+        Assert.assertEquals(vx.getHakutoive(), v0.getHakutoive());
+        Assert.assertEquals(vx.getHyvaksyPeruuntunut(), v0.getHyvaksyPeruuntunut());
+        Assert.assertEquals(vx.getHyvaksyttyVarasijalta(), v0.getHyvaksyttyVarasijalta());
+        Assert.assertEquals(vx.getIlmoittautumisTila(), v0.getIlmoittautumisTila());
+        Assert.assertEquals(vx.getJulkaistavissa(), v0.getJulkaistavissa());
+        Assert.assertEquals(vx.getTila(), v0.getTila());
+        Assert.assertEquals(vx.getLogEntries(), v0.getLogEntries());
+
+        vx.setHakemusOid(v0.getHakemusOid() + "X");
+        vx.setTila(ValintatuloksenTila.ILMOITETTU);
+        LogEntry log2 = new LogEntry();
+        final Date now2 = DateTime.now().plusDays(1).toDate();
+        log2.setLuotu(now2);
+        log2.setMuokkaaja(muokkaaja);
+        log2.setSelite(selite);
+        log2.setMuutos(muutos);
+        vx.getLogEntries().add(log2);
+        valintatulosDao.createOrUpdateValintatulos(vx);
+
+        Valintatulos vx2 = valintatulosDao.loadValintatulos(hakukohdeOid,jonoOid,hakemusOid);
+        Assert.assertEquals(vx2.getId(), vx.getId());
+        Assert.assertEquals(vx2.getTila(), vx.getTila());
+        Assert.assertNotSame(vx2.getHakemusOid(), vx.getHakemusOid());
+        Assert.assertEquals(vx2.getLogEntries(), vx.getLogEntries());
+
+    }
 
 	@Test
 	public void testSijoitteluService() {

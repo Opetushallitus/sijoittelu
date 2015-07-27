@@ -1,5 +1,6 @@
 package fi.vm.sade.sijoittelu.domain;
 
+import org.apache.commons.lang.builder.EqualsBuilder;
 import org.mongodb.morphia.annotations.Embedded;
 import org.mongodb.morphia.annotations.Id;
 import org.bson.types.ObjectId;
@@ -9,8 +10,6 @@ import java.util.Date;
 
 @Embedded("LogEntry")
 public class LogEntry implements Serializable {
-    @Id
-    private ObjectId id;
 
     private Date luotu;
 
@@ -44,20 +43,17 @@ public class LogEntry implements Serializable {
         this.selite = selite;
     }
 
-    public ObjectId getId() {
-        return id;
-    }
-
-    public void setId(ObjectId id) {
-        this.id = id;
-    }
-
     public String getMuutos() {
         return muutos;
     }
 
     public void setMuutos(String muutos) {
         this.muutos = muutos;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return EqualsBuilder.reflectionEquals(this,obj);
     }
 }
 

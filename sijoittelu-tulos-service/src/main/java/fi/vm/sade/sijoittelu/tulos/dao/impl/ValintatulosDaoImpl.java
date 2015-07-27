@@ -8,7 +8,9 @@ import javax.annotation.PostConstruct;
 import fi.vm.sade.sijoittelu.domain.*;
 import org.apache.commons.lang.StringUtils;
 import org.mongodb.morphia.Datastore;
+import org.mongodb.morphia.aggregation.AggregationPipeline;
 import org.mongodb.morphia.query.Query;
+import org.mongodb.morphia.query.UpdateOperations;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -110,7 +112,23 @@ public class ValintatulosDaoImpl implements ValintatulosDao {
 
     @Override
     public void createOrUpdateValintatulos(Valintatulos tulos) {
-        morphiaDS.save(tulos);
+        if(tulos.getId() == null) {
+            morphiaDS.save(tulos);
+        } else {
+            UpdateOperations<Valintatulos> update = morphiaDS.createUpdateOperations(Valintatulos.class)
+                    .set("tila",tulos.getTila())
+                    .set("ilmoittautumisTila",tulos.getIlmoittautumisTila())
+                    .set("julkaistavissa", tulos.getJulkaistavissa())
+                    .set("hyvaksyttyVarasijalta", tulos.getHyvaksyttyVarasijalta())
+                    .set("hyvaksyPeruuntunut", tulos.getHyvaksyPeruuntunut());
+
+            List<LogEntry> diff = new ArrayList<>(tulos.getLogEntries());
+            diff.removeAll(tulos.getOriginalLogEntries());
+            if(!diff.isEmpty()) {
+                update.addAll("logEntries", diff, false);
+            }
+            morphiaDS.update(morphiaDS.createQuery(Valintatulos.class).field("_id").equal(tulos.getId()),update);
+        }
     }
 
     @Override
