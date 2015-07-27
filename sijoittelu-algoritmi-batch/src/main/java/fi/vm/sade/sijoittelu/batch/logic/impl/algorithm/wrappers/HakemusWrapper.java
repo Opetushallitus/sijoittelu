@@ -39,6 +39,8 @@ public class HakemusWrapper {
     //jos hakemuksen tilaa ei voida muuttaa, esm. ilmoitettu hakijalle jo
     private boolean tilaVoidaanVaihtaa = true;
 
+    private boolean hyvaksyPeruuntunut;
+
     public HashCode getLahtotilanteenHash() {
         return lahtotilanteenHash;
     }
@@ -172,5 +174,13 @@ public class HakemusWrapper {
 
     public void setHyvaksyttavissaHakijaryhmanJalkeen(boolean hyvaksyttavissaHakijaryhmanJalkeen) {
         this.hyvaksyttavissaHakijaryhmanJalkeen = hyvaksyttavissaHakijaryhmanJalkeen;
+    }
+
+    public boolean getHyvaksyPeruuntunut() {
+        return this.hyvaksyPeruuntunut;
+    }
+
+    public void hyvaksyPeruuntunut() {
+        this.hyvaksyPeruuntunut = true;
     }
 }
