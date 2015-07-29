@@ -188,9 +188,10 @@ public abstract class SijoitteluAlgorithm {
                             // eika varasijataytto ole viela paattynyt niissa
                             .filter(h0 -> !sijoitteluAjo.onkoVarasijaTayttoPaattynyt(h0.getValintatapajono()))
                             .findAny().isPresent()) {
-                        Valintatulos v = h.getValintatulos();
-                        v.setTila(ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI);
-                        sijoitteluAjo.getMuuttuneetValintatulokset().add(v);
+                        h.getValintatulos().ifPresent(v -> {
+                            v.setTila(ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI);
+                            sijoitteluAjo.getMuuttuneetValintatulokset().add(v);
+                        });
                     }
                 });
     }

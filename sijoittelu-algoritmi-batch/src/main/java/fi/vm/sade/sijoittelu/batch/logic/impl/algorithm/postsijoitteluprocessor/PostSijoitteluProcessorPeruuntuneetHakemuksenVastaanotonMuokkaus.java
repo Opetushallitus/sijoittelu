@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class PostSijoitteluProcessorPeruuntuneetHakemuksenVastaanotonMuokkaus implements PostSijoitteluProcessor {
@@ -44,8 +45,10 @@ public class PostSijoitteluProcessorPeruuntuneetHakemuksenVastaanotonMuokkaus im
         return sijoitteluajoWrapper.getHakukohteet().stream()
                 .flatMap(hk -> hk.getValintatapajonot().stream())
                 .flatMap(j -> j.getHakemukset().stream())
-                .filter(h -> h.getHakemus().getTila() == HakemuksenTila.PERUUNTUNUT)
+                .filter(h -> HakemuksenTila.PERUUNTUNUT == h.getHakemus().getTila())
                 .map(HakemusWrapper::getValintatulos)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
                 .filter(PostSijoitteluProcessorPeruuntuneetHakemuksenVastaanotonMuokkaus::vastaanottanut)
                 .collect(Collectors.toList());
     }

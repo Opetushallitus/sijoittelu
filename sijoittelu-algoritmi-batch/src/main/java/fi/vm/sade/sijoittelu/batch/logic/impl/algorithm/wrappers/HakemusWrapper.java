@@ -64,8 +64,11 @@ public class HakemusWrapper {
         return HakemuksenTila.VARALLA.equals(hakemus.getTila());
     }
 
-    public Valintatulos getValintatulos() {
-        return henkilo.getValintatulos().stream().filter(v -> hakemus.getHakemusOid().equals(v.getHakemusOid())).findAny().get();
+    public Optional<Valintatulos> getValintatulos() {
+        return henkilo.getValintatulos().stream()
+                .filter(v -> hakemus.getHakemusOid().equals(v.getHakemusOid()) &&
+                        valintatapajono.getValintatapajono().getOid().equals(v.getValintatapajonoOid()))
+                .findAny();
     }
 
     public Stream<HakemusWrapper> getYlemmatTaiSamanarvoisetMuttaKorkeammallaJonoPrioriteetillaOlevatHakutoiveet() {
