@@ -50,7 +50,8 @@ public abstract class SijoitteluAlgorithm {
     }
 
     public static SijoittelunTila sijoittele(SijoitteluajoWrapper sijoitteluAjo) {
-        LOG.info("Starting sijoitteluajo " + sijoitteluAjo.getSijoitteluAjoId());
+        LOG.info("(hakuOid={}) Starting sijoitteluajo {}",
+                Optional.ofNullable(sijoitteluAjo.getSijoitteluajo()).orElse(new SijoitteluAjo()).getHakuOid(), sijoitteluAjo.getSijoitteluAjoId());
         runPreProcessors(sijoitteluAjo);
         final SijoittelunTila tila = suoritaSijoittelu(sijoitteluAjo);
         runPostProcessors(sijoitteluAjo);
@@ -59,7 +60,8 @@ public abstract class SijoitteluAlgorithm {
 
     private static void runPreProcessors(final SijoitteluajoWrapper sijoitteluAjo) {
         for (PreSijoitteluProcessor processor : preSijoitteluProcessors) {
-            LOG.info("Starting preprocessor {} for sijoitteluAjo {}",  processor.name(), sijoitteluAjo.getSijoitteluAjoId());
+            LOG.info("(hakuOid={}) Starting preprocessor {} for sijoitteluAjo {}",
+                    Optional.ofNullable(sijoitteluAjo.getSijoitteluajo()).orElse(new SijoitteluAjo()).getHakuOid(), processor.name(), sijoitteluAjo.getSijoitteluAjoId());
             processor.process(sijoitteluAjo);
         }
     }
@@ -78,7 +80,8 @@ public abstract class SijoitteluAlgorithm {
 
     private static void runPostProcessors(final SijoitteluajoWrapper sijoitteluAjo) {
         for (PostSijoitteluProcessor processor : postSijoitteluProcessors) {
-            LOG.info("Starting postprocessor {} for sijoitteluAjo {}",  processor.name(), sijoitteluAjo.getSijoitteluAjoId());
+            LOG.info("(hakuOid={}) Starting postprocessor {} for sijoitteluAjo {}",
+                    Optional.ofNullable(sijoitteluAjo.getSijoitteluajo()).orElse(new SijoitteluAjo()).getHakuOid(), processor.name(), sijoitteluAjo.getSijoitteluAjoId());
             processor.process(sijoitteluAjo);
         }
     }
