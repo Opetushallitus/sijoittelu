@@ -38,23 +38,23 @@ public class VastaanottotietoTest {
         ArrayList<Valintatulos> valintatuloses = new ArrayList<Valintatulos>();
         Valintatulos valintatulos = new Valintatulos();
 
-        valintatulos.setHakemusOid("1.2.246.562.24.00000000004");
-        valintatulos.setHakijaOid("oid");
-        valintatulos.setHakukohdeOid("1.2.246.562.11.00000000007");
-        valintatulos.setHakuOid(t.getHakuOid());
-        valintatulos.setTila(ValintatuloksenTila.PERUUTETTU);
-        valintatulos.setValintatapajonoOid("tkk_jono_1");
+        valintatulos.setHakemusOid("1.2.246.562.24.00000000004", "");
+        valintatulos.setHakijaOid("oid", "");
+        valintatulos.setHakukohdeOid("1.2.246.562.11.00000000007", "");
+        valintatulos.setHakuOid(t.getHakuOid(), "");
+        valintatulos.setTila(ValintatuloksenTila.PERUUTETTU, "");
+        valintatulos.setValintatapajonoOid("tkk_jono_1", "");
 
         valintatuloses.add(valintatulos);
 
         valintatulos = new Valintatulos();
 
-        valintatulos.setHakemusOid("1.2.246.562.24.00000000003");
-        valintatulos.setHakijaOid("oid2");
-        valintatulos.setHakukohdeOid("1.2.246.562.11.00000000007");
-        valintatulos.setHakuOid(t.getHakuOid());
-        valintatulos.setTila(ValintatuloksenTila.PERUNUT);
-        valintatulos.setValintatapajonoOid("tkk_jono_1");
+        valintatulos.setHakemusOid("1.2.246.562.24.00000000003", "");
+        valintatulos.setHakijaOid("oid2", "");
+        valintatulos.setHakukohdeOid("1.2.246.562.11.00000000007", "");
+        valintatulos.setHakuOid(t.getHakuOid(), "");
+        valintatulos.setTila(ValintatuloksenTila.PERUNUT, "");
+        valintatulos.setValintatapajonoOid("tkk_jono_1", "");
 
         valintatuloses.add(valintatulos);
         SijoittelunTila s = SijoitteluAlgorithm.sijoittele(new SijoitteluAjo(), hakukohteet, valintatuloses);
@@ -87,24 +87,24 @@ public class VastaanottotietoTest {
         ArrayList<Valintatulos> valintatuloses = new ArrayList<>();
         Valintatulos valintatulos = new Valintatulos();
 
-        valintatulos.setHakemusOid("1.2.246.562.24.00000000006");
-        valintatulos.setHakijaOid("oid");
-        valintatulos.setHakukohdeOid("1.2.246.562.11.00000000009");
-        valintatulos.setHakuOid(t.getHakuOid());
-        valintatulos.setJulkaistavissa(true);
-        valintatulos.setTila(ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI);
-        valintatulos.setValintatapajonoOid("opisto_jono_1");
+        valintatulos.setHakemusOid("1.2.246.562.24.00000000006", "");
+        valintatulos.setHakijaOid("oid", "");
+        valintatulos.setHakukohdeOid("1.2.246.562.11.00000000009", "");
+        valintatulos.setHakuOid(t.getHakuOid(), "");
+        valintatulos.setJulkaistavissa(true, "");
+        valintatulos.setTila(ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI, "");
+        valintatulos.setValintatapajonoOid("opisto_jono_1", "");
 
         valintatuloses.add(valintatulos);
 
         valintatulos = new Valintatulos();
-        valintatulos.setHakemusOid("1.2.246.562.24.00000000005");
-        valintatulos.setHakijaOid("oid");
-        valintatulos.setHakukohdeOid("1.2.246.562.11.00000000009");
-        valintatulos.setHakuOid(t.getHakuOid());
-        valintatulos.setJulkaistavissa(true);
-        valintatulos.setTila(ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI);
-        valintatulos.setValintatapajonoOid("opisto_jono_1");
+        valintatulos.setHakemusOid("1.2.246.562.24.00000000005", "");
+        valintatulos.setHakijaOid("oid", "");
+        valintatulos.setHakukohdeOid("1.2.246.562.11.00000000009", "");
+        valintatulos.setHakuOid(t.getHakuOid(), "");
+        valintatulos.setJulkaistavissa(true, "");
+        valintatulos.setTila(ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI, "");
+        valintatulos.setValintatapajonoOid("opisto_jono_1", "");
 
         valintatuloses.add(valintatulos);
         SijoittelunTila s = SijoitteluAlgorithm.sijoittele(new SijoitteluAjo(), hakukohteet, valintatuloses);
@@ -126,24 +126,24 @@ public class VastaanottotietoTest {
         valintatuloses = new ArrayList<>();
         valintatulos = new Valintatulos();
 
-        valintatulos.setHakemusOid("1.2.246.562.24.00000000003");
-        valintatulos.setHakijaOid("oid");
-        valintatulos.setHakukohdeOid("1.2.246.562.11.00000000007");
-        valintatulos.setHakuOid(t.getHakuOid());
-        valintatulos.setJulkaistavissa(true);
-        valintatulos.setTila(ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI);
-        valintatulos.setValintatapajonoOid("tkk_jono_2");
+        valintatulos.setHakemusOid("1.2.246.562.24.00000000003", "");
+        valintatulos.setHakijaOid("oid", "");
+        valintatulos.setHakukohdeOid("1.2.246.562.11.00000000007", "");
+        valintatulos.setHakuOid(t.getHakuOid(), "");
+        valintatulos.setJulkaistavissa(true, "");
+        valintatulos.setTila(ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI, "");
+        valintatulos.setValintatapajonoOid("tkk_jono_2", "");
 
         valintatuloses.add(valintatulos);
 
 //        valintatulos = new Valintatulos();
-//        valintatulos.setHakemusOid("1.2.246.562.24.00000000006");
-//        valintatulos.setHakijaOid("oid");
-//        valintatulos.setHakukohdeOid("1.2.246.562.11.00000000009");
-//        valintatulos.setHakuOid(t.getHakuOid());
-//        valintatulos.setJulkaistavissa(true);
-//        valintatulos.setTila(ValintatuloksenTila.KESKEN);
-//        valintatulos.setValintatapajonoOid("opisto_jono_1");
+//        valintatulos.setHakemusOid("1.2.246.562.24.00000000006", "");
+//        valintatulos.setHakijaOid("oid", "");
+//        valintatulos.setHakukohdeOid("1.2.246.562.11.00000000009", "");
+//        valintatulos.setHakuOid(t.getHakuOid(), "");
+//        valintatulos.setJulkaistavissa(true, "");
+//        valintatulos.setTila(ValintatuloksenTila.KESKEN, "");
+//        valintatulos.setValintatapajonoOid("opisto_jono_1", "");
 //
 //        valintatuloses.add(valintatulos);
         s = SijoitteluAlgorithm.sijoittele(new SijoitteluAjo(), hakukohteet, valintatuloses);
@@ -166,24 +166,24 @@ public class VastaanottotietoTest {
         valintatuloses = new ArrayList<>();
         valintatulos = new Valintatulos();
 
-        valintatulos.setHakemusOid("1.2.246.562.24.00000000002");
-        valintatulos.setHakijaOid("oid");
-        valintatulos.setHakukohdeOid("1.2.246.562.11.00000000008");
-        valintatulos.setHakuOid(t.getHakuOid());
-        valintatulos.setJulkaistavissa(true);
-        valintatulos.setTila(ValintatuloksenTila.KESKEN);
-        valintatulos.setValintatapajonoOid("esimerkkikoulu_jono_1");
+        valintatulos.setHakemusOid("1.2.246.562.24.00000000002", "");
+        valintatulos.setHakijaOid("oid", "");
+        valintatulos.setHakukohdeOid("1.2.246.562.11.00000000008", "");
+        valintatulos.setHakuOid(t.getHakuOid(), "");
+        valintatulos.setJulkaistavissa(true, "");
+        valintatulos.setTila(ValintatuloksenTila.KESKEN, "");
+        valintatulos.setValintatapajonoOid("esimerkkikoulu_jono_1", "");
 
         valintatuloses.add(valintatulos);
 
         valintatulos = new Valintatulos();
-        valintatulos.setHakemusOid("1.2.246.562.24.00000000003");
-        valintatulos.setHakijaOid("oid");
-        valintatulos.setHakukohdeOid("1.2.246.562.11.00000000008");
-        valintatulos.setHakuOid(t.getHakuOid());
-        valintatulos.setJulkaistavissa(true);
-        valintatulos.setTila(ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI);
-        valintatulos.setValintatapajonoOid("esimerkkikoulu_jono_1");
+        valintatulos.setHakemusOid("1.2.246.562.24.00000000003", "");
+        valintatulos.setHakijaOid("oid", "");
+        valintatulos.setHakukohdeOid("1.2.246.562.11.00000000008", "");
+        valintatulos.setHakuOid(t.getHakuOid(), "");
+        valintatulos.setJulkaistavissa(true, "");
+        valintatulos.setTila(ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI, "");
+        valintatulos.setValintatapajonoOid("esimerkkikoulu_jono_1", "");
 
         valintatuloses.add(valintatulos);
         s = SijoitteluAlgorithm.sijoittele(new SijoitteluAjo(), hakukohteet, valintatuloses);
@@ -213,24 +213,24 @@ public class VastaanottotietoTest {
         ArrayList<Valintatulos> valintatuloses = new ArrayList<>();
         Valintatulos valintatulos = new Valintatulos();
 
-        valintatulos.setHakemusOid("1.2.246.562.24.00000000006");
-        valintatulos.setHakijaOid("oid");
-        valintatulos.setHakukohdeOid("1.2.246.562.11.00000000009");
-        valintatulos.setHakuOid(t.getHakuOid());
-        valintatulos.setJulkaistavissa(true);
-        valintatulos.setTila(ValintatuloksenTila.KESKEN);
-        valintatulos.setValintatapajonoOid("opisto_jono_1");
+        valintatulos.setHakemusOid("1.2.246.562.24.00000000006", "");
+        valintatulos.setHakijaOid("oid", "");
+        valintatulos.setHakukohdeOid("1.2.246.562.11.00000000009", "");
+        valintatulos.setHakuOid(t.getHakuOid(), "");
+        valintatulos.setJulkaistavissa(true, "");
+        valintatulos.setTila(ValintatuloksenTila.KESKEN, "");
+        valintatulos.setValintatapajonoOid("opisto_jono_1", "");
 
         valintatuloses.add(valintatulos);
 
         valintatulos = new Valintatulos();
-        valintatulos.setHakemusOid("1.2.246.562.24.00000000005");
-        valintatulos.setHakijaOid("oid");
-        valintatulos.setHakukohdeOid("1.2.246.562.11.00000000009");
-        valintatulos.setHakuOid(t.getHakuOid());
-        valintatulos.setJulkaistavissa(true);
-        valintatulos.setTila(ValintatuloksenTila.EHDOLLISESTI_VASTAANOTTANUT);
-        valintatulos.setValintatapajonoOid("opisto_jono_1");
+        valintatulos.setHakemusOid("1.2.246.562.24.00000000005", "");
+        valintatulos.setHakijaOid("oid", "");
+        valintatulos.setHakukohdeOid("1.2.246.562.11.00000000009", "");
+        valintatulos.setHakuOid(t.getHakuOid(), "");
+        valintatulos.setJulkaistavissa(true, "");
+        valintatulos.setTila(ValintatuloksenTila.EHDOLLISESTI_VASTAANOTTANUT, "");
+        valintatulos.setValintatapajonoOid("opisto_jono_1", "");
 
         valintatuloses.add(valintatulos);
         SijoittelunTila s = SijoitteluAlgorithm.sijoittele(new SijoitteluAjo(), hakukohteet, valintatuloses);
@@ -247,24 +247,24 @@ public class VastaanottotietoTest {
         valintatuloses = new ArrayList<>();
         valintatulos = new Valintatulos();
 
-        valintatulos.setHakemusOid("1.2.246.562.24.00000000005");
-        valintatulos.setHakijaOid("oid");
-        valintatulos.setHakukohdeOid("1.2.246.562.11.00000000009");
-        valintatulos.setHakuOid(t.getHakuOid());
-        valintatulos.setJulkaistavissa(true);
-        valintatulos.setTila(ValintatuloksenTila.KESKEN);
-        valintatulos.setValintatapajonoOid("opisto_jono_1");
+        valintatulos.setHakemusOid("1.2.246.562.24.00000000005", "");
+        valintatulos.setHakijaOid("oid", "");
+        valintatulos.setHakukohdeOid("1.2.246.562.11.00000000009", "");
+        valintatulos.setHakuOid(t.getHakuOid(), "");
+        valintatulos.setJulkaistavissa(true, "");
+        valintatulos.setTila(ValintatuloksenTila.KESKEN, "");
+        valintatulos.setValintatapajonoOid("opisto_jono_1", "");
 
         valintatuloses.add(valintatulos);
 
         valintatulos = new Valintatulos();
-        valintatulos.setHakemusOid("1.2.246.562.24.00000000006");
-        valintatulos.setHakijaOid("oid");
-        valintatulos.setHakukohdeOid("1.2.246.562.11.00000000009");
-        valintatulos.setHakuOid(t.getHakuOid());
-        valintatulos.setJulkaistavissa(true);
-        valintatulos.setTila(ValintatuloksenTila.EHDOLLISESTI_VASTAANOTTANUT);
-        valintatulos.setValintatapajonoOid("opisto_jono_1");
+        valintatulos.setHakemusOid("1.2.246.562.24.00000000006", "");
+        valintatulos.setHakijaOid("oid", "");
+        valintatulos.setHakukohdeOid("1.2.246.562.11.00000000009", "");
+        valintatulos.setHakuOid(t.getHakuOid(), "");
+        valintatulos.setJulkaistavissa(true, "");
+        valintatulos.setTila(ValintatuloksenTila.EHDOLLISESTI_VASTAANOTTANUT, "");
+        valintatulos.setValintatapajonoOid("opisto_jono_1", "");
 
         valintatuloses.add(valintatulos);
         s = SijoitteluAlgorithm.sijoittele(new SijoitteluAjo(), hakukohteet, valintatuloses);
@@ -280,24 +280,24 @@ public class VastaanottotietoTest {
         valintatuloses = new ArrayList<>();
         valintatulos = new Valintatulos();
 
-        valintatulos.setHakemusOid("1.2.246.562.24.00000000002");
-        valintatulos.setHakijaOid("oid");
-        valintatulos.setHakukohdeOid("1.2.246.562.11.00000000008");
-        valintatulos.setHakuOid(t.getHakuOid());
-        valintatulos.setJulkaistavissa(true);
-        valintatulos.setTila(ValintatuloksenTila.KESKEN);
-        valintatulos.setValintatapajonoOid("esimerkkikoulu_jono_1");
+        valintatulos.setHakemusOid("1.2.246.562.24.00000000002", "");
+        valintatulos.setHakijaOid("oid", "");
+        valintatulos.setHakukohdeOid("1.2.246.562.11.00000000008", "");
+        valintatulos.setHakuOid(t.getHakuOid(), "");
+        valintatulos.setJulkaistavissa(true, "");
+        valintatulos.setTila(ValintatuloksenTila.KESKEN, "");
+        valintatulos.setValintatapajonoOid("esimerkkikoulu_jono_1", "");
 
         valintatuloses.add(valintatulos);
 
         valintatulos = new Valintatulos();
-        valintatulos.setHakemusOid("1.2.246.562.24.00000000001");
-        valintatulos.setHakijaOid("oid");
-        valintatulos.setHakukohdeOid("1.2.246.562.11.00000000008");
-        valintatulos.setHakuOid(t.getHakuOid());
-        valintatulos.setJulkaistavissa(true);
-        valintatulos.setTila(ValintatuloksenTila.EHDOLLISESTI_VASTAANOTTANUT);
-        valintatulos.setValintatapajonoOid("esimerkkikoulu_jono_1");
+        valintatulos.setHakemusOid("1.2.246.562.24.00000000001", "");
+        valintatulos.setHakijaOid("oid", "");
+        valintatulos.setHakukohdeOid("1.2.246.562.11.00000000008", "");
+        valintatulos.setHakuOid(t.getHakuOid(), "");
+        valintatulos.setJulkaistavissa(true, "");
+        valintatulos.setTila(ValintatuloksenTila.EHDOLLISESTI_VASTAANOTTANUT, "");
+        valintatulos.setValintatapajonoOid("esimerkkikoulu_jono_1", "");
 
         valintatuloses.add(valintatulos);
         s = SijoitteluAlgorithm.sijoittele(new SijoitteluAjo(), hakukohteet, valintatuloses);
@@ -313,24 +313,24 @@ public class VastaanottotietoTest {
         valintatuloses = new ArrayList<>();
         valintatulos = new Valintatulos();
 
-        valintatulos.setHakemusOid("1.2.246.562.24.00000000002");
-        valintatulos.setHakijaOid("oid");
-        valintatulos.setHakukohdeOid("1.2.246.562.11.00000000008");
-        valintatulos.setHakuOid(t.getHakuOid());
-        valintatulos.setJulkaistavissa(true);
-        valintatulos.setTila(ValintatuloksenTila.KESKEN);
-        valintatulos.setValintatapajonoOid("esimerkkikoulu_jono_1");
+        valintatulos.setHakemusOid("1.2.246.562.24.00000000002", "");
+        valintatulos.setHakijaOid("oid", "");
+        valintatulos.setHakukohdeOid("1.2.246.562.11.00000000008", "");
+        valintatulos.setHakuOid(t.getHakuOid(), "");
+        valintatulos.setJulkaistavissa(true, "");
+        valintatulos.setTila(ValintatuloksenTila.KESKEN, "");
+        valintatulos.setValintatapajonoOid("esimerkkikoulu_jono_1", "");
 
         valintatuloses.add(valintatulos);
 
         valintatulos = new Valintatulos();
-        valintatulos.setHakemusOid("1.2.246.562.24.00000000003");
-        valintatulos.setHakijaOid("oid");
-        valintatulos.setHakukohdeOid("1.2.246.562.11.00000000008");
-        valintatulos.setHakuOid(t.getHakuOid());
-        valintatulos.setJulkaistavissa(true);
-        valintatulos.setTila(ValintatuloksenTila.EHDOLLISESTI_VASTAANOTTANUT);
-        valintatulos.setValintatapajonoOid("esimerkkikoulu_jono_1");
+        valintatulos.setHakemusOid("1.2.246.562.24.00000000003", "");
+        valintatulos.setHakijaOid("oid", "");
+        valintatulos.setHakukohdeOid("1.2.246.562.11.00000000008", "");
+        valintatulos.setHakuOid(t.getHakuOid(), "");
+        valintatulos.setJulkaistavissa(true, "");
+        valintatulos.setTila(ValintatuloksenTila.EHDOLLISESTI_VASTAANOTTANUT, "");
+        valintatulos.setValintatapajonoOid("esimerkkikoulu_jono_1", "");
 
         valintatuloses.add(valintatulos);
         s = SijoitteluAlgorithm.sijoittele(new SijoitteluAjo(), hakukohteet, valintatuloses);

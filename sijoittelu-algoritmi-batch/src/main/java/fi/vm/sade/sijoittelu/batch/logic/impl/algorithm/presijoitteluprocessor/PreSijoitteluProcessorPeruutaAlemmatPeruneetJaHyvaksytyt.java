@@ -189,9 +189,9 @@ public class PreSijoitteluProcessorPeruutaAlemmatPeruneetJaHyvaksytyt implements
     }
 
     private void lisaaMuokattavaValintatulos(SijoitteluajoWrapper sijoitteluajoWrapper, Valintatulos nykyinen) {
-        nykyinen.setIlmoittautumisTila(IlmoittautumisTila.EI_TEHTY);
-        nykyinen.setTila(ValintatuloksenTila.KESKEN);
-        nykyinen.setHyvaksyttyVarasijalta(false);
+        nykyinen.setIlmoittautumisTila(IlmoittautumisTila.EI_TEHTY, "Peruutettu alempi hakutoive");
+        nykyinen.setTila(ValintatuloksenTila.KESKEN, "Peruutettu alempi hakutoive");
+        nykyinen.setHyvaksyttyVarasijalta(false, "Peruutettu alempi hakutoive");
         sijoitteluajoWrapper.getMuuttuneetValintatulokset().add(nykyinen);
     }
 

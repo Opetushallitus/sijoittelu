@@ -39,7 +39,7 @@ public class SijoitteluajoWrapperHashTest {
             if (i <= 5) {
                 hakemus.setJonosija(hakemus.getJonosija() + 1);
             } else {
-                valintatulos1.setHakutoive(valintatulos1.getHakutoive() + 1);
+                valintatulos1.setHakutoive(valintatulos1.getHakutoive() + 1, "");
             }
             hcode = ajo.asHash();
 
@@ -56,12 +56,12 @@ public class SijoitteluajoWrapperHashTest {
                 .hakukohteenHakijat().findFirst().get().getValintatulos().iterator().next();
 
 
-        valintatulos1.setTila(null);
+        valintatulos1.setTila(null, "");
         HashCode h0 = ajo.asHash();
 
         Set<HashCode> hashes = Sets.newHashSet();
         for(ValintatuloksenTila v0 : ValintatuloksenTila.values()) {
-            valintatulos1.setTila(v0);
+            valintatulos1.setTila(v0, "");
             hashes.add(ajo.asHash());
         }
         Assert.assertFalse(hashes.contains(h0));

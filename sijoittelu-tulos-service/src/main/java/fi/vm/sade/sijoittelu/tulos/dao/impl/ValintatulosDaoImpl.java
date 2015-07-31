@@ -154,9 +154,9 @@ public class ValintatulosDaoImpl implements ValintatulosDao {
     }
 
     private void paivitaArvotMongosta(Valintatulos valintatulos, Valintatulos mongoTulos) {
-        valintatulos.setTila(mongoTulos.getTila());
-        valintatulos.setIlmoittautumisTila(mongoTulos.getIlmoittautumisTila());
-        valintatulos.setJulkaistavissa(mongoTulos.getJulkaistavissa());
+        valintatulos.setTila(mongoTulos.getTila(), "Korvataan sijoittelun ulkopuolella muuttuneella tiedolla");
+        valintatulos.setIlmoittautumisTila(mongoTulos.getIlmoittautumisTila(), "Korvataan sijoittelun ulkopuolella muuttuneella tiedolla");
+        valintatulos.setJulkaistavissa(mongoTulos.getJulkaistavissa(), "Korvataan sijoittelun ulkopuolella muuttuneella tiedolla");
     }
 
     private Optional<Valintatulos> haeOlemassaolevaValintatulosMongosta(Map<String, List<Valintatulos>> hakukohteidenValintatuloksetMongo, Valintatulos valintatulos) {

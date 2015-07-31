@@ -19,6 +19,15 @@ public class LogEntry implements Serializable {
 
     private String selite;
 
+    public LogEntry() {}
+
+    public LogEntry(String muokkaaja, String muutos, String selite) {
+        this.luotu = new Date();
+        this.muokkaaja = muokkaaja;
+        this.muutos = muutos;
+        this.selite = selite;
+    }
+
     public Date getLuotu() {
         return luotu;
     }

@@ -3,7 +3,6 @@ package fi.vm.sade.sijoittelu.laskenta.service.business;
 import akka.actor.ActorRef;
 import com.google.common.collect.Sets.SetView;
 import fi.vm.sade.authentication.business.service.Authorizer;
-import fi.vm.sade.security.service.authz.util.AuthorizationUtil;
 import fi.vm.sade.sijoittelu.batch.logic.impl.DomainConverter;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoitteluAlgorithm;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoitteluajoWrapperFactory;
@@ -519,21 +518,28 @@ public class SijoitteluBusinessService {
         Hakemus hakemus = getHakemus(hakemusOid, valintatapajono);
         String hakukohdeOid = hakukohde.getOid();
         Valintatulos v = Optional.ofNullable(valintatulosDao.loadValintatulos(hakukohdeOid, valintatapajonoOid, hakemusOid))
-                .orElse(buildValintatulos(hakuoid, hakukohde, valintatapajono, hakemus));
+                .orElse(new Valintatulos(
+                        valintatapajono.getOid(),
+                        hakemus.getHakemusOid(),
+                        hakukohde.getOid(),
+                        hakemus.getHakijaOid(),
+                        hakuoid,
+                        hakemus.getPrioriteetti()));
         if (notModifying(tila, ilmoittautumisTila, julkaistavissa, hyvaksyttyVarasijalta, hyvaksyPeruuntunut, v)) {
             return;
         }
 
         authorizeHyvaksyPeruuntunutModification(tarjoajaOid, hyvaksyPeruuntunut, v);
 
-        String muutos = muutos(v, tila, ilmoittautumisTila, julkaistavissa, hyvaksyttyVarasijalta, hyvaksyPeruuntunut);
-        v.getLogEntries().add(createLogEntry(selite, muutos));
-        v.setTila(tila);
-        v.setIlmoittautumisTila(ilmoittautumisTila);
-        v.setJulkaistavissa(julkaistavissa);
-        v.setHyvaksyttyVarasijalta(hyvaksyttyVarasijalta);
-        v.setHyvaksyPeruuntunut(hyvaksyPeruuntunut);
-        LOG.info("Muutetaan valintatulosta hakukohdeoid {}, valintatapajonooid {}, hakemusoid {}: {}", hakukohdeOid, valintatapajonoOid, hakemusOid, muutos);
+        String muokkaaja = getUsernameFromSession();
+        v.setTila(tila, selite, muokkaaja);
+        v.setIlmoittautumisTila(ilmoittautumisTila, selite, muokkaaja);
+        v.setJulkaistavissa(julkaistavissa, selite, muokkaaja);
+        v.setHyvaksyttyVarasijalta(hyvaksyttyVarasijalta, selite, muokkaaja);
+        v.setHyvaksyPeruuntunut(hyvaksyPeruuntunut, selite, muokkaaja);
+        LOG.info("Muutetaan valintatulosta hakukohdeoid {}, valintatapajonooid {}, hakemusoid {}: {}",
+                hakukohdeOid, valintatapajonoOid, hakemusOid,
+                muutos(v, tila, ilmoittautumisTila, julkaistavissa, hyvaksyttyVarasijalta, hyvaksyPeruuntunut));
         valintatulosDao.createOrUpdateValintatulos(v);
     }
 
@@ -548,17 +554,6 @@ public class SijoitteluBusinessService {
     private String getUsernameFromSession() {
         Authentication authentication = getContext().getAuthentication();
         return authentication == null ? "[No user defined in session]" : authentication.getName();
-    }
-
-    private static Valintatulos buildValintatulos(String hakuoid, Hakukohde hakukohde, Valintatapajono valintatapajono, Hakemus hakemus) {
-        Valintatulos v = new Valintatulos();
-        v.setHakemusOid(hakemus.getHakemusOid());
-        v.setValintatapajonoOid(valintatapajono.getOid());
-        v.setHakukohdeOid(hakukohde.getOid());
-        v.setHakijaOid(hakemus.getHakijaOid());
-        v.setHakutoive(hakemus.getPrioriteetti());
-        v.setHakuOid(hakuoid);
-        return v;
     }
 
     private static String muutos(Valintatulos v,
@@ -597,15 +592,6 @@ public class SijoitteluBusinessService {
                 v.getJulkaistavissa() == julkaistavissa &&
                 v.getHyvaksyttyVarasijalta() == hyvaksyttyVarasijalta &&
                 v.getHyvaksyPeruuntunut() == hyvaksyPeruuntunut;
-    }
-
-    private LogEntry createLogEntry(String selite, String muutos) {
-        LogEntry logEntry = new LogEntry();
-        logEntry.setLuotu(new Date());
-        logEntry.setMuokkaaja(AuthorizationUtil.getCurrentUser());
-        logEntry.setSelite(selite);
-        logEntry.setMuutos(muutos);
-        return logEntry;
     }
 
     private void updateMissingTarjoajaOidFromTarjonta(Hakukohde hakukohde) {

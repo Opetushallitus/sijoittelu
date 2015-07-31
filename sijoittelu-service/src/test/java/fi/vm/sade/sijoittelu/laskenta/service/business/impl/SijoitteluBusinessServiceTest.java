@@ -164,19 +164,19 @@ public class SijoitteluBusinessServiceTest {
 
     private Valintatulos getValintatulos(ValintatuloksenTila tila) {
         Valintatulos valintatulos = new Valintatulos();
-        valintatulos.setHakemusOid(HAKEMUS_OID);
-        valintatulos.setHakijaOid(HAKEMUS_OID);
-        valintatulos.setHakukohdeOid(HAKUKOHDE_OID);
-        valintatulos.setHakuOid(HAKU_OID);
-        valintatulos.setHakutoive(0);
-        valintatulos.setValintatapajonoOid(VALINTATAPAJONO_OID);
-        valintatulos.setTila(tila);
+        valintatulos.setHakemusOid(HAKEMUS_OID, "");
+        valintatulos.setHakijaOid(HAKEMUS_OID, "");
+        valintatulos.setHakukohdeOid(HAKUKOHDE_OID, "");
+        valintatulos.setHakuOid(HAKU_OID, "");
+        valintatulos.setHakutoive(0, "");
+        valintatulos.setValintatapajonoOid(VALINTATAPAJONO_OID, "");
+        valintatulos.setTila(tila, "");
         return valintatulos;
     }
 
     private Valintatulos getValintatulos(ValintatuloksenTila tila, boolean hyvaksyPeruuntunut) {
         Valintatulos valintatulos = getValintatulos(tila);
-        valintatulos.setHyvaksyPeruuntunut(hyvaksyPeruuntunut);
+        valintatulos.setHyvaksyPeruuntunut(hyvaksyPeruuntunut, "");
         return valintatulos;
     }
 

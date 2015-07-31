@@ -189,7 +189,8 @@ public abstract class SijoitteluAlgorithm {
                             .filter(h0 -> !sijoitteluAjo.onkoVarasijaTayttoPaattynyt(h0.getValintatapajono()))
                             .findAny().isPresent()) {
                         h.getValintatulos().ifPresent(v -> {
-                            v.setTila(ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI);
+                            v.setTila(ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI,
+                                    "Ehdollinen vastaanotto ylimmässä mahdollisessa hakutoiveessa sitovaksi");
                             sijoitteluAjo.getMuuttuneetValintatulokset().add(v);
                         });
                     }
@@ -564,11 +565,9 @@ public abstract class SijoitteluAlgorithm {
                             asetaTilaksiPeruuntunutYlempiToive(h);
                             ehdollinenOpt.ifPresent(e -> siirraVastaanottotilaYlemmalleHakutoiveelle(sijoitteluAjo, hakemus));
                             uudelleenSijoiteltavatHakukohteet.add(h);
-                        } else {
-                            if (!kuuluuHylattyihinTiloihin(hakemuksenTila(h))) {
-                                asetaTilaksiPeruuntunutYlempiToive(h);
-                                ehdollinenOpt.ifPresent(e -> siirraVastaanottotilaYlemmalleHakutoiveelle(sijoitteluAjo, hakemus));
-                            }
+                        } else if (!kuuluuHylattyihinTiloihin(hakemuksenTila(h))) {
+                            asetaTilaksiPeruuntunutYlempiToive(h);
+                            ehdollinenOpt.ifPresent(e -> siirraVastaanottotilaYlemmalleHakutoiveelle(sijoitteluAjo, hakemus));
                         }
                     }
 

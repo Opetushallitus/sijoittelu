@@ -86,11 +86,11 @@ public class TulosGenerator {
 
     static private Valintatulos createValintatulos(final Hakukohde hakukohde, final Valintatapajono jono, final Hakemus hakemus) {
         Valintatulos valintatulos = template.getTemplate("Valintatulos", Valintatulos.class);
-        valintatulos.setHakemusOid(hakemus.getHakemusOid());
-        valintatulos.setHakijaOid(hakemus.getHakijaOid());
-        valintatulos.setHakukohdeOid(hakukohde.getOid());
-        valintatulos.setId(null);
-        valintatulos.setValintatapajonoOid(jono.getOid());
+        valintatulos.setHakemusOid(hakemus.getHakemusOid(), "");
+        valintatulos.setHakijaOid(hakemus.getHakijaOid(), "");
+        valintatulos.setHakukohdeOid(hakukohde.getOid(), "");
+        valintatulos.setId(null, "");
+        valintatulos.setValintatapajonoOid(jono.getOid(), "");
         return valintatulos;
     }
 

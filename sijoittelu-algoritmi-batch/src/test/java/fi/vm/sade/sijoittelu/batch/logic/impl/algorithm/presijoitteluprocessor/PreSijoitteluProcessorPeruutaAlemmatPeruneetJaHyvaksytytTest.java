@@ -128,10 +128,10 @@ public class PreSijoitteluProcessorPeruutaAlemmatPeruneetJaHyvaksytytTest {
 
 
         Valintatulos valintatulos = new Valintatulos();
-        valintatulos.setHakemusOid("321");
-        valintatulos.setHakukohdeOid("321");
-        valintatulos.setValintatapajonoOid("123");
-        valintatulos.setTila(ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI);
+        valintatulos.setHakemusOid("321", "");
+        valintatulos.setHakukohdeOid("321", "");
+        valintatulos.setValintatapajonoOid("123", "");
+        valintatulos.setTila(ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI, "");
         henkilo.getValintatulos().add(valintatulos);
         hakemus.setHenkilo(henkilo);
         hakemus2.setHenkilo(henkilo);
@@ -177,10 +177,10 @@ public class PreSijoitteluProcessorPeruutaAlemmatPeruneetJaHyvaksytytTest {
 
 
         valintatulos = new Valintatulos();
-        valintatulos.setHakemusOid("123");
-        valintatulos.setHakukohdeOid("123");
-        valintatulos.setValintatapajonoOid("123");
-        valintatulos.setTila(ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI);
+        valintatulos.setHakemusOid("123", "");
+        valintatulos.setHakukohdeOid("123", "");
+        valintatulos.setValintatapajonoOid("123", "");
+        valintatulos.setTila(ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI, "");
         henkilo.getValintatulos().add(valintatulos);
         hakemus.setHenkilo(henkilo);
         hakemus2.setHenkilo(henkilo);
@@ -231,17 +231,17 @@ public class PreSijoitteluProcessorPeruutaAlemmatPeruneetJaHyvaksytytTest {
 
         sijoitteluajoWrapper.getHakukohteet().get(0).getValintatapajonot().get(0).getHakemukset().add(hakemus);
         Valintatulos valintatulos = new Valintatulos();
-        valintatulos.setHakemusOid("321");
-        valintatulos.setHakukohdeOid("321");
-        valintatulos.setValintatapajonoOid("123");
-        valintatulos.setTila(ValintatuloksenTila.EHDOLLISESTI_VASTAANOTTANUT);
+        valintatulos.setHakemusOid("321", "");
+        valintatulos.setHakukohdeOid("321", "");
+        valintatulos.setValintatapajonoOid("123", "");
+        valintatulos.setTila(ValintatuloksenTila.EHDOLLISESTI_VASTAANOTTANUT, "");
         henkilo.getValintatulos().add(valintatulos);
 
         Valintatulos valintatulos2 = new Valintatulos();
-        valintatulos2.setHakemusOid("123");
-        valintatulos2.setHakukohdeOid("123");
-        valintatulos2.setValintatapajonoOid("123");
-        valintatulos2.setTila(ValintatuloksenTila.VASTAANOTTANUT);
+        valintatulos2.setHakemusOid("123", "");
+        valintatulos2.setHakukohdeOid("123", "");
+        valintatulos2.setValintatapajonoOid("123", "");
+        valintatulos2.setTila(ValintatuloksenTila.VASTAANOTTANUT, "");
         henkilo.getValintatulos().add(valintatulos2);
 
         hakemus.setHenkilo(henkilo);
@@ -287,17 +287,17 @@ public class PreSijoitteluProcessorPeruutaAlemmatPeruneetJaHyvaksytytTest {
 
         sijoitteluajoWrapper.getHakukohteet().get(0).getValintatapajonot().get(0).getHakemukset().add(hakemus);
         valintatulos = new Valintatulos();
-        valintatulos.setHakemusOid("123");
-        valintatulos.setHakukohdeOid("123");
-        valintatulos.setValintatapajonoOid("123");
-        valintatulos.setTila(ValintatuloksenTila.EHDOLLISESTI_VASTAANOTTANUT);
+        valintatulos.setHakemusOid("123", "");
+        valintatulos.setHakukohdeOid("123", "");
+        valintatulos.setValintatapajonoOid("123", "");
+        valintatulos.setTila(ValintatuloksenTila.EHDOLLISESTI_VASTAANOTTANUT, "");
         henkilo.getValintatulos().add(valintatulos);
 
         valintatulos2 = new Valintatulos();
-        valintatulos2.setHakemusOid("321");
-        valintatulos2.setHakukohdeOid("321");
-        valintatulos2.setValintatapajonoOid("123");
-        valintatulos2.setTila(ValintatuloksenTila.VASTAANOTTANUT);
+        valintatulos2.setHakemusOid("321", "");
+        valintatulos2.setHakukohdeOid("321", "");
+        valintatulos2.setValintatapajonoOid("123", "");
+        valintatulos2.setTila(ValintatuloksenTila.VASTAANOTTANUT, "");
         henkilo.getValintatulos().add(valintatulos2);
 
         hakemus.setHenkilo(henkilo);

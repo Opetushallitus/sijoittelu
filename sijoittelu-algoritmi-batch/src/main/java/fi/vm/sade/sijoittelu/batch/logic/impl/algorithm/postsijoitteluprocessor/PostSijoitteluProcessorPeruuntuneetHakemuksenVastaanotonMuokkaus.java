@@ -54,20 +54,9 @@ public class PostSijoitteluProcessorPeruuntuneetHakemuksenVastaanotonMuokkaus im
     }
 
     private static void poistaVastaanottoTieto(Valintatulos valintatulos) {
-        valintatulos.setTila(ValintatuloksenTila.KESKEN);
-        valintatulos.setIlmoittautumisTila(IlmoittautumisTila.EI_TEHTY);
-        valintatulos.setHyvaksyttyVarasijalta(false);
-        valintatulos.getLogEntries().add(createLogEntry(valintatulos.getTila() + " -> " + ValintatuloksenTila.KESKEN,
-                "Poistettu vastaanottotieto koska peruuntunut"));
-    }
-
-    private static LogEntry createLogEntry(String muutos, String selite) {
-        LogEntry logEntry = new LogEntry();
-        logEntry.setLuotu(new Date());
-        logEntry.setMuokkaaja("sijoittelu");
-        logEntry.setMuutos(muutos);
-        logEntry.setSelite(selite);
-        return logEntry;
+        valintatulos.setTila(ValintatuloksenTila.KESKEN, "Peruuntunut hakutoive");
+        valintatulos.setIlmoittautumisTila(IlmoittautumisTila.EI_TEHTY, "Peruuntunut hakutoive");
+        valintatulos.setHyvaksyttyVarasijalta(false, "Peruuntunut hakutoive");
     }
 }
 

@@ -62,8 +62,8 @@ public class SijoitteluajoWrapperFactoryTest {
         @Test
         public void VASTAANOTTANUT_SITOVASTI_hyvaksyy_hakemuksen_ja_kopioi_ilmoittautumistilan() {
             Valintatulos valintatulos = valintatulosWithTila(ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI);
-            valintatulos.setIlmoittautumisTila(IlmoittautumisTila.LASNA);
-            valintatulos.setJulkaistavissa(true);
+            valintatulos.setIlmoittautumisTila(IlmoittautumisTila.LASNA, "");
+            valintatulos.setJulkaistavissa(true, "");
             SijoitteluajoWrapper sijoitteluAjo = sijoitteluAjo(valintatulos);
 
             assertEquals(1, sijoitteluAjo.getHakukohteet().size());
@@ -76,7 +76,7 @@ public class SijoitteluajoWrapperFactoryTest {
         @Test
         public void hyvaksyPeruuntunut_flag_hyvaksyy_hakemuksen() {
             Valintatulos valintatulos = valintatulosWithTila(ValintatuloksenTila.KESKEN);
-            valintatulos.setHyvaksyPeruuntunut(true);
+            valintatulos.setHyvaksyPeruuntunut(true, "");
             List<Hakemus> hakemukset = generateHakemuksetEdellisellaTilalla(HakemuksenTila.PERUUNTUNUT, HakemuksenTila.PERUUNTUNUT);
             SijoitteluajoWrapper sijoitteluAjo = sijoitteluAjo(valintatulos, hakemukset);
 
@@ -89,7 +89,7 @@ public class SijoitteluajoWrapperFactoryTest {
         @Test
         public void hyvaksyVarasijalta_flag_hyvaksyy_hakemuksen() {
             Valintatulos valintatulos = valintatulosWithTila(ValintatuloksenTila.KESKEN);
-            valintatulos.setHyvaksyttyVarasijalta(true);
+            valintatulos.setHyvaksyttyVarasijalta(true, "");
             List<Hakemus> hakemukset = generateHakemuksetEdellisellaTilalla(HakemuksenTila.HYVAKSYTTY, HakemuksenTila.HYVAKSYTTY);
             SijoitteluajoWrapper sijoitteluAjo = sijoitteluAjo(valintatulos, hakemukset);
 
@@ -104,7 +104,7 @@ public class SijoitteluajoWrapperFactoryTest {
         @Test
         public void ei_voi_vaihtua_HYLATTY_tilaan() {
             Valintatulos valintatulos = valintatulosWithTila(ValintatuloksenTila.KESKEN);
-            valintatulos.setJulkaistavissa(true);
+            valintatulos.setJulkaistavissa(true, "");
             final List<Hakemus> hakemukset = generateHakemuksetEdellisellaTilalla(HakemuksenTila.HYVAKSYTTY, HakemuksenTila.HYLATTY);
             asetaRandomTilanKuvaus(hakemukset);
             final SijoitteluajoWrapper sijoitteluAjo = sijoitteluAjo(valintatulos, hakemukset);
@@ -140,10 +140,10 @@ public class SijoitteluajoWrapperFactoryTest {
 
     private static Valintatulos valintatulosWithTila(ValintatuloksenTila tila) {
         Valintatulos valintatulos = new Valintatulos();
-        valintatulos.setValintatapajonoOid("123");
-        valintatulos.setHakukohdeOid("123");
-        valintatulos.setHakemusOid("123");
-        valintatulos.setTila(tila);
+        valintatulos.setValintatapajonoOid("123", "");
+        valintatulos.setHakukohdeOid("123", "");
+        valintatulos.setHakemusOid("123", "");
+        valintatulos.setTila(tila, "");
         return valintatulos;
     }
 

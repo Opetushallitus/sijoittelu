@@ -50,13 +50,13 @@ public class ValintatulosDaoImplTest {
             setOid("1.2.246.562.5.72607738902");
         }};
         Valintatulos tulos = new Valintatulos() {{
-            setHakuOid(hakuOid);
-            setHakukohdeOid("1.2.246.562.5.72607738902");
-            setHakemusOid("1.2.246.562.11.00000441369");
-            setTila(ValintatuloksenTila.KESKEN);
-            setIlmoittautumisTila(IlmoittautumisTila.LASNA);
-            setValintatapajonoOid("14090336922663576781797489829886");
-            setJulkaistavissa(true);
+            setHakuOid(hakuOid, "");
+            setHakukohdeOid("1.2.246.562.5.72607738902", "");
+            setHakemusOid("1.2.246.562.11.00000441369", "");
+            setTila(ValintatuloksenTila.KESKEN, "");
+            setIlmoittautumisTila(IlmoittautumisTila.LASNA, "");
+            setValintatapajonoOid("14090336922663576781797489829886", "");
+            setJulkaistavissa(true, "");
         }};
 
         final List<Valintatulos> mergattu = valintatulosDao.mergaaValintatulos(Arrays.asList(kohde), Arrays.asList(tulos));
@@ -84,13 +84,13 @@ public class ValintatulosDaoImplTest {
             setValintatapajonot(Arrays.asList(jono));
         }};
         Valintatulos tulos = new Valintatulos() {{
-            setHakuOid(hakuOid);
-            setHakukohdeOid("1.2.246.562.5.72607738902");
-            setHakemusOid("1.2.246.562.11.00000441369");
-            setTila(ValintatuloksenTila.KESKEN);
-            setIlmoittautumisTila(IlmoittautumisTila.LASNA);
-            setValintatapajonoOid("14090336922663576781797489829886");
-            setJulkaistavissa(true);
+            setHakuOid(hakuOid, "");
+            setHakukohdeOid("1.2.246.562.5.72607738902", "");
+            setHakemusOid("1.2.246.562.11.00000441369", "");
+            setTila(ValintatuloksenTila.KESKEN, "");
+            setIlmoittautumisTila(IlmoittautumisTila.LASNA, "");
+            setValintatapajonoOid("14090336922663576781797489829886", "");
+            setJulkaistavissa(true, "");
         }};
 
         final List<Valintatulos> mergattu = valintatulosDao.mergaaValintatulos(Arrays.asList(kohde), Arrays.asList(tulos));

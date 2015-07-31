@@ -59,15 +59,15 @@ public class SijoitteluMontaJonoaTest {
         List<Hakukohde> hakukohteet = haku.getHakukohteet().parallelStream().map(DomainConverter::convertToHakukohde).collect(Collectors.toList());
 
         Valintatulos tulos = new Valintatulos();
-        tulos.setHakemusOid("1.2.246.562.11.00001068863");
-        tulos.setHakukohdeOid("1.2.246.562.20.18895322503");
-        tulos.setHakuOid("1.2.246.562.29.173465377510");
-        tulos.setHakutoive(2);
-        tulos.setHyvaksyttyVarasijalta(false);
-        tulos.setIlmoittautumisTila(IlmoittautumisTila.LASNA_KOKO_LUKUVUOSI);
-        tulos.setJulkaistavissa(true);
-        tulos.setTila(ValintatuloksenTila.VASTAANOTTANUT);
-        tulos.setValintatapajonoOid("oid2");
+        tulos.setHakemusOid("1.2.246.562.11.00001068863", "");
+        tulos.setHakukohdeOid("1.2.246.562.20.18895322503", "");
+        tulos.setHakuOid("1.2.246.562.29.173465377510", "");
+        tulos.setHakutoive(2, "");
+        tulos.setHyvaksyttyVarasijalta(false, "");
+        tulos.setIlmoittautumisTila(IlmoittautumisTila.LASNA_KOKO_LUKUVUOSI, "");
+        tulos.setJulkaistavissa(true, "");
+        tulos.setTila(ValintatuloksenTila.VASTAANOTTANUT, "");
+        tulos.setValintatapajonoOid("oid2", "");
         final SijoitteluajoWrapper sijoitteluAjo = SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(new SijoitteluAjo(), hakukohteet, Arrays.asList(tulos));
         final SijoittelunTila s = SijoitteluAlgorithm.sijoittele(sijoitteluAjo);
 
@@ -138,16 +138,16 @@ public class SijoitteluMontaJonoaTest {
 
         List<Hakukohde> hakukohteet = haku.getHakukohteet().parallelStream().map(DomainConverter::convertToHakukohde).collect(Collectors.toList());
         Valintatulos tulos = new Valintatulos();
-        tulos.setHakemusOid("1.2.246.562.11.00001067411");
-        tulos.setHakijaOid("1.2.246.562.11.00001067411");
-        tulos.setHakukohdeOid("1.2.246.562.20.18895322503");
-        tulos.setHakuOid("1.2.246.562.29.173465377510");
-        tulos.setHakutoive(1);
-        tulos.setHyvaksyttyVarasijalta(false);
-        tulos.setIlmoittautumisTila(IlmoittautumisTila.POISSA);
-        tulos.setJulkaistavissa(true);
-        tulos.setTila(ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI);
-        tulos.setValintatapajonoOid("oid1");
+        tulos.setHakemusOid("1.2.246.562.11.00001067411", "");
+        tulos.setHakijaOid("1.2.246.562.11.00001067411", "");
+        tulos.setHakukohdeOid("1.2.246.562.20.18895322503", "");
+        tulos.setHakuOid("1.2.246.562.29.173465377510", "");
+        tulos.setHakutoive(1, "");
+        tulos.setHyvaksyttyVarasijalta(false, "");
+        tulos.setIlmoittautumisTila(IlmoittautumisTila.POISSA, "");
+        tulos.setJulkaistavissa(true, "");
+        tulos.setTila(ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI, "");
+        tulos.setValintatapajonoOid("oid1", "");
         SijoittelunTila s = SijoitteluAlgorithm.sijoittele(new SijoitteluAjo(), hakukohteet, Arrays.asList(tulos));
 
         System.out.println(PrintHelper.tulostaSijoittelu(s));
@@ -165,16 +165,16 @@ public class SijoitteluMontaJonoaTest {
 
         List<Hakukohde> hakukohteet = haku.getHakukohteet().parallelStream().map(DomainConverter::convertToHakukohde).collect(Collectors.toList());
         Valintatulos tulos = new Valintatulos();
-        tulos.setHakemusOid("1.2.246.562.11.00001068863");
-        tulos.setHakijaOid("1.2.246.562.11.00001068863");
-        tulos.setHakukohdeOid("1.2.246.562.20.18895322503");
-        tulos.setHakuOid("1.2.246.562.29.173465377510");
-        tulos.setHakutoive(1);
-        tulos.setHyvaksyttyVarasijalta(false);
-        tulos.setIlmoittautumisTila(IlmoittautumisTila.EI_TEHTY);
-        tulos.setJulkaistavissa(true);
-        tulos.setTila(ValintatuloksenTila.EI_VASTAANOTETTU_MAARA_AIKANA);
-        tulos.setValintatapajonoOid("oid1");
+        tulos.setHakemusOid("1.2.246.562.11.00001068863", "");
+        tulos.setHakijaOid("1.2.246.562.11.00001068863", "");
+        tulos.setHakukohdeOid("1.2.246.562.20.18895322503", "");
+        tulos.setHakuOid("1.2.246.562.29.173465377510", "");
+        tulos.setHakutoive(1, "");
+        tulos.setHyvaksyttyVarasijalta(false, "");
+        tulos.setIlmoittautumisTila(IlmoittautumisTila.EI_TEHTY, "");
+        tulos.setJulkaistavissa(true, "");
+        tulos.setTila(ValintatuloksenTila.EI_VASTAANOTETTU_MAARA_AIKANA, "");
+        tulos.setValintatapajonoOid("oid1", "");
         SijoittelunTila s = SijoitteluAlgorithm.sijoittele(new SijoitteluAjo(), hakukohteet, Arrays.asList(tulos));
 
         System.out.println(PrintHelper.tulostaSijoittelu(s));
@@ -197,16 +197,16 @@ public class SijoitteluMontaJonoaTest {
 
 
         Valintatulos tulos2 = new Valintatulos();
-        tulos2.setHakemusOid("1.2.246.562.11.00001068863");
-        tulos2.setHakijaOid("1.2.246.562.11.00001068863");
-        tulos2.setHakukohdeOid("1.2.246.562.20.18895322503");
-        tulos2.setHakuOid("1.2.246.562.29.173465377510");
-        tulos2.setHakutoive(1);
-        tulos2.setHyvaksyttyVarasijalta(false);
-        tulos2.setIlmoittautumisTila(IlmoittautumisTila.EI_TEHTY);
-        tulos2.setJulkaistavissa(true);
-        tulos2.setTila(ValintatuloksenTila.EHDOLLISESTI_VASTAANOTTANUT);
-        tulos2.setValintatapajonoOid("oid2");
+        tulos2.setHakemusOid("1.2.246.562.11.00001068863", "");
+        tulos2.setHakijaOid("1.2.246.562.11.00001068863", "");
+        tulos2.setHakukohdeOid("1.2.246.562.20.18895322503", "");
+        tulos2.setHakuOid("1.2.246.562.29.173465377510", "");
+        tulos2.setHakutoive(1, "");
+        tulos2.setHyvaksyttyVarasijalta(false, "");
+        tulos2.setIlmoittautumisTila(IlmoittautumisTila.EI_TEHTY, "");
+        tulos2.setJulkaistavissa(true, "");
+        tulos2.setTila(ValintatuloksenTila.EHDOLLISESTI_VASTAANOTTANUT, "");
+        tulos2.setValintatapajonoOid("oid2", "");
 
         hakukohteet = haku.getHakukohteet().parallelStream().map(DomainConverter::convertToHakukohde).collect(Collectors.toList());
         s = SijoitteluAlgorithm.sijoittele(new SijoitteluAjo(), hakukohteet, Arrays.asList(tulos, tulos2));
@@ -228,7 +228,7 @@ public class SijoitteluMontaJonoaTest {
             }
         });
 
-        tulos2.setTila(ValintatuloksenTila.KESKEN);
+        tulos2.setTila(ValintatuloksenTila.KESKEN, "");
 
         hakukohteet = haku.getHakukohteet().parallelStream().map(DomainConverter::convertToHakukohde).collect(Collectors.toList());
         s = SijoitteluAlgorithm.sijoittele(new SijoitteluAjo(), hakukohteet, Arrays.asList(tulos, tulos2));
@@ -290,24 +290,24 @@ public class SijoitteluMontaJonoaTest {
         });
 
         Valintatulos tulos = new Valintatulos();
-        tulos.setHakemusOid("1.2.246.562.11.00001068863");
-        tulos.setHakijaOid("1.2.246.562.11.00001068863");
-        tulos.setHakukohdeOid("1.2.246.562.20.18895322503");
-        tulos.setHakutoive(1);
-        tulos.setIlmoittautumisTila(IlmoittautumisTila.EI_TEHTY);
-        tulos.setTila(ValintatuloksenTila.PERUNUT);
-        tulos.setJulkaistavissa(true);
-        tulos.setValintatapajonoOid("oid1");
+        tulos.setHakemusOid("1.2.246.562.11.00001068863", "");
+        tulos.setHakijaOid("1.2.246.562.11.00001068863", "");
+        tulos.setHakukohdeOid("1.2.246.562.20.18895322503", "");
+        tulos.setHakutoive(1, "");
+        tulos.setIlmoittautumisTila(IlmoittautumisTila.EI_TEHTY, "");
+        tulos.setTila(ValintatuloksenTila.PERUNUT, "");
+        tulos.setJulkaistavissa(true, "");
+        tulos.setValintatapajonoOid("oid1", "");
 
         Valintatulos tulos2 = new Valintatulos();
-        tulos2.setHakemusOid("1.2.246.562.11.00001090792");
-        tulos2.setHakijaOid("1.2.246.562.11.00001090792");
-        tulos2.setHakukohdeOid("1.2.246.562.20.18895322503");
-        tulos2.setHakutoive(1);
-        tulos2.setIlmoittautumisTila(IlmoittautumisTila.EI_TEHTY);
-        tulos2.setTila(ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI);
-        tulos2.setJulkaistavissa(true);
-        tulos2.setValintatapajonoOid("oid1");
+        tulos2.setHakemusOid("1.2.246.562.11.00001090792", "");
+        tulos2.setHakijaOid("1.2.246.562.11.00001090792", "");
+        tulos2.setHakukohdeOid("1.2.246.562.20.18895322503", "");
+        tulos2.setHakutoive(1, "");
+        tulos2.setIlmoittautumisTila(IlmoittautumisTila.EI_TEHTY, "");
+        tulos2.setTila(ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI, "");
+        tulos2.setJulkaistavissa(true, "");
+        tulos2.setValintatapajonoOid("oid1", "");
         SijoitteluajoWrapper sijoitteluajoWrapper = SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(new SijoitteluAjo(), hakukohteet, Arrays.asList(tulos));
         sijoitteluajoWrapper.setVarasijaSaannotAstuvatVoimaan(LocalDateTime.now().plusDays(1));
         s = SijoitteluAlgorithm.sijoittele(sijoitteluajoWrapper);
@@ -444,10 +444,10 @@ public class SijoitteluMontaJonoaTest {
         hakukohteet.get(0).getValintatapajonot().get(0).setVarasijojaTaytetaanAsti(new Date(time.minusHours(10).toInstant(ZoneOffset.UTC).toEpochMilli()));
 
         Valintatulos tulos1 = createTulos("hakemus2", "hakukohde1", "oid1");
-        tulos1.setTila(ValintatuloksenTila.EHDOLLISESTI_VASTAANOTTANUT);
+        tulos1.setTila(ValintatuloksenTila.EHDOLLISESTI_VASTAANOTTANUT, "");
 
         Valintatulos tulos2 = createTulos("hakemus3", "hakukohde1", "oid2");
-        tulos1.setTila(ValintatuloksenTila.EHDOLLISESTI_VASTAANOTTANUT);
+        tulos1.setTila(ValintatuloksenTila.EHDOLLISESTI_VASTAANOTTANUT, "");
         final SijoitteluajoWrapper sijoitteluAjo = SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(new SijoitteluAjo(), hakukohteet, Arrays.asList(tulos1, tulos2));
         sijoitteluAjo.setKKHaku(true);
         SijoittelunTila s = SijoitteluAlgorithm.sijoittele(sijoitteluAjo);
@@ -538,10 +538,10 @@ public class SijoitteluMontaJonoaTest {
         Valintatulos tulos72 = createTulos("oid7", "hakukohde1", "oid2");
         s = SijoitteluAlgorithm.sijoittele(new SijoitteluAjo(), hakukohteet, Arrays.asList(tulos11, tulos12, tulos21, tulos22, tulos31, tulos32, tulos41, tulos42, tulos51, tulos52, tulos61, tulos62, tulos71, tulos72));
 
-        tulos11.setTila(ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI);
-        tulos11.setIlmoittautumisTila(IlmoittautumisTila.POISSA);
+        tulos11.setTila(ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI, "");
+        tulos11.setIlmoittautumisTila(IlmoittautumisTila.POISSA, "");
 
-        tulos22.setTila(ValintatuloksenTila.PERUNUT);
+        tulos22.setTila(ValintatuloksenTila.PERUNUT, "");
         s = SijoitteluAlgorithm.sijoittele(new SijoitteluAjo(), hakukohteet, Arrays.asList(tulos11, tulos12, tulos21, tulos22, tulos31, tulos32, tulos41, tulos42, tulos51, tulos52, tulos61, tulos62, tulos71, tulos72));
 
         System.out.println(PrintHelper.tulostaSijoittelu(s));
@@ -579,13 +579,13 @@ public class SijoitteluMontaJonoaTest {
 
         System.out.println(PrintHelper.tulostaSijoittelu(s));
 
-        tulos1.setTila(ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI);
-        tulos1.setIlmoittautumisTila(IlmoittautumisTila.POISSA);
+        tulos1.setTila(ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI, "");
+        tulos1.setIlmoittautumisTila(IlmoittautumisTila.POISSA, "");
 
-        tulos2.setTila(ValintatuloksenTila.PERUNUT);
+        tulos2.setTila(ValintatuloksenTila.PERUNUT, "");
 
-        tulos3.setTila(ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI);
-        tulos3.setIlmoittautumisTila(IlmoittautumisTila.POISSA);
+        tulos3.setTila(ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI, "");
+        tulos3.setIlmoittautumisTila(IlmoittautumisTila.POISSA, "");
         s = SijoitteluAlgorithm.sijoittele(new SijoitteluAjo(), hakukohteet, Arrays.asList(tulos1, tulos2, tulos3, tulos4, tulos5, tulos6, tulos7, tulos8, tulos9, tulos10));
 
         System.out.println(PrintHelper.tulostaSijoittelu(s));
@@ -638,15 +638,15 @@ public class SijoitteluMontaJonoaTest {
         Valintatulos tulos101 = createTulos("oid10", "hakukohde2", "jono2");
         s = SijoitteluAlgorithm.sijoittele(new SijoitteluAjo(), hakukohteet, Arrays.asList(tulos1, tulos2, tulos3, tulos4, tulos6, tulos7, tulos8, tulos9, tulos10, tulos11, tulos21, tulos31, tulos41, tulos61, tulos71, tulos81, tulos91, tulos101));
 
-        tulos1.setTila(ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI);
-        tulos1.setIlmoittautumisTila(IlmoittautumisTila.POISSA);
+        tulos1.setTila(ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI, "");
+        tulos1.setIlmoittautumisTila(IlmoittautumisTila.POISSA, "");
 
-        tulos2.setTila(ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI);
-        tulos2.setIlmoittautumisTila(IlmoittautumisTila.POISSA);
+        tulos2.setTila(ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI, "");
+        tulos2.setIlmoittautumisTila(IlmoittautumisTila.POISSA, "");
 
-        tulos61.setTila(ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI);
-        tulos71.setTila(ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI);
-        tulos81.setTila(ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI);
+        tulos61.setTila(ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI, "");
+        tulos71.setTila(ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI, "");
+        tulos81.setTila(ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI, "");
         s = SijoitteluAlgorithm.sijoittele(new SijoitteluAjo(), hakukohteet, Arrays.asList(tulos1, tulos2, tulos3, tulos4, tulos6, tulos7, tulos8, tulos9, tulos10, tulos11, tulos21, tulos31, tulos41, tulos61, tulos71, tulos81, tulos91, tulos101));
 
         System.out.println(PrintHelper.tulostaSijoittelu(s));
@@ -703,14 +703,14 @@ public class SijoitteluMontaJonoaTest {
 
     private Valintatulos createTulos(String hakemus, String hakukohde, String valintatapajono) {
         Valintatulos tulos = new Valintatulos();
-        tulos.setHakemusOid(hakemus);
-        tulos.setHakijaOid("hakijaoid");
-        tulos.setHakukohdeOid(hakukohde);
-        tulos.setHakutoive(1);
-        tulos.setIlmoittautumisTila(IlmoittautumisTila.EI_TEHTY);
-        tulos.setTila(ValintatuloksenTila.KESKEN);
-        tulos.setJulkaistavissa(true);
-        tulos.setValintatapajonoOid(valintatapajono);
+        tulos.setHakemusOid(hakemus, "");
+        tulos.setHakijaOid("hakijaoid", "");
+        tulos.setHakukohdeOid(hakukohde, "");
+        tulos.setHakutoive(1, "");
+        tulos.setIlmoittautumisTila(IlmoittautumisTila.EI_TEHTY, "");
+        tulos.setTila(ValintatuloksenTila.KESKEN, "");
+        tulos.setJulkaistavissa(true, "");
+        tulos.setValintatapajonoOid(valintatapajono, "");
         return tulos;
     }
 

@@ -51,7 +51,7 @@ public class PostSijoitteluProcessorEhdollisenVastaanotonSiirtyminenYlemmalleHak
         final SijoitteluajoWrapper sijoitteluAjo = sijoitteluajoWrapper;
         System.out.println("sijoitteluAjo.getMuuttuneetValintatulokset().size(): " + sijoitteluAjo.getMuuttuneetValintatulokset().size());
         sijoitteluAjo.getMuuttuneetValintatulokset().forEach(vt -> {
-            System.out.println("Valintatulos: " + vt.getHakemusOid() + " | " + vt.getValintatapajonoOid() + " | " + vt.getTila() + " | " + vt.getLogEntries().size());
+            System.out.println("Valintatulos: " + vt.getHakemusOid() + " | " + vt.getValintatapajonoOid() + " | " + vt.getTila());
         });
         //sijoitteluAjo.getMuuttuneetValintatulokset().addAll(valintatulosList);
         System.out.println(PrintHelper.tulostaSijoittelu(algorithm));

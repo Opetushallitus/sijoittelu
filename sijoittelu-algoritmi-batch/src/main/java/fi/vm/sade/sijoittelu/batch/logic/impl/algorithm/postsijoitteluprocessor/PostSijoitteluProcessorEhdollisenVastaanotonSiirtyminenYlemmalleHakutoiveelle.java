@@ -168,40 +168,6 @@ public class PostSijoitteluProcessorEhdollisenVastaanotonSiirtyminenYlemmalleHak
     }
 
     private void paivitaVastaanottotieto(Valintatulos valintatulos, ValintatuloksenTila tila) {
-        valintatulos.setTila(tila);
-        valintatulos.getLogEntries().add(createLogEntry(tila, "Vastaanottotieto peritynyt alemmalta hakutoiveelta"));
+        valintatulos.setTila(tila, "Vastaanottotieto peritynyt alemmalta hakutoiveelta");
     }
-
-    private LogEntry createLogEntry(ValintatuloksenTila tila, String selite) {
-        LogEntry logEntry = new LogEntry();
-        logEntry.setLuotu(new Date());
-        logEntry.setMuokkaaja("sijoittelu");
-        logEntry.setSelite(selite);
-        if (tila == null) {
-            logEntry.setMuutos("");
-        } else {
-            logEntry.setMuutos(tila.name());
-        }
-        return logEntry;
-    }
-
-    /*
-    private Valintatulos createNewValintaTulos(Hakemus hakemus, SijoitteluajoWrapper sijoitteluajoWrapper) {
-
-        Valintatulos v = new Valintatulos();
-
-        v.setHakemusOid(hakemus.getHakemusOid());
-        v.setValintatapajonoOid(valintatapajono.getOid());
-        v.setHakukohdeOid(hakukohde.getOid());
-        v.setHakijaOid(hakemus.getHakijaOid());
-        v.setHakutoive(hakemus.getPrioriteetti());
-        v.setHakuOid(sijoitteluajoWrapper.getSijoitteluajo().getHakuOid());
-        v.setTila(ValintatuloksenTila.KESKEN);
-        v.setIlmoittautumisTila(IlmoittautumisTila.EI_TEHTY);
-        v.setJulkaistavissa(false);
-        v.setHyvaksyttyVarasijalta(false);
-
-        return v;
-    };
-    */
 }

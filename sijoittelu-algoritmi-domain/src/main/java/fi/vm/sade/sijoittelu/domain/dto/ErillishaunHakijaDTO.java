@@ -165,17 +165,16 @@ public class ErillishaunHakijaDTO {
     }
 
     public Valintatulos asValintatulos() {
-        Valintatulos v = new Valintatulos();
-        v.setHakemusOid(hakemusOid);
-        v.setHakijaOid(hakijaOid);
-        v.setHakukohdeOid(hakukohdeOid);
-        v.setHakuOid(hakuOid);
-        v.setHakutoive(1);// aina ensimmainen?
-        v.setHyvaksyttyVarasijalta(HakemuksenTila.VARASIJALTA_HYVAKSYTTY.equals(hakemuksenTila));
-        v.setIlmoittautumisTila(ilmoittautumisTila);
-        v.setJulkaistavissa(julkaistavissa);
-        v.setTila(valintatuloksenTila);
-        v.setValintatapajonoOid(valintatapajonoOid);
-        return v;
+        return new Valintatulos(
+                hakemusOid,
+                hakijaOid,
+                hakukohdeOid,
+                hakuOid,
+                1,
+                HakemuksenTila.VARASIJALTA_HYVAKSYTTY == hakemuksenTila,
+                ilmoittautumisTila,
+                julkaistavissa,
+                valintatuloksenTila,
+                valintatapajonoOid);
     }
 }
