@@ -10,6 +10,9 @@ import java.util.Optional;
 
 public class TilojenMuokkaus {
 
+    public static final String VASTAANOTTOTIETO_PERIYTYNYT_ALEMMALTA_VALINTATAPAJONOLTA = "Vastaanottotieto periytynyt alemmalta valintatapajonolta";
+    public static final String VASTAANOTTOTIETO_PERIYTYNYT_ALEMMALTA_HAKUTOIVEELTA = "Vastaanottotieto periytynyt alemmalta hakutoiveelta";
+
     public static void asetaTilaksiVaralla(HakemusWrapper hakemusWrapper) {
         hakemusWrapper.getHakemus().setTila(HakemuksenTila.VARALLA);
         hakemusWrapper.getHakemus().getTilanKuvaukset().clear();
@@ -50,58 +53,58 @@ public class TilojenMuokkaus {
         hk.getHakemus().setTilanKuvaukset(TilanKuvaukset.peruuntunutHakukierrosOnPaattynyt());
     }
 
-    public static Valintatulos muokkaaValintatulos(HakemusWrapper hakemus, HakemusWrapper h, Valintatapajono hyvaksyttyJono, Valintatulos muokattava) {
-        Optional<Valintatulos> nykyinenTulos = h.getHenkilo().getValintatulos().stream().filter(v -> v.getValintatapajonoOid().equals(hyvaksyttyJono.getOid())).findFirst();
-        Valintatulos nykyinen;
-        if (nykyinenTulos.isPresent()) {
-            nykyinen = nykyinenTulos.get();
-            nykyinen.setHyvaksyttyVarasijalta(muokattava.getHyvaksyttyVarasijalta(), "Vastaanottotieto peritynyt alemmalta valintatapajonolta");
-            nykyinen.setIlmoittautumisTila(muokattava.getIlmoittautumisTila(), "Vastaanottotieto peritynyt alemmalta valintatapajonolta");
-            nykyinen.setJulkaistavissa(muokattava.getJulkaistavissa(), "Vastaanottotieto peritynyt alemmalta valintatapajonolta");
-            nykyinen.setTila(muokattava.getTila(), "Vastaanottotieto peritynyt alemmalta valintatapajonolta");
-        } else {
-            nykyinen = new Valintatulos();
-            nykyinen.setHyvaksyttyVarasijalta(muokattava.getHyvaksyttyVarasijalta(), "Vastaanottotieto peritynyt alemmalta valintatapajonolta");
-            nykyinen.setIlmoittautumisTila(muokattava.getIlmoittautumisTila(), "Vastaanottotieto peritynyt alemmalta valintatapajonolta");
-            nykyinen.setJulkaistavissa(muokattava.getJulkaistavissa(), "Vastaanottotieto peritynyt alemmalta valintatapajonolta");
-            nykyinen.setTila(muokattava.getTila(), "Vastaanottotieto peritynyt alemmalta valintatapajonolta");
-            nykyinen.setValintatapajonoOid(hyvaksyttyJono.getOid(), "Vastaanottotieto peritynyt alemmalta valintatapajonolta");
-            nykyinen.setHakemusOid(muokattava.getHakemusOid(), "Vastaanottotieto peritynyt alemmalta valintatapajonolta");
-            nykyinen.setHakijaOid(muokattava.getHakijaOid(), "Vastaanottotieto peritynyt alemmalta valintatapajonolta");
-            nykyinen.setHakukohdeOid(muokattava.getHakukohdeOid(), "Vastaanottotieto peritynyt alemmalta valintatapajonolta");
-            nykyinen.setHakuOid(muokattava.getHakuOid(), "Vastaanottotieto peritynyt alemmalta valintatapajonolta");
-            nykyinen.setHakutoive(muokattava.getHakutoive(), "Vastaanottotieto peritynyt alemmalta valintatapajonolta");
-            hakemus.getHenkilo().getValintatulos().add(nykyinen);
-        }
-        return nykyinen;
+    public static Optional<Valintatulos> findValintatulos(HakemusWrapper h, String jonoOid) {
+        return h.getHenkilo().getValintatulos().stream()
+                .filter(v -> jonoOid.equals(v.getValintatapajonoOid()))
+                .findAny();
     }
 
-    public static void siirraVastaanottotilaYlemmalleHakutoiveelle(SijoitteluajoWrapper sijoitteluajoWrapper, HakemusWrapper h) {
+    public static Valintatulos siirraValintatulosHyvaksyttyynJonoon(HakemusWrapper hyvaksyttyHakemus,
+                                                                    HakemusWrapper vanhaHakemus,
+                                                                    Valintatapajono hyvaksyttyJono,
+                                                                    Valintatulos vanhaTulos) {
+        Valintatulos hyvaksyttyTulos = findValintatulos(vanhaHakemus, hyvaksyttyJono.getOid())
+                .orElseGet(() -> {
+                    Valintatulos v = new Valintatulos(
+                            hyvaksyttyJono.getOid(),
+                            vanhaTulos.getHakemusOid(),
+                            vanhaTulos.getHakukohdeOid(),
+                            vanhaTulos.getHakijaOid(),
+                            vanhaTulos.getHakuOid(),
+                            vanhaTulos.getHakutoive()
+                    );
+                    hyvaksyttyHakemus.getHenkilo().getValintatulos().add(v);
+                    return v;
+                });
+        hyvaksyttyTulos.setHyvaksyttyVarasijalta(vanhaTulos.getHyvaksyttyVarasijalta(), VASTAANOTTOTIETO_PERIYTYNYT_ALEMMALTA_VALINTATAPAJONOLTA);
+        hyvaksyttyTulos.setIlmoittautumisTila(vanhaTulos.getIlmoittautumisTila(), VASTAANOTTOTIETO_PERIYTYNYT_ALEMMALTA_VALINTATAPAJONOLTA);
+        hyvaksyttyTulos.setJulkaistavissa(vanhaTulos.getJulkaistavissa(), VASTAANOTTOTIETO_PERIYTYNYT_ALEMMALTA_VALINTATAPAJONOLTA);
+        hyvaksyttyTulos.setTila(vanhaTulos.getTila(), VASTAANOTTOTIETO_PERIYTYNYT_ALEMMALTA_VALINTATAPAJONOLTA);
+        return hyvaksyttyTulos;
+    }
 
-        Optional<Valintatulos> jononTulos = h.getHenkilo().getValintatulos().stream()
-                .filter(v -> v.getValintatapajonoOid().equals(h.getValintatapajono().getValintatapajono().getOid())).findFirst();
-        Valintatulos nykyinen;
-        if (!jononTulos.isPresent()) {
-            nykyinen = new Valintatulos();
-            nykyinen.setHyvaksyttyVarasijalta(false, "Vastaanottotieto peritynyt alemmalta hakutoiveelta");
-            nykyinen.setIlmoittautumisTila(IlmoittautumisTila.EI_TEHTY, "Vastaanottotieto peritynyt alemmalta hakutoiveelta");
-            nykyinen.setJulkaistavissa(false, "Vastaanottotieto peritynyt alemmalta hakutoiveelta");
-            nykyinen.setValintatapajonoOid(h.getValintatapajono().getValintatapajono().getOid(), "Vastaanottotieto peritynyt alemmalta hakutoiveelta");
-            nykyinen.setHakemusOid(h.getHakemus().getHakemusOid(), "Vastaanottotieto peritynyt alemmalta hakutoiveelta");
-            nykyinen.setHakijaOid(h.getHenkilo().getHakijaOid(), "Vastaanottotieto peritynyt alemmalta hakutoiveelta");
-            nykyinen.setHakukohdeOid(h.getValintatapajono().getHakukohdeWrapper().getHakukohde().getOid(), "Vastaanottotieto peritynyt alemmalta hakutoiveelta");
-            nykyinen.setHakuOid(sijoitteluajoWrapper.getSijoitteluajo().getHakuOid(), "Vastaanottotieto peritynyt alemmalta hakutoiveelta");
-            nykyinen.setHakutoive(h.getHakemus().getPrioriteetti(), "Vastaanottotieto peritynyt alemmalta hakutoiveelta");
-            h.getHenkilo().getValintatulos().add(nykyinen);
+    public static void asetaVastaanottanut(SijoitteluajoWrapper sijoitteluajo, HakemusWrapper hakemus) {
+        Valintatulos valintatulos = findValintatulos(hakemus, hakemus.getValintatapajono().getValintatapajono().getOid())
+                .orElseGet(() -> {
+                    Valintatulos v = new Valintatulos(
+                            hakemus.getValintatapajono().getValintatapajono().getOid(),
+                            hakemus.getHakemus().getHakemusOid(),
+                            hakemus.getValintatapajono().getHakukohdeWrapper().getHakukohde().getOid(),
+                            hakemus.getHenkilo().getHakijaOid(),
+                            sijoitteluajo.getSijoitteluajo().getHakuOid(),
+                            hakemus.getHakemus().getPrioriteetti()
+                    );
+                    hakemus.getHenkilo().getValintatulos().add(v);
+                    return v;
+                });
+        valintatulos.setHyvaksyttyVarasijalta(false, VASTAANOTTOTIETO_PERIYTYNYT_ALEMMALTA_HAKUTOIVEELTA);
+        valintatulos.setIlmoittautumisTila(IlmoittautumisTila.EI_TEHTY, VASTAANOTTOTIETO_PERIYTYNYT_ALEMMALTA_HAKUTOIVEELTA);
+        valintatulos.setJulkaistavissa(false, VASTAANOTTOTIETO_PERIYTYNYT_ALEMMALTA_HAKUTOIVEELTA);
+        if (hakemus.getHakemus().getPrioriteetti() == 1) {
+            valintatulos.setTila(ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI, VASTAANOTTOTIETO_PERIYTYNYT_ALEMMALTA_HAKUTOIVEELTA);
         } else {
-            nykyinen = jononTulos.get();
+            valintatulos.setTila(ValintatuloksenTila.EHDOLLISESTI_VASTAANOTTANUT, VASTAANOTTOTIETO_PERIYTYNYT_ALEMMALTA_HAKUTOIVEELTA);
         }
-        if(h.getHakemus().getPrioriteetti() == 1) {
-            nykyinen.setTila(ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI, "Vastaanottotieto peritynyt alemmalta hakutoiveelta");
-        } else {
-            nykyinen.setTila(ValintatuloksenTila.EHDOLLISESTI_VASTAANOTTANUT, "Vastaanottotieto peritynyt alemmalta hakutoiveelta");
-        }
-        sijoitteluajoWrapper.getMuuttuneetValintatulokset().add(nykyinen);
-
+        sijoitteluajo.getMuuttuneetValintatulokset().add(valintatulos);
     }
 }

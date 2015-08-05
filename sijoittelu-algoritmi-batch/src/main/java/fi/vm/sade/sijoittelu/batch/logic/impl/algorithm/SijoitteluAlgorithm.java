@@ -19,8 +19,6 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -563,18 +561,18 @@ public abstract class SijoitteluAlgorithm {
                     if (h.isTilaVoidaanVaihtaa() || ehdollinenOpt.isPresent()) {
                         if (kuuluuHyvaksyttyihinTiloihin(hakemuksenTila(h))) {
                             asetaTilaksiPeruuntunutYlempiToive(h);
-                            ehdollinenOpt.ifPresent(e -> siirraVastaanottotilaYlemmalleHakutoiveelle(sijoitteluAjo, hakemus));
+                            ehdollinenOpt.ifPresent(e -> asetaVastaanottanut(sijoitteluAjo, hakemus));
                             uudelleenSijoiteltavatHakukohteet.add(h);
                         } else if (!kuuluuHylattyihinTiloihin(hakemuksenTila(h))) {
                             asetaTilaksiPeruuntunutYlempiToive(h);
-                            ehdollinenOpt.ifPresent(e -> siirraVastaanottotilaYlemmalleHakutoiveelle(sijoitteluAjo, hakemus));
+                            ehdollinenOpt.ifPresent(e -> asetaVastaanottanut(sijoitteluAjo, hakemus));
                         }
                     }
 
                     // Kaikki jonot ei vielä sijoittelussa, yliajetaan tylysti kaikki alemmat hyväksytyt ja varalla olot
                     if(!sijoitteluAjo.paivamaaraOhitettu() && kuuluuYliajettaviinHakemuksenTiloihin(hakemuksenTila(h))) {
                         asetaTilaksiPeruuntunutYlempiToive(h);
-                        ehdollinenOpt.ifPresent(e -> siirraVastaanottotilaYlemmalleHakutoiveelle(sijoitteluAjo, hakemus));
+                        ehdollinenOpt.ifPresent(e -> asetaVastaanottanut(sijoitteluAjo, hakemus));
                         hakemus.setTilaVoidaanVaihtaa(false);
                         uudelleenSijoiteltavatHakukohteet.add(h);
                     }
@@ -603,7 +601,7 @@ public abstract class SijoitteluAlgorithm {
                                 Optional<Valintatulos> jononTulos = h.getHenkilo().getValintatulos().stream().filter(v -> v.getValintatapajonoOid().equals(current.getOid())).findFirst();
                                 if (jononTulos.isPresent() && !jononTulos.get().getTila().equals(ValintatuloksenTila.KESKEN)) {
                                     Valintatulos muokattava = jononTulos.get();
-                                    Valintatulos nykyinen = muokkaaValintatulos(hakemus, h, hyvaksyttyJono, muokattava);
+                                    Valintatulos nykyinen = siirraValintatulosHyvaksyttyynJonoon(hakemus, h, hyvaksyttyJono, muokattava);
                                     // Lisää muokatut valintatulokset listaan tallennusta varten
                                     sijoitteluAjo.getMuuttuneetValintatulokset().addAll(Arrays.asList(muokattava, nykyinen));
                                 }
