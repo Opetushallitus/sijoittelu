@@ -146,7 +146,7 @@ public class TilaResource {
                         v.getHakemusOid(), v.getTila(), selite, v.getIlmoittautumisTila(), v.getJulkaistavissa(),
                         v.getHyvaksyttyVarasijalta(), v.getHyvaksyPeruuntunut());
             }
-            return Response.status(Status.ACCEPTED).build();
+            return Response.status(Status.OK).build();
         } catch (Exception e) {
             LOGGER.error("Valintatulosten tallenus epäonnistui haussa {} hakukohteelle {}", hakuOid, hakukohdeOid, e);
             Map<String, String> error = new HashMap<>();
@@ -179,7 +179,7 @@ public class TilaResource {
                         v.getHakemusOid(), tila, selite, ilmoittautumisTila,
                         v.getJulkaistavissa(), v.getHyvaksyttyVarasijalta(), v.getHyvaksyPeruuntunut());
             }
-            return Response.status(Response.Status.ACCEPTED).build();
+            return Response.status(Response.Status.OK).build();
         } catch (Exception e) {
             LOGGER.error("Valintatulosten tallenus epäonnistui haussa " + hakuOid + " hakukohteelle " + hakukohdeOid, e);
             Map error = new HashMap();
@@ -241,7 +241,7 @@ public class TilaResource {
                             v.getHyvaksyPeruuntunut()));
             LOGGER.info("Erillishaun tietojen tuonti onnistui jonolle {} haussa {} hakukohteelle {}",
                     erillishaunHakijaDtos.iterator().next().valintatapajonoOid, hakuOid, hakukohdeOid);
-            return Response.status(Response.Status.ACCEPTED).build();
+            return Response.status(Response.Status.OK).build();
         } catch (Exception e) {
             LOGGER.error("Error in erillishaunhakijat tuonti haussa " + hakuOid + " hakukohteelle " + hakukohdeOid, e);
             Map error = new HashMap();
@@ -462,7 +462,7 @@ public class TilaResource {
             Optional<List<String>> kuvaukset = Optional.ofNullable(tilaObj.getTilanKuvaukset());
             muutaTilaa(valintatapajononNimi, tarjoajaOid, hakuOid, hakukohdeOid, hakemusOid, tila, kuvaukset,
                     Optional.empty(), Optional.empty(), Optional.empty());
-            return Response.status(Response.Status.ACCEPTED).build();
+            return Response.status(Response.Status.OK).build();
 
         } catch (Exception e) {
             LOGGER.error("Hakemuksen tilan asetus epäonnistui haussa {} hakukohteelle {} ja hakemukselle {}", hakuOid, hakukohdeOid, hakemusOid, e);
