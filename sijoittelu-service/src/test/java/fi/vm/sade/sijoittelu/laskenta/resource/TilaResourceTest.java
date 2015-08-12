@@ -81,7 +81,7 @@ public class TilaResourceTest {
             .type(MediaType.APPLICATION_JSON_TYPE)
             .accept(MediaType.APPLICATION_JSON_TYPE)
             .post(Entity.entity(hakijat, MediaType.APPLICATION_JSON));
-        assertEquals(202, response.getStatus());
+        assertEquals(200, response.getStatus());
         List<Valintatulos> valintatuloses = haeTulokset(hakemusOid);
         // Tarkistetaan, että tila meni kantaan
         assertEquals(ValintatuloksenTila.EHDOLLISESTI_VASTAANOTTANUT, valintatuloses.get(0).getTila());
@@ -110,7 +110,7 @@ public class TilaResourceTest {
                 .accept(MediaType.APPLICATION_JSON_TYPE)
                 .post(Entity.entity(hakijat, MediaType.APPLICATION_JSON));
 
-        assertEquals(202, response.getStatus());
+        assertEquals(200, response.getStatus());
 
         assertEquals(1, haeTulokset("hakemus1").size());
         assertEquals("hakemus1", haeHakukohde("haku1", "hakukohde1").getValintatapajonot().stream().filter(j -> j.getOid().equals("jono1")).findFirst().get().getHakemukset().get(0).getHakemusOid());
@@ -124,7 +124,7 @@ public class TilaResourceTest {
                 .accept(MediaType.APPLICATION_JSON_TYPE)
                 .post(Entity.entity(hakijat, MediaType.APPLICATION_JSON));
 
-        assertEquals(202, response2.getStatus());
+        assertEquals(200, response2.getStatus());
 
 
         // Tarkistetaan, että poistui kannasta
