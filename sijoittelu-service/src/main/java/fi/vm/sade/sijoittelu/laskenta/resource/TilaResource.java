@@ -39,6 +39,8 @@ import com.wordnik.swagger.annotations.ApiParam;
 import fi.vm.sade.sijoittelu.laskenta.service.business.SijoitteluBusinessService;
 import org.springframework.stereotype.Controller;
 import scala.tools.cmd.Opt;
+import static fi.vm.sade.sijoittelu.laskenta.util.SijoitteluAudit.*;
+import static fi.vm.sade.auditlog.LogMessage.builder;
 
 @Controller
 @Path("tila")
@@ -145,6 +147,20 @@ public class TilaResource {
                 sijoitteluBusinessService.vaihdaHakemuksenTila(hakuOid, hakukohde, v.getValintatapajonoOid(),
                         v.getHakemusOid(), v.getTila(), selite, v.getIlmoittautumisTila(), v.getJulkaistavissa(),
                         v.getHyvaksyttyVarasijalta(), v.getHyvaksyPeruuntunut());
+                AUDIT.log(builder()
+                        .id(username())
+                        .hakuOid(hakuOid)
+                        .hakukohdeOid(hakukohde.getOid())
+                        .hakemusOid(v.getHakemusOid())
+                        .valintatapajonoOid(v.getValintatapajonoOid())
+                        .add("ilmoittautumistila", v.getIlmoittautumisTila())
+                        .add("julkaistavissa", v.getJulkaistavissa())
+                        .add("hyvaksyttyvarasijalta", v.getHyvaksyttyVarasijalta())
+                        .add("hyvaksyperuuntunut", v.getHyvaksyPeruuntunut())
+                        .add("selite", selite)
+                        .add("valintatuloksentila", v.getTila())
+                        .message("Hakemuksen tilan muuttaminen")
+                        .build());
             }
             return Response.status(Status.OK).build();
         } catch (Exception e) {
@@ -178,6 +194,20 @@ public class TilaResource {
                         hakukohde, v.getValintatapajonoOid(),
                         v.getHakemusOid(), tila, selite, ilmoittautumisTila,
                         v.getJulkaistavissa(), v.getHyvaksyttyVarasijalta(), v.getHyvaksyPeruuntunut());
+                AUDIT.log(builder()
+                        .id(username())
+                        .hakuOid(hakuOid)
+                        .hakukohdeOid(hakukohde.getOid())
+                        .hakemusOid(v.getHakemusOid())
+                        .valintatapajonoOid(v.getValintatapajonoOid())
+                        .add("ilmoittautumistila", v.getIlmoittautumisTila())
+                        .add("julkaistavissa", v.getJulkaistavissa())
+                        .add("hyvaksyttyvarasijalta", v.getHyvaksyttyVarasijalta())
+                        .add("hyvaksyperuuntunut", v.getHyvaksyPeruuntunut())
+                        .add("selite", selite)
+                        .add("valintatuloksentila",v.getTila())
+                        .message("Erillishaun hakemuksen tilan muuttaminen")
+                        .build());
             }
             return Response.status(Response.Status.OK).build();
         } catch (Exception e) {
