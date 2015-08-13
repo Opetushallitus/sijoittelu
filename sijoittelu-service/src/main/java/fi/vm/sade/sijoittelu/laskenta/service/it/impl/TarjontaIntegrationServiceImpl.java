@@ -32,9 +32,7 @@ public class TarjontaIntegrationServiceImpl implements TarjontaIntegrationServic
             ResultHakukohdeDTO tarjonnanHakukohde = hakukohdeV1Resource.findByOid(hakukohdeOid);
             return tarjonnanHakukohde.getResult().getTarjoajaOids().stream().findFirst();
         } catch(Exception e) {
-            final String message = "Hakukohteelle " + hakukohdeOid + " ei löytynyt tarjoajaOidia";
-            LOG.error(message, e);
-            throw new RuntimeException(message);
+            return Optional.empty();
         }
     }
 
