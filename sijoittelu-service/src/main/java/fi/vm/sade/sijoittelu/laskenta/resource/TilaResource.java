@@ -379,6 +379,7 @@ public class TilaResource {
             }
         }
         hakemus.setTila(tila);
+        hakemus.getTilaHistoria().add(new TilaHistoria(tila));
         tilanKuvaukset.ifPresent(kuvaukset -> {
             if (kuvaukset.size() == 3) {
                 hakemus.getTilanKuvaukset().put("FI", kuvaukset.get(0));

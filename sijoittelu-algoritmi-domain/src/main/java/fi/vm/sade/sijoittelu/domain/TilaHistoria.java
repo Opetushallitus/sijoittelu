@@ -12,6 +12,15 @@ public class TilaHistoria implements Serializable {
 
     private HakemuksenTila tila;
 
+    public TilaHistoria() {
+        this.luotu = new Date();
+    }
+
+    public TilaHistoria(HakemuksenTila tila) {
+        this.luotu = new Date();
+        this.tila = tila;
+    }
+
     public Date getLuotu() {
         return luotu;
     }
