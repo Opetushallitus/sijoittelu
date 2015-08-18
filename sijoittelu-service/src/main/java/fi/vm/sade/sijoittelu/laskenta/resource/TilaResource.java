@@ -40,7 +40,7 @@ import fi.vm.sade.sijoittelu.laskenta.service.business.SijoitteluBusinessService
 import org.springframework.stereotype.Controller;
 import scala.tools.cmd.Opt;
 import static fi.vm.sade.sijoittelu.laskenta.util.SijoitteluAudit.*;
-import static fi.vm.sade.auditlog.LogMessage.builder;
+import static fi.vm.sade.auditlog.valintaperusteet.LogMessage.builder;
 
 @Controller
 @Path("tila")
