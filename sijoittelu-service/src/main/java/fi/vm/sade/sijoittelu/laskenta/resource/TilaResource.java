@@ -17,6 +17,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import fi.vm.sade.auditlog.valintaperusteet.ValintaperusteetOperation;
 import fi.vm.sade.sijoittelu.domain.*;
 import fi.vm.sade.sijoittelu.domain.dto.ErillishaunHakijaDTO;
 import fi.vm.sade.sijoittelu.laskenta.service.it.TarjontaIntegrationService;
@@ -159,7 +160,7 @@ public class TilaResource {
                         .add("hyvaksyperuuntunut", v.getHyvaksyPeruuntunut())
                         .add("selite", selite)
                         .add("valintatuloksentila", v.getTila())
-                        .message("Hakemuksen tilan muuttaminen")
+                        .setOperaatio(ValintaperusteetOperation.HAKEMUS_TILAMUUTOS)
                         .build());
             }
             return Response.status(Status.OK).build();
@@ -206,7 +207,7 @@ public class TilaResource {
                         .add("hyvaksyperuuntunut", v.getHyvaksyPeruuntunut())
                         .add("selite", selite)
                         .add("valintatuloksentila",v.getTila())
-                        .message("Erillishaun hakemuksen tilan muuttaminen")
+                        .setOperaatio(ValintaperusteetOperation.HAKEMUS_TILAMUUTOS_ERILLISHAKU)
                         .build());
             }
             return Response.status(Response.Status.OK).build();
