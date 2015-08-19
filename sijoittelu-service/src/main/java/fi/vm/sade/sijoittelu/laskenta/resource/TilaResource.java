@@ -20,6 +20,7 @@ import javax.ws.rs.core.Response.Status;
 import fi.vm.sade.auditlog.valintaperusteet.ValintaperusteetOperation;
 import fi.vm.sade.sijoittelu.domain.*;
 import fi.vm.sade.sijoittelu.domain.dto.ErillishaunHakijaDTO;
+import fi.vm.sade.sijoittelu.laskenta.service.business.PriorAcceptanceException;
 import fi.vm.sade.sijoittelu.laskenta.service.it.TarjontaIntegrationService;
 import fi.vm.sade.sijoittelu.tulos.dao.HakukohdeDao;
 import fi.vm.sade.sijoittelu.tulos.dao.SijoitteluDao;
@@ -31,7 +32,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.stereotype.Component;
 
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
@@ -39,7 +39,7 @@ import com.wordnik.swagger.annotations.ApiParam;
 
 import fi.vm.sade.sijoittelu.laskenta.service.business.SijoitteluBusinessService;
 import org.springframework.stereotype.Controller;
-import scala.tools.cmd.Opt;
+
 import static fi.vm.sade.sijoittelu.laskenta.util.SijoitteluAudit.*;
 import static fi.vm.sade.auditlog.valintaperusteet.LogMessage.builder;
 
@@ -147,7 +147,7 @@ public class TilaResource {
             for (Valintatulos v : valintatulokset) {
                 sijoitteluBusinessService.vaihdaHakemuksenTila(hakuOid, hakukohde, v.getValintatapajonoOid(),
                         v.getHakemusOid(), v.getTila(), selite, v.getIlmoittautumisTila(), v.getJulkaistavissa(),
-                        v.getHyvaksyttyVarasijalta(), v.getHyvaksyPeruuntunut());
+                        v.getHyvaksyttyVarasijalta(), v.getHyvaksyPeruuntunut(), username());
                 AUDIT.log(builder()
                         .id(username())
                         .hakuOid(hakuOid)
@@ -164,6 +164,11 @@ public class TilaResource {
                         .build());
             }
             return Response.status(Status.OK).build();
+        } catch (PriorAcceptanceException e) {
+            LOGGER.info("Valintatulosten tallenus epäonnistui haussa {} hakukohteelle {}", hakuOid, hakukohdeOid, e);
+            Map<String, String> error = new HashMap<>();
+            error.put("message", e.getMessage());
+            return Response.status(Status.FORBIDDEN).entity(error).build();
         } catch (Exception e) {
             LOGGER.error("Valintatulosten tallenus epäonnistui haussa {} hakukohteelle {}", hakuOid, hakukohdeOid, e);
             Map<String, String> error = new HashMap<>();
@@ -194,7 +199,7 @@ public class TilaResource {
                 sijoitteluBusinessService.vaihdaHakemuksenTila(hakuOid,
                         hakukohde, v.getValintatapajonoOid(),
                         v.getHakemusOid(), tila, selite, ilmoittautumisTila,
-                        v.getJulkaistavissa(), v.getHyvaksyttyVarasijalta(), v.getHyvaksyPeruuntunut());
+                        v.getJulkaistavissa(), v.getHyvaksyttyVarasijalta(), v.getHyvaksyPeruuntunut(), username());
                 AUDIT.log(builder()
                         .id(username())
                         .hakuOid(hakuOid)
@@ -269,7 +274,8 @@ public class TilaResource {
                             v.getIlmoittautumisTila(),
                             v.getJulkaistavissa(),
                             v.getHyvaksyttyVarasijalta(),
-                            v.getHyvaksyPeruuntunut()));
+                            v.getHyvaksyPeruuntunut(),
+                            username()));
             LOGGER.info("Erillishaun tietojen tuonti onnistui jonolle {} haussa {} hakukohteelle {}",
                     erillishaunHakijaDtos.iterator().next().valintatapajonoOid, hakuOid, hakukohdeOid);
             return Response.status(Response.Status.OK).build();

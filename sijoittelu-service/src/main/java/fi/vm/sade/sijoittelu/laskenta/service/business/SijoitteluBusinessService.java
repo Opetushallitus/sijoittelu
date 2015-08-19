@@ -11,7 +11,9 @@ import fi.vm.sade.sijoittelu.domain.*;
 import fi.vm.sade.sijoittelu.domain.comparator.HakemusComparator;
 import fi.vm.sade.sijoittelu.laskenta.actors.messages.PoistaHakukohteet;
 import fi.vm.sade.sijoittelu.laskenta.actors.messages.PoistaVanhatAjotSijoittelulta;
+import fi.vm.sade.sijoittelu.laskenta.external.resource.ValintaTulosServiceResource;
 import fi.vm.sade.sijoittelu.laskenta.external.resource.dto.ParametriDTO;
+import fi.vm.sade.sijoittelu.laskenta.external.resource.dto.VastaanottoDTO;
 import fi.vm.sade.sijoittelu.laskenta.service.exception.HakemustaEiLoytynytException;
 import fi.vm.sade.sijoittelu.laskenta.service.exception.ValintatapajonoaEiLoytynytException;
 import fi.vm.sade.sijoittelu.laskenta.service.it.TarjontaIntegrationService;
@@ -29,6 +31,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
+import javax.ws.rs.ClientErrorException;
+import javax.ws.rs.ServerErrorException;
+import javax.ws.rs.WebApplicationException;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -84,6 +89,9 @@ public class SijoitteluBusinessService {
 
     @Autowired
     TarjontaIntegrationService tarjontaIntegrationService;
+
+    @Autowired
+    private ValintaTulosServiceResource valintaTulosServiceResource;
 
     /**
      * ei versioi sijoittelua, tekeee uuden sijoittelun olemassaoleville
@@ -502,7 +510,8 @@ public class SijoitteluBusinessService {
                                      IlmoittautumisTila ilmoittautumisTila,
                                      boolean julkaistavissa,
                                      boolean hyvaksyttyVarasijalta,
-                                     boolean hyvaksyPeruuntunut) {
+                                     boolean hyvaksyPeruuntunut,
+                                     String muokkaaja) {
         if (tila == null || isBlank(hakuoid) || isBlank(valintatapajonoOid) || isBlank(hakemusOid)) {
             throw new IllegalArgumentException(String.format("tila: %s, hakuoid: %s, valintatapajonoOid: %s, hakemusOid: %s", tila, hakuoid, valintatapajonoOid, hakemusOid));
         }
@@ -514,33 +523,60 @@ public class SijoitteluBusinessService {
         // organisaatio updater voi muokata, jos hyväksytty
         authorizer.checkOrganisationAccess(tarjoajaOid, SijoitteluRole.UPDATE_ROLE, SijoitteluRole.CRUD_ROLE);
 
-        Valintatapajono valintatapajono = getValintatapajono(valintatapajonoOid, hakukohde);
-        Hakemus hakemus = getHakemus(hakemusOid, valintatapajono);
-        String hakukohdeOid = hakukohde.getOid();
-        Valintatulos v = Optional.ofNullable(valintatulosDao.loadValintatulos(hakukohdeOid, valintatapajonoOid, hakemusOid))
-                .orElse(new Valintatulos(
-                        valintatapajono.getOid(),
-                        hakemus.getHakemusOid(),
-                        hakukohde.getOid(),
-                        hakemus.getHakijaOid(),
-                        hakuoid,
-                        hakemus.getPrioriteetti()));
-        if (notModifying(tila, ilmoittautumisTila, julkaistavissa, hyvaksyttyVarasijalta, hyvaksyPeruuntunut, v)) {
-            return;
+        if (tila == ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI) {
+            vastaanotaValintaTulosServicella(hakuoid, hakukohde, hakemusOid, selite, muokkaaja);
+        } else {
+            Valintatapajono valintatapajono = getValintatapajono(valintatapajonoOid, hakukohde);
+            Hakemus hakemus = getHakemus(hakemusOid, valintatapajono);
+            String hakukohdeOid = hakukohde.getOid();
+            Valintatulos v = Optional.ofNullable(valintatulosDao.loadValintatulos(hakukohdeOid, valintatapajonoOid, hakemusOid))
+                    .orElse(new Valintatulos(
+                            valintatapajono.getOid(),
+                            hakemus.getHakemusOid(),
+                            hakukohde.getOid(),
+                            hakemus.getHakijaOid(),
+                            hakuoid,
+                            hakemus.getPrioriteetti()));
+            if (notModifying(tila, ilmoittautumisTila, julkaistavissa, hyvaksyttyVarasijalta, hyvaksyPeruuntunut, v)) {
+                return;
+            }
+
+            authorizeHyvaksyPeruuntunutModification(tarjoajaOid, hyvaksyPeruuntunut, v);
+
+            v.setTila(tila, selite, muokkaaja);
+            v.setIlmoittautumisTila(ilmoittautumisTila, selite, muokkaaja);
+            v.setJulkaistavissa(julkaistavissa, selite, muokkaaja);
+            v.setHyvaksyttyVarasijalta(hyvaksyttyVarasijalta, selite, muokkaaja);
+            v.setHyvaksyPeruuntunut(hyvaksyPeruuntunut, selite, muokkaaja);
+            LOG.info("Muutetaan valintatulosta hakukohdeoid {}, valintatapajonooid {}, hakemusoid {}: {}",
+                    hakukohdeOid, valintatapajonoOid, hakemusOid,
+                    muutos(v, tila, ilmoittautumisTila, julkaistavissa, hyvaksyttyVarasijalta, hyvaksyPeruuntunut));
+            valintatulosDao.createOrUpdateValintatulos(v);
         }
+    }
 
-        authorizeHyvaksyPeruuntunutModification(tarjoajaOid, hyvaksyPeruuntunut, v);
-
-        String muokkaaja = getUsernameFromSession();
-        v.setTila(tila, selite, muokkaaja);
-        v.setIlmoittautumisTila(ilmoittautumisTila, selite, muokkaaja);
-        v.setJulkaistavissa(julkaistavissa, selite, muokkaaja);
-        v.setHyvaksyttyVarasijalta(hyvaksyttyVarasijalta, selite, muokkaaja);
-        v.setHyvaksyPeruuntunut(hyvaksyPeruuntunut, selite, muokkaaja);
-        LOG.info("Muutetaan valintatulosta hakukohdeoid {}, valintatapajonooid {}, hakemusoid {}: {}",
-                hakukohdeOid, valintatapajonoOid, hakemusOid,
-                muutos(v, tila, ilmoittautumisTila, julkaistavissa, hyvaksyttyVarasijalta, hyvaksyPeruuntunut));
-        valintatulosDao.createOrUpdateValintatulos(v);
+    private void vastaanotaValintaTulosServicella(String hakuoid, Hakukohde hakukohde, String hakemusOid, String selite, String muokkaaja) {
+        try {
+            valintaTulosServiceResource.vastaanota(hakuoid,
+                    hakemusOid,
+                    new VastaanottoDTO(
+                            hakukohde.getOid(),
+                            ValintatuloksenTila.VASTAANOTTANUT /* VTS muuntaa VASTAANOTTANUT -> SITOVASTI_VASTAANOTTANUT kk-haussa */,
+                            muokkaaja,
+                            selite));
+        } catch(ClientErrorException e) {
+            // 403 on aikaisempi vastaanotto
+            if (e.getResponse().getStatus() == 403) {
+                Object error = e.getResponse().readEntity(Map.class).get("error");
+                throw new PriorAcceptanceException(error != null ? error.toString() : "");
+            }
+            throw new RuntimeException("valinta-tulos-service status: " + e.getResponse().getStatus() + " body: " + e.getResponse().getEntity());
+        } catch(WebApplicationException e) {
+            throw new RuntimeException("valinta-tulos-service status: " + e.getResponse().getStatus() + " body: " + e.getResponse().getEntity());
+        } catch(Exception e) {
+            LOG.error("valinta-tulos-service vastaanotto", e);
+            throw new RuntimeException("Virhe valinta-tulos-servicen kutsumisessa", e);
+        }
     }
 
     private void authorizeHyvaksyPeruuntunutModification(String tarjoajaOid, boolean hyvaksyPeruuntunut, Valintatulos v) {
