@@ -1,7 +1,9 @@
 package fi.vm.sade.sijoittelu.laskenta.service.business;
 
-public class PriorAcceptanceException extends RuntimeException {
-    public PriorAcceptanceException(String message) {
-        super(message);
+import javax.ws.rs.WebApplicationException;
+
+public class PriorAcceptanceException extends IllegalVTSRequestException {
+    public PriorAcceptanceException(WebApplicationException e) {
+        super(e);
     }
 }

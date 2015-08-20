@@ -31,8 +31,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
-import javax.ws.rs.ClientErrorException;
-import javax.ws.rs.ServerErrorException;
 import javax.ws.rs.WebApplicationException;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -564,15 +562,16 @@ public class SijoitteluBusinessService {
                             ValintatuloksenTila.VASTAANOTTANUT /* VTS muuntaa VASTAANOTTANUT -> SITOVASTI_VASTAANOTTANUT kk-haussa */,
                             muokkaaja,
                             selite));
-        } catch(ClientErrorException e) {
-            // 403 on aikaisempi vastaanotto
-            if (e.getResponse().getStatus() == 403) {
-                Object error = e.getResponse().readEntity(Map.class).get("error");
-                throw new PriorAcceptanceException(error != null ? error.toString() : "");
-            }
-            throw new RuntimeException("valinta-tulos-service status: " + e.getResponse().getStatus() + " body: " + e.getResponse().getEntity());
         } catch(WebApplicationException e) {
-            throw new RuntimeException("valinta-tulos-service status: " + e.getResponse().getStatus() + " body: " + e.getResponse().getEntity());
+            int status = e.getResponse().getStatus();
+            switch (status) {
+                case 403:
+                    throw new PriorAcceptanceException(e);
+                case 400:
+                    throw new IllegalVTSRequestException(e);
+                default:
+                    throw new RuntimeException("valinta-tulos-service status: " + status + " body: " + e.getResponse().readEntity(String.class));
+            }
         } catch(Exception e) {
             LOG.error("valinta-tulos-service vastaanotto", e);
             throw new RuntimeException("Virhe valinta-tulos-servicen kutsumisessa", e);

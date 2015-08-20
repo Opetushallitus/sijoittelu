@@ -20,6 +20,7 @@ import javax.ws.rs.core.Response.Status;
 import fi.vm.sade.auditlog.valintaperusteet.ValintaperusteetOperation;
 import fi.vm.sade.sijoittelu.domain.*;
 import fi.vm.sade.sijoittelu.domain.dto.ErillishaunHakijaDTO;
+import fi.vm.sade.sijoittelu.laskenta.service.business.IllegalVTSRequestException;
 import fi.vm.sade.sijoittelu.laskenta.service.business.PriorAcceptanceException;
 import fi.vm.sade.sijoittelu.laskenta.service.it.TarjontaIntegrationService;
 import fi.vm.sade.sijoittelu.tulos.dao.HakukohdeDao;
@@ -169,6 +170,11 @@ public class TilaResource {
             Map<String, String> error = new HashMap<>();
             error.put("message", e.getMessage());
             return Response.status(Status.FORBIDDEN).entity(error).build();
+        } catch (IllegalVTSRequestException e) {
+            LOGGER.info("Valintatulosten tallenus epäonnistui haussa {} hakukohteelle {}", hakuOid, hakukohdeOid, e);
+            Map<String, String> error = new HashMap<>();
+            error.put("message", e.getMessage());
+            return Response.status(Status.BAD_REQUEST).entity(error).build();
         } catch (Exception e) {
             LOGGER.error("Valintatulosten tallenus epäonnistui haussa {} hakukohteelle {}", hakuOid, hakukohdeOid, e);
             Map<String, String> error = new HashMap<>();
