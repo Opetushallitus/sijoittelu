@@ -6,6 +6,8 @@ import fi.vm.sade.sijoittelu.domain.IlmoittautumisTila;
 import fi.vm.sade.sijoittelu.domain.Sijoittelu;
 import fi.vm.sade.sijoittelu.domain.ValintatuloksenTila;
 import fi.vm.sade.sijoittelu.domain.Valintatulos;
+import fi.vm.sade.sijoittelu.laskenta.external.resource.ValintaTulosServiceResource;
+import fi.vm.sade.sijoittelu.laskenta.external.resource.dto.VastaanottoDTO;
 import fi.vm.sade.sijoittelu.laskenta.service.business.SijoitteluBusinessService;
 import fi.vm.sade.sijoittelu.tulos.dao.HakukohdeDao;
 import fi.vm.sade.sijoittelu.tulos.dao.SijoitteluDao;
@@ -36,6 +38,8 @@ public class SijoitteluBusinessServiceTest {
     private SijoitteluDao sijoitteluDao;
     private Authorizer authorizer;
     private TestDataGenerator testDataGenerator;
+    private ValintaTulosServiceResource valintaTulosServiceResourceMock;
+
 
     @Before
     public void setUp() throws Exception {
@@ -45,15 +49,43 @@ public class SijoitteluBusinessServiceTest {
         sijoitteluDao = mock(SijoitteluDao.class);
         hakukohdeDao = mock(HakukohdeDao.class);
         authorizer = mock(Authorizer.class);
+        valintaTulosServiceResourceMock = mock(ValintaTulosServiceResource.class);
 
         ReflectionTestUtils.setField(sijoitteluBusinessService, "valintatulosDao", valintatulosDaoMock);
         ReflectionTestUtils.setField(sijoitteluBusinessService, "sijoitteluDao", sijoitteluDao);
         ReflectionTestUtils.setField(sijoitteluBusinessService, "hakukohdeDao", hakukohdeDao);
         ReflectionTestUtils.setField(sijoitteluBusinessService, "authorizer", authorizer);
+        ReflectionTestUtils.setField(sijoitteluBusinessService, "valintaTulosServiceResource", valintaTulosServiceResourceMock);
         ReflectionTestUtils.setField(sijoitteluBusinessService, ROOT_ORG_OID, ROOT_ORG_OID);
 
         testDataGenerator = new TestDataGenerator();
 
+    }
+
+    @Test
+    public void testSitovaVastaanottoOhjataanValintaTulosServicelle() throws Exception {
+        when(sijoitteluDao.getSijoitteluByHakuOid(HAKU_OID)).thenReturn(Optional.of(testDataGenerator.generateTestData()));
+        when(hakukohdeDao.getHakukohdeForSijoitteluajo(TestDataGenerator.SIJOITTELU_AJO_ID_2, HAKUKOHDE_OID)).thenReturn(testDataGenerator.createHakukohdes(1).get(0));
+
+        sijoitteluBusinessService.vaihdaHakemuksenTila(HAKU_OID,
+                sijoitteluBusinessService.getHakukohde(HAKU_OID, HAKUKOHDE_OID),
+                VALINTATAPAJONO_OID, HAKEMUS_OID,
+                ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI, SELITE,
+                IlmoittautumisTila.EI_TEHTY, false, false, false, "muokkaaja");
+
+        ArgumentCaptor<String> hakuOid = ArgumentCaptor.forClass(String.class);
+        ArgumentCaptor<String> hakemusOid = ArgumentCaptor.forClass(String.class);
+        ArgumentCaptor<VastaanottoDTO> vastaanotto = ArgumentCaptor.forClass(VastaanottoDTO.class);
+        verify(valintaTulosServiceResourceMock).vastaanota(hakuOid.capture(), hakemusOid.capture(), vastaanotto.capture());
+
+        assertEquals(HAKU_OID, hakuOid.getValue());
+        assertEquals(HAKEMUS_OID, hakemusOid.getValue());
+
+        VastaanottoDTO value = vastaanotto.getValue();
+        assertEquals(HAKUKOHDE_OID, value.hakukohdeOid);
+        assertEquals(ValintatuloksenTila.VASTAANOTTANUT, value.tila);
+        assertEquals("muokkaaja", value.muokkaaja);
+        assertEquals("selite", SELITE);
     }
 
     @Test
