@@ -47,7 +47,7 @@ import static fi.vm.sade.auditlog.valintaperusteet.LogMessage.builder;
 @Controller
 @Path("tila")
 @PreAuthorize("isAuthenticated()")
-@Api(value = "/tila", description = "Resurssi sijoittelun tilojen käsittelyyn")
+@Api(value = "tila", description = "Resurssi sijoittelun tilojen käsittelyyn")
 public class TilaResource {
     private final static Logger LOGGER = LoggerFactory.getLogger(TilaResource.class);
 
@@ -73,7 +73,7 @@ public class TilaResource {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    @Path("{hakemusOid}")
+    @Path("/{hakemusOid}")
     @PreAuthorize(READ_UPDATE_CRUD)
     @ApiOperation(value = "Hakemuksen valintatulosten haku")
     public List<Valintatulos> hakemus(@PathParam("hakemusOid") String hakemusOid) {
@@ -86,7 +86,7 @@ public class TilaResource {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    @Path("{hakemusOid}/{hakuOid}/{hakukohdeOid}/{valintatapajonoOid}/")
+    @Path("/{hakemusOid}/{hakuOid}/{hakukohdeOid}/{valintatapajonoOid}/")
     @PreAuthorize(READ_UPDATE_CRUD)
     @ApiOperation(value = "Hakemuksen valintatulosten haku tietyssä hakukohteessa ja valintatapajonossa")
     public Valintatulos hakemus(@PathParam("hakuOid") String hakuOid,
@@ -131,7 +131,7 @@ public class TilaResource {
 
     @POST
     @Produces(MediaType.APPLICATION_JSON)
-    @Path("haku/{hakuOid}/hakukohde/{hakukohdeOid}")
+    @Path("/haku/{hakuOid}/hakukohde/{hakukohdeOid}")
     @PreAuthorize(UPDATE_CRUD)
     @ApiOperation(value = "Valintatulosten tuonti hakukohteelle")
     public Response muutaHakemustenTilaa(@PathParam("hakuOid") String hakuOid,
@@ -185,7 +185,7 @@ public class TilaResource {
 
     @POST
     @Produces(MediaType.APPLICATION_JSON)
-    @Path("erillishaku/haku/{hakuOid}/hakukohde/{hakukohdeOid}")
+    @Path("/erillishaku/haku/{hakuOid}/hakukohde/{hakukohdeOid}")
     @PreAuthorize(UPDATE_CRUD)
     @ApiOperation(value = "Valintatulosten tuonti erillishaun hakukohteelle")
     public Response muutaErillishaunHakemustenTilaa(@PathParam("hakuOid") String hakuOid,
@@ -424,7 +424,7 @@ public class TilaResource {
 
     @POST
     @Produces(MediaType.APPLICATION_JSON)
-    @Path("haku/{hakuOid}/hakukohde/{hakukohdeOid}/hakemus/{hakemusOid}")
+    @Path("/haku/{hakuOid}/hakukohde/{hakukohdeOid}/hakemus/{hakemusOid}")
     @PreAuthorize(UPDATE_CRUD)
     @ApiOperation(value = "Hakemuksen sijoittelun tilan muuttaminen")
     public Response muutaSijoittelunTilaa(

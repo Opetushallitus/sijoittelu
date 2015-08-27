@@ -33,7 +33,7 @@ import static java.util.stream.Collectors.toSet;
 @Path("sijoittele")
 @Controller
 // @PreAuthorize("isAuthenticated()")
-@Api(value = "/sijoittele", description = "Resurssi sijoitteluun")
+@Api(value = "sijoittele", description = "Resurssi sijoitteluun")
 public class SijoitteluResource {
     private final static Logger LOGGER = LoggerFactory.getLogger(SijoitteluResource.class);
 
@@ -51,7 +51,7 @@ public class SijoitteluResource {
     }
 
     @GET
-    @Path("{hakuOid}")
+    @Path("/{hakuOid}")
     // @PreAuthorize(CRUD)
     @ApiOperation(value = "Hakemuksen valintatulosten haku", response = String.class)
     public String sijoittele(@PathParam("hakuOid") String hakuOid) {

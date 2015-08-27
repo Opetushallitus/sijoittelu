@@ -28,7 +28,7 @@ import static fi.vm.sade.valintalaskenta.tulos.roles.ValintojenToteuttaminenRole
 @Path("erillissijoittele")
 @Controller
 @PreAuthorize("isAuthenticated()")
-@Api(value = "/erillissijoittele", description = "Resurssi sijoitteluun")
+@Api(value = "erillissijoittele", description = "Resurssi sijoitteluun")
 public class ErillisSijoitteluResource {
     private final static Logger LOGGER = LoggerFactory.getLogger(ErillisSijoitteluResource.class);
 
@@ -39,7 +39,7 @@ public class ErillisSijoitteluResource {
     private ActorService actorService;
 
     @POST
-    @Path("{hakuOid}")
+    @Path("/{hakuOid}")
     @Consumes("application/json")
     @PreAuthorize(CRUD)
     @ApiOperation(consumes = "application/json", value = "Valintatapajonon vienti taulukkolaskentaan", response = Long.class)

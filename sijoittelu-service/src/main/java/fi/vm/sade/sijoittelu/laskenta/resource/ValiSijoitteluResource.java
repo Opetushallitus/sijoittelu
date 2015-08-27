@@ -36,7 +36,7 @@ import static fi.vm.sade.valintalaskenta.tulos.roles.ValintojenToteuttaminenRole
 
 @Path("valisijoittele")
 @Controller
-@Api(value = "/valisijoittele", description = "Resurssi sijoitteluun")
+@Api(value = "valisijoittele", description = "Resurssi sijoitteluun")
 public class ValiSijoitteluResource {
     private final static Logger LOGGER = LoggerFactory.getLogger(ValiSijoitteluResource.class);
 
@@ -72,7 +72,7 @@ public class ValiSijoitteluResource {
     }
 
     @POST
-    @Path("{hakuOid}")
+    @Path("/{hakuOid}")
     @Consumes("application/json")
     @Produces("application/json")
     @ApiOperation(value = "Välisijoittelun suorittaminen")

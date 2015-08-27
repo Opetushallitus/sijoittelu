@@ -36,7 +36,7 @@ import fi.vm.sade.sijoittelu.tulos.service.SijoitteluTulosService;
 @Path("sijoittelu")
 @Controller
 @PreAuthorize("isAuthenticated()")
-@Api(value = "/sijoittelu", description = "Resurssi sijoittelun tuloksien hakemiseen")
+@Api(value = "sijoittelu", description = "Resurssi sijoittelun tuloksien hakemiseen")
 public class SijoitteluResourceImpl implements SijoitteluResource {
     private final static Logger LOGGER = LoggerFactory.getLogger(SijoitteluResourceImpl.class);
 

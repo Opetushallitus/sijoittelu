@@ -15,7 +15,7 @@ import org.springframework.stereotype.Controller;
 
 @Controller
 @Path("session")
-@Api(value = "/session", description = "Sessionhallinta")
+@Api(value = "session", description = "Sessionhallinta")
 public class SessionResource {
     @GET
     @Path("/maxinactiveinterval")
