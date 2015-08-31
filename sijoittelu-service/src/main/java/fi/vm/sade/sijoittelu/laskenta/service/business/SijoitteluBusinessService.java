@@ -542,14 +542,15 @@ public class SijoitteluBusinessService {
 
         authorizeHyvaksyPeruuntunutModification(tarjoajaOid, hyvaksyPeruuntunut, v);
 
+        LOG.info("Muutetaan valintatulosta hakukohdeoid {}, valintatapajonooid {}, hakemusoid {}: {}",
+                hakukohdeOid, valintatapajonoOid, hakemusOid,
+                muutos(v, tila, ilmoittautumisTila, julkaistavissa, hyvaksyttyVarasijalta, hyvaksyPeruuntunut));
+
         v.setTila(tila, selite, muokkaaja);
         v.setIlmoittautumisTila(ilmoittautumisTila, selite, muokkaaja);
         v.setJulkaistavissa(julkaistavissa, selite, muokkaaja);
         v.setHyvaksyttyVarasijalta(hyvaksyttyVarasijalta, selite, muokkaaja);
         v.setHyvaksyPeruuntunut(hyvaksyPeruuntunut, selite, muokkaaja);
-        LOG.info("Muutetaan valintatulosta hakukohdeoid {}, valintatapajonooid {}, hakemusoid {}: {}",
-                hakukohdeOid, valintatapajonoOid, hakemusOid,
-                muutos(v, tila, ilmoittautumisTila, julkaistavissa, hyvaksyttyVarasijalta, hyvaksyPeruuntunut));
         valintatulosDao.createOrUpdateValintatulos(v);
     }
 
