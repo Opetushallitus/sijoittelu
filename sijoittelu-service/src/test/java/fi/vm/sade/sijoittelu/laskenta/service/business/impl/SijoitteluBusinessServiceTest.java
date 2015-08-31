@@ -31,6 +31,7 @@ public class SijoitteluBusinessServiceTest {
     final String HAKEMUS_OID_2 = TestDataGenerator.HAKEMUS_OID_2;
     final String SELITE = "selite";
     final String ROOT_ORG_OID = "rootOrgOid";
+    final String MUOKKAAJA = "muokkaaja";
 
     private SijoitteluBusinessService sijoitteluBusinessService;
     private ValintatulosDao valintatulosDaoMock;
@@ -67,25 +68,37 @@ public class SijoitteluBusinessServiceTest {
         when(sijoitteluDao.getSijoitteluByHakuOid(HAKU_OID)).thenReturn(Optional.of(testDataGenerator.generateTestData()));
         when(hakukohdeDao.getHakukohdeForSijoitteluajo(TestDataGenerator.SIJOITTELU_AJO_ID_2, HAKUKOHDE_OID)).thenReturn(testDataGenerator.createHakukohdes(1).get(0));
 
+        final boolean julkaistavissa = false;
+        final boolean hyvaksyttyVarasijalta = false;
+        final boolean hyvaksyPeruuntunut = false;
         sijoitteluBusinessService.vaihdaHakemuksenTila(HAKU_OID,
                 sijoitteluBusinessService.getHakukohde(HAKU_OID, HAKUKOHDE_OID),
                 VALINTATAPAJONO_OID, HAKEMUS_OID,
                 ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI, SELITE,
-                IlmoittautumisTila.EI_TEHTY, false, false, false, "muokkaaja");
+                IlmoittautumisTila.EI_TEHTY, julkaistavissa, hyvaksyttyVarasijalta, hyvaksyPeruuntunut, MUOKKAAJA);
 
         ArgumentCaptor<String> hakuOid = ArgumentCaptor.forClass(String.class);
         ArgumentCaptor<String> hakemusOid = ArgumentCaptor.forClass(String.class);
-        ArgumentCaptor<VastaanottoDTO> vastaanotto = ArgumentCaptor.forClass(VastaanottoDTO.class);
-        verify(valintaTulosServiceResourceMock).vastaanota(hakuOid.capture(), hakemusOid.capture(), vastaanotto.capture());
+        ArgumentCaptor<String> hakukohdeOid = ArgumentCaptor.forClass(String.class);
+        verify(valintaTulosServiceResourceMock).vastaanotettavuus(hakuOid.capture(), hakemusOid.capture(), hakukohdeOid.capture());
 
         assertEquals(HAKU_OID, hakuOid.getValue());
         assertEquals(HAKEMUS_OID, hakemusOid.getValue());
+        assertEquals(HAKUKOHDE_OID, hakukohdeOid.getValue());
 
-        VastaanottoDTO value = vastaanotto.getValue();
-        assertEquals(HAKUKOHDE_OID, value.hakukohdeOid);
-        assertEquals(ValintatuloksenTila.VASTAANOTTANUT, value.tila);
-        assertEquals("muokkaaja", value.muokkaaja);
-        assertEquals("selite", SELITE);
+        ArgumentCaptor<Valintatulos> argument = ArgumentCaptor.forClass(Valintatulos.class);
+        verify(valintatulosDaoMock).createOrUpdateValintatulos(argument.capture());
+
+        Valintatulos valintatulos = argument.getValue();
+        assertEquals(ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI, valintatulos.getTila());
+        assertEquals(IlmoittautumisTila.EI_TEHTY, valintatulos.getIlmoittautumisTila());
+        assertEquals(julkaistavissa, valintatulos.getJulkaistavissa());
+        assertEquals(hyvaksyttyVarasijalta, valintatulos.getHyvaksyttyVarasijalta());
+        assertEquals(hyvaksyPeruuntunut, valintatulos.getHyvaksyPeruuntunut());
+        assertEquals(1, valintatulos.getLogEntries().size());
+        assertEquals("tila: KESKEN -> VASTAANOTTANUT_SITOVASTI", valintatulos.getLogEntries().get(0).getMuutos());
+        assertEquals(SELITE, valintatulos.getLogEntries().get(0).getSelite());
+        assertEquals(MUOKKAAJA, valintatulos.getLogEntries().get(0).getMuokkaaja());
     }
 
     @Test
