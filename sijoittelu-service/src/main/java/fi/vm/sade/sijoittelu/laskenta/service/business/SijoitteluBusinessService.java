@@ -2,6 +2,7 @@ package fi.vm.sade.sijoittelu.laskenta.service.business;
 
 import akka.actor.ActorRef;
 import com.google.common.collect.Sets.SetView;
+import fi.vm.sade.auditlog.valintaperusteet.ValintaperusteetOperation;
 import fi.vm.sade.authentication.business.service.Authorizer;
 import fi.vm.sade.sijoittelu.batch.logic.impl.DomainConverter;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoitteluAlgorithm;
@@ -41,6 +42,8 @@ import java.util.stream.Collectors;
 
 import static com.google.common.collect.Sets.difference;
 import static com.google.common.collect.Sets.intersection;
+import static fi.vm.sade.auditlog.valintaperusteet.LogMessage.builder;
+import static fi.vm.sade.sijoittelu.laskenta.util.SijoitteluAudit.AUDIT;
 import static java.util.Collections.unmodifiableSet;
 import static java.util.stream.Collectors.toSet;
 import static org.apache.commons.lang.StringUtils.isBlank;
@@ -537,6 +540,20 @@ public class SijoitteluBusinessService {
         v.setHyvaksyttyVarasijalta(change.getHyvaksyttyVarasijalta(), selite, muokkaaja);
         v.setHyvaksyPeruuntunut(change.getHyvaksyPeruuntunut(), selite, muokkaaja);
         valintatulosDao.createOrUpdateValintatulos(v);
+        AUDIT.log(builder()
+                .id(muokkaaja)
+                .hakuOid(hakuoid)
+                .hakukohdeOid(hakukohde.getOid())
+                .hakemusOid(v.getHakemusOid())
+                .valintatapajonoOid(v.getValintatapajonoOid())
+                .add("ilmoittautumistila", v.getIlmoittautumisTila())
+                .add("julkaistavissa", v.getJulkaistavissa())
+                .add("hyvaksyttyvarasijalta", v.getHyvaksyttyVarasijalta())
+                .add("hyvaksyperuuntunut", v.getHyvaksyPeruuntunut())
+                .add("selite", selite)
+                .add("valintatuloksentila", v.getTila())
+                .setOperaatio(ValintaperusteetOperation.HAKEMUS_TILAMUUTOS)
+                .build());
     }
 
     private void vastaanotettavuusValintaTulosServicella(String hakuoid, String hakemusOid, String hakukohdeOid) {

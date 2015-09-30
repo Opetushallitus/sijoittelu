@@ -143,20 +143,6 @@ public class TilaResource {
             Hakukohde hakukohde = sijoitteluBusinessService.getHakukohde(hakuOid, hakukohdeOid);
             for (Valintatulos v : valintatulokset) {
                 sijoitteluBusinessService.vaihdaHakemuksenTila(hakuOid, hakukohde, v, selite, username());
-                AUDIT.log(builder()
-                        .id(username())
-                        .hakuOid(hakuOid)
-                        .hakukohdeOid(hakukohde.getOid())
-                        .hakemusOid(v.getHakemusOid())
-                        .valintatapajonoOid(v.getValintatapajonoOid())
-                        .add("ilmoittautumistila", v.getIlmoittautumisTila())
-                        .add("julkaistavissa", v.getJulkaistavissa())
-                        .add("hyvaksyttyvarasijalta", v.getHyvaksyttyVarasijalta())
-                        .add("hyvaksyperuuntunut", v.getHyvaksyPeruuntunut())
-                        .add("selite", selite)
-                        .add("valintatuloksentila", v.getTila())
-                        .setOperaatio(ValintaperusteetOperation.HAKEMUS_TILAMUUTOS)
-                        .build());
             }
             return Response.status(Status.OK).build();
         } catch (PriorAcceptanceException e) {
@@ -192,20 +178,6 @@ public class TilaResource {
             Hakukohde hakukohde = sijoitteluBusinessService.getErillishaunHakukohde(hakuOid, hakukohdeOid);
             for (Valintatulos v : valintatulokset) {
                 sijoitteluBusinessService.vaihdaHakemuksenTila(hakuOid, hakukohde, v, selite, username());
-                AUDIT.log(builder()
-                        .id(username())
-                        .hakuOid(hakuOid)
-                        .hakukohdeOid(hakukohde.getOid())
-                        .hakemusOid(v.getHakemusOid())
-                        .valintatapajonoOid(v.getValintatapajonoOid())
-                        .add("ilmoittautumistila", v.getIlmoittautumisTila())
-                        .add("julkaistavissa", v.getJulkaistavissa())
-                        .add("hyvaksyttyvarasijalta", v.getHyvaksyttyVarasijalta())
-                        .add("hyvaksyperuuntunut", v.getHyvaksyPeruuntunut())
-                        .add("selite", selite)
-                        .add("valintatuloksentila",v.getTila())
-                        .setOperaatio(ValintaperusteetOperation.HAKEMUS_TILAMUUTOS_ERILLISHAKU)
-                        .build());
             }
             return Response.status(Response.Status.OK).build();
         }  catch (StaleReadException e) {
