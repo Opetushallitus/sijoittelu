@@ -146,9 +146,7 @@ public class TilaResource {
         try {
             Hakukohde hakukohde = sijoitteluBusinessService.getHakukohde(hakuOid, hakukohdeOid);
             for (Valintatulos v : valintatulokset) {
-                sijoitteluBusinessService.vaihdaHakemuksenTila(hakuOid, hakukohde, v.getValintatapajonoOid(),
-                        v.getHakemusOid(), v.getTila(), selite, v.getIlmoittautumisTila(), v.getJulkaistavissa(),
-                        v.getHyvaksyttyVarasijalta(), v.getHyvaksyPeruuntunut(), username());
+                sijoitteluBusinessService.vaihdaHakemuksenTila(hakuOid, hakukohde, v, selite, username());
                 AUDIT.log(builder()
                         .id(username())
                         .hakuOid(hakuOid)
@@ -200,12 +198,7 @@ public class TilaResource {
         try {
             Hakukohde hakukohde = sijoitteluBusinessService.getErillishaunHakukohde(hakuOid, hakukohdeOid);
             for (Valintatulos v : valintatulokset) {
-                ValintatuloksenTila tila = v.getTila();
-                IlmoittautumisTila ilmoittautumisTila = v.getIlmoittautumisTila();
-                sijoitteluBusinessService.vaihdaHakemuksenTila(hakuOid,
-                        hakukohde, v.getValintatapajonoOid(),
-                        v.getHakemusOid(), tila, selite, ilmoittautumisTila,
-                        v.getJulkaistavissa(), v.getHyvaksyttyVarasijalta(), v.getHyvaksyPeruuntunut(), username());
+                sijoitteluBusinessService.vaihdaHakemuksenTila(hakuOid, hakukohde, v, selite, username());
                 AUDIT.log(builder()
                         .id(username())
                         .hakuOid(hakuOid)
@@ -273,14 +266,8 @@ public class TilaResource {
                     .forEach(v -> sijoitteluBusinessService.vaihdaHakemuksenTila(
                             v.getHakuOid(),
                             sijoitteluBusinessService.getHakukohde(v.getHakuOid(), v.getHakukohdeOid()),
-                            v.getValintatapajonoOid(),
-                            v.getHakemusOid(),
-                            v.getTila(),
+                            v,
                             "Erillishauntuonti",
-                            v.getIlmoittautumisTila(),
-                            v.getJulkaistavissa(),
-                            v.getHyvaksyttyVarasijalta(),
-                            v.getHyvaksyPeruuntunut(),
                             username()));
             LOGGER.info("Erillishaun tietojen tuonti onnistui jonolle {} haussa {} hakukohteelle {}",
                     erillishaunHakijaDtos.iterator().next().valintatapajonoOid, hakuOid, hakukohdeOid);

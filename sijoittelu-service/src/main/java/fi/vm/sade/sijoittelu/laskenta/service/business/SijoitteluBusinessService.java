@@ -498,17 +498,10 @@ public class SijoitteluBusinessService {
                 .orElseThrow(() -> new RuntimeException("Erillissijoittelua ei löytynyt haulle: " + hakuOid));
     }
 
-    public void vaihdaHakemuksenTila(String hakuoid,
-                                     Hakukohde hakukohde,
-                                     String valintatapajonoOid,
-                                     String hakemusOid,
-                                     ValintatuloksenTila tila,
-                                     String selite,
-                                     IlmoittautumisTila ilmoittautumisTila,
-                                     boolean julkaistavissa,
-                                     boolean hyvaksyttyVarasijalta,
-                                     boolean hyvaksyPeruuntunut,
-                                     String muokkaaja) {
+    public void vaihdaHakemuksenTila(String hakuoid, Hakukohde hakukohde, Valintatulos change, String selite, String muokkaaja) {
+        ValintatuloksenTila tila = change.getTila();
+        String valintatapajonoOid = change.getValintatapajonoOid();
+        String hakemusOid = change.getHakemusOid();
         if (tila == null || isBlank(hakuoid) || isBlank(valintatapajonoOid) || isBlank(hakemusOid)) {
             throw new IllegalArgumentException(String.format("tila: %s, hakuoid: %s, valintatapajonoOid: %s, hakemusOid: %s", tila, hakuoid, valintatapajonoOid, hakemusOid));
         }
@@ -536,21 +529,20 @@ public class SijoitteluBusinessService {
                         hakemus.getHakijaOid(),
                         hakuoid,
                         hakemus.getPrioriteetti()));
-        if (notModifying(tila, ilmoittautumisTila, julkaistavissa, hyvaksyttyVarasijalta, hyvaksyPeruuntunut, v)) {
+        if (notModifying(change, v)) {
             return;
         }
 
-        authorizeHyvaksyPeruuntunutModification(tarjoajaOid, hyvaksyPeruuntunut, v);
+        authorizeHyvaksyPeruuntunutModification(tarjoajaOid, change.getHyvaksyPeruuntunut(), v);
 
         LOG.info("Muutetaan valintatulosta hakukohdeoid {}, valintatapajonooid {}, hakemusoid {}: {}",
-                hakukohdeOid, valintatapajonoOid, hakemusOid,
-                muutos(v, tila, ilmoittautumisTila, julkaistavissa, hyvaksyttyVarasijalta, hyvaksyPeruuntunut));
+                hakukohdeOid, valintatapajonoOid, hakemusOid, muutos(v, change));
 
         v.setTila(tila, selite, muokkaaja);
-        v.setIlmoittautumisTila(ilmoittautumisTila, selite, muokkaaja);
-        v.setJulkaistavissa(julkaistavissa, selite, muokkaaja);
-        v.setHyvaksyttyVarasijalta(hyvaksyttyVarasijalta, selite, muokkaaja);
-        v.setHyvaksyPeruuntunut(hyvaksyPeruuntunut, selite, muokkaaja);
+        v.setIlmoittautumisTila(change.getIlmoittautumisTila(), selite, muokkaaja);
+        v.setJulkaistavissa(change.getJulkaistavissa(), selite, muokkaaja);
+        v.setHyvaksyttyVarasijalta(change.getHyvaksyttyVarasijalta(), selite, muokkaaja);
+        v.setHyvaksyPeruuntunut(change.getHyvaksyPeruuntunut(), selite, muokkaaja);
         valintatulosDao.createOrUpdateValintatulos(v);
     }
 
@@ -586,12 +578,12 @@ public class SijoitteluBusinessService {
         return authentication == null ? "[No user defined in session]" : authentication.getName();
     }
 
-    private static String muutos(Valintatulos v,
-                                 ValintatuloksenTila tila,
-                                 IlmoittautumisTila ilmoittautumisTila,
-                                 boolean julkaistavissa,
-                                 boolean hyvaksyttyVarasijalta,
-                                 boolean hyvaksyPeruuntunut) {
+    private static String muutos(Valintatulos v, Valintatulos change) {
+        ValintatuloksenTila tila = change.getTila();
+        IlmoittautumisTila ilmoittautumisTila = change.getIlmoittautumisTila();
+        boolean julkaistavissa = change.getJulkaistavissa();
+        boolean hyvaksyttyVarasijalta = change.getHyvaksyttyVarasijalta();
+        boolean hyvaksyPeruuntunut = change.getHyvaksyPeruuntunut();
         List<String> muutos = new ArrayList<>();
         if (tila != v.getTila()) {
             muutos.add(Optional.ofNullable(v.getTila()).map(Enum::name).orElse("") + " -> " + tila.name());
@@ -611,17 +603,12 @@ public class SijoitteluBusinessService {
         return muutos.stream().collect(Collectors.joining(", "));
     }
 
-    private static boolean notModifying(ValintatuloksenTila tila,
-                                        IlmoittautumisTila ilmoittautumisTila,
-                                        boolean julkaistavissa,
-                                        boolean hyvaksyttyVarasijalta,
-                                        boolean hyvaksyPeruuntunut,
-                                        Valintatulos v) {
-        return v.getTila() == tila &&
-                v.getIlmoittautumisTila() == ilmoittautumisTila &&
-                v.getJulkaistavissa() == julkaistavissa &&
-                v.getHyvaksyttyVarasijalta() == hyvaksyttyVarasijalta &&
-                v.getHyvaksyPeruuntunut() == hyvaksyPeruuntunut;
+    private static boolean notModifying(Valintatulos change, Valintatulos v) {
+        return v.getTila() == change.getTila() &&
+                v.getIlmoittautumisTila() == change.getIlmoittautumisTila() &&
+                v.getJulkaistavissa() == change.getJulkaistavissa() &&
+                v.getHyvaksyttyVarasijalta() == change.getHyvaksyttyVarasijalta() &&
+                v.getHyvaksyPeruuntunut() == change.getHyvaksyPeruuntunut();
     }
 
     private void updateMissingTarjoajaOidFromTarjonta(Hakukohde hakukohde) {
