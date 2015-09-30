@@ -1,20 +1,18 @@
 package fi.vm.sade.sijoittelu.batch.logic.impl.algorithm;
 
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.HakemusWrapper;
+import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.HakukohdeWrapper;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.HenkiloWrapper;
+import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.SijoitteluajoWrapper;
 import fi.vm.sade.sijoittelu.domain.HakemuksenTila;
 import fi.vm.sade.sijoittelu.domain.Hakemus;
+import fi.vm.sade.sijoittelu.domain.Tasasijasaanto;
 import org.junit.Assert;
 import org.junit.Test;
 
-/**
- * Created with IntelliJ IDEA.
- * User: kkammone
- * Date: 26.11.2013
- * Time: 16:31
- * To change this template use File | Settings | File Templates.
- */
-public class SijoitteluAlgorithmTest {
+import static org.junit.Assert.assertEquals;
+
+public class SijoitteleHakukohdeTest {
 
     @Test
     public void eiPeruttuaKorkeampaaTaiSamaaHakutoivettaTest() {
