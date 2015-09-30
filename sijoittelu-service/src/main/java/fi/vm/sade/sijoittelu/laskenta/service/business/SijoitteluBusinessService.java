@@ -469,16 +469,6 @@ public class SijoitteluBusinessService {
         return valintatulosDao.loadValintatuloksetForHakukohde(hakukohdeOid);
     }
 
-    public boolean muutoksetOvatAjantasaisia(String hakukohdeOid, List<Valintatulos> valintatulokset) {
-        return !valintatulokset.stream()
-                .anyMatch(valintatulos -> {
-                    Valintatulos saved = valintatulosDao.loadValintatulos(hakukohdeOid, valintatulos.getValintatapajonoOid(), valintatulos.getHakemusOid());
-                    Interval interval = new Interval(new DateTime(valintatulos.getRead()), DateTime.now());
-                    return saved != null && saved.getLogEntries() != null &&
-                            saved.getLogEntries().stream().anyMatch(entry -> interval.contains(entry.getLuotu().getTime()));
-                });
-    }
-
     public List<Valintatulos> haeHakemuksenTila(String hakemusOid) {
         if (isBlank(hakemusOid)) {
             throw new RuntimeException("Invalid search params, fix exception later");
@@ -531,6 +521,9 @@ public class SijoitteluBusinessService {
                         hakemus.getPrioriteetti()));
         if (notModifying(change, v)) {
             return;
+        }
+        if (v.getViimeinenMuutos() != null && v.getViimeinenMuutos().after(change.getRead())) {
+            throw new StaleReadException();
         }
 
         authorizeHyvaksyPeruuntunutModification(tarjoajaOid, change.getHyvaksyPeruuntunut(), v);

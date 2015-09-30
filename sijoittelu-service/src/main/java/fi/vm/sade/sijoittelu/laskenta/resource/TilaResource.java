@@ -22,6 +22,7 @@ import fi.vm.sade.sijoittelu.domain.*;
 import fi.vm.sade.sijoittelu.domain.dto.ErillishaunHakijaDTO;
 import fi.vm.sade.sijoittelu.laskenta.service.business.IllegalVTSRequestException;
 import fi.vm.sade.sijoittelu.laskenta.service.business.PriorAcceptanceException;
+import fi.vm.sade.sijoittelu.laskenta.service.business.StaleReadException;
 import fi.vm.sade.sijoittelu.laskenta.service.it.TarjontaIntegrationService;
 import fi.vm.sade.sijoittelu.tulos.dao.HakukohdeDao;
 import fi.vm.sade.sijoittelu.tulos.dao.SijoitteluDao;
@@ -138,11 +139,6 @@ public class TilaResource {
                                          @PathParam("hakukohdeOid") String hakukohdeOid,
                                          List<Valintatulos> valintatulokset,
                                          @QueryParam("selite") String selite) {
-
-        if(valintatulokset != null && !sijoitteluBusinessService.muutoksetOvatAjantasaisia(hakukohdeOid, valintatulokset)) {
-            return Response.status(Status.CONFLICT).build();
-        }
-
         try {
             Hakukohde hakukohde = sijoitteluBusinessService.getHakukohde(hakuOid, hakukohdeOid);
             for (Valintatulos v : valintatulokset) {
@@ -173,6 +169,8 @@ public class TilaResource {
             Map<String, String> error = new HashMap<>();
             error.put("message", e.getMessage());
             return Response.status(Status.BAD_REQUEST).entity(error).build();
+        } catch (StaleReadException e) {
+            return Response.status(Status.CONFLICT).build();
         } catch (Exception e) {
             LOGGER.error("Valintatulosten tallenus epäonnistui haussa {} hakukohteelle {}", hakuOid, hakukohdeOid, e);
             Map<String, String> error = new HashMap<>();
@@ -190,11 +188,6 @@ public class TilaResource {
                                          @PathParam("hakukohdeOid") String hakukohdeOid,
                                          List<Valintatulos> valintatulokset,
                                          @QueryParam("selite") String selite) {
-
-        if(valintatulokset != null && !sijoitteluBusinessService.muutoksetOvatAjantasaisia(hakukohdeOid, valintatulokset)) {
-            return Response.status(Response.Status.CONFLICT).build();
-        }
-
         try {
             Hakukohde hakukohde = sijoitteluBusinessService.getErillishaunHakukohde(hakuOid, hakukohdeOid);
             for (Valintatulos v : valintatulokset) {
@@ -215,9 +208,11 @@ public class TilaResource {
                         .build());
             }
             return Response.status(Response.Status.OK).build();
+        }  catch (StaleReadException e) {
+            return Response.status(Status.CONFLICT).build();
         } catch (Exception e) {
             LOGGER.error("Valintatulosten tallenus epäonnistui haussa " + hakuOid + " hakukohteelle " + hakukohdeOid, e);
-            Map error = new HashMap();
+            Map<String, String> error = new HashMap<>();
             error.put("message", e.getMessage());
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(error).build();
         }
