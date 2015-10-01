@@ -233,7 +233,7 @@ public class SijoitteleHakukohde {
                 if (h != hakemus && hakemuksenPrioriteetti(hakemus).equals(hakemuksenPrioriteetti(h))) {
                     Valintatapajono current = h.getValintatapajono().getValintatapajono();
                     Valintatapajono hyvaksyttyJono = hakemus.getValintatapajono().getValintatapajono();
-                    // Peruutetaan vain korkeamman prioriteetin jonot
+                    // Peruutetaan vain jonot joissa prioriteetti integer on suurempi
                     if (hyvaksyttyJono.getPrioriteetti() < current.getPrioriteetti()) {
                         // Perustapaus
                         if (h.isTilaVoidaanVaihtaa()) {
