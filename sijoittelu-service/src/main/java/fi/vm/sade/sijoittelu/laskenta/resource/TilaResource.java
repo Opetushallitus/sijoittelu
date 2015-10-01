@@ -17,12 +17,13 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
-import fi.vm.sade.auditlog.valintaperusteet.ValintaperusteetOperation;
+import fi.vm.sade.generic.service.exception.NotAuthorizedException;
 import fi.vm.sade.sijoittelu.domain.*;
 import fi.vm.sade.sijoittelu.domain.dto.ErillishaunHakijaDTO;
 import fi.vm.sade.sijoittelu.laskenta.service.business.IllegalVTSRequestException;
 import fi.vm.sade.sijoittelu.laskenta.service.business.PriorAcceptanceException;
 import fi.vm.sade.sijoittelu.laskenta.service.business.StaleReadException;
+import fi.vm.sade.sijoittelu.laskenta.service.exception.HakemustaEiLoytynytException;
 import fi.vm.sade.sijoittelu.laskenta.service.it.TarjontaIntegrationService;
 import fi.vm.sade.sijoittelu.tulos.dao.HakukohdeDao;
 import fi.vm.sade.sijoittelu.tulos.dao.SijoitteluDao;
@@ -43,7 +44,6 @@ import fi.vm.sade.sijoittelu.laskenta.service.business.SijoitteluBusinessService
 import org.springframework.stereotype.Controller;
 
 import static fi.vm.sade.sijoittelu.laskenta.util.SijoitteluAudit.*;
-import static fi.vm.sade.auditlog.valintaperusteet.LogMessage.builder;
 
 @Controller
 @Path("tila")
@@ -139,29 +139,45 @@ public class TilaResource {
                                          @PathParam("hakukohdeOid") String hakukohdeOid,
                                          List<Valintatulos> valintatulokset,
                                          @QueryParam("selite") String selite) {
+        List<ValintatulosUpdateStatus> statuses = new ArrayList<>();
         try {
             Hakukohde hakukohde = sijoitteluBusinessService.getHakukohde(hakuOid, hakukohdeOid);
             for (Valintatulos v : valintatulokset) {
-                sijoitteluBusinessService.vaihdaHakemuksenTila(hakuOid, hakukohde, v, selite, username());
+                try {
+                    sijoitteluBusinessService.vaihdaHakemuksenTila(hakuOid, hakukohde, v, selite, username());
+                } catch (HakemustaEiLoytynytException e) {
+                    LOGGER.info("haku: {}, hakukohde: {}", hakuOid, hakukohdeOid, e);
+                    statuses.add(new ValintatulosUpdateStatus(Status.NOT_FOUND.getStatusCode(), e.getMessage(), v.getValintatapajonoOid(), v.getHakemusOid()));
+                } catch (NotAuthorizedException e) {
+                    LOGGER.info("haku: {}, hakukohde: {}, valintatapajono: {}, hakemus: {}",
+                            hakuOid, hakukohdeOid, v.getValintatapajonoOid(), v.getHakemusOid(), e);
+                    statuses.add(new ValintatulosUpdateStatus(Status.UNAUTHORIZED.getStatusCode(), e.getMessage(), v.getValintatapajonoOid(), v.getHakemusOid()));
+                } catch (PriorAcceptanceException e) {
+                    LOGGER.info("haku: {}, hakukohde: {}, valintatapajono: {}, hakemus: {}",
+                            hakuOid, hakukohdeOid, v.getValintatapajonoOid(), v.getHakemusOid(), e);
+                    statuses.add(new ValintatulosUpdateStatus(Status.FORBIDDEN.getStatusCode(), e.getMessage(), v.getValintatapajonoOid(), v.getHakemusOid()));
+                } catch (IllegalArgumentException | IllegalVTSRequestException e) {
+                    LOGGER.info("haku: {}, hakukohde: {}, valintatapajono: {}, hakemus: {}",
+                            hakuOid, hakukohdeOid, v.getValintatapajonoOid(), v.getHakemusOid(), e);
+                    statuses.add(new ValintatulosUpdateStatus(Status.BAD_REQUEST.getStatusCode(), e.getMessage(), v.getValintatapajonoOid(), v.getHakemusOid()));
+                } catch (StaleReadException e) {
+                    LOGGER.info("", e);
+                    statuses.add(new ValintatulosUpdateStatus(Status.CONFLICT.getStatusCode(), e.getMessage(), v.getValintatapajonoOid(), v.getHakemusOid()));
+                } catch (Exception e) {
+                    LOGGER.error("haku: {}, hakukohde: {}, valintatapajono: {}, hakemus: {}",
+                            hakuOid, hakukohdeOid, v.getValintatapajonoOid(), v.getHakemusOid(), e);
+                    statuses.add(new ValintatulosUpdateStatus(Status.INTERNAL_SERVER_ERROR.getStatusCode(), e.getMessage(), v.getValintatapajonoOid(), v.getHakemusOid()));
+                }
             }
-            return Response.status(Status.OK).build();
-        } catch (PriorAcceptanceException e) {
-            LOGGER.info("Valintatulosten tallenus epäonnistui haussa {} hakukohteelle {}", hakuOid, hakukohdeOid, e);
-            Map<String, String> error = new HashMap<>();
-            error.put("message", e.getMessage());
-            return Response.status(Status.FORBIDDEN).entity(error).build();
-        } catch (IllegalVTSRequestException e) {
-            LOGGER.info("Valintatulosten tallenus epäonnistui haussa {} hakukohteelle {}", hakuOid, hakukohdeOid, e);
-            Map<String, String> error = new HashMap<>();
-            error.put("message", e.getMessage());
-            return Response.status(Status.BAD_REQUEST).entity(error).build();
-        } catch (StaleReadException e) {
-            return Response.status(Status.CONFLICT).build();
+            Status s = statuses.isEmpty() ? Status.OK : Status.INTERNAL_SERVER_ERROR;
+            return Response.status(s)
+                    .entity(new HakukohteenValintatulosUpdateStatuses(statuses))
+                    .build();
         } catch (Exception e) {
-            LOGGER.error("Valintatulosten tallenus epäonnistui haussa {} hakukohteelle {}", hakuOid, hakukohdeOid, e);
-            Map<String, String> error = new HashMap<>();
-            error.put("message", e.getMessage());
-            return Response.status(Status.INTERNAL_SERVER_ERROR).entity(error).build();
+            LOGGER.error("haku: {}, hakukohde: {}", hakuOid, hakukohdeOid, e);
+            return Response.status(Status.INTERNAL_SERVER_ERROR)
+                    .entity(new HakukohteenValintatulosUpdateStatuses(e.getMessage(), statuses))
+                    .build();
         }
     }
 

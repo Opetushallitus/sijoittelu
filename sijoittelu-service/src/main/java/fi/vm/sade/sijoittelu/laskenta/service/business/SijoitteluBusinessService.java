@@ -526,7 +526,7 @@ public class SijoitteluBusinessService {
             return;
         }
         if (v.getViimeinenMuutos() != null && v.getViimeinenMuutos().after(change.getRead())) {
-            throw new StaleReadException();
+            throw new StaleReadException(hakuoid, hakukohdeOid, valintatapajonoOid, hakemusOid);
         }
 
         authorizeHyvaksyPeruuntunutModification(tarjoajaOid, change.getHyvaksyPeruuntunut(), v);
@@ -639,6 +639,6 @@ public class SijoitteluBusinessService {
         return valintatapajono.getHakemukset().stream()
                 .filter(h -> hakemusOid.equals(h.getHakemusOid()))
                 .findFirst()
-                .orElseThrow(() -> new HakemustaEiLoytynytException("Hakemusta ei löytynyt."));
+                .orElseThrow(() -> new HakemustaEiLoytynytException(valintatapajono.getOid(), hakemusOid));
     }
 }
