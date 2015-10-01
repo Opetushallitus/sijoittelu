@@ -1,32 +1,32 @@
 package fi.vm.sade.sijoittelu.laskenta.resource;
 
-import static org.junit.Assert.assertEquals;
-
-import java.util.Arrays;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
+import fi.vm.sade.generic.service.exception.NotAuthorizedException;
+import fi.vm.sade.integrationtest.tomcat.SharedTomcat;
+import fi.vm.sade.sijoittelu.SijoitteluServiceTomcat;
+import fi.vm.sade.sijoittelu.domain.*;
+import fi.vm.sade.sijoittelu.domain.dto.ErillishaunHakijaDTO;
+import fi.vm.sade.sijoittelu.laskenta.service.business.SijoitteluBusinessService;
+import fi.vm.sade.sijoittelu.laskenta.service.business.StaleReadException;
+import fi.vm.sade.sijoittelu.laskenta.service.exception.HakemustaEiLoytynytException;
+import fi.vm.sade.sijoittelu.tulos.dto.HakukohdeDTO;
+import fi.vm.sade.valinta.http.HttpResource;
+import junit.framework.Assert;
+import org.apache.cxf.jaxrs.client.WebClient;
+import org.junit.Before;
+import org.junit.Test;
 
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
-import fi.vm.sade.sijoittelu.tulos.dto.HakukohdeDTO;
-import junit.framework.Assert;
-import org.apache.cxf.jaxrs.client.WebClient;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
-
-import fi.vm.sade.sijoittelu.domain.HakemuksenTila;
-import fi.vm.sade.sijoittelu.domain.IlmoittautumisTila;
-import fi.vm.sade.sijoittelu.domain.ValintatuloksenTila;
-import fi.vm.sade.sijoittelu.domain.Valintatulos;
-import fi.vm.sade.sijoittelu.domain.dto.ErillishaunHakijaDTO;
-import fi.vm.sade.valinta.http.HttpResource;
-import fi.vm.sade.integrationtest.tomcat.SharedTomcat;
-import fi.vm.sade.sijoittelu.SijoitteluServiceTomcat;
+import static org.junit.Assert.*;
 
 public class TilaResourceTest {
     String hakuOid = "1.2.246.562.5.2013080813081926341928";
@@ -40,6 +40,83 @@ public class TilaResourceTest {
     @Before
     public void startServer() {
         SijoitteluServiceTomcat.startShared();
+    }
+
+    @Test
+    public void onnistunutMuokkausPalauttaaOk() {
+        TilaResource r = new TilaResource();
+        r.sijoitteluBusinessService = sijoitteluBusinessServiceMock(new Hakukohde());
+        List<Valintatulos> valintatulokset = new ArrayList<>();
+        valintatulokset.add(new Valintatulos());
+
+        Response response = r.muutaHakemustenTilaa(hakuOid, hakukohdeOid, valintatulokset, "selite");
+        HakukohteenValintatulosUpdateStatuses statuses = (HakukohteenValintatulosUpdateStatuses) response.getEntity();
+        assertEquals(200, response.getStatus());
+        assertNull("ei viestiä", statuses.message);
+        assertTrue("ei virheitä", statuses.statuses.isEmpty());
+    }
+
+    @Test
+    public void internalServerErrorJosHakukohdettaEiLoydy() {
+        TilaResource r = new TilaResource();
+        r.sijoitteluBusinessService = sijoitteluBusinessServiceMock(new RuntimeException("Sijoittelua ei löytynyt haulle: " + hakuOid));
+        List<Valintatulos> valintatulokset = new ArrayList<>();
+
+        Response response = r.muutaHakemustenTilaa(hakuOid, hakukohdeOid, valintatulokset, "selite");
+        HakukohteenValintatulosUpdateStatuses statuses = (HakukohteenValintatulosUpdateStatuses) response.getEntity();
+        assertEquals(500, response.getStatus());
+        assertEquals("Sijoittelua ei löytynyt haulle: " + hakuOid, statuses.message);
+        assertTrue("ei virheitä", statuses.statuses.isEmpty());
+    }
+
+    @Test
+    public void epaonnistuneidenMuokkaustenVirheetKerataan() {
+        TilaResource r = new TilaResource();
+        r.sijoitteluBusinessService = new SijoitteluBusinessService() {
+            @Override
+            public Hakukohde getHakukohde(String hakuOid, String hakukohdeOid) {
+                return new Hakukohde();
+            }
+
+            @Override
+            public void vaihdaHakemuksenTila(String hakuoid, Hakukohde hakukohde, Valintatulos change, String selite, String muokkaaja) {
+                switch (change.getHakemusOid()) {
+                    case "1":
+                        throw new HakemustaEiLoytynytException(valintatapajonoOid, hakemusOid);
+                    case "2":
+                        throw new NotAuthorizedException();
+                    case "3":
+                        throw new StaleReadException(hakuoid, hakukohdeOid, valintatapajonoOid, hakemusOid);
+                    case "4":
+                        throw new IllegalArgumentException();
+                }
+            }
+        };
+        List<Valintatulos> valintatulokset = new ArrayList<>();
+        Valintatulos one = new Valintatulos();
+        one.setHakemusOid("1", "");
+        Valintatulos two = new Valintatulos();
+        two.setHakemusOid("2", "");
+        Valintatulos three = new Valintatulos();
+        three.setHakemusOid("3", "");
+        Valintatulos four = new Valintatulos();
+        four.setHakemusOid("4", "");
+        valintatulokset.add(one);
+        valintatulokset.add(two);
+        valintatulokset.add(three);
+        valintatulokset.add(four);
+
+        Response response = r.muutaHakemustenTilaa(hakuOid, hakukohdeOid, valintatulokset, "selite");
+        HakukohteenValintatulosUpdateStatuses statuses = (HakukohteenValintatulosUpdateStatuses) response.getEntity();
+        assertEquals(500, response.getStatus());
+        assertNull("ei viestiä", statuses.message);
+        assertFalse("virheitä", statuses.statuses.isEmpty());
+        Map<String, Integer> errors = statuses.statuses.stream()
+                .collect(Collectors.toMap(status -> status.hakemusOid, status -> status.status));
+        assertEquals(new Integer(404), errors.get("1"));
+        assertEquals(new Integer(401), errors.get("2"));
+        assertEquals(new Integer(409), errors.get("3"));
+        assertEquals(new Integer(400), errors.get("4"));
     }
 
     @Test
@@ -134,15 +211,43 @@ public class TilaResourceTest {
 
     private List<Valintatulos> haeTulokset(String hakemusOid) {
         final String url = "http://localhost:" + SharedTomcat.port + "/sijoittelu-service/resources/tila/" + hakemusOid;
-        return createClient(url).accept(MediaType.APPLICATION_JSON).get(new GenericType<List<Valintatulos>>() { });
+        return createClient(url).accept(MediaType.APPLICATION_JSON).get(new GenericType<List<Valintatulos>>() {
+        });
     }
 
     private HakukohdeDTO haeHakukohde(String hakuOid, String hakukohdeOid) {
         final String url = "http://localhost:" + SharedTomcat.port + "/sijoittelu-service/resources/sijoittelu/" + hakuOid + "/sijoitteluajo/latest/hakukohdedto/"+hakukohdeOid;
-        return createClient(url).accept(MediaType.APPLICATION_JSON).get(new GenericType<HakukohdeDTO>() { });
+        return createClient(url).accept(MediaType.APPLICATION_JSON).get(new GenericType<HakukohdeDTO>() {
+        });
     }
 
     private WebClient createClient(String url) {
         return new HttpResource(url, 15000).getWebClient();
+    }
+
+    private static SijoitteluBusinessService sijoitteluBusinessServiceMock(RuntimeException e) {
+        return new SijoitteluBusinessService() {
+            @Override
+            public Hakukohde getHakukohde(String hakuOid, String hakukohdeOid) {
+                throw e;
+            }
+
+            @Override
+            public void vaihdaHakemuksenTila(String hakuoid, Hakukohde hakukohde, Valintatulos change, String selite, String muokkaaja) {
+            }
+        };
+    }
+
+    private static SijoitteluBusinessService sijoitteluBusinessServiceMock(Hakukohde hakukohde) {
+        return new SijoitteluBusinessService() {
+            @Override
+            public Hakukohde getHakukohde(String hakuOid, String hakukohdeOid) {
+                return hakukohde;
+            }
+
+            @Override
+            public void vaihdaHakemuksenTila(String hakuoid, Hakukohde hakukohde, Valintatulos change, String selite, String muokkaaja) {
+            }
+        };
     }
 }

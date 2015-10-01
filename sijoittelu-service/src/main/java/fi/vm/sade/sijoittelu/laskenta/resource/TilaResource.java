@@ -55,7 +55,7 @@ public class TilaResource {
     static final String LATEST = "latest";
 
     @Autowired
-    private SijoitteluBusinessService sijoitteluBusinessService;
+    public SijoitteluBusinessService sijoitteluBusinessService;
 
     @Autowired
     private RaportointiService raportointiService;
