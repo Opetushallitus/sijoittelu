@@ -148,7 +148,7 @@ public class EnsikertalaisuusKiintionKayttoTest {
     }
 
     @Test
-    public void esim4_1() {
+    public void esim4_1_vanha() {
         SijoitusAjoBuilder after = new SijoitusAjoBuilder();
         after.hakijaryhma(2, "C", "B", "D");
         after.jono(2, Tasasijasaanto.YLITAYTTO).samaJonosija(j -> j.hyvaksytty("A").perunut("C").hyvaksytty("E")).varalla("H", "B", "F", "D");
@@ -157,7 +157,16 @@ public class EnsikertalaisuusKiintionKayttoTest {
     }
 
     @Test
-    public void esim4_1B() {
+    public void esim4_1() {
+        SijoitusAjoBuilder after = new SijoitusAjoBuilder();
+        after.hakijaryhma(2, "C", "B", "D");
+        after.jono(2, Tasasijasaanto.YLITAYTTO).samaJonosija(j -> j.hyvaksytty("A").perunut("C","E")).varalla("H").hyvaksytty("B").varalla("F", "D");
+        after.jono(2, Tasasijasaanto.YLITAYTTO).samaJonosija(j -> j.hyvaksytty("D", "H").peruuntunut("B")).varalla("F").peruuntunut("A", "C", "E");
+        assertSijoittelu(after);
+    }
+
+    @Test
+    public void esim4_1B_vanha() {
         SijoitusAjoBuilder after = new SijoitusAjoBuilder();
         after.hakijaryhma(2, "C", "B", "D");
         after.jono(2, Tasasijasaanto.YLITAYTTO).samaJonosija(j -> j.hyvaksytty("A").perunut("C").hyvaksytty("E")).varalla("H").perunut("B").varalla("F", "D");
