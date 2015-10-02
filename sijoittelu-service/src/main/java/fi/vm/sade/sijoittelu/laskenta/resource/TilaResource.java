@@ -142,33 +142,7 @@ public class TilaResource {
         List<ValintatulosUpdateStatus> statuses = new ArrayList<>();
         try {
             Hakukohde hakukohde = sijoitteluBusinessService.getHakukohde(hakuOid, hakukohdeOid);
-            for (Valintatulos v : valintatulokset) {
-                try {
-                    sijoitteluBusinessService.vaihdaHakemuksenTila(hakuOid, hakukohde, v, selite, username());
-                } catch (HakemustaEiLoytynytException e) {
-                    LOGGER.info("haku: {}, hakukohde: {}", hakuOid, hakukohdeOid, e);
-                    statuses.add(new ValintatulosUpdateStatus(Status.NOT_FOUND.getStatusCode(), e.getMessage(), v.getValintatapajonoOid(), v.getHakemusOid()));
-                } catch (NotAuthorizedException e) {
-                    LOGGER.info("haku: {}, hakukohde: {}, valintatapajono: {}, hakemus: {}",
-                            hakuOid, hakukohdeOid, v.getValintatapajonoOid(), v.getHakemusOid(), e);
-                    statuses.add(new ValintatulosUpdateStatus(Status.UNAUTHORIZED.getStatusCode(), e.getMessage(), v.getValintatapajonoOid(), v.getHakemusOid()));
-                } catch (PriorAcceptanceException e) {
-                    LOGGER.info("haku: {}, hakukohde: {}, valintatapajono: {}, hakemus: {}",
-                            hakuOid, hakukohdeOid, v.getValintatapajonoOid(), v.getHakemusOid(), e);
-                    statuses.add(new ValintatulosUpdateStatus(Status.FORBIDDEN.getStatusCode(), e.getMessage(), v.getValintatapajonoOid(), v.getHakemusOid()));
-                } catch (IllegalArgumentException | IllegalVTSRequestException e) {
-                    LOGGER.info("haku: {}, hakukohde: {}, valintatapajono: {}, hakemus: {}",
-                            hakuOid, hakukohdeOid, v.getValintatapajonoOid(), v.getHakemusOid(), e);
-                    statuses.add(new ValintatulosUpdateStatus(Status.BAD_REQUEST.getStatusCode(), e.getMessage(), v.getValintatapajonoOid(), v.getHakemusOid()));
-                } catch (StaleReadException e) {
-                    LOGGER.info("", e);
-                    statuses.add(new ValintatulosUpdateStatus(Status.CONFLICT.getStatusCode(), e.getMessage(), v.getValintatapajonoOid(), v.getHakemusOid()));
-                } catch (Exception e) {
-                    LOGGER.error("haku: {}, hakukohde: {}, valintatapajono: {}, hakemus: {}",
-                            hakuOid, hakukohdeOid, v.getValintatapajonoOid(), v.getHakemusOid(), e);
-                    statuses.add(new ValintatulosUpdateStatus(Status.INTERNAL_SERVER_ERROR.getStatusCode(), e.getMessage(), v.getValintatapajonoOid(), v.getHakemusOid()));
-                }
-            }
+            processVaihdaHakemuksienTilat(statuses,valintatulokset,hakuOid,hakukohdeOid,hakukohde,selite);
             Status s = statuses.isEmpty() ? Status.OK : Status.INTERNAL_SERVER_ERROR;
             return Response.status(s)
                     .entity(new HakukohteenValintatulosUpdateStatuses(statuses))
@@ -190,19 +164,49 @@ public class TilaResource {
                                          @PathParam("hakukohdeOid") String hakukohdeOid,
                                          List<Valintatulos> valintatulokset,
                                          @QueryParam("selite") String selite) {
+        List<ValintatulosUpdateStatus> statuses = new ArrayList<>();
         try {
             Hakukohde hakukohde = sijoitteluBusinessService.getErillishaunHakukohde(hakuOid, hakukohdeOid);
-            for (Valintatulos v : valintatulokset) {
-                sijoitteluBusinessService.vaihdaHakemuksenTila(hakuOid, hakukohde, v, selite, username());
-            }
-            return Response.status(Response.Status.OK).build();
-        }  catch (StaleReadException e) {
-            return Response.status(Status.CONFLICT).build();
+            processVaihdaHakemuksienTilat(statuses,valintatulokset,hakuOid,hakukohdeOid,hakukohde,selite);
+            Status s = statuses.isEmpty() ? Status.OK : Status.INTERNAL_SERVER_ERROR;
+            return Response.status(s)
+                    .entity(new HakukohteenValintatulosUpdateStatuses(statuses))
+                    .build();
         } catch (Exception e) {
-            LOGGER.error("Valintatulosten tallenus epäonnistui haussa " + hakuOid + " hakukohteelle " + hakukohdeOid, e);
-            Map<String, String> error = new HashMap<>();
-            error.put("message", e.getMessage());
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(error).build();
+            LOGGER.error("haku: {}, hakukohde: {}", hakuOid, hakukohdeOid, e);
+            return Response.status(Status.INTERNAL_SERVER_ERROR)
+                    .entity(new HakukohteenValintatulosUpdateStatuses(e.getMessage(), statuses))
+                    .build();
+        }
+    }
+
+    private void processVaihdaHakemuksienTilat(List<ValintatulosUpdateStatus> statuses, List<Valintatulos> valintatulokset, String hakuOid, String hakukohdeOid, Hakukohde hakukohde,  String selite) {
+        for (Valintatulos v : valintatulokset) {
+            try {
+                sijoitteluBusinessService.vaihdaHakemuksenTila(hakuOid, hakukohde, v, selite, username());
+            } catch (HakemustaEiLoytynytException e) {
+                LOGGER.info("haku: {}, hakukohde: {}", hakuOid, hakukohdeOid, e);
+                statuses.add(new ValintatulosUpdateStatus(Status.NOT_FOUND.getStatusCode(), e.getMessage(), v.getValintatapajonoOid(), v.getHakemusOid()));
+            } catch (NotAuthorizedException e) {
+                LOGGER.info("haku: {}, hakukohde: {}, valintatapajono: {}, hakemus: {}",
+                        hakuOid, hakukohdeOid, v.getValintatapajonoOid(), v.getHakemusOid(), e);
+                statuses.add(new ValintatulosUpdateStatus(Status.UNAUTHORIZED.getStatusCode(), e.getMessage(), v.getValintatapajonoOid(), v.getHakemusOid()));
+            } catch (PriorAcceptanceException e) {
+                LOGGER.info("haku: {}, hakukohde: {}, valintatapajono: {}, hakemus: {}",
+                        hakuOid, hakukohdeOid, v.getValintatapajonoOid(), v.getHakemusOid(), e);
+                statuses.add(new ValintatulosUpdateStatus(Status.FORBIDDEN.getStatusCode(), e.getMessage(), v.getValintatapajonoOid(), v.getHakemusOid()));
+            } catch (IllegalArgumentException | IllegalVTSRequestException e) {
+                LOGGER.info("haku: {}, hakukohde: {}, valintatapajono: {}, hakemus: {}",
+                        hakuOid, hakukohdeOid, v.getValintatapajonoOid(), v.getHakemusOid(), e);
+                statuses.add(new ValintatulosUpdateStatus(Status.BAD_REQUEST.getStatusCode(), e.getMessage(), v.getValintatapajonoOid(), v.getHakemusOid()));
+            } catch (StaleReadException e) {
+                LOGGER.info("", e);
+                statuses.add(new ValintatulosUpdateStatus(Status.CONFLICT.getStatusCode(), e.getMessage(), v.getValintatapajonoOid(), v.getHakemusOid()));
+            } catch (Exception e) {
+                LOGGER.error("haku: {}, hakukohde: {}, valintatapajono: {}, hakemus: {}",
+                        hakuOid, hakukohdeOid, v.getValintatapajonoOid(), v.getHakemusOid(), e);
+                statuses.add(new ValintatulosUpdateStatus(Status.INTERNAL_SERVER_ERROR.getStatusCode(), e.getMessage(), v.getValintatapajonoOid(), v.getHakemusOid()));
+            }
         }
     }
 
