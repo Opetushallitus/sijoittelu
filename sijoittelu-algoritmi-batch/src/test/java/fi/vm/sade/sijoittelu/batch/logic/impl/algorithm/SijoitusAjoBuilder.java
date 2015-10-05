@@ -13,20 +13,21 @@ import static org.junit.Assert.assertEquals;
 class SijoitusAjoBuilder {
     private List<Hakijaryhma> hakijaryhmat = new ArrayList<>();
     private List<JonoBuilder> jonot = new ArrayList<>();
+    private boolean kaikkiJulkaistu = false;
 
     public static void assertSijoittelu(SijoitusAjoBuilder before, SijoitusAjoBuilder after) {
-        SijoitteluajoWrapper sijoitteluajoWrapper = before.buildSijoitteluajoWrapper();
+        SijoitteluajoWrapper sijoitteluajoWrapper = before.build();
         SijoitteluAlgorithm.sijoittele(sijoitteluajoWrapper);
         HakukohdeWrapper hakukohdeWrapper = sijoitteluajoWrapper.getHakukohteet().get(0);
         assertEquals(after.forTest(), SijoitusAjoBuilder.forTest(hakukohdeWrapper.getHakukohde()));
     }
 
-    public static void assertSijoittelu(SijoitusAjoBuilder after) {
+    public static void luoAlkuTilanneJaAssertSijoittelu(SijoitusAjoBuilder after) {
         assertSijoittelu(after.buildBefore(), after);
     }
 
     public SijoitusAjoBuilder hakijaryhma(int kiintio, String... args) {
-         createHakijaryhmaForValintatapajono(kiintio, null, args);
+        createHakijaryhmaForValintatapajono(kiintio, null, args);
         return this;
     }
 
@@ -39,51 +40,63 @@ class SijoitusAjoBuilder {
         hakijaryhma.setValintatapajonoOid(valintatapajonoOid);
         return hakijaryhma;
     }
+
     public JonoBuilder jono(int aloituspaikat) {
         return jono(aloituspaikat, Tasasijasaanto.ARVONTA);
     }
+
     public JonoBuilder jono(int aloituspaikat, Tasasijasaanto tasasijasaanto) {
-        JonoBuilder jonoBuilder = new JonoBuilder(aloituspaikat, tasasijasaanto, Integer.toString(jonot.size()));
+        JonoBuilder jonoBuilder = new JonoBuilder(aloituspaikat, tasasijasaanto, jonot.size() + 1);
         jonot.add(jonoBuilder);
         return jonoBuilder;
     }
 
-    public SijoitusAjoBuilder buildBefore() {
+    private SijoitusAjoBuilder buildBefore() {
         SijoitusAjoBuilder before = new SijoitusAjoBuilder();
         before.hakijaryhmat.addAll(hakijaryhmat);
         for (JonoBuilder jono : jonot) {
-            JonoBuilder beforeJonoBuilder = new JonoBuilder(jono.aloituspaikat, jono.tasasijasaanto, jono.valintatapajonoOid);
-            for(Hakemus hakemus : jono.hakemukset) {
+            JonoBuilder beforeJonoBuilder = new JonoBuilder(jono.aloituspaikat, jono.tasasijasaanto, jono.valintatapajonoPrioriteetti);
+            for (Hakemus hakemus : jono.hakemukset) {
                 HakemuksenTila tila = Arrays.asList(HakemuksenTila.PERUNUT).contains(hakemus.getTila()) ? hakemus.getTila() : HakemuksenTila.VARALLA;
-                beforeJonoBuilder.copyHakemusWithTila(hakemus, tila);
+                boolean julkaistu = jono.julkaistutHakemukset.contains(hakemus);
+                beforeJonoBuilder.copyHakemusWithTila(hakemus, tila, julkaistu);
             }
             before.jonot.add(beforeJonoBuilder);
         }
         return before;
     }
 
-    private Hakukohde buildHakukohde() {
-        Hakukohde hakukohde = new Hakukohde();
-        hakukohde.setOid("1");
-        hakukohde.getValintatapajonot().addAll(jonot.stream().map(j -> buildValintatapaJono(j, jonot.indexOf(j))).collect(Collectors.toList()));
-        hakukohde.getHakijaryhmat().addAll(hakijaryhmat);
-        return hakukohde;
-    }
-
-    private Valintatapajono buildValintatapaJono(JonoBuilder j, int prioriteetti) {
+    private Valintatapajono buildValintatapaJono(JonoBuilder j) {
         Valintatapajono valintatapajono = new Valintatapajono();
         valintatapajono.setAloituspaikat(j.aloituspaikat);
         valintatapajono.setTasasijasaanto(j.tasasijasaanto);
         valintatapajono.setHakemukset(j.hakemukset);
-        valintatapajono.setPrioriteetti(prioriteetti);
+        valintatapajono.setPrioriteetti(j.valintatapajonoPrioriteetti);
         valintatapajono.setOid(j.valintatapajonoOid);
         return valintatapajono;
     }
 
-    public SijoitteluajoWrapper buildSijoitteluajoWrapper() {
-//        verify();
+    private SijoitteluajoWrapper build() {
         SijoitteluAjo sijoitteluAjo = new SijoitteluAjo();
-        return SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(sijoitteluAjo, Arrays.asList(buildHakukohde()), Arrays.asList());
+        sijoitteluAjo.setHakuOid("haku-1");
+//        verify();
+        Hakukohde hakukohde = new Hakukohde();
+        hakukohde.setOid("hakukohde-1");
+        hakukohde.getHakijaryhmat().addAll(hakijaryhmat);
+
+        List<Valintatulos> valintatulokset = new ArrayList<>();
+        for (JonoBuilder jonoBuilder : jonot) {
+            hakukohde.getValintatapajonot().add(buildValintatapaJono(jonoBuilder));
+            List<Hakemus> julkaistutHakemukset = jonoBuilder.julkaistutHakemukset;
+            if (kaikkiJulkaistu) {
+                julkaistutHakemukset = jonoBuilder.hakemukset;
+            }
+            for (Hakemus h : julkaistutHakemukset) {
+                valintatulokset.add(new Valintatulos(jonoBuilder.valintatapajonoOid, h.getHakemusOid(), hakukohde.getOid(), h.getHakijaOid(), sijoitteluAjo.getHakuOid(), h.getPrioriteetti()));
+            }
+        }
+
+        return SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(sijoitteluAjo, Arrays.asList(hakukohde), valintatulokset);
     }
 
     private SijoitusAjoBuilder verify() {
@@ -94,7 +107,7 @@ class SijoitusAjoBuilder {
         return this;
     }
 
-    public HashMap forTest() {
+    private HashMap forTest() {
         return new HashMap() {{
             List<List<String>> jonoList = jonot.stream().map(j -> hakemuksetStringList(j.hakemukset)).collect(Collectors.toList());
             put("jonot", jonoList);
@@ -102,14 +115,19 @@ class SijoitusAjoBuilder {
     }
 
     private static List<String> hakemuksetStringList(List<Hakemus> hakemukset) {
-        return hakemukset.stream().map(h -> "" +h.getJonosija() + ":" + h.getTasasijaJonosija() + ":" + h.getHakijaOid() + ":" + h.getTila()).collect(Collectors.toList());
+        return hakemukset.stream().map(h -> "" + h.getJonosija() + ":" + h.getTasasijaJonosija() + ":" + h.getHakijaOid() + ":" + h.getTila()).collect(Collectors.toList());
     }
 
-    public static HashMap forTest(Hakukohde hakukohde) {
+    private static HashMap forTest(Hakukohde hakukohde) {
         return new HashMap() {{
             List<List<String>> jonoList = hakukohde.getValintatapajonot().stream().map(j -> hakemuksetStringList(j.getHakemukset())).collect(Collectors.toList());
             put("jonot", jonoList);
         }};
+    }
+
+    public SijoitusAjoBuilder julkaiseKaikki() {
+        kaikkiJulkaistu = true;
+        return this;
     }
 
     public class JonoBuilder {
@@ -117,14 +135,17 @@ class SijoitusAjoBuilder {
         private final List<Hakemus> hakemukset = new ArrayList<>();
         private final Tasasijasaanto tasasijasaanto;
         private final String valintatapajonoOid;
+        private final int valintatapajonoPrioriteetti;
         private boolean samaJonoSija = false;
         private int tasasijaJonoSija;
         private int alkuperainenJonosija;
+        private List<Hakemus> julkaistutHakemukset = new ArrayList<>();
 
-        public JonoBuilder(int aloituspaikat, Tasasijasaanto tasasijasaanto, String valintatapajonoOid) {
+        public JonoBuilder(int aloituspaikat, Tasasijasaanto tasasijasaanto, int valintatapajonoPrioriteetti) {
             this.aloituspaikat = aloituspaikat;
             this.tasasijasaanto = tasasijasaanto;
-            this.valintatapajonoOid = valintatapajonoOid;
+            this.valintatapajonoPrioriteetti = valintatapajonoPrioriteetti;
+            this.valintatapajonoOid = "jono-" + valintatapajonoPrioriteetti;
         }
 
         public JonoBuilder hyvaksytty(String... hakijat) {
@@ -143,19 +164,26 @@ class SijoitusAjoBuilder {
 
         private JonoBuilder add(HakemuksenTila tila, boolean julkaistu, String... hakijat) {
             for (String hakija : hakijat) {
-                if(!samaJonoSija) {
+                if (!samaJonoSija) {
                     tasasijaJonoSija = 1;
                 }
-                int jonosija = 1 + (samaJonoSija? alkuperainenJonosija : hakemukset.size());
+                int jonosija = 1 + (samaJonoSija ? alkuperainenJonosija : hakemukset.size());
                 Hakemus h = createHakemus(hakija, tila, jonosija, tasasijaJonoSija);
                 hakemukset.add(h);
+                if (julkaistu) {
+                    julkaistutHakemukset.add(h);
+                }
                 tasasijaJonoSija++;
             }
             return this;
         }
 
-        public JonoBuilder copyHakemusWithTila(Hakemus hakemus, HakemuksenTila tila) {
-            hakemukset.add(createHakemus(hakemus.getHakemusOid(), tila, hakemus.getJonosija(), hakemus.getTasasijaJonosija()));
+        public JonoBuilder copyHakemusWithTila(Hakemus hakemus, HakemuksenTila tila, boolean julkaistu) {
+            Hakemus h = createHakemus(hakemus.getHakemusOid(), tila, hakemus.getJonosija(), hakemus.getTasasijaJonosija());
+            hakemukset.add(h);
+            if (julkaistu) {
+                julkaistutHakemukset.add(h);
+            }
             return this;
         }
 
