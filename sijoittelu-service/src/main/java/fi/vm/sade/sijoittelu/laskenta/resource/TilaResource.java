@@ -225,6 +225,7 @@ public class TilaResource {
             LOGGER.error("Yritettiin tuoda tyhjaa joukkoa erillishaun hakijoiden tuontiin haussa {} hakukohteelle {}!", hakuOid, hakukohdeOid);
             throw new RuntimeException("Yritettiin tuoda tyhjaa joukkoa erillishaun hakijoiden tuontiin!");
         }
+        List<ValintatulosUpdateStatus> statuses = new ArrayList<>();
         try {
             LOGGER.info("Tuodaan erillishaun tietoja jonolle {}", erillishaunHakijaDtos.iterator().next().valintatapajonoOid);
             Map<Boolean, List<ErillishaunHakijaDTO>> ryhmitelty = erillishaunHakijaDtos.stream().collect(Collectors.partitioningBy(ErillishaunHakijaDTO::getPoistetaankoTulokset));
@@ -247,23 +248,25 @@ public class TilaResource {
                             e.hakukohdeOid, e.hakemusOid,
                             e.hakemuksenTila, Optional.empty(), Optional.ofNullable(e.valintatapajonoOid),
                             Optional.ofNullable(e.etunimi), Optional.ofNullable(e.sukunimi)));
+
+
             ryhmitelty.getOrDefault(false, new ArrayList<>())
                     .stream()
                     .map(e -> e.asValintatulos())
-                    .forEach(v -> sijoitteluBusinessService.vaihdaHakemuksenTila(
-                            v.getHakuOid(),
-                            sijoitteluBusinessService.getHakukohde(v.getHakuOid(), v.getHakukohdeOid()),
-                            v,
-                            "Erillishauntuonti",
-                            username()));
-            LOGGER.info("Erillishaun tietojen tuonti onnistui jonolle {} haussa {} hakukohteelle {}",
-                    erillishaunHakijaDtos.iterator().next().valintatapajonoOid, hakuOid, hakukohdeOid);
-            return Response.status(Response.Status.OK).build();
-        } catch (Exception e) {
+                    .collect(Collectors.groupingBy(v -> v.getHakukohdeOid()))
+                    .forEach((k, v) -> processVaihdaHakemuksienTilat(statuses, v, hakuOid, k, sijoitteluBusinessService.getHakukohde(hakuOid, k), "Erillishauntuonti"));
+
+            LOGGER.info("Erillishaun tietojen tuonti onnistui jonolle {} haussa {} hakukohteelle {}. Erroreita: {}",
+                    erillishaunHakijaDtos.iterator().next().valintatapajonoOid, hakuOid, hakukohdeOid, !statuses.isEmpty());
+            Status s = statuses.isEmpty() ? Status.OK : Status.INTERNAL_SERVER_ERROR;
+            return Response.status(s)
+                    .entity(new HakukohteenValintatulosUpdateStatuses(statuses))
+                    .build();
+       } catch (Exception e) {
             LOGGER.error("Error in erillishaunhakijat tuonti haussa " + hakuOid + " hakukohteelle " + hakukohdeOid, e);
-            Map error = new HashMap();
-            error.put("message", e.getMessage());
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(error).build();
+            return Response.status(Status.INTERNAL_SERVER_ERROR)
+                    .entity(new HakukohteenValintatulosUpdateStatuses(e.getMessage(), statuses))
+                    .build();
         }
     }
 
