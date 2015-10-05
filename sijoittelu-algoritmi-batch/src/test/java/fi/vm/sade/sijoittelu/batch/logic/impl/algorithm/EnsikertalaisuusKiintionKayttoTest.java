@@ -109,7 +109,7 @@ public class EnsikertalaisuusKiintionKayttoTest {
 
         // D peruu, H hyväksytään
         SijoitusAjoBuilder dPeruu = new SijoitusAjoBuilder();
-        dPeruu.hakijaryhma(2, "C", "B", "D").julkaiseKaikki();
+        dPeruu.hakijaryhma(2, "C", "B", "D");
         dPeruu.jono(2, Tasasijasaanto.ALITAYTTO).samaJonosija(j -> j.varalla("A").hyvaksytty("C").varalla("E")).varalla("H", "B", "F", "D");
         dPeruu.jono(2, Tasasijasaanto.ALITAYTTO).samaJonosija(j -> j.perunut("D").varalla("H").hyvaksytty("B")).varalla("F", "A").peruuntunut("C").varalla("E");
         SijoitusAjoBuilder hHyvaksytty = new SijoitusAjoBuilder();
