@@ -13,7 +13,7 @@ import static org.junit.Assert.assertEquals;
 class SijoitusAjoBuilder {
     private List<Hakijaryhma> hakijaryhmat = new ArrayList<>();
     private List<JonoBuilder> jonot = new ArrayList<>();
-    private boolean kaikkiJulkaistu = false;
+    private boolean julkaiseKaikki = false;
 
     public static void assertSijoittelu(SijoitusAjoBuilder before, SijoitusAjoBuilder after) {
         SijoitteluajoWrapper sijoitteluajoWrapper = before.build();
@@ -53,6 +53,7 @@ class SijoitusAjoBuilder {
 
     private SijoitusAjoBuilder buildBefore() {
         SijoitusAjoBuilder before = new SijoitusAjoBuilder();
+        before.julkaiseKaikki = julkaiseKaikki;
         before.hakijaryhmat.addAll(hakijaryhmat);
         for (JonoBuilder jono : jonot) {
             JonoBuilder beforeJonoBuilder = new JonoBuilder(jono.aloituspaikat, jono.tasasijasaanto, jono.valintatapajonoPrioriteetti);
@@ -88,11 +89,13 @@ class SijoitusAjoBuilder {
         for (JonoBuilder jonoBuilder : jonot) {
             hakukohde.getValintatapajonot().add(buildValintatapaJono(jonoBuilder));
             List<Hakemus> julkaistutHakemukset = jonoBuilder.julkaistutHakemukset;
-            if (kaikkiJulkaistu) {
+            if (julkaiseKaikki) {
                 julkaistutHakemukset = jonoBuilder.hakemukset;
             }
             for (Hakemus h : julkaistutHakemukset) {
-                valintatulokset.add(new Valintatulos(jonoBuilder.valintatapajonoOid, h.getHakemusOid(), hakukohde.getOid(), h.getHakijaOid(), sijoitteluAjo.getHakuOid(), h.getPrioriteetti()));
+                Valintatulos valintatulos = new Valintatulos(jonoBuilder.valintatapajonoOid, h.getHakemusOid(), hakukohde.getOid(), h.getHakijaOid(), sijoitteluAjo.getHakuOid(), h.getPrioriteetti());
+                valintatulos.setJulkaistavissa(true, "Init");
+                valintatulokset.add(valintatulos);
             }
         }
 
@@ -126,7 +129,7 @@ class SijoitusAjoBuilder {
     }
 
     public SijoitusAjoBuilder julkaiseKaikki() {
-        kaikkiJulkaistu = true;
+        julkaiseKaikki = true;
         return this;
     }
 

@@ -9,9 +9,18 @@ public class EnsikertalaisuusKiintionKayttoTest {
 
     @Test
     public void ilmanHakijaryhmaa() {
-        SijoitusAjoBuilder after = new SijoitusAjoBuilder();
+        SijoitusAjoBuilder after = new SijoitusAjoBuilder().julkaiseKaikki();
         after.jono(2).hyvaksytty("A", "C").varalla("E", "H", "B", "F", "D");
         after.jono(2).peruuntunut("C").hyvaksytty("H", "B").varalla("F").peruuntunut("A").varalla("D", "E");
+        luoAlkuTilanneJaAssertSijoittelu(after);
+    }
+
+    @Test
+    public void yksiEnsikertalainen() {
+        SijoitusAjoBuilder after = new SijoitusAjoBuilder().julkaiseKaikki();
+        after.hakijaryhma(1, "C", "B", "D");
+        after.jono(1).varalla("A").hyvaksytty("C");
+        after.jono(1).hyvaksytty("E").varalla("D");
         luoAlkuTilanneJaAssertSijoittelu(after);
     }
 
