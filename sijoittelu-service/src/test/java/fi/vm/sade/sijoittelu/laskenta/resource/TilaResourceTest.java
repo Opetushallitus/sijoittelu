@@ -170,10 +170,10 @@ public class TilaResourceTest {
         hakija.setEtunimi("etunimi");
         hakija.setSukunimi("sukunimi");
         hakija.setHakemuksenTila(HakemuksenTila.HYLATTY);
-        hakija.setHakuOid("haku1");
+        hakija.setHakuOid(hakuOid);
         hakija.setHakemusOid("hakemus1");
         hakija.setHakijaOid("hakija1");
-        hakija.setHakukohdeOid("hakukohde1");
+        hakija.setHakukohdeOid(hakukohdeOid);
         hakija.setIlmoittautumisTila(IlmoittautumisTila.EI_ILMOITTAUTUNUT);
         hakija.setJulkaistavissa(true);
         hakija.setTarjoajaOid("tarjoaja1");
@@ -190,7 +190,7 @@ public class TilaResourceTest {
         assertEquals(200, response.getStatus());
 
         assertEquals(1, haeTulokset("hakemus1").size());
-        assertEquals("hakemus1", haeHakukohde("haku1", "hakukohde1").getValintatapajonot().stream().filter(j -> j.getOid().equals("jono1")).findFirst().get().getHakemukset().get(0).getHakemusOid());
+        assertEquals("hakemus1", haeHakukohde(hakuOid, hakukohdeOid).getValintatapajonot().stream().filter(j -> j.getOid().equals("jono1")).findFirst().get().getHakemukset().get(0).getHakemusOid());
 
         hakija.setPoistetaankoTulokset(true);
         hakijat = Arrays.asList(hakija);
@@ -206,7 +206,7 @@ public class TilaResourceTest {
 
         // Tarkistetaan, että poistui kannasta
         assertEquals(0, haeTulokset("hakemus1").size());
-        assertEquals(0, haeHakukohde("haku1", "hakukohde1").getValintatapajonot().stream().filter(j -> j.getOid().equals("jono1")).findFirst().get().getHakemukset().size());
+        assertEquals(0, haeHakukohde(hakuOid, hakukohdeOid).getValintatapajonot().stream().filter(j -> j.getOid().equals("jono1")).findFirst().get().getHakemukset().size());
     }
 
     private List<Valintatulos> haeTulokset(String hakemusOid) {
