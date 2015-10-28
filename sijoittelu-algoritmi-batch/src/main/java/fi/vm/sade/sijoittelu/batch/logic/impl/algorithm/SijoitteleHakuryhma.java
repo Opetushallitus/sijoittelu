@@ -82,6 +82,8 @@ public class SijoitteleHakuryhma {
             // Hyväksytään valittavat
             valittavatJaVarasijat.getLeft().forEach(h -> {
                 h.setHyvaksyttyHakijaryhmasta(true);
+                h.getHakemus().setHyvaksyttyHakijaryhmasta(true);
+                h.getHakemus().setHakijaryhmaOid(hakijaryhmaWrapper.getHakijaryhma().getOid());
                 muuttuneetHakemukset.addAll(SijoitteleHakukohde.hyvaksyHakemus(sijoitteluAjo, h));
             });
             boolean lukko = liittyvatJonot.stream().anyMatch(ValintatapajonoWrapper::isAlitayttoLukko);

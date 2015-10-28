@@ -50,6 +50,26 @@ public class Hakemus implements Serializable {
 
     private Integer varasijanNumero;
 
+    private boolean hyvaksyttyHakijaryhmasta = false;
+
+    private String hakijaryhmaOid;
+
+    public String getHakijaryhmaOid() {
+        return hakijaryhmaOid;
+    }
+
+    public void setHakijaryhmaOid(String hakijaryhmaOid) {
+        this.hakijaryhmaOid = hakijaryhmaOid;
+    }
+
+    public boolean isHyvaksyttyHakijaryhmasta() {
+        return hyvaksyttyHakijaryhmasta;
+    }
+
+    public void setHyvaksyttyHakijaryhmasta(boolean hyvaksyttyHakijaryhmasta) {
+        this.hyvaksyttyHakijaryhmasta = hyvaksyttyHakijaryhmasta;
+    }
+
     public Integer getPrioriteetti() {
         return prioriteetti;
     }

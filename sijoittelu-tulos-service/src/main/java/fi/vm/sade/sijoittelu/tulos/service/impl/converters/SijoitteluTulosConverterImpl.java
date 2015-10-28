@@ -92,6 +92,8 @@ public class SijoitteluTulosConverterImpl implements SijoitteluTulosConverter {
         }
         dto.setVarasijanNumero(ha.getVarasijanNumero());
         applyPistetiedot(dto, ha.getPistetiedot());
+        dto.setHyvaksyttyHakijaryhmasta(ha.isHyvaksyttyHakijaryhmasta());
+        dto.setHakijaryhmaOid(ha.getHakijaryhmaOid());
         return dto;
     }
 

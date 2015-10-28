@@ -48,6 +48,26 @@ public class HakemusDTO implements Serializable {
 
     private boolean onkoMuuttunutViimeSijoittelussa = false;
 
+    private boolean hyvaksyttyHakijaryhmasta = false;
+
+    private String hakijaryhmaOid;
+
+    public String getHakijaryhmaOid() {
+        return hakijaryhmaOid;
+    }
+
+    public void setHakijaryhmaOid(String hakijaryhmaOid) {
+        this.hakijaryhmaOid = hakijaryhmaOid;
+    }
+
+    public boolean isHyvaksyttyHakijaryhmasta() {
+        return hyvaksyttyHakijaryhmasta;
+    }
+
+    public void setHyvaksyttyHakijaryhmasta(boolean hyvaksyttyHakijaryhmasta) {
+        this.hyvaksyttyHakijaryhmasta = hyvaksyttyHakijaryhmasta;
+    }
+
     public int getTodellinenJonosija() {
         if (jonosija == null) {
             return 0;
