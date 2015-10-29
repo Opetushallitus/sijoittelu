@@ -307,6 +307,10 @@ public class SijoitteluBusinessService {
                             varasija++;
                             hakemus.setVarasijanNumero(varasija);
                         }
+                        if(edellinen != null && hakemus.isHyvaksyttyHakijaryhmasta() == false) {
+                            hakemus.setHyvaksyttyHakijaryhmasta(edellinen.isHyvaksyttyHakijaryhmasta());
+                            hakemus.setHakijaryhmaOid(edellinen.getHakijaryhmaOid());
+                        }
                     }
                 };
     }
