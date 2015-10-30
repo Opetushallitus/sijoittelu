@@ -21,6 +21,8 @@ public class HakutoiveenValintatapajonoDTO {
 
     private String valintatapajonoNimi;
 
+    private boolean eiVarasijatayttoa;
+
     private Integer jonosija;
 
     private BigDecimal paasyJaSoveltuvuusKokeenTulos;
@@ -273,5 +275,13 @@ public class HakutoiveenValintatapajonoDTO {
 
     public void setHakemuksenTilanViimeisinMuutos(Date hakemuksenTilanViimeisinMuutos) {
         this.hakemuksenTilanViimeisinMuutos = hakemuksenTilanViimeisinMuutos;
+    }
+
+    public boolean isEiVarasijatayttoa() {
+        return eiVarasijatayttoa;
+    }
+
+    public void setEiVarasijatayttoa(boolean eiVarasijatayttoa) {
+        this.eiVarasijatayttoa = eiVarasijatayttoa;
     }
 }

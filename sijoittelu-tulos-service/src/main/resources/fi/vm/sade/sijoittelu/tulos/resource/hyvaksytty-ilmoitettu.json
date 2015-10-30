@@ -17,7 +17,7 @@
                     "nimi": "Varsinainen jono",
                     "prioriteetti": 0,
                     "aloituspaikat": 3,
-                    "eiVarasijatayttoa": false,
+                    "eiVarasijatayttoa": true,
                     "kaikkiEhdonTayttavatHyvaksytaan": false,
                     "poissaOlevaTaytto": false,
                     "hyvaksytty": 1,
