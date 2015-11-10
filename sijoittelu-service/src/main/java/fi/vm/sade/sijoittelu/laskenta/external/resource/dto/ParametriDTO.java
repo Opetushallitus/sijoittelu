@@ -7,6 +7,8 @@ public class ParametriDTO {
 
     private ParametriArvoDTO PH_HKP; // Hakukierros päättyy
 
+    private ParametriArvoDTO PH_VEH; // Valintaesitys hyväksyttävissä
+
     public ParametriDTO() {}
 
     public ParametriArvoDTO getPH_VTSSV() {
@@ -31,5 +33,13 @@ public class ParametriDTO {
 
     public void setPH_HKP(ParametriArvoDTO PH_HKP) {
         this.PH_HKP = PH_HKP;
+    }
+
+    public ParametriArvoDTO getPH_VEH() {
+        return PH_VEH;
+    }
+
+    public void setPH_VEH(ParametriArvoDTO PH_VEH) {
+        this.PH_VEH = PH_VEH;
     }
 }

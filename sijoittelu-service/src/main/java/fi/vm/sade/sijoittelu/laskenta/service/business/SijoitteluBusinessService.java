@@ -4,6 +4,7 @@ import akka.actor.ActorRef;
 import com.google.common.collect.Sets.SetView;
 import fi.vm.sade.auditlog.valintaperusteet.ValintaperusteetOperation;
 import fi.vm.sade.authentication.business.service.Authorizer;
+import fi.vm.sade.generic.service.exception.NotAuthorizedException;
 import fi.vm.sade.sijoittelu.batch.logic.impl.DomainConverter;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoitteluAlgorithm;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoitteluajoWrapperFactory;
@@ -13,6 +14,7 @@ import fi.vm.sade.sijoittelu.domain.comparator.HakemusComparator;
 import fi.vm.sade.sijoittelu.laskenta.actors.messages.PoistaHakukohteet;
 import fi.vm.sade.sijoittelu.laskenta.actors.messages.PoistaVanhatAjotSijoittelulta;
 import fi.vm.sade.sijoittelu.laskenta.external.resource.ValintaTulosServiceResource;
+import fi.vm.sade.sijoittelu.laskenta.external.resource.dto.ParametriArvoDTO;
 import fi.vm.sade.sijoittelu.laskenta.external.resource.dto.ParametriDTO;
 import fi.vm.sade.sijoittelu.laskenta.service.exception.HakemustaEiLoytynytException;
 import fi.vm.sade.sijoittelu.laskenta.service.exception.ValintatapajonoaEiLoytynytException;
@@ -54,6 +56,7 @@ import static org.springframework.security.core.context.SecurityContextHolder.ge
 @Service
 public class SijoitteluBusinessService {
     private static final Logger LOG = LoggerFactory.getLogger(SijoitteluBusinessService.class);
+    public static final String OPH_OID = "1.2.246.562.10.00000000001";
     private HakemusComparator hakemusComparator = new HakemusComparator();
     private final String KK_KOHDEJOUKKO = "haunkohdejoukko_12";
 
@@ -533,6 +536,7 @@ public class SijoitteluBusinessService {
             throw new StaleReadException(hakuoid, hakukohdeOid, valintatapajonoOid, hakemusOid);
         }
 
+        authorizeJulkaistavissa(hakuoid, v.getJulkaistavissa(), change.getJulkaistavissa());
         authorizeHyvaksyPeruuntunutModification(tarjoajaOid, change.getHyvaksyPeruuntunut(), v);
 
         LOG.info("Muutetaan valintatulosta hakukohdeoid {}, valintatapajonooid {}, hakemusoid {}: {}",
@@ -576,6 +580,15 @@ public class SijoitteluBusinessService {
         } catch(Exception e) {
             LOG.error("valinta-tulos-service vastaanotettavuus", e);
             throw new RuntimeException("Virhe valinta-tulos-servicen kutsumisessa", e);
+        }
+    }
+
+    private void authorizeJulkaistavissa(String hakuOid, boolean v, boolean change) {
+        if (!v && change && !KK_KOHDEJOUKKO.equals(tarjontaIntegrationService.getHaunKohdejoukko(hakuOid).orElse(""))) {
+            ParametriArvoDTO d = tarjontaIntegrationService.getHaunParametrit(hakuOid).getPH_VEH();
+            if (d.getDate() == null || d.getDate() > new Date().getTime()) {
+                authorizer.checkOrganisationAccess(OPH_OID, SijoitteluRole.CRUD_ROLE);
+            }
         }
     }
 
