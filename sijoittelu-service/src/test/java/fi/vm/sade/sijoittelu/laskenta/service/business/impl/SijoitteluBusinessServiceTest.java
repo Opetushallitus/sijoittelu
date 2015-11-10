@@ -7,8 +7,11 @@ import fi.vm.sade.sijoittelu.domain.Sijoittelu;
 import fi.vm.sade.sijoittelu.domain.ValintatuloksenTila;
 import fi.vm.sade.sijoittelu.domain.Valintatulos;
 import fi.vm.sade.sijoittelu.laskenta.external.resource.ValintaTulosServiceResource;
+import fi.vm.sade.sijoittelu.laskenta.external.resource.dto.ParametriArvoDTO;
+import fi.vm.sade.sijoittelu.laskenta.external.resource.dto.ParametriDTO;
 import fi.vm.sade.sijoittelu.laskenta.external.resource.dto.VastaanottoDTO;
 import fi.vm.sade.sijoittelu.laskenta.service.business.SijoitteluBusinessService;
+import fi.vm.sade.sijoittelu.laskenta.service.it.TarjontaIntegrationService;
 import fi.vm.sade.sijoittelu.tulos.dao.HakukohdeDao;
 import fi.vm.sade.sijoittelu.tulos.dao.SijoitteluDao;
 import fi.vm.sade.sijoittelu.tulos.dao.ValintatulosDao;
@@ -18,6 +21,7 @@ import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import java.util.Date;
 import java.util.Optional;
 
 import static org.junit.Assert.*;
@@ -40,6 +44,7 @@ public class SijoitteluBusinessServiceTest {
     private Authorizer authorizer;
     private TestDataGenerator testDataGenerator;
     private ValintaTulosServiceResource valintaTulosServiceResourceMock;
+    private TarjontaIntegrationService tarjontaIntegrationService;
 
 
     @Before
@@ -51,12 +56,14 @@ public class SijoitteluBusinessServiceTest {
         hakukohdeDao = mock(HakukohdeDao.class);
         authorizer = mock(Authorizer.class);
         valintaTulosServiceResourceMock = mock(ValintaTulosServiceResource.class);
+        tarjontaIntegrationService = mock(TarjontaIntegrationService.class);
 
         ReflectionTestUtils.setField(sijoitteluBusinessService, "valintatulosDao", valintatulosDaoMock);
         ReflectionTestUtils.setField(sijoitteluBusinessService, "sijoitteluDao", sijoitteluDao);
         ReflectionTestUtils.setField(sijoitteluBusinessService, "hakukohdeDao", hakukohdeDao);
         ReflectionTestUtils.setField(sijoitteluBusinessService, "authorizer", authorizer);
         ReflectionTestUtils.setField(sijoitteluBusinessService, "valintaTulosServiceResource", valintaTulosServiceResourceMock);
+        ReflectionTestUtils.setField(sijoitteluBusinessService, "tarjontaIntegrationService", tarjontaIntegrationService);
         ReflectionTestUtils.setField(sijoitteluBusinessService, ROOT_ORG_OID, ROOT_ORG_OID);
 
         testDataGenerator = new TestDataGenerator();
@@ -561,6 +568,53 @@ public class SijoitteluBusinessServiceTest {
     @Test
     public void testHyvaksyPeruuntunutCanBeUnset() {
         assertFalse(vaihdaHakemuksenHyvaksyPeruuntunut(false).getHyvaksyPeruuntunut());
+    }
+
+    @Test(expected = NotAuthorizedException.class)
+    public void testJulkaistavissaCannotBeSetIfValintaesitysNotJulkaistavissa() {
+        ParametriDTO params = new ParametriDTO();
+        params.setPH_VEH(new ParametriArvoDTO(new Date().getTime() + 10000));
+        doThrow(new NotAuthorizedException())
+                .when(authorizer)
+                .checkOrganisationAccess(SijoitteluBusinessService.OPH_OID, SijoitteluRole.CRUD_ROLE);
+        runValintaesitysJulkaistavissaTest(params);
+    }
+
+    @Test
+    public void testJulkaistavissaCanBeSetIfOPHEvenIfValintaesitysNotJulkaistavissa() {
+        when(valintatulosDaoMock.loadValintatulos(HAKUKOHDE_OID, VALINTATAPAJONO_OID, HAKEMUS_OID))
+                .thenReturn(getValintatulos(ValintatuloksenTila.KESKEN));
+        ParametriDTO params = new ParametriDTO();
+        params.setPH_VEH(new ParametriArvoDTO(new Date().getTime() + 10000));
+        runValintaesitysJulkaistavissaTest(params);
+    }
+
+    @Test
+    public void testJulkaistavissaCanBeSetIfValintaesitysIsJulkaistavissa() {
+        when(valintatulosDaoMock.loadValintatulos(HAKUKOHDE_OID, VALINTATAPAJONO_OID, HAKEMUS_OID))
+                .thenReturn(getValintatulos(ValintatuloksenTila.KESKEN));
+        ParametriDTO params = new ParametriDTO();
+        params.setPH_VEH(new ParametriArvoDTO(new Date().getTime() - 10000));
+        runValintaesitysJulkaistavissaTest(params);
+    }
+
+    private void runValintaesitysJulkaistavissaTest(ParametriDTO params) {
+        when(valintatulosDaoMock.loadValintatulos(HAKUKOHDE_OID, VALINTATAPAJONO_OID, HAKEMUS_OID))
+                .thenReturn(getValintatulos(ValintatuloksenTila.KESKEN));
+        when(tarjontaIntegrationService.getHaunParametrit(HAKU_OID))
+                .thenReturn(params);
+        Valintatulos v = new Valintatulos(
+                HAKEMUS_OID,
+                HAKEMUS_OID,
+                HAKUKOHDE_OID,
+                HAKU_OID,
+                1,
+                false,
+                IlmoittautumisTila.EI_TEHTY,
+                true,
+                ValintatuloksenTila.KESKEN,
+                VALINTATAPAJONO_OID);
+        sijoitteluBusinessService.vaihdaHakemuksenTila(HAKU_OID, testDataGenerator.createHakukohdes(1).get(0), v, SELITE, "");
     }
 
     private Valintatulos vaihdaHakemuksenHyvaksyPeruuntunut(boolean hyvaksyPeruuntunut) {

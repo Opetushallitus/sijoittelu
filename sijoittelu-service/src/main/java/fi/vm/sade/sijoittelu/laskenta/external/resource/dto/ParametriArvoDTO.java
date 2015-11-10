@@ -7,6 +7,10 @@ public class ParametriArvoDTO {
 
     public ParametriArvoDTO() {}
 
+    public ParametriArvoDTO(Long date) {
+        this.date = date;
+    }
+
     public Long getDate() {
         return date;
     }
