@@ -23,8 +23,8 @@ public class SijoitteluServiceTomcat extends EmbeddedTomcat {
         super(port, SIJOITTELU_MODULE_ROOT, SIJOITTELU_CONTEXT_PATH);
     }
 
-    public static void startShared() {
-        LOG.error("######### PALVELIN KÄYNNISTYY PORTTIIN {}",SharedTomcat.port);
-        SharedTomcat.start(SIJOITTELU_MODULE_ROOT, SIJOITTELU_CONTEXT_PATH);
+    public static EmbeddedTomcat startShared() {
+        LOG.error("######### PALVELIN KÄYNNISTYY PORTTIIN {}", SharedTomcat.port);
+        return SharedTomcat.start(SIJOITTELU_MODULE_ROOT, SIJOITTELU_CONTEXT_PATH);
     }
 }

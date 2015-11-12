@@ -1,10 +1,14 @@
 package fi.vm.sade.sijoittelu.laskenta.resource;
 
 import fi.vm.sade.generic.service.exception.NotAuthorizedException;
+import fi.vm.sade.integrationtest.tomcat.EmbeddedTomcat;
 import fi.vm.sade.integrationtest.tomcat.SharedTomcat;
 import fi.vm.sade.sijoittelu.SijoitteluServiceTomcat;
 import fi.vm.sade.sijoittelu.domain.*;
 import fi.vm.sade.sijoittelu.domain.dto.ErillishaunHakijaDTO;
+import fi.vm.sade.sijoittelu.laskenta.external.resource.HakuV1Resource;
+import fi.vm.sade.sijoittelu.laskenta.external.resource.dto.HakuDTO;
+import fi.vm.sade.sijoittelu.laskenta.external.resource.dto.ResultHakuDTO;
 import fi.vm.sade.sijoittelu.laskenta.service.business.SijoitteluBusinessService;
 import fi.vm.sade.sijoittelu.laskenta.service.business.StaleReadException;
 import fi.vm.sade.sijoittelu.laskenta.service.exception.HakemustaEiLoytynytException;
@@ -14,6 +18,7 @@ import junit.framework.Assert;
 import org.apache.cxf.jaxrs.client.WebClient;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.GenericType;
@@ -27,6 +32,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import static org.junit.Assert.*;
+import static org.mockito.Mockito.when;
 
 public class TilaResourceTest {
     String hakuOid = "1.2.246.562.5.2013080813081926341928";
@@ -36,10 +42,12 @@ public class TilaResourceTest {
     String valintatapajonoOid = "14090336922663576781797489829886";
     String hakijaOid = "1.2.246.562.24.14229104472";
 
+    private HakuV1Resource hakuV1Resource;
 
     @Before
     public void startServer() {
-        SijoitteluServiceTomcat.startShared();
+        EmbeddedTomcat tomcat = SijoitteluServiceTomcat.startShared();
+        this.hakuV1Resource = (HakuV1Resource)WebApplicationContextUtils.getWebApplicationContext(tomcat.ctx.getServletContext()).getBean("hakuV1Resource");
     }
 
     @Test
@@ -138,6 +146,12 @@ public class TilaResourceTest {
 
     @Test
     public void erillishaunHakijoidenTuonti() {
+        when(hakuV1Resource.findByOid(hakuOid))
+                .thenReturn(new ResultHakuDTO() {{
+                    setResult(new HakuDTO() {{
+                        setKohdejoukkoUri("haunkohdejoukko_12#1");
+                    }});
+                }});
         final ErillishaunHakijaDTO hakija = new ErillishaunHakijaDTO();
         hakija.setEtunimi("etu");
         hakija.setSukunimi("suku");
@@ -166,6 +180,12 @@ public class TilaResourceTest {
 
     @Test
     public void tulostenPoisto() {
+        when(hakuV1Resource.findByOid(hakuOid))
+                .thenReturn(new ResultHakuDTO() {{
+                    setResult(new HakuDTO() {{
+                        setKohdejoukkoUri("haunkohdejoukko_12#1");
+                    }});
+                }});
         final ErillishaunHakijaDTO hakija = new ErillishaunHakijaDTO();
         hakija.setEtunimi("etunimi");
         hakija.setSukunimi("sukunimi");
