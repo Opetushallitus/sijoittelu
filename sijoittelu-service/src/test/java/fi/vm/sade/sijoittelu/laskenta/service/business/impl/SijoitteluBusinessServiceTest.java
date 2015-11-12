@@ -603,6 +603,8 @@ public class SijoitteluBusinessServiceTest {
                 .thenReturn(getValintatulos(ValintatuloksenTila.KESKEN));
         when(tarjontaIntegrationService.getHaunParametrit(HAKU_OID))
                 .thenReturn(params);
+        when(tarjontaIntegrationService.getHaunKohdejoukko(HAKU_OID))
+                .thenReturn(Optional.of("haunkohdejoukko_xx"));
         Valintatulos v = new Valintatulos(
                 HAKEMUS_OID,
                 HAKEMUS_OID,
