@@ -206,7 +206,9 @@ public class SijoitteluajoWrapper {
         Date varasijojaTaytetaanAsti = valintatapajono.getValintatapajono().getVarasijojaTaytetaanAsti();
         LocalDateTime varasijaTayttoPaattyy = this.getVarasijaTayttoPaattyy();
         if (varasijojaTaytetaanAsti != null) {
-            varasijaTayttoPaattyy = LocalDateTime.ofInstant(varasijojaTaytetaanAsti.toInstant(), ZoneId.systemDefault());
+            LocalDateTime tempDate = LocalDateTime.ofInstant(varasijojaTaytetaanAsti.toInstant(), ZoneId.systemDefault());
+            if(tempDate.isBefore(varasijaTayttoPaattyy))
+                varasijaTayttoPaattyy = tempDate;
         }
         return getToday().isAfter(varasijaTayttoPaattyy);
     }
