@@ -37,6 +37,8 @@ public class SijoitteluajoWrapper {
 
     private LocalDateTime varasijaSaannotAstuvatVoimaan = LocalDateTime.now().minusDays(1);
 
+    private LocalDateTime varasijaTayttoPaattyy = LocalDateTime.now().plusYears(100);
+
     private LocalDateTime hakuKierrosPaattyy = LocalDateTime.now().plusYears(100);
 
     private boolean isKKHaku = false;
@@ -105,6 +107,14 @@ public class SijoitteluajoWrapper {
 
     public void setVarasijaSaannotAstuvatVoimaan(LocalDateTime varasijaSaannotAstuvatVoimaan) {
         this.varasijaSaannotAstuvatVoimaan = varasijaSaannotAstuvatVoimaan;
+    }
+
+    public LocalDateTime getVarasijaTayttoPaattyy() {
+        return varasijaTayttoPaattyy;
+    }
+
+    public void setVarasijaTayttoPaattyy(LocalDateTime varasijaTayttoPaattyy) {
+        this.varasijaTayttoPaattyy = varasijaTayttoPaattyy;
     }
 
     public LocalDateTime getHakuKierrosPaattyy() {
@@ -194,7 +204,7 @@ public class SijoitteluajoWrapper {
 
     public boolean onkoVarasijaTayttoPaattynyt(ValintatapajonoWrapper valintatapajono) {
         Date varasijojaTaytetaanAsti = valintatapajono.getValintatapajono().getVarasijojaTaytetaanAsti();
-        LocalDateTime varasijaTayttoPaattyy = this.getHakuKierrosPaattyy();
+        LocalDateTime varasijaTayttoPaattyy = this.getVarasijaTayttoPaattyy();
         if (varasijojaTaytetaanAsti != null) {
             varasijaTayttoPaattyy = LocalDateTime.ofInstant(varasijojaTaytetaanAsti.toInstant(), ZoneId.systemDefault());
         }

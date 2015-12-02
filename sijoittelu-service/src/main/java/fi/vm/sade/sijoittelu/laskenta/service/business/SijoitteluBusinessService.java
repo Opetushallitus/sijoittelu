@@ -206,6 +206,9 @@ public class SijoitteluBusinessService {
             if (parametri.getPH_VSSAV() != null && parametri.getPH_VSSAV().getDate() != null) {
                 sijoitteluAjo.setVarasijaSaannotAstuvatVoimaan(fromTimestamp(parametri.getPH_VSSAV().getDate()));
             }
+            if (parametri.getPH_VSTP() != null && parametri.getPH_VSTP().getDate() != null) {
+                sijoitteluAjo.setVarasijaTayttoPaattyy(fromTimestamp(parametri.getPH_VSTP().getDate()));
+            }
         } catch (Exception e) {
             LOG.error("############## Ohjausparametrin muuntaminen LocalDateksi epäonnistui ##############", e);
             if (sijoitteluAjo.isKKHaku()) {

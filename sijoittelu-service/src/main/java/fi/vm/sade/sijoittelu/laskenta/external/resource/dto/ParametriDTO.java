@@ -9,6 +9,8 @@ public class ParametriDTO {
 
     private ParametriArvoDTO PH_VEH; // Valintaesitys hyväksyttävissä
 
+    private ParametriArvoDTO PH_VSTP; // Varasijatäyttö päättyy
+
     public ParametriDTO() {}
 
     public ParametriArvoDTO getPH_VTSSV() {
@@ -41,5 +43,13 @@ public class ParametriDTO {
 
     public void setPH_VEH(ParametriArvoDTO PH_VEH) {
         this.PH_VEH = PH_VEH;
+    }
+
+    public ParametriArvoDTO getPH_VSTP() {
+        return PH_VSTP;
+    }
+
+    public void setPH_VSTP(ParametriArvoDTO PH_VSTP) {
+        this.PH_VSTP = PH_VSTP;
     }
 }
