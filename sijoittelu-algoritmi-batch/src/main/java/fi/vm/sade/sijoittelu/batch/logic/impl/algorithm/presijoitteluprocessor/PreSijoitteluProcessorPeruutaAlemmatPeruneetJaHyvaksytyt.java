@@ -56,6 +56,10 @@ public class PreSijoitteluProcessorPeruutaAlemmatPeruneetJaHyvaksytyt implements
                         h.setTila(HakemuksenTila.PERUNUT);
                         h.setTilanKuvaukset(parasHyvaksyttyHakutoive.getHakemus().getTilanKuvaukset());
                         hakemus.setTilaVoidaanVaihtaa(false);
+                    } else if (parasHyvaksyttyHakutoive.getHakemus().getTila() == HakemuksenTila.PERUUTETTU) {
+                        h.setTila(HakemuksenTila.PERUUTETTU);
+                        h.setTilanKuvaukset(parasHyvaksyttyHakutoive.getHakemus().getTilanKuvaukset());
+                        hakemus.setTilaVoidaanVaihtaa(false);
                     }
                     // Hyväksytyltä laitetaan peruuntuneiksi huonomman prioriteetin jonot
                     else if (parasHyvaksyttyHakutoive.getValintatapajono().getValintatapajono().getPrioriteetti() < hakemus.getValintatapajono().getValintatapajono().getPrioriteetti()) {
@@ -70,6 +74,18 @@ public class PreSijoitteluProcessorPeruutaAlemmatPeruneetJaHyvaksytyt implements
                     // Ei vastaanottoa, voidaan yliajaa
                     if (!vastaanOttoPerutussaKohteessa(henkilo, hakemus)) {
                         h.setTila(HakemuksenTila.PERUNUT);
+                        h.setTilanKuvaukset(parasHyvaksyttyHakutoive.getHakemus().getTilanKuvaukset());
+                        hakemus.setTilaVoidaanVaihtaa(false);
+                    }
+                }
+                // Paras toive PERUUTETTU, toisessa jonossa hyväksytty
+                else if (!hakemus.isTilaVoidaanVaihtaa()
+                        && h.getPrioriteetti().equals(parasHyvaksyttyHakutoive.getHakemus().getPrioriteetti())
+                        && parasHyvaksyttyHakutoive.getHakemus().getTila() == HakemuksenTila.PERUUTETTU
+                        && yliajettavat.contains(h.getTila())) {
+                    // Ei vastaanottoa, voidaan yliajaa
+                    if (!vastaanOttoPerutussaKohteessa(henkilo, hakemus)) {
+                        h.setTila(HakemuksenTila.PERUUTETTU);
                         h.setTilanKuvaukset(parasHyvaksyttyHakutoive.getHakemus().getTilanKuvaukset());
                         hakemus.setTilaVoidaanVaihtaa(false);
                     }
@@ -102,6 +118,12 @@ public class PreSijoitteluProcessorPeruutaAlemmatPeruneetJaHyvaksytyt implements
                     // Jos tila on Perunut se periytetään kaikkiin jonoihin
                     if (parasHyvaksyttyHakutoive.getHakemus().getTila() == HakemuksenTila.PERUNUT) {
                         h.setTila(HakemuksenTila.PERUNUT);
+                        h.setTilanKuvaukset(parasHyvaksyttyHakutoive.getHakemus().getTilanKuvaukset());
+                        hakemus.setTilaVoidaanVaihtaa(false);
+                    }
+                    // Jos tila on PERUUTETTU se periytetään kaikkiin jonoihin
+                    else if (parasHyvaksyttyHakutoive.getHakemus().getTila() == HakemuksenTila.PERUUTETTU) {
+                        h.setTila(HakemuksenTila.PERUUTETTU);
                         h.setTilanKuvaukset(parasHyvaksyttyHakutoive.getHakemus().getTilanKuvaukset());
                         hakemus.setTilaVoidaanVaihtaa(false);
                     }
@@ -222,11 +244,12 @@ public class PreSijoitteluProcessorPeruutaAlemmatPeruneetJaHyvaksytyt implements
         for (HakemusWrapper hakemusWrapper : wrapper.getHakemukset()) {
             if (hakemusWrapper.getHakemus().getTila() == HakemuksenTila.HYVAKSYTTY
                     || hakemusWrapper.getHakemus().getTila() == HakemuksenTila.PERUNUT
+                    || hakemusWrapper.getHakemus().getTila() == HakemuksenTila.PERUUTETTU
                     || hakemusWrapper.getHakemus().getTila() == HakemuksenTila.VARASIJALTA_HYVAKSYTTY) {
                 if (parasHyvaksyttyHakutoive == null || parasHyvaksyttyHakutoive.getHakemus().getPrioriteetti() > hakemusWrapper.getHakemus().getPrioriteetti()) {
                     parasHyvaksyttyHakutoive = hakemusWrapper;
-                } else if (parasHyvaksyttyHakutoive.getHakemus().getPrioriteetti().equals(hakemusWrapper.getHakemus().getPrioriteetti()) && hakemusWrapper.getHakemus().getTila() == HakemuksenTila.PERUNUT) {
-                    // PERUNUT tila yliajaa hyväksynnät
+                } else if (parasHyvaksyttyHakutoive.getHakemus().getPrioriteetti().equals(hakemusWrapper.getHakemus().getPrioriteetti()) && (hakemusWrapper.getHakemus().getTila() == HakemuksenTila.PERUNUT && hakemusWrapper.getHakemus().getTila() == HakemuksenTila.PERUUTETTU)) {
+                    // PERUNUT tai PERUUTETTU tila yliajaa hyväksynnät
                     parasHyvaksyttyHakutoive = hakemusWrapper;
                 }
             }

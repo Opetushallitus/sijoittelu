@@ -14,6 +14,7 @@ import fi.vm.sade.sijoittelu.domain.*;
 import fi.vm.sade.valintalaskenta.domain.dto.valintatieto.HakuDTO;
 import fi.vm.sade.valintalaskenta.tulos.service.impl.ValintatietoService;
 import junit.framework.Assert;
+import org.eclipse.core.internal.dtree.TestHelper;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -23,6 +24,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -161,5 +163,147 @@ public class VastaanottoTest {
 
 
 	}
+
+    @Test
+    @UsingDataSet(locations = "vastaanotot_perunut_kaikille_jonoille.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
+    public void testPeruutettuVastaanottoKaikilleJonoille() throws IOException {
+
+        HakuDTO haku = valintatietoService.haeValintatiedot("1.2.246.562.29.173465377510");
+        List<Hakukohde> hakukohteet = haku.getHakukohteet().parallelStream().map(DomainConverter::convertToHakukohde).collect(Collectors.toList());
+
+        Valintatulos jono2Tulos = new Valintatulos();
+        jono2Tulos.setHakemusOid("1.2.246.562.11.00001090792", "");
+        jono2Tulos.setHakijaOid("1.2.246.562.24.45661259022", "");
+        jono2Tulos.setHakukohdeOid("1.2.246.562.20.18895322503", "");
+        jono2Tulos.setHakuOid("1.2.246.562.29.173465377510", "");
+        jono2Tulos.setHakutoive(4, "");
+        jono2Tulos.setHyvaksyttyVarasijalta(false, "");
+        jono2Tulos.setJulkaistavissa(true, "");
+        jono2Tulos.setIlmoittautumisTila(IlmoittautumisTila.EI_TEHTY, "");
+        jono2Tulos.setTila(ValintatuloksenTila.KESKEN, "");
+        jono2Tulos.setValintatapajonoOid("jono2", "");
+
+        Valintatulos jono1Tulos = new Valintatulos();
+        jono1Tulos.setHakemusOid("1.2.246.562.11.00001090792", "");
+        jono1Tulos.setHakijaOid("1.2.246.562.24.45661259022", "");
+        jono1Tulos.setHakukohdeOid("1.2.246.562.20.18895322503", "");
+        jono1Tulos.setHakuOid("1.2.246.562.29.173465377510", "");
+        jono1Tulos.setHakutoive(4, "");
+        jono1Tulos.setHyvaksyttyVarasijalta(false, "");
+        jono1Tulos.setJulkaistavissa(true, "");
+        jono1Tulos.setIlmoittautumisTila(IlmoittautumisTila.EI_TEHTY, "");
+        jono1Tulos.setTila(ValintatuloksenTila.PERUUTETTU, "");
+        jono1Tulos.setValintatapajonoOid("jono1", "");
+
+        final SijoitteluajoWrapper sijoitteluAjo = SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(new SijoitteluAjo(), hakukohteet, Arrays.asList(jono1Tulos, jono2Tulos));
+
+        SijoittelunTila s = SijoitteluAlgorithm.sijoittele(sijoitteluAjo);
+
+        System.out.println(PrintHelper.tulostaSijoittelu(s));
+
+        assertoi(hakukohteet.get(0).getValintatapajonot()
+                .get(0), "1.2.246.562.11.00001090792", HakemuksenTila.PERUUTETTU);
+        assertoi(hakukohteet.get(0).getValintatapajonot()
+                .get(1), "1.2.246.562.11.00001090792", HakemuksenTila.PERUUTETTU);
+
+    }
+
+    @Test
+    @UsingDataSet(locations = "vastaanotot_perunut_kaikille_jonoille.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
+    public void testEiVastaanottanutMaaraaikanaVastaanottoKaikilleJonoille() throws IOException {
+
+        HakuDTO haku = valintatietoService.haeValintatiedot("1.2.246.562.29.173465377510");
+        List<Hakukohde> hakukohteet = haku.getHakukohteet().parallelStream().map(DomainConverter::convertToHakukohde).collect(Collectors.toList());
+
+        Valintatulos jono2Tulos = new Valintatulos();
+        jono2Tulos.setHakemusOid("1.2.246.562.11.00001090792", "");
+        jono2Tulos.setHakijaOid("1.2.246.562.24.45661259022", "");
+        jono2Tulos.setHakukohdeOid("1.2.246.562.20.18895322503", "");
+        jono2Tulos.setHakuOid("1.2.246.562.29.173465377510", "");
+        jono2Tulos.setHakutoive(4, "");
+        jono2Tulos.setHyvaksyttyVarasijalta(false, "");
+        jono2Tulos.setJulkaistavissa(true, "");
+        jono2Tulos.setIlmoittautumisTila(IlmoittautumisTila.EI_TEHTY, "");
+        jono2Tulos.setTila(ValintatuloksenTila.KESKEN, "");
+        jono2Tulos.setValintatapajonoOid("jono2", "");
+
+        Valintatulos jono1Tulos = new Valintatulos();
+        jono1Tulos.setHakemusOid("1.2.246.562.11.00001090792", "");
+        jono1Tulos.setHakijaOid("1.2.246.562.24.45661259022", "");
+        jono1Tulos.setHakukohdeOid("1.2.246.562.20.18895322503", "");
+        jono1Tulos.setHakuOid("1.2.246.562.29.173465377510", "");
+        jono1Tulos.setHakutoive(4, "");
+        jono1Tulos.setHyvaksyttyVarasijalta(false, "");
+        jono1Tulos.setJulkaistavissa(true, "");
+        jono1Tulos.setIlmoittautumisTila(IlmoittautumisTila.EI_TEHTY, "");
+        jono1Tulos.setTila(ValintatuloksenTila.EI_VASTAANOTETTU_MAARA_AIKANA, "");
+        jono1Tulos.setValintatapajonoOid("jono1", "");
+
+        final SijoitteluajoWrapper sijoitteluAjo = SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(new SijoitteluAjo(), hakukohteet, Arrays.asList(jono1Tulos, jono2Tulos));
+
+        SijoittelunTila s = SijoitteluAlgorithm.sijoittele(sijoitteluAjo);
+
+        System.out.println(PrintHelper.tulostaSijoittelu(s));
+
+        assertoi(hakukohteet.get(0).getValintatapajonot()
+                .get(0), "1.2.246.562.11.00001090792", HakemuksenTila.PERUNUT);
+        assertoi(hakukohteet.get(0).getValintatapajonot()
+                .get(1), "1.2.246.562.11.00001090792", HakemuksenTila.PERUNUT);
+
+    }
+
+    @Test
+    @UsingDataSet(locations = "vastaanotot_perunut_kaikille_jonoille.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
+    public void testPerunutVastaanottoKaikilleJonoille() throws IOException {
+
+        HakuDTO haku = valintatietoService.haeValintatiedot("1.2.246.562.29.173465377510");
+        List<Hakukohde> hakukohteet = haku.getHakukohteet().parallelStream().map(DomainConverter::convertToHakukohde).collect(Collectors.toList());
+
+        Valintatulos jono2Tulos = new Valintatulos();
+        jono2Tulos.setHakemusOid("1.2.246.562.11.00001090792", "");
+        jono2Tulos.setHakijaOid("1.2.246.562.24.45661259022", "");
+        jono2Tulos.setHakukohdeOid("1.2.246.562.20.18895322503", "");
+        jono2Tulos.setHakuOid("1.2.246.562.29.173465377510", "");
+        jono2Tulos.setHakutoive(4, "");
+        jono2Tulos.setHyvaksyttyVarasijalta(false, "");
+        jono2Tulos.setJulkaistavissa(true, "");
+        jono2Tulos.setIlmoittautumisTila(IlmoittautumisTila.EI_TEHTY, "");
+        jono2Tulos.setTila(ValintatuloksenTila.KESKEN, "");
+        jono2Tulos.setValintatapajonoOid("jono2", "");
+
+        Valintatulos jono1Tulos = new Valintatulos();
+        jono1Tulos.setHakemusOid("1.2.246.562.11.00001090792", "");
+        jono1Tulos.setHakijaOid("1.2.246.562.24.45661259022", "");
+        jono1Tulos.setHakukohdeOid("1.2.246.562.20.18895322503", "");
+        jono1Tulos.setHakuOid("1.2.246.562.29.173465377510", "");
+        jono1Tulos.setHakutoive(4, "");
+        jono1Tulos.setHyvaksyttyVarasijalta(false, "");
+        jono1Tulos.setJulkaistavissa(true, "");
+        jono1Tulos.setIlmoittautumisTila(IlmoittautumisTila.EI_TEHTY, "");
+        jono1Tulos.setTila(ValintatuloksenTila.PERUNUT, "");
+        jono1Tulos.setValintatapajonoOid("jono1", "");
+
+        final SijoitteluajoWrapper sijoitteluAjo = SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(new SijoitteluAjo(), hakukohteet, Arrays.asList(jono1Tulos, jono2Tulos));
+
+        SijoittelunTila s = SijoitteluAlgorithm.sijoittele(sijoitteluAjo);
+
+        System.out.println(PrintHelper.tulostaSijoittelu(s));
+
+        assertoi(hakukohteet.get(0).getValintatapajonot()
+                .get(0), "1.2.246.562.11.00001090792", HakemuksenTila.PERUNUT);
+        assertoi(hakukohteet.get(0).getValintatapajonot()
+                .get(1), "1.2.246.562.11.00001090792", HakemuksenTila.PERUNUT);
+
+    }
+
+    private static void assertoi(Valintatapajono valintatapajono, String oid, HakemuksenTila tila) {
+        Hakemus check = null;
+        for (Hakemus hakemus : valintatapajono.getHakemukset()) {
+            if (hakemus.getHakemusOid().equals(oid)) {
+                check = hakemus;
+            }
+        }
+        Assert.assertTrue(check.getTila().equals(tila));
+    }
 
 }

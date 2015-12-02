@@ -97,13 +97,7 @@ public class SijoitteluajoWrapperFactory {
             ValintatuloksenTila tila = valintatulos.getTila();
             boolean voidaanVaihtaa = false;
             if (tila == ValintatuloksenTila.PERUNUT) {
-                henkiloWrapper.getHakemukset().stream()
-                .filter(hw ->
-                    hw.getValintatapajono().getHakukohdeWrapper().getHakukohde().getOid().equals(hakemusWrapper.getValintatapajono().getHakukohdeWrapper().getHakukohde().getOid())
-                ).forEach(hw -> {
-                    hw.getHakemus().setTila(HakemuksenTila.PERUNUT);
-                });
-                //hakemus.setTila(HakemuksenTila.PERUNUT);
+                hakemus.setTila(HakemuksenTila.PERUNUT);
             } else if (asList(ILMOITETTU, VASTAANOTTANUT, VASTAANOTTANUT_SITOVASTI, EHDOLLISESTI_VASTAANOTTANUT, VASTAANOTTANUT_LASNA, VASTAANOTTANUT_POISSAOLEVA).contains(tila)) {
                 if (hakemus.getEdellinenTila() == HakemuksenTila.VARALLA || hakemus.getEdellinenTila() == HakemuksenTila.VARASIJALTA_HYVAKSYTTY) {
                     hyvaksyVarasijalta(hakemus, valintatulos);
@@ -111,15 +105,8 @@ public class SijoitteluajoWrapperFactory {
                     hyvaksy(hakemus, valintatulos);
                 }
             } else if (tila == ValintatuloksenTila.EI_VASTAANOTETTU_MAARA_AIKANA) {
-                henkiloWrapper.getHakemukset().stream()
-                .filter(hw ->
-                    hw.getValintatapajono().getHakukohdeWrapper().getHakukohde().getOid().equals(hakemusWrapper.getValintatapajono().getHakukohdeWrapper().getHakukohde().getOid())
-                ).forEach(hw -> {
-                    hw.getHakemus().setTila(HakemuksenTila.PERUNUT);
-                    hw.getHakemus().setTilanKuvaukset(TilanKuvaukset.peruuntunutEiVastaanottanutMaaraaikana());
-                });
-                //hakemus.setTila(HakemuksenTila.PERUNUT);
-                //hakemus.setTilanKuvaukset(TilanKuvaukset.peruuntunutEiVastaanottanutMaaraaikana());
+                hakemus.setTila(HakemuksenTila.PERUNUT);
+                hakemus.setTilanKuvaukset(TilanKuvaukset.peruuntunutEiVastaanottanutMaaraaikana());
             } else if (tila == ValintatuloksenTila.PERUUTETTU) {
                 hakemus.setTila(HakemuksenTila.PERUUTETTU);
             } else {

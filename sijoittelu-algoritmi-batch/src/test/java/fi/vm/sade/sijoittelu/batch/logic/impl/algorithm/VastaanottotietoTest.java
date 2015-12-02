@@ -70,7 +70,7 @@ public class VastaanottotietoTest {
                 .get(0), "1.2.246.562.24.00000000001");
 
         TestHelper.assertoiAinoastaanValittu(hakukohteet.get(0).getValintatapajonot()
-                .get(1), "1.2.246.562.24.00000000004");
+                .get(1), "1.2.246.562.24.00000000006");
 
     }
 
