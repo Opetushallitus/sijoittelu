@@ -102,9 +102,8 @@ public class TilojenMuokkaus {
                     hakemus.getHenkilo().getValintatulos().add(v);
                     return v;
                 });
-        valintatulos.setHyvaksyttyVarasijalta(false, VASTAANOTTOTIETO_PERIYTYNYT_ALEMMALTA_HAKUTOIVEELTA);
         valintatulos.setIlmoittautumisTila(IlmoittautumisTila.EI_TEHTY, VASTAANOTTOTIETO_PERIYTYNYT_ALEMMALTA_HAKUTOIVEELTA);
-        valintatulos.setJulkaistavissa(false, VASTAANOTTOTIETO_PERIYTYNYT_ALEMMALTA_HAKUTOIVEELTA);
+        // TODO: Peritymisen yhteydessä muutetaan sitovaksi jos ylin hakutoive jolle hakija voi vielä tulla hyväksytyksi.
         if (hakemus.getHakemus().getPrioriteetti() == 1) {
             valintatulos.setTila(ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI, VASTAANOTTOTIETO_PERIYTYNYT_ALEMMALTA_HAKUTOIVEELTA);
         } else {
