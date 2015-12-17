@@ -16,7 +16,7 @@ public class SijoitteleHakukohde {
     public static Set<HakukohdeWrapper> sijoitteleHakukohde(SijoitteluajoWrapper sijoitteluAjo, HakukohdeWrapper hakukohde) {
         Set<HakukohdeWrapper> muuttuneetHakukohteet = Sets.newHashSet();
         for (HakijaryhmaWrapper hakijaryhmaWrapper : hakukohde.getHakijaryhmaWrappers()) {
-            muuttuneetHakukohteet.addAll(SijoitteleHakuryhma.sijoitteleHakijaryhma(sijoitteluAjo, hakijaryhmaWrapper));
+            muuttuneetHakukohteet.addAll(SijoitteleHakijaryhma.sijoitteleHakijaryhma(sijoitteluAjo, hakijaryhmaWrapper));
         }
         for (ValintatapajonoWrapper valintatapajono : hakukohde.getValintatapajonot()) {
             muuttuneetHakukohteet.addAll(sijoitteleValintatapajono(sijoitteluAjo, valintatapajono));
