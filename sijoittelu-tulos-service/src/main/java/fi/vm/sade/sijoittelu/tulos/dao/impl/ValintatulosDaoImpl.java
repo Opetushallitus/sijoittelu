@@ -8,7 +8,6 @@ import javax.annotation.PostConstruct;
 import fi.vm.sade.sijoittelu.domain.*;
 import org.apache.commons.lang.StringUtils;
 import org.mongodb.morphia.Datastore;
-import org.mongodb.morphia.aggregation.AggregationPipeline;
 import org.mongodb.morphia.query.Query;
 import org.mongodb.morphia.query.UpdateOperations;
 import org.slf4j.Logger;
