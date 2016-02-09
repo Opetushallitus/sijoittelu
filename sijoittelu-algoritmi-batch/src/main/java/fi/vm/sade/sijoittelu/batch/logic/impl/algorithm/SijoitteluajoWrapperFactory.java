@@ -1,10 +1,7 @@
 package fi.vm.sade.sijoittelu.batch.logic.impl.algorithm;
 
 import static fi.vm.sade.sijoittelu.domain.ValintatuloksenTila.EHDOLLISESTI_VASTAANOTTANUT;
-import static fi.vm.sade.sijoittelu.domain.ValintatuloksenTila.ILMOITETTU;
-import static fi.vm.sade.sijoittelu.domain.ValintatuloksenTila.VASTAANOTTANUT;
-import static fi.vm.sade.sijoittelu.domain.ValintatuloksenTila.VASTAANOTTANUT_LASNA;
-import static fi.vm.sade.sijoittelu.domain.ValintatuloksenTila.VASTAANOTTANUT_POISSAOLEVA;
+import static fi.vm.sade.sijoittelu.domain.ValintatuloksenTila.KESKEN;
 import static fi.vm.sade.sijoittelu.domain.ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI;
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyMap;
@@ -12,6 +9,7 @@ import static java.util.Collections.emptyMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ThreadFactory;
 
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.util.TilanKuvaukset;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.HakemusWrapper;
@@ -98,7 +96,7 @@ public class SijoitteluajoWrapperFactory {
             boolean voidaanVaihtaa = false;
             if (tila == ValintatuloksenTila.PERUNUT) {
                 hakemus.setTila(HakemuksenTila.PERUNUT);
-            } else if (asList(ILMOITETTU, VASTAANOTTANUT, VASTAANOTTANUT_SITOVASTI, EHDOLLISESTI_VASTAANOTTANUT, VASTAANOTTANUT_LASNA, VASTAANOTTANUT_POISSAOLEVA).contains(tila)) {
+            } else if (asList(VASTAANOTTANUT_SITOVASTI, EHDOLLISESTI_VASTAANOTTANUT).contains(tila)) {
                 if (hakemus.getEdellinenTila() == HakemuksenTila.VARALLA || hakemus.getEdellinenTila() == HakemuksenTila.VARASIJALTA_HYVAKSYTTY) {
                     hyvaksyVarasijalta(hakemus, valintatulos);
                 } else {

@@ -120,7 +120,7 @@ public class RaportointiServiceImpl implements RaportointiService {
                 if (valintatapajono.getTila() == HakemuksenTila.HYVAKSYTTY || valintatapajono.getTila() == HakemuksenTila.VARASIJALTA_HYVAKSYTTY) {
                     isHyvaksytty = true;
                 }
-                if (valintatapajono.getVastaanottotieto() == ValintatuloksenTila.VASTAANOTTANUT || valintatapajono.getVastaanottotieto() == ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI) {
+                if (valintatapajono.getVastaanottotieto() == ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI) {
                     isVastaanottanut = true;
                 }
             }

@@ -8,16 +8,16 @@ import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.TestHelper;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.SijoitteluajoWrapper;
 import fi.vm.sade.sijoittelu.domain.*;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.junit.Test;
 import static junit.framework.Assert.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
-public class PostSijoitteluProcessorEhdollisenVastaanotonSiirtyminenYlemmalleHakutoiveelleTest {
+public class SijoitteluAlgorithmEhdollisenVastaanotonSiirtyminenYlemmalleHakutoiveelleTest {
     List<Hakukohde> hakukohdeList = TestHelper.readHakukohteetListFromJson("testdata/sijoittelu_hakukohde.json");
     List<Valintatulos> valintatulosList = TestHelper.readValintatulosListFromJson("testdata/sijoittelu_valintatulos.json");
-    final PostSijoitteluProcessorEhdollisenVastaanotonSiirtyminenYlemmalleHakutoiveelle postProcessor =
-            new PostSijoitteluProcessorEhdollisenVastaanotonSiirtyminenYlemmalleHakutoiveelle();
 
     @Test
     public void testEhdollisenVastaanotonSiirtyminenYlospain() {
@@ -42,7 +42,8 @@ public class PostSijoitteluProcessorEhdollisenVastaanotonSiirtyminenYlemmalleHak
     }
 
     private Valintatulos haeValintatulosHakemukselle(String hakemusOid, String valintatapajonoOid, SijoitteluajoWrapper sijoitteluAjo) {
-        return sijoitteluAjo.getMuuttuneetValintatulokset().stream().filter(valintatulos -> valintatulos.getHakemusOid().equals(hakemusOid) && valintatulos.getValintatapajonoOid().equals(valintatapajonoOid)).findFirst().get();
+        List<Valintatulos> muuttuneetValintatulokset = sijoitteluAjo.getMuuttuneetValintatulokset();
+        return muuttuneetValintatulokset.stream().filter(valintatulos -> valintatulos.getHakemusOid().equals(hakemusOid) && valintatulos.getValintatapajonoOid().equals(valintatapajonoOid)).findFirst().get();
     }
 
     private SijoitteluajoWrapper luoSijoitteluAjonTulokset() {

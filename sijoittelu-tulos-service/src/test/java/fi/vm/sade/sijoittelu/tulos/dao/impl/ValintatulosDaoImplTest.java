@@ -61,9 +61,9 @@ public class ValintatulosDaoImplTest {
 
         final List<Valintatulos> mergattu = valintatulosDao.mergaaValintatulos(Arrays.asList(kohde), Arrays.asList(tulos));
         assertNotNull(mergattu);
-        assertEquals(ValintatuloksenTila.ILMOITETTU, mergattu.get(0).getTila());
+        assertEquals(ValintatuloksenTila.KESKEN, mergattu.get(0).getTila());
         assertEquals(IlmoittautumisTila.EI_TEHTY, mergattu.get(0).getIlmoittautumisTila());
-        assertEquals(false, mergattu.get(0).getJulkaistavissa());
+        assertEquals(true, mergattu.get(0).getJulkaistavissa());
     }
 
     @Test

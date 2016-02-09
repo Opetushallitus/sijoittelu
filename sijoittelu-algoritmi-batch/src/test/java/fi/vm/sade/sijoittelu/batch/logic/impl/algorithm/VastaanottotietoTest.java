@@ -170,7 +170,7 @@ public class VastaanottotietoTest {
         valintatulos.setHakijaOid("oid", "");
         valintatulos.setHakukohdeOid("1.2.246.562.11.00000000008", "");
         valintatulos.setHakuOid(t.getHakuOid(), "");
-        valintatulos.setJulkaistavissa(true, "");
+        valintatulos.setJulkaistavissa(false, "");
         valintatulos.setTila(ValintatuloksenTila.KESKEN, "");
         valintatulos.setValintatapajonoOid("esimerkkikoulu_jono_1", "");
 
@@ -217,7 +217,7 @@ public class VastaanottotietoTest {
         valintatulos.setHakijaOid("oid", "");
         valintatulos.setHakukohdeOid("1.2.246.562.11.00000000009", "");
         valintatulos.setHakuOid(t.getHakuOid(), "");
-        valintatulos.setJulkaistavissa(true, "");
+        valintatulos.setJulkaistavissa(false, "");
         valintatulos.setTila(ValintatuloksenTila.KESKEN, "");
         valintatulos.setValintatapajonoOid("opisto_jono_1", "");
 
@@ -251,7 +251,7 @@ public class VastaanottotietoTest {
         valintatulos.setHakijaOid("oid", "");
         valintatulos.setHakukohdeOid("1.2.246.562.11.00000000009", "");
         valintatulos.setHakuOid(t.getHakuOid(), "");
-        valintatulos.setJulkaistavissa(true, "");
+        valintatulos.setJulkaistavissa(false, "");
         valintatulos.setTila(ValintatuloksenTila.KESKEN, "");
         valintatulos.setValintatapajonoOid("opisto_jono_1", "");
 
@@ -284,7 +284,7 @@ public class VastaanottotietoTest {
         valintatulos.setHakijaOid("oid", "");
         valintatulos.setHakukohdeOid("1.2.246.562.11.00000000008", "");
         valintatulos.setHakuOid(t.getHakuOid(), "");
-        valintatulos.setJulkaistavissa(true, "");
+        valintatulos.setJulkaistavissa(false, "");
         valintatulos.setTila(ValintatuloksenTila.KESKEN, "");
         valintatulos.setValintatapajonoOid("esimerkkikoulu_jono_1", "");
 
@@ -317,7 +317,7 @@ public class VastaanottotietoTest {
         valintatulos.setHakijaOid("oid", "");
         valintatulos.setHakukohdeOid("1.2.246.562.11.00000000008", "");
         valintatulos.setHakuOid(t.getHakuOid(), "");
-        valintatulos.setJulkaistavissa(true, "");
+        valintatulos.setJulkaistavissa(false, "");
         valintatulos.setTila(ValintatuloksenTila.KESKEN, "");
         valintatulos.setValintatapajonoOid("esimerkkikoulu_jono_1", "");
 

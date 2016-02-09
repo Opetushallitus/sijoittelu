@@ -1,10 +1,18 @@
 package fi.vm.sade.sijoittelu.batch.logic.impl;
 
+import static com.lordofthejars.nosqlunit.mongodb.MongoDbRule.MongoDbRuleBuilder.newMongoDbRule;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import com.lordofthejars.nosqlunit.mongodb.MongoDbRule;
 
-import fi.vm.sade.sijoittelu.domain.*;
+import fi.vm.sade.sijoittelu.domain.IlmoittautumisTila;
+import fi.vm.sade.sijoittelu.domain.LogEntry;
+import fi.vm.sade.sijoittelu.domain.Sijoittelu;
+import fi.vm.sade.sijoittelu.domain.ValintatuloksenTila;
+import fi.vm.sade.sijoittelu.domain.Valintatulos;
 import fi.vm.sade.sijoittelu.laskenta.external.resource.dto.ParametriDTO;
 import fi.vm.sade.sijoittelu.laskenta.service.business.SijoitteluBusinessService;
 import fi.vm.sade.sijoittelu.laskenta.service.it.TarjontaIntegrationService;
@@ -17,7 +25,6 @@ import fi.vm.sade.tarjonta.service.resources.v1.dto.ResultV1RDTO;
 import fi.vm.sade.valintalaskenta.domain.dto.valintatieto.HakuDTO;
 import fi.vm.sade.valintalaskenta.tulos.service.impl.ValintatietoService;
 import junit.framework.Assert;
-
 import org.joda.time.DateTime;
 import org.junit.Rule;
 import org.junit.Test;
@@ -32,20 +39,11 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-
 import org.springframework.test.util.ReflectionTestUtils;
 
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Optional;
-
-import static com.lordofthejars.nosqlunit.mongodb.MongoDbRule.MongoDbRuleBuilder.newMongoDbRule;
-import static org.mockito.Matchers.*;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 /**
  * @author Kari Kammonen
@@ -132,7 +130,7 @@ public class MorphiaIntegrationTest {
         Assert.assertEquals(vx.getLogEntries(), v0.getLogEntries());
 
         vx.setHakemusOid(v0.getHakemusOid() + "X", "");
-        vx.setTila(ValintatuloksenTila.ILMOITETTU, "");
+        vx.setTila(ValintatuloksenTila.KESKEN, "");
         valintatulosDao.createOrUpdateValintatulos(vx);
 
         Valintatulos vx2 = valintatulosDao.loadValintatulos(hakukohdeOid,jonoOid,hakemusOid);

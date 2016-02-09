@@ -142,20 +142,23 @@ public class ValintatulosDaoImpl implements ValintatulosDao {
         return sijoittelunTulokset.stream().map(valintatulos -> {
             if (!peruuntuneetHakemukset.contains(valintatulos.getHakemusOid())) {
                 final Optional<Valintatulos> valintatulosMongosta = haeOlemassaolevaValintatulosMongosta(hakukohteidenValintatuloksetMongo, valintatulos);
-                if (valintatulosMongosta.isPresent() && !valintatulosMongosta.get().getTila().equals(ValintatuloksenTila.KESKEN)) {
-                    LOG.info("Ohitetaan sijoittelun ulkopuolella muutettu valintatulos: hakija {}, hakemus {}, hakutoive {}",
-                            valintatulos.getHakijaOid(), valintatulos.getHakemusOid(), valintatulos.getHakutoive());
-                    paivitaArvotMongosta(valintatulos, valintatulosMongosta.get());
+                if (valintatulosMongosta.isPresent()) {
+                    Valintatulos mongoTulos = valintatulosMongosta.get();
+                    if (mongoTulos.getIlmoittautumisTila() != valintatulos.getIlmoittautumisTila()) {
+                        valintatulos.setIlmoittautumisTila(mongoTulos.getIlmoittautumisTila(), "Korvataan sijoittelun ulkopuolella muuttuneella tiedolla");
+                    }
+                    if (mongoTulos.getJulkaistavissa() != valintatulos.getJulkaistavissa()) {
+                        valintatulos.setJulkaistavissa(mongoTulos.getJulkaistavissa(), "Korvataan sijoittelun ulkopuolella muuttuneella tiedolla");
+                    }
+                    if (mongoTulos.getTila() != ValintatuloksenTila.KESKEN) {
+                        LOG.info("Ohitetaan sijoittelun ulkopuolella muutettu valintatulos: hakija {}, hakemus {}, hakutoive {}",
+                                valintatulos.getHakijaOid(), valintatulos.getHakemusOid(), valintatulos.getHakutoive());
+                        valintatulos.setTila(mongoTulos.getTila(), "Korvataan sijoittelun ulkopuolella muuttuneella tiedolla");
+                    }
                 }
             }
             return valintatulos;
         }).collect(Collectors.toList());
-    }
-
-    private void paivitaArvotMongosta(Valintatulos valintatulos, Valintatulos mongoTulos) {
-        valintatulos.setTila(mongoTulos.getTila(), "Korvataan sijoittelun ulkopuolella muuttuneella tiedolla");
-        valintatulos.setIlmoittautumisTila(mongoTulos.getIlmoittautumisTila(), "Korvataan sijoittelun ulkopuolella muuttuneella tiedolla");
-        valintatulos.setJulkaistavissa(mongoTulos.getJulkaistavissa(), "Korvataan sijoittelun ulkopuolella muuttuneella tiedolla");
     }
 
     private Optional<Valintatulos> haeOlemassaolevaValintatulosMongosta(Map<String, List<Valintatulos>> hakukohteidenValintatuloksetMongo, Valintatulos valintatulos) {

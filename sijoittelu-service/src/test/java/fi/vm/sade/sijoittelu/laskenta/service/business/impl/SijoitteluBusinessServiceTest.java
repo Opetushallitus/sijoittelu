@@ -9,7 +9,6 @@ import fi.vm.sade.sijoittelu.domain.Valintatulos;
 import fi.vm.sade.sijoittelu.laskenta.external.resource.ValintaTulosServiceResource;
 import fi.vm.sade.sijoittelu.laskenta.external.resource.dto.ParametriArvoDTO;
 import fi.vm.sade.sijoittelu.laskenta.external.resource.dto.ParametriDTO;
-import fi.vm.sade.sijoittelu.laskenta.external.resource.dto.VastaanottoDTO;
 import fi.vm.sade.sijoittelu.laskenta.service.business.SijoitteluBusinessService;
 import fi.vm.sade.sijoittelu.laskenta.service.it.TarjontaIntegrationService;
 import fi.vm.sade.sijoittelu.tulos.dao.HakukohdeDao;
@@ -118,46 +117,6 @@ public class SijoitteluBusinessServiceTest {
     }
 
     @Test
-    public void testVaihdaTilaIlmoitetuksi() throws Exception {
-
-        Sijoittelu sijoittelu = testDataGenerator.generateTestData();
-
-        when(sijoitteluDao.getSijoitteluByHakuOid(HAKU_OID))
-                .thenReturn(Optional.of(sijoittelu));
-        when(hakukohdeDao.getHakukohdeForSijoitteluajo(TestDataGenerator.SIJOITTELU_AJO_ID_2, HAKUKOHDE_OID))
-                .thenReturn(testDataGenerator.createHakukohdes(1).get(0));
-        doThrow(new NotAuthorizedException())
-                .when(authorizer)
-                .checkOrganisationAccess(ROOT_ORG_OID, SijoitteluRole.CRUD_ROLE);
-
-        when(valintatulosDaoMock.loadValintatulos(HAKUKOHDE_OID, VALINTATAPAJONO_OID, HAKEMUS_OID))
-                .thenReturn(getValintatulos(ValintatuloksenTila.KESKEN));
-
-        boolean hyvaksyttyVarasijalta = false;
-        boolean julkaistavissa = false;
-        Valintatulos v = new Valintatulos(
-                HAKEMUS_OID,
-                HAKEMUS_OID,
-                HAKUKOHDE_OID,
-                HAKU_OID,
-                1,
-                hyvaksyttyVarasijalta,
-                IlmoittautumisTila.EI_TEHTY,
-                julkaistavissa,
-                ValintatuloksenTila.ILMOITETTU,
-                VALINTATAPAJONO_OID);
-        sijoitteluBusinessService.vaihdaHakemuksenTila(HAKU_OID,
-                sijoitteluBusinessService.getHakukohde(HAKU_OID, HAKUKOHDE_OID),
-                v, SELITE, "");
-
-        ArgumentCaptor<Valintatulos> argument = ArgumentCaptor.forClass(Valintatulos.class);
-        verify(valintatulosDaoMock).createOrUpdateValintatulos(argument.capture());
-        Valintatulos valintatulos = argument.getValue();
-        assertEquals(ValintatuloksenTila.ILMOITETTU, valintatulos.getTila());
-        assertEquals(IlmoittautumisTila.EI_TEHTY, valintatulos.getIlmoittautumisTila());
-    }
-
-    @Test
     public void testVaihdaTilaPeruuntuneeksi() throws Exception {
 
         Sijoittelu sijoittelu = testDataGenerator.generateTestData();
@@ -171,7 +130,7 @@ public class SijoitteluBusinessServiceTest {
                 .checkOrganisationAccess(ROOT_ORG_OID, SijoitteluRole.CRUD_ROLE);
 
         when(valintatulosDaoMock.loadValintatulos(HAKUKOHDE_OID, VALINTATAPAJONO_OID, HAKEMUS_OID))
-                .thenReturn(getValintatulos(ValintatuloksenTila.ILMOITETTU));
+                .thenReturn(getValintatulos(ValintatuloksenTila.KESKEN));
 
         boolean hyvaksyttyVarasijalta = false;
         boolean julkaistavissa = false;
@@ -256,7 +215,7 @@ public class SijoitteluBusinessServiceTest {
                 hyvaksyttyVarasijalta,
                 IlmoittautumisTila.EI_TEHTY,
                 julkaistavissa,
-                ValintatuloksenTila.VASTAANOTTANUT,
+                ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI,
                 VALINTATAPAJONO_OID);
         sijoitteluBusinessService.vaihdaHakemuksenTila(HAKU_OID,
                 sijoitteluBusinessService.getHakukohde(HAKU_OID, HAKUKOHDE_OID),
@@ -265,7 +224,7 @@ public class SijoitteluBusinessServiceTest {
         ArgumentCaptor<Valintatulos> argument = ArgumentCaptor.forClass(Valintatulos.class);
         verify(valintatulosDaoMock).createOrUpdateValintatulos(argument.capture());
         Valintatulos valintatulos = argument.getValue();
-        assertEquals(ValintatuloksenTila.VASTAANOTTANUT, valintatulos.getTila());
+        assertEquals(ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI, valintatulos.getTila());
         assertEquals(IlmoittautumisTila.EI_TEHTY, valintatulos.getIlmoittautumisTila());
     }
 
@@ -300,7 +259,7 @@ public class SijoitteluBusinessServiceTest {
                 .checkOrganisationAccess(ROOT_ORG_OID, SijoitteluRole.CRUD_ROLE);
 
         when(valintatulosDaoMock.loadValintatulos(HAKUKOHDE_OID, VALINTATAPAJONO_OID, HAKEMUS_OID))
-                .thenReturn(getValintatulos(ValintatuloksenTila.ILMOITETTU));
+                .thenReturn(getValintatulos(ValintatuloksenTila.KESKEN));
 
         boolean hyvaksyttyVarasijalta = false;
         boolean julkaistavissa = false;
@@ -313,7 +272,7 @@ public class SijoitteluBusinessServiceTest {
                 hyvaksyttyVarasijalta,
                 IlmoittautumisTila.LASNA_KOKO_LUKUVUOSI,
                 julkaistavissa,
-                ValintatuloksenTila.VASTAANOTTANUT,
+                ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI,
                 VALINTATAPAJONO_OID);
         sijoitteluBusinessService.vaihdaHakemuksenTila(HAKU_OID,
                 sijoitteluBusinessService.getHakukohde(HAKU_OID, HAKUKOHDE_OID),
@@ -322,7 +281,7 @@ public class SijoitteluBusinessServiceTest {
         ArgumentCaptor<Valintatulos> argument = ArgumentCaptor.forClass(Valintatulos.class);
         verify(valintatulosDaoMock).createOrUpdateValintatulos(argument.capture());
         Valintatulos valintatulos = argument.getValue();
-        assertEquals(ValintatuloksenTila.VASTAANOTTANUT, valintatulos.getTila());
+        assertEquals(ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI, valintatulos.getTila());
         assertEquals(IlmoittautumisTila.LASNA_KOKO_LUKUVUOSI, valintatulos.getIlmoittautumisTila());
     }
 
@@ -339,7 +298,7 @@ public class SijoitteluBusinessServiceTest {
                 .checkOrganisationAccess(ROOT_ORG_OID, SijoitteluRole.CRUD_ROLE);
 
         when(valintatulosDaoMock.loadValintatulos(HAKUKOHDE_OID, VALINTATAPAJONO_OID, HAKEMUS_OID))
-                .thenReturn(getValintatulos(ValintatuloksenTila.ILMOITETTU));
+                .thenReturn(getValintatulos(ValintatuloksenTila.KESKEN));
 
         boolean hyvaksyttyVarasijalta = false;
         boolean julkaistavissa = false;
@@ -352,7 +311,7 @@ public class SijoitteluBusinessServiceTest {
                 hyvaksyttyVarasijalta,
                 IlmoittautumisTila.POISSA_KOKO_LUKUVUOSI,
                 julkaistavissa,
-                ValintatuloksenTila.VASTAANOTTANUT,
+                ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI,
                 VALINTATAPAJONO_OID);
         sijoitteluBusinessService.vaihdaHakemuksenTila(HAKU_OID,
                 sijoitteluBusinessService.getHakukohde(HAKU_OID, HAKUKOHDE_OID),
@@ -361,7 +320,7 @@ public class SijoitteluBusinessServiceTest {
         ArgumentCaptor<Valintatulos> argument = ArgumentCaptor.forClass(Valintatulos.class);
         verify(valintatulosDaoMock).createOrUpdateValintatulos(argument.capture());
         Valintatulos valintatulos = argument.getValue();
-        assertEquals(ValintatuloksenTila.VASTAANOTTANUT, valintatulos.getTila());
+        assertEquals(ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI, valintatulos.getTila());
         assertEquals(IlmoittautumisTila.POISSA_KOKO_LUKUVUOSI, valintatulos.getIlmoittautumisTila());
     }
 
@@ -378,7 +337,7 @@ public class SijoitteluBusinessServiceTest {
                 .checkOrganisationAccess(ROOT_ORG_OID, SijoitteluRole.CRUD_ROLE);
 
         when(valintatulosDaoMock.loadValintatulos(HAKUKOHDE_OID, VALINTATAPAJONO_OID, HAKEMUS_OID))
-                .thenReturn(getValintatulos(ValintatuloksenTila.ILMOITETTU));
+                .thenReturn(getValintatulos(ValintatuloksenTila.KESKEN));
 
         boolean hyvaksyttyVarasijalta = false;
         boolean julkaistavissa = false;
@@ -391,7 +350,7 @@ public class SijoitteluBusinessServiceTest {
                 hyvaksyttyVarasijalta,
                 IlmoittautumisTila.EI_ILMOITTAUTUNUT,
                 julkaistavissa,
-                ValintatuloksenTila.VASTAANOTTANUT,
+                ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI,
                 VALINTATAPAJONO_OID);
         sijoitteluBusinessService.vaihdaHakemuksenTila(HAKU_OID,
                 sijoitteluBusinessService.getHakukohde(HAKU_OID, HAKUKOHDE_OID),
@@ -400,7 +359,7 @@ public class SijoitteluBusinessServiceTest {
         ArgumentCaptor<Valintatulos> argument = ArgumentCaptor.forClass(Valintatulos.class);
         verify(valintatulosDaoMock).createOrUpdateValintatulos(argument.capture());
         Valintatulos valintatulos = argument.getValue();
-        assertEquals(ValintatuloksenTila.VASTAANOTTANUT, valintatulos.getTila());
+        assertEquals(ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI, valintatulos.getTila());
         assertEquals(IlmoittautumisTila.EI_ILMOITTAUTUNUT, valintatulos.getIlmoittautumisTila());
     }
 
@@ -417,7 +376,7 @@ public class SijoitteluBusinessServiceTest {
                 .checkOrganisationAccess(ROOT_ORG_OID, SijoitteluRole.CRUD_ROLE);
 
         when(valintatulosDaoMock.loadValintatulos(HAKUKOHDE_OID, VALINTATAPAJONO_OID, HAKEMUS_OID))
-                .thenReturn(getValintatulos(ValintatuloksenTila.ILMOITETTU));
+                .thenReturn(getValintatulos(ValintatuloksenTila.KESKEN));
 
         boolean hyvaksyttyVarasijalta = false;
         boolean julkaistavissa = false;
@@ -430,7 +389,7 @@ public class SijoitteluBusinessServiceTest {
                 hyvaksyttyVarasijalta,
                 IlmoittautumisTila.LASNA_SYKSY,
                 julkaistavissa,
-                ValintatuloksenTila.VASTAANOTTANUT,
+                ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI,
                 VALINTATAPAJONO_OID);
         sijoitteluBusinessService.vaihdaHakemuksenTila(HAKU_OID,
                 sijoitteluBusinessService.getHakukohde(HAKU_OID, HAKUKOHDE_OID),
@@ -439,7 +398,7 @@ public class SijoitteluBusinessServiceTest {
         ArgumentCaptor<Valintatulos> argument = ArgumentCaptor.forClass(Valintatulos.class);
         verify(valintatulosDaoMock).createOrUpdateValintatulos(argument.capture());
         Valintatulos valintatulos = argument.getValue();
-        assertEquals(ValintatuloksenTila.VASTAANOTTANUT, valintatulos.getTila());
+        assertEquals(ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI, valintatulos.getTila());
         assertEquals(IlmoittautumisTila.LASNA_SYKSY, valintatulos.getIlmoittautumisTila());
     }
 
@@ -456,7 +415,7 @@ public class SijoitteluBusinessServiceTest {
                 .checkOrganisationAccess(ROOT_ORG_OID, SijoitteluRole.CRUD_ROLE);
 
         when(valintatulosDaoMock.loadValintatulos(HAKUKOHDE_OID, VALINTATAPAJONO_OID, HAKEMUS_OID))
-                .thenReturn(getValintatulos(ValintatuloksenTila.ILMOITETTU));
+                .thenReturn(getValintatulos(ValintatuloksenTila.KESKEN));
 
         boolean hyvaksyttyVarasijalta = false;
         boolean julkaistavissa = false;
@@ -469,7 +428,7 @@ public class SijoitteluBusinessServiceTest {
                 hyvaksyttyVarasijalta,
                 IlmoittautumisTila.POISSA_SYKSY,
                 julkaistavissa,
-                ValintatuloksenTila.VASTAANOTTANUT,
+                ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI,
                 VALINTATAPAJONO_OID);
         sijoitteluBusinessService.vaihdaHakemuksenTila(HAKU_OID,
                 sijoitteluBusinessService.getHakukohde(HAKU_OID, HAKUKOHDE_OID),
@@ -478,7 +437,7 @@ public class SijoitteluBusinessServiceTest {
         ArgumentCaptor<Valintatulos> argument = ArgumentCaptor.forClass(Valintatulos.class);
         verify(valintatulosDaoMock).createOrUpdateValintatulos(argument.capture());
         Valintatulos valintatulos = argument.getValue();
-        assertEquals(ValintatuloksenTila.VASTAANOTTANUT, valintatulos.getTila());
+        assertEquals(ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI, valintatulos.getTila());
         assertEquals(IlmoittautumisTila.POISSA_SYKSY, valintatulos.getIlmoittautumisTila());
     }
 
@@ -495,7 +454,7 @@ public class SijoitteluBusinessServiceTest {
                 .checkOrganisationAccess(ROOT_ORG_OID, SijoitteluRole.CRUD_ROLE);
 
         when(valintatulosDaoMock.loadValintatulos(HAKUKOHDE_OID, VALINTATAPAJONO_OID, HAKEMUS_OID))
-                .thenReturn(getValintatulos(ValintatuloksenTila.ILMOITETTU));
+                .thenReturn(getValintatulos(ValintatuloksenTila.KESKEN));
 
         boolean hyvaksyttyVarasijalta = false;
         boolean julkaistavissa = false;
@@ -508,7 +467,7 @@ public class SijoitteluBusinessServiceTest {
                 hyvaksyttyVarasijalta,
                 IlmoittautumisTila.LASNA,
                 julkaistavissa,
-                ValintatuloksenTila.VASTAANOTTANUT,
+                ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI,
                 VALINTATAPAJONO_OID);
         sijoitteluBusinessService.vaihdaHakemuksenTila(HAKU_OID,
                 sijoitteluBusinessService.getHakukohde(HAKU_OID, HAKUKOHDE_OID),
@@ -517,7 +476,7 @@ public class SijoitteluBusinessServiceTest {
         ArgumentCaptor<Valintatulos> argument = ArgumentCaptor.forClass(Valintatulos.class);
         verify(valintatulosDaoMock).createOrUpdateValintatulos(argument.capture());
         Valintatulos valintatulos = argument.getValue();
-        assertEquals(ValintatuloksenTila.VASTAANOTTANUT, valintatulos.getTila());
+        assertEquals(ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI, valintatulos.getTila());
         assertEquals(IlmoittautumisTila.LASNA, valintatulos.getIlmoittautumisTila());
     }
 
@@ -534,7 +493,7 @@ public class SijoitteluBusinessServiceTest {
                 .checkOrganisationAccess(ROOT_ORG_OID, SijoitteluRole.CRUD_ROLE);
 
         when(valintatulosDaoMock.loadValintatulos(HAKUKOHDE_OID, VALINTATAPAJONO_OID, HAKEMUS_OID))
-                .thenReturn(getValintatulos(ValintatuloksenTila.ILMOITETTU));
+                .thenReturn(getValintatulos(ValintatuloksenTila.KESKEN));
 
         boolean hyvaksyttyVarasijalta = false;
         boolean julkaistavissa = false;
@@ -547,7 +506,7 @@ public class SijoitteluBusinessServiceTest {
                 hyvaksyttyVarasijalta,
                 IlmoittautumisTila.POISSA,
                 julkaistavissa,
-                ValintatuloksenTila.VASTAANOTTANUT,
+                ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI,
                 VALINTATAPAJONO_OID);
         sijoitteluBusinessService.vaihdaHakemuksenTila(HAKU_OID,
                 sijoitteluBusinessService.getHakukohde(HAKU_OID, HAKUKOHDE_OID),
@@ -556,7 +515,7 @@ public class SijoitteluBusinessServiceTest {
         ArgumentCaptor<Valintatulos> argument = ArgumentCaptor.forClass(Valintatulos.class);
         verify(valintatulosDaoMock).createOrUpdateValintatulos(argument.capture());
         Valintatulos valintatulos = argument.getValue();
-        assertEquals(ValintatuloksenTila.VASTAANOTTANUT, valintatulos.getTila());
+        assertEquals(ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI, valintatulos.getTila());
         assertEquals(IlmoittautumisTila.POISSA, valintatulos.getIlmoittautumisTila());
     }
 
@@ -621,7 +580,7 @@ public class SijoitteluBusinessServiceTest {
 
     private Valintatulos vaihdaHakemuksenHyvaksyPeruuntunut(boolean hyvaksyPeruuntunut) {
         when(valintatulosDaoMock.loadValintatulos(HAKUKOHDE_OID, VALINTATAPAJONO_OID, HAKEMUS_OID))
-                .thenReturn(getValintatulos(ValintatuloksenTila.ILMOITETTU));
+                .thenReturn(getValintatulos(ValintatuloksenTila.KESKEN));
         boolean hyvaksyttyVarasijalta = false;
         boolean julkaistavissa = false;
         Valintatulos v = new Valintatulos(
@@ -633,7 +592,7 @@ public class SijoitteluBusinessServiceTest {
                 hyvaksyttyVarasijalta,
                 IlmoittautumisTila.POISSA,
                 julkaistavissa,
-                ValintatuloksenTila.VASTAANOTTANUT,
+                ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI,
                 VALINTATAPAJONO_OID);
         v.setHyvaksyPeruuntunut(hyvaksyPeruuntunut, "");
         sijoitteluBusinessService.vaihdaHakemuksenTila(HAKU_OID,

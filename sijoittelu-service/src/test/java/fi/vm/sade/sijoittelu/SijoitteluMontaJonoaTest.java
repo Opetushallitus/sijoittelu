@@ -66,7 +66,7 @@ public class SijoitteluMontaJonoaTest {
         tulos.setHyvaksyttyVarasijalta(false, "");
         tulos.setIlmoittautumisTila(IlmoittautumisTila.LASNA_KOKO_LUKUVUOSI, "");
         tulos.setJulkaistavissa(true, "");
-        tulos.setTila(ValintatuloksenTila.VASTAANOTTANUT, "");
+        tulos.setTila(ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI, "");
         tulos.setValintatapajonoOid("oid2", "");
         final SijoitteluajoWrapper sijoitteluAjo = SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(new SijoitteluAjo(), hakukohteet, Arrays.asList(tulos));
         final SijoittelunTila s = SijoitteluAlgorithm.sijoittele(sijoitteluAjo);
@@ -90,12 +90,12 @@ public class SijoitteluMontaJonoaTest {
         Assert.assertTrue(list.size() == 2);
         list.forEach(v -> {
             if(v.getValintatapajonoOid().equals("oid1")) {
-                Assert.assertTrue(v.getTila().equals(ValintatuloksenTila.VASTAANOTTANUT));
-                Assert.assertTrue(v.getIlmoittautumisTila().equals(IlmoittautumisTila.LASNA_KOKO_LUKUVUOSI));
+                Assert.assertEquals(ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI, v.getTila());
+                Assert.assertEquals(IlmoittautumisTila.LASNA_KOKO_LUKUVUOSI, v.getIlmoittautumisTila());
             }
             if(v.getValintatapajonoOid().equals("oid2")) {
-                Assert.assertTrue(v.getTila().equals(ValintatuloksenTila.KESKEN));
-                Assert.assertTrue(v.getIlmoittautumisTila().equals(IlmoittautumisTila.EI_TEHTY));
+                Assert.assertEquals(ValintatuloksenTila.KESKEN, v.getTila());
+                Assert.assertEquals(IlmoittautumisTila.EI_TEHTY, v.getIlmoittautumisTila());
             }
         });
 
@@ -603,7 +603,6 @@ public class SijoitteluMontaJonoaTest {
     @Test
     @UsingDataSet(locations = "poissa_oleva_taytto3.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
     public void testPoissaOloTaytto3() throws IOException {
-
         HakuDTO haku = valintatietoService.haeValintatiedot("haku1");
 
         List<Hakukohde> hakukohteet = haku.getHakukohteet().parallelStream().map(DomainConverter::convertToHakukohde).collect(Collectors.toList());
@@ -709,7 +708,7 @@ public class SijoitteluMontaJonoaTest {
         tulos.setHakutoive(1, "");
         tulos.setIlmoittautumisTila(IlmoittautumisTila.EI_TEHTY, "");
         tulos.setTila(ValintatuloksenTila.KESKEN, "");
-        tulos.setJulkaistavissa(true, "");
+        tulos.setJulkaistavissa(false, "");
         tulos.setValintatapajonoOid(valintatapajono, "");
         return tulos;
     }

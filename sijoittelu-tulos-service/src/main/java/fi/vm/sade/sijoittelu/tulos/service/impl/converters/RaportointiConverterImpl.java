@@ -99,7 +99,7 @@ public class RaportointiConverterImpl implements RaportointiConverter {
                                 valintatapajonoDTO.setJulkaistavissa(valintatulos.getJulkaistavissa());
                                 valintatapajonoDTO.setHyvaksyttyVarasijalta(valintatulos.getHyvaksyttyVarasijalta());
                                 valintatapajonoDTO.setValintatuloksenViimeisinMuutos(viimeisinValintatuloksenMuutos(valintatulos));
-                                if (ValintatuloksenTila.VASTAANOTTANUT.equals(valintatapajonoDTO.getVastaanottotieto()) || ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI.equals(valintatapajonoDTO.getVastaanottotieto()) || ValintatuloksenTila.EHDOLLISESTI_VASTAANOTTANUT.equals(valintatapajonoDTO.getVastaanottotieto())) {
+                                if (ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI.equals(valintatapajonoDTO.getVastaanottotieto()) || ValintatuloksenTila.EHDOLLISESTI_VASTAANOTTANUT.equals(valintatapajonoDTO.getVastaanottotieto())) {
                                     valintatapajonoDTO.setIlmoittautumisTila(EnumConverter.convert(IlmoittautumisTila.class, valintatulos.getIlmoittautumisTila()));
                                 }
                             }

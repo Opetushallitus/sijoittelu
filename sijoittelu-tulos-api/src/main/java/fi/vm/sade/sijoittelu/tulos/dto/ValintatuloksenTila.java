@@ -1,12 +1,6 @@
 package fi.vm.sade.sijoittelu.tulos.dto;
 
-import static java.util.Arrays.*;
-
 public enum ValintatuloksenTila {
-    ILMOITETTU,                    // Hakijalle on ilmoitettu, sijoittelun tulos ei voi muuttaa paikkaa peruuntuneeksi
-    VASTAANOTTANUT,
-    VASTAANOTTANUT_LASNA,          // Hakija ottanut paikan vastaan ja on lasna
-    VASTAANOTTANUT_POISSAOLEVA,    // Hakija ottanut paikan vastaan ja ilmoittautunut poissaolevaksi
     EI_VASTAANOTETTU_MAARA_AIKANA, // Hakija ei ole ilmoittanut paikkaa vastaanotetuksi maaraaikana ja on nain ollen hylatty
     PERUNUT,                       // Hakija ei ota paikkaa vastaan
     PERUUTETTU,                    // Hakijan tila on peruutettu
@@ -15,6 +9,6 @@ public enum ValintatuloksenTila {
     KESKEN;
 
     public boolean isVastaanottanut() {
-        return asList(VASTAANOTTANUT, VASTAANOTTANUT_LASNA, VASTAANOTTANUT_POISSAOLEVA).contains(this);
+        return VASTAANOTTANUT_SITOVASTI.equals(this);
     }
 }

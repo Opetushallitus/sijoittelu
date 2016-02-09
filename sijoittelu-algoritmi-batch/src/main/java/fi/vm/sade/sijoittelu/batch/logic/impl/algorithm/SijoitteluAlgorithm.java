@@ -35,7 +35,6 @@ public abstract class SijoitteluAlgorithm {
         new PreSijoitteluProcessorLahtotilanteenHash()
     );
     private final static List<PostSijoitteluProcessor> postSijoitteluProcessors = Arrays.asList(
-        //new PostSijoitteluProcessorEhdollisenVastaanotonSiirtyminenYlemmalleHakutoiveelle(),
         new PostSijoitteluProcessorPeruuntuneetHakemuksenVastaanotonMuokkaus(),
         new PostSijoitteluProcessorMuutostiedonAsetus()
     );

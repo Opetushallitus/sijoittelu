@@ -34,11 +34,8 @@ public class PostSijoitteluProcessorPeruuntuneetHakemuksenVastaanotonMuokkaus im
     }
 
     private static boolean vastaanottanut(Valintatulos valintatulos) {
-        return ValintatuloksenTila.VASTAANOTTANUT == valintatulos.getTila() ||
-                ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI == valintatulos.getTila() ||
-                ValintatuloksenTila.VASTAANOTTANUT_LASNA == valintatulos.getTila() ||
-                ValintatuloksenTila.EHDOLLISESTI_VASTAANOTTANUT == valintatulos.getTila() ||
-                ValintatuloksenTila.VASTAANOTTANUT_POISSAOLEVA == valintatulos.getTila();
+        return  ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI == valintatulos.getTila() ||
+                ValintatuloksenTila.EHDOLLISESTI_VASTAANOTTANUT == valintatulos.getTila();
     }
 
     private static List<Valintatulos> peruuntuneetJaVastaanotetutValintatulokset(SijoitteluajoWrapper sijoitteluajoWrapper) {
