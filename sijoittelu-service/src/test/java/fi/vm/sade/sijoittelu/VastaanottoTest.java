@@ -303,7 +303,7 @@ public class VastaanottoTest {
                 check = hakemus;
             }
         }
-        Assert.assertTrue(check.getTila().equals(tila));
+        Assert.assertEquals(tila, check.getTila());
     }
 
 }
