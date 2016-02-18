@@ -1,17 +1,14 @@
 package fi.vm.sade.sijoittelu.tulos.service.impl.converters;
 
-import java.util.*;
-
-import org.springframework.stereotype.Component;
-
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-
 import fi.vm.sade.sijoittelu.domain.Valintatulos;
 import fi.vm.sade.sijoittelu.tulos.dto.*;
 import fi.vm.sade.sijoittelu.tulos.dto.raportointi.HakijaDTO;
 import fi.vm.sade.sijoittelu.tulos.dto.raportointi.HakutoiveDTO;
 import fi.vm.sade.sijoittelu.tulos.dto.raportointi.HakutoiveenValintatapajonoDTO;
+import org.springframework.stereotype.Component;
+
+import java.util.*;
 
 @Component
 public class RaportointiConverterImpl implements RaportointiConverter {
@@ -57,35 +54,16 @@ public class RaportointiConverterImpl implements RaportointiConverter {
         return new ArrayList<>(hakijat.values());
     }
 
-    private Map<String, HakukohdeDTO> mapHakukohteet(List<HakukohdeDTO> hakukohteet) {
-        Map<String, HakukohdeDTO> tmp = Maps.newHashMap();
-        for (HakukohdeDTO h : hakukohteet) {
-            tmp.put(h.getOid(), h);
-        }
-        return tmp;
-    }
-
-    private ValintatapajonoDTO getValintatapajono(HakukohdeDTO hakukohde, String jonoOid) {
-        for (ValintatapajonoDTO j : hakukohde.getValintatapajonot()) {
-            if (jonoOid.equals(j.getOid())) {
-                return j;
-            }
-        }
-        return null;
-    }
-
     @Override
     public List<HakijaDTO> convert(List<HakukohdeDTO> hakukohteet, List<Valintatulos> kaikkienValintatulokset) {
         // convert hakijat
         List<HakijaDTO> hakijat = convert(hakukohteet);
         // apply valintatulos
-        Map<String, HakukohdeDTO> hakukohteetMap = mapHakukohteet(hakukohteet);
         Map<String, List<Valintatulos>> valintatulosMap = mapValintatulokset(kaikkienValintatulokset);
         for (HakijaDTO hakija : hakijat) {
             List<Valintatulos> valintatulokset = valintatulosMap.get(hakija.getHakemusOid());
             if (valintatulokset != null && !valintatulokset.isEmpty()) {
                 for (HakutoiveDTO hakutoiveDTO : hakija.getHakutoiveet()) {
-                    HakukohdeDTO hakukohde = hakukohteetMap.get(hakutoiveDTO.getHakukohdeOid());
                     for (HakutoiveenValintatapajonoDTO valintatapajonoDTO : hakutoiveDTO.getHakutoiveenValintatapajonot()) {
                         if (valintatapajonoDTO == null) {
                             continue;
