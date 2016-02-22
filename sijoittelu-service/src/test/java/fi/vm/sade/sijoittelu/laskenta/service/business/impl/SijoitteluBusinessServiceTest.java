@@ -9,6 +9,7 @@ import fi.vm.sade.sijoittelu.domain.Valintatulos;
 import fi.vm.sade.sijoittelu.laskenta.external.resource.ValintaTulosServiceResource;
 import fi.vm.sade.sijoittelu.laskenta.external.resource.dto.ParametriArvoDTO;
 import fi.vm.sade.sijoittelu.laskenta.external.resource.dto.ParametriDTO;
+import fi.vm.sade.sijoittelu.laskenta.external.resource.dto.VastaanotettavuusDTO;
 import fi.vm.sade.sijoittelu.laskenta.service.business.SijoitteluBusinessService;
 import fi.vm.sade.sijoittelu.laskenta.service.it.TarjontaIntegrationService;
 import fi.vm.sade.sijoittelu.tulos.dao.HakukohdeDao;
@@ -20,9 +21,14 @@ import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+import static fi.vm.sade.sijoittelu.laskenta.external.resource.dto.VastaanotettavuusDTO.VastaanottoActionValue.VastaanotaSitovasti;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
@@ -73,6 +79,7 @@ public class SijoitteluBusinessServiceTest {
     public void testSitovaVastaanottoOhjataanValintaTulosServicelle() throws Exception {
         when(sijoitteluDao.getSijoitteluByHakuOid(HAKU_OID)).thenReturn(Optional.of(testDataGenerator.generateTestData()));
         when(hakukohdeDao.getHakukohdeForSijoitteluajo(TestDataGenerator.SIJOITTELU_AJO_ID_2, HAKUKOHDE_OID)).thenReturn(testDataGenerator.createHakukohdes(1).get(0));
+        mockVastaanotettavuus(HAKEMUS_OID, HAKEMUS_OID, HAKUKOHDE_OID, VastaanotaSitovasti);
 
         final boolean julkaistavissa = false;
         final boolean hyvaksyttyVarasijalta = false;
@@ -92,12 +99,12 @@ public class SijoitteluBusinessServiceTest {
                 sijoitteluBusinessService.getHakukohde(HAKU_OID, HAKUKOHDE_OID),
                 v, SELITE, MUOKKAAJA);
 
-        ArgumentCaptor<String> hakuOid = ArgumentCaptor.forClass(String.class);
+        ArgumentCaptor<String> hakijaOid = ArgumentCaptor.forClass(String.class);
         ArgumentCaptor<String> hakemusOid = ArgumentCaptor.forClass(String.class);
         ArgumentCaptor<String> hakukohdeOid = ArgumentCaptor.forClass(String.class);
-        verify(valintaTulosServiceResourceMock).vastaanotettavuus(hakuOid.capture(), hakemusOid.capture(), hakukohdeOid.capture());
+        verify(valintaTulosServiceResourceMock).vastaanotettavuus(hakijaOid.capture(), hakemusOid.capture(), hakukohdeOid.capture());
 
-        assertEquals(HAKU_OID, hakuOid.getValue());
+        assertEquals(HAKEMUS_OID, hakijaOid.getValue());
         assertEquals(HAKEMUS_OID, hakemusOid.getValue());
         assertEquals(HAKUKOHDE_OID, hakukohdeOid.getValue());
 
@@ -204,6 +211,8 @@ public class SijoitteluBusinessServiceTest {
         when(valintatulosDaoMock.loadValintatulos(HAKUKOHDE_OID, VALINTATAPAJONO_OID, HAKEMUS_OID_2))
                 .thenReturn(getValintatulos(ValintatuloksenTila.KESKEN));
 
+        mockVastaanotettavuus(HAKEMUS_OID_2, HAKEMUS_OID_2, HAKUKOHDE_OID, VastaanotaSitovasti);
+
         boolean hyvaksyttyVarasijalta = false;
         boolean julkaistavissa = false;
         Valintatulos v = new Valintatulos(
@@ -261,6 +270,8 @@ public class SijoitteluBusinessServiceTest {
         when(valintatulosDaoMock.loadValintatulos(HAKUKOHDE_OID, VALINTATAPAJONO_OID, HAKEMUS_OID))
                 .thenReturn(getValintatulos(ValintatuloksenTila.KESKEN));
 
+        mockVastaanotettavuus(HAKEMUS_OID, HAKEMUS_OID, HAKUKOHDE_OID, VastaanotaSitovasti);
+
         boolean hyvaksyttyVarasijalta = false;
         boolean julkaistavissa = false;
         Valintatulos v = new Valintatulos(
@@ -299,6 +310,8 @@ public class SijoitteluBusinessServiceTest {
 
         when(valintatulosDaoMock.loadValintatulos(HAKUKOHDE_OID, VALINTATAPAJONO_OID, HAKEMUS_OID))
                 .thenReturn(getValintatulos(ValintatuloksenTila.KESKEN));
+
+        mockVastaanotettavuus(HAKEMUS_OID, HAKEMUS_OID, HAKUKOHDE_OID, VastaanotaSitovasti);
 
         boolean hyvaksyttyVarasijalta = false;
         boolean julkaistavissa = false;
@@ -339,6 +352,8 @@ public class SijoitteluBusinessServiceTest {
         when(valintatulosDaoMock.loadValintatulos(HAKUKOHDE_OID, VALINTATAPAJONO_OID, HAKEMUS_OID))
                 .thenReturn(getValintatulos(ValintatuloksenTila.KESKEN));
 
+        mockVastaanotettavuus(HAKEMUS_OID, HAKEMUS_OID, HAKUKOHDE_OID, VastaanotaSitovasti);
+
         boolean hyvaksyttyVarasijalta = false;
         boolean julkaistavissa = false;
         Valintatulos v = new Valintatulos(
@@ -377,6 +392,8 @@ public class SijoitteluBusinessServiceTest {
 
         when(valintatulosDaoMock.loadValintatulos(HAKUKOHDE_OID, VALINTATAPAJONO_OID, HAKEMUS_OID))
                 .thenReturn(getValintatulos(ValintatuloksenTila.KESKEN));
+
+        mockVastaanotettavuus(HAKEMUS_OID, HAKEMUS_OID, HAKUKOHDE_OID, VastaanotaSitovasti);
 
         boolean hyvaksyttyVarasijalta = false;
         boolean julkaistavissa = false;
@@ -417,6 +434,8 @@ public class SijoitteluBusinessServiceTest {
         when(valintatulosDaoMock.loadValintatulos(HAKUKOHDE_OID, VALINTATAPAJONO_OID, HAKEMUS_OID))
                 .thenReturn(getValintatulos(ValintatuloksenTila.KESKEN));
 
+        mockVastaanotettavuus(HAKEMUS_OID, HAKEMUS_OID, HAKUKOHDE_OID, VastaanotaSitovasti);
+
         boolean hyvaksyttyVarasijalta = false;
         boolean julkaistavissa = false;
         Valintatulos v = new Valintatulos(
@@ -455,6 +474,8 @@ public class SijoitteluBusinessServiceTest {
 
         when(valintatulosDaoMock.loadValintatulos(HAKUKOHDE_OID, VALINTATAPAJONO_OID, HAKEMUS_OID))
                 .thenReturn(getValintatulos(ValintatuloksenTila.KESKEN));
+
+        mockVastaanotettavuus(HAKEMUS_OID, HAKEMUS_OID, HAKUKOHDE_OID, VastaanotaSitovasti);
 
         boolean hyvaksyttyVarasijalta = false;
         boolean julkaistavissa = false;
@@ -495,6 +516,8 @@ public class SijoitteluBusinessServiceTest {
         when(valintatulosDaoMock.loadValintatulos(HAKUKOHDE_OID, VALINTATAPAJONO_OID, HAKEMUS_OID))
                 .thenReturn(getValintatulos(ValintatuloksenTila.KESKEN));
 
+        mockVastaanotettavuus(HAKEMUS_OID, HAKEMUS_OID, HAKUKOHDE_OID, VastaanotaSitovasti);
+
         boolean hyvaksyttyVarasijalta = false;
         boolean julkaistavissa = false;
         Valintatulos v = new Valintatulos(
@@ -521,12 +544,24 @@ public class SijoitteluBusinessServiceTest {
 
     @Test
     public void testHyvaksyPeruuntunutCanBeSet() {
+        mockVastaanotettavuus(HAKEMUS_OID, HAKEMUS_OID, HAKUKOHDE_OID, VastaanotaSitovasti);
+
         assertTrue(vaihdaHakemuksenHyvaksyPeruuntunut(true).getHyvaksyPeruuntunut());
     }
 
     @Test
     public void testHyvaksyPeruuntunutCanBeUnset() {
+        mockVastaanotettavuus(HAKEMUS_OID, HAKEMUS_OID, HAKUKOHDE_OID, VastaanotaSitovasti);
+
         assertFalse(vaihdaHakemuksenHyvaksyPeruuntunut(false).getHyvaksyPeruuntunut());
+    }
+
+    private void mockVastaanotettavuus(String hakijaOid, String hakemusOid, String hakukohdeOid, VastaanotettavuusDTO.VastaanottoActionValue... vastaanotettavuudet) {
+        when(valintaTulosServiceResourceMock.vastaanotettavuus(hakijaOid, hakemusOid, hakukohdeOid)).thenReturn(new VastaanotettavuusDTO() {{
+            setAllowedActions(Arrays.asList(vastaanotettavuudet).stream().<VastaanottoAction>map(vastaanottoActionValue -> new VastaanottoAction() {{
+                setAction(vastaanottoActionValue);
+            }}).collect(Collectors.toList()));
+        }});
     }
 
     @Test(expected = NotAuthorizedException.class)

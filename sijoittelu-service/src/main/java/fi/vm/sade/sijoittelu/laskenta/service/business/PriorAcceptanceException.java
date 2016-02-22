@@ -6,4 +6,8 @@ public class PriorAcceptanceException extends IllegalVTSRequestException {
     public PriorAcceptanceException(WebApplicationException e) {
         super(e);
     }
+
+    public PriorAcceptanceException(String reason) {
+        super(reason);
+    }
 }

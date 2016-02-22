@@ -11,4 +11,8 @@ public class IllegalVTSRequestException extends RuntimeException {
     private IllegalVTSRequestException(Map<?, ?> response) {
         super(response.get("error") != null ? response.get("error").toString() : "");
     }
+
+    public IllegalVTSRequestException(String reason) {
+        super(reason);
+    }
 }

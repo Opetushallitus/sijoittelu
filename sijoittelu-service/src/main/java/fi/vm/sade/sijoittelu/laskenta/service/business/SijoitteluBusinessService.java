@@ -16,6 +16,7 @@ import fi.vm.sade.sijoittelu.laskenta.actors.messages.PoistaVanhatAjotSijoittelu
 import fi.vm.sade.sijoittelu.laskenta.external.resource.ValintaTulosServiceResource;
 import fi.vm.sade.sijoittelu.laskenta.external.resource.dto.ParametriArvoDTO;
 import fi.vm.sade.sijoittelu.laskenta.external.resource.dto.ParametriDTO;
+import fi.vm.sade.sijoittelu.laskenta.external.resource.dto.VastaanotettavuusDTO;
 import fi.vm.sade.sijoittelu.laskenta.service.exception.HakemustaEiLoytynytException;
 import fi.vm.sade.sijoittelu.laskenta.service.exception.ValintatapajonoaEiLoytynytException;
 import fi.vm.sade.sijoittelu.laskenta.service.it.TarjontaIntegrationService;
@@ -518,7 +519,7 @@ public class SijoitteluBusinessService {
 
         // Estä tuplavastaanotto tarkistamalla mahdollinen aikaisempi vastaanotto VTS:ltä
         if (tila == ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI) {
-            vastaanotettavuusValintaTulosServicella(hakuoid, hakemusOid, hakukohde.getOid());
+            vastaanotettavuusValintaTulosServicella(change.getHakijaOid(), hakemusOid, hakukohde.getOid());
         }
 
         Valintatapajono valintatapajono = getValintatapajono(valintatapajonoOid, hakukohde);
@@ -567,14 +568,15 @@ public class SijoitteluBusinessService {
                 .build());
     }
 
-    private void vastaanotettavuusValintaTulosServicella(String hakuoid, String hakemusOid, String hakukohdeOid) {
+    private void vastaanotettavuusValintaTulosServicella(String hakijaOid, String hakemusOid, String hakukohdeOid) {
         try {
-            valintaTulosServiceResource.vastaanotettavuus(hakuoid, hakemusOid, hakukohdeOid);
+            VastaanotettavuusDTO vastaanotettavuus = valintaTulosServiceResource.vastaanotettavuus(hakijaOid, hakemusOid, hakukohdeOid);
+            if (!vastaanotettavuus.isVastaanotettavissa()) {
+                throw new PriorAcceptanceException(vastaanotettavuus.getReason());
+            }
         } catch(WebApplicationException e) {
             int status = e.getResponse().getStatus();
             switch (status) {
-                case 403:
-                    throw new PriorAcceptanceException(e);
                 case 400:
                     throw new IllegalVTSRequestException(e);
                 default:
