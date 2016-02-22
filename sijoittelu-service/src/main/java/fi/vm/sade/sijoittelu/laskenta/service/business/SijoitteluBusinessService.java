@@ -82,9 +82,6 @@ public class SijoitteluBusinessService {
     @Autowired
     private SijoitteluTulosConverter sijoitteluTulosConverter;
 
-    @Value("${root.organisaatio.oid}")
-    private String rootOrgOid;
-
     @Value("${sijoittelu.maxAjojenMaara:75}")
     private int maxAjoMaara;
 

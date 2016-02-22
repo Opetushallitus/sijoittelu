@@ -17,155 +17,156 @@
     <import resource="classpath:META-INF/cxf/cxf.xml" />
     <import resource="classpath:META-INF/cxf/cxf-servlet.xml" />
 
-  <context:property-placeholder
-    location="classpath:sijoittelu-service.properties, file:///${user.home:''}/oph-configuration/common.properties, file:///${user.home:''}/oph-configuration/valinta.properties, file:///${user.home:''}/oph-configuration/sijoittelu-service.properties,  file:///${user.home:''}/oph-configuration/override.properties"
-    ignore-resource-not-found="true"
-    properties-ref="defaultProps"/>
+    <beans  profile="default">
+        <context:property-placeholder
+        location="classpath:sijoittelu-service.properties, file:///${user.home:''}/oph-configuration/common.properties, file:///${user.home:''}/oph-configuration/valinta.properties, file:///${user.home:''}/oph-configuration/sijoittelu-service.properties,  file:///${user.home:''}/oph-configuration/override.properties"
+        ignore-resource-not-found="false"
+        properties-ref="defaultProps"/>
 
-  <bean id="defaultProps" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
-    <property name="properties">
-      <util:properties local-override="true">
-        <prop key="cas_key">sijoittelu-service</prop>
-        <prop key="cas_service">${cas.service.sijoittelu-service}</prop>
-        <prop key="cas_callback_url">${cas.callback.sijoittelu-service}</prop>
-        <prop key="spring_security_default_access">permitAll</prop>
-      </util:properties>
-    </property>
-  </bean>
-  <import resource="file:///${user.home:''}/oph-configuration/security-context-backend.xml"/>
+        <bean id="defaultProps" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
+        <property name="properties">
+          <util:properties local-override="true">
+            <prop key="cas_key">sijoittelu-service</prop>
+            <prop key="cas_service">${cas.service.sijoittelu-service}</prop>
+            <prop key="cas_callback_url">${cas.callback.sijoittelu-service}</prop>
+            <prop key="spring_security_default_access">permitAll</prop>
+          </util:properties>
+        </property>
+        </bean>
+        <import resource="file:///${user.home:''}/oph-configuration/security-context-backend.xml"/>
 
-  <http:conduit name="*.http-conduit">
-    <!-- AllowChunking="false" Nginx fails without this -->
-    <http:client Connection="Keep-Alive" ConnectionTimeout="0"
-                 ReceiveTimeout="0" AllowChunking="false" />
-  </http:conduit>
+        <http:conduit name="*.http-conduit">
+        <!-- AllowChunking="false" Nginx fails without this -->
+        <http:client Connection="Keep-Alive" ConnectionTimeout="0"
+                     ReceiveTimeout="0" AllowChunking="false" />
+        </http:conduit>
+    </beans>
+    <beans  profile="test">
+        <context:property-placeholder system-properties-mode="OVERRIDE"/>
+    </beans>
+    <beans>
+        <jaxrs-client:client id="ValintaperusteetLaskentaRestClient"
+                           address="${valintalaskentakoostepalvelu.valintaperusteet.rest.url}"
+                           serviceClass="fi.vm.sade.service.valintaperusteet.resource.ValintaperusteetResource"
+                           inheritHeaders="true">
+        <jaxrs-client:providers>
+            <bean class="com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider"/>
+            <bean class="fi.vm.sade.sijoittelu.tulos.resource.ObjectMapperProvider" />
+        </jaxrs-client:providers>
+        </jaxrs-client:client>
+
+        <jaxrs-client:client id="ValintaperusteetKoostepalveluRestClient"
+                           address="${host.ilb}/valintaperusteet-service/resources"
+                           serviceClass="fi.vm.sade.service.valintaperusteet.resource.ValintalaskentakoostepalveluResource"
+                           inheritHeaders="true">
+        <jaxrs-client:providers>
+            <bean class="com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider"/>
+            <bean class="fi.vm.sade.sijoittelu.tulos.resource.ObjectMapperProvider" />
+        </jaxrs-client:providers>
+        </jaxrs-client:client>
+
+        <jaxrs-client:client id="ParametriServiceRestClient"
+                           address="${valintalaskentakoostepalvelu.parametriservice.rest.url}"
+                           serviceClass="fi.vm.sade.sijoittelu.laskenta.external.resource.OhjausparametriResource"
+                           inheritHeaders="true">
+        <jaxrs-client:providers>
+            <bean class="com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider"/>
+            <bean class="fi.vm.sade.sijoittelu.tulos.resource.ObjectMapperProvider" />
+        </jaxrs-client:providers>
+        </jaxrs-client:client>
+        <jaxrs-client:client id="TarjontaHakuResourceRestClient"
+                           address="${valintalaskentakoostepalvelu.tarjonta.rest.url}"
+                           serviceClass="fi.vm.sade.sijoittelu.laskenta.external.resource.HakuV1Resource"
+                           inheritHeaders="true">
+        <jaxrs-client:providers>
+          <bean class="com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider"/>
+          <bean class="fi.vm.sade.sijoittelu.tulos.resource.ObjectMapperProvider" />
+        </jaxrs-client:providers>
+        </jaxrs-client:client>
+        <jaxrs-client:client id="TarjontaHakukohdeResourceRestClient"
+                           address="${valintalaskentakoostepalvelu.tarjonta.rest.url}"
+                           serviceClass="fi.vm.sade.sijoittelu.laskenta.external.resource.HakukohdeV1Resource"
+                           inheritHeaders="true">
+        <jaxrs-client:providers>
+          <bean class="com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider"/>
+          <bean class="fi.vm.sade.sijoittelu.tulos.resource.ObjectMapperProvider" />
+        </jaxrs-client:providers>
+        </jaxrs-client:client>
+        <jaxrs-client:client id="ValintaTulosServiceRestClient"
+                           address="${valintalaskentakoostepalvelu.valinta-tulos-service.rest.url}"
+                           serviceClass="fi.vm.sade.sijoittelu.laskenta.external.resource.ValintaTulosServiceResource"
+                           inheritHeaders="true">
+        <jaxrs-client:providers>
+          <bean class="com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider"/>
+          <bean class="fi.vm.sade.sijoittelu.tulos.resource.ObjectMapperProvider" />
+        </jaxrs-client:providers>
+        </jaxrs-client:client>
+
+        <context:component-scan base-package="fi.vm.sade.sijoittelu.laskenta"/>
+        <context:component-scan base-package="fi.vm.sade.sijoittelu.batch"/>
+        <context:component-scan base-package="fi.vm.sade.valintalaskenta.tulos.dao"/>
+        <context:component-scan base-package="fi.vm.sade.valintalaskenta.tulos.service.impl"/>
+        <context:component-scan base-package="fi.vm.sade.valintalaskenta.tulos.service.impl.converters"/>
+
+        <bean id="swaggerResourceJSON" class="com.wordnik.swagger.jaxrs.listing.ApiListingResourceJSON"/>
+
+        <!-- Swagger writers -->
+        <bean id="resourceWriter" class="com.wordnik.swagger.jaxrs.listing.ResourceListingProvider" scope="singleton"/>
+        <bean id="apiWriter" class="com.wordnik.swagger.jaxrs.listing.ApiDeclarationProvider" scope="singleton"/>
+
+        <!-- Swagger configuration -->
+        <bean id="swaggerConfig" class="com.wordnik.swagger.jaxrs.config.BeanConfig">
+        <property name="resourcePackage" value="fi.vm.sade.sijoittelu"/>
+        <property name="version" value="1.0"/>
+        <property name="basePath" value="${sijoittelu-service.swagger.basepath}"/>
+
+        <property name="title" value="Swagger API documentation"/>
+        <property name="scan" value="true"/>
+        </bean>
+
+        <import resource="application-context-db.xml" />
+        <import resource="application-context-service.xml" />
+        <import resource="application-context-mongo.xml" />
+        <import resource="application-context-tulos.xml" /> <!-- tulee tulos projektilta jarrissa -->
+
+        <bean id="mongoUri2" class="com.mongodb.MongoClientURI">
+        <constructor-arg type="java.lang.String" value="${valintalaskenta-laskenta-service.mongodb.uri}" />
+        </bean>
+
+        <bean id="mongo2" class="com.mongodb.MongoClient" scope="singleton">
+        <constructor-arg type="com.mongodb.MongoClientURI" ref="mongoUri2"/>
+        </bean>
+        <bean id="morphia2" class="org.mongodb.morphia.Morphia" />
+        <bean id="datastore2" factory-bean="morphia2" factory-method="createDatastore">
+        <constructor-arg type="com.mongodb.MongoClient" ref="mongo2" />
+        <constructor-arg type="java.lang.String" value="${valintalaskenta-laskenta-service.mongodb.dbname}" />
+        </bean>
+
+        <bean id="modelMapper" class="fi.vm.sade.valintalaskenta.tulos.mapping.ValintalaskentaModelMapper"/>
+
+        <bean id="sijoitteluModelMapper" class="fi.vm.sade.sijoittelu.laskenta.mapping.SijoitteluModelMapper"/>
+
+        <bean id="jaxrsConfig" class="fi.vm.sade.sijoittelu.laskenta.resource.JaxrsConfiguration" />
+        <bean id="cors-filter" class="fi.vm.sade.sijoittelu.laskenta.resource.filter.CorsResponseFilter"/>
 
 
-
-  <jaxrs-client:client id="ValintaperusteetLaskentaRestClient"
-                       address="${valintalaskentakoostepalvelu.valintaperusteet.rest.url}"
-                       serviceClass="fi.vm.sade.service.valintaperusteet.resource.ValintaperusteetResource"
-                       inheritHeaders="true">
-    <jaxrs-client:providers>
-        <bean class="com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider"/>
-        <bean class="fi.vm.sade.sijoittelu.tulos.resource.ObjectMapperProvider" />
-    </jaxrs-client:providers>
-  </jaxrs-client:client>
-
-  <jaxrs-client:client id="ValintaperusteetKoostepalveluRestClient"
-                       address="${host.ilb}/valintaperusteet-service/resources"
-                       serviceClass="fi.vm.sade.service.valintaperusteet.resource.ValintalaskentakoostepalveluResource"
-                       inheritHeaders="true">
-    <jaxrs-client:providers>
-        <bean class="com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider"/>
-        <bean class="fi.vm.sade.sijoittelu.tulos.resource.ObjectMapperProvider" />
-    </jaxrs-client:providers>
-  </jaxrs-client:client>
-
-  <jaxrs-client:client id="ParametriServiceRestClient"
-                       address="${valintalaskentakoostepalvelu.parametriservice.rest.url}"
-                       serviceClass="fi.vm.sade.sijoittelu.laskenta.external.resource.OhjausparametriResource"
-                       inheritHeaders="true">
-    <jaxrs-client:providers>
-        <bean class="com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider"/>
-        <bean class="fi.vm.sade.sijoittelu.tulos.resource.ObjectMapperProvider" />
-    </jaxrs-client:providers>
-  </jaxrs-client:client>
-  <jaxrs-client:client id="TarjontaHakuResourceRestClient"
-                       address="${valintalaskentakoostepalvelu.tarjonta.rest.url}"
-                       serviceClass="fi.vm.sade.sijoittelu.laskenta.external.resource.HakuV1Resource"
-                       inheritHeaders="true">
-    <jaxrs-client:providers>
-      <bean class="com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider"/>
-      <bean class="fi.vm.sade.sijoittelu.tulos.resource.ObjectMapperProvider" />
-    </jaxrs-client:providers>
-  </jaxrs-client:client>
-  <jaxrs-client:client id="TarjontaHakukohdeResourceRestClient"
-                       address="${valintalaskentakoostepalvelu.tarjonta.rest.url}"
-                       serviceClass="fi.vm.sade.sijoittelu.laskenta.external.resource.HakukohdeV1Resource"
-                       inheritHeaders="true">
-    <jaxrs-client:providers>
-      <bean class="com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider"/>
-      <bean class="fi.vm.sade.sijoittelu.tulos.resource.ObjectMapperProvider" />
-    </jaxrs-client:providers>
-  </jaxrs-client:client>
-  <jaxrs-client:client id="ValintaTulosServiceRestClient"
-                       address="${valintalaskentakoostepalvelu.valinta-tulos-service.rest.url}"
-                       serviceClass="fi.vm.sade.sijoittelu.laskenta.external.resource.ValintaTulosServiceResource"
-                       inheritHeaders="true">
-    <jaxrs-client:providers>
-      <bean class="com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider"/>
-      <bean class="fi.vm.sade.sijoittelu.tulos.resource.ObjectMapperProvider" />
-    </jaxrs-client:providers>
-  </jaxrs-client:client>
-
-  <context:component-scan base-package="fi.vm.sade.sijoittelu.laskenta"/>
-  <context:component-scan base-package="fi.vm.sade.sijoittelu.batch"/>
-  <context:component-scan base-package="fi.vm.sade.valintalaskenta.tulos.dao"/>
-  <context:component-scan base-package="fi.vm.sade.valintalaskenta.tulos.service.impl"/>
-  <context:component-scan base-package="fi.vm.sade.valintalaskenta.tulos.service.impl.converters"/>
-
-
-
-  <bean id="swaggerResourceJSON" class="com.wordnik.swagger.jaxrs.listing.ApiListingResourceJSON"/>
-
-  <!-- Swagger writers -->
-  <bean id="resourceWriter" class="com.wordnik.swagger.jaxrs.listing.ResourceListingProvider" scope="singleton"/>
-  <bean id="apiWriter" class="com.wordnik.swagger.jaxrs.listing.ApiDeclarationProvider" scope="singleton"/>
-
-  <!-- Swagger configuration -->
-  <bean id="swaggerConfig" class="com.wordnik.swagger.jaxrs.config.BeanConfig">
-    <property name="resourcePackage" value="fi.vm.sade.sijoittelu"/>
-    <property name="version" value="1.0"/>
-    <property name="basePath" value="${sijoittelu-service.swagger.basepath}"/>
-
-    <property name="title" value="Swagger API documentation"/>
-    <property name="scan" value="true"/>
-  </bean>
-
-  <import resource="application-context-db.xml" />
-  <import resource="application-context-service.xml" />
-  <import resource="application-context-mongo.xml" />
-  <import resource="application-context-tulos.xml" /> <!-- tulee tulos projektilta jarrissa -->
-
-  <bean id="mongoUri2" class="com.mongodb.MongoClientURI">
-    <constructor-arg type="java.lang.String" value="${valintalaskenta-laskenta-service.mongodb.uri}" />
-  </bean>
-
-  <bean id="mongo2" class="com.mongodb.MongoClient" scope="singleton">
-    <constructor-arg type="com.mongodb.MongoClientURI" ref="mongoUri2"/>
-  </bean>
-  <bean id="morphia2" class="org.mongodb.morphia.Morphia" />
-  <bean id="datastore2" factory-bean="morphia2" factory-method="createDatastore">
-    <constructor-arg type="com.mongodb.MongoClient" ref="mongo2" />
-    <constructor-arg type="java.lang.String" value="${valintalaskenta-laskenta-service.mongodb.dbname}" />
-  </bean>
-
-  <bean id="modelMapper" class="fi.vm.sade.valintalaskenta.tulos.mapping.ValintalaskentaModelMapper"/>
-
-  <bean id="sijoitteluModelMapper" class="fi.vm.sade.sijoittelu.laskenta.mapping.SijoitteluModelMapper"/>
-
-    <bean id="jaxrsConfig" class="fi.vm.sade.sijoittelu.laskenta.resource.JaxrsConfiguration" />
-    <bean id="cors-filter" class="fi.vm.sade.sijoittelu.laskenta.resource.filter.CorsResponseFilter"/>
-
-
-    <jaxrs:server id="sijoittelunResurssit">
-        <jaxrs:serviceBeans>
-            <ref bean="sijoitteluResource"/>
-            <ref bean="tilaResource"/>
-            <ref bean="erillisSijoitteluResource"/>
-            <ref bean="valiSijoitteluResource"/>
-            <ref bean="sijoitteluResourceImpl"/>
-            <ref bean="erillisSijoitteluResourceImpl"/>
-            <ref bean="swaggerResourceJSON"/>
-            <ref bean="sessionResource"/>
-        </jaxrs:serviceBeans>
-        <jaxrs:providers>
-            <ref bean="jsonProvider" />
-            <ref bean="cors-filter" />
-            <ref bean="resourceWriter" />
-            <ref bean="apiWriter" />
-        </jaxrs:providers>
-    </jaxrs:server>
-
+        <jaxrs:server id="sijoittelunResurssit">
+            <jaxrs:serviceBeans>
+                <ref bean="sijoitteluResource"/>
+                <ref bean="tilaResource"/>
+                <ref bean="erillisSijoitteluResource"/>
+                <ref bean="valiSijoitteluResource"/>
+                <ref bean="sijoitteluResourceImpl"/>
+                <ref bean="erillisSijoitteluResourceImpl"/>
+                <ref bean="swaggerResourceJSON"/>
+                <ref bean="sessionResource"/>
+            </jaxrs:serviceBeans>
+            <jaxrs:providers>
+                <ref bean="jsonProvider" />
+                <ref bean="cors-filter" />
+                <ref bean="resourceWriter" />
+                <ref bean="apiWriter" />
+            </jaxrs:providers>
+        </jaxrs:server>
+    </beans>
 </beans>

@@ -9,7 +9,7 @@
     <context:annotation-config />
 
     <!-- Database -->
-    <beans profile="default">
+    <beans profile="default,test">
         <bean id="mongoUri" class="com.mongodb.MongoClientURI">
             <constructor-arg type="java.lang.String" value="${sijoittelu-service.mongodb.uri}" />
         </bean>
