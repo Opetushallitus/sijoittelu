@@ -543,12 +543,12 @@ public class SijoitteluBusinessService {
         LOG.info("Muutetaan valintatulosta hakukohdeoid {}, valintatapajonooid {}, hakemusoid {}: {}",
                 hakukohdeOid, valintatapajonoOid, hakemusOid, muutos(v, change));
 
-        v.setTila(tila, selite, muokkaaja);
         v.setIlmoittautumisTila(change.getIlmoittautumisTila(), selite, muokkaaja);
         v.setJulkaistavissa(change.getJulkaistavissa(), selite, muokkaaja);
         v.setHyvaksyttyVarasijalta(change.getHyvaksyttyVarasijalta(), selite, muokkaaja);
         v.setHyvaksyPeruuntunut(change.getHyvaksyPeruuntunut(), selite, muokkaaja);
         valintatulosDao.createOrUpdateValintatulos(v);
+
         AUDIT.log(builder()
                 .id(muokkaaja)
                 .hakuOid(hakuoid)
@@ -560,7 +560,7 @@ public class SijoitteluBusinessService {
                 .add("hyvaksyttyvarasijalta", v.getHyvaksyttyVarasijalta())
                 .add("hyvaksyperuuntunut", v.getHyvaksyPeruuntunut())
                 .add("selite", selite)
-                .add("valintatuloksentila", v.getTila())
+                .add("valintatuloksentila", tila)
                 .setOperaatio(ValintaperusteetOperation.HAKEMUS_TILAMUUTOS)
                 .build());
     }

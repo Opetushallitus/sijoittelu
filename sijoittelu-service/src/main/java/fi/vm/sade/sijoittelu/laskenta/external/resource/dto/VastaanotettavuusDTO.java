@@ -1,6 +1,10 @@
 package fi.vm.sade.sijoittelu.laskenta.external.resource.dto;
 
+import fi.vm.sade.sijoittelu.domain.ValintatuloksenTila;
+
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class VastaanotettavuusDTO {
     private List<VastaanottoAction> allowedActions;
@@ -32,7 +36,26 @@ public class VastaanotettavuusDTO {
     }
 
     public static class VastaanottoAction {
+        private static final Map<ValintatuloksenTila, VastaanottoActionValue> tilaToAction;
+
+        static {
+            tilaToAction = new HashMap<>();
+            tilaToAction.put(ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI, VastaanottoActionValue.VastaanotaSitovasti);
+            tilaToAction.put(ValintatuloksenTila.EHDOLLISESTI_VASTAANOTTANUT, VastaanottoActionValue.VastaanotaEhdollisesti);
+            tilaToAction.put(ValintatuloksenTila.PERUNUT, VastaanottoActionValue.Peru);
+        }
+
         private VastaanottoActionValue action;
+
+        public VastaanottoAction() {
+        }
+
+        public VastaanottoAction(VastaanottoActionValue vastaanottoActionValue) {
+            if (vastaanottoActionValue == null) {
+                throw new IllegalArgumentException("vastaanottoActionValue is null");
+            }
+            action = vastaanottoActionValue;
+        }
 
         public void setAction(VastaanottoActionValue action) {
             this.action = action;
@@ -44,6 +67,18 @@ public class VastaanotettavuusDTO {
 
         public boolean isVastaanotettavissa() {
             return action == VastaanottoActionValue.VastaanotaSitovasti || action == VastaanottoActionValue.VastaanotaEhdollisesti;
+        }
+
+        public boolean actionMatches(ValintatuloksenTila tila) {
+            return tilaToAction.get(tila) == action;
+        }
+
+        public static boolean matchesInexistingAction(ValintatuloksenTila tila) {
+            return tila == ValintatuloksenTila.KESKEN || tila == ValintatuloksenTila.EI_VASTAANOTETTU_MAARA_AIKANA || tila == ValintatuloksenTila.PERUUTETTU;
+        }
+
+        public static VastaanottoAction of(ValintatuloksenTila tila) {
+            return new VastaanottoAction(tilaToAction.get(tila));
         }
     }
 }
