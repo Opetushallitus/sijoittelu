@@ -1,6 +1,4 @@
-package fi.vm.sade.sijoittelu.laskenta.external.resource.dto;
-
-import fi.vm.sade.sijoittelu.domain.ValintatuloksenTila;
+package fi.vm.sade.sijoittelu.domain;
 
 import java.util.HashMap;
 import java.util.List;

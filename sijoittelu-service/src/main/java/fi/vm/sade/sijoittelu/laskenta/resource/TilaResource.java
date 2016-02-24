@@ -1,34 +1,15 @@
 package fi.vm.sade.sijoittelu.laskenta.resource;
 
-import static fi.vm.sade.sijoittelu.laskenta.external.resource.dto.VastaanotettavuusDTO.VastaanottoAction.matchesInexistingAction;
-import static fi.vm.sade.sijoittelu.laskenta.roles.SijoitteluRole.READ_UPDATE_CRUD;
-import static fi.vm.sade.sijoittelu.laskenta.roles.SijoitteluRole.UPDATE_CRUD;
-
-import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
-
+import com.wordnik.swagger.annotations.Api;
+import com.wordnik.swagger.annotations.ApiOperation;
+import com.wordnik.swagger.annotations.ApiParam;
 import fi.vm.sade.generic.service.exception.NotAuthorizedException;
 import fi.vm.sade.sijoittelu.domain.*;
 import fi.vm.sade.sijoittelu.domain.dto.ErillishaunHakijaDTO;
 import fi.vm.sade.sijoittelu.laskenta.external.resource.ValintaTulosServiceResource;
-import fi.vm.sade.sijoittelu.laskenta.external.resource.dto.PoistaVastaanottoDTO;
-import fi.vm.sade.sijoittelu.laskenta.external.resource.dto.VastaanotettavuusDTO;
-import fi.vm.sade.sijoittelu.laskenta.external.resource.dto.VastaanottoDTO;
-import fi.vm.sade.sijoittelu.laskenta.external.resource.dto.VastaanottoRecordDTO;
 import fi.vm.sade.sijoittelu.laskenta.service.business.IllegalVTSRequestException;
 import fi.vm.sade.sijoittelu.laskenta.service.business.PriorAcceptanceException;
+import fi.vm.sade.sijoittelu.laskenta.service.business.SijoitteluBusinessService;
 import fi.vm.sade.sijoittelu.laskenta.service.business.StaleReadException;
 import fi.vm.sade.sijoittelu.laskenta.service.exception.HakemustaEiLoytynytException;
 import fi.vm.sade.sijoittelu.laskenta.service.it.TarjontaIntegrationService;
@@ -36,21 +17,23 @@ import fi.vm.sade.sijoittelu.tulos.dao.HakukohdeDao;
 import fi.vm.sade.sijoittelu.tulos.dao.SijoitteluDao;
 import fi.vm.sade.sijoittelu.tulos.dao.ValintatulosDao;
 import fi.vm.sade.sijoittelu.tulos.service.RaportointiService;
-
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
-
-import com.wordnik.swagger.annotations.Api;
-import com.wordnik.swagger.annotations.ApiOperation;
-import com.wordnik.swagger.annotations.ApiParam;
-
-import fi.vm.sade.sijoittelu.laskenta.service.business.SijoitteluBusinessService;
 import org.springframework.stereotype.Controller;
 
-import static fi.vm.sade.sijoittelu.laskenta.util.SijoitteluAudit.*;
+import javax.ws.rs.*;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
+import java.util.*;
+import java.util.stream.Collectors;
+
+import static fi.vm.sade.sijoittelu.laskenta.roles.SijoitteluRole.READ_UPDATE_CRUD;
+import static fi.vm.sade.sijoittelu.laskenta.roles.SijoitteluRole.UPDATE_CRUD;
+import static fi.vm.sade.sijoittelu.laskenta.util.SijoitteluAudit.username;
 
 @Controller
 @Path("tila")
@@ -191,12 +174,9 @@ public class TilaResource {
     }
 
     private void processVaihdaHakemuksienTilat(List<ValintatulosUpdateStatus> statuses, List<Valintatulos> valintatulokset, String hakuOid, String hakukohdeOid, Hakukohde hakukohde,  String selite) {
-        String muokkaaja = username();
-        paivitaVastaanototValintarekisteriin(valintatulokset, hakukohdeOid, muokkaaja);
-
         for (Valintatulos v : valintatulokset) {
             try {
-                sijoitteluBusinessService.vaihdaHakemuksenTila(hakuOid, hakukohde, v, selite, muokkaaja);
+                sijoitteluBusinessService.vaihdaHakemuksenTila(hakuOid, hakukohde, v, selite, username());
             } catch (HakemustaEiLoytynytException e) {
                 LOGGER.info("haku: {}, hakukohde: {}", hakuOid, hakukohdeOid, e);
                 statuses.add(new ValintatulosUpdateStatus(Status.NOT_FOUND.getStatusCode(), e.getMessage(), v.getValintatapajonoOid(), v.getHakemusOid()));
@@ -221,43 +201,6 @@ public class TilaResource {
                 statuses.add(new ValintatulosUpdateStatus(Status.INTERNAL_SERVER_ERROR.getStatusCode(), e.getMessage(), v.getValintatapajonoOid(), v.getHakemusOid()));
             }
         }
-    }
-
-    private void paivitaVastaanototValintarekisteriin(List<Valintatulos> valintatulokset, String hakukohdeOid, String muokkaaja) {
-        final List<VastaanottoRecordDTO> aiemmatVastaanotot = valintaTulosServiceResource.hakukohteenVastaanotot(hakukohdeOid);
-
-        Map<Boolean, List<Valintatulos>> aktiivisetJaPoistettavat = valintatulokset.stream()
-                .filter(valintatulos -> onPaivitettava(valintatulos, aiemmatVastaanotot))
-                .collect(Collectors.partitioningBy(valintatulos -> !matchesInexistingAction(valintatulos.getTila())));
-
-        tallennaAktiivisetVastaanotot(aktiivisetJaPoistettavat.get(true), muokkaaja);
-        poistaVastaanotot(aktiivisetJaPoistettavat.get(false), muokkaaja);
-    }
-
-    private void tallennaAktiivisetVastaanotot(List<Valintatulos> valintatulokset, String muokkaaja) {
-        List<VastaanottoRecordDTO> tallennettavat = valintatulokset.stream()
-                .<VastaanottoRecordDTO>map(valintatulos -> VastaanottoRecordDTO.of(valintatulos, muokkaaja))
-                .collect(Collectors.toList());
-        valintaTulosServiceResource.tallenna(tallennettavat);
-    }
-
-    private void poistaVastaanotot(List<Valintatulos> valintatulokset, String muokkaaja) {
-        valintatulokset.stream()
-                .<PoistaVastaanottoDTO>map(valintatulos -> PoistaVastaanottoDTO.of(valintatulos, muokkaaja))
-                .forEach(valintaTulosServiceResource::poista);
-    }
-
-    private boolean onPaivitettava(Valintatulos valintatulos, List<VastaanottoRecordDTO> aiemmatVastaanotot) {
-        Optional<VastaanottoRecordDTO> aiempiVastaanotto = aiemmatVastaanotot.stream()
-                .filter(vastaanottoRecordDTO -> vastaanottoRecordDTO.getHenkiloOid().equals(valintatulos.getHakijaOid()))
-                .findFirst();
-
-        if (aiempiVastaanotto.isPresent() && aiempiVastaanotto.get().getAction().actionMatches(valintatulos.getTila())) {
-            return false;
-        } else if (!aiempiVastaanotto.isPresent() && matchesInexistingAction(valintatulos.getTila())) {
-            return false;
-        }
-        return true;
     }
 
     @POST
