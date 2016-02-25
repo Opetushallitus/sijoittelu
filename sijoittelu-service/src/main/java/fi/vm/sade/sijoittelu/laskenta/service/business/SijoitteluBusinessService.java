@@ -1,25 +1,49 @@
 package fi.vm.sade.sijoittelu.laskenta.service.business;
 
-import akka.actor.ActorRef;
+import static com.google.common.collect.Sets.difference;
+import static com.google.common.collect.Sets.intersection;
+import static fi.vm.sade.auditlog.valintaperusteet.LogMessage.builder;
+import static fi.vm.sade.sijoittelu.laskenta.util.SijoitteluAudit.AUDIT;
+import static java.util.Collections.unmodifiableSet;
+import static java.util.stream.Collectors.toSet;
+import static org.apache.commons.lang.StringUtils.isBlank;
+import static org.apache.commons.lang.StringUtils.join;
+import static org.springframework.security.core.context.SecurityContextHolder.getContext;
 import com.google.common.collect.Sets.SetView;
+
+import akka.actor.ActorRef;
 import fi.vm.sade.auditlog.valintaperusteet.ValintaperusteetOperation;
 import fi.vm.sade.authentication.business.service.Authorizer;
 import fi.vm.sade.sijoittelu.batch.logic.impl.DomainConverter;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoitteluAlgorithm;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoitteluajoWrapperFactory;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.SijoitteluajoWrapper;
-import fi.vm.sade.sijoittelu.domain.*;
+import fi.vm.sade.sijoittelu.domain.ErillisSijoittelu;
+import fi.vm.sade.sijoittelu.domain.HakemuksenTila;
+import fi.vm.sade.sijoittelu.domain.Hakemus;
+import fi.vm.sade.sijoittelu.domain.Hakukohde;
+import fi.vm.sade.sijoittelu.domain.HakukohdeItem;
+import fi.vm.sade.sijoittelu.domain.IlmoittautumisTila;
+import fi.vm.sade.sijoittelu.domain.Sijoittelu;
+import fi.vm.sade.sijoittelu.domain.SijoitteluAjo;
+import fi.vm.sade.sijoittelu.domain.TilaHistoria;
+import fi.vm.sade.sijoittelu.domain.ValiSijoittelu;
+import fi.vm.sade.sijoittelu.domain.Valintatapajono;
+import fi.vm.sade.sijoittelu.domain.ValintatuloksenTila;
+import fi.vm.sade.sijoittelu.domain.Valintatulos;
 import fi.vm.sade.sijoittelu.domain.comparator.HakemusComparator;
 import fi.vm.sade.sijoittelu.laskenta.actors.messages.PoistaHakukohteet;
 import fi.vm.sade.sijoittelu.laskenta.actors.messages.PoistaVanhatAjotSijoittelulta;
-import fi.vm.sade.sijoittelu.laskenta.external.resource.ValintaTulosServiceResource;
 import fi.vm.sade.sijoittelu.laskenta.external.resource.dto.ParametriArvoDTO;
 import fi.vm.sade.sijoittelu.laskenta.external.resource.dto.ParametriDTO;
-import fi.vm.sade.sijoittelu.domain.VastaanotettavuusDTO;
 import fi.vm.sade.sijoittelu.laskenta.service.exception.HakemustaEiLoytynytException;
 import fi.vm.sade.sijoittelu.laskenta.service.exception.ValintatapajonoaEiLoytynytException;
 import fi.vm.sade.sijoittelu.laskenta.service.it.TarjontaIntegrationService;
-import fi.vm.sade.sijoittelu.tulos.dao.*;
+import fi.vm.sade.sijoittelu.tulos.dao.ErillisSijoitteluDao;
+import fi.vm.sade.sijoittelu.tulos.dao.HakukohdeDao;
+import fi.vm.sade.sijoittelu.tulos.dao.SijoitteluDao;
+import fi.vm.sade.sijoittelu.tulos.dao.ValiSijoitteluDao;
+import fi.vm.sade.sijoittelu.tulos.dao.ValintatulosDao;
 import fi.vm.sade.sijoittelu.tulos.dto.HakukohdeDTO;
 import fi.vm.sade.sijoittelu.tulos.roles.SijoitteluRole;
 import fi.vm.sade.sijoittelu.tulos.service.impl.converters.SijoitteluTulosConverter;
@@ -31,24 +55,20 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
-import javax.ws.rs.WebApplicationException;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
-
-import static com.google.common.collect.Sets.difference;
-import static com.google.common.collect.Sets.intersection;
-import static fi.vm.sade.auditlog.valintaperusteet.LogMessage.builder;
-import static fi.vm.sade.sijoittelu.laskenta.util.SijoitteluAudit.AUDIT;
-import static java.util.Collections.unmodifiableSet;
-import static java.util.stream.Collectors.toSet;
-import static org.apache.commons.lang.StringUtils.isBlank;
-import static org.apache.commons.lang.StringUtils.join;
-import static org.springframework.security.core.context.SecurityContextHolder.getContext;
 
 
 @Service
@@ -87,9 +107,6 @@ public class SijoitteluBusinessService {
 
     @Autowired
     TarjontaIntegrationService tarjontaIntegrationService;
-
-    @Autowired
-    private ValintaTulosServiceResource valintaTulosServiceResource;
 
     /**
      * ei versioi sijoittelua, tekeee uuden sijoittelun olemassaoleville
@@ -511,11 +528,6 @@ public class SijoitteluBusinessService {
         // organisaatio updater voi muokata, jos hyväksytty
         authorizer.checkOrganisationAccess(tarjoajaOid, SijoitteluRole.UPDATE_ROLE, SijoitteluRole.CRUD_ROLE);
 
-        // Estä tuplavastaanotto tarkistamalla mahdollinen aikaisempi vastaanotto VTS:ltä
-        if (tila == ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI) {
-            vastaanotettavuusValintaTulosServicella(change.getHakijaOid(), hakemusOid, hakukohde.getOid());
-        }
-
         Valintatapajono valintatapajono = getValintatapajono(valintatapajonoOid, hakukohde);
         Hakemus hakemus = getHakemus(hakemusOid, valintatapajono);
         String hakukohdeOid = hakukohde.getOid();
@@ -560,26 +572,6 @@ public class SijoitteluBusinessService {
                 .add("valintatuloksentila", tila)
                 .setOperaatio(ValintaperusteetOperation.HAKEMUS_TILAMUUTOS)
                 .build());
-    }
-
-    private void vastaanotettavuusValintaTulosServicella(String hakijaOid, String hakemusOid, String hakukohdeOid) {
-        try {
-            VastaanotettavuusDTO vastaanotettavuus = valintaTulosServiceResource.vastaanotettavuus(hakijaOid, hakemusOid, hakukohdeOid);
-            if (!vastaanotettavuus.isVastaanotettavissa()) {
-                throw new PriorAcceptanceException(vastaanotettavuus.getReason());
-            }
-        } catch(WebApplicationException e) {
-            int status = e.getResponse().getStatus();
-            switch (status) {
-                case 400:
-                    throw new IllegalVTSRequestException(e);
-                default:
-                    throw new RuntimeException("valinta-tulos-service status: " + status + " body: " + e.getResponse().readEntity(String.class));
-            }
-        } catch(Exception e) {
-            LOG.error("valinta-tulos-service vastaanotettavuus", e);
-            throw new RuntimeException("Virhe valinta-tulos-servicen kutsumisessa", e);
-        }
     }
 
     private void authorizeJulkaistavissa(String hakuOid, boolean v, boolean change) {

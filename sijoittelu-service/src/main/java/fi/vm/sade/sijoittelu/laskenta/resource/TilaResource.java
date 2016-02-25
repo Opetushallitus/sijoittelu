@@ -1,12 +1,23 @@
 package fi.vm.sade.sijoittelu.laskenta.resource;
 
+import static fi.vm.sade.sijoittelu.laskenta.roles.SijoitteluRole.READ_UPDATE_CRUD;
+import static fi.vm.sade.sijoittelu.laskenta.roles.SijoitteluRole.UPDATE_CRUD;
+import static fi.vm.sade.sijoittelu.laskenta.util.SijoitteluAudit.username;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
+
 import fi.vm.sade.generic.service.exception.NotAuthorizedException;
-import fi.vm.sade.sijoittelu.domain.*;
+import fi.vm.sade.sijoittelu.domain.HakemuksenTila;
+import fi.vm.sade.sijoittelu.domain.Hakemus;
+import fi.vm.sade.sijoittelu.domain.Hakukohde;
+import fi.vm.sade.sijoittelu.domain.HakukohdeItem;
+import fi.vm.sade.sijoittelu.domain.Sijoittelu;
+import fi.vm.sade.sijoittelu.domain.SijoitteluAjo;
+import fi.vm.sade.sijoittelu.domain.TilaHistoria;
+import fi.vm.sade.sijoittelu.domain.Valintatapajono;
+import fi.vm.sade.sijoittelu.domain.Valintatulos;
 import fi.vm.sade.sijoittelu.domain.dto.ErillishaunHakijaDTO;
-import fi.vm.sade.sijoittelu.laskenta.external.resource.ValintaTulosServiceResource;
 import fi.vm.sade.sijoittelu.laskenta.service.business.IllegalVTSRequestException;
 import fi.vm.sade.sijoittelu.laskenta.service.business.PriorAcceptanceException;
 import fi.vm.sade.sijoittelu.laskenta.service.business.SijoitteluBusinessService;
@@ -24,16 +35,25 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 
-import javax.ws.rs.*;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
-
-import static fi.vm.sade.sijoittelu.laskenta.roles.SijoitteluRole.READ_UPDATE_CRUD;
-import static fi.vm.sade.sijoittelu.laskenta.roles.SijoitteluRole.UPDATE_CRUD;
-import static fi.vm.sade.sijoittelu.laskenta.util.SijoitteluAudit.username;
 
 @Controller
 @Path("tila")
@@ -61,9 +81,6 @@ public class TilaResource {
 
     @Autowired
     TarjontaIntegrationService tarjontaIntegrationService;
-
-    @Autowired
-    private ValintaTulosServiceResource valintaTulosServiceResource;
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
@@ -103,20 +120,6 @@ public class TilaResource {
             @PathParam("hakukohdeOid") String hakukohdeOid,
             @PathParam("valintatapajonoOid") String valintatapajonoOid) {
         List<Valintatulos> v = sijoitteluBusinessService.haeHakemustenTilat(hakukohdeOid, valintatapajonoOid);
-        if (v == null) {
-            v = new ArrayList<Valintatulos>();
-        }
-        return v;
-    }
-
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    @Path("/hakukohde/{hakukohdeOid}")
-    @PreAuthorize(READ_UPDATE_CRUD)
-    @ApiOperation(value = "Valintatulosten haku hakukohteelle ja valintatapajonolle")
-    public List<Valintatulos> hakukohteelle(
-            @PathParam("hakukohdeOid") String hakukohdeOid) {
-        List<Valintatulos> v = sijoitteluBusinessService.haeHakukohteenTilat(hakukohdeOid);
         if (v == null) {
             v = new ArrayList<Valintatulos>();
         }
