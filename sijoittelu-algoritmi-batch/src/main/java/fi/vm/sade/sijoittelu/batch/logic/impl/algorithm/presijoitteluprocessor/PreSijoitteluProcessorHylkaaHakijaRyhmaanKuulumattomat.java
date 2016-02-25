@@ -12,11 +12,6 @@ import java.util.stream.Collectors;
 public class PreSijoitteluProcessorHylkaaHakijaRyhmaanKuulumattomat implements PreSijoitteluProcessor {
 
     @Override
-    public String name() {
-        return getClass().getSimpleName();
-    }
-
-    @Override
     public void process(SijoitteluajoWrapper sijoitteluajoWrapper) {
         this.hylkaaHakijaryhmiinKuulumattomat(sijoitteluajoWrapper);
 

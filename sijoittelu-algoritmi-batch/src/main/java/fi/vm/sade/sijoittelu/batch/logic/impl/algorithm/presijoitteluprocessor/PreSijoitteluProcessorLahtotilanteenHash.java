@@ -6,11 +6,6 @@ import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.SijoitteluajoWr
  * @author Jussi Jartamo
  */
 public class PreSijoitteluProcessorLahtotilanteenHash implements PreSijoitteluProcessor {
-    @Override
-    public String name() {
-        return getClass().getSimpleName();
-    }
-
 
     @Override
     public void process(SijoitteluajoWrapper sijoitteluajoWrapper) {

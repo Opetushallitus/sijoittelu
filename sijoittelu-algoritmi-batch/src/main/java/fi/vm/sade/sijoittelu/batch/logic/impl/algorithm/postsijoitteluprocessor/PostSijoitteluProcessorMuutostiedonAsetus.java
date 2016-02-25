@@ -8,10 +8,6 @@ import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.SijoitteluajoWr
  * @author Jussi Jartamo
  */
 public class PostSijoitteluProcessorMuutostiedonAsetus implements PostSijoitteluProcessor{
-    @Override
-    public String name() {
-        return getClass().getSimpleName();
-    }
 
 
     @Override

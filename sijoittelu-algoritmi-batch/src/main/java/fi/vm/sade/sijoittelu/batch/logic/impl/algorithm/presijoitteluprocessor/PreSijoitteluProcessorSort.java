@@ -13,11 +13,6 @@ import java.util.Collections;
 public class PreSijoitteluProcessorSort implements PreSijoitteluProcessor {
 
     @Override
-    public String name() {
-        return getClass().getSimpleName();
-    }
-
-    @Override
     public void process(SijoitteluajoWrapper sijoitteluajoWrapper) {
         this.sortDomain(sijoitteluajoWrapper);
 

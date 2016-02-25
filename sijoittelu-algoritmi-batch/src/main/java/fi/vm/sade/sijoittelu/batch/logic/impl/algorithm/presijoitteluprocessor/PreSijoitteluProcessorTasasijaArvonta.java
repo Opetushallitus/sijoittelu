@@ -13,10 +13,6 @@ import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.SijoitteluajoWr
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.ValintatapajonoWrapper;
 
 public class PreSijoitteluProcessorTasasijaArvonta implements PreSijoitteluProcessor {
-    @Override
-    public String name() {
-        return getClass().getSimpleName();
-    }
 
     @Override
     public void process(SijoitteluajoWrapper sijoitteluajoWrapper) {
