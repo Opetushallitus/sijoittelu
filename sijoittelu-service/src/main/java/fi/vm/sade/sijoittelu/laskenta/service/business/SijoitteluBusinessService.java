@@ -17,6 +17,11 @@ import fi.vm.sade.authentication.business.service.Authorizer;
 import fi.vm.sade.sijoittelu.batch.logic.impl.DomainConverter;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoitteluAlgorithm;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoitteluajoWrapperFactory;
+import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.postsijoitteluprocessor.PostSijoitteluProcessor;
+import fi.vm.sade.sijoittelu.laskenta.external.resource.ValintaTulosServiceResource;
+import fi.vm.sade.sijoittelu.laskenta.service.business.processors.PostSijoitteluProcessorValintaTulosServiceValinnantilojenTallennus;
+import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.presijoitteluprocessor.PreSijoitteluProcessor;
+import fi.vm.sade.sijoittelu.laskenta.service.business.processors.PreSijoitteluProcessorValintaTulosServiceValinnantilojenLuku;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.SijoitteluajoWrapper;
 import fi.vm.sade.sijoittelu.domain.ErillisSijoittelu;
 import fi.vm.sade.sijoittelu.domain.HakemuksenTila;
@@ -58,17 +63,11 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 
 @Service
@@ -78,35 +77,55 @@ public class SijoitteluBusinessService {
     private HakemusComparator hakemusComparator = new HakemusComparator();
     private final String KK_KOHDEJOUKKO = "haunkohdejoukko_12";
 
-    @Autowired
-    private ValintatulosDao valintatulosDao;
+
+    private final int maxAjoMaara;
+    private final ValintatulosDao valintatulosDao;
+    private final HakukohdeDao hakukohdeDao;
+    private final SijoitteluDao sijoitteluDao;
+    private final ValiSijoitteluDao valisijoitteluDao;
+    private final ErillisSijoitteluDao erillisSijoitteluDao;
+    private final Authorizer authorizer;
+    private final SijoitteluTulosConverter sijoitteluTulosConverter;
+    private final ActorService actorService;
+    private final TarjontaIntegrationService tarjontaIntegrationService;
+    private final ValintaTulosServiceResource valintaTulosServiceResource;
+    private final Collection<PostSijoitteluProcessor> postSijoitteluProcessors;
+    private final Collection<PreSijoitteluProcessor> preSijoitteluProcessors;
 
     @Autowired
-    private HakukohdeDao hakukohdeDao;
+    public SijoitteluBusinessService(@Value("${sijoittelu.maxAjojenMaara:75}") int maxAjoMaara,
+                                     ValintatulosDao valintatulosDao,
+                                     HakukohdeDao hakukohdeDao,
+                                     SijoitteluDao sijoitteluDao,
+                                     ValiSijoitteluDao valisijoitteluDao,
+                                     ErillisSijoitteluDao erillisSijoitteluDao,
+                                     Authorizer authorizer,
+                                     SijoitteluTulosConverter sijoitteluTulosConverter,
+                                     ActorService actorService,
+                                     TarjontaIntegrationService tarjontaIntegrationService,
+                                     ValintaTulosServiceResource valintaTulosServiceResource) {
+        this.maxAjoMaara = maxAjoMaara;
+        this.valintatulosDao = valintatulosDao;
+        this.hakukohdeDao = hakukohdeDao;
+        this.sijoitteluDao = sijoitteluDao;
+        this.valisijoitteluDao = valisijoitteluDao;
+        this.erillisSijoitteluDao = erillisSijoitteluDao;
+        this.authorizer = authorizer;
+        this.sijoitteluTulosConverter = sijoitteluTulosConverter;
+        this.actorService = actorService;
+        this.tarjontaIntegrationService = tarjontaIntegrationService;
+        this.valintaTulosServiceResource = valintaTulosServiceResource;
+        this.preSijoitteluProcessors =
+                Stream.concat(
+                        Stream.of(new PreSijoitteluProcessorValintaTulosServiceValinnantilojenLuku(valintaTulosServiceResource)),
+                        PreSijoitteluProcessor.defaultPreProcessors().stream()).collect(Collectors.toList());
+        this.postSijoitteluProcessors =
+                Stream.concat(
+                        Stream.of(new PostSijoitteluProcessorValintaTulosServiceValinnantilojenTallennus(valintaTulosServiceResource)),
+                        PostSijoitteluProcessor.defaultPostProcessors().stream()).collect(Collectors.toList());
+    }
 
-    @Autowired
-    private SijoitteluDao sijoitteluDao;
 
-    @Autowired
-    private ValiSijoitteluDao valisijoitteluDao;
-
-    @Autowired
-    private ErillisSijoitteluDao erillisSijoitteluDao;
-
-    @Autowired
-    private Authorizer authorizer;
-
-    @Autowired
-    private SijoitteluTulosConverter sijoitteluTulosConverter;
-
-    @Value("${sijoittelu.maxAjojenMaara:75}")
-    private int maxAjoMaara;
-
-    @Autowired
-    ActorService actorService;
-
-    @Autowired
-    TarjontaIntegrationService tarjontaIntegrationService;
 
     /**
      * ei versioi sijoittelua, tekeee uuden sijoittelun olemassaoleville
@@ -118,7 +137,7 @@ public class SijoitteluBusinessService {
         List<Hakukohde> hakukohteet = hakukohdeDao.getHakukohdeForSijoitteluajo(viimeisinSijoitteluajo.getSijoitteluajoId());
         List<Valintatulos> valintatulokset = valintatulosDao.loadValintatulokset(hakuOid);
         viimeisinSijoitteluajo.setStartMils(System.currentTimeMillis());
-        SijoitteluAlgorithm.sijoittele(viimeisinSijoitteluajo, hakukohteet, valintatulokset);
+        SijoitteluAlgorithm.sijoittele(preSijoitteluProcessors, postSijoitteluProcessors, viimeisinSijoitteluajo, hakukohteet, valintatulokset);
         viimeisinSijoitteluajo.setEndMils(System.currentTimeMillis());
         // and after
         sijoitteluDao.persistSijoittelu(sijoittelu);
@@ -160,7 +179,7 @@ public class SijoitteluBusinessService {
         asetaSijoittelunParametrit(hakuOid, sijoitteluajoWrapper);
         uusiSijoitteluajo.setStartMils(startTime);
         LOG.info("Suoritetaan sijoittelu haulle {}", hakuOid);
-        SijoitteluAlgorithm.sijoittele(sijoitteluajoWrapper);
+        SijoitteluAlgorithm.sijoittele(preSijoitteluProcessors, postSijoitteluProcessors, sijoitteluajoWrapper);
         uusiSijoitteluajo.setEndMils(System.currentTimeMillis());
         processOldApplications(olemassaolevatHakukohteet, kaikkiHakukohteet);
         List<Valintatulos> muuttuneetValintatulokset = sijoitteluajoWrapper.getMuuttuneetValintatulokset();
@@ -261,7 +280,7 @@ public class SijoitteluBusinessService {
         List<Hakukohde> kaikkiHakukohteet = merge(uusiSijoitteluajo, olemassaolevatHakukohteet, uudetHakukohteet);
         List<Valintatulos> valintatulokset = Collections.emptyList();
         uusiSijoitteluajo.setStartMils(startTime);
-        SijoitteluAlgorithm.sijoittele(SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(uusiSijoitteluajo, kaikkiHakukohteet, valintatulokset));
+        SijoitteluAlgorithm.sijoittele(preSijoitteluProcessors, postSijoitteluProcessors, SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(uusiSijoitteluajo, kaikkiHakukohteet, valintatulokset));
         uusiSijoitteluajo.setEndMils(System.currentTimeMillis());
         processOldApplications(olemassaolevatHakukohteet, kaikkiHakukohteet);
         valisijoitteluDao.persistSijoittelu(sijoittelu);
@@ -282,7 +301,7 @@ public class SijoitteluBusinessService {
                 .flatMap(list -> list.stream())
                 .collect(Collectors.toList());
         uusiSijoitteluajo.setStartMils(startTime);
-        SijoitteluAlgorithm.sijoittele(SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(uusiSijoitteluajo, kaikkiHakukohteet, valintatulokset));
+        SijoitteluAlgorithm.sijoittele(preSijoitteluProcessors, postSijoitteluProcessors, SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(uusiSijoitteluajo, kaikkiHakukohteet, valintatulokset));
         uusiSijoitteluajo.setEndMils(System.currentTimeMillis());
         processOldApplications(olemassaolevatHakukohteet, kaikkiHakukohteet);
         erillisSijoitteluDao.persistSijoittelu(sijoittelu);

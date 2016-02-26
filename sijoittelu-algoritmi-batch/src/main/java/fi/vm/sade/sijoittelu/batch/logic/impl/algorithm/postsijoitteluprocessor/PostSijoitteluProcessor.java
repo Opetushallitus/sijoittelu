@@ -1,14 +1,19 @@
 package fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.postsijoitteluprocessor;
 
+import com.google.common.collect.ImmutableList;
+import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.Processor;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.SijoitteluajoWrapper;
 
-public interface PostSijoitteluProcessor {
+import java.util.Collection;
+
+public interface PostSijoitteluProcessor extends Processor {
 
     void process(SijoitteluajoWrapper sijoitteluajoWrapper);
 
-
-    default String name() {
-        return getClass().getSimpleName();
+    static Collection<PostSijoitteluProcessor> defaultPostProcessors() {
+        return ImmutableList.of(
+            new PostSijoitteluProcessorPeruuntuneetHakemuksenVastaanotonMuokkaus(),
+            new PostSijoitteluProcessorMuutostiedonAsetus()
+        );
     }
-
 }

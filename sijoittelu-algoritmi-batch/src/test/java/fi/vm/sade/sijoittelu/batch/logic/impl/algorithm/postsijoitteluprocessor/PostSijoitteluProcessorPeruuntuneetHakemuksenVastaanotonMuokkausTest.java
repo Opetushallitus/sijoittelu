@@ -4,6 +4,7 @@ import static junit.framework.Assert.assertEquals;
 
 import java.util.List;
 
+import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.util.SijoitteluAlgorithmUtil;
 import org.junit.Test;
 
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.PrintHelper;
@@ -37,7 +38,7 @@ public class PostSijoitteluProcessorPeruuntuneetHakemuksenVastaanotonMuokkausTes
 
     private SijoitteluajoWrapper luoSijoitteluAjonTulokset() {
         final SijoitteluajoWrapper sijoitteluajoWrapper = SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(new SijoitteluAjo(), hakukohdeList, valintatulosList);
-        SijoittelunTila tila = SijoitteluAlgorithm.sijoittele(sijoitteluajoWrapper);
+        SijoittelunTila tila = SijoitteluAlgorithmUtil.sijoittele(sijoitteluajoWrapper);
         System.out.println(PrintHelper.tulostaSijoittelu(tila));
         final SijoitteluajoWrapper sijoitteluAjo = sijoitteluajoWrapper;
         return sijoitteluAjo;

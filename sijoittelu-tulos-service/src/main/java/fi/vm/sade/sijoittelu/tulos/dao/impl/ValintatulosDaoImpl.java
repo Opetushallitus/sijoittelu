@@ -115,17 +115,10 @@ public class ValintatulosDaoImpl implements ValintatulosDao {
             morphiaDS.save(tulos);
         } else {
             UpdateOperations<Valintatulos> update = morphiaDS.createUpdateOperations(Valintatulos.class)
-                    .set("tila",tulos.getTila())
                     .set("ilmoittautumisTila",tulos.getIlmoittautumisTila())
                     .set("julkaistavissa", tulos.getJulkaistavissa())
                     .set("hyvaksyttyVarasijalta", tulos.getHyvaksyttyVarasijalta())
                     .set("hyvaksyPeruuntunut", tulos.getHyvaksyPeruuntunut());
-
-            List<LogEntry> diff = new ArrayList<>(tulos.getLogEntries());
-            diff.removeAll(tulos.getOriginalLogEntries());
-            if(!diff.isEmpty()) {
-                update.addAll("logEntries", diff, false);
-            }
             morphiaDS.update(morphiaDS.createQuery(Valintatulos.class).field("_id").equal(tulos.getId()),update);
         }
     }

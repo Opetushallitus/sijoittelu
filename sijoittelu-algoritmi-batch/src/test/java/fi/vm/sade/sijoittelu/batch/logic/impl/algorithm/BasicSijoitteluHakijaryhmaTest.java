@@ -1,10 +1,9 @@
 package fi.vm.sade.sijoittelu.batch.logic.impl.algorithm;
 
-import static fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoitteluAlgorithm.sijoittele;
-
 import com.google.gson.GsonBuilder;
 
 import fi.vm.sade.sijoittelu.batch.logic.impl.DomainConverter;
+import static fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.util.SijoitteluAlgorithmUtil.sijoittele;
 import fi.vm.sade.sijoittelu.domain.Hakukohde;
 import fi.vm.sade.sijoittelu.domain.SijoitteluAjo;
 import fi.vm.sade.sijoittelu.domain.Valintatulos;
@@ -35,6 +34,7 @@ public class BasicSijoitteluHakijaryhmaTest {
     //@Ignore
 	@Test
 	public void testSijoittelu() throws IOException {
+
 		// tee sijoittelu
         HakuDTO t = TestHelper.readHakuDTOFromJson("testdata/sijoittelu_basic_hakijaryhma_case.json");
 

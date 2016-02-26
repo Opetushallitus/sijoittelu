@@ -126,8 +126,6 @@ public class MorphiaIntegrationTest {
         Assert.assertEquals(vx.getHyvaksyttyVarasijalta(), v0.getHyvaksyttyVarasijalta());
         Assert.assertEquals(vx.getIlmoittautumisTila(), v0.getIlmoittautumisTila());
         Assert.assertEquals(vx.getJulkaistavissa(), v0.getJulkaistavissa());
-        Assert.assertEquals(vx.getTila(), v0.getTila());
-        Assert.assertEquals(vx.getLogEntries(), v0.getLogEntries());
 
         vx.setHakemusOid(v0.getHakemusOid() + "X", "");
         vx.setTila(ValintatuloksenTila.KESKEN, "");
@@ -137,7 +135,6 @@ public class MorphiaIntegrationTest {
         Assert.assertEquals(vx2.getId(), vx.getId());
         Assert.assertEquals(vx2.getTila(), vx.getTila());
         Assert.assertNotSame(vx2.getHakemusOid(), vx.getHakemusOid());
-        Assert.assertEquals(vx2.getLogEntries(), vx.getLogEntries());
     }
 
 	@Test

@@ -14,7 +14,7 @@ import java.util.*;
         @Index("hakukohdeOid, valintatapajonoOid"),
         @Index("hakukohdeOid"),
         @Index("hakemusOid"),
-        @Index("hakuOid, tila, julkaistavissa, mailStatus.sent, mailStatus.previousCheck")
+        @Index("hakuOid, julkaistavissa, mailStatus.sent, mailStatus.previousCheck")
 })
 public class Valintatulos implements Serializable {
 
@@ -42,13 +42,14 @@ public class Valintatulos implements Serializable {
 
     private int hakutoive;
 
-    private ValintatuloksenTila tila = ValintatuloksenTila.KESKEN;
-
     private IlmoittautumisTila ilmoittautumisTila = IlmoittautumisTila.EI_TEHTY;
 
     private ValintatulosMailStatus mailStatus = new ValintatulosMailStatus();
 
-    @Embedded
+    @Transient
+    private ValintatuloksenTila tila = ValintatuloksenTila.KESKEN;
+
+    @Transient
     private List<LogEntry> logEntries = new ArrayList<>();
 
     @Transient

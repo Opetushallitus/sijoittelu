@@ -1,6 +1,7 @@
 package fi.vm.sade.sijoittelu.batch.logic.impl.algorithm;
 
 import fi.vm.sade.sijoittelu.batch.logic.impl.DomainConverter;
+import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.util.SijoitteluAlgorithmUtil;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.SijoitteluajoWrapper;
 import fi.vm.sade.sijoittelu.domain.Hakukohde;
 import fi.vm.sade.sijoittelu.domain.SijoitteluAjo;
@@ -13,9 +14,6 @@ import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-/**
- * @author Jussi Jartamo
- */
 public abstract class SijoitteluTestSpec {
     private static final Logger LOG = LoggerFactory.getLogger(SijoitteluTestSpec.class);
 
@@ -23,7 +21,7 @@ public abstract class SijoitteluTestSpec {
         return (haku) -> {
             List<Hakukohde> hakukohteet = haku.getHakukohteet().parallelStream().map(DomainConverter::convertToHakukohde).collect(Collectors.toList());
             final SijoitteluajoWrapper sijoitteluAjo = SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(new SijoitteluAjo(), hakukohteet, new ArrayList());
-            SijoittelunTila s = SijoitteluAlgorithm.sijoittele(sijoitteluAjo);
+            SijoittelunTila s = SijoitteluAlgorithmUtil.sijoittele(sijoitteluAjo);
             LOG.debug("\r\n{}", PrintHelper.tulostaSijoittelu(s));
             return sijoitteluAjo;
         };

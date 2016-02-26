@@ -1,63 +1,38 @@
 package fi.vm.sade.sijoittelu.batch.logic.impl.algorithm;
 
-import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.common.hash.HashCode;
-import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.comparator.HakemusWrapperComparator;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.postsijoitteluprocessor.PostSijoitteluProcessor;
-import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.postsijoitteluprocessor.PostSijoitteluProcessorMuutostiedonAsetus;
-import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.postsijoitteluprocessor.PostSijoitteluProcessorPeruuntuneetHakemuksenVastaanotonMuokkaus;
-import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.presijoitteluprocessor.PreSijoitteluProcessor;
-import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.presijoitteluprocessor.PreSijoitteluProcessorHylkaaHakijaRyhmaanKuulumattomat;
-import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.presijoitteluprocessor.PreSijoitteluProcessorLahtotilanteenHash;
-import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.presijoitteluprocessor.PreSijoitteluProcessorPeruutaAlemmatPeruneetJaHyvaksytyt;
-import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.presijoitteluprocessor.PreSijoitteluProcessorSort;
-import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.presijoitteluprocessor.PreSijoitteluProcessorTasasijaArvonta;
+import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.presijoitteluprocessor.*;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.*;
 import fi.vm.sade.sijoittelu.domain.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.*;
-import java.util.stream.Collectors;
-
-import static fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.util.TilaTaulukot.*;
-import static fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.WrapperHelperMethods.*;
+import java.util.function.Function;
 
 public abstract class SijoitteluAlgorithm {
     private static final Logger LOG = LoggerFactory.getLogger(SijoitteluAlgorithm.class);
 
-    private final static List<PreSijoitteluProcessor> preSijoitteluProcessors = Arrays.asList(
-        new PreSijoitteluProcessorTasasijaArvonta(),
-        new PreSijoitteluProcessorSort(),
-        new PreSijoitteluProcessorPeruutaAlemmatPeruneetJaHyvaksytyt(),
-        new PreSijoitteluProcessorHylkaaHakijaRyhmaanKuulumattomat(),
-        new PreSijoitteluProcessorLahtotilanteenHash()
-    );
-    private final static List<PostSijoitteluProcessor> postSijoitteluProcessors = Arrays.asList(
-        new PostSijoitteluProcessorPeruuntuneetHakemuksenVastaanotonMuokkaus(),
-        new PostSijoitteluProcessorMuutostiedonAsetus()
-    );
-
-    public static SijoittelunTila sijoittele(SijoitteluAjo sijoitteluAjo, List<Hakukohde> hakukohteet, List<Valintatulos> valintatulokset) {
-        return sijoittele(SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(sijoitteluAjo, hakukohteet, valintatulokset));
+    public static SijoittelunTila sijoittele(Collection<PreSijoitteluProcessor> preProcessors,Collection<PostSijoitteluProcessor> postProcessors, SijoitteluAjo sijoitteluAjo, List<Hakukohde> hakukohteet, List<Valintatulos> valintatulokset) {
+        return sijoittele(preProcessors, postProcessors, SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(sijoitteluAjo, hakukohteet, valintatulokset));
     }
 
-    public static SijoittelunTila sijoittele(SijoitteluajoWrapper sijoitteluAjo) {
+    public static SijoittelunTila sijoittele(Collection<PreSijoitteluProcessor> preProcessors,Collection<PostSijoitteluProcessor> postProcessors, SijoitteluajoWrapper sijoitteluAjo) {
         LOG.info("(hakuOid={}) Starting sijoitteluajo {}",
                 Optional.ofNullable(sijoitteluAjo.getSijoitteluajo()).orElse(new SijoitteluAjo()).getHakuOid(), sijoitteluAjo.getSijoitteluAjoId());
-        runPreProcessors(sijoitteluAjo);
+        preProcessors.stream().map(log(sijoitteluAjo)).forEach(p -> p.process(sijoitteluAjo));
         final SijoittelunTila tila = suoritaSijoittelu(sijoitteluAjo);
-        runPostProcessors(sijoitteluAjo);
+        postProcessors.stream().map(log(sijoitteluAjo)).forEach(p -> p.process(sijoitteluAjo));
         return tila;
     }
-
-    private static void runPreProcessors(final SijoitteluajoWrapper sijoitteluAjo) {
-        for (PreSijoitteluProcessor processor : preSijoitteluProcessors) {
-            LOG.info("(hakuOid={}) Starting preprocessor {} for sijoitteluAjo {}",
+    private static <T extends Processor> Function<T,T> log(final SijoitteluajoWrapper sijoitteluAjo) {
+        return (processor) -> {
+            LOG.info("(hakuOid={}) Starting processor {} for sijoitteluAjo {}",
                     Optional.ofNullable(sijoitteluAjo.getSijoitteluajo()).orElse(new SijoitteluAjo()).getHakuOid(), processor.name(), sijoitteluAjo.getSijoitteluAjoId());
-            processor.process(sijoitteluAjo);
-        }
+            return processor;
+        };
     }
 
     private static SijoittelunTila suoritaSijoittelu(final SijoitteluajoWrapper sijoitteluAjo) {
@@ -69,14 +44,6 @@ public abstract class SijoitteluAlgorithm {
             return SijoitteleKunnesTavoiteHashTuleeVastaanTaiHeitaPoikkeus.sijoittele(
                 sijoitteluAjo, tila, sijoittelunIterointi.edellinenHash.get(), sijoittelunIterointi.iteraationHakukohteet
             );
-        }
-    }
-
-    private static void runPostProcessors(final SijoitteluajoWrapper sijoitteluAjo) {
-        for (PostSijoitteluProcessor processor : postSijoitteluProcessors) {
-            LOG.info("(hakuOid={}) Starting postprocessor {} for sijoitteluAjo {}",
-                    Optional.ofNullable(sijoitteluAjo.getSijoitteluajo()).orElse(new SijoitteluAjo()).getHakuOid(), processor.name(), sijoitteluAjo.getSijoitteluAjoId());
-            processor.process(sijoitteluAjo);
         }
     }
 

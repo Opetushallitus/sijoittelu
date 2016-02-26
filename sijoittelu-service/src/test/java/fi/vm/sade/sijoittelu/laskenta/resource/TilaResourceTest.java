@@ -80,7 +80,7 @@ public class TilaResourceTest {
     @Test
     public void epaonnistuneidenMuokkaustenVirheetKerataan() {
         TilaResource r = new TilaResource();
-        r.sijoitteluBusinessService = new SijoitteluBusinessService() {
+        r.sijoitteluBusinessService = new SijoitteluBusinessService(0,null,null,null,null,null,null,null,null,null,null) {
             @Override
             public Hakukohde getHakukohde(String hakuOid, String hakukohdeOid) {
                 return new Hakukohde();
@@ -173,9 +173,6 @@ public class TilaResourceTest {
             .accept(MediaType.APPLICATION_JSON_TYPE)
             .post(Entity.entity(hakijat, MediaType.APPLICATION_JSON));
         assertEquals(200, response.getStatus());
-        List<Valintatulos> valintatuloses = haeTulokset(hakemusOid);
-        // Tarkistetaan, että tila meni kantaan
-        assertEquals(ValintatuloksenTila.EHDOLLISESTI_VASTAANOTTANUT, valintatuloses.get(0).getTila());
     }
 
     @Test
@@ -246,7 +243,7 @@ public class TilaResourceTest {
     }
 
     private static SijoitteluBusinessService sijoitteluBusinessServiceMock(RuntimeException e) {
-        return new SijoitteluBusinessService() {
+        return new SijoitteluBusinessService(0,null,null,null,null,null,null,null,null,null,null) {
             @Override
             public Hakukohde getHakukohde(String hakuOid, String hakukohdeOid) {
                 throw e;
@@ -259,7 +256,7 @@ public class TilaResourceTest {
     }
 
     private static SijoitteluBusinessService sijoitteluBusinessServiceMock(Hakukohde hakukohde) {
-        return new SijoitteluBusinessService() {
+        return new SijoitteluBusinessService(0,null,null,null,null,null,null,null,null,null,null) {
             @Override
             public Hakukohde getHakukohde(String hakuOid, String hakukohdeOid) {
                 return hakukohde;

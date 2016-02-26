@@ -11,6 +11,7 @@ import fi.vm.sade.sijoittelu.domain.Sijoittelu;
 import fi.vm.sade.sijoittelu.domain.ValintatuloksenTila;
 import fi.vm.sade.sijoittelu.domain.Valintatulos;
 import fi.vm.sade.sijoittelu.domain.VastaanotettavuusDTO;
+import fi.vm.sade.sijoittelu.laskenta.external.resource.ValintaTulosServiceResource;
 import fi.vm.sade.sijoittelu.laskenta.external.resource.dto.ParametriArvoDTO;
 import fi.vm.sade.sijoittelu.laskenta.external.resource.dto.ParametriDTO;
 import fi.vm.sade.sijoittelu.laskenta.service.business.SijoitteluBusinessService;
@@ -36,7 +37,6 @@ public class SijoitteluBusinessServiceTest {
     final String HAKEMUS_OID = TestDataGenerator.HAKEMUS_OID_1;
     final String HAKEMUS_OID_2 = TestDataGenerator.HAKEMUS_OID_2;
     final String SELITE = "selite";
-    final String ROOT_ORG_OID = "rootOrgOid";
     final String MUOKKAAJA = "muokkaaja";
 
     private SijoitteluBusinessService sijoitteluBusinessService;
@@ -50,69 +50,16 @@ public class SijoitteluBusinessServiceTest {
 
     @Before
     public void setUp() throws Exception {
-        sijoitteluBusinessService = new SijoitteluBusinessService();
-
         valintatulosDaoMock = mock(ValintatulosDao.class);
         sijoitteluDao = mock(SijoitteluDao.class);
         hakukohdeDao = mock(HakukohdeDao.class);
         authorizer = mock(Authorizer.class);
         tarjontaIntegrationService = mock(TarjontaIntegrationService.class);
+        ValintaTulosServiceResource valintaTulosServiceResourceMock = mock(ValintaTulosServiceResource.class);
 
-        ReflectionTestUtils.setField(sijoitteluBusinessService, "valintatulosDao", valintatulosDaoMock);
-        ReflectionTestUtils.setField(sijoitteluBusinessService, "sijoitteluDao", sijoitteluDao);
-        ReflectionTestUtils.setField(sijoitteluBusinessService, "hakukohdeDao", hakukohdeDao);
-        ReflectionTestUtils.setField(sijoitteluBusinessService, "authorizer", authorizer);
-        ReflectionTestUtils.setField(sijoitteluBusinessService, "tarjontaIntegrationService", tarjontaIntegrationService);
-        ReflectionTestUtils.setField(sijoitteluBusinessService, ROOT_ORG_OID, ROOT_ORG_OID);
-
+        sijoitteluBusinessService = new SijoitteluBusinessService(1,valintatulosDaoMock,hakukohdeDao,sijoitteluDao,null,null,authorizer,null,null,tarjontaIntegrationService,valintaTulosServiceResourceMock);
         testDataGenerator = new TestDataGenerator();
 
-    }
-
-    @Test
-    public void testSitovaVastaanottoOhjataanValintaTulosServicelle() throws Exception {
-        when(sijoitteluDao.getSijoitteluByHakuOid(HAKU_OID)).thenReturn(Optional.of(testDataGenerator.generateTestData()));
-        when(hakukohdeDao.getHakukohdeForSijoitteluajo(TestDataGenerator.SIJOITTELU_AJO_ID_2, HAKUKOHDE_OID)).thenReturn(testDataGenerator.createHakukohdes(1).get(0));
-
-        final boolean julkaistavissa = false;
-        final boolean hyvaksyttyVarasijalta = false;
-        final boolean hyvaksyPeruuntunut = false;
-        Valintatulos v = new Valintatulos(
-                HAKEMUS_OID,
-                HAKEMUS_OID,
-                HAKUKOHDE_OID,
-                HAKU_OID,
-                1,
-                hyvaksyttyVarasijalta,
-                IlmoittautumisTila.EI_TEHTY,
-                julkaistavissa,
-                ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI,
-                VALINTATAPAJONO_OID);
-        sijoitteluBusinessService.vaihdaHakemuksenTila(HAKU_OID,
-                sijoitteluBusinessService.getHakukohde(HAKU_OID, HAKUKOHDE_OID),
-                v, SELITE, MUOKKAAJA);
-
-        ArgumentCaptor<String> hakijaOid = ArgumentCaptor.forClass(String.class);
-        ArgumentCaptor<String> hakemusOid = ArgumentCaptor.forClass(String.class);
-        ArgumentCaptor<String> hakukohdeOid = ArgumentCaptor.forClass(String.class);
-
-        assertEquals(HAKEMUS_OID, hakijaOid.getValue());
-        assertEquals(HAKEMUS_OID, hakemusOid.getValue());
-        assertEquals(HAKUKOHDE_OID, hakukohdeOid.getValue());
-
-        ArgumentCaptor<Valintatulos> argument = ArgumentCaptor.forClass(Valintatulos.class);
-        verify(valintatulosDaoMock).createOrUpdateValintatulos(argument.capture());
-
-        Valintatulos valintatulos = argument.getValue();
-        assertEquals(ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI, valintatulos.getTila());
-        assertEquals(IlmoittautumisTila.EI_TEHTY, valintatulos.getIlmoittautumisTila());
-        assertEquals(julkaistavissa, valintatulos.getJulkaistavissa());
-        assertEquals(hyvaksyttyVarasijalta, valintatulos.getHyvaksyttyVarasijalta());
-        assertEquals(hyvaksyPeruuntunut, valintatulos.getHyvaksyPeruuntunut());
-        assertEquals(1, valintatulos.getLogEntries().size());
-        assertEquals("tila: KESKEN -> VASTAANOTTANUT_SITOVASTI", valintatulos.getLogEntries().get(0).getMuutos());
-        assertEquals(SELITE, valintatulos.getLogEntries().get(0).getSelite());
-        assertEquals(MUOKKAAJA, valintatulos.getLogEntries().get(0).getMuokkaaja());
     }
 
     @Test
@@ -124,9 +71,6 @@ public class SijoitteluBusinessServiceTest {
                 .thenReturn(Optional.of(sijoittelu));
         when(hakukohdeDao.getHakukohdeForSijoitteluajo(TestDataGenerator.SIJOITTELU_AJO_ID_2, HAKUKOHDE_OID))
                 .thenReturn(testDataGenerator.createHakukohdes(1).get(0));
-        doThrow(new NotAuthorizedException())
-                .when(authorizer)
-                .checkOrganisationAccess(ROOT_ORG_OID, SijoitteluRole.CRUD_ROLE);
 
         when(valintatulosDaoMock.loadValintatulos(HAKUKOHDE_OID, VALINTATAPAJONO_OID, HAKEMUS_OID))
                 .thenReturn(getValintatulos(ValintatuloksenTila.KESKEN));
@@ -151,7 +95,6 @@ public class SijoitteluBusinessServiceTest {
         ArgumentCaptor<Valintatulos> argument = ArgumentCaptor.forClass(Valintatulos.class);
         verify(valintatulosDaoMock).createOrUpdateValintatulos(argument.capture());
         Valintatulos valintatulos = argument.getValue();
-        assertEquals(ValintatuloksenTila.PERUNUT, valintatulos.getTila());
         assertEquals(IlmoittautumisTila.EI_TEHTY, valintatulos.getIlmoittautumisTila());
     }
 
@@ -187,7 +130,6 @@ public class SijoitteluBusinessServiceTest {
         ArgumentCaptor<Valintatulos> argument = ArgumentCaptor.forClass(Valintatulos.class);
         verify(valintatulosDaoMock).createOrUpdateValintatulos(argument.capture());
         Valintatulos valintatulos = argument.getValue();
-        assertEquals(ValintatuloksenTila.PERUNUT, valintatulos.getTila());
         assertEquals(IlmoittautumisTila.EI_TEHTY, valintatulos.getIlmoittautumisTila());
     }
 
@@ -223,7 +165,6 @@ public class SijoitteluBusinessServiceTest {
         ArgumentCaptor<Valintatulos> argument = ArgumentCaptor.forClass(Valintatulos.class);
         verify(valintatulosDaoMock).createOrUpdateValintatulos(argument.capture());
         Valintatulos valintatulos = argument.getValue();
-        assertEquals(ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI, valintatulos.getTila());
         assertEquals(IlmoittautumisTila.EI_TEHTY, valintatulos.getIlmoittautumisTila());
     }
 
@@ -253,9 +194,6 @@ public class SijoitteluBusinessServiceTest {
                 .thenReturn(Optional.of(sijoittelu));
         when(hakukohdeDao.getHakukohdeForSijoitteluajo(TestDataGenerator.SIJOITTELU_AJO_ID_2, HAKUKOHDE_OID))
                 .thenReturn(testDataGenerator.createHakukohdes(1).get(0));
-        doThrow(new NotAuthorizedException())
-                .when(authorizer)
-                .checkOrganisationAccess(ROOT_ORG_OID, SijoitteluRole.CRUD_ROLE);
 
         when(valintatulosDaoMock.loadValintatulos(HAKUKOHDE_OID, VALINTATAPAJONO_OID, HAKEMUS_OID))
                 .thenReturn(getValintatulos(ValintatuloksenTila.KESKEN));
@@ -280,7 +218,6 @@ public class SijoitteluBusinessServiceTest {
         ArgumentCaptor<Valintatulos> argument = ArgumentCaptor.forClass(Valintatulos.class);
         verify(valintatulosDaoMock).createOrUpdateValintatulos(argument.capture());
         Valintatulos valintatulos = argument.getValue();
-        assertEquals(ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI, valintatulos.getTila());
         assertEquals(IlmoittautumisTila.LASNA_KOKO_LUKUVUOSI, valintatulos.getIlmoittautumisTila());
     }
 
@@ -292,9 +229,6 @@ public class SijoitteluBusinessServiceTest {
                 .thenReturn(Optional.of(sijoittelu));
         when(hakukohdeDao.getHakukohdeForSijoitteluajo(TestDataGenerator.SIJOITTELU_AJO_ID_2, HAKUKOHDE_OID))
                 .thenReturn(testDataGenerator.createHakukohdes(1).get(0));
-        doThrow(new NotAuthorizedException())
-                .when(authorizer)
-                .checkOrganisationAccess(ROOT_ORG_OID, SijoitteluRole.CRUD_ROLE);
 
         when(valintatulosDaoMock.loadValintatulos(HAKUKOHDE_OID, VALINTATAPAJONO_OID, HAKEMUS_OID))
                 .thenReturn(getValintatulos(ValintatuloksenTila.KESKEN));
@@ -319,7 +253,6 @@ public class SijoitteluBusinessServiceTest {
         ArgumentCaptor<Valintatulos> argument = ArgumentCaptor.forClass(Valintatulos.class);
         verify(valintatulosDaoMock).createOrUpdateValintatulos(argument.capture());
         Valintatulos valintatulos = argument.getValue();
-        assertEquals(ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI, valintatulos.getTila());
         assertEquals(IlmoittautumisTila.POISSA_KOKO_LUKUVUOSI, valintatulos.getIlmoittautumisTila());
     }
 
@@ -331,9 +264,6 @@ public class SijoitteluBusinessServiceTest {
                 .thenReturn(Optional.of(sijoittelu));
         when(hakukohdeDao.getHakukohdeForSijoitteluajo(TestDataGenerator.SIJOITTELU_AJO_ID_2, HAKUKOHDE_OID))
                 .thenReturn(testDataGenerator.createHakukohdes(1).get(0));
-        doThrow(new NotAuthorizedException())
-                .when(authorizer)
-                .checkOrganisationAccess(ROOT_ORG_OID, SijoitteluRole.CRUD_ROLE);
 
         when(valintatulosDaoMock.loadValintatulos(HAKUKOHDE_OID, VALINTATAPAJONO_OID, HAKEMUS_OID))
                 .thenReturn(getValintatulos(ValintatuloksenTila.KESKEN));
@@ -358,7 +288,6 @@ public class SijoitteluBusinessServiceTest {
         ArgumentCaptor<Valintatulos> argument = ArgumentCaptor.forClass(Valintatulos.class);
         verify(valintatulosDaoMock).createOrUpdateValintatulos(argument.capture());
         Valintatulos valintatulos = argument.getValue();
-        assertEquals(ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI, valintatulos.getTila());
         assertEquals(IlmoittautumisTila.EI_ILMOITTAUTUNUT, valintatulos.getIlmoittautumisTila());
     }
 
@@ -370,9 +299,6 @@ public class SijoitteluBusinessServiceTest {
                 .thenReturn(Optional.of(sijoittelu));
         when(hakukohdeDao.getHakukohdeForSijoitteluajo(TestDataGenerator.SIJOITTELU_AJO_ID_2, HAKUKOHDE_OID))
                 .thenReturn(testDataGenerator.createHakukohdes(1).get(0));
-        doThrow(new NotAuthorizedException())
-                .when(authorizer)
-                .checkOrganisationAccess(ROOT_ORG_OID, SijoitteluRole.CRUD_ROLE);
 
         when(valintatulosDaoMock.loadValintatulos(HAKUKOHDE_OID, VALINTATAPAJONO_OID, HAKEMUS_OID))
                 .thenReturn(getValintatulos(ValintatuloksenTila.KESKEN));
@@ -397,7 +323,6 @@ public class SijoitteluBusinessServiceTest {
         ArgumentCaptor<Valintatulos> argument = ArgumentCaptor.forClass(Valintatulos.class);
         verify(valintatulosDaoMock).createOrUpdateValintatulos(argument.capture());
         Valintatulos valintatulos = argument.getValue();
-        assertEquals(ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI, valintatulos.getTila());
         assertEquals(IlmoittautumisTila.LASNA_SYKSY, valintatulos.getIlmoittautumisTila());
     }
 
@@ -409,9 +334,6 @@ public class SijoitteluBusinessServiceTest {
                 .thenReturn(Optional.of(sijoittelu));
         when(hakukohdeDao.getHakukohdeForSijoitteluajo(TestDataGenerator.SIJOITTELU_AJO_ID_2, HAKUKOHDE_OID))
                 .thenReturn(testDataGenerator.createHakukohdes(1).get(0));
-        doThrow(new NotAuthorizedException())
-                .when(authorizer)
-                .checkOrganisationAccess(ROOT_ORG_OID, SijoitteluRole.CRUD_ROLE);
 
         when(valintatulosDaoMock.loadValintatulos(HAKUKOHDE_OID, VALINTATAPAJONO_OID, HAKEMUS_OID))
                 .thenReturn(getValintatulos(ValintatuloksenTila.KESKEN));
@@ -436,7 +358,6 @@ public class SijoitteluBusinessServiceTest {
         ArgumentCaptor<Valintatulos> argument = ArgumentCaptor.forClass(Valintatulos.class);
         verify(valintatulosDaoMock).createOrUpdateValintatulos(argument.capture());
         Valintatulos valintatulos = argument.getValue();
-        assertEquals(ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI, valintatulos.getTila());
         assertEquals(IlmoittautumisTila.POISSA_SYKSY, valintatulos.getIlmoittautumisTila());
     }
 
@@ -448,9 +369,6 @@ public class SijoitteluBusinessServiceTest {
                 .thenReturn(Optional.of(sijoittelu));
         when(hakukohdeDao.getHakukohdeForSijoitteluajo(TestDataGenerator.SIJOITTELU_AJO_ID_2, HAKUKOHDE_OID))
                 .thenReturn(testDataGenerator.createHakukohdes(1).get(0));
-        doThrow(new NotAuthorizedException())
-                .when(authorizer)
-                .checkOrganisationAccess(ROOT_ORG_OID, SijoitteluRole.CRUD_ROLE);
 
         when(valintatulosDaoMock.loadValintatulos(HAKUKOHDE_OID, VALINTATAPAJONO_OID, HAKEMUS_OID))
                 .thenReturn(getValintatulos(ValintatuloksenTila.KESKEN));
@@ -475,7 +393,6 @@ public class SijoitteluBusinessServiceTest {
         ArgumentCaptor<Valintatulos> argument = ArgumentCaptor.forClass(Valintatulos.class);
         verify(valintatulosDaoMock).createOrUpdateValintatulos(argument.capture());
         Valintatulos valintatulos = argument.getValue();
-        assertEquals(ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI, valintatulos.getTila());
         assertEquals(IlmoittautumisTila.LASNA, valintatulos.getIlmoittautumisTila());
     }
 
@@ -487,9 +404,6 @@ public class SijoitteluBusinessServiceTest {
                 .thenReturn(Optional.of(sijoittelu));
         when(hakukohdeDao.getHakukohdeForSijoitteluajo(TestDataGenerator.SIJOITTELU_AJO_ID_2, HAKUKOHDE_OID))
                 .thenReturn(testDataGenerator.createHakukohdes(1).get(0));
-        doThrow(new NotAuthorizedException())
-                .when(authorizer)
-                .checkOrganisationAccess(ROOT_ORG_OID, SijoitteluRole.CRUD_ROLE);
 
         when(valintatulosDaoMock.loadValintatulos(HAKUKOHDE_OID, VALINTATAPAJONO_OID, HAKEMUS_OID))
                 .thenReturn(getValintatulos(ValintatuloksenTila.KESKEN));
@@ -514,7 +428,6 @@ public class SijoitteluBusinessServiceTest {
         ArgumentCaptor<Valintatulos> argument = ArgumentCaptor.forClass(Valintatulos.class);
         verify(valintatulosDaoMock).createOrUpdateValintatulos(argument.capture());
         Valintatulos valintatulos = argument.getValue();
-        assertEquals(ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI, valintatulos.getTila());
         assertEquals(IlmoittautumisTila.POISSA, valintatulos.getIlmoittautumisTila());
     }
 

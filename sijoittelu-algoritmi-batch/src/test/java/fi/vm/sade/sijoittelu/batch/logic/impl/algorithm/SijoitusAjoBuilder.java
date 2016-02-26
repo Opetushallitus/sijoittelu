@@ -1,5 +1,6 @@
 package fi.vm.sade.sijoittelu.batch.logic.impl.algorithm;
 
+import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.util.SijoitteluAlgorithmUtil;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.HakukohdeWrapper;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.SijoitteluajoWrapper;
 import fi.vm.sade.sijoittelu.domain.*;
@@ -17,7 +18,7 @@ class SijoitusAjoBuilder {
 
     public static void assertSijoittelu(SijoitusAjoBuilder before, SijoitusAjoBuilder after) {
         SijoitteluajoWrapper sijoitteluajoWrapper = before.build();
-        SijoitteluAlgorithm.sijoittele(sijoitteluajoWrapper);
+        SijoitteluAlgorithmUtil.sijoittele(sijoitteluajoWrapper);
         HakukohdeWrapper hakukohdeWrapper = sijoitteluajoWrapper.getHakukohteet().get(0);
         assertEquals(after.forTest(), SijoitusAjoBuilder.forTest(hakukohdeWrapper.getHakukohde()));
     }

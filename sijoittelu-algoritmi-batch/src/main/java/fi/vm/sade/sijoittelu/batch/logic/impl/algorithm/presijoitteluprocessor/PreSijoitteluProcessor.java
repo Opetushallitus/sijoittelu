@@ -1,12 +1,22 @@
 package fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.presijoitteluprocessor;
 
+import com.google.common.collect.ImmutableList;
+import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.Processor;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.SijoitteluajoWrapper;
 
-public interface PreSijoitteluProcessor {
+import java.util.Collection;
 
-    default String name() {
-        return getClass().getSimpleName();
-    }
+public interface PreSijoitteluProcessor extends Processor {
 
     void process(SijoitteluajoWrapper sijoitteluajoWrapper);
+
+    static Collection<PreSijoitteluProcessor> defaultPreProcessors() {
+        return ImmutableList.of(
+                new PreSijoitteluProcessorTasasijaArvonta(),
+                new PreSijoitteluProcessorSort(),
+                new PreSijoitteluProcessorPeruutaAlemmatPeruneetJaHyvaksytyt(),
+                new PreSijoitteluProcessorHylkaaHakijaRyhmaanKuulumattomat(),
+                new PreSijoitteluProcessorLahtotilanteenHash()
+        );
+    }
 }
