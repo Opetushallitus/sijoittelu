@@ -67,14 +67,6 @@ public class VastaanotettavuusDTO {
             return action == VastaanottoActionValue.VastaanotaSitovasti || action == VastaanottoActionValue.VastaanotaEhdollisesti;
         }
 
-        public boolean actionMatches(ValintatuloksenTila tila) {
-            return tilaToAction.get(tila) == action;
-        }
-
-        public static boolean matchesInexistingAction(ValintatuloksenTila tila) {
-            return tila == ValintatuloksenTila.KESKEN || tila == ValintatuloksenTila.EI_VASTAANOTETTU_MAARA_AIKANA || tila == ValintatuloksenTila.PERUUTETTU;
-        }
-
         public static VastaanottoAction of(ValintatuloksenTila tila) {
             return new VastaanottoAction(tilaToAction.get(tila));
         }

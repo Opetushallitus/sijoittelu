@@ -1,6 +1,5 @@
 package fi.vm.sade.sijoittelu.laskenta.service.business.impl;
 
-import static fi.vm.sade.sijoittelu.domain.VastaanotettavuusDTO.VastaanottoActionValue.VastaanotaSitovasti;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
@@ -10,7 +9,6 @@ import fi.vm.sade.sijoittelu.domain.IlmoittautumisTila;
 import fi.vm.sade.sijoittelu.domain.Sijoittelu;
 import fi.vm.sade.sijoittelu.domain.ValintatuloksenTila;
 import fi.vm.sade.sijoittelu.domain.Valintatulos;
-import fi.vm.sade.sijoittelu.domain.VastaanotettavuusDTO;
 import fi.vm.sade.sijoittelu.laskenta.external.resource.ValintaTulosServiceResource;
 import fi.vm.sade.sijoittelu.laskenta.external.resource.dto.ParametriArvoDTO;
 import fi.vm.sade.sijoittelu.laskenta.external.resource.dto.ParametriDTO;
@@ -25,10 +23,8 @@ import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import java.util.Arrays;
 import java.util.Date;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 public class SijoitteluBusinessServiceTest {
     final String HAKU_OID = TestDataGenerator.HAKU_OID;
