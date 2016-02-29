@@ -7,7 +7,6 @@ import com.google.common.hash.HashFunction;
 import com.google.common.hash.Hasher;
 import fi.vm.sade.sijoittelu.domain.Hakemus;
 import fi.vm.sade.sijoittelu.domain.Hakukohde;
-import fi.vm.sade.sijoittelu.domain.Valintatulos;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

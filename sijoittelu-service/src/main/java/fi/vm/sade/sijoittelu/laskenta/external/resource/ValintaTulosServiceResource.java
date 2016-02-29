@@ -1,14 +1,15 @@
 package fi.vm.sade.sijoittelu.laskenta.external.resource;
 
+import fi.vm.sade.sijoittelu.domain.Valintatulos;
 import fi.vm.sade.sijoittelu.domain.VastaanotettavuusDTO;
+import fi.vm.sade.sijoittelu.laskenta.external.resource.dto.VastaanottoEventDto;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import java.util.List;
 
-@Path("/virkailija/vastaanotto")
+@Path("/virkailija")
 public interface ValintaTulosServiceResource {
 
     @GET
@@ -16,4 +17,14 @@ public interface ValintaTulosServiceResource {
     @Produces(MediaType.APPLICATION_JSON)
     VastaanotettavuusDTO vastaanotettavuus(@PathParam("hakijaOid") String hakijaOid, @PathParam("hakemusOid") String hakemusOid, @PathParam("hakukohdeOid") String hakukohdeOid);
 
+
+    @GET
+    @Path("/valintatulos/haku/{hakuOid}")
+    @Produces(MediaType.APPLICATION_JSON)
+    List<Valintatulos> valintatuloksetValinnantilalla(@PathParam("hakuOid") String hakuOid);
+
+    @POST
+    @Path("/vastaanotto")
+    @Produces(MediaType.APPLICATION_JSON)
+    Response valintatuloksetValinnantilalla(List<VastaanottoEventDto> valintatuloses);
 }
