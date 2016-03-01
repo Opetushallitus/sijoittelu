@@ -126,6 +126,20 @@ public class TilaResource {
         return v;
     }
 
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("/hakukohde/{hakukohdeOid}")
+    @PreAuthorize(READ_UPDATE_CRUD)
+    @ApiOperation(value = "Valintatulosten haku hakukohteelle ja valintatapajonolle")
+    public List<Valintatulos> hakukohteelle(
+            @PathParam("hakukohdeOid") String hakukohdeOid) {
+        List<Valintatulos> v = sijoitteluBusinessService.haeHakukohteenTilat(hakukohdeOid);
+        if (v == null) {
+            v = new ArrayList<Valintatulos>();
+        }
+        return v;
+    }
+
     @POST
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/haku/{hakuOid}/hakukohde/{hakukohdeOid}")
