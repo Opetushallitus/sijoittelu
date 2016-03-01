@@ -92,6 +92,15 @@
           <bean class="fi.vm.sade.sijoittelu.tulos.resource.ObjectMapperProvider" />
         </jaxrs-client:providers>
         </jaxrs-client:client>
+        <jaxrs-client:client id="ValintaTulosServiceRestClient"
+                             address="${valintalaskentakoostepalvelu.valinta-tulos-service.rest.url}"
+                             serviceClass="fi.vm.sade.sijoittelu.laskenta.external.resource.ValintaTulosServiceResource"
+                             inheritHeaders="true">
+            <jaxrs-client:providers>
+                <bean class="com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider"/>
+                <bean class="fi.vm.sade.sijoittelu.tulos.resource.ObjectMapperProvider"/>
+            </jaxrs-client:providers>
+        </jaxrs-client:client>
 
         <context:component-scan base-package="fi.vm.sade.sijoittelu.laskenta"/>
         <context:component-scan base-package="fi.vm.sade.sijoittelu.batch"/>
