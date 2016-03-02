@@ -58,10 +58,6 @@ public class Valintatulos implements Serializable {
     @Transient
     private Date viimeinenMuutos;
 
-    @JsonIgnore
-    @Transient
-    private List<LogEntry> originalLogEntries = Collections.emptyList();
-
     public Valintatulos() {}
 
     public Valintatulos(String valintatapajonoOid, String hakemusOid, String hakukohdeOid, String hakijaOid, String hakuOid, int hakutoive) {
@@ -88,21 +84,8 @@ public class Valintatulos implements Serializable {
         this.hyvaksyttyVarasijalta = hyvaksyttyVarasijalta;
     }
 
-    public List<LogEntry> getOriginalLogEntries() {
-        return originalLogEntries;
-    }
-
     public Date getViimeinenMuutos() {
         return viimeinenMuutos;
-    }
-
-    @PostLoad
-    public void postLoad() {
-        originalLogEntries = ImmutableList.copyOf(logEntries);
-        viimeinenMuutos = logEntries.stream()
-                    .filter(e -> e.getLuotu() != null)
-                    .map(LogEntry::getLuotu)
-                    .sorted((e1,e2) -> e2.compareTo(e1)).findFirst().orElse(null);
     }
 
     private void modified(String field, Object oldVal, Object newVal, String muokkaaja, String selite) {
