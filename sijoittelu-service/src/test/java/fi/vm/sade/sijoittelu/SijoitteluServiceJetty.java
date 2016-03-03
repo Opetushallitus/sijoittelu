@@ -54,7 +54,7 @@ public class SijoitteluServiceJetty {
         System.setProperty("cas.service.organisaatio-service", "http://localhost");
         System.setProperty("sijoittelu-service.mongodb.dbname", Optional.ofNullable(System.getProperty("sijoitteludbName")).orElse("sijoitteludb"));
         System.setProperty("valintalaskenta-laskenta-service.mongodb.dbname", "valintalaskentadb");
-        System.setProperty("valintalaskenta-laskenta-service.mongodb.uri", System.getProperty("valintalaskentaMongoUri"));
+        System.setProperty("valintalaskenta-laskenta-service.mongodb.uri", Optional.ofNullable(System.getProperty("valintalaskentaMongoUri")).orElse(""));
         System.setProperty("sijoittelu-service.mongodb.uri", System.getProperty("sijoitteluMongoUri"));
         try {
             if (server.isStopped()) {
