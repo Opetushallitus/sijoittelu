@@ -24,7 +24,7 @@ public interface ValintaTulosServiceResource {
     List<Valintatulos> valintatuloksetValinnantilalla(@PathParam("hakuOid") String hakuOid);
 
     @POST
-    @Path("/vastaanotto")
+    @Path("/trasactional-vastaanotto")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     Response valintatuloksetValinnantilalla(List<VastaanottoEventDto> valintatuloses);
