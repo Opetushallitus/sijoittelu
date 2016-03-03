@@ -42,13 +42,15 @@ public class SijoitteluServiceJetty {
 
     public static void startShared() {
         SpringProfile.setProfile("test");
+        String publicServerUrl = Optional.ofNullable(System.getProperty("public_server")).orElse("http://localhost");
+        String vtsServerUrl = Optional.ofNullable(System.getProperty("vts_server")).orElse("http://localhost");
         System.setProperty("root.organisaatio.oid","");
         System.setProperty("valintalaskentakoostepalvelu.valintaperusteet.rest.url", "http://localhost");
         System.setProperty("host.ilb", "http://localhost");
-        System.setProperty("valintalaskentakoostepalvelu.parametriservice.rest.url", "http://localhost");
-        System.setProperty("valintalaskentakoostepalvelu.tarjonta.rest.url", "http://localhost");
-        System.setProperty("valintalaskentakoostepalvelu.valinta-tulos-service.rest.url", "http://localhost");
-        System.setProperty("sijoittelu-service.swagger.basepath", "http://localhost");
+        System.setProperty("valintalaskentakoostepalvelu.parametriservice.rest.url", publicServerUrl);
+        System.setProperty("valintalaskentakoostepalvelu.tarjonta.rest.url", publicServerUrl);
+        System.setProperty("valintalaskentakoostepalvelu.valinta-tulos-service.rest.url", vtsServerUrl + "/valinta-tulos-service");
+        System.setProperty("sijoittelu-service.swagger.basepath", resourcesAddress);
         System.setProperty("cas.callback.sijoittelu-service", "http://localhost");
         System.setProperty("cas.service.sijoittelu-service", "http://localhost");
         System.setProperty("cas.service.organisaatio-service", "http://localhost");
