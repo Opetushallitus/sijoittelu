@@ -95,7 +95,10 @@ public class RaportointiConverterImpl implements RaportointiConverter {
     }
 
     private static Date viimeisinValintatuloksenMuutos(Valintatulos valintatulos) {
-        return valintatulos.getViimeinenMuutos();
+        if (valintatulos != null && !valintatulos.getLogEntries().isEmpty()) {
+            return valintatulos.getLogEntries().get(valintatulos.getLogEntries().size() - 1).getLuotu();
+        }
+        return null;
     }
 
     private Map<String, List<Valintatulos>> mapValintatulokset(List<Valintatulos> valintatulokset) {

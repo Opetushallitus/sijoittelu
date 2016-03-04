@@ -55,7 +55,8 @@ public class Valintatulos implements Serializable {
     @Transient
     private Date read = new Date();
 
-    private Date viimeinenMuutos = null;
+    @Transient
+    private Date viimeinenMuutos;
 
     public Valintatulos() {}
 
