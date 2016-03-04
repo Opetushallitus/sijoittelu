@@ -178,6 +178,10 @@ public class Valintatulos implements Serializable {
         this.tila = tila;
     }
 
+    public void setTila(String tila, String selite, String muokkaaja) {
+        modified("tila", this.tila, tila, muokkaaja, selite);
+    }
+
     public String getValintatapajonoOid() {
         return valintatapajonoOid;
     }
