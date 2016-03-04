@@ -49,7 +49,7 @@ public class Valintatulos implements Serializable {
     @Transient
     private ValintatuloksenTila tila = ValintatuloksenTila.KESKEN;
 
-    @Transient
+    @Embedded
     private List<LogEntry> logEntries = new ArrayList<>();
 
     @Transient
