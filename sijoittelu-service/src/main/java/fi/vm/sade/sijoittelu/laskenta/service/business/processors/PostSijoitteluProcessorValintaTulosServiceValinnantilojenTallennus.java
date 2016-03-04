@@ -9,7 +9,10 @@ import fi.vm.sade.sijoittelu.laskenta.external.resource.dto.VastaanottoEventDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Date;
+import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -33,6 +36,6 @@ public class PostSijoitteluProcessorValintaTulosServiceValinnantilojenTallennus 
 
     }
     private static String extractSeliteFromValintatulos(Valintatulos valintatulos) {
-        return valintatulos.getLogEntries().stream().findFirst().map(LogEntry::getSelite).orElse("");
+        return valintatulos.getLogEntries().stream().sorted((a,b) -> b.getLuotu().compareTo(a.getLuotu())).findFirst().map(LogEntry::getSelite).orElse("");
     }
 }
