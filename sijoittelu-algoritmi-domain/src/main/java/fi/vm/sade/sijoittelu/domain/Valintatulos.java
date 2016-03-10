@@ -47,7 +47,7 @@ public class Valintatulos implements Serializable {
     private ValintatulosMailStatus mailStatus = new ValintatulosMailStatus();
 
     @Transient
-    private ValintatuloksenTila tila = ValintatuloksenTila.KESKEN;
+    private ValintatuloksenTila tila;
 
     @Embedded
     private List<LogEntry> logEntries = new ArrayList<>();
