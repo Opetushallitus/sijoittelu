@@ -94,7 +94,10 @@ public class SijoitteluajoWrapperFactory {
         if (valintatulos != null && valintatulos.getTila() != null) {
             ValintatuloksenTila tila = valintatulos.getTila();
             boolean voidaanVaihtaa = false;
-            if (tila == ValintatuloksenTila.PERUNUT) {
+            if (tila == ValintatuloksenTila.OTTANUT_VASTAAN_TOISEN_PAIKAN) {
+                hakemus.setTila(HakemuksenTila.PERUUNTUNUT);
+                hakemus.setTilanKuvaukset(TilanKuvaukset.peruuntunutVastaanottanutToisenOpiskelupaikanYhdenPaikanSaannonPiirissa());
+            } else if (tila == ValintatuloksenTila.PERUNUT) {
                 hakemus.setTila(HakemuksenTila.PERUNUT);
             } else if (asList(VASTAANOTTANUT_SITOVASTI, EHDOLLISESTI_VASTAANOTTANUT).contains(tila)) {
                 if (hakemus.getEdellinenTila() == HakemuksenTila.VARALLA || hakemus.getEdellinenTila() == HakemuksenTila.VARASIJALTA_HYVAKSYTTY) {

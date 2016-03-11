@@ -93,4 +93,12 @@ public class TilanKuvaukset {
             put("EN", "Cancelled, is not included in the applicant group: " + hakijaryhma);
         }};
     }
+
+    public static Map<String,String> peruuntunutVastaanottanutToisenOpiskelupaikanYhdenPaikanSaannonPiirissa() {
+        return new HashMap<String, String>() {{
+            put("FI", "Peruuntunut, ottanut vastaan toisen opiskelupaikan yhden paikan säännön piirissä");
+            put("SV", "Annullerad, ottanut vastaan toisen opiskelupaikan yhden paikan säännön piirissä");
+            put("EN", "Cancelled, ottanut vastaan toisen opiskelupaikan yhden paikan säännön piirissä");
+        }};
+    }
 }
