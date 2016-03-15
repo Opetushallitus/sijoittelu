@@ -49,6 +49,9 @@ public class Valintatulos implements Serializable {
     @Transient
     private ValintatuloksenTila tila;
 
+    @Transient
+    private ValintatuloksenTila tilaHakijalle;
+
     @Embedded
     private List<LogEntry> logEntries = new ArrayList<>();
 
@@ -171,6 +174,14 @@ public class Valintatulos implements Serializable {
 
     public void setTila(ValintatuloksenTila tila, String selite) {
         setTila(tila, selite, JARJESTELMA);
+    }
+
+    public ValintatuloksenTila getTilaHakijalle() {
+        return tilaHakijalle;
+    }
+
+    public void setTilaHakijalle(ValintatuloksenTila tilaHakijalle) {
+        this.tilaHakijalle = tilaHakijalle;
     }
 
     public void setTila(ValintatuloksenTila tila, String selite, String muokkaaja) {
