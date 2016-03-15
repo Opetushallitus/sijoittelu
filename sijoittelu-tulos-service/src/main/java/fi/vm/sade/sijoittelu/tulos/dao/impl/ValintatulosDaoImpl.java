@@ -148,11 +148,6 @@ public class ValintatulosDaoImpl implements ValintatulosDao {
                     if (mongoTulos.getJulkaistavissa() != valintatulos.getJulkaistavissa()) {
                         valintatulos.setJulkaistavissa(mongoTulos.getJulkaistavissa(), "Korvataan sijoittelun ulkopuolella muuttuneella tiedolla");
                     }
-                    if (mongoTulos.getTila() != ValintatuloksenTila.KESKEN) {
-                        LOG.info("Ohitetaan sijoittelun ulkopuolella muutettu valintatulos: hakija {}, hakemus {}, hakutoive {}",
-                                valintatulos.getHakijaOid(), valintatulos.getHakemusOid(), valintatulos.getHakutoive());
-                        valintatulos.setTila(mongoTulos.getTila(), "Korvataan sijoittelun ulkopuolella muuttuneella tiedolla");
-                    }
                 }
             }
             return valintatulos;
