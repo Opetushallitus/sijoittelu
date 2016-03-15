@@ -133,7 +133,7 @@ public class MorphiaIntegrationTest {
 
         Valintatulos vx2 = valintatulosDao.loadValintatulos(hakukohdeOid,jonoOid,hakemusOid);
         Assert.assertEquals(vx2.getId(), vx.getId());
-        Assert.assertEquals(vx2.getTila(), vx.getTila());
+        Assert.assertNull(vx2.getTila());
         Assert.assertNotSame(vx2.getHakemusOid(), vx.getHakemusOid());
     }
 
