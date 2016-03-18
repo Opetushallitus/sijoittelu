@@ -1,8 +1,10 @@
 package fi.vm.sade.sijoittelu.batch.logic.impl.algorithm;
 
 import fi.vm.sade.sijoittelu.domain.Tasasijasaanto;
+import fi.vm.sade.sijoittelu.domain.ValintatuloksenTila;
 import org.junit.Test;
 
+import static fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoitusAjoBuilder.assertSijoittelu;
 import static fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoitusAjoBuilder.luoAlkuTilanneJaAssertSijoittelu;
 
 public class SijoittelunPerusTilanteetTest {
@@ -30,5 +32,30 @@ public class SijoittelunPerusTilanteetTest {
         fEnsin.hakijaryhma(3, "A", "B", "C", "D");
         fEnsin.jono(5, Tasasijasaanto.ARVONTA).hyvaksytty("A","B","C","E").samaJonosija(j -> j.hyvaksytty("F").varalla("D"));
         luoAlkuTilanneJaAssertSijoittelu(fEnsin);
+    }
+    @Test
+    public void peruutaToisenPaikanVastaanottanutHakijaYPS() {
+        SijoitusAjoBuilder before = new SijoitusAjoBuilder().julkaiseKaikki();
+        SijoitusAjoBuilder after = new SijoitusAjoBuilder().julkaiseKaikki();
+        before.jono(2).hyvaksytty("A", "B").varalla("C").vastaanottotila("A", ValintatuloksenTila.OTTANUT_VASTAAN_TOISEN_PAIKAN);
+        after.jono(2).peruuntunut("A").hyvaksytty("B", "C");
+        assertSijoittelu(before, after);
+    }
+    @Test
+    public void sailytaAlkuperainenPerunutValintatila() {
+        SijoitusAjoBuilder before = new SijoitusAjoBuilder().julkaiseKaikki();
+        SijoitusAjoBuilder after = new SijoitusAjoBuilder().julkaiseKaikki();
+        boolean asetaMyosEdellinenTila = true;
+        before.jono(2).perunut(asetaMyosEdellinenTila, "A").hyvaksytty("B", "C").vastaanottotila("A", ValintatuloksenTila.OTTANUT_VASTAAN_TOISEN_PAIKAN);
+        after.jono(2).perunut("A").hyvaksytty("B", "C");
+        assertSijoittelu(before, after);
+    }
+    @Test
+    public void sailytaAlkuperainenHylattyValintatila() {
+        SijoitusAjoBuilder before = new SijoitusAjoBuilder().julkaiseKaikki();
+        SijoitusAjoBuilder after = new SijoitusAjoBuilder().julkaiseKaikki();
+        before.jono(2).hyvaksytty("A", "B").hylatty("C").vastaanottotila("C", ValintatuloksenTila.OTTANUT_VASTAAN_TOISEN_PAIKAN);
+        after.jono(2).hyvaksytty("A", "B").hylatty("C");
+        assertSijoittelu(before, after);
     }
 }

@@ -95,6 +95,11 @@ class SijoitusAjoBuilder {
             }
             for (Hakemus h : julkaistutHakemukset) {
                 Valintatulos valintatulos = new Valintatulos(jonoBuilder.valintatapajonoOid, h.getHakemusOid(), hakukohde.getOid(), h.getHakijaOid(), sijoitteluAjo.getHakuOid(), h.getPrioriteetti());
+                if (jonoBuilder.vastaanottotilat.containsKey(h.getHakemusOid())) {
+                    valintatulos.setTila(jonoBuilder.vastaanottotilat.get(h.getHakemusOid()), "");
+                } else {
+                    valintatulos.setTila(ValintatuloksenTila.KESKEN, "");
+                }
                 valintatulos.setJulkaistavissa(true, "Init");
                 valintatulokset.add(valintatulos);
             }
@@ -144,12 +149,18 @@ class SijoitusAjoBuilder {
         private int tasasijaJonoSija;
         private int alkuperainenJonosija;
         private List<Hakemus> julkaistutHakemukset = new ArrayList<>();
+        private Map<String, ValintatuloksenTila> vastaanottotilat = new HashMap<>();
 
         public JonoBuilder(int aloituspaikat, Tasasijasaanto tasasijasaanto, int valintatapajonoPrioriteetti) {
             this.aloituspaikat = aloituspaikat;
             this.tasasijasaanto = tasasijasaanto;
             this.valintatapajonoPrioriteetti = valintatapajonoPrioriteetti;
             this.valintatapajonoOid = "jono-" + valintatapajonoPrioriteetti;
+        }
+
+        public JonoBuilder vastaanottotila(String hakija, ValintatuloksenTila vastaanottotila) {
+            vastaanottotilat.put(hakija, vastaanottotila);
+            return this;
         }
 
         public JonoBuilder hyvaksytty(String... hakijat) {
@@ -166,13 +177,16 @@ class SijoitusAjoBuilder {
             return this;
         }
 
-        private JonoBuilder add(HakemuksenTila tila, boolean julkaistu, String... hakijat) {
+        private JonoBuilder add(HakemuksenTila tila, boolean asetaEdellinenTila, boolean julkaistu, String... hakijat) {
             for (String hakija : hakijat) {
                 if (!samaJonoSija) {
                     tasasijaJonoSija = 1;
                 }
                 int jonosija = 1 + (samaJonoSija ? alkuperainenJonosija : hakemukset.size());
                 Hakemus h = createHakemus(hakija, tila, jonosija, tasasijaJonoSija);
+                if (asetaEdellinenTila) {
+                    h.setEdellinenTila(tila);
+                }
                 hakemukset.add(h);
                 if (julkaistu) {
                     julkaistutHakemukset.add(h);
@@ -180,6 +194,10 @@ class SijoitusAjoBuilder {
                 tasasijaJonoSija++;
             }
             return this;
+        }
+
+        private JonoBuilder add(HakemuksenTila tila, boolean julkaistu, String... hakijat) {
+            return add(tila, false, julkaistu, hakijat);
         }
 
         public JonoBuilder copyHakemusWithTila(Hakemus hakemus, HakemuksenTila tila, boolean julkaistu) {
@@ -210,6 +228,10 @@ class SijoitusAjoBuilder {
             return add(HakemuksenTila.PERUUNTUNUT, false, hakijat);
         }
 
+        public JonoBuilder perunut(boolean asetaEdellinenTila, String... hakijat) {
+            return add(HakemuksenTila.PERUNUT, asetaEdellinenTila, false, hakijat);
+        }
+
         public JonoBuilder perunut(String... hakijat) {
             return add(HakemuksenTila.PERUNUT, false, hakijat);
         }
@@ -224,6 +246,10 @@ class SijoitusAjoBuilder {
 
         public JonoBuilder perunut_julkaistu(String... hakijat) {
             return add(HakemuksenTila.PERUNUT, false, hakijat);
+        }
+
+        public JonoBuilder hylatty(String... hakijat) {
+            return add(HakemuksenTila.HYLATTY, false, hakijat);
         }
 
         public List<String> getHakijaNames() {

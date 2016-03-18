@@ -79,13 +79,18 @@ public class SijoitteluajoWrapperFactory {
         }
     }
 
-    private static final Set<HakemuksenTila> VOI_TULLA_HYVAKSYTYKSI = ImmutableSet.of(HakemuksenTila.HYVAKSYTTY, HakemuksenTila.VARASIJALTA_HYVAKSYTTY, HakemuksenTila.VARALLA);
+    private static boolean voiTullaHyvaksytyksi(Hakemus hakemus) {
+        final Set<HakemuksenTila> hyvaksymiseenMahdollisestiJohtavatTilat =
+                ImmutableSet.of(HakemuksenTila.HYVAKSYTTY, HakemuksenTila.VARASIJALTA_HYVAKSYTTY, HakemuksenTila.VARALLA);
+        return ((hakemus.getEdellinenTila() == null && hyvaksymiseenMahdollisestiJohtavatTilat.contains(hakemus.getTila()))
+                || hyvaksymiseenMahdollisestiJohtavatTilat.contains(hakemus.getEdellinenTila()));
+    }
 
     private static void setHakemuksenValintatuloksenTila(Hakemus hakemus, HakemusWrapper hakemusWrapper, HenkiloWrapper henkiloWrapper, Valintatulos valintatulos) {
         if (valintatulos != null && valintatulos.getTila() != null) {
             ValintatuloksenTila tila = valintatulos.getTila();
             boolean voidaanVaihtaa = false;
-            if ((hakemus.getEdellinenTila() == null || VOI_TULLA_HYVAKSYTYKSI.contains(hakemus.getEdellinenTila())) && tila == ValintatuloksenTila.OTTANUT_VASTAAN_TOISEN_PAIKAN) {
+            if (voiTullaHyvaksytyksi(hakemus) && tila == ValintatuloksenTila.OTTANUT_VASTAAN_TOISEN_PAIKAN) {
                 hakemus.setTila(HakemuksenTila.PERUUNTUNUT);
                 hakemus.setTilanKuvaukset(TilanKuvaukset.peruuntunutVastaanottanutToisenOpiskelupaikanYhdenPaikanSaannonPiirissa());
             } else if (tila == ValintatuloksenTila.PERUNUT) {
