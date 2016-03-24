@@ -324,9 +324,10 @@ public class SijoitteleHakukohde {
     }
 
     static boolean eiPeruttuaKorkeampaaTaiSamaaHakutoivetta(HakemusWrapper hakemusWrapper) {
+        List<HakemuksenTila> perututHakemuksenTilat = Arrays.asList(HakemuksenTila.PERUNUT, HakemuksenTila.PERUUTETTU);
         return hakemusWrapper.getHenkilo().getHakemukset()
             .stream()
             .filter(h -> h != hakemusWrapper)
-            .noneMatch(h -> hakemuksenTila(h) == HakemuksenTila.PERUNUT && hakemuksenPrioriteetti(h) <= hakemuksenPrioriteetti(hakemusWrapper));
+            .noneMatch(h -> perututHakemuksenTilat.contains(hakemuksenTila(h)) && hakemuksenPrioriteetti(h) <= hakemuksenPrioriteetti(hakemusWrapper));
     }
 }
