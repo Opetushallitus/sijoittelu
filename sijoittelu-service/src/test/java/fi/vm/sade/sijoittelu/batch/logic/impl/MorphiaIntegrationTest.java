@@ -184,7 +184,7 @@ public class MorphiaIntegrationTest {
     static class someConfig {
 
         @Bean
-        PropertyPlaceholderConfigurer propConfig() {
+        static PropertyPlaceholderConfigurer propConfig() {
             PropertyPlaceholderConfigurer ppc =  new PropertyPlaceholderConfigurer();
             ppc.setLocation(new ClassPathResource("common.properties"));
             return ppc;
