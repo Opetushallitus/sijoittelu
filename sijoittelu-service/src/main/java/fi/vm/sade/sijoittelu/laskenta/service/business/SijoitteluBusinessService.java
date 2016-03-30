@@ -9,6 +9,7 @@ import static java.util.stream.Collectors.toSet;
 import static org.apache.commons.lang.StringUtils.isBlank;
 import static org.apache.commons.lang.StringUtils.join;
 import static org.springframework.security.core.context.SecurityContextHolder.getContext;
+import com.google.common.collect.Sets;
 import com.google.common.collect.Sets.SetView;
 
 import akka.actor.ActorRef;
@@ -313,10 +314,38 @@ public class SijoitteluBusinessService {
         return kaikkiHakukohteet.parallelStream().map(h -> sijoitteluTulosConverter.convert(h)).collect(Collectors.toList());
     }
 
+    private static class HakukohdeOidAndSijoitteluAjoId {
+        private final String hakukohdeOid;
+        private final Long sijoitteluAjoId;
+        public HakukohdeOidAndSijoitteluAjoId(String hakukohdeOid, Long sijoitteluAjoId) {
+            this.hakukohdeOid = hakukohdeOid;
+            this.sijoitteluAjoId = sijoitteluAjoId;
+        }
+
+        public Long getSijoitteluAjoId() {
+            return sijoitteluAjoId;
+        }
+
+        public String getHakukohdeOid() {
+            return hakukohdeOid;
+        }
+    }
+    
+    private Map<String,Set<Long>> hakukohdeToSijoitteluAjoId(final ErillisSijoittelu sijoittelu) {
+        return sijoittelu.getSijoitteluajot().stream()
+                .flatMap(s -> s.getHakukohteet().stream().map(h -> new HakukohdeOidAndSijoitteluAjoId(h.getOid(),s.getSijoitteluajoId())))
+                .collect(Collectors.toMap(
+                        HakukohdeOidAndSijoitteluAjoId::getHakukohdeOid,
+                        s -> Sets.newHashSet(s.getSijoitteluAjoId()),
+                        (u,v) -> Sets.union(u,v)
+                ));
+    }
+
     public long erillissijoittele(HakuDTO sijoitteluTyyppi) {
         long startTime = System.currentTimeMillis();
         String hakuOid = sijoitteluTyyppi.getHakuOid();
-        ErillisSijoittelu sijoittelu = getOrCreateErillisSijoittelu(hakuOid);
+        final ErillisSijoittelu sijoittelu = getOrCreateErillisSijoittelu(hakuOid);
+        final Long latest = sijoittelu.getLatestSijoitteluajo().getSijoitteluajoId();
         List<Hakukohde> uudetHakukohteet = sijoitteluTyyppi.getHakukohteet().parallelStream().map(DomainConverter::convertToHakukohde).collect(Collectors.toList());
         List<Hakukohde> olemassaolevatHakukohteet = Collections.<Hakukohde>emptyList();
 
@@ -337,6 +366,27 @@ public class SijoitteluBusinessService {
         );
         uusiSijoitteluajo.setEndMils(System.currentTimeMillis());
         processOldApplications(olemassaolevatHakukohteet, kaikkiHakukohteet, hakuOid);
+        Map<String, Set<Long>> hakukohdeToSijoitteluAjoId = hakukohdeToSijoitteluAjoId(sijoittelu);
+        final Set<String> uudetHakukohdeOids = uudetHakukohteet.stream().map(u -> u.getOid()).collect(Collectors.toSet());
+        // Clone previous hakukohdes
+        hakukohdeToSijoitteluAjoId.forEach(
+                (hakukohdeOid, sijoitteluAjoIds) -> {
+                    if(!uudetHakukohdeOids.contains(hakukohdeOid)) {
+                        Long latestForThisHakukohde = Sets.newTreeSet(sijoitteluAjoIds).last();
+                        Hakukohde h = hakukohdeDao.getHakukohdeForSijoitteluajo(latestForThisHakukohde, hakukohdeOid);
+                        if(h == null) {
+                            // hakukohde has been removed
+                        } else {
+                            h.setId(null);
+                            h.setSijoitteluajoId(latest);
+                            hakukohdeDao.persistHakukohde(h, hakuOid);
+                            HakukohdeItem item = new HakukohdeItem();
+                            item.setOid(hakukohdeOid);
+                            sijoittelu.getLatestSijoitteluajo().getHakukohteet().add(item);
+                        }
+                    }
+                }
+        );
         erillisSijoitteluDao.persistSijoittelu(sijoittelu);
         return uusiSijoitteluajo.getSijoitteluajoId();
     }
