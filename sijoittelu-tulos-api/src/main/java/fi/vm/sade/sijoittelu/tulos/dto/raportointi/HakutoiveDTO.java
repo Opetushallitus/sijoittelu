@@ -1,6 +1,7 @@
 package fi.vm.sade.sijoittelu.tulos.dto.raportointi;
 
 import fi.vm.sade.sijoittelu.tulos.dto.PistetietoDTO;
+import fi.vm.sade.sijoittelu.tulos.dto.ValintatuloksenTila;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,6 +16,8 @@ public class HakutoiveDTO implements Comparable<HakutoiveDTO> {
     private String hakukohdeOid;
 
     private String tarjoajaOid;
+
+    private ValintatuloksenTila vastaanottotieto = ValintatuloksenTila.KESKEN;
 
     private List<PistetietoDTO> pistetiedot = new ArrayList<PistetietoDTO>();
 
@@ -90,5 +93,13 @@ public class HakutoiveDTO implements Comparable<HakutoiveDTO> {
 
     public void setKaikkiJonotSijoiteltu(boolean kaikkiJonotSijoiteltu) {
         this.kaikkiJonotSijoiteltu = kaikkiJonotSijoiteltu;
+    }
+
+    public ValintatuloksenTila getVastaanottotieto() {
+        return vastaanottotieto;
+    }
+
+    public void setVastaanottotieto(ValintatuloksenTila vastaanottotieto) {
+        this.vastaanottotieto = vastaanottotieto;
     }
 }

@@ -64,6 +64,8 @@ public class RaportointiConverterImpl implements RaportointiConverter {
             List<Valintatulos> valintatulokset = valintatulosMap.get(hakija.getHakemusOid());
             if (valintatulokset != null && !valintatulokset.isEmpty()) {
                 for (HakutoiveDTO hakutoiveDTO : hakija.getHakutoiveet()) {
+                    valintatulokset.stream().filter(v -> v.getHakukohdeOid().equals(hakutoiveDTO.getHakukohdeOid())).forEach(v ->
+                        hakutoiveDTO.setVastaanottotieto(EnumConverter.convert(ValintatuloksenTila.class, v.getTila())));
                     for (HakutoiveenValintatapajonoDTO valintatapajonoDTO : hakutoiveDTO.getHakutoiveenValintatapajonot()) {
                         if (valintatapajonoDTO == null) {
                             continue;
@@ -73,7 +75,6 @@ public class RaportointiConverterImpl implements RaportointiConverter {
                                 continue;
                             }
                             if (valintatulos.getValintatapajonoOid().equals(valintatapajonoDTO.getValintatapajonoOid())) {
-                                valintatapajonoDTO.setVastaanottotieto(EnumConverter.convert(ValintatuloksenTila.class, valintatulos.getTila()));
                                 valintatapajonoDTO.setJulkaistavissa(valintatulos.getJulkaistavissa());
                                 valintatapajonoDTO.setHyvaksyttyVarasijalta(valintatulos.getHyvaksyttyVarasijalta());
                                 valintatapajonoDTO.setValintatuloksenViimeisinMuutos(viimeisinValintatuloksenMuutos(valintatulos));

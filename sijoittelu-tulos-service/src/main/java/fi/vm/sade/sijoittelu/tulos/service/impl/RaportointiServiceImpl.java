@@ -116,12 +116,12 @@ public class RaportointiServiceImpl implements RaportointiService {
             if (hakukohdeOids != null && hakukohdeOids.contains(hakutoiveDTO.getHakukohdeOid())) {
                 isPartOfHakukohdeList = true;
             }
+            if (hakutoiveDTO.getVastaanottotieto() == ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI) {
+                isVastaanottanut = true;
+            }
             for (HakutoiveenValintatapajonoDTO valintatapajono : hakutoiveDTO.getHakutoiveenValintatapajonot()) {
                 if (valintatapajono.getTila() == HakemuksenTila.HYVAKSYTTY || valintatapajono.getTila() == HakemuksenTila.VARASIJALTA_HYVAKSYTTY) {
                     isHyvaksytty = true;
-                }
-                if (valintatapajono.getVastaanottotieto() == ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI) {
-                    isVastaanottanut = true;
                 }
             }
         }
