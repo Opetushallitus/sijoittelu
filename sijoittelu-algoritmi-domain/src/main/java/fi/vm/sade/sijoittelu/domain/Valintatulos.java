@@ -291,4 +291,28 @@ public class Valintatulos implements Serializable {
     public Date getRead() {
         return read;
     }
+
+    @Override
+    public String toString() {
+        return "Valintatulos{" +
+                "id=" + id +
+                ", valintatapajonoOid='" + valintatapajonoOid + '\'' +
+                ", hakemusOid='" + hakemusOid + '\'' +
+                ", hakukohdeOid='" + hakukohdeOid + '\'' +
+                ", julkaistavissa=" + julkaistavissa +
+                ", hyvaksyttyVarasijalta=" + hyvaksyttyVarasijalta +
+                ", hyvaksyPeruuntunut=" + hyvaksyPeruuntunut +
+                ", hakijaOid='" + hakijaOid + '\'' +
+                ", hakuOid='" + hakuOid + '\'' +
+                ", hakutoive=" + hakutoive +
+                ", ilmoittautumisTila=" + ilmoittautumisTila +
+                ", mailStatus=" + mailStatus +
+                ", tila=" + tila +
+                ", tilaHakijalle=" + tilaHakijalle +
+                ", logEntries=" + logEntries +
+                ", read=" + read +
+                ", viimeinenMuutos=" + viimeinenMuutos +
+                ", originalLogEntries=" + originalLogEntries +
+                '}';
+    }
 }

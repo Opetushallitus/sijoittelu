@@ -1,18 +1,23 @@
 package fi.vm.sade.sijoittelu.laskenta.service.business;
 
-import com.mysema.commons.lang.Pair;
+import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.HakemusWrapper;
+import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.SijoitteluajoWrapper;
+import fi.vm.sade.sijoittelu.domain.HakemuksenTila;
 import fi.vm.sade.sijoittelu.domain.LogEntry;
 import fi.vm.sade.sijoittelu.domain.ValintatuloksenTila;
 import fi.vm.sade.sijoittelu.domain.Valintatulos;
 import fi.vm.sade.sijoittelu.laskenta.external.resource.ValintaTulosServiceResource;
 import fi.vm.sade.sijoittelu.laskenta.external.resource.dto.VastaanottoEventDto;
 import fi.vm.sade.sijoittelu.tulos.dao.ValintatulosDao;
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class ValintatulosWithVastaanotto {
 
@@ -48,11 +53,24 @@ public class ValintatulosWithVastaanotto {
     }
 
     public void persistValintatulokset(List<Valintatulos> valintatulokset) {
-        List<VastaanottoEventDto> vs = valintatulokset.stream()
-                .map(v -> new VastaanottoEventDto(
-                        v.getHakijaOid(), v.getHakemusOid(), v.getHakukohdeOid(), v.getHakuOid(), v.getTila(),
-                        "järjestelmä", extractSeliteFromValintatulos(v)))
-                .collect(Collectors.toList());
+
+        final Map<Pair<String, String>, List<Valintatulos>> valintatulosGroups = valintatulokset.stream().
+                collect(Collectors.groupingBy(valintatulos -> Pair.of(valintatulos.getHakukohdeOid(), valintatulos.getHakemusOid())));
+
+        List<VastaanottoEventDto> vs = valintatulosGroups.entrySet().stream().map(e -> e.getValue())
+                .map(list -> {
+                    List<Valintatulos> eiKeskenTilaiset = list.stream()
+                            .filter(v -> v.getTila() != ValintatuloksenTila.KESKEN)
+                            .collect(Collectors.toList());
+                    if(eiKeskenTilaiset.size() > 1) {
+                        throw new RuntimeException("Hakijalle löytyi useampi kuin yksi ei-kesken-tilainen valintatulos: " + list);
+                    }
+                    Valintatulos vt = (!eiKeskenTilaiset.isEmpty() ? eiKeskenTilaiset.get(0) : list.get(0));
+                    return new VastaanottoEventDto(
+                            vt.getHakijaOid(), vt.getHakemusOid(), vt.getHakukohdeOid(), vt.getHakuOid(), vt.getTila(),
+                            "järjestelmä", extractSeliteFromValintatulos(vt));
+                }).collect(Collectors.toList());
+
         valintaTulosServiceResource.valintatuloksetValinnantilalla(vs);
         valintatulokset.forEach(valintatulosDao::createOrUpdateValintatulos);
     }
