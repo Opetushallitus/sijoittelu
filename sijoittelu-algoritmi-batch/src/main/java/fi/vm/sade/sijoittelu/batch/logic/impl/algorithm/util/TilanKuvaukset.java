@@ -96,9 +96,9 @@ public class TilanKuvaukset {
 
     public static Map<String,String> peruuntunutVastaanottanutToisenOpiskelupaikanYhdenPaikanSaannonPiirissa() {
         return new HashMap<String, String>() {{
-            put("FI", "Peruuntunut, ottanut vastaan toisen opiskelupaikan yhden paikan säännön piirissä");
-            put("SV", "Annullerad, ottanut vastaan toisen opiskelupaikan yhden paikan säännön piirissä");
-            put("EN", "Cancelled, ottanut vastaan toisen opiskelupaikan yhden paikan säännön piirissä");
+            put("FI", "Peruuntunut, vastaanottanut toisen korkeakoulupaikan");
+            put("SV", "Annullerad, tagit emot en annan högskoleplats");
+            put("EN", "Cancelled, accepted another higher education study place");
         }};
     }
 }
