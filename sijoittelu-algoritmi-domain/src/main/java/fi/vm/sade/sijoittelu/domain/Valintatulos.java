@@ -189,8 +189,9 @@ public class Valintatulos implements Serializable {
         this.tila = tila;
     }
 
-    public void setTila(String oldTila, String tila, String selite, String muokkaaja) {
+    public void setTila(ValintatuloksenTila oldTila, ValintatuloksenTila tila, String selite, String muokkaaja) {
         modified("tila", oldTila, tila, muokkaaja, selite);
+        this.tila = tila;
     }
 
     public String getValintatapajonoOid() {
