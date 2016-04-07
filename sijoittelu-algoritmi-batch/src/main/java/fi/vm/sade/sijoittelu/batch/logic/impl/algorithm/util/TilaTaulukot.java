@@ -12,6 +12,7 @@ public class TilaTaulukot {
     private static final List<IlmoittautumisTila> poissaoloTilat = Arrays.asList(IlmoittautumisTila.POISSA, IlmoittautumisTila.POISSA_KOKO_LUKUVUOSI, IlmoittautumisTila.POISSA_SYKSY);
     private static final List<HakemuksenTila> hylatytTilat = Arrays.asList(HakemuksenTila.PERUNUT, HakemuksenTila.PERUUTETTU, HakemuksenTila.HYLATTY);
     private static final List<HakemuksenTila> yliajettavatHakemuksetTilat = Arrays.asList(HakemuksenTila.HYVAKSYTTY, HakemuksenTila.VARALLA, HakemuksenTila.VARASIJALTA_HYVAKSYTTY);
+    private static final List<HakemuksenTila> vastaanotonMuokattavissaTilat = Arrays.asList(HakemuksenTila.HYVAKSYTTY, HakemuksenTila.VARASIJALTA_HYVAKSYTTY, HakemuksenTila.PERUNUT, HakemuksenTila.PERUUTETTU);
 
     public static boolean kuuluuHyvaksyttyihinTiloihin(HakemuksenTila tila) {
         return hyvaksytytTilat.contains(tila);
@@ -31,4 +32,6 @@ public class TilaTaulukot {
     public static boolean kuuluuYliajettaviinHakemuksenTiloihin(HakemuksenTila tila) {
         return yliajettavatHakemuksetTilat.contains(tila);
     }
+
+    public static boolean kuuluuVastaanotonMuokattavissaTiloihin(HakemuksenTila tila) { return vastaanotonMuokattavissaTilat.contains(tila); }
 }

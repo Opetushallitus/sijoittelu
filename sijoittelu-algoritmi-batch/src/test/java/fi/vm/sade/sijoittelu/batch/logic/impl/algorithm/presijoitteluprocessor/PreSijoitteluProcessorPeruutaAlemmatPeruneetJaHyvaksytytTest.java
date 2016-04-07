@@ -144,10 +144,10 @@ public class PreSijoitteluProcessorPeruutaAlemmatPeruneetJaHyvaksytytTest {
 
         pre.process(sijoitteluajoWrapper);
 
-        Assert.assertEquals(sijoitteluajoWrapper.getHakukohteet().get(0)
-                .getValintatapajonot().get(0).getHakemukset().get(0).getHakemus().getTila(), HakemuksenTila.PERUUNTUNUT);
-        Assert.assertEquals(sijoitteluajoWrapper.getHakukohteet().get(1)
-                .getValintatapajonot().get(0).getHakemukset().get(0).getHakemus().getTila(), HakemuksenTila.HYVAKSYTTY);
+        Assert.assertEquals(HakemuksenTila.HYVAKSYTTY, sijoitteluajoWrapper.getHakukohteet().get(0)
+                .getValintatapajonot().get(0).getHakemukset().get(0).getHakemus().getTila());
+        Assert.assertEquals(HakemuksenTila.HYVAKSYTTY, sijoitteluajoWrapper.getHakukohteet().get(1)
+                .getValintatapajonot().get(0).getHakemukset().get(0).getHakemus().getTila());
 
         sijoitteluajoWrapper = generateSijoitteluajoWrapper();
 
@@ -193,10 +193,10 @@ public class PreSijoitteluProcessorPeruutaAlemmatPeruneetJaHyvaksytytTest {
 
         pre.process(sijoitteluajoWrapper);
 
-        Assert.assertEquals(sijoitteluajoWrapper.getHakukohteet().get(0)
-                .getValintatapajonot().get(0).getHakemukset().get(0).getHakemus().getTila(), HakemuksenTila.HYVAKSYTTY);
-        Assert.assertEquals(sijoitteluajoWrapper.getHakukohteet().get(1)
-                .getValintatapajonot().get(0).getHakemukset().get(0).getHakemus().getTila(), HakemuksenTila.PERUUNTUNUT);
+        Assert.assertEquals(HakemuksenTila.HYVAKSYTTY, sijoitteluajoWrapper.getHakukohteet().get(0)
+                .getValintatapajonot().get(0).getHakemukset().get(0).getHakemus().getTila());
+        Assert.assertEquals(HakemuksenTila.HYVAKSYTTY, sijoitteluajoWrapper.getHakukohteet().get(1)
+                .getValintatapajonot().get(0).getHakemukset().get(0).getHakemus().getTila());
     }
 
     @Test

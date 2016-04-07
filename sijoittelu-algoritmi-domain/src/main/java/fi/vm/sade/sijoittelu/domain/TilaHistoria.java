@@ -36,5 +36,13 @@ public class TilaHistoria implements Serializable {
     public void setTila(HakemuksenTila tila) {
         this.tila = tila;
     }
+
+    @Override
+    public String toString() {
+        return "TilaHistoria{" +
+                "luotu=" + luotu +
+                ", tila=" + tila +
+                '}';
+    }
 }
 

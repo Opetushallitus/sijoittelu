@@ -58,6 +58,8 @@ public class VastaanottotietoTest {
         valintatulos.setValintatapajonoOid("tkk_jono_1", "");
 
         valintatuloses.add(valintatulos);
+        SijoitteluAlgorithmUtil.sijoittele(new SijoitteluAjo(), hakukohteet, valintatuloses);
+        SijoitteluAlgorithmUtil.sijoittele(new SijoitteluAjo(), hakukohteet, valintatuloses);
         SijoittelunTila s = SijoitteluAlgorithmUtil.sijoittele(new SijoitteluAjo(), hakukohteet, valintatuloses);
 
         System.out.println(PrintHelper.tulostaSijoittelu(s));
@@ -108,6 +110,9 @@ public class VastaanottotietoTest {
         valintatulos.setValintatapajonoOid("opisto_jono_1", "");
 
         valintatuloses.add(valintatulos);
+        SijoitteluAlgorithmUtil.sijoittele(new SijoitteluAjo(), hakukohteet, valintatuloses);
+        TestHelper.assertoi(hakukohteet.get(2).getValintatapajonot()
+                .get(0), "1.2.246.562.24.00000000006", HakemuksenTila.HYVAKSYTTY);
         SijoittelunTila s = SijoitteluAlgorithmUtil.sijoittele(new SijoitteluAjo(), hakukohteet, valintatuloses);
 
         System.out.println(PrintHelper.tulostaSijoittelu(s));
@@ -115,12 +120,10 @@ public class VastaanottotietoTest {
         // assertoi
         TestHelper.assertoi(hakukohteet.get(2).getValintatapajonot()
                 .get(0), "1.2.246.562.24.00000000005", HakemuksenTila.HYVAKSYTTY);
-        TestHelper.assertoi(hakukohteet.get(2).getValintatapajonot()
-                .get(0), "1.2.246.562.24.00000000006", HakemuksenTila.HYVAKSYTTY);
         TestHelper.assertoi(hakukohteet.get(0).getValintatapajonot()
-                .get(0), "1.2.246.562.24.00000000006", HakemuksenTila.PERUUNTUNUT);
+                .get(0), "1.2.246.562.24.00000000006", HakemuksenTila.VARALLA);
         TestHelper.assertoi(hakukohteet.get(0).getValintatapajonot()
-                .get(1), "1.2.246.562.24.00000000006", HakemuksenTila.PERUUNTUNUT);
+                .get(1), "1.2.246.562.24.00000000006", HakemuksenTila.VARALLA);
 
 
 
@@ -157,9 +160,9 @@ public class VastaanottotietoTest {
         TestHelper.assertoi(hakukohteet.get(2).getValintatapajonot()
                 .get(0), "1.2.246.562.24.00000000006", HakemuksenTila.HYVAKSYTTY);
         TestHelper.assertoi(hakukohteet.get(0).getValintatapajonot()
-                .get(0), "1.2.246.562.24.00000000006", HakemuksenTila.PERUUNTUNUT);
+                .get(0), "1.2.246.562.24.00000000006", HakemuksenTila.VARALLA);
         TestHelper.assertoi(hakukohteet.get(0).getValintatapajonot()
-                .get(1), "1.2.246.562.24.00000000006", HakemuksenTila.PERUUNTUNUT);
+                .get(1), "1.2.246.562.24.00000000006", HakemuksenTila.VARALLA);
         TestHelper.assertoi(hakukohteet.get(0).getValintatapajonot()
                 .get(0), "1.2.246.562.24.00000000003", HakemuksenTila.VARALLA);
 
@@ -195,11 +198,11 @@ public class VastaanottotietoTest {
         TestHelper.assertoi(hakukohteet.get(1).getValintatapajonot()
                 .get(0), "1.2.246.562.24.00000000002", HakemuksenTila.VARALLA);
         TestHelper.assertoi(hakukohteet.get(1).getValintatapajonot()
-                .get(0), "1.2.246.562.24.00000000003", HakemuksenTila.HYVAKSYTTY);
-        TestHelper.assertoi(hakukohteet.get(0).getValintatapajonot()
                 .get(0), "1.2.246.562.24.00000000003", HakemuksenTila.PERUUNTUNUT);
         TestHelper.assertoi(hakukohteet.get(0).getValintatapajonot()
-                .get(1), "1.2.246.562.24.00000000003", HakemuksenTila.PERUUNTUNUT);
+                .get(0), "1.2.246.562.24.00000000003", HakemuksenTila.VARALLA);
+        TestHelper.assertoi(hakukohteet.get(0).getValintatapajonot()
+                .get(1), "1.2.246.562.24.00000000003", HakemuksenTila.HYVAKSYTTY);
     }
 
     @Test
@@ -307,9 +310,13 @@ public class VastaanottotietoTest {
 
         // assertoi
         TestHelper.assertoi(hakukohteet.get(1).getValintatapajonot()
+                .get(0), "1.2.246.562.24.000000000010", HakemuksenTila.HYVAKSYTTY);
+        TestHelper.assertoi(hakukohteet.get(1).getValintatapajonot()
+                .get(0), "1.2.246.562.24.00000000003", HakemuksenTila.PERUUNTUNUT);
+        TestHelper.assertoi(hakukohteet.get(1).getValintatapajonot()
                 .get(0), "1.2.246.562.24.00000000002", HakemuksenTila.VARALLA);
         TestHelper.assertoi(hakukohteet.get(1).getValintatapajonot()
-                .get(0), "1.2.246.562.24.00000000001", HakemuksenTila.HYVAKSYTTY);
+                .get(0), "1.2.246.562.24.00000000001", HakemuksenTila.VARALLA);
 
         valintatuloses = new ArrayList<>();
         valintatulos = new Valintatulos();

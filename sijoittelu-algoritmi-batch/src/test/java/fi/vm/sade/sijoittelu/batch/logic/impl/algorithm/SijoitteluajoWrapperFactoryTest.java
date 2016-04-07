@@ -128,7 +128,10 @@ public class SijoitteluajoWrapperFactoryTest {
     }
 
     private static List<Hakemus> yksiHakemus() {
-        return asetaRandomTilanKuvaus(Collections.singletonList(new Hakemus().setHakemusOid("123")));
+        Hakemus h = new Hakemus();
+        h.setHakemusOid("123");
+        h.setTila(HakemuksenTila.HYVAKSYTTY);
+        return asetaRandomTilanKuvaus(Collections.singletonList(h));
     }
 
     private static SijoitteluajoWrapper sijoitteluAjo(Valintatulos valintatulos, List<Hakemus> hakemukset) {
