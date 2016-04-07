@@ -21,10 +21,10 @@ public class PreSijoitteluProcessorPeruutaAlemmatPeruneetJaHyvaksytyt implements
         henkilot.forEach(henkilo -> {
             Optional<Valintatulos> sitovaOpt = sitovastiVastaanottanut(henkilo);
             Optional<Valintatulos> ehdollinenOpt = ehdollisestiVastaanottanut(henkilo);
-            if (sitovaOpt.isPresent()) {
+            if (sitovaOpt.isPresent() && sijoitteluajoWrapper.isKKHaku()) {
                 peruutaMuutKuinSitovastiVastaanotettuHakemus(sijoitteluajoWrapper, henkilo, sitovaOpt.get());
             }
-            else if (ehdollinenOpt.isPresent()) {
+            else if (ehdollinenOpt.isPresent() && sijoitteluajoWrapper.isKKHaku()) {
                 peruutaAlemmatHakemukset(sijoitteluajoWrapper, henkilo, ehdollinenOpt.get());
             }
             HakemusWrapper parasHyvaksyttyHakutoive = parasHyvaksyttyTaiPeruttuHakutoive(henkilo);
