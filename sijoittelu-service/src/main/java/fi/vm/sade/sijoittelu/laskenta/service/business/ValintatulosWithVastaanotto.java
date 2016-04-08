@@ -11,6 +11,8 @@ import fi.vm.sade.sijoittelu.laskenta.external.resource.dto.VastaanottoEventDto;
 import fi.vm.sade.sijoittelu.tulos.dao.ValintatulosDao;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -20,6 +22,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class ValintatulosWithVastaanotto {
+
+    private static final Logger LOG = LoggerFactory.getLogger(ValintatulosWithVastaanotto.class);
 
     final private ValintatulosDao valintatulosDao;
     final private ValintaTulosServiceResource valintaTulosServiceResource;
@@ -31,9 +35,13 @@ public class ValintatulosWithVastaanotto {
     }
 
     public List<Valintatulos> forHaku(String hakuOid) {
+        LOG.info("Haetaan valintatulokset haulle {}" + hakuOid);
         List<Valintatulos> fromDb = valintatulosDao.loadValintatulokset(hakuOid);
+        LOG.info("Valintatulokset haettu haulle {}" + hakuOid);
+        LOG.info("Haetaan haetaan vastaanottotiedot haulle {}" + hakuOid);
         Map<Triple<String, String, String>, Valintatulos> vastaanottotiedot =
                 indexValintatulokset(valintaTulosServiceResource.valintatuloksetValinnantilalla(hakuOid));
+        LOG.info("Vastaanottotiedot haettu haulle {}" + hakuOid);
         fromDb.forEach(v -> {
             ValintatuloksenTila tila = ValintatuloksenTila.KESKEN;
             Triple<String, String, String> key = Triple.of(

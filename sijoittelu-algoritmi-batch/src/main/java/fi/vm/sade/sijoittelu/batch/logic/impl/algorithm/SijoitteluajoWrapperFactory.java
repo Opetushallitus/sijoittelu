@@ -6,6 +6,8 @@ import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.util.TilanKuvaukset;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.*;
 import fi.vm.sade.sijoittelu.domain.*;
 import org.apache.commons.lang3.tuple.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.*;
 import java.util.List;
@@ -17,7 +19,11 @@ import static java.util.Arrays.asList;
 import static java.util.Collections.emptyMap;
 
 public class SijoitteluajoWrapperFactory {
+
+    private static final Logger LOG = LoggerFactory.getLogger(SijoitteluajoWrapperFactory.class);
+
     public static SijoitteluajoWrapper createSijoitteluAjoWrapper(SijoitteluAjo sijoitteluAjo, List<Hakukohde> hakukohteet, List<Valintatulos> valintatulokset) {
+        LOG.info("Luodaan SijoitteluAjoWrapper haulle {}" + sijoitteluAjo.getHakuOid());
         final Map<String, Map<String, Map<String, Valintatulos>>> indeksoidutTulokset = indexValintatulokset(valintatulokset);
         SijoitteluajoWrapper sijoitteluajoWrapper = new SijoitteluajoWrapper(sijoitteluAjo);
         Map<String, HenkiloWrapper> hakemusOidMap = new HashMap<String, HenkiloWrapper>();
@@ -52,6 +58,7 @@ public class SijoitteluajoWrapperFactory {
                 });
             });
         });
+        LOG.info("SijoitteluAjoWrapper luotu haulle {}" + sijoitteluAjo.getHakuOid());
         return sijoitteluajoWrapper;
     }
 

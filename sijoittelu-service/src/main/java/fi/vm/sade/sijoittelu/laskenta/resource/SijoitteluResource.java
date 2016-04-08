@@ -62,6 +62,7 @@ public class SijoitteluResource {
         final Map<String, HakijaryhmaValintatapajonoDTO> hakijaryhmaByOid = haeMahdollisestiMuuttuneetHakijaryhmat(haku);
         final Map<String, Map<String, ValintatapajonoDTO>> hakukohdeMapToValintatapajonoByOid = Maps.newHashMap(haeMahdollisestiMuuttuneetValintatapajonot(haku));
 
+        List<String> kaikkiaJonojaEiOleSijoiteltu = new ArrayList<>();
         haku.getHakukohteet().forEach(hakukohde -> {
             updateHakijaRyhmat(hakijaryhmaByOid, hakukohde);
             Map<String, ValintatapajonoDTO> valintatapajonoByOid = hakukohdeMapToValintatapajonoByOid.getOrDefault(hakukohde.getOid(), new HashMap<>());
@@ -69,11 +70,11 @@ public class SijoitteluResource {
                 updateValintatapajonotAndRemoveUsed(valintatapajonoByOid, vaihe);
             });
             if (!valintatapajonoByOid.isEmpty()) {
-                LOGGER.warn("Kaikkia jonoja ei ole sijoiteltu {}!", hakukohde.getOid());
+                kaikkiaJonojaEiOleSijoiteltu.add(hakukohde.getOid());
                 hakukohde.setKaikkiJonotSijoiteltu(false);
             }
         });
-
+        LOGGER.warn("Kaikkia jonoja ei ole sijoiteltu:", kaikkiaJonojaEiOleSijoiteltu);
         LOGGER.info("Valintaperusteet asetettu {}!", hakuOid);
 
         try {
