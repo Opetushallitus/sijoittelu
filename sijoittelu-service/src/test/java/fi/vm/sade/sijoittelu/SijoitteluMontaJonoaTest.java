@@ -182,7 +182,7 @@ public class SijoitteluMontaJonoaTest {
         tulos.setJulkaistavissa(true, "");
         tulos.setTila(ValintatuloksenTila.EI_VASTAANOTETTU_MAARA_AIKANA, "");
         tulos.setValintatapajonoOid("oid1", "");
-        SijoittelunTila s = SijoitteluAlgorithmUtil.sijoittele(new SijoitteluAjo(), hakukohteet, Arrays.asList(tulos));
+        SijoittelunTila s = SijoitteluAlgorithmUtil.sijoittele(new SijoitteluAjo(), tallennaEdellisetTilat(hakukohteet), Arrays.asList(tulos));
 
         System.out.println(PrintHelper.tulostaSijoittelu(s));
 
@@ -224,7 +224,7 @@ public class SijoitteluMontaJonoaTest {
         tulos2.setValintatapajonoOid("oid2", "");
 
         //hakukohteet = haku.getHakukohteet().parallelStream().map(DomainConverter::convertToHakukohde).collect(Collectors.toList());
-        s = SijoitteluAlgorithmUtil.sijoittele(new SijoitteluAjo(), hakukohteet, Arrays.asList(tulos, tulos2));
+        s = SijoitteluAlgorithmUtil.sijoittele(new SijoitteluAjo(), tallennaEdellisetTilat(hakukohteet), Arrays.asList(tulos, tulos2));
 
         System.out.println(PrintHelper.tulostaSijoittelu(s));
 
@@ -252,7 +252,7 @@ public class SijoitteluMontaJonoaTest {
         HakuDTO haku = valintatietoService.haeValintatiedot("1.2.246.562.29.173465377510");
 
         List<Hakukohde> hakukohteet = haku.getHakukohteet().parallelStream().map(DomainConverter::convertToHakukohde).collect(Collectors.toList());
-        final SijoitteluajoWrapper sijoitteluAjo = SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(new SijoitteluAjo(), hakukohteet, Collections.newArrayList());
+        final SijoitteluajoWrapper sijoitteluAjo = SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(new SijoitteluAjo(), tallennaEdellisetTilat(hakukohteet), Collections.newArrayList());
         sijoitteluAjo.setVarasijaSaannotAstuvatVoimaan(LocalDateTime.now().plusDays(1));
         SijoittelunTila s = SijoitteluAlgorithmUtil.sijoittele(sijoitteluAjo);
 
@@ -301,7 +301,7 @@ public class SijoitteluMontaJonoaTest {
         tulos2.setTila(ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI, "");
         tulos2.setJulkaistavissa(true, "");
         tulos2.setValintatapajonoOid("oid1", "");
-        SijoitteluajoWrapper sijoitteluajoWrapper = SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(new SijoitteluAjo(), hakukohteet, Arrays.asList(tulos));
+        SijoitteluajoWrapper sijoitteluajoWrapper = SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(new SijoitteluAjo(), tallennaEdellisetTilat(hakukohteet), Arrays.asList(tulos));
         sijoitteluajoWrapper.setVarasijaSaannotAstuvatVoimaan(LocalDateTime.now().plusDays(1));
         s = SijoitteluAlgorithmUtil.sijoittele(sijoitteluajoWrapper);
 
@@ -330,7 +330,7 @@ public class SijoitteluMontaJonoaTest {
                 Assert.assertTrue(hak.getTila().equals(HakemuksenTila.HYLATTY));
             }
         });
-        s = SijoitteluAlgorithmUtil.sijoittele(new SijoitteluAjo(), hakukohteet, Arrays.asList(tulos, tulos2));
+        s = SijoitteluAlgorithmUtil.sijoittele(new SijoitteluAjo(), tallennaEdellisetTilat(hakukohteet), Arrays.asList(tulos, tulos2));
 
         System.out.println(PrintHelper.tulostaSijoittelu(s));
 
@@ -357,7 +357,7 @@ public class SijoitteluMontaJonoaTest {
                 Assert.assertTrue(hak.getTila().equals(HakemuksenTila.HYLATTY));
             }
         });
-        sijoitteluajoWrapper = SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(new SijoitteluAjo(), hakukohteet, Arrays.asList(tulos, tulos2));
+        sijoitteluajoWrapper = SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(new SijoitteluAjo(), tallennaEdellisetTilat(hakukohteet), Arrays.asList(tulos, tulos2));
         sijoitteluajoWrapper.setKKHaku(true);
         s = SijoitteluAlgorithmUtil.sijoittele(sijoitteluajoWrapper);
 
@@ -561,7 +561,7 @@ public class SijoitteluMontaJonoaTest {
         HakuDTO haku = valintatietoService.haeValintatiedot("haku1");
 
         List<Hakukohde> hakukohteet = haku.getHakukohteet().parallelStream().map(DomainConverter::convertToHakukohde).collect(Collectors.toList());
-        SijoittelunTila s = SijoitteluAlgorithmUtil.sijoittele(new SijoitteluAjo(), hakukohteet, new ArrayList());
+        SijoittelunTila s = SijoitteluAlgorithmUtil.sijoittele(new SijoitteluAjo(), tallennaEdellisetTilat(hakukohteet), new ArrayList());
 
         System.out.println(PrintHelper.tulostaSijoittelu(s));
 
@@ -579,7 +579,7 @@ public class SijoitteluMontaJonoaTest {
 
         Valintatulos tulos9 = createTulos("oid9", "hakukohde1", "jono1");
         Valintatulos tulos10 = createTulos("oid10", "hakukohde1", "jono1");
-        s = SijoitteluAlgorithmUtil.sijoittele(new SijoitteluAjo(), hakukohteet, Arrays.asList(tulos1, tulos2, tulos3, tulos4, tulos5, tulos6, tulos7, tulos8, tulos9, tulos10));
+        s = SijoitteluAlgorithmUtil.sijoittele(new SijoitteluAjo(), tallennaEdellisetTilat(hakukohteet), Arrays.asList(tulos1, tulos2, tulos3, tulos4, tulos5, tulos6, tulos7, tulos8, tulos9, tulos10));
 
         System.out.println(PrintHelper.tulostaSijoittelu(s));
 
@@ -590,7 +590,7 @@ public class SijoitteluMontaJonoaTest {
 
         tulos3.setTila(ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI, "");
         tulos3.setIlmoittautumisTila(IlmoittautumisTila.POISSA, "");
-        s = SijoitteluAlgorithmUtil.sijoittele(new SijoitteluAjo(), hakukohteet, Arrays.asList(tulos1, tulos2, tulos3, tulos4, tulos5, tulos6, tulos7, tulos8, tulos9, tulos10));
+        s = SijoitteluAlgorithmUtil.sijoittele(new SijoitteluAjo(), tallennaEdellisetTilat(hakukohteet), Arrays.asList(tulos1, tulos2, tulos3, tulos4, tulos5, tulos6, tulos7, tulos8, tulos9, tulos10));
 
         System.out.println(PrintHelper.tulostaSijoittelu(s));
 
@@ -610,7 +610,7 @@ public class SijoitteluMontaJonoaTest {
         HakuDTO haku = valintatietoService.haeValintatiedot("haku1");
 
         List<Hakukohde> hakukohteet = haku.getHakukohteet().parallelStream().map(DomainConverter::convertToHakukohde).collect(Collectors.toList());
-        SijoittelunTila s = SijoitteluAlgorithmUtil.sijoittele(new SijoitteluAjo(), hakukohteet, new ArrayList());
+        SijoittelunTila s = SijoitteluAlgorithmUtil.sijoittele(new SijoitteluAjo(), tallennaEdellisetTilat(hakukohteet), new ArrayList());
 
         Valintatulos tulos1 = createTulos("oid1", "hakukohde1", "jono1");
         Valintatulos tulos2 = createTulos("oid2", "hakukohde1", "jono1");
@@ -639,7 +639,7 @@ public class SijoitteluMontaJonoaTest {
 
         Valintatulos tulos91 = createTulos("oid9", "hakukohde2", "jono2");
         Valintatulos tulos101 = createTulos("oid10", "hakukohde2", "jono2");
-        s = SijoitteluAlgorithmUtil.sijoittele(new SijoitteluAjo(), hakukohteet, Arrays.asList(tulos1, tulos2, tulos3, tulos4, tulos6, tulos7, tulos8, tulos9, tulos10, tulos11, tulos21, tulos31, tulos41, tulos61, tulos71, tulos81, tulos91, tulos101));
+        s = SijoitteluAlgorithmUtil.sijoittele(new SijoitteluAjo(), tallennaEdellisetTilat(hakukohteet), Arrays.asList(tulos1, tulos2, tulos3, tulos4, tulos6, tulos7, tulos8, tulos9, tulos10, tulos11, tulos21, tulos31, tulos41, tulos61, tulos71, tulos81, tulos91, tulos101));
 
         tulos1.setTila(ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI, "");
         tulos1.setIlmoittautumisTila(IlmoittautumisTila.POISSA, "");
@@ -650,7 +650,7 @@ public class SijoitteluMontaJonoaTest {
         tulos61.setTila(ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI, "");
         tulos71.setTila(ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI, "");
         tulos81.setTila(ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI, "");
-        s = SijoitteluAlgorithmUtil.sijoittele(new SijoitteluAjo(), hakukohteet, Arrays.asList(tulos1, tulos2, tulos3, tulos4, tulos6, tulos7, tulos8, tulos9, tulos10, tulos11, tulos21, tulos31, tulos41, tulos61, tulos71, tulos81, tulos91, tulos101));
+        s = SijoitteluAlgorithmUtil.sijoittele(new SijoitteluAjo(), tallennaEdellisetTilat(hakukohteet), Arrays.asList(tulos1, tulos2, tulos3, tulos4, tulos6, tulos7, tulos8, tulos9, tulos10, tulos11, tulos21, tulos31, tulos41, tulos61, tulos71, tulos81, tulos91, tulos101));
 
         System.out.println(PrintHelper.tulostaSijoittelu(s));
 
@@ -721,12 +721,23 @@ public class SijoitteluMontaJonoaTest {
         List<String> wanted = Arrays.asList(oids);
         List<String> actual = new ArrayList<String>();
         for (Hakemus hakemus : h.getHakemukset()) {
-            if (hakemus.getTila() == HakemuksenTila.HYVAKSYTTY) {
+            if (hakemus.getTila() == HakemuksenTila.HYVAKSYTTY || hakemus.getTila() == HakemuksenTila.VARASIJALTA_HYVAKSYTTY) {
                 actual.add(hakemus.getHakemusOid());
             }
         }
         Assert.assertTrue("Actual result does not contain all wanted approved OIDs", actual.containsAll(wanted));
         Assert.assertTrue("Wanted result contains more approved OIDs than actual", wanted.containsAll(actual));
+    }
+
+    private List<Hakukohde> tallennaEdellisetTilat(List<Hakukohde> hakukohteet) {
+        hakukohteet.stream().forEach(hk -> {
+            hk.getValintatapajonot().stream().forEach(jono -> {
+                jono.getHakemukset().stream().forEach(h -> {
+                    h.setEdellinenTila(h.getTila());
+                });
+            });
+        });
+        return hakukohteet;
     }
 
 }

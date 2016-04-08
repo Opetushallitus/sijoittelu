@@ -35,13 +35,13 @@ public class ValintatulosWithVastaanotto {
     }
 
     public List<Valintatulos> forHaku(String hakuOid) {
-        LOG.info("Haetaan valintatulokset haulle {}" + hakuOid);
+        LOG.info("Haetaan valintatulokset haulle {}", hakuOid);
         List<Valintatulos> fromDb = valintatulosDao.loadValintatulokset(hakuOid);
-        LOG.info("Valintatulokset haettu haulle {}" + hakuOid);
-        LOG.info("Haetaan haetaan vastaanottotiedot haulle {}" + hakuOid);
+        LOG.info("Valintatulokset haettu haulle {}", hakuOid);
+        LOG.info("Haetaan haetaan vastaanottotiedot haulle {}", hakuOid);
         Map<Triple<String, String, String>, Valintatulos> vastaanottotiedot =
                 indexValintatulokset(valintaTulosServiceResource.valintatuloksetValinnantilalla(hakuOid));
-        LOG.info("Vastaanottotiedot haettu haulle {}" + hakuOid);
+        LOG.info("Vastaanottotiedot haettu haulle {}", hakuOid);
         fromDb.forEach(v -> {
             ValintatuloksenTila tila = ValintatuloksenTila.KESKEN;
             Triple<String, String, String> key = Triple.of(
@@ -57,6 +57,7 @@ public class ValintatulosWithVastaanotto {
             }
             v.setTila(tila, "");
         });
+        LOG.info("Valintatuloksia haettu {} kpl haulle {}", fromDb.size(), hakuOid);
         return fromDb;
     }
 

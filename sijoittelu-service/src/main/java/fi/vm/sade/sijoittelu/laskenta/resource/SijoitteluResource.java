@@ -74,7 +74,7 @@ public class SijoitteluResource {
                 hakukohde.setKaikkiJonotSijoiteltu(false);
             }
         });
-        LOGGER.warn("Kaikkia jonoja ei ole sijoiteltu:", kaikkiaJonojaEiOleSijoiteltu);
+        LOGGER.warn("Kaikkia jonoja ei ole sijoiteltu: {}", kaikkiaJonojaEiOleSijoiteltu);
         LOGGER.info("Valintaperusteet asetettu {}!", hakuOid);
 
         try {

@@ -110,7 +110,7 @@ public class VastaanottoTest {
         ehdollinenPoistettava.setIlmoittautumisTila(IlmoittautumisTila.EI_TEHTY, "");
         ehdollinenPoistettava.setTila(ValintatuloksenTila.EHDOLLISESTI_VASTAANOTTANUT, "");
         ehdollinenPoistettava.setValintatapajonoOid("jono2", "");
-        final SijoitteluajoWrapper sijoitteluAjo = SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(new SijoitteluAjo(), hakukohteet, Arrays.asList(sitova, ehdollinen, perunut, ehdollinenPidettava, ehdollinenPoistettava));
+        final SijoitteluajoWrapper sijoitteluAjo = SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(new SijoitteluAjo(), tallennaEdellisetTilat(hakukohteet), Arrays.asList(sitova, ehdollinen, perunut, ehdollinenPidettava, ehdollinenPoistettava));
 
         SijoittelunTila s = SijoitteluAlgorithmUtil.sijoittele(sijoitteluAjo);
 
@@ -120,13 +120,13 @@ public class VastaanottoTest {
 
         hakukohteet.get(0).getValintatapajonot().get(0).getHakemukset().forEach(hak -> {
            if(hak.getHakemusOid().equals("oid1")) {
-               Assert.assertEquals(hak.getTila(), HakemuksenTila.HYVAKSYTTY);
+               Assert.assertEquals(hak.getTila(), HakemuksenTila.VARASIJALTA_HYVAKSYTTY);
            } else if(hak.getHakemusOid().equals("oid2")) {
-               Assert.assertEquals(hak.getTila(), HakemuksenTila.HYVAKSYTTY);
+               Assert.assertEquals(hak.getTila(), HakemuksenTila.VARASIJALTA_HYVAKSYTTY);
            } else if(hak.getHakemusOid().equals("oid3")) {
-               Assert.assertEquals(hak.getTila(), HakemuksenTila.HYVAKSYTTY);
+               Assert.assertEquals(hak.getTila(), HakemuksenTila.VARASIJALTA_HYVAKSYTTY);
            } else {
-               Assert.assertEquals(hak.getTila(), HakemuksenTila.HYVAKSYTTY);
+               Assert.assertEquals(hak.getTila(), HakemuksenTila.VARASIJALTA_HYVAKSYTTY);
            }
         });
 
@@ -164,7 +164,7 @@ public class VastaanottoTest {
         HakuDTO haku = valintatietoService.haeValintatiedot("1.2.246.562.29.173465377510");
         List<Hakukohde> hakukohteet = haku.getHakukohteet().parallelStream().map(DomainConverter::convertToHakukohde).collect(Collectors.toList());
 
-        SijoitteluajoWrapper sijoitteluAjo = SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(new SijoitteluAjo(), hakukohteet, Arrays.asList());
+        SijoitteluajoWrapper sijoitteluAjo = SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(new SijoitteluAjo(), tallennaEdellisetTilat(hakukohteet), Arrays.asList());
         SijoittelunTila s = SijoitteluAlgorithmUtil.sijoittele(sijoitteluAjo);
         System.out.println(PrintHelper.tulostaSijoittelu(s));
 
@@ -193,7 +193,7 @@ public class VastaanottoTest {
         jono1Tulos.setTila(ValintatuloksenTila.PERUUTETTU, "");
         jono1Tulos.setValintatapajonoOid("jono2", "");
 
-        sijoitteluAjo = SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(new SijoitteluAjo(), hakukohteet, Arrays.asList(jono1Tulos, jono2Tulos));
+        sijoitteluAjo = SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(new SijoitteluAjo(), tallennaEdellisetTilat(hakukohteet), Arrays.asList(jono1Tulos, jono2Tulos));
 
         s = SijoitteluAlgorithmUtil.sijoittele(sijoitteluAjo);
 
@@ -213,7 +213,7 @@ public class VastaanottoTest {
         HakuDTO haku = valintatietoService.haeValintatiedot("1.2.246.562.29.173465377510");
         List<Hakukohde> hakukohteet = haku.getHakukohteet().parallelStream().map(DomainConverter::convertToHakukohde).collect(Collectors.toList());
 
-        SijoitteluajoWrapper sijoitteluAjo = SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(new SijoitteluAjo(), hakukohteet, Arrays.asList());
+        SijoitteluajoWrapper sijoitteluAjo = SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(new SijoitteluAjo(), tallennaEdellisetTilat(hakukohteet), Arrays.asList());
 
         SijoittelunTila s = SijoitteluAlgorithmUtil.sijoittele(sijoitteluAjo);
 
@@ -243,7 +243,7 @@ public class VastaanottoTest {
         jono1Tulos.setTila(ValintatuloksenTila.EI_VASTAANOTETTU_MAARA_AIKANA, "");
         jono1Tulos.setValintatapajonoOid("jono1", "");
 
-        sijoitteluAjo = SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(new SijoitteluAjo(), hakukohteet, Arrays.asList(jono1Tulos, jono2Tulos));
+        sijoitteluAjo = SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(new SijoitteluAjo(), tallennaEdellisetTilat(hakukohteet), Arrays.asList(jono1Tulos, jono2Tulos));
 
         s = SijoitteluAlgorithmUtil.sijoittele(sijoitteluAjo);
 
@@ -263,7 +263,7 @@ public class VastaanottoTest {
         HakuDTO haku = valintatietoService.haeValintatiedot("1.2.246.562.29.173465377510");
         List<Hakukohde> hakukohteet = haku.getHakukohteet().parallelStream().map(DomainConverter::convertToHakukohde).collect(Collectors.toList());
 
-        SijoitteluajoWrapper sijoitteluAjo = SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(new SijoitteluAjo(), hakukohteet, Arrays.asList());
+        SijoitteluajoWrapper sijoitteluAjo = SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(new SijoitteluAjo(), tallennaEdellisetTilat(hakukohteet), Arrays.asList());
 
         SijoittelunTila s = SijoitteluAlgorithmUtil.sijoittele(sijoitteluAjo);
 
@@ -293,7 +293,7 @@ public class VastaanottoTest {
         jono1Tulos.setTila(ValintatuloksenTila.PERUNUT, "");
         jono1Tulos.setValintatapajonoOid("jono1", "");
 
-        sijoitteluAjo = SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(new SijoitteluAjo(), hakukohteet, Arrays.asList(jono1Tulos, jono2Tulos));
+        sijoitteluAjo = SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(new SijoitteluAjo(), tallennaEdellisetTilat(hakukohteet), Arrays.asList(jono1Tulos, jono2Tulos));
 
         s = SijoitteluAlgorithmUtil.sijoittele(sijoitteluAjo);
 
@@ -314,6 +314,17 @@ public class VastaanottoTest {
             }
         }
         Assert.assertEquals(tila, check.getTila());
+    }
+
+    private List<Hakukohde> tallennaEdellisetTilat(List<Hakukohde> hakukohteet) {
+        hakukohteet.stream().forEach(hk -> {
+            hk.getValintatapajonot().stream().forEach(jono -> {
+                jono.getHakemukset().stream().forEach(h -> {
+                    h.setEdellinenTila(h.getTila());
+                });
+            });
+        });
+        return hakukohteet;
     }
 
 }

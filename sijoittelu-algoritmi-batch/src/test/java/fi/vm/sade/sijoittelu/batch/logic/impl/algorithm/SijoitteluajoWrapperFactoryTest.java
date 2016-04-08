@@ -131,6 +131,7 @@ public class SijoitteluajoWrapperFactoryTest {
         Hakemus h = new Hakemus();
         h.setHakemusOid("123");
         h.setTila(HakemuksenTila.HYVAKSYTTY);
+        h.setEdellinenTila(HakemuksenTila.HYVAKSYTTY);
         return asetaRandomTilanKuvaus(Collections.singletonList(h));
     }
 

@@ -127,6 +127,18 @@ public final class TestHelper {
         Assert.assertTrue("Wanted result contains more approved OIDs than actual", wanted.containsAll(actual));
     }
 
+    public static void assertoiAinoastaanValittuMyosVarasijalta(Valintatapajono h, String... oids) {
+        List<String> wanted = Arrays.asList(oids);
+        List<String> actual = new ArrayList<String>();
+        for (Hakemus hakemus : h.getHakemukset()) {
+            if (hakemus.getTila() == HakemuksenTila.HYVAKSYTTY || hakemus.getTila() == HakemuksenTila.VARASIJALTA_HYVAKSYTTY) {
+                actual.add(hakemus.getHakemusOid());
+            }
+        }
+        Assert.assertTrue("Actual result does not contain all wanted approved OIDs", actual.containsAll(wanted));
+        Assert.assertTrue("Wanted result contains more approved OIDs than actual", wanted.containsAll(actual));
+    }
+
     public static void assertoiAinakinValittu(Valintatapajono h, String... oids) {
         List<String> wanted = Arrays.asList(oids);
         List<String> actual = new ArrayList<String>();

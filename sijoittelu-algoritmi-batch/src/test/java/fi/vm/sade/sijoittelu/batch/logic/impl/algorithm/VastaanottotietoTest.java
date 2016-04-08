@@ -58,9 +58,9 @@ public class VastaanottotietoTest {
         valintatulos.setValintatapajonoOid("tkk_jono_1", "");
 
         valintatuloses.add(valintatulos);
-        SijoitteluAlgorithmUtil.sijoittele(new SijoitteluAjo(), hakukohteet, valintatuloses);
-        SijoitteluAlgorithmUtil.sijoittele(new SijoitteluAjo(), hakukohteet, valintatuloses);
-        SijoittelunTila s = SijoitteluAlgorithmUtil.sijoittele(new SijoitteluAjo(), hakukohteet, valintatuloses);
+        SijoitteluAlgorithmUtil.sijoittele(new SijoitteluAjo(), tallennaEdellisetTilat(hakukohteet), valintatuloses);
+        SijoitteluAlgorithmUtil.sijoittele(new SijoitteluAjo(), tallennaEdellisetTilat(hakukohteet), valintatuloses);
+        SijoittelunTila s = SijoitteluAlgorithmUtil.sijoittele(new SijoitteluAjo(), tallennaEdellisetTilat(hakukohteet), valintatuloses);
 
         System.out.println(PrintHelper.tulostaSijoittelu(s));
 
@@ -69,10 +69,10 @@ public class VastaanottotietoTest {
                 .get(0), "1.2.246.562.24.00000000004", HakemuksenTila.PERUUTETTU);
         TestHelper.assertoi(hakukohteet.get(0).getValintatapajonot()
                 .get(0), "1.2.246.562.24.00000000003", HakemuksenTila.PERUNUT);
-        TestHelper.assertoiAinoastaanValittu(hakukohteet.get(0).getValintatapajonot()
+        TestHelper.assertoiAinoastaanValittuMyosVarasijalta(hakukohteet.get(0).getValintatapajonot()
                 .get(0), "1.2.246.562.24.00000000001");
 
-        TestHelper.assertoiAinoastaanValittu(hakukohteet.get(0).getValintatapajonot()
+        TestHelper.assertoiAinoastaanValittuMyosVarasijalta(hakukohteet.get(0).getValintatapajonot()
                 .get(1), "1.2.246.562.24.00000000006");
 
     }
@@ -83,9 +83,7 @@ public class VastaanottotietoTest {
         // tee sijoittelu
         HakuDTO t = TestHelper.readHakuDTOFromJson("testdata/sijoittelu_vastaanottotieto_case.json");
 
-
         List<Hakukohde> hakukohteet = t.getHakukohteet().parallelStream().map(DomainConverter::convertToHakukohde).collect(Collectors.toList());
-
 
         ArrayList<Valintatulos> valintatuloses = new ArrayList<>();
         Valintatulos valintatulos = new Valintatulos();
@@ -110,16 +108,16 @@ public class VastaanottotietoTest {
         valintatulos.setValintatapajonoOid("opisto_jono_1", "");
 
         valintatuloses.add(valintatulos);
-        SijoitteluAlgorithmUtil.sijoittele(new SijoitteluAjo(), hakukohteet, valintatuloses);
+        SijoitteluAlgorithmUtil.sijoittele(new SijoitteluAjo(), tallennaEdellisetTilat(hakukohteet), valintatuloses);
         TestHelper.assertoi(hakukohteet.get(2).getValintatapajonot()
-                .get(0), "1.2.246.562.24.00000000006", HakemuksenTila.HYVAKSYTTY);
+                .get(0), "1.2.246.562.24.00000000006", HakemuksenTila.VARASIJALTA_HYVAKSYTTY);
         SijoittelunTila s = SijoitteluAlgorithmUtil.sijoittele(new SijoitteluAjo(), hakukohteet, valintatuloses);
 
         System.out.println(PrintHelper.tulostaSijoittelu(s));
 
         // assertoi
         TestHelper.assertoi(hakukohteet.get(2).getValintatapajonot()
-                .get(0), "1.2.246.562.24.00000000005", HakemuksenTila.HYVAKSYTTY);
+                .get(0), "1.2.246.562.24.00000000005", HakemuksenTila.VARASIJALTA_HYVAKSYTTY);
         TestHelper.assertoi(hakukohteet.get(0).getValintatapajonot()
                 .get(0), "1.2.246.562.24.00000000006", HakemuksenTila.VARALLA);
         TestHelper.assertoi(hakukohteet.get(0).getValintatapajonot()
@@ -158,7 +156,7 @@ public class VastaanottotietoTest {
 
         // assertoi
         TestHelper.assertoi(hakukohteet.get(2).getValintatapajonot()
-                .get(0), "1.2.246.562.24.00000000006", HakemuksenTila.HYVAKSYTTY);
+                .get(0), "1.2.246.562.24.00000000006", HakemuksenTila.VARASIJALTA_HYVAKSYTTY);
         TestHelper.assertoi(hakukohteet.get(0).getValintatapajonot()
                 .get(0), "1.2.246.562.24.00000000006", HakemuksenTila.VARALLA);
         TestHelper.assertoi(hakukohteet.get(0).getValintatapajonot()
@@ -202,7 +200,7 @@ public class VastaanottotietoTest {
         TestHelper.assertoi(hakukohteet.get(0).getValintatapajonot()
                 .get(0), "1.2.246.562.24.00000000003", HakemuksenTila.VARALLA);
         TestHelper.assertoi(hakukohteet.get(0).getValintatapajonot()
-                .get(1), "1.2.246.562.24.00000000003", HakemuksenTila.HYVAKSYTTY);
+                .get(1), "1.2.246.562.24.00000000003", HakemuksenTila.VARASIJALTA_HYVAKSYTTY);
     }
 
     @Test
@@ -351,5 +349,16 @@ public class VastaanottotietoTest {
         TestHelper.assertoi(hakukohteet.get(1).getValintatapajonot()
                 .get(0), "1.2.246.562.24.00000000003", HakemuksenTila.PERUUNTUNUT);
 
+    }
+
+    private List<Hakukohde> tallennaEdellisetTilat(List<Hakukohde> hakukohteet) {
+        hakukohteet.stream().forEach(hk -> {
+            hk.getValintatapajonot().stream().forEach(jono -> {
+                jono.getHakemukset().stream().forEach(h -> {
+                    h.setEdellinenTila(h.getTila());
+                });
+            });
+        });
+        return hakukohteet;
     }
 }
