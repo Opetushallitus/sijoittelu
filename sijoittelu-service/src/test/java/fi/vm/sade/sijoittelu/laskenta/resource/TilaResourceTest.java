@@ -47,7 +47,7 @@ public class TilaResourceTest {
     @Before
     public void startServer() {
         EmbeddedTomcat tomcat = SijoitteluServiceTomcat.startShared();
-        this.hakuV1Resource = (HakuV1Resource)WebApplicationContextUtils.getWebApplicationContext(tomcat.ctx.getServletContext()).getBean("hakuV1Resource");
+        this.hakuV1Resource = (HakuV1Resource)WebApplicationContextUtils.getWebApplicationContext(tomcat.apps.get(0).getContext().getServletContext()).getBean("hakuV1Resource");
     }
 
     @Test
