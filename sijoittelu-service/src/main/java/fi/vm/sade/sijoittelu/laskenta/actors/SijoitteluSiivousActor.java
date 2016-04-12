@@ -85,7 +85,6 @@ public class SijoitteluSiivousActor extends AbstractActor {
             self().tell(PoisonPill.getInstance(), ActorRef.noSender());
         }).match(PoistaHakukohteet.class, p -> {
             log.info("Poistetaan hakukohteet pieleen menneeltä sijoittelulta");
-            sijoitteluDao.clearCacheForHaku(p.getSijoittelu().getHakuOid());
 
             Optional<SijoitteluAjo> ajo = sijoitteluDao.getSijoitteluajo(p.getAjoId());
 
