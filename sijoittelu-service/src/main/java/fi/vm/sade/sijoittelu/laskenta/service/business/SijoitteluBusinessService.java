@@ -500,11 +500,10 @@ public class SijoitteluBusinessService {
     }
 
     public void vaihdaHakemuksenTila(String hakuoid, Hakukohde hakukohde, Valintatulos change, String selite, String muokkaaja) {
-        ValintatuloksenTila tila = change.getTila();
         String valintatapajonoOid = change.getValintatapajonoOid();
         String hakemusOid = change.getHakemusOid();
-        if (tila == null || isBlank(hakuoid) || isBlank(valintatapajonoOid) || isBlank(hakemusOid)) {
-            throw new IllegalArgumentException(String.format("tila: %s, hakuoid: %s, valintatapajonoOid: %s, hakemusOid: %s", tila, hakuoid, valintatapajonoOid, hakemusOid));
+        if (isBlank(hakuoid) || isBlank(valintatapajonoOid) || isBlank(hakemusOid)) {
+            throw new IllegalArgumentException(String.format("hakuoid: %s, valintatapajonoOid: %s, hakemusOid: %s", hakuoid, valintatapajonoOid, hakemusOid));
         }
         String tarjoajaOid = hakukohde.getTarjoajaOid();
         if (isBlank(tarjoajaOid)) {
@@ -537,8 +536,9 @@ public class SijoitteluBusinessService {
 
         LOG.info("Muutetaan valintatulosta hakukohdeoid {}, valintatapajonooid {}, hakemusoid {}: {}",
                 hakukohdeOid, valintatapajonoOid, hakemusOid, muutos(v, change));
-
-        v.setIlmoittautumisTila(change.getIlmoittautumisTila(), selite, muokkaaja);
+        if(change.getIlmoittautumisTila() != null) {
+            v.setIlmoittautumisTila(change.getIlmoittautumisTila(), selite, muokkaaja);
+        }
         v.setJulkaistavissa(change.getJulkaistavissa(), selite, muokkaaja);
         v.setHyvaksyttyVarasijalta(change.getHyvaksyttyVarasijalta(), selite, muokkaaja);
         v.setHyvaksyPeruuntunut(change.getHyvaksyPeruuntunut(), selite, muokkaaja);
@@ -555,7 +555,6 @@ public class SijoitteluBusinessService {
                 .add("hyvaksyttyvarasijalta", v.getHyvaksyttyVarasijalta())
                 .add("hyvaksyperuuntunut", v.getHyvaksyPeruuntunut())
                 .add("selite", selite)
-                .add("valintatuloksentila", tila)
                 .setOperaatio(ValintaperusteetOperation.HAKEMUS_TILAMUUTOS)
                 .build());
     }
@@ -583,16 +582,12 @@ public class SijoitteluBusinessService {
     }
 
     private static String muutos(Valintatulos v, Valintatulos change) {
-        ValintatuloksenTila tila = change.getTila();
         IlmoittautumisTila ilmoittautumisTila = change.getIlmoittautumisTila();
         boolean julkaistavissa = change.getJulkaistavissa();
         boolean hyvaksyttyVarasijalta = change.getHyvaksyttyVarasijalta();
         boolean hyvaksyPeruuntunut = change.getHyvaksyPeruuntunut();
         List<String> muutos = new ArrayList<>();
-        if (tila != v.getTila()) {
-            muutos.add(Optional.ofNullable(v.getTila()).map(Enum::name).orElse("") + " -> " + tila.name());
-        }
-        if (ilmoittautumisTila != v.getIlmoittautumisTila()) {
+        if (ilmoittautumisTila != null && ilmoittautumisTila != v.getIlmoittautumisTila()) {
             muutos.add(Optional.ofNullable(v.getIlmoittautumisTila()).map(Enum::name).orElse("") + " -> " + ilmoittautumisTila.name());
         }
         if (julkaistavissa != v.getJulkaistavissa()) {
