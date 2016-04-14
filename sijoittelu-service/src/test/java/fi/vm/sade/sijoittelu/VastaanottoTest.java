@@ -116,7 +116,7 @@ public class VastaanottoTest {
 
         System.out.println(PrintHelper.tulostaSijoittelu(s));
 
-        Assert.assertEquals(4, sijoitteluAjo.getMuuttuneetValintatulokset().size());
+        Assert.assertEquals(7, sijoitteluAjo.getMuuttuneetValintatulokset().size());
 
         hakukohteet.get(0).getValintatapajonot().get(0).getHakemukset().forEach(hak -> {
            if(hak.getHakemusOid().equals("oid1")) {
