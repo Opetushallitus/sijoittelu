@@ -10,12 +10,14 @@ public class VastaanottoEventDto {
     private ValintatuloksenTila tila;
     private String ilmoittaja;
     private String selite;
+    private String valintatapajonoOid;
 
     public VastaanottoEventDto() {
     }
-    public VastaanottoEventDto(String henkiloOid, String hakemusOid, String hakukohdeOid, String hakuOid, ValintatuloksenTila tila, String ilmoittaja, String selite) {
+    public VastaanottoEventDto(String henkiloOid, String hakemusOid, String valintatapajonoOid, String hakukohdeOid, String hakuOid, ValintatuloksenTila tila, String ilmoittaja, String selite) {
         this.henkiloOid = henkiloOid;
         this.hakemusOid = hakemusOid;
+        this.valintatapajonoOid = valintatapajonoOid;
         this.hakukohdeOid = hakukohdeOid;
         this.hakuOid = hakuOid;
         this.tila = tila;
@@ -50,4 +52,6 @@ public class VastaanottoEventDto {
     public ValintatuloksenTila getTila() {
         return tila;
     }
+
+    public String getValintatapajonoOid() { return valintatapajonoOid; }
 }

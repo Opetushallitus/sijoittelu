@@ -18,8 +18,8 @@ public class PostSijoitteluProcessorPeruuntuneetHakemuksenVastaanotonMuokkaus im
     public void process(SijoitteluajoWrapper sijoitteluajoWrapper) {
         LOG.info("Aloitetaan peruuntuneiden hakemusten vastaanottojen muokkaus.");
         peruuntuneetJaVastaanotetutValintatulokset(sijoitteluajoWrapper).forEach(v -> {
-            LOG.info("Hakemus {} on PERUUNTUNUT ja valintatuloksentilassa {}, asetetaan valintatuloksentila KESKEN",
-                    v.getHakemusOid(), v.getTila());
+            LOG.info("Hakemus {} on PERUUNTUNUT ja valintatuloksentilassa {}, asetetaan valintatuloksentila KESKEN (hakukohde: {}, jono: {})",
+                    v.getHakemusOid(), v.getTila(), v.getHakukohdeOid(), v.getValintatapajonoOid());
             poistaVastaanottoTieto(v);
             if (!sijoitteluajoWrapper.getMuuttuneetValintatulokset().contains(v)) {
                 sijoitteluajoWrapper.getMuuttuneetValintatulokset().add(v);

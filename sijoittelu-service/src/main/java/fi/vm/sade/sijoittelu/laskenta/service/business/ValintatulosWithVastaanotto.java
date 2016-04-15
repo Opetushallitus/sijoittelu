@@ -14,10 +14,7 @@ import org.apache.commons.lang3.tuple.Triple;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -63,22 +60,40 @@ public class ValintatulosWithVastaanotto {
 
     public void persistValintatulokset(List<Valintatulos> valintatulokset) {
 
+        valintatulokset.forEach(vt -> {
+            LOG.info("Valintatulos - Hakukohde: {}, valintatapajono: {}, hakija: {}, hakemus: {}, vastaanoton tila: {}",
+                    vt.getHakukohdeOid(),
+                    vt.getValintatapajonoOid(),
+                    vt.getHakijaOid(),
+                    vt.getHakemusOid(),
+                    vt.getTila());
+        });
+
         final Map<Pair<String, String>, List<Valintatulos>> valintatulosGroups = valintatulokset.stream().
                 collect(Collectors.groupingBy(valintatulos -> Pair.of(valintatulos.getHakukohdeOid(), valintatulos.getHakemusOid())));
 
         List<VastaanottoEventDto> vs = valintatulosGroups.entrySet().stream().map(e -> e.getValue())
                 .map(list -> {
-                    List<Valintatulos> eiKeskenTilaiset = list.stream()
+                    Set<Valintatulos> eiKeskenTilaiset = list.stream()
                             .filter(v -> v.getTila() != ValintatuloksenTila.KESKEN)
-                            .collect(Collectors.toList());
+                            .collect(Collectors.toSet());
                     if(eiKeskenTilaiset.size() > 1) {
                         throw new RuntimeException("Hakijalle löytyi useampi kuin yksi ei-kesken-tilainen valintatulos: " + list);
                     }
-                    Valintatulos vt = (!eiKeskenTilaiset.isEmpty() ? eiKeskenTilaiset.get(0) : list.get(0));
+                    Valintatulos vt = (!eiKeskenTilaiset.isEmpty() ? eiKeskenTilaiset.stream().findFirst().get() : list.get(0));
                     return new VastaanottoEventDto(
-                            vt.getHakijaOid(), vt.getHakemusOid(), vt.getHakukohdeOid(), vt.getHakuOid(), vt.getTila(),
+                            vt.getHakijaOid(), vt.getHakemusOid(), vt.getValintatapajonoOid(), vt.getHakukohdeOid(), vt.getHakuOid(), vt.getTila(),
                             "järjestelmä", extractSeliteFromValintatulos(vt));
                 }).collect(Collectors.toList());
+
+        vs.forEach(dto -> {
+            LOG.info("VastaanottoEventDto - Hakukohde: {}, valintatapajono: {}, hakija: {}, hakemus: {}, vastaanoton tila: {}",
+                    dto.getHakukohdeOid(),
+                    dto.getValintatapajonoOid(),
+                    dto.getHenkiloOid(),
+                    dto.getHakemusOid(),
+                    dto.getTila());
+        });
 
         valintaTulosServiceResource.valintatuloksetValinnantilalla(vs);
         valintatulokset.forEach(valintatulosDao::createOrUpdateValintatulos);

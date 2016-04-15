@@ -106,18 +106,9 @@ public class SijoitteluajoWrapperFactory {
 
     private static void setHakemuksenValintatuloksenTila(Hakemus hakemus, HakemusWrapper hakemusWrapper, HenkiloWrapper henkiloWrapper, Valintatulos valintatulos) {
         if (valintatulos != null && valintatulos.getTila() != null) {
-            System.out.println("TILA: " + valintatulos.getTila() + " | " + hakemus.getEdellinenTila());
             if(!onJonoJolleValintatulosAsetaan(hakemus)) {
-                System.out.println("OID: " + hakemus.getHakemusOid());
                 valintatulos.setTila(ValintatuloksenTila.KESKEN, "");
             }
-            System.out.println(String.format("Hakukohde: %s, valintatapajono: %s, hakemus: %s, hakemuksen tila: %s, hakemuksen edellinen tila: %s, vastaanoton tila: %s",
-                    hakemusWrapper.getValintatapajono().getHakukohdeWrapper().getHakukohde().getOid(),
-                    hakemusWrapper.getValintatapajono().getValintatapajono().getOid(),
-                    hakemus.getHakemusOid(),
-                    hakemus.getTila(),
-                    hakemus.getEdellinenTila(),
-                    valintatulos.getTila()));
             LOG.debug("Hakukohde: {}, valintatapajono: {}, hakemus: {}, hakemuksen tila: {}, hakemuksen edellinen tila: {}, vastaanoton tila: {}",
                     hakemusWrapper.getValintatapajono().getHakukohdeWrapper().getHakukohde().getOid(),
                     hakemusWrapper.getValintatapajono().getValintatapajono().getOid(),
@@ -223,11 +214,7 @@ public class SijoitteluajoWrapperFactory {
     }
 
     private static boolean onJonoJolleValintatulosAsetaan(Hakemus h) {
-        System.out.println("TILA2: " + h.getEdellinenTila());
-        System.out.println("BOOLEAN: " + TilaTaulukot.kuuluuVastaanotonMuokattavissaTiloihin(h.getEdellinenTila()));
         return TilaTaulukot.kuuluuVastaanotonMuokattavissaTiloihin(h.getEdellinenTila());
-
-
     }
 
 }

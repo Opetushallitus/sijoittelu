@@ -154,6 +154,8 @@ public class SijoitteluBusinessService {
         uusiSijoitteluajo.setEndMils(System.currentTimeMillis());
         processOldApplications(olemassaolevatHakukohteet, kaikkiHakukohteet);
         List<Valintatulos> muuttuneetValintatulokset = sijoitteluajoWrapper.getMuuttuneetValintatulokset();
+        LOG.info("Ennen mergeä muuttuneita valintatuloksia: " + muuttuneetValintatulokset.size());
+        LOG.info("Ennen mergeä muuttuneet valintatulokset: " + muuttuneetValintatulokset);
         List<Valintatulos> mergatut = valintatulosDao.mergaaValintatulos(kaikkiHakukohteet, muuttuneetValintatulokset);
         valintatulosWithVastaanotto.persistValintatulokset(mergatut);
         sijoitteluajoWrapper.setMuuttuneetValintatulokset(mergatut);
