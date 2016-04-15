@@ -55,11 +55,11 @@ public class VastaanottotietoTest {
         valintatulos.setHakukohdeOid("1.2.246.562.11.00000000007", "");
         valintatulos.setHakuOid(t.getHakuOid(), "");
         valintatulos.setTila(ValintatuloksenTila.PERUNUT, "");
-        valintatulos.setValintatapajonoOid("tkk_jono_1", "");
+        valintatulos.setValintatapajonoOid("tkk_jono_2", "");
 
         valintatuloses.add(valintatulos);
-        SijoitteluAlgorithmUtil.sijoittele(new SijoitteluAjo(), tallennaEdellisetTilat(hakukohteet), valintatuloses);
-        SijoitteluAlgorithmUtil.sijoittele(new SijoitteluAjo(), tallennaEdellisetTilat(hakukohteet), valintatuloses);
+        System.out.println(PrintHelper.tulostaSijoittelu(SijoitteluAlgorithmUtil.sijoittele(new SijoitteluAjo(), tallennaEdellisetTilat(hakukohteet), new ArrayList<>())));
+        System.out.println(PrintHelper.tulostaSijoittelu(SijoitteluAlgorithmUtil.sijoittele(new SijoitteluAjo(), tallennaEdellisetTilat(hakukohteet), new ArrayList<>())));
         SijoittelunTila s = SijoitteluAlgorithmUtil.sijoittele(new SijoitteluAjo(), tallennaEdellisetTilat(hakukohteet), valintatuloses);
 
         System.out.println(PrintHelper.tulostaSijoittelu(s));

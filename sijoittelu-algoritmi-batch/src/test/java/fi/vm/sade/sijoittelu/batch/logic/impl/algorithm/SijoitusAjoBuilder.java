@@ -124,7 +124,7 @@ class SijoitusAjoBuilder {
     }
 
     private static List<String> hakemuksetStringList(List<Hakemus> hakemukset) {
-        return hakemukset.stream().map(h -> "" + h.getJonosija() + ":" + h.getTasasijaJonosija() + ":" + h.getHakijaOid() + ":" + h.getTila()).collect(Collectors.toList());
+        return hakemukset.stream().map(h -> "" + h.getJonosija() + ":" + h.getTasasijaJonosija() + ":" + h.getHakijaOid() + ":" + (HakemuksenTila.VARASIJALTA_HYVAKSYTTY.equals(h.getTila()) ? HakemuksenTila.HYVAKSYTTY : h.getTila())).collect(Collectors.toList());
     }
 
     private static HashMap forTest(Hakukohde hakukohde) {
@@ -197,7 +197,7 @@ class SijoitusAjoBuilder {
         }
 
         private JonoBuilder add(HakemuksenTila tila, boolean julkaistu, String... hakijat) {
-            return add(tila, false, julkaistu, hakijat);
+            return add(tila, true, julkaistu, hakijat);
         }
 
         public JonoBuilder copyHakemusWithTila(Hakemus hakemus, HakemuksenTila tila, boolean julkaistu) {

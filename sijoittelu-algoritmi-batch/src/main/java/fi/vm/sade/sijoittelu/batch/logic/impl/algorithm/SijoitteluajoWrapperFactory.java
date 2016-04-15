@@ -106,6 +106,18 @@ public class SijoitteluajoWrapperFactory {
 
     private static void setHakemuksenValintatuloksenTila(Hakemus hakemus, HakemusWrapper hakemusWrapper, HenkiloWrapper henkiloWrapper, Valintatulos valintatulos) {
         if (valintatulos != null && valintatulos.getTila() != null) {
+            System.out.println("TILA: " + valintatulos.getTila() + " | " + hakemus.getEdellinenTila());
+            if(!onJonoJolleValintatulosAsetaan(hakemus)) {
+                System.out.println("OID: " + hakemus.getHakemusOid());
+                valintatulos.setTila(ValintatuloksenTila.KESKEN, "");
+            }
+            System.out.println(String.format("Hakukohde: %s, valintatapajono: %s, hakemus: %s, hakemuksen tila: %s, hakemuksen edellinen tila: %s, vastaanoton tila: %s",
+                    hakemusWrapper.getValintatapajono().getHakukohdeWrapper().getHakukohde().getOid(),
+                    hakemusWrapper.getValintatapajono().getValintatapajono().getOid(),
+                    hakemus.getHakemusOid(),
+                    hakemus.getTila(),
+                    hakemus.getEdellinenTila(),
+                    valintatulos.getTila()));
             LOG.debug("Hakukohde: {}, valintatapajono: {}, hakemus: {}, hakemuksen tila: {}, hakemuksen edellinen tila: {}, vastaanoton tila: {}",
                     hakemusWrapper.getValintatapajono().getHakukohdeWrapper().getHakukohde().getOid(),
                     hakemusWrapper.getValintatapajono().getValintatapajono().getOid(),
@@ -189,7 +201,7 @@ public class SijoitteluajoWrapperFactory {
 
     private static boolean viimeisinHyvaksyttyJono(HakemusWrapper hakemusWrapper, HenkiloWrapper henkiloWrapper) {
 
-        if(TilaTaulukot.kuuluuHyvaksyttyihinTiloihin(hakemusWrapper.getHakemus().getTila())) return true;
+        if(TilaTaulukot.kuuluuHyvaksyttyihinTiloihin(hakemusWrapper.getHakemus().getEdellinenTila())) return true;
 
         final String viimeisinHyvaksyttyJonoOid = henkiloWrapper.getHakemukset().stream()
                 .filter(hw -> hw.getHakemus().getTilaHistoria().stream().anyMatch(th -> TilaTaulukot.kuuluuHyvaksyttyihinTiloihin(th.getTila())) == true)
@@ -206,6 +218,14 @@ public class SijoitteluajoWrapperFactory {
                 .max(Comparator.comparingLong(pair -> pair.getRight().getTime())).orElse(Pair.of("", null)).getLeft();
 
         return viimeisinHyvaksyttyJonoOid.equals(hakemusWrapper.getValintatapajono().getValintatapajono().getOid());
+
+
+    }
+
+    private static boolean onJonoJolleValintatulosAsetaan(Hakemus h) {
+        System.out.println("TILA2: " + h.getEdellinenTila());
+        System.out.println("BOOLEAN: " + TilaTaulukot.kuuluuVastaanotonMuokattavissaTiloihin(h.getEdellinenTila()));
+        return TilaTaulukot.kuuluuVastaanotonMuokattavissaTiloihin(h.getEdellinenTila());
 
 
     }

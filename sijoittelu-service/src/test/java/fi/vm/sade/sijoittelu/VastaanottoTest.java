@@ -50,11 +50,12 @@ public class VastaanottoTest {
         HakuDTO haku = valintatietoService.haeValintatiedot("1.2.246.562.29.173465377510");
 
         List<Hakukohde> hakukohteet = haku.getHakukohteet().parallelStream().map(DomainConverter::convertToHakukohde).collect(Collectors.toList());
+        hakukohteet.get(0).getValintatapajonot().get(0).setAloituspaikat(0);
 
         Valintatulos sitova = new Valintatulos();
         sitova.setHakemusOid("oid1", "");
         sitova.setHakijaOid("oid", "");
-        sitova.setHakukohdeOid("hakukohde2", "");
+        sitova.setHakukohdeOid("hakukohde1", "");
         sitova.setHakuOid("1.2.246.562.29.173465377510", "");
         sitova.setHakutoive(2, "");
         sitova.setHyvaksyttyVarasijalta(false, "");
@@ -110,13 +111,17 @@ public class VastaanottoTest {
         ehdollinenPoistettava.setIlmoittautumisTila(IlmoittautumisTila.EI_TEHTY, "");
         ehdollinenPoistettava.setTila(ValintatuloksenTila.EHDOLLISESTI_VASTAANOTTANUT, "");
         ehdollinenPoistettava.setValintatapajonoOid("jono2", "");
+
+        System.out.println(PrintHelper.tulostaSijoittelu(SijoitteluAlgorithmUtil.sijoittele(SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(new SijoitteluAjo(), tallennaEdellisetTilat(hakukohteet), Arrays.asList()))));
+
+        hakukohteet.stream().flatMap(hk -> hk.getValintatapajonot().stream()).forEach(jono -> jono.setAloituspaikat(3));
         final SijoitteluajoWrapper sijoitteluAjo = SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(new SijoitteluAjo(), tallennaEdellisetTilat(hakukohteet), Arrays.asList(sitova, ehdollinen, perunut, ehdollinenPidettava, ehdollinenPoistettava));
 
         SijoittelunTila s = SijoitteluAlgorithmUtil.sijoittele(sijoitteluAjo);
 
         System.out.println(PrintHelper.tulostaSijoittelu(s));
 
-        Assert.assertEquals(7, sijoitteluAjo.getMuuttuneetValintatulokset().size());
+        Assert.assertEquals(6, sijoitteluAjo.getMuuttuneetValintatulokset().size());
 
         hakukohteet.get(0).getValintatapajonot().get(0).getHakemukset().forEach(hak -> {
            if(hak.getHakemusOid().equals("oid1")) {
