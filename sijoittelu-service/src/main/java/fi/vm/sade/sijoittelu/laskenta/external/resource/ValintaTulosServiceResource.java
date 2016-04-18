@@ -27,5 +27,5 @@ public interface ValintaTulosServiceResource {
     @Path("/transactional-vastaanotto")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    Response valintatuloksetValinnantilalla(List<VastaanottoEventDto> valintatuloses);
+    void valintatuloksetValinnantilalla(List<VastaanottoEventDto> valintatuloses);
 }
