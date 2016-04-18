@@ -118,9 +118,12 @@ public class SijoitteluajoWrapperFactory {
                     valintatulos.getTila());
             ValintatuloksenTila tila = valintatulos.getTila();
             boolean voidaanVaihtaa = false;
-            if (voiTullaHyvaksytyksi(hakemus) && tila == ValintatuloksenTila.OTTANUT_VASTAAN_TOISEN_PAIKAN) {
-                hakemus.setTila(HakemuksenTila.PERUUNTUNUT);
-                hakemus.setTilanKuvaukset(TilanKuvaukset.peruuntunutVastaanottanutToisenOpiskelupaikanYhdenPaikanSaannonPiirissa());
+            if (tila == ValintatuloksenTila.OTTANUT_VASTAAN_TOISEN_PAIKAN) {
+                if (voiTullaHyvaksytyksi(hakemus)) {
+                    hakemus.setTila(HakemuksenTila.PERUUNTUNUT);
+                    hakemus.setTilanKuvaukset(TilanKuvaukset.peruuntunutVastaanottanutToisenOpiskelupaikanYhdenPaikanSaannonPiirissa());
+                }
+                voidaanVaihtaa = false;
             } else if (vastaanotonTilaSaaMuuttaaHakemuksenTilaa(hakemus) && tila == ValintatuloksenTila.PERUNUT) {
                 hakemus.setTila(HakemuksenTila.PERUNUT);
             } else if (vastaanotonTilaSaaMuuttaaHakemuksenTilaa(hakemus) && viimeisinHyvaksyttyJono(hakemusWrapper, henkiloWrapper) && asList(VASTAANOTTANUT_SITOVASTI, EHDOLLISESTI_VASTAANOTTANUT).contains(tila)) {
@@ -134,7 +137,7 @@ public class SijoitteluajoWrapperFactory {
                 hakemus.setTilanKuvaukset(TilanKuvaukset.peruuntunutEiVastaanottanutMaaraaikana());
             } else if (vastaanotonTilaSaaMuuttaaHakemuksenTilaa(hakemus) && tila == ValintatuloksenTila.PERUUTETTU) {
                 hakemus.setTila(HakemuksenTila.PERUUTETTU);
-            } else {
+            } else if (tila == ValintatuloksenTila.KESKEN) {
                 // tila == KESKEN
                 if (valintatulos.getJulkaistavissa() && hakemus.getEdellinenTila() == HakemuksenTila.HYVAKSYTTY) {
                     hyvaksy(hakemus, valintatulos);
@@ -146,10 +149,12 @@ public class SijoitteluajoWrapperFactory {
                     hyvaksy(hakemus, valintatulos);
                     hakemusWrapper.hyvaksyPeruuntunut();
                 } else if (HakemuksenTila.HYLATTY == hakemus.getTila()) {
-                    // NOOP
+                    voidaanVaihtaa = false;
                 } else {
                     voidaanVaihtaa = true;
                 }
+            } else {
+                throw new IllegalStateException(String.format("Valintatulos %s ja hakemus %s olivat tuntemattomassa tilassa", valintatulos, hakemus));
             }
             hakemusWrapper.setTilaVoidaanVaihtaa(voidaanVaihtaa);
             henkiloWrapper.getValintatulos().add(valintatulos);
