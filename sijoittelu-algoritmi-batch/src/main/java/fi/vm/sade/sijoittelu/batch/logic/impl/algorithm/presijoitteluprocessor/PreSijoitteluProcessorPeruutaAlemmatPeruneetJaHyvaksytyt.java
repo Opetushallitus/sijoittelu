@@ -169,10 +169,12 @@ public class PreSijoitteluProcessorPeruutaAlemmatPeruneetJaHyvaksytyt implements
                     }
                 } else if (sitovaHakemus.getValintatapajono().getValintatapajono().getPrioriteetti() < hakemus.getValintatapajono().getValintatapajono().getPrioriteetti()) {
                     peruutaHakemusKoskaHyvaksyttyToisessaJonossa(hakemus, h);
+                    /*
                     Optional<Valintatulos> nykyinenTulos = henkilo.getValintatulos().stream().filter(v -> v.getValintatapajonoOid().equals(hakemus.getValintatapajono().getValintatapajono().getOid())).findFirst();
                     if (nykyinenTulos.isPresent()) {
                         lisaaMuokattavaValintatulos(sijoitteluajoWrapper, nykyinenTulos.get());
                     }
+                    */
                 }
 
             }

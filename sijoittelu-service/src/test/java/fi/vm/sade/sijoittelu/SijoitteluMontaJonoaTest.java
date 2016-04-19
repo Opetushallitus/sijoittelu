@@ -226,7 +226,7 @@ public class SijoitteluMontaJonoaTest {
         tulos2.setHyvaksyttyVarasijalta(false, "");
         tulos2.setIlmoittautumisTila(IlmoittautumisTila.EI_TEHTY, "");
         tulos2.setJulkaistavissa(true, "");
-        tulos2.setTila(ValintatuloksenTila.EHDOLLISESTI_VASTAANOTTANUT, "");
+        tulos2.setTila(ValintatuloksenTila.KESKEN, "");
         tulos2.setValintatapajonoOid("oid2", "");
 
         //hakukohteet = haku.getHakukohteet().parallelStream().map(DomainConverter::convertToHakukohde).collect(Collectors.toList());
