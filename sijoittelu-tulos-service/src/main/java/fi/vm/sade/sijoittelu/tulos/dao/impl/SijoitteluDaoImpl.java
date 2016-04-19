@@ -1,16 +1,23 @@
 package fi.vm.sade.sijoittelu.tulos.dao.impl;
 
+import com.google.common.collect.ImmutableList;
+import com.mongodb.BasicDBObject;
+import com.mongodb.BasicDBObjectBuilder;
+import com.mongodb.DBObject;
 import fi.vm.sade.sijoittelu.domain.Sijoittelu;
 import fi.vm.sade.sijoittelu.domain.SijoitteluAjo;
 import fi.vm.sade.sijoittelu.tulos.dao.SijoitteluDao;
-
 import org.mongodb.morphia.Datastore;
+import org.mongodb.morphia.Morphia;
+import org.mongodb.morphia.mapping.Mapper;
+import org.mongodb.morphia.mapping.cache.DefaultEntityCache;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 
@@ -24,10 +31,31 @@ public class SijoitteluDaoImpl implements SijoitteluDao {
 
     @Override
     public Optional<SijoitteluAjo> getLatestSijoitteluajo(String hakuOid) {
-        Optional<Sijoittelu> sijoittelu = getSijoitteluByHakuOid(hakuOid);
-        return sijoittelu.map(
-                s -> Optional.ofNullable(s.getLatestSijoitteluajo())).orElse(
-                Optional.empty());
+        DBObject match = BasicDBObjectBuilder.start().push("$match").add("hakuOid", hakuOid).get();
+        DBObject unwind = BasicDBObjectBuilder.start("$unwind", "$sijoitteluajot").get();
+        DBObject endMilsProject = BasicDBObjectBuilder.start().push("$project")
+                .add("sijoitteluajoId", "$sijoitteluajot.sijoitteluajoId")
+                .push("endMils").add("$ifNull", ImmutableList.of("$sijoitteluajot.endMils", -1)).get();
+        DBObject sort = BasicDBObjectBuilder.start().push("$sort").add("endMils", -1).get();
+        DBObject limit = BasicDBObjectBuilder.start("$limit", 1).get();
+        DBObject sijoitteluajoIdProject = BasicDBObjectBuilder.start().push("$project")
+                .add("_id", 0)
+                .add("sijoitteluajoId", 1).get();
+
+        Iterator<DBObject> i = morphiaDS.getDB().getCollection("Sijoittelu").aggregate(ImmutableList.of(
+                match, unwind, endMilsProject, sort, limit, sijoitteluajoIdProject
+        )).results().iterator();
+
+        if (i.hasNext()) {
+            Long sijoitteluajoId = (Long) i.next().get("sijoitteluajoId");
+            DBObject o = morphiaDS.getDB().getCollection("Sijoittelu").findOne(
+                    new BasicDBObject("hakuOid", hakuOid),
+                    BasicDBObjectBuilder.start().push("sijoitteluajot").push("$elemMatch").add("sijoitteluajoId", sijoitteluajoId).get()
+            );
+            new Morphia();
+            return Optional.of(new Mapper().fromDBObject(Sijoittelu.class, o, new DefaultEntityCache()).getSijoitteluajot().get(0));
+        }
+        return Optional.empty();
     }
 
     @Override
