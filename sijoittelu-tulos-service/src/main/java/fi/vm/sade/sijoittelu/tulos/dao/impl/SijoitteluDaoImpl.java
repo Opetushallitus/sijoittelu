@@ -8,7 +8,6 @@ import fi.vm.sade.sijoittelu.domain.Sijoittelu;
 import fi.vm.sade.sijoittelu.domain.SijoitteluAjo;
 import fi.vm.sade.sijoittelu.tulos.dao.SijoitteluDao;
 import org.mongodb.morphia.Datastore;
-import org.mongodb.morphia.Morphia;
 import org.mongodb.morphia.mapping.Mapper;
 import org.mongodb.morphia.mapping.cache.DefaultEntityCache;
 import org.slf4j.Logger;
@@ -34,26 +33,21 @@ public class SijoitteluDaoImpl implements SijoitteluDao {
         DBObject match = BasicDBObjectBuilder.start().push("$match").add("hakuOid", hakuOid).get();
         DBObject unwind = BasicDBObjectBuilder.start("$unwind", "$sijoitteluajot").get();
         DBObject endMilsProject = BasicDBObjectBuilder.start().push("$project")
-                .add("sijoitteluajoId", "$sijoitteluajot.sijoitteluajoId")
+                .add("sijoitteluajo", "$sijoitteluajot")
                 .push("endMils").add("$ifNull", ImmutableList.of("$sijoitteluajot.endMils", -1)).get();
         DBObject sort = BasicDBObjectBuilder.start().push("$sort").add("endMils", -1).get();
         DBObject limit = BasicDBObjectBuilder.start("$limit", 1).get();
         DBObject sijoitteluajoIdProject = BasicDBObjectBuilder.start().push("$project")
                 .add("_id", 0)
-                .add("sijoitteluajoId", 1).get();
+                .add("sijoitteluajo", 1).get();
 
         Iterator<DBObject> i = morphiaDS.getDB().getCollection("Sijoittelu").aggregate(ImmutableList.of(
                 match, unwind, endMilsProject, sort, limit, sijoitteluajoIdProject
         )).results().iterator();
 
         if (i.hasNext()) {
-            Long sijoitteluajoId = (Long) i.next().get("sijoitteluajoId");
-            DBObject o = morphiaDS.getDB().getCollection("Sijoittelu").findOne(
-                    new BasicDBObject("hakuOid", hakuOid),
-                    BasicDBObjectBuilder.start().push("sijoitteluajot").push("$elemMatch").add("sijoitteluajoId", sijoitteluajoId).get()
-            );
-            new Morphia();
-            return Optional.of(new Mapper().fromDBObject(Sijoittelu.class, o, new DefaultEntityCache()).getSijoitteluajot().get(0));
+            DBObject o = (DBObject) i.next().get("sijoitteluajo");
+            return Optional.of(new Mapper().fromDBObject(SijoitteluAjo.class, o, new DefaultEntityCache()));
         }
         return Optional.empty();
     }
