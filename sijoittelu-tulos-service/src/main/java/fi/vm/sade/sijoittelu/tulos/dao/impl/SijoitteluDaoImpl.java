@@ -58,23 +58,11 @@ public class SijoitteluDaoImpl implements SijoitteluDao {
             return Optional.empty();
         }
 
-        Optional<Sijoittelu> a = Optional.ofNullable(morphiaDS
-                .find(Sijoittelu.class).field("sijoitteluajot.sijoitteluajoId")
-                .equal(sijoitteluajoId).get());
-
-        if (a.isPresent()) {
-            Optional<SijoitteluAjo> sa = a
-                    .get()
-                    .getSijoitteluajot()
-                    .parallelStream()
-                    .filter(ajo -> sijoitteluajoId.equals(ajo
-                            .getSijoitteluajoId())).findFirst();
-            if (sa.isPresent()) {
-                return sa;
-            }
-        }
-
-        return Optional.empty();
+        DBObject o = morphiaDS.getDB().getCollection("Sijoittelu").findOne(
+                new BasicDBObject("sijoitteluajot.sijoitteluajoId", sijoitteluajoId),
+                BasicDBObjectBuilder.start().push("sijoitteluajot").push("$elemMatch").add("sijoitteluajoId", sijoitteluajoId).get()
+        );
+        return Optional.of(new Mapper().fromDBObject(Sijoittelu.class, o, new DefaultEntityCache()).getSijoitteluajot().get(0));
     }
 
     @Override
