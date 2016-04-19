@@ -1,7 +1,5 @@
 package fi.vm.sade.sijoittelu.tulos.dao.impl;
 
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
 import fi.vm.sade.sijoittelu.domain.Sijoittelu;
 import fi.vm.sade.sijoittelu.domain.SijoitteluAjo;
 import fi.vm.sade.sijoittelu.tulos.dao.SijoitteluDao;
@@ -13,15 +11,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.Callable;
-import java.util.concurrent.TimeUnit;
 
 @Repository
-public class CachingSijoitteluDao implements SijoitteluDao {
-    private final Logger LOG = LoggerFactory.getLogger(CachingSijoitteluDao.class);
+public class SijoitteluDaoImpl implements SijoitteluDao {
+    private final Logger LOG = LoggerFactory.getLogger(SijoitteluDaoImpl.class);
 
     @Qualifier("datastore")
     @Autowired
@@ -63,8 +58,7 @@ public class CachingSijoitteluDao implements SijoitteluDao {
     @Override
     public Optional<Sijoittelu> getSijoitteluByHakuOid(final String hakuOid) {
         try {
-            return Optional.ofNullable(morphiaDS.find(Sijoittelu.class).field("hakuOid")
-                            .equal(hakuOid).get());
+            return Optional.ofNullable(morphiaDS.find(Sijoittelu.class).field("hakuOid").equal(hakuOid).get());
         } catch (Exception e) {
             LOG.debug("Ei saatu sijoittelua haulle" + hakuOid, e);
             return Optional.empty();
