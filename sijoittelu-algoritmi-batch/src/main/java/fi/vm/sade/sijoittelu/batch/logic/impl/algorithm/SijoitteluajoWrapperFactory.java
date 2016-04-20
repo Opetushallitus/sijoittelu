@@ -106,6 +106,9 @@ public class SijoitteluajoWrapperFactory {
 
     private static void setHakemuksenValintatuloksenTila(Hakemus hakemus, HakemusWrapper hakemusWrapper, HenkiloWrapper henkiloWrapper, Valintatulos valintatulos) {
         if (valintatulos != null && valintatulos.getTila() != null) {
+            if(!onJonoJolleValintatulosAsetaan(hakemus)) {
+                valintatulos.setTila(ValintatuloksenTila.KESKEN, "");
+            }
             LOG.debug("Hakukohde: {}, valintatapajono: {}, hakemus: {}, hakemuksen tila: {}, hakemuksen edellinen tila: {}, vastaanoton tila: {}",
                     hakemusWrapper.getValintatapajono().getHakukohdeWrapper().getHakukohde().getOid(),
                     hakemusWrapper.getValintatapajono().getValintatapajono().getOid(),
@@ -135,6 +138,7 @@ public class SijoitteluajoWrapperFactory {
             } else if (vastaanotonTilaSaaMuuttaaHakemuksenTilaa(hakemus) && tila == ValintatuloksenTila.PERUUTETTU) {
                 hakemus.setTila(HakemuksenTila.PERUUTETTU);
             } else if (tila == ValintatuloksenTila.KESKEN) {
+                // tila == KESKEN
                 if (valintatulos.getJulkaistavissa() && hakemus.getEdellinenTila() == HakemuksenTila.HYVAKSYTTY) {
                     hyvaksy(hakemus, valintatulos);
                 } else if (valintatulos.getJulkaistavissa() && hakemus.getEdellinenTila() == HakemuksenTila.VARASIJALTA_HYVAKSYTTY) {
@@ -212,6 +216,10 @@ public class SijoitteluajoWrapperFactory {
         return viimeisinHyvaksyttyJonoOid.equals(hakemusWrapper.getValintatapajono().getValintatapajono().getOid());
 
 
+    }
+
+    private static boolean onJonoJolleValintatulosAsetaan(Hakemus h) {
+        return TilaTaulukot.kuuluuVastaanotonMuokattavissaTiloihin(h.getEdellinenTila());
     }
 
 }
