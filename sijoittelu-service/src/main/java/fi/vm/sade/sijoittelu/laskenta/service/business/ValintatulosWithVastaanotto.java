@@ -52,7 +52,8 @@ public class ValintatulosWithVastaanotto {
                             key.getLeft(), key.getMiddle(), key.getRight()));
                 }
             }
-            v.setTila(tila, "");
+            // Don't write a log entry
+            v.setTila(tila, tila, "", "");
         });
         LOG.info("Valintatuloksia haettu {} kpl haulle {}", fromDb.size(), hakuOid);
         return fromDb;
