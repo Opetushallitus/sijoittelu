@@ -106,8 +106,9 @@ public class SijoitteluajoWrapperFactory {
 
     private static void setHakemuksenValintatuloksenTila(Hakemus hakemus, HakemusWrapper hakemusWrapper, HenkiloWrapper henkiloWrapper, Valintatulos valintatulos) {
         if (valintatulos != null && valintatulos.getTila() != null) {
-            if(!onJonoJolleValintatulosAsetaan(hakemus)) {
-                valintatulos.setTila(ValintatuloksenTila.KESKEN, "");
+            if (!vastaanotonTilaSaaMuuttaaHakemuksenTilaa(hakemus) && valintatulos.getTila() != ValintatuloksenTila.OTTANUT_VASTAAN_TOISEN_PAIKAN) {
+                // Don't write a log entry
+                valintatulos.setTila(ValintatuloksenTila.KESKEN, ValintatuloksenTila.KESKEN, "", "");
             }
             LOG.debug("Hakukohde: {}, valintatapajono: {}, hakemus: {}, hakemuksen tila: {}, hakemuksen edellinen tila: {}, vastaanoton tila: {}",
                     hakemusWrapper.getValintatapajono().getHakukohdeWrapper().getHakukohde().getOid(),
@@ -124,18 +125,18 @@ public class SijoitteluajoWrapperFactory {
                     hakemus.setTilanKuvaukset(TilanKuvaukset.peruuntunutVastaanottanutToisenOpiskelupaikanYhdenPaikanSaannonPiirissa());
                 }
                 voidaanVaihtaa = false;
-            } else if (vastaanotonTilaSaaMuuttaaHakemuksenTilaa(hakemus) && tila == ValintatuloksenTila.PERUNUT) {
+            } else if (tila == ValintatuloksenTila.PERUNUT) {
                 hakemus.setTila(HakemuksenTila.PERUNUT);
-            } else if (vastaanotonTilaSaaMuuttaaHakemuksenTilaa(hakemus) && viimeisinHyvaksyttyJono(hakemusWrapper, henkiloWrapper) && asList(VASTAANOTTANUT_SITOVASTI, EHDOLLISESTI_VASTAANOTTANUT).contains(tila)) {
+            } else if (asList(VASTAANOTTANUT_SITOVASTI, EHDOLLISESTI_VASTAANOTTANUT).contains(tila) && viimeisinHyvaksyttyJono(hakemusWrapper, henkiloWrapper)) {
                 if (hakemus.getEdellinenTila() == HakemuksenTila.VARALLA || hakemus.getEdellinenTila() == HakemuksenTila.VARASIJALTA_HYVAKSYTTY) {
                     hyvaksyVarasijalta(hakemus, valintatulos);
                 } else {
                     hyvaksy(hakemus, valintatulos);
                 }
-            } else if (vastaanotonTilaSaaMuuttaaHakemuksenTilaa(hakemus) && tila == ValintatuloksenTila.EI_VASTAANOTETTU_MAARA_AIKANA) {
+            } else if (tila == ValintatuloksenTila.EI_VASTAANOTETTU_MAARA_AIKANA) {
                 hakemus.setTila(HakemuksenTila.PERUNUT);
                 hakemus.setTilanKuvaukset(TilanKuvaukset.peruuntunutEiVastaanottanutMaaraaikana());
-            } else if (vastaanotonTilaSaaMuuttaaHakemuksenTilaa(hakemus) && tila == ValintatuloksenTila.PERUUTETTU) {
+            } else if (tila == ValintatuloksenTila.PERUUTETTU) {
                 hakemus.setTila(HakemuksenTila.PERUUTETTU);
             } else if (tila == ValintatuloksenTila.KESKEN) {
                 // tila == KESKEN
@@ -217,9 +218,4 @@ public class SijoitteluajoWrapperFactory {
 
 
     }
-
-    private static boolean onJonoJolleValintatulosAsetaan(Hakemus h) {
-        return TilaTaulukot.kuuluuVastaanotonMuokattavissaTiloihin(h.getEdellinenTila());
-    }
-
 }
