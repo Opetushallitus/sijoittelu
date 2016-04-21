@@ -54,7 +54,7 @@ public class SijoitteluajoWrapperFactory {
             hakukohdeWrapper.getValintatapajonot().forEach(valintatapajonoWrapper -> {
                 Map<String, Valintatulos> hakemusIndex = jonoIndex.getOrDefault(valintatapajonoWrapper.getValintatapajono().getOid(), emptyMap());
                 valintatapajonoWrapper.getHakemukset().forEach(hakemusWrapper -> {
-                    setHakemuksenValintatuloksenTila(hakemusWrapper.getHakemus(), hakemusWrapper, hakemusWrapper.getHenkilo(), hakemusIndex.get(hakemusWrapper.getHakemus().getHakemusOid()));
+                    setHakemuksenValintatuloksenTila(hakemusWrapper, hakemusIndex.get(hakemusWrapper.getHakemus().getHakemusOid()));
                 });
             });
         });
@@ -104,7 +104,8 @@ public class SijoitteluajoWrapperFactory {
         return TilaTaulukot.kuuluuVastaanotonMuokattavissaTiloihin(hakemus.getEdellinenTila());
     }
 
-    private static void setHakemuksenValintatuloksenTila(Hakemus hakemus, HakemusWrapper hakemusWrapper, HenkiloWrapper henkiloWrapper, Valintatulos valintatulos) {
+    private static void setHakemuksenValintatuloksenTila(HakemusWrapper hakemusWrapper, Valintatulos valintatulos) {
+        Hakemus hakemus = hakemusWrapper.getHakemus();
         if (valintatulos != null && valintatulos.getTila() != null) {
             if (!vastaanotonTilaSaaMuuttaaHakemuksenTilaa(hakemus) && valintatulos.getTila() != ValintatuloksenTila.OTTANUT_VASTAAN_TOISEN_PAIKAN) {
                 // Don't write a log entry
@@ -129,7 +130,7 @@ public class SijoitteluajoWrapperFactory {
                 voidaanVaihtaa = false;
             } else if (tila == ValintatuloksenTila.PERUNUT) {
                 hakemus.setTila(HakemuksenTila.PERUNUT);
-            } else if (asList(VASTAANOTTANUT_SITOVASTI, EHDOLLISESTI_VASTAANOTTANUT).contains(tila) && viimeisinHyvaksyttyJono(hakemusWrapper, henkiloWrapper)) {
+            } else if (asList(VASTAANOTTANUT_SITOVASTI, EHDOLLISESTI_VASTAANOTTANUT).contains(tila) && viimeisinHyvaksyttyJono(hakemusWrapper)) {
                 if (hakemus.getEdellinenTila() == HakemuksenTila.VARALLA || hakemus.getEdellinenTila() == HakemuksenTila.VARASIJALTA_HYVAKSYTTY) {
                     hyvaksyVarasijalta(hakemus, valintatulos);
                 } else {
@@ -160,7 +161,7 @@ public class SijoitteluajoWrapperFactory {
                 throw new IllegalStateException(String.format("Valintatulos %s ja hakemus %s olivat tuntemattomassa tilassa", valintatulos, hakemus));
             }
             hakemusWrapper.setTilaVoidaanVaihtaa(voidaanVaihtaa);
-            henkiloWrapper.getValintatulos().add(valintatulos);
+            hakemusWrapper.getHenkilo().getValintatulos().add(valintatulos);
         } else if (hakemus.getTila().equals(HakemuksenTila.HYLATTY)) {
             hakemusWrapper.setTilaVoidaanVaihtaa(false);
         }
@@ -198,11 +199,11 @@ public class SijoitteluajoWrapperFactory {
         return hakijaOidMap.get(hakijaOid);
     }
 
-    private static boolean viimeisinHyvaksyttyJono(HakemusWrapper hakemusWrapper, HenkiloWrapper henkiloWrapper) {
+    private static boolean viimeisinHyvaksyttyJono(HakemusWrapper hakemusWrapper) {
 
         if(TilaTaulukot.kuuluuHyvaksyttyihinTiloihin(hakemusWrapper.getHakemus().getEdellinenTila())) return true;
 
-        final String viimeisinHyvaksyttyJonoOid = henkiloWrapper.getHakemukset().stream()
+        final String viimeisinHyvaksyttyJonoOid = hakemusWrapper.getHenkilo().getHakemukset().stream()
                 .filter(hw -> hw.getHakemus().getTilaHistoria().stream().anyMatch(th -> TilaTaulukot.kuuluuHyvaksyttyihinTiloihin(th.getTila())) == true)
                 .map(hw -> {
                     final TilaHistoria tilaHistoria = hw.getHakemus().getTilaHistoria().stream()
