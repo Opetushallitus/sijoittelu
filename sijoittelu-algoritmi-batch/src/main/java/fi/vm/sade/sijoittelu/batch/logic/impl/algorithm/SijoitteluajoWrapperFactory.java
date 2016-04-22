@@ -120,9 +120,11 @@ public class SijoitteluajoWrapperFactory {
             ValintatuloksenTila tila = valintatulos.getTila();
             boolean voidaanVaihtaa = false;
             if (tila == ValintatuloksenTila.OTTANUT_VASTAAN_TOISEN_PAIKAN) {
-                if (voiTullaHyvaksytyksi(hakemus)) {
+                if (voiTullaHyvaksytyksi(hakemus) || hakemus.getEdellinenTila() == HakemuksenTila.PERUUNTUNUT) {
                     hakemus.setTila(HakemuksenTila.PERUUNTUNUT);
-                    hakemus.setTilanKuvaukset(TilanKuvaukset.peruuntunutVastaanottanutToisenOpiskelupaikanYhdenPaikanSaannonPiirissa());
+                    if (hakemus.getEdellinenTila() != HakemuksenTila.PERUUNTUNUT) {
+                        hakemus.setTilanKuvaukset(TilanKuvaukset.peruuntunutVastaanottanutToisenOpiskelupaikanYhdenPaikanSaannonPiirissa());
+                    }
                 }
                 voidaanVaihtaa = false;
             } else if (tila == ValintatuloksenTila.PERUNUT) {
