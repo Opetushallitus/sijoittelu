@@ -176,12 +176,13 @@ public class SijoitteluajoWrapperFactory {
             if (vastaanotettuHakukohde.get().equals(hakukohdeOid)) {
                 LOG.warn(String.format("Hakijalle %s löytyy vastaanotto hakukohteeseen %s vaikka valintatulosta ei löydy",
                         hakemus.getHakijaOid(), hakukohdeOid));
+            } else {
+                if (voiTullaHyvaksytyksi(hakemus)) {
+                    hakemus.setTila(HakemuksenTila.PERUUNTUNUT);
+                    hakemus.setTilanKuvaukset(TilanKuvaukset.peruuntunutVastaanottanutToisenOpiskelupaikanYhdenPaikanSaannonPiirissa());
+                }
+                hakemusWrapper.setTilaVoidaanVaihtaa(false);
             }
-            if (voiTullaHyvaksytyksi(hakemus)) {
-                hakemus.setTila(HakemuksenTila.PERUUNTUNUT);
-                hakemus.setTilanKuvaukset(TilanKuvaukset.peruuntunutVastaanottanutToisenOpiskelupaikanYhdenPaikanSaannonPiirissa());
-            }
-            hakemusWrapper.setTilaVoidaanVaihtaa(false);
         } else if (hakemus.getTila().equals(HakemuksenTila.HYLATTY)) {
             hakemusWrapper.setTilaVoidaanVaihtaa(false);
         }
