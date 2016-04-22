@@ -174,10 +174,8 @@ public class SijoitteluajoWrapperFactory {
         } else if (valintatulos == null && vastaanotettuHakukohde.isPresent()) {
             String hakukohdeOid = hakemusWrapper.getValintatapajono().getHakukohdeWrapper().getHakukohde().getOid();
             if (vastaanotettuHakukohde.get().equals(hakukohdeOid)) {
-                throw new IllegalStateException(
-                        String.format("Hakijalle %s löytyy vastaanotto hakukohteeseen %s vaikka valintatulosta ei löydy",
-                                hakemus.getHakijaOid(), hakukohdeOid)
-                );
+                LOG.warn(String.format("Hakijalle %s löytyy vastaanotto hakukohteeseen %s vaikka valintatulosta ei löydy",
+                        hakemus.getHakijaOid(), hakukohdeOid));
             }
             if (voiTullaHyvaksytyksi(hakemus)) {
                 hakemus.setTila(HakemuksenTila.PERUUNTUNUT);
