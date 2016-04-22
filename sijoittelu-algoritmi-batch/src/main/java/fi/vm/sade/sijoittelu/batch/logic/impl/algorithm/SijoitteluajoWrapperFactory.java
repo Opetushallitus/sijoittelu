@@ -177,9 +177,11 @@ public class SijoitteluajoWrapperFactory {
                 LOG.warn(String.format("Hakijalle %s löytyy vastaanotto hakukohteeseen %s vaikka valintatulosta ei löydy",
                         hakemus.getHakijaOid(), hakukohdeOid));
             } else {
-                if (voiTullaHyvaksytyksi(hakemus)) {
+                if (voiTullaHyvaksytyksi(hakemus) || hakemus.getEdellinenTila() == HakemuksenTila.PERUUNTUNUT) {
                     hakemus.setTila(HakemuksenTila.PERUUNTUNUT);
-                    hakemus.setTilanKuvaukset(TilanKuvaukset.peruuntunutVastaanottanutToisenOpiskelupaikanYhdenPaikanSaannonPiirissa());
+                    if (hakemus.getEdellinenTila() != HakemuksenTila.PERUUNTUNUT || hakemus.getTilanKuvaukset() == null || hakemus.getTilanKuvaukset().isEmpty()) {
+                        hakemus.setTilanKuvaukset(TilanKuvaukset.peruuntunutVastaanottanutToisenOpiskelupaikanYhdenPaikanSaannonPiirissa());
+                    }
                 }
                 hakemusWrapper.setTilaVoidaanVaihtaa(false);
             }
