@@ -22,7 +22,10 @@ public class SijoitteluajoWrapperFactory {
 
     private static final Logger LOG = LoggerFactory.getLogger(SijoitteluajoWrapperFactory.class);
 
-    public static SijoitteluajoWrapper createSijoitteluAjoWrapper(SijoitteluAjo sijoitteluAjo, List<Hakukohde> hakukohteet, List<Valintatulos> valintatulokset) {
+    public static SijoitteluajoWrapper createSijoitteluAjoWrapper(SijoitteluAjo sijoitteluAjo,
+                                                                  List<Hakukohde> hakukohteet,
+                                                                  List<Valintatulos> valintatulokset,
+                                                                  Map<String, String> aiemmanVastaanotonHakukohdePerHakija) {
         LOG.info("Luodaan SijoitteluAjoWrapper haulle {}", sijoitteluAjo.getHakuOid());
         final Map<String, Map<String, Map<String, Valintatulos>>> indeksoidutTulokset = indexValintatulokset(valintatulokset);
         SijoitteluajoWrapper sijoitteluajoWrapper = new SijoitteluajoWrapper(sijoitteluAjo);
@@ -54,7 +57,11 @@ public class SijoitteluajoWrapperFactory {
             hakukohdeWrapper.getValintatapajonot().forEach(valintatapajonoWrapper -> {
                 Map<String, Valintatulos> hakemusIndex = jonoIndex.getOrDefault(valintatapajonoWrapper.getValintatapajono().getOid(), emptyMap());
                 valintatapajonoWrapper.getHakemukset().forEach(hakemusWrapper -> {
-                    setHakemuksenValintatuloksenTila(hakemusWrapper, hakemusIndex.get(hakemusWrapper.getHakemus().getHakemusOid()));
+                    setHakemuksenValintatuloksenTila(
+                            hakemusWrapper,
+                            hakemusIndex.get(hakemusWrapper.getHakemus().getHakemusOid()),
+                            Optional.ofNullable(aiemmanVastaanotonHakukohdePerHakija.get(hakemusWrapper.getHenkilo().getHakijaOid()))
+                    );
                 });
             });
         });
@@ -104,7 +111,9 @@ public class SijoitteluajoWrapperFactory {
         return TilaTaulukot.kuuluuVastaanotonMuokattavissaTiloihin(hakemus.getEdellinenTila());
     }
 
-    private static void setHakemuksenValintatuloksenTila(HakemusWrapper hakemusWrapper, Valintatulos valintatulos) {
+    private static void setHakemuksenValintatuloksenTila(HakemusWrapper hakemusWrapper,
+                                                         Valintatulos valintatulos,
+                                                         Optional<String> vastaanotettuHakukohde) {
         Hakemus hakemus = hakemusWrapper.getHakemus();
         if (valintatulos != null && valintatulos.getTila() != null) {
             if (!vastaanotonTilaSaaMuuttaaHakemuksenTilaa(hakemus) && valintatulos.getTila() != ValintatuloksenTila.OTTANUT_VASTAAN_TOISEN_PAIKAN) {
@@ -162,6 +171,19 @@ public class SijoitteluajoWrapperFactory {
             }
             hakemusWrapper.setTilaVoidaanVaihtaa(voidaanVaihtaa);
             hakemusWrapper.getHenkilo().getValintatulos().add(valintatulos);
+        } else if (valintatulos == null && vastaanotettuHakukohde.isPresent()) {
+            String hakukohdeOid = hakemusWrapper.getValintatapajono().getHakukohdeWrapper().getHakukohde().getOid();
+            if (vastaanotettuHakukohde.get().equals(hakukohdeOid)) {
+                throw new IllegalStateException(
+                        String.format("Hakijalle %s löytyy vastaanotto hakukohteeseen %s vaikka valintatulosta ei löydy",
+                                hakemus.getHakijaOid(), hakukohdeOid)
+                );
+            }
+            if (voiTullaHyvaksytyksi(hakemus)) {
+                hakemus.setTila(HakemuksenTila.PERUUNTUNUT);
+                hakemus.setTilanKuvaukset(TilanKuvaukset.peruuntunutVastaanottanutToisenOpiskelupaikanYhdenPaikanSaannonPiirissa());
+            }
+            hakemusWrapper.setTilaVoidaanVaihtaa(false);
         } else if (hakemus.getTila().equals(HakemuksenTila.HYLATTY)) {
             hakemusWrapper.setTilaVoidaanVaihtaa(false);
         }

@@ -2,6 +2,7 @@ package fi.vm.sade.sijoittelu.laskenta.external.resource;
 
 import fi.vm.sade.sijoittelu.domain.Valintatulos;
 import fi.vm.sade.sijoittelu.domain.VastaanotettavuusDTO;
+import fi.vm.sade.sijoittelu.laskenta.external.resource.dto.VastaanottoDTO;
 import fi.vm.sade.sijoittelu.laskenta.external.resource.dto.VastaanottoEventDto;
 
 import javax.ws.rs.*;
@@ -22,6 +23,11 @@ public interface ValintaTulosServiceResource {
     @Path("/valintatulos/haku/{hakuOid}")
     @Produces(MediaType.APPLICATION_JSON)
     List<Valintatulos> valintatuloksetValinnantilalla(@PathParam("hakuOid") String hakuOid);
+
+    @GET
+    @Path("/vastaanotot/haku/{hakuOid}")
+    @Produces(MediaType.APPLICATION_JSON)
+    List<VastaanottoDTO> haunKoulutuksenAlkamiskaudenVastaanototYhdenPaikanSaadoksenPiirissa(@PathParam("hakuOid") String hakuOid);
 
     @POST
     @Path("/transactional-vastaanotto")

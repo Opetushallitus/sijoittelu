@@ -41,7 +41,7 @@ public class BasicSijoitteluHakijaryhmaTasasijaTest {
 
         List<Hakukohde> hakukohteet = t.getHakukohteet().parallelStream().map(DomainConverter::convertToHakukohde).collect(Collectors.toList());
 
-        SijoittelunTila s = SijoitteluAlgorithmUtil.sijoittele(new SijoitteluAjo(), hakukohteet, Collections.<Valintatulos>newArrayList());
+        SijoittelunTila s = SijoitteluAlgorithmUtil.sijoittele(new SijoitteluAjo(), hakukohteet, Collections.<Valintatulos>newArrayList(), java.util.Collections.emptyMap());
         PrintHelper.tallennaSijoitteluTiedostoon(s, "target/sijoittelu_basic_hakijaryhma_tasasija_case.sijoitteluresult");
         // Pitäiskö olla näin???
         //TestHelper.assertoiAinoastaanValittu(hakukohteet.get(0).getValintatapajonot().get(0), "1.2.246.562.24.00000000001", "1.2.246.562.24.00000000002");

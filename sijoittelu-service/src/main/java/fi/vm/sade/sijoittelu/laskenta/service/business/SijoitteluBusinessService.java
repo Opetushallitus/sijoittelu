@@ -39,6 +39,7 @@ import fi.vm.sade.sijoittelu.laskenta.actors.messages.PoistaHakukohteet;
 import fi.vm.sade.sijoittelu.laskenta.actors.messages.PoistaVanhatAjotSijoittelulta;
 import fi.vm.sade.sijoittelu.laskenta.external.resource.dto.ParametriArvoDTO;
 import fi.vm.sade.sijoittelu.laskenta.external.resource.dto.ParametriDTO;
+import fi.vm.sade.sijoittelu.laskenta.external.resource.dto.VastaanottoDTO;
 import fi.vm.sade.sijoittelu.laskenta.service.exception.HakemustaEiLoytynytException;
 import fi.vm.sade.sijoittelu.laskenta.service.exception.ValintatapajonoaEiLoytynytException;
 import fi.vm.sade.sijoittelu.laskenta.service.it.TarjontaIntegrationService;
@@ -86,6 +87,7 @@ public class SijoitteluBusinessService {
     private final SijoitteluTulosConverter sijoitteluTulosConverter;
     private final ActorService actorService;
     private final TarjontaIntegrationService tarjontaIntegrationService;
+    private final ValintaTulosServiceResource valintaTulosServiceResource;
     private final ValintatulosWithVastaanotto valintatulosWithVastaanotto;
     private final Collection<PostSijoitteluProcessor> postSijoitteluProcessors;
     private final Collection<PreSijoitteluProcessor> preSijoitteluProcessors;
@@ -112,6 +114,7 @@ public class SijoitteluBusinessService {
         this.sijoitteluTulosConverter = sijoitteluTulosConverter;
         this.actorService = actorService;
         this.tarjontaIntegrationService = tarjontaIntegrationService;
+        this.valintaTulosServiceResource = valintaTulosServiceResource;
         this.valintatulosWithVastaanotto = new ValintatulosWithVastaanotto(valintatulosDao, valintaTulosServiceResource);
         this.preSijoitteluProcessors = PreSijoitteluProcessor.defaultPreProcessors();
         this.postSijoitteluProcessors = PostSijoitteluProcessor.defaultPostProcessors();
@@ -145,8 +148,9 @@ public class SijoitteluBusinessService {
         SijoitteluAjo uusiSijoitteluajo = createSijoitteluAjo(sijoittelu);
         List<Hakukohde> kaikkiHakukohteet = merge(uusiSijoitteluajo, olemassaolevatHakukohteet, uudetHakukohteet);
         List<Valintatulos> valintatulokset = valintatulosWithVastaanotto.forHaku(hakuOid);
+        Map<String, String> kaudenAiemmatVastaanotot = aiemmanVastaanotonHakukohdePerHakija(hakuOid);
         LOG.info("Haun {} sijoittelun koko: {} olemassaolevaa, {} uutta, {} valintatulosta", hakuOid, olemassaolevatHakukohteet.size(), uudetHakukohteet.size(), valintatulokset.size());
-        final SijoitteluajoWrapper sijoitteluajoWrapper = SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(uusiSijoitteluajo, kaikkiHakukohteet, valintatulokset);
+        final SijoitteluajoWrapper sijoitteluajoWrapper = SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(uusiSijoitteluajo, kaikkiHakukohteet, valintatulokset, kaudenAiemmatVastaanotot);
         asetaSijoittelunParametrit(hakuOid, sijoitteluajoWrapper);
         uusiSijoitteluajo.setStartMils(startTime);
         LOG.info("Suoritetaan sijoittelu haulle {}", hakuOid);
@@ -253,7 +257,11 @@ public class SijoitteluBusinessService {
         List<Hakukohde> kaikkiHakukohteet = merge(uusiSijoitteluajo, olemassaolevatHakukohteet, uudetHakukohteet);
         List<Valintatulos> valintatulokset = Collections.emptyList();
         uusiSijoitteluajo.setStartMils(startTime);
-        SijoitteluAlgorithm.sijoittele(preSijoitteluProcessors, postSijoitteluProcessors, SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(uusiSijoitteluajo, kaikkiHakukohteet, valintatulokset));
+        SijoitteluAlgorithm.sijoittele(
+                preSijoitteluProcessors,
+                postSijoitteluProcessors,
+                SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(uusiSijoitteluajo, kaikkiHakukohteet, valintatulokset, Collections.emptyMap())
+        );
         uusiSijoitteluajo.setEndMils(System.currentTimeMillis());
         processOldApplications(olemassaolevatHakukohteet, kaikkiHakukohteet);
         valisijoitteluDao.persistSijoittelu(sijoittelu);
@@ -269,8 +277,13 @@ public class SijoitteluBusinessService {
         SijoitteluAjo uusiSijoitteluajo = createErillisSijoitteluAjo(sijoittelu);
         List<Hakukohde> kaikkiHakukohteet = merge(uusiSijoitteluajo, olemassaolevatHakukohteet, uudetHakukohteet);
         List<Valintatulos> valintatulokset = valintatulosWithVastaanotto.forHaku(hakuOid);
+        Map<String, String> kaudenAiemmatVastaanotot = aiemmanVastaanotonHakukohdePerHakija(hakuOid);
         uusiSijoitteluajo.setStartMils(startTime);
-        SijoitteluAlgorithm.sijoittele(preSijoitteluProcessors, postSijoitteluProcessors, SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(uusiSijoitteluajo, kaikkiHakukohteet, valintatulokset));
+        SijoitteluAlgorithm.sijoittele(
+                preSijoitteluProcessors,
+                postSijoitteluProcessors,
+                SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(uusiSijoitteluajo, kaikkiHakukohteet, valintatulokset, kaudenAiemmatVastaanotot)
+        );
         uusiSijoitteluajo.setEndMils(System.currentTimeMillis());
         processOldApplications(olemassaolevatHakukohteet, kaikkiHakukohteet);
         erillisSijoitteluDao.persistSijoittelu(sijoittelu);
@@ -499,6 +512,11 @@ public class SijoitteluBusinessService {
         return erillisSijoitteluDao.getSijoitteluByHakuOid(hakuOid)
                 .map(sijoittelu -> hakukohdeDao.getHakukohdeForSijoitteluajo(sijoittelu.getLatestSijoitteluajo().getSijoitteluajoId(), hakukohdeOid))
                 .orElseThrow(() -> new RuntimeException("Erillissijoittelua ei löytynyt haulle: " + hakuOid));
+    }
+
+    public Map<String, String> aiemmanVastaanotonHakukohdePerHakija(String hakuOid) {
+        return valintaTulosServiceResource.haunKoulutuksenAlkamiskaudenVastaanototYhdenPaikanSaadoksenPiirissa(hakuOid)
+                .stream().collect(Collectors.toMap(VastaanottoDTO::getHenkiloOid, VastaanottoDTO::getHakukohdeOid));
     }
 
     public void vaihdaHakemuksenTila(String hakuoid, Hakukohde hakukohde, Valintatulos change, String selite, String muokkaaja) {

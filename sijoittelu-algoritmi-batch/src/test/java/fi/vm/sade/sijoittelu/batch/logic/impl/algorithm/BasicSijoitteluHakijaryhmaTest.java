@@ -12,6 +12,7 @@ import org.junit.Test;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -40,7 +41,7 @@ public class BasicSijoitteluHakijaryhmaTest {
 
 
         List<Hakukohde> hakukohteet = t.getHakukohteet().parallelStream().map(DomainConverter::convertToHakukohde).collect(Collectors.toList());
-		SijoittelunTila s = sijoittele(new SijoitteluAjo(), hakukohteet, new ArrayList());
+		SijoittelunTila s = sijoittele(new SijoitteluAjo(), hakukohteet, new ArrayList(), Collections.emptyMap());
 
 		PrintHelper.tallennaSijoitteluTiedostoon(s, "target/sijoittelu_basic_hakijaryhma_case.sijoitteluresult");
 
@@ -56,7 +57,7 @@ public class BasicSijoitteluHakijaryhmaTest {
 
 
 		List<Hakukohde> hakukohteet = t.getHakukohteet().parallelStream().map(DomainConverter::convertToHakukohde).collect(Collectors.toList());
-		SijoittelunTila s = sijoittele(new SijoitteluAjo(), hakukohteet, new ArrayList());
+		SijoittelunTila s = sijoittele(new SijoitteluAjo(), hakukohteet, new ArrayList(), Collections.emptyMap());
 
 		PrintHelper.tallennaSijoitteluTiedostoon(s, "target/sijoittelu_basic_hakijaryhma_ei_ryhmaan_kuuluvia_case.sijoitteluresult");
 

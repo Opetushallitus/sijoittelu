@@ -12,6 +12,7 @@ import org.junit.Test;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -58,9 +59,9 @@ public class VastaanottotietoTest {
         valintatulos.setValintatapajonoOid("tkk_jono_2", "");
 
         valintatuloses.add(valintatulos);
-        System.out.println(PrintHelper.tulostaSijoittelu(SijoitteluAlgorithmUtil.sijoittele(new SijoitteluAjo(), tallennaEdellisetTilat(hakukohteet), new ArrayList<>())));
-        System.out.println(PrintHelper.tulostaSijoittelu(SijoitteluAlgorithmUtil.sijoittele(new SijoitteluAjo(), tallennaEdellisetTilat(hakukohteet), new ArrayList<>())));
-        SijoittelunTila s = SijoitteluAlgorithmUtil.sijoittele(new SijoitteluAjo(), tallennaEdellisetTilat(hakukohteet), valintatuloses);
+        System.out.println(PrintHelper.tulostaSijoittelu(SijoitteluAlgorithmUtil.sijoittele(new SijoitteluAjo(), tallennaEdellisetTilat(hakukohteet), new ArrayList<>(), Collections.emptyMap())));
+        System.out.println(PrintHelper.tulostaSijoittelu(SijoitteluAlgorithmUtil.sijoittele(new SijoitteluAjo(), tallennaEdellisetTilat(hakukohteet), new ArrayList<>(), Collections.emptyMap())));
+        SijoittelunTila s = SijoitteluAlgorithmUtil.sijoittele(new SijoitteluAjo(), tallennaEdellisetTilat(hakukohteet), valintatuloses, Collections.emptyMap());
 
         System.out.println(PrintHelper.tulostaSijoittelu(s));
 
@@ -108,10 +109,10 @@ public class VastaanottotietoTest {
         valintatulos.setValintatapajonoOid("opisto_jono_1", "");
 
         valintatuloses.add(valintatulos);
-        SijoitteluAlgorithmUtil.sijoittele(new SijoitteluAjo(), tallennaEdellisetTilat(hakukohteet), valintatuloses);
+        SijoitteluAlgorithmUtil.sijoittele(new SijoitteluAjo(), tallennaEdellisetTilat(hakukohteet), valintatuloses, Collections.emptyMap());
         TestHelper.assertoi(hakukohteet.get(2).getValintatapajonot()
                 .get(0), "1.2.246.562.24.00000000006", HakemuksenTila.VARASIJALTA_HYVAKSYTTY);
-        SijoittelunTila s = SijoitteluAlgorithmUtil.sijoittele(new SijoitteluAjo(), hakukohteet, valintatuloses);
+        SijoittelunTila s = SijoitteluAlgorithmUtil.sijoittele(new SijoitteluAjo(), hakukohteet, valintatuloses, Collections.emptyMap());
 
         System.out.println(PrintHelper.tulostaSijoittelu(s));
 
@@ -148,7 +149,7 @@ public class VastaanottotietoTest {
 //        valintatulos.setValintatapajonoOid("opisto_jono_1", "");
 //
 //        valintatuloses.add(valintatulos);
-        s = SijoitteluAlgorithmUtil.sijoittele(new SijoitteluAjo(), hakukohteet, valintatuloses);
+        s = SijoitteluAlgorithmUtil.sijoittele(new SijoitteluAjo(), hakukohteet, valintatuloses, Collections.emptyMap());
 
         System.out.println(PrintHelper.tulostaSijoittelu(s));
 
@@ -188,7 +189,7 @@ public class VastaanottotietoTest {
         valintatulos.setValintatapajonoOid("esimerkkikoulu_jono_1", "");
 
         valintatuloses.add(valintatulos);
-        s = SijoitteluAlgorithmUtil.sijoittele(new SijoitteluAjo(), hakukohteet, valintatuloses);
+        s = SijoitteluAlgorithmUtil.sijoittele(new SijoitteluAjo(), hakukohteet, valintatuloses, Collections.emptyMap());
 
         System.out.println(PrintHelper.tulostaSijoittelu(s));
 
@@ -235,7 +236,7 @@ public class VastaanottotietoTest {
         valintatulos.setValintatapajonoOid("opisto_jono_1", "");
 
         valintatuloses.add(valintatulos);
-        SijoittelunTila s = SijoitteluAlgorithmUtil.sijoittele(new SijoitteluAjo(), hakukohteet, valintatuloses);
+        SijoittelunTila s = SijoitteluAlgorithmUtil.sijoittele(new SijoitteluAjo(), hakukohteet, valintatuloses, Collections.emptyMap());
 
         System.out.println(PrintHelper.tulostaSijoittelu(s));
 
@@ -269,7 +270,7 @@ public class VastaanottotietoTest {
         valintatulos.setValintatapajonoOid("opisto_jono_1", "");
 
         valintatuloses.add(valintatulos);
-        s = SijoitteluAlgorithmUtil.sijoittele(new SijoitteluAjo(), hakukohteet, valintatuloses);
+        s = SijoitteluAlgorithmUtil.sijoittele(new SijoitteluAjo(), hakukohteet, valintatuloses, Collections.emptyMap());
 
         System.out.println(PrintHelper.tulostaSijoittelu(s));
 
@@ -302,7 +303,7 @@ public class VastaanottotietoTest {
         valintatulos.setValintatapajonoOid("esimerkkikoulu_jono_1", "");
 
         valintatuloses.add(valintatulos);
-        s = SijoitteluAlgorithmUtil.sijoittele(new SijoitteluAjo(), hakukohteet, valintatuloses);
+        s = SijoitteluAlgorithmUtil.sijoittele(new SijoitteluAjo(), hakukohteet, valintatuloses, Collections.emptyMap());
 
         System.out.println(PrintHelper.tulostaSijoittelu(s));
 
@@ -339,7 +340,7 @@ public class VastaanottotietoTest {
         valintatulos.setValintatapajonoOid("esimerkkikoulu_jono_1", "");
 
         valintatuloses.add(valintatulos);
-        s = SijoitteluAlgorithmUtil.sijoittele(new SijoitteluAjo(), hakukohteet, valintatuloses);
+        s = SijoitteluAlgorithmUtil.sijoittele(new SijoitteluAjo(), hakukohteet, valintatuloses, Collections.emptyMap());
 
         System.out.println(PrintHelper.tulostaSijoittelu(s));
 

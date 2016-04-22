@@ -24,10 +24,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static com.lordofthejars.nosqlunit.mongodb.MongoDbRule.MongoDbRuleBuilder.newMongoDbRule;
 
@@ -77,7 +74,7 @@ public class SijoitteluTest {
                 }
             }
         }
-        SijoitteluAlgorithmUtil.sijoittele(new SijoitteluAjo(), hakukohteet, ImmutableList.of());
+        SijoitteluAlgorithmUtil.sijoittele(new SijoitteluAjo(), hakukohteet, ImmutableList.of(), Collections.emptyMap());
         ass(hakemusMapByHakemusOid, "1.2.246.562.11.00000011992", 1, getHakukohde(hakukohteet, "1.2.246.562.14.2013082908162538927436"), HakemuksenTila.HYVAKSYTTY);
         ass(hakemusMapByHakemusOid, "1.2.246.562.11.00000011992", 2, getHakukohde(hakukohteet, "1.2.246.562.5.02563_04_873_0530"), HakemuksenTila.PERUUNTUNUT);
 
@@ -108,7 +105,7 @@ public class SijoitteluTest {
 
         ass(hakemusMapByHakemusOid, "1.2.246.562.11.00000011992", 1, getHakukohde(hakukohteet, "1.2.246.562.14.2013082908162538927436"), HakemuksenTila.HYVAKSYTTY);
         ass(hakemusMapByHakemusOid, "1.2.246.562.11.00000011992", 2, getHakukohde(hakukohteet, "1.2.246.562.5.02563_04_873_0530"), HakemuksenTila.VARALLA);
-        SijoitteluAlgorithmUtil.sijoittele(new SijoitteluAjo(), hakukohteet, ImmutableList.of());
+        SijoitteluAlgorithmUtil.sijoittele(new SijoitteluAjo(), hakukohteet, ImmutableList.of(), Collections.emptyMap());
         ass(hakemusMapByHakemusOid, "1.2.246.562.11.00000011992", 1, getHakukohde(hakukohteet, "1.2.246.562.14.2013082908162538927436"), HakemuksenTila.HYVAKSYTTY);
         ass(hakemusMapByHakemusOid, "1.2.246.562.11.00000011992", 2, getHakukohde(hakukohteet, "1.2.246.562.5.02563_04_873_0530"), HakemuksenTila.PERUUNTUNUT);
 

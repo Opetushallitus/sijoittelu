@@ -41,7 +41,7 @@ public class BasicSijoitteluTest {
             hakukohteet.add(hakukohde);
         }
 
-        SijoittelunTila s = SijoitteluAlgorithmUtil.sijoittele(new SijoitteluAjo(), hakukohteet, Collections.<Valintatulos>newArrayList());
+        SijoittelunTila s = SijoitteluAlgorithmUtil.sijoittele(new SijoitteluAjo(), hakukohteet, Collections.<Valintatulos>newArrayList(), java.util.Collections.emptyMap());
 
         PrintHelper.tallennaSijoitteluTiedostoon(s, "target/sijoittelu_basic_case.sijoitteluresult");
 

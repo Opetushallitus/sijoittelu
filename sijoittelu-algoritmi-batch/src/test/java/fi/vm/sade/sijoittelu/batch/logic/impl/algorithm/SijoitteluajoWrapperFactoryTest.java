@@ -139,7 +139,7 @@ public class SijoitteluajoWrapperFactoryTest {
         List<Valintatapajono> valintatapajonot = generateValintatapajono(hakemukset);
         final List<Hakukohde> hakukohteet = generateHakukohteet(valintatapajonot);
         final List<Valintatulos> valintatulokset = Collections.singletonList(valintatulos);
-        return SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(new SijoitteluAjo(), hakukohteet, valintatulokset);
+        return SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(new SijoitteluAjo(), hakukohteet, valintatulokset, Collections.emptyMap());
     }
 
     private static Valintatulos valintatulosWithTila(ValintatuloksenTila tila) {

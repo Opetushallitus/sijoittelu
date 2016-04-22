@@ -11,6 +11,7 @@ import org.junit.Test;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.StringTokenizer;
 import java.util.stream.Collectors;
@@ -39,7 +40,7 @@ public class Sijoitteludata_2011K_ALPATTest {
 		HakuDTO t = csvToDomain("testdata/sijoitteludata_2011K_ALPAT.csv");
 
         List<Hakukohde> hakukohteet = t.getHakukohteet().parallelStream().map(DomainConverter::convertToHakukohde).collect(Collectors.toList());
-		SijoittelunTila s = SijoitteluAlgorithmUtil.sijoittele(new SijoitteluAjo(), hakukohteet, new ArrayList());
+		SijoittelunTila s = SijoitteluAlgorithmUtil.sijoittele(new SijoitteluAjo(), hakukohteet, new ArrayList(), Collections.emptyMap());
 
         long timestart = System.currentTimeMillis();
 		long timeend = System.currentTimeMillis();

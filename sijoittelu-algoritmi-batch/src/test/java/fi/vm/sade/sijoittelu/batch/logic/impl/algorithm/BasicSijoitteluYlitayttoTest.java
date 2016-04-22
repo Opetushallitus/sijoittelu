@@ -11,6 +11,7 @@ import org.junit.Test;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -36,7 +37,7 @@ public class BasicSijoitteluYlitayttoTest {
             Hakukohde hakukohde = DomainConverter.convertToHakukohde(hkt);
             hakukohteet.add(hakukohde);
         }
-		SijoittelunTila s = SijoitteluAlgorithmUtil.sijoittele(new SijoitteluAjo(), hakukohteet, new ArrayList());
+		SijoittelunTila s = SijoitteluAlgorithmUtil.sijoittele(new SijoitteluAjo(), hakukohteet, new ArrayList(), Collections.emptyMap());
 
 		PrintHelper.tallennaSijoitteluTiedostoon(s, "target/sijoittelu_basic_ylitaytto_case.sijoitteluresult");
 

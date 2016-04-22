@@ -14,6 +14,7 @@ import org.junit.Test;
 import static junit.framework.Assert.*;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 
 public class SijoitteluAlgorithmEhdollisenVastaanotonSiirtyminenYlemmalleHakutoiveelleTest {
@@ -48,7 +49,7 @@ public class SijoitteluAlgorithmEhdollisenVastaanotonSiirtyminenYlemmalleHakutoi
     }
 
     private SijoitteluajoWrapper luoSijoitteluAjonTulokset() {
-        final SijoitteluajoWrapper sijoitteluajoWrapper = SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(new SijoitteluAjo(), hakukohdeList, valintatulosList);
+        final SijoitteluajoWrapper sijoitteluajoWrapper = SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(new SijoitteluAjo(), hakukohdeList, valintatulosList, Collections.emptyMap());
         SijoittelunTila algorithm = SijoitteluAlgorithmUtil.sijoittele(sijoitteluajoWrapper);
         final SijoitteluajoWrapper sijoitteluAjo = sijoitteluajoWrapper;
         System.out.println("sijoitteluAjo.getMuuttuneetValintatulokset().size(): " + sijoitteluAjo.getMuuttuneetValintatulokset().size());

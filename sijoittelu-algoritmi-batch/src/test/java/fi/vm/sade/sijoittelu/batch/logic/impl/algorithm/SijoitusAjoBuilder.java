@@ -105,7 +105,7 @@ class SijoitusAjoBuilder {
             }
         }
 
-        return SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(sijoitteluAjo, Arrays.asList(hakukohde), valintatulokset);
+        return SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(sijoitteluAjo, Arrays.asList(hakukohde), valintatulokset, Collections.emptyMap());
     }
 
     private SijoitusAjoBuilder verify() {
