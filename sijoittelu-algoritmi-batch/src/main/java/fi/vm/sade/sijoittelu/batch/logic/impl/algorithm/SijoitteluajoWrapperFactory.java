@@ -132,7 +132,7 @@ public class SijoitteluajoWrapperFactory {
             if (tila == ValintatuloksenTila.OTTANUT_VASTAAN_TOISEN_PAIKAN) {
                 if (voiTullaHyvaksytyksi(hakemus) || hakemus.getEdellinenTila() == HakemuksenTila.PERUUNTUNUT) {
                     hakemus.setTila(HakemuksenTila.PERUUNTUNUT);
-                    if (hakemus.getEdellinenTila() != HakemuksenTila.PERUUNTUNUT) {
+                    if (hakemus.getEdellinenTila() != HakemuksenTila.PERUUNTUNUT || hakemus.getTilanKuvaukset() == null || hakemus.getTilanKuvaukset().isEmpty()) {
                         hakemus.setTilanKuvaukset(TilanKuvaukset.peruuntunutVastaanottanutToisenOpiskelupaikanYhdenPaikanSaannonPiirissa());
                     }
                 }
