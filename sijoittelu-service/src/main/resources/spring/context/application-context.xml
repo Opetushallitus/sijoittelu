@@ -93,7 +93,7 @@
         </jaxrs-client:providers>
         </jaxrs-client:client>
         <jaxrs-client:client id="ValintaTulosServiceRestClient"
-                             address="${valintalaskentakoostepalvelu.valinta-tulos-service.rest.url}"
+                             address="${valintalaskentakoostepalvelu.valintatulosservice.rest.url}"
                              serviceClass="fi.vm.sade.sijoittelu.laskenta.external.resource.ValintaTulosServiceResource"
                              inheritHeaders="true">
             <jaxrs-client:providers>
