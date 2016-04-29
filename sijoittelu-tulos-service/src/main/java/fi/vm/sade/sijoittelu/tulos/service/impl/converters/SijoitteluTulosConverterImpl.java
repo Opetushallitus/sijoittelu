@@ -24,6 +24,21 @@ public class SijoitteluTulosConverterImpl implements SijoitteluTulosConverter {
     }
 
     @Override
+    public Iterator<HakukohdeDTO> convert(Iterator<Hakukohde> hakukohteet) {
+        return new Iterator<HakukohdeDTO>() {
+            @Override
+            public boolean hasNext() {
+                return hakukohteet.hasNext();
+            }
+
+            @Override
+            public HakukohdeDTO next() {
+                return convert(hakukohteet.next());
+            }
+        };
+    }
+
+    @Override
     public HakukohdeDTO convert(Hakukohde hakukohde) {
         if (hakukohde == null) {
             return null;

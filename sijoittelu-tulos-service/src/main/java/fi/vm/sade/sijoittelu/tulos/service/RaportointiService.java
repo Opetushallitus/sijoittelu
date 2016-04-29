@@ -16,5 +16,7 @@ public interface RaportointiService {
 
     HakijaPaginationObject hakemukset(SijoitteluAjo ajo,Boolean hyvaksytyt, Boolean ilmanHyvaksyntaa,Boolean vastaanottaneet, List <String> hakukohdeOid, Integer count, Integer index);
 
+    List<HakijaDTO> hakemukset(SijoitteluAjo ajo, String hakukohdeOid);
+
     HakijaPaginationObject cachedHakemukset(SijoitteluAjo ajo, Boolean hyvaksytyt, Boolean ilmanHyvaksyntaa, Boolean vastaanottaneet, List<String> hakukohdeOid, Integer count, Integer index);
 }

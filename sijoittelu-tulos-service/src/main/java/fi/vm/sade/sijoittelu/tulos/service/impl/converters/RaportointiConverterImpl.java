@@ -19,35 +19,61 @@ public class RaportointiConverterImpl implements RaportointiConverter {
             for (ValintatapajonoDTO valintatapajono : hakukohde.getValintatapajonot()) {
                 for (HakemusDTO hakemusDTO : valintatapajono.getHakemukset()) {
                     HakijaDTO hakijaRaportointiDTO = getOrCreateHakijaRaportointiDTO(hakijat, hakemusDTO);
-                    HakutoiveDTO raportointiHakutoiveDTO = getOrCreateHakutoive(hakijaRaportointiDTO, hakemusDTO, hakukohde);
-                    HakutoiveenValintatapajonoDTO hakutoiveenValintatapajonoDTO = new HakutoiveenValintatapajonoDTO();
-                    raportointiHakutoiveDTO.getHakutoiveenValintatapajonot().add(hakutoiveenValintatapajonoDTO);
-                    hakutoiveenValintatapajonoDTO.setHakeneet(valintatapajono.getHakeneet());
-                    hakutoiveenValintatapajonoDTO.setAlinHyvaksyttyPistemaara(valintatapajono.getAlinHyvaksyttyPistemaara());
-                    hakutoiveenValintatapajonoDTO.setHyvaksytty(valintatapajono.getHyvaksytty());
-                    hakutoiveenValintatapajonoDTO.setVaralla(valintatapajono.getVaralla());
-                    hakutoiveenValintatapajonoDTO.setHakeneet(valintatapajono.getHakeneet());
-                    hakutoiveenValintatapajonoDTO.setValintatapajonoOid(valintatapajono.getOid());
-                    hakutoiveenValintatapajonoDTO.setTayttojono(valintatapajono.getTayttojono());
-                    hakutoiveenValintatapajonoDTO.setEiVarasijatayttoa(Optional.ofNullable(valintatapajono.getEiVarasijatayttoa()).orElse(false));
-                    hakutoiveenValintatapajonoDTO.setVarasijat(valintatapajono.getVarasijat());
-                    hakutoiveenValintatapajonoDTO.setVarasijaTayttoPaivat(valintatapajono.getVarasijaTayttoPaivat());
-                    hakutoiveenValintatapajonoDTO.setVarasijojaKaytetaanAlkaen(valintatapajono.getVarasijojaKaytetaanAlkaen());
-                    hakutoiveenValintatapajonoDTO.setVarasijojaTaytetaanAsti(valintatapajono.getVarasijojaTaytetaanAsti());
-                    hakutoiveenValintatapajonoDTO.setValintatapajonoNimi(valintatapajono.getNimi());
-                    hakutoiveenValintatapajonoDTO.setVarasijanNumero(hakemusDTO.getVarasijanNumero());
-                    hakutoiveenValintatapajonoDTO.setTasasijaJonosija(hakemusDTO.getTasasijaJonosija());
-                    hakutoiveenValintatapajonoDTO.setPisteet(hakemusDTO.getPisteet());
-                    hakutoiveenValintatapajonoDTO.setJonosija(hakemusDTO.getJonosija());
-                    hakutoiveenValintatapajonoDTO.setTila(hakemusDTO.getTila());
-                    hakutoiveenValintatapajonoDTO.setTilanKuvaukset(hakemusDTO.getTilanKuvaukset());
-                    hakutoiveenValintatapajonoDTO.setHyvaksyttyHarkinnanvaraisesti(hakemusDTO.isHyvaksyttyHarkinnanvaraisesti());
-                    hakutoiveenValintatapajonoDTO.setPaasyJaSoveltuvuusKokeenTulos(hakemusDTO.getPaasyJaSoveltuvuusKokeenTulos());
-                    hakutoiveenValintatapajonoDTO.setValintatapajonoPrioriteetti(hakemusDTO.getPrioriteetti());
-                    // hakutoiveenValintatapajonoDTO.setValintatapajonoPrioriteetti(hakemusDTO.getPrioriteetti());
-                    hakutoiveenValintatapajonoDTO.setValintatapajonoOid(valintatapajono.getOid());
-                    hakutoiveenValintatapajonoDTO.setHakemuksenTilanViimeisinMuutos(viimeisinHakemuksenTilanMuutos(hakemusDTO));
-                    applyPistetiedot(raportointiHakutoiveDTO, hakemusDTO.getPistetiedot());
+                    populateHakija(hakukohde, valintatapajono, hakemusDTO, hakijaRaportointiDTO);
+                }
+            }
+        }
+        return new ArrayList<>(hakijat.values());
+    }
+
+    private void populateHakija(HakukohdeDTO hakukohde, ValintatapajonoDTO valintatapajono, HakemusDTO hakemusDTO, HakijaDTO hakijaRaportointiDTO) {
+        HakutoiveDTO raportointiHakutoiveDTO = getOrCreateHakutoive(hakijaRaportointiDTO, hakemusDTO, hakukohde);
+        HakutoiveenValintatapajonoDTO hakutoiveenValintatapajonoDTO = new HakutoiveenValintatapajonoDTO();
+        raportointiHakutoiveDTO.getHakutoiveenValintatapajonot().add(hakutoiveenValintatapajonoDTO);
+        hakutoiveenValintatapajonoDTO.setHakeneet(valintatapajono.getHakeneet());
+        hakutoiveenValintatapajonoDTO.setAlinHyvaksyttyPistemaara(valintatapajono.getAlinHyvaksyttyPistemaara());
+        hakutoiveenValintatapajonoDTO.setHyvaksytty(valintatapajono.getHyvaksytty());
+        hakutoiveenValintatapajonoDTO.setVaralla(valintatapajono.getVaralla());
+        hakutoiveenValintatapajonoDTO.setHakeneet(valintatapajono.getHakeneet());
+        hakutoiveenValintatapajonoDTO.setValintatapajonoOid(valintatapajono.getOid());
+        hakutoiveenValintatapajonoDTO.setTayttojono(valintatapajono.getTayttojono());
+        hakutoiveenValintatapajonoDTO.setEiVarasijatayttoa(Optional.ofNullable(valintatapajono.getEiVarasijatayttoa()).orElse(false));
+        hakutoiveenValintatapajonoDTO.setVarasijat(valintatapajono.getVarasijat());
+        hakutoiveenValintatapajonoDTO.setVarasijaTayttoPaivat(valintatapajono.getVarasijaTayttoPaivat());
+        hakutoiveenValintatapajonoDTO.setVarasijojaKaytetaanAlkaen(valintatapajono.getVarasijojaKaytetaanAlkaen());
+        hakutoiveenValintatapajonoDTO.setVarasijojaTaytetaanAsti(valintatapajono.getVarasijojaTaytetaanAsti());
+        hakutoiveenValintatapajonoDTO.setValintatapajonoNimi(valintatapajono.getNimi());
+        hakutoiveenValintatapajonoDTO.setVarasijanNumero(hakemusDTO.getVarasijanNumero());
+        hakutoiveenValintatapajonoDTO.setTasasijaJonosija(hakemusDTO.getTasasijaJonosija());
+        hakutoiveenValintatapajonoDTO.setPisteet(hakemusDTO.getPisteet());
+        hakutoiveenValintatapajonoDTO.setJonosija(hakemusDTO.getJonosija());
+        hakutoiveenValintatapajonoDTO.setTila(hakemusDTO.getTila());
+        hakutoiveenValintatapajonoDTO.setTilanKuvaukset(hakemusDTO.getTilanKuvaukset());
+        hakutoiveenValintatapajonoDTO.setHyvaksyttyHarkinnanvaraisesti(hakemusDTO.isHyvaksyttyHarkinnanvaraisesti());
+        hakutoiveenValintatapajonoDTO.setPaasyJaSoveltuvuusKokeenTulos(hakemusDTO.getPaasyJaSoveltuvuusKokeenTulos());
+        hakutoiveenValintatapajonoDTO.setValintatapajonoPrioriteetti(hakemusDTO.getPrioriteetti());
+        hakutoiveenValintatapajonoDTO.setValintatapajonoOid(valintatapajono.getOid());
+        hakutoiveenValintatapajonoDTO.setHakemuksenTilanViimeisinMuutos(viimeisinHakemuksenTilanMuutos(hakemusDTO));
+        applyPistetiedot(raportointiHakutoiveDTO, hakemusDTO.getPistetiedot());
+    }
+
+    private List<HakijaDTO> convertHakukohteenHakijat(HakukohdeDTO hakukohde, Iterator<HakukohdeDTO> hakukohteet) {
+        HashMap<String, HakijaDTO> hakijat = new HashMap<>();
+        for (ValintatapajonoDTO valintatapajono : hakukohde.getValintatapajonot()) {
+            for (HakemusDTO hakemusDTO : valintatapajono.getHakemukset()) {
+                HakijaDTO hakijaRaportointiDTO = getOrCreateHakijaRaportointiDTO(hakijat, hakemusDTO);
+                populateHakija(hakukohde, valintatapajono, hakemusDTO, hakijaRaportointiDTO);
+            }
+        }
+        while (hakukohteet.hasNext()) {
+            HakukohdeDTO hk = hakukohteet.next();
+            if (hk.getOid() != hakukohde.getOid()) {
+                for (ValintatapajonoDTO valintatapajono : hk.getValintatapajonot()) {
+                    for (HakemusDTO hakemusDTO : valintatapajono.getHakemukset()) {
+                        if (hakijat.containsKey(hakemusDTO.getHakemusOid())) {
+                            populateHakija(hk, valintatapajono, hakemusDTO, hakijat.get(hakemusDTO.getHakemusOid()));
+                        }
+                    }
                 }
             }
         }
@@ -56,9 +82,17 @@ public class RaportointiConverterImpl implements RaportointiConverter {
 
     @Override
     public List<HakijaDTO> convert(List<HakukohdeDTO> hakukohteet, List<Valintatulos> kaikkienValintatulokset) {
-        // convert hakijat
         List<HakijaDTO> hakijat = convert(hakukohteet);
-        // apply valintatulos
+        return applyValintatuloksenTiedot(kaikkienValintatulokset, hakijat);
+    }
+
+    @Override
+    public List<HakijaDTO> convertHakukohde(HakukohdeDTO hakukohde, Iterator<HakukohdeDTO> hakukohteet, List<Valintatulos> valintatulokset) {
+        List<HakijaDTO> hakijat = convertHakukohteenHakijat(hakukohde, hakukohteet);
+        return applyValintatuloksenTiedot(valintatulokset, hakijat);
+    }
+
+    private List<HakijaDTO> applyValintatuloksenTiedot(List<Valintatulos> kaikkienValintatulokset, List<HakijaDTO> hakijat) {
         Map<String, List<Valintatulos>> valintatulosMap = mapValintatulokset(kaikkienValintatulokset);
         for (HakijaDTO hakija : hakijat) {
             List<Valintatulos> valintatulokset = valintatulosMap.get(hakija.getHakemusOid());

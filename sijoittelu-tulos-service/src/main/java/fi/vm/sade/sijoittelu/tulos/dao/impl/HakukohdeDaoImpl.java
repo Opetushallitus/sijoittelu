@@ -1,7 +1,9 @@
 package fi.vm.sade.sijoittelu.tulos.dao.impl;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 import javax.annotation.PostConstruct;
@@ -63,6 +65,13 @@ public class HakukohdeDaoImpl implements HakukohdeDao {
         Query<Hakukohde> q = morphiaDS.createQuery(Hakukohde.class);
         q.criteria("sijoitteluajoId").equal(sijoitteluajoId);
         return q.asList();
+    }
+
+    @Override
+    public Iterator<Hakukohde> getHakukohdeForSijoitteluajoIterator(Long sijoitteluajoId) {
+        Query<Hakukohde> q = morphiaDS.createQuery(Hakukohde.class);
+        q.criteria("sijoitteluajoId").equal(sijoitteluajoId);
+        return q.iterator();
     }
 
     @Override

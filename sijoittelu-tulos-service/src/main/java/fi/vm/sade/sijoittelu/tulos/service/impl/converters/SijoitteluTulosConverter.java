@@ -8,6 +8,7 @@ import fi.vm.sade.sijoittelu.tulos.dto.SijoitteluDTO;
 import fi.vm.sade.sijoittelu.tulos.dto.SijoitteluajoDTO;
 import fi.vm.sade.sijoittelu.tulos.dto.ValintatapajonoDTO;
 
+import java.util.Iterator;
 import java.util.List;
 
 public interface SijoitteluTulosConverter {
@@ -18,6 +19,8 @@ public interface SijoitteluTulosConverter {
     SijoitteluDTO convert(Sijoittelu s);
 
     List<HakukohdeDTO> convert(List<Hakukohde> hakukohdeList);
+
+    Iterator<HakukohdeDTO> convert(Iterator<Hakukohde> hakukohteet);
 
     void sortHakemukset(ValintatapajonoDTO valintatapajonoDTO);
 }

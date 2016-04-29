@@ -1,11 +1,14 @@
 package fi.vm.sade.sijoittelu.tulos.dao;
 
+import java.util.Iterator;
 import java.util.List;
 
 import fi.vm.sade.sijoittelu.domain.Hakukohde;
 
 public interface HakukohdeDao {
     List<Hakukohde> getHakukohdeForSijoitteluajo(Long sijoitteluajoId);
+
+    Iterator<Hakukohde> getHakukohdeForSijoitteluajoIterator(Long sijoitteluajoId);
 
     void persistHakukohde(Hakukohde hakukohde);
 
