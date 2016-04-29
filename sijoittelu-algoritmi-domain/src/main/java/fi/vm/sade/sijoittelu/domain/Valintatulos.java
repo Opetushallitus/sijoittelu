@@ -30,6 +30,8 @@ public class Valintatulos implements Serializable {
     //Maarittaa 2 muun kanssa taman luokan hakemisen
     private String hakukohdeOid;
 
+    private boolean ehdollisestiHyvaksyttavissa;
+
     private boolean julkaistavissa;
 
     private boolean hyvaksyttyVarasijalta;
@@ -289,6 +291,15 @@ public class Valintatulos implements Serializable {
         this.hyvaksyPeruuntunut = hyvaksyPeruuntunut;
     }
 
+    public boolean getEhdollisestiHyvaksyttavissa() {
+        return ehdollisestiHyvaksyttavissa;
+    }
+
+    public void setEhdollisestiHyvaksyttavissa(boolean ehdollisestiHyvaksyttavissa, String selite, String muokkaaja) {
+        modified("ehdollisestiHyvaksyttavissa", this.ehdollisestiHyvaksyttavissa, ehdollisestiHyvaksyttavissa, muokkaaja, selite);
+        this.ehdollisestiHyvaksyttavissa = ehdollisestiHyvaksyttavissa;
+    }
+
     public Date getRead() {
         return read;
     }
@@ -303,6 +314,7 @@ public class Valintatulos implements Serializable {
                 ", julkaistavissa=" + julkaistavissa +
                 ", hyvaksyttyVarasijalta=" + hyvaksyttyVarasijalta +
                 ", hyvaksyPeruuntunut=" + hyvaksyPeruuntunut +
+                ", ehdollisestiHyvaksyttavissa=" + ehdollisestiHyvaksyttavissa +
                 ", hakijaOid='" + hakijaOid + '\'' +
                 ", hakuOid='" + hakuOid + '\'' +
                 ", hakutoive=" + hakutoive +

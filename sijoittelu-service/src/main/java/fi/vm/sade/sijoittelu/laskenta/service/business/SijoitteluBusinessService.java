@@ -592,6 +592,7 @@ public class SijoitteluBusinessService {
             v.setIlmoittautumisTila(change.getIlmoittautumisTila(), selite, muokkaaja);
         }
         v.setJulkaistavissa(change.getJulkaistavissa(), selite, muokkaaja);
+        v.setEhdollisestiHyvaksyttavissa(change.getEhdollisestiHyvaksyttavissa(), selite, muokkaaja);
         v.setHyvaksyttyVarasijalta(change.getHyvaksyttyVarasijalta(), selite, muokkaaja);
         v.setHyvaksyPeruuntunut(change.getHyvaksyPeruuntunut(), selite, muokkaaja);
         valintatulosDao.createOrUpdateValintatulos(v);
