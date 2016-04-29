@@ -82,6 +82,9 @@ public class RaportointiServiceImpl implements RaportointiService {
         Iterator<Valintatulos> valintatulokset = valintatulosDao.loadValintatuloksetIterator(ajo.getHakuOid());
         Iterator<Hakukohde> hakukohteet = hakukohdeDao.getHakukohdeForSijoitteluajoIterator(ajo.getSijoitteluajoId());
         Hakukohde hakukohde = hakukohdeDao.getHakukohdeForSijoitteluajo(ajo.getSijoitteluajoId(), hakukohdeOid);
+        if (hakukohde == null) {
+            return Collections.emptyList();
+        }
         return konvertoiHakijat(hakukohde, valintatulokset, hakukohteet);
     }
 
