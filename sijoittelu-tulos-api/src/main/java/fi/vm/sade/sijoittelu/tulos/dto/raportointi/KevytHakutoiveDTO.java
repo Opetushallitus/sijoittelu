@@ -16,7 +16,7 @@ public class KevytHakutoiveDTO implements Comparable<KevytHakutoiveDTO> {
     }
 
     public void setHakukohdeOid(String hakukohdeOid) {
-        this.hakukohdeOid = hakukohdeOid;
+        this.hakukohdeOid = hakukohdeOid.intern();
     }
 
     public List<KevytHakutoiveenValintatapajonoDTO> getHakutoiveenValintatapajonot() {
@@ -40,7 +40,7 @@ public class KevytHakutoiveDTO implements Comparable<KevytHakutoiveDTO> {
     }
 
     public void setTarjoajaOid(String tarjoajaOid) {
-        this.tarjoajaOid = tarjoajaOid;
+        this.tarjoajaOid = tarjoajaOid.intern();
     }
 
     public Integer getHakutoive() {

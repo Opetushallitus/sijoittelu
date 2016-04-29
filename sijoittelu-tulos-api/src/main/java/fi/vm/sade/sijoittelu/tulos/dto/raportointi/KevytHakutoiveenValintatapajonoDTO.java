@@ -139,7 +139,7 @@ public class KevytHakutoiveenValintatapajonoDTO {
     }
 
     public void setValintatapajonoOid(String valintatapajonoOid) {
-        this.valintatapajonoOid = valintatapajonoOid;
+        this.valintatapajonoOid = valintatapajonoOid.intern();
     }
 
     public IlmoittautumisTila getIlmoittautumisTila() {
