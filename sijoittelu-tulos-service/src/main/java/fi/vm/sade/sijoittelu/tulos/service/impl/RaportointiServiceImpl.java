@@ -79,7 +79,7 @@ public class RaportointiServiceImpl implements RaportointiService {
 
     @Override
     public List<KevytHakijaDTO> hakemukset(SijoitteluAjo ajo, String hakukohdeOid) {
-        List<Valintatulos> valintatulokset = valintatulosDao.loadValintatulokset(ajo.getHakuOid());
+        Iterator<Valintatulos> valintatulokset = valintatulosDao.loadValintatuloksetIterator(ajo.getHakuOid());
         Iterator<Hakukohde> hakukohteet = hakukohdeDao.getHakukohdeForSijoitteluajoIterator(ajo.getSijoitteluajoId());
         Hakukohde hakukohde = hakukohdeDao.getHakukohdeForSijoitteluajo(ajo.getSijoitteluajoId(), hakukohdeOid);
         return konvertoiHakijat(hakukohde, valintatulokset, hakukohteet);
@@ -108,7 +108,7 @@ public class RaportointiServiceImpl implements RaportointiService {
         return paginationObject;
     }
 
-    private List<KevytHakijaDTO> konvertoiHakijat(Hakukohde hakukohde, List<Valintatulos> valintatulokset, Iterator<Hakukohde> hakukohteet) {
+    private List<KevytHakijaDTO> konvertoiHakijat(Hakukohde hakukohde, Iterator<Valintatulos> valintatulokset, Iterator<Hakukohde> hakukohteet) {
         Iterator<HakukohdeDTO> hakukohdeDTOs = sijoitteluTulosConverter.convert(hakukohteet);
         List<KevytHakijaDTO> hakijat = raportointiConverter.convertHakukohde(sijoitteluTulosConverter.convert(hakukohde), hakukohdeDTOs, valintatulokset);
         Collections.sort(hakijat, new KevytHakijaDTOComparator());

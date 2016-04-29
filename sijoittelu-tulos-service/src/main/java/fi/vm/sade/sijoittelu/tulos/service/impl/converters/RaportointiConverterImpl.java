@@ -109,7 +109,7 @@ public class RaportointiConverterImpl implements RaportointiConverter {
     }
 
     @Override
-    public List<KevytHakijaDTO> convertHakukohde(HakukohdeDTO hakukohde, Iterator<HakukohdeDTO> hakukohteet, List<Valintatulos> valintatulokset) {
+    public List<KevytHakijaDTO> convertHakukohde(HakukohdeDTO hakukohde, Iterator<HakukohdeDTO> hakukohteet, Iterator<Valintatulos> valintatulokset) {
         List<KevytHakijaDTO> hakijat = convertHakukohteenHakijat(hakukohde, hakukohteet);
         return kevytApplyValintatuloksenTiedot(valintatulokset, hakijat);
     }
@@ -144,8 +144,21 @@ public class RaportointiConverterImpl implements RaportointiConverter {
         return hakijat;
     }
 
-    private List<KevytHakijaDTO> kevytApplyValintatuloksenTiedot(List<Valintatulos> kaikkienValintatulokset, List<KevytHakijaDTO> hakijat) {
-        Map<String, List<Valintatulos>> valintatulosMap = mapValintatulokset(kaikkienValintatulokset);
+    private List<KevytHakijaDTO> kevytApplyValintatuloksenTiedot(Iterator<Valintatulos> kaikkienValintatulokset, List<KevytHakijaDTO> hakijat) {
+        Set<String> hakemusOids = new HashSet<>(hakijat.size());
+        for (KevytHakijaDTO hakija: hakijat) {
+            hakemusOids.add(hakija.getHakemusOid());
+        }
+        Map<String, List<Valintatulos>> valintatulosMap = new HashMap<>(hakemusOids.size());
+        while (kaikkienValintatulokset.hasNext()) {
+            Valintatulos v = kaikkienValintatulokset.next();
+            if (hakemusOids.contains(v.getHakemusOid())) {
+                if (!valintatulosMap.containsKey(v.getHakemusOid())) {
+                    valintatulosMap.put(v.getHakemusOid(), new ArrayList<>());
+                }
+                valintatulosMap.get(v.getHakemusOid()).add(v);
+            }
+        }
         for (KevytHakijaDTO hakija : hakijat) {
             List<Valintatulos> valintatulokset = valintatulosMap.get(hakija.getHakemusOid());
             if (valintatulokset != null && !valintatulokset.isEmpty()) {
@@ -155,10 +168,7 @@ public class RaportointiConverterImpl implements RaportointiConverter {
                             continue;
                         }
                         for (Valintatulos valintatulos : valintatulokset) {
-                            if (valintatulos == null) {
-                                continue;
-                            }
-                            if (valintatulos.getValintatapajonoOid().equals(valintatapajonoDTO.getValintatapajonoOid())) {
+                            if (valintatulos != null && valintatulos.getValintatapajonoOid().equals(valintatapajonoDTO.getValintatapajonoOid())) {
                                 valintatapajonoDTO.setJulkaistavissa(valintatulos.getJulkaistavissa());
                                 valintatapajonoDTO.setHyvaksyttyVarasijalta(valintatulos.getHyvaksyttyVarasijalta());
                                 valintatapajonoDTO.setValintatuloksenViimeisinMuutos(viimeisinValintatuloksenMuutos(valintatulos));

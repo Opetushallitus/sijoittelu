@@ -13,5 +13,5 @@ public interface RaportointiConverter {
 
     List<HakijaDTO> convert(List<HakukohdeDTO> hakukohteet, List<Valintatulos> valintatulokset);
 
-    List<KevytHakijaDTO> convertHakukohde(HakukohdeDTO hakukohde, Iterator<HakukohdeDTO> hakukohteet, List<Valintatulos> valintatulokset);
+    List<KevytHakijaDTO> convertHakukohde(HakukohdeDTO hakukohde, Iterator<HakukohdeDTO> hakukohteet, Iterator<Valintatulos> valintatulokset);
 }

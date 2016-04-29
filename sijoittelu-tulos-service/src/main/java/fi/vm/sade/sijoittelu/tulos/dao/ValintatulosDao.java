@@ -1,5 +1,6 @@
 package fi.vm.sade.sijoittelu.tulos.dao;
 
+import java.util.Iterator;
 import java.util.List;
 
 import fi.vm.sade.sijoittelu.domain.Hakukohde;
@@ -13,6 +14,8 @@ public interface ValintatulosDao {
     List<Valintatulos> mergaaValintatulos(List<Hakukohde> kaikkiHakukohteet, List<Valintatulos> sijoittelunTulokset);
 
     List<Valintatulos> loadValintatulokset(String hakuOid);
+
+    Iterator<Valintatulos> loadValintatuloksetIterator(String hakuOid);
 
     List<Valintatulos> loadValintatuloksetForHakukohde(String hakukohdeOid);
 

@@ -95,6 +95,16 @@ public class ValintatulosDaoImpl implements ValintatulosDao {
     }
 
     @Override
+    public Iterator<Valintatulos> loadValintatuloksetIterator(String hakuOid) {
+        if (StringUtils.isBlank(hakuOid)) {
+            throw new RuntimeException("Invalid search params, fix exception later");
+        }
+        Query<Valintatulos> q = morphiaDS.createQuery(Valintatulos.class);
+        q.criteria("hakuOid").equal(hakuOid);
+        return q.iterator();
+    }
+
+    @Override
     public List<Valintatulos> loadValintatuloksetForHakemus(String hakemusOid) {
         if (StringUtils.isBlank(hakemusOid)) {
             throw new RuntimeException("Invalid search params, fix exception later");
