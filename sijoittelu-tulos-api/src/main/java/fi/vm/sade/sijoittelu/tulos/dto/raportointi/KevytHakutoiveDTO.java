@@ -40,7 +40,7 @@ public class KevytHakutoiveDTO implements Comparable<KevytHakutoiveDTO> {
     }
 
     public void setTarjoajaOid(String tarjoajaOid) {
-        this.tarjoajaOid = tarjoajaOid.intern();
+        this.tarjoajaOid = tarjoajaOid == null ? null : tarjoajaOid.intern();
     }
 
     public Integer getHakutoive() {
