@@ -5,6 +5,8 @@ import java.util.*;
 import com.google.common.collect.ImmutableList;
 import fi.vm.sade.sijoittelu.tulos.dao.CachingRaportointiDao;
 import fi.vm.sade.sijoittelu.tulos.dao.HakukohdeDao;
+import fi.vm.sade.sijoittelu.tulos.dto.raportointi.*;
+import fi.vm.sade.sijoittelu.tulos.service.impl.comparators.KevytHakijaDTOComparator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,10 +18,6 @@ import fi.vm.sade.sijoittelu.tulos.dao.ValintatulosDao;
 import fi.vm.sade.sijoittelu.tulos.dto.HakemuksenTila;
 import fi.vm.sade.sijoittelu.tulos.dto.HakukohdeDTO;
 import fi.vm.sade.sijoittelu.tulos.dto.ValintatuloksenTila;
-import fi.vm.sade.sijoittelu.tulos.dto.raportointi.HakijaDTO;
-import fi.vm.sade.sijoittelu.tulos.dto.raportointi.HakijaPaginationObject;
-import fi.vm.sade.sijoittelu.tulos.dto.raportointi.HakutoiveDTO;
-import fi.vm.sade.sijoittelu.tulos.dto.raportointi.HakutoiveenValintatapajonoDTO;
 import fi.vm.sade.sijoittelu.tulos.service.RaportointiService;
 import fi.vm.sade.sijoittelu.tulos.service.impl.comparators.HakijaDTOComparator;
 import fi.vm.sade.sijoittelu.tulos.service.impl.converters.RaportointiConverter;
@@ -80,7 +78,7 @@ public class RaportointiServiceImpl implements RaportointiService {
     }
 
     @Override
-    public List<HakijaDTO> hakemukset(SijoitteluAjo ajo, String hakukohdeOid) {
+    public List<KevytHakijaDTO> hakemukset(SijoitteluAjo ajo, String hakukohdeOid) {
         List<Valintatulos> valintatulokset = valintatulosDao.loadValintatulokset(ajo.getHakuOid());
         Iterator<Hakukohde> hakukohteet = hakukohdeDao.getHakukohdeForSijoitteluajoIterator(ajo.getSijoitteluajoId());
         Hakukohde hakukohde = hakukohdeDao.getHakukohdeForSijoitteluajo(ajo.getSijoitteluajoId(), hakukohdeOid);
@@ -110,18 +108,11 @@ public class RaportointiServiceImpl implements RaportointiService {
         return paginationObject;
     }
 
-    private List<HakijaDTO> konvertoiHakijat(Hakukohde hakukohde, List<Valintatulos> valintatulokset, Iterator<Hakukohde> hakukohteet) {
+    private List<KevytHakijaDTO> konvertoiHakijat(Hakukohde hakukohde, List<Valintatulos> valintatulokset, Iterator<Hakukohde> hakukohteet) {
         Iterator<HakukohdeDTO> hakukohdeDTOs = sijoitteluTulosConverter.convert(hakukohteet);
-        List<HakijaDTO> hakijat = raportointiConverter.convertHakukohde(sijoitteluTulosConverter.convert(hakukohde), hakukohdeDTOs, valintatulokset);
-        Collections.sort(hakijat, new HakijaDTOComparator());
-        HakijaPaginationObject paginationObject = new HakijaPaginationObject();
-        List<HakijaDTO> result = new ArrayList<>();
-        for (HakijaDTO hakija : hakijat) {
-            if (filter(hakija, null, null, null, ImmutableList.of(hakukohde.getOid()))) {
-                result.add(hakija);
-            }
-        }
-        return result;
+        List<KevytHakijaDTO> hakijat = raportointiConverter.convertHakukohde(sijoitteluTulosConverter.convert(hakukohde), hakukohdeDTOs, valintatulokset);
+        Collections.sort(hakijat, new KevytHakijaDTOComparator());
+        return hakijat;
     }
 
     private boolean filter(HakijaDTO hakija, Boolean hyvaksytyt, Boolean ilmanHyvaksyntaa, Boolean vastaanottaneet, List<String> hakukohdeOids) {
