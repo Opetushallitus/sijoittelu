@@ -4,11 +4,12 @@ import java.util.Iterator;
 import java.util.List;
 
 import fi.vm.sade.sijoittelu.domain.Hakukohde;
+import fi.vm.sade.sijoittelu.tulos.dto.KevytHakukohdeDTO;
 
 public interface HakukohdeDao {
     List<Hakukohde> getHakukohdeForSijoitteluajo(Long sijoitteluajoId);
 
-    Iterator<Hakukohde> getHakukohdeForSijoitteluajoIterator(Long sijoitteluajoId);
+    Iterator<KevytHakukohdeDTO> getHakukohdeForSijoitteluajoIterator(Long sijoitteluajoId);
 
     void persistHakukohde(Hakukohde hakukohde);
 

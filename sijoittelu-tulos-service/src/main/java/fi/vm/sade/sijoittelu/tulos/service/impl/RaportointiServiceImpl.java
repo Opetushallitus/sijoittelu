@@ -1,9 +1,11 @@
 package fi.vm.sade.sijoittelu.tulos.service.impl;
 
+import java.lang.instrument.Instrumentation;
 import java.util.*;
 
 import fi.vm.sade.sijoittelu.tulos.dao.CachingRaportointiDao;
 import fi.vm.sade.sijoittelu.tulos.dao.HakukohdeDao;
+import fi.vm.sade.sijoittelu.tulos.dto.KevytHakukohdeDTO;
 import fi.vm.sade.sijoittelu.tulos.dto.raportointi.*;
 import fi.vm.sade.sijoittelu.tulos.service.impl.comparators.KevytHakijaDTOComparator;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -79,7 +81,7 @@ public class RaportointiServiceImpl implements RaportointiService {
     @Override
     public List<KevytHakijaDTO> hakemukset(SijoitteluAjo ajo, String hakukohdeOid) {
         Map<String, List<RaportointiValintatulos>> hakukohteenValintatulokset = valintatulosDao.loadValintatuloksetForHakukohteenHakijat(hakukohdeOid);
-        Iterator<Hakukohde> hakukohteet = hakukohdeDao.getHakukohdeForSijoitteluajoIterator(ajo.getSijoitteluajoId());
+        Iterator<KevytHakukohdeDTO> hakukohteet = hakukohdeDao.getHakukohdeForSijoitteluajoIterator(ajo.getSijoitteluajoId());
         Hakukohde hakukohde = hakukohdeDao.getHakukohdeForSijoitteluajo(ajo.getSijoitteluajoId(), hakukohdeOid);
         if (hakukohde == null) {
             return Collections.emptyList();
@@ -110,9 +112,8 @@ public class RaportointiServiceImpl implements RaportointiService {
         return paginationObject;
     }
 
-    private List<KevytHakijaDTO> konvertoiHakijat(Hakukohde hakukohde, Map<String, List<RaportointiValintatulos>> valintatulokset, Iterator<Hakukohde> hakukohteet) {
-        Iterator<HakukohdeDTO> hakukohdeDTOs = sijoitteluTulosConverter.convert(hakukohteet);
-        List<KevytHakijaDTO> hakijat = raportointiConverter.convertHakukohde(sijoitteluTulosConverter.convert(hakukohde), hakukohdeDTOs, valintatulokset);
+    private List<KevytHakijaDTO> konvertoiHakijat(Hakukohde hakukohde, Map<String, List<RaportointiValintatulos>> valintatulokset, Iterator<KevytHakukohdeDTO> hakukohteet) {
+        List<KevytHakijaDTO> hakijat = raportointiConverter.convertHakukohde(sijoitteluTulosConverter.convert(hakukohde), hakukohteet, valintatulokset);
         Collections.sort(hakijat, new KevytHakijaDTOComparator());
         return hakijat;
     }

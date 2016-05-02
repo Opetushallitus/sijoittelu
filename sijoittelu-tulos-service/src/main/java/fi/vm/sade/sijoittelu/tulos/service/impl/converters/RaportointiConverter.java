@@ -2,6 +2,7 @@ package fi.vm.sade.sijoittelu.tulos.service.impl.converters;
 
 import fi.vm.sade.sijoittelu.domain.Valintatulos;
 import fi.vm.sade.sijoittelu.tulos.dto.HakukohdeDTO;
+import fi.vm.sade.sijoittelu.tulos.dto.KevytHakukohdeDTO;
 import fi.vm.sade.sijoittelu.tulos.dto.raportointi.HakijaDTO;
 import fi.vm.sade.sijoittelu.tulos.dto.raportointi.KevytHakijaDTO;
 import fi.vm.sade.sijoittelu.tulos.dto.raportointi.RaportointiValintatulos;
@@ -15,5 +16,5 @@ public interface RaportointiConverter {
 
     List<HakijaDTO> convert(List<HakukohdeDTO> hakukohteet, List<Valintatulos> valintatulokset);
 
-    List<KevytHakijaDTO> convertHakukohde(HakukohdeDTO hakukohde, Iterator<HakukohdeDTO> hakukohteet, Map<String, List<RaportointiValintatulos>> valintatulokset);
+    List<KevytHakijaDTO> convertHakukohde(HakukohdeDTO hakukohde, Iterator<KevytHakukohdeDTO> hakukohteet, Map<String, List<RaportointiValintatulos>> valintatulokset);
 }
