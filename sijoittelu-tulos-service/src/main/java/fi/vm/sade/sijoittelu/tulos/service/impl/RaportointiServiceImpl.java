@@ -2,7 +2,6 @@ package fi.vm.sade.sijoittelu.tulos.service.impl;
 
 import java.util.*;
 
-import com.google.common.collect.ImmutableList;
 import fi.vm.sade.sijoittelu.tulos.dao.CachingRaportointiDao;
 import fi.vm.sade.sijoittelu.tulos.dao.HakukohdeDao;
 import fi.vm.sade.sijoittelu.tulos.dto.raportointi.*;
@@ -79,13 +78,13 @@ public class RaportointiServiceImpl implements RaportointiService {
 
     @Override
     public List<KevytHakijaDTO> hakemukset(SijoitteluAjo ajo, String hakukohdeOid) {
-        Iterator<Valintatulos> valintatulokset = valintatulosDao.loadValintatuloksetIterator(ajo.getHakuOid());
+        Map<String, List<RaportointiValintatulos>> hakukohteenValintatulokset = valintatulosDao.loadValintatuloksetForHakukohteenHakijat(hakukohdeOid);
         Iterator<Hakukohde> hakukohteet = hakukohdeDao.getHakukohdeForSijoitteluajoIterator(ajo.getSijoitteluajoId());
         Hakukohde hakukohde = hakukohdeDao.getHakukohdeForSijoitteluajo(ajo.getSijoitteluajoId(), hakukohdeOid);
         if (hakukohde == null) {
             return Collections.emptyList();
         }
-        return konvertoiHakijat(hakukohde, valintatulokset, hakukohteet);
+        return konvertoiHakijat(hakukohde, hakukohteenValintatulokset, hakukohteet);
     }
 
     @Override
@@ -111,7 +110,7 @@ public class RaportointiServiceImpl implements RaportointiService {
         return paginationObject;
     }
 
-    private List<KevytHakijaDTO> konvertoiHakijat(Hakukohde hakukohde, Iterator<Valintatulos> valintatulokset, Iterator<Hakukohde> hakukohteet) {
+    private List<KevytHakijaDTO> konvertoiHakijat(Hakukohde hakukohde, Map<String, List<RaportointiValintatulos>> valintatulokset, Iterator<Hakukohde> hakukohteet) {
         Iterator<HakukohdeDTO> hakukohdeDTOs = sijoitteluTulosConverter.convert(hakukohteet);
         List<KevytHakijaDTO> hakijat = raportointiConverter.convertHakukohde(sijoitteluTulosConverter.convert(hakukohde), hakukohdeDTOs, valintatulokset);
         Collections.sort(hakijat, new KevytHakijaDTOComparator());

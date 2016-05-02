@@ -2,9 +2,11 @@ package fi.vm.sade.sijoittelu.tulos.dao;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import fi.vm.sade.sijoittelu.domain.Hakukohde;
 import fi.vm.sade.sijoittelu.domain.Valintatulos;
+import fi.vm.sade.sijoittelu.tulos.dto.raportointi.RaportointiValintatulos;
 
 public interface ValintatulosDao {
     Valintatulos loadValintatulos(String hakukohdeOid, String valintatapajonoOid, String hakemusOid);
@@ -18,6 +20,8 @@ public interface ValintatulosDao {
     Iterator<Valintatulos> loadValintatuloksetIterator(String hakuOid);
 
     List<Valintatulos> loadValintatuloksetForHakukohde(String hakukohdeOid);
+
+    Map<String, List<RaportointiValintatulos>> loadValintatuloksetForHakukohteenHakijat(String hakukohdeOid);
 
     List<Valintatulos> loadValintatulos(String oid);
 

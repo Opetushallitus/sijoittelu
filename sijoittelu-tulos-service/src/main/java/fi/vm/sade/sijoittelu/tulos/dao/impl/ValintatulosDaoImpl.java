@@ -4,8 +4,12 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.concurrent.Immutable;
 
+import com.google.common.collect.ImmutableList;
+import com.mongodb.*;
 import fi.vm.sade.sijoittelu.domain.*;
+import fi.vm.sade.sijoittelu.tulos.dto.raportointi.RaportointiValintatulos;
 import org.apache.commons.lang.StringUtils;
 import org.mongodb.morphia.Datastore;
 import org.mongodb.morphia.query.Query;
@@ -82,6 +86,47 @@ public class ValintatulosDaoImpl implements ValintatulosDao {
         Query<Valintatulos> q = morphiaDS.createQuery(Valintatulos.class);
         q.or(q.criteria("hakukohdeOid").equal(hakukohdeOid));
         return q.asList();
+    }
+
+    @Override
+    public Map<String, List<RaportointiValintatulos>> loadValintatuloksetForHakukohteenHakijat(String hakukohdeOid) {
+        if (StringUtils.isBlank(hakukohdeOid)) {
+            throw new IllegalArgumentException("Hakukohde oid is empty");
+        }
+        DBCollection c = morphiaDS.getDB().getCollection("Valintatulos");
+        List<String> hakemusOids = c.distinct("hakemusOid", new BasicDBObject("hakukohdeOid", hakukohdeOid));
+        Iterable<DBObject> i = c.aggregate(ImmutableList.of(
+                new BasicDBObject("$match", new BasicDBObject("hakemusOid", new BasicDBObject("$in", hakemusOids))),
+                new BasicDBObject("$unwind", "$logEntries"),
+                BasicDBObjectBuilder.start().push("$group")
+                        .push("_id")
+                        .add("hakemusOid", "$hakemusOid")
+                        .add("valintatapajonoOid", "$valintatapajonoOid")
+                        .add("julkaistavissa", "$julkaistavissa")
+                        .add("hyvaksyttyVarasijalta", "$hyvaksyttyVarasijalta")
+                        .add("ilmoittautumisTila", "$ilmoittautumisTila")
+                        .pop()
+                        .push("viimeisinValintatuloksenMuutos")
+                        .add("$max", "$logEntries.luotu")
+                        .get()
+        )).results();
+        Map<String, List<RaportointiValintatulos>> r = new HashMap<>();
+        for (DBObject o : i) {
+            DBObject id = (DBObject)o.get("_id");
+            String hakemusOid = (String) id.get("hakemusOid");
+            if (!r.containsKey(hakemusOid)) {
+                r.put(hakemusOid, new ArrayList<>());
+            }
+            r.get(hakemusOid).add(new RaportointiValintatulos(
+                    hakemusOid,
+                    (String) id.get("valintatapajonoOid"),
+                    (boolean) id.get("julkaistavissa"),
+                    (boolean) id.get("hyvaksyttyVarasijalta"),
+                    (Date) o.get("viimeisinValintatuloksenMuutos"),
+                    fi.vm.sade.sijoittelu.tulos.dto.IlmoittautumisTila.valueOf((String) id.get("ilmoittautumisTila"))
+            ));
+        }
+        return r;
     }
 
     @Override
