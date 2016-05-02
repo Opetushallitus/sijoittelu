@@ -639,6 +639,7 @@ public class SijoitteluBusinessService {
         boolean julkaistavissa = change.getJulkaistavissa();
         boolean hyvaksyttyVarasijalta = change.getHyvaksyttyVarasijalta();
         boolean hyvaksyPeruuntunut = change.getHyvaksyPeruuntunut();
+        boolean ehdollinenHyvaksynta = change.getEhdollisestiHyvaksyttavissa();
         List<String> muutos = new ArrayList<>();
         if (ilmoittautumisTila != null && ilmoittautumisTila != v.getIlmoittautumisTila()) {
             muutos.add(Optional.ofNullable(v.getIlmoittautumisTila()).map(Enum::name).orElse("") + " -> " + ilmoittautumisTila.name());
@@ -651,6 +652,9 @@ public class SijoitteluBusinessService {
         }
         if (hyvaksyPeruuntunut != v.getHyvaksyPeruuntunut()) {
             muutos.add((v.getHyvaksyPeruuntunut() ? "HYVÄKSYTTY PERUUNTUNUT" : "") + " -> " + (hyvaksyPeruuntunut ? "HYVÄKSYTTY PERUUNTUNUT" : ""));
+        }
+        if (ehdollinenHyvaksynta != v.getEhdollisestiHyvaksyttavissa()) {
+            muutos.add((v.getEhdollisestiHyvaksyttavissa() ? "EHDOLLINEN HYVÄKSYNTÄ" : "") + " -> " + (ehdollinenHyvaksynta ? "EHDOLLINEN HYVÄKSYNTÄ" : ""));
         }
         return muutos.stream().collect(Collectors.joining(", "));
     }
