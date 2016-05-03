@@ -121,7 +121,7 @@ public class ValintatulosDaoImpl implements ValintatulosDao {
                     hakemusOid,
                     (String) id.get("valintatapajonoOid"),
                     (boolean) id.get("julkaistavissa"),
-                    (boolean) id.get("hyvaksyttyVarasijalta"),
+                    (id.get("hyvaksyttyVarasijalta") == null ? false : ((boolean) id.get("hyvaksyttyVarasijalta"))),
                     (Date) o.get("viimeisinValintatuloksenMuutos"),
                     fi.vm.sade.sijoittelu.tulos.dto.IlmoittautumisTila.valueOf((String) id.get("ilmoittautumisTila"))
             ));

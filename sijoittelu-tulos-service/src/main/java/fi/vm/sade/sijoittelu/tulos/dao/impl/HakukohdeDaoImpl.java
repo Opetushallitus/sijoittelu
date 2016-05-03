@@ -107,7 +107,9 @@ public class HakukohdeDaoImpl implements HakukohdeDao {
             hk.setOid((String) o.get("oid"));
             String tila = (String) o.get("tila");
             hk.setTarjoajaOid((String) o.get("tarjoajaOid"));
-            hk.setKaikkiJonotSijoiteltu((boolean) o.get("kaikkiJonotSijoiteltu"));
+            if (null != o.get("kaikkiJonotSijoiteltu")) {
+                hk.setKaikkiJonotSijoiteltu((boolean) o.get("kaikkiJonotSijoiteltu"));
+            }
             List<DBObject> valintatapajonot = (List<DBObject>) o.get("valintatapajonot");
             for (DBObject j : valintatapajonot == null ? Collections.<DBObject>emptyList() : valintatapajonot) {
                 KevytValintatapajonoDTO jono = new KevytValintatapajonoDTO();
