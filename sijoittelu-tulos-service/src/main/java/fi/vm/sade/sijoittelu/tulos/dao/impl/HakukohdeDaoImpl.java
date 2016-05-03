@@ -11,6 +11,7 @@ import java.util.stream.StreamSupport;
 import javax.annotation.PostConstruct;
 
 import com.google.common.base.Strings;
+import com.google.common.collect.ImmutableList;
 import com.mongodb.*;
 import fi.vm.sade.sijoittelu.domain.*;
 import fi.vm.sade.sijoittelu.tulos.dto.KevytHakemusDTO;
@@ -70,8 +71,119 @@ public class HakukohdeDaoImpl implements HakukohdeDao {
     }
 
     @Override
-    public Iterator<KevytHakukohdeDTO> getHakukohdeForSijoitteluajoIterator(Long sijoitteluajoId) {
-        AtomicLong count = new AtomicLong(0);
+    public Iterator<KevytHakukohdeDTO> getHakukohdeForSijoitteluajoIterator(Long sijoitteluajoId, String hakukohdeOid) {
+        List<String> hakemusOids = morphiaDS.getDB().getCollection("Hakukohde")
+                .distinct("valintatapajonot.hakemukset.hakemusOid",
+                        BasicDBObjectBuilder.start("sijoitteluajoId", sijoitteluajoId).add("oid", hakukohdeOid).get());
+        Map<String, KevytHakukohdeDTO> hakukohteet = new HashMap<>();
+        DBCursor hakukohdeIterable = morphiaDS.getDB().getCollection("Hakukohde").find(
+                BasicDBObjectBuilder.start("sijoitteluajoId", sijoitteluajoId)
+                        .push("valintatapajonot.hakemukset.hakemusOid")
+                        .add("$in", hakemusOids)
+                        .get(),
+                BasicDBObjectBuilder
+                        .start("_id", 0)
+                        .add("sijoitteluajoId", 0)
+                        .add("tila", 0)
+                        .add("hakijaryhmat", 0)
+                        .add("valintatapajonot.tasasijasaanto", 0)
+                        .add("valintatapajonot.tila", 0)
+                        .add("valintatapajonot.nimi", 0)
+                        .add("valintatapajonot.prioriteetti", 0)
+                        .add("valintatapajonot.aloituspaikat", 0)
+                        .add("valintatapajonot.kaikkiEhdonTayttavatHyvaksytaan", 0)
+                        .add("valintatapajonot.poissaOlevaTaytto", 0)
+                        .add("valintatapajonot.varasijat", 0)
+                        .add("valintatapajonot.varasijaTayttoPaivat", 0)
+                        .add("valintatapajonot.tayttojono", 0)
+                        .add("valintatapajonot.hyvaksytty", 0)
+                        .add("valintatapajonot.varalla", 0)
+                        .add("valintatapajonot.alinHyvaksyttyPistemaara", 0)
+                        .add("valintatapajonot.hakemukset", 0)
+                        .get()
+        );
+        for (DBObject o : hakukohdeIterable) {
+            KevytHakukohdeDTO hk = new KevytHakukohdeDTO();
+            hk.setOid((String) o.get("oid"));
+            String tila = (String) o.get("tila");
+            hk.setTarjoajaOid((String) o.get("tarjoajaOid"));
+            hk.setKaikkiJonotSijoiteltu((boolean) o.get("kaikkiJonotSijoiteltu"));
+            List<DBObject> valintatapajonot = (List<DBObject>) o.get("valintatapajonot");
+            for (DBObject j : valintatapajonot == null ? Collections.<DBObject>emptyList() : valintatapajonot) {
+                KevytValintatapajonoDTO jono = new KevytValintatapajonoDTO();
+                jono.setOid((String) j.get("oid"));
+                jono.setEiVarasijatayttoa((Boolean) j.get("eiVarasijatayttoa"));
+                jono.setVarasijojaKaytetaanAlkaen((Date) j.get("varasijojaKaytetaanAlkaen"));
+                jono.setVarasijojaTaytetaanAsti((Date) j.get("varasijojaTaytetaanAsti"));
+                hk.getValintatapajonot().add(jono);
+            }
+            hakukohteet.put(hk.getOid(), hk);
+        }
+        // db.Hakukohde.aggregate([{$match: {"sijoitteluajoId": NumberLong("1456410250214")}},
+        // {$unwind: "$valintatapajonot"},
+        // {$unwind: "$valintatapajonot.hakemukset"},
+        // {$match: {"valintatapajonot.hakemukset.hakemusOid": {$in: oids}}},
+        // {$group: {_id: {"oid": "$oid", "valintatapajonoOid": "$valintatapajonot.oid"}, hakemukset: {$push: "$valintatapajonot.hakemukset"}}},
+        // {$group: {_id: "$_id.oid", valintatapajonot: {$push: {oid: "$_id.valintatapajonoOid", hakemukset: "$hakemukset"}}}])
+        Iterator<DBObject> hakemusIterator = morphiaDS.getDB().getCollection("Hakukohde")
+                .aggregate(ImmutableList.of(
+                        BasicDBObjectBuilder.start()
+                                .push("$match")
+                                .add("sijoitteluajoId", sijoitteluajoId)
+                                .push("valintatapajonot.hakemukset.hakemusOid")
+                                .add("$in", hakemusOids)
+                                .get(),
+                        new BasicDBObject("$unwind", "$valintatapajonot"),
+                        new BasicDBObject("$unwind", "$valintatapajonot.hakemukset"),
+                        BasicDBObjectBuilder.start()
+                                .push("$match")
+                                .push("valintatapajonot.hakemukset.hakemusOid")
+                                .add("$in", hakemusOids)
+                                .get(),
+                        BasicDBObjectBuilder.start()
+                                .push("$group")
+                                .push("_id")
+                                .add("oid", "$oid")
+                                .add("valintatapajonoOid", "$valintatapajonot.oid")
+                                .pop()
+                                .push("hakemukset")
+                                .add("$push", "$valintatapajonot.hakemukset")
+                                .get(),
+                        BasicDBObjectBuilder.start()
+                                .push("$group")
+                                .add("_id", "$_id.oid")
+                                .push("valintatapajonot")
+                                .push("$push")
+                                .add("oid", "$_id.valintatapajonoOid")
+                                .add("hakemukset", "$hakemukset")
+                                .get()
+                )).results().iterator();
+
+        return new Iterator<KevytHakukohdeDTO>() {
+            @Override
+            public boolean hasNext() {
+                return hakemusIterator.hasNext();
+            }
+
+            @Override
+            public KevytHakukohdeDTO next() {
+                DBObject o = hakemusIterator.next();
+                KevytHakukohdeDTO hk = hakukohteet.get((String) o.get("_id"));
+                for (DBObject j : (List<DBObject>) o.get("valintatapajonot")) {
+                    String jonoOid = (String) j.get("oid");
+                    for (KevytValintatapajonoDTO jono : hk.getValintatapajonot()) {
+                        if (jono.getOid().equals(jonoOid)) {
+                            for (DBObject h : (List<DBObject>) j.get("hakemukset")) {
+                                jono.getHakemukset().add(parseKevytHakemusDTO(h));
+                            }
+                            break;
+                        }
+                    }
+                }
+                return hk;
+            }
+        };
+        /*
         Iterator<DBObject> i = morphiaDS.getDB().getCollection("Hakukohde")
                 .find(
                         new BasicDBObject("sijoitteluajoId", sijoitteluajoId),
@@ -143,7 +255,6 @@ public class HakukohdeDaoImpl implements HakukohdeDao {
                     //String alinHyvaksyttyPistemaara = (String) j.get("alinHyvaksyttyPistemaara");
                     //jono.setAlinHyvaksyttyPistemaara(Strings.isNullOrEmpty(alinHyvaksyttyPistemaara) ? null : new BigDecimal(alinHyvaksyttyPistemaara));
                     for (DBObject h : (List<DBObject>) j.get("hakemukset")) {
-                        count.incrementAndGet();
                         KevytHakemusDTO hakemus = new KevytHakemusDTO();
                         hakemus.setHakijaOid((String) h.get("hakijaOid"));
                         hakemus.setHakemusOid((String) h.get("hakemusOid"));
@@ -176,10 +287,31 @@ public class HakukohdeDaoImpl implements HakukohdeDao {
                     }
                     hk.getValintatapajonot().add(jono);
                 }
-                System.out.println("count " + count.get());
                 return hk;
             }
         };
+        */
+    }
+
+    private KevytHakemusDTO parseKevytHakemusDTO(DBObject h) {
+        KevytHakemusDTO hakemus = new KevytHakemusDTO();
+        hakemus.setHakijaOid((String) h.get("hakijaOid"));
+        hakemus.setHakemusOid((String) h.get("hakemusOid"));
+        hakemus.setPrioriteetti((Integer) h.get("prioriteetti"));
+        hakemus.setJonosija((Integer) h.get("jonosija"));
+        String pisteet = (String) h.get("pisteet");
+        hakemus.setPisteet(Strings.isNullOrEmpty(pisteet) ? null : new BigDecimal(pisteet));
+        hakemus.setTila(fi.vm.sade.sijoittelu.tulos.dto.HakemuksenTila.valueOf((String) h.get("tila")));
+        List<DBObject> tilaHistoria = (List<DBObject>) h.get("tilaHistoria");
+        Date viimeisenMuutos = tilaHistoria == null ? null : (Date) tilaHistoria.get(tilaHistoria.size() - 1).get("luotu");
+        hakemus.setViimeisenHakemuksenTilanMuutos(viimeisenMuutos);
+        hakemus.setHyvaksyttyHarkinnanvaraisesti((boolean) h.get("hyvaksyttyHarkinnanvaraisesti"));
+        DBObject tilanKuvaukset = (DBObject) h.get("tilanKuvaukset");
+        for (String k : tilanKuvaukset == null ? Collections.<String>emptySet() : tilanKuvaukset.keySet()) {
+            hakemus.getTilanKuvaukset().put(k, (String) tilanKuvaukset.get(k));
+        }
+        hakemus.setVarasijanNumero((Integer) h.get("varasijanNumero"));
+        return hakemus;
     }
 
     @Override

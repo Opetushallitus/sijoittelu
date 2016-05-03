@@ -9,7 +9,7 @@ import fi.vm.sade.sijoittelu.tulos.dto.KevytHakukohdeDTO;
 public interface HakukohdeDao {
     List<Hakukohde> getHakukohdeForSijoitteluajo(Long sijoitteluajoId);
 
-    Iterator<KevytHakukohdeDTO> getHakukohdeForSijoitteluajoIterator(Long sijoitteluajoId);
+    Iterator<KevytHakukohdeDTO> getHakukohdeForSijoitteluajoIterator(Long sijoitteluajoId, String hakukohdeOid);
 
     void persistHakukohde(Hakukohde hakukohde);
 

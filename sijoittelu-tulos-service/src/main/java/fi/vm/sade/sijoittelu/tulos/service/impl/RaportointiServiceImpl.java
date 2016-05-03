@@ -81,7 +81,7 @@ public class RaportointiServiceImpl implements RaportointiService {
     @Override
     public List<KevytHakijaDTO> hakemukset(SijoitteluAjo ajo, String hakukohdeOid) {
         Map<String, List<RaportointiValintatulos>> hakukohteenValintatulokset = valintatulosDao.loadValintatuloksetForHakukohteenHakijat(hakukohdeOid);
-        Iterator<KevytHakukohdeDTO> hakukohteet = hakukohdeDao.getHakukohdeForSijoitteluajoIterator(ajo.getSijoitteluajoId());
+        Iterator<KevytHakukohdeDTO> hakukohteet = hakukohdeDao.getHakukohdeForSijoitteluajoIterator(ajo.getSijoitteluajoId(), hakukohdeOid);
         Hakukohde hakukohde = hakukohdeDao.getHakukohdeForSijoitteluajo(ajo.getSijoitteluajoId(), hakukohdeOid);
         if (hakukohde == null) {
             return Collections.emptyList();
