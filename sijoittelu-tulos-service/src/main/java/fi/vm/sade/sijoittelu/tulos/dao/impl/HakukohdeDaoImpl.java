@@ -1,11 +1,8 @@
 package fi.vm.sade.sijoittelu.tulos.dao.impl;
 
-import java.lang.instrument.Instrumentation;
 import java.math.BigDecimal;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 import javax.annotation.PostConstruct;
@@ -17,7 +14,6 @@ import fi.vm.sade.sijoittelu.domain.*;
 import fi.vm.sade.sijoittelu.tulos.dto.KevytHakemusDTO;
 import fi.vm.sade.sijoittelu.tulos.dto.KevytHakukohdeDTO;
 import fi.vm.sade.sijoittelu.tulos.dto.KevytValintatapajonoDTO;
-import org.bson.types.ObjectId;
 import org.mongodb.morphia.Datastore;
 import org.mongodb.morphia.mapping.Mapper;
 import org.mongodb.morphia.mapping.cache.DefaultEntityCache;
@@ -72,55 +68,8 @@ public class HakukohdeDaoImpl implements HakukohdeDao {
 
     @Override
     public Iterator<KevytHakukohdeDTO> getHakukohdeForSijoitteluajoIterator(Long sijoitteluajoId, String hakukohdeOid) {
-        List<String> hakemusOids = morphiaDS.getDB().getCollection("Hakukohde")
-                .distinct("valintatapajonot.hakemukset.hakemusOid",
-                        BasicDBObjectBuilder.start("sijoitteluajoId", sijoitteluajoId).add("oid", hakukohdeOid).get());
-        Map<String, KevytHakukohdeDTO> hakukohteet = new HashMap<>();
-        DBCursor hakukohdeIterable = morphiaDS.getDB().getCollection("Hakukohde").find(
-                BasicDBObjectBuilder.start("sijoitteluajoId", sijoitteluajoId)
-                        .push("valintatapajonot.hakemukset.hakemusOid")
-                        .add("$in", hakemusOids)
-                        .get(),
-                BasicDBObjectBuilder
-                        .start("_id", 0)
-                        .add("sijoitteluajoId", 0)
-                        .add("tila", 0)
-                        .add("hakijaryhmat", 0)
-                        .add("valintatapajonot.tasasijasaanto", 0)
-                        .add("valintatapajonot.tila", 0)
-                        .add("valintatapajonot.nimi", 0)
-                        .add("valintatapajonot.prioriteetti", 0)
-                        .add("valintatapajonot.aloituspaikat", 0)
-                        .add("valintatapajonot.kaikkiEhdonTayttavatHyvaksytaan", 0)
-                        .add("valintatapajonot.poissaOlevaTaytto", 0)
-                        .add("valintatapajonot.varasijat", 0)
-                        .add("valintatapajonot.varasijaTayttoPaivat", 0)
-                        .add("valintatapajonot.tayttojono", 0)
-                        .add("valintatapajonot.hyvaksytty", 0)
-                        .add("valintatapajonot.varalla", 0)
-                        .add("valintatapajonot.alinHyvaksyttyPistemaara", 0)
-                        .add("valintatapajonot.hakemukset", 0)
-                        .get()
-        );
-        for (DBObject o : hakukohdeIterable) {
-            KevytHakukohdeDTO hk = new KevytHakukohdeDTO();
-            hk.setOid((String) o.get("oid"));
-            String tila = (String) o.get("tila");
-            hk.setTarjoajaOid((String) o.get("tarjoajaOid"));
-            if (null != o.get("kaikkiJonotSijoiteltu")) {
-                hk.setKaikkiJonotSijoiteltu((boolean) o.get("kaikkiJonotSijoiteltu"));
-            }
-            List<DBObject> valintatapajonot = (List<DBObject>) o.get("valintatapajonot");
-            for (DBObject j : valintatapajonot == null ? Collections.<DBObject>emptyList() : valintatapajonot) {
-                KevytValintatapajonoDTO jono = new KevytValintatapajonoDTO();
-                jono.setOid((String) j.get("oid"));
-                jono.setEiVarasijatayttoa((Boolean) j.get("eiVarasijatayttoa"));
-                jono.setVarasijojaKaytetaanAlkaen((Date) j.get("varasijojaKaytetaanAlkaen"));
-                jono.setVarasijojaTaytetaanAsti((Date) j.get("varasijojaTaytetaanAsti"));
-                hk.getValintatapajonot().add(jono);
-            }
-            hakukohteet.put(hk.getOid(), hk);
-        }
+        List<String> hakemusOids = fetchHakukohteenHakemusOids(sijoitteluajoId, hakukohdeOid);
+        Map<String, KevytHakukohdeDTO> hakukohteet = fetchKevytHakukohdeDTOsWithoutHakemukset(sijoitteluajoId, hakemusOids);
 
         return new Iterator<KevytHakukohdeDTO>() {
             private static final long LIMIT = 500;
@@ -161,6 +110,71 @@ public class HakukohdeDaoImpl implements HakukohdeDao {
                 return hk;
             }
         };
+    }
+
+    private List fetchHakukohteenHakemusOids(Long sijoitteluajoId, String hakukohdeOid) {
+        return morphiaDS.getDB().getCollection("Hakukohde")
+                .distinct("valintatapajonot.hakemukset.hakemusOid",
+                        BasicDBObjectBuilder.start("sijoitteluajoId", sijoitteluajoId).add("oid", hakukohdeOid).get());
+    }
+
+    private Map<String, KevytHakukohdeDTO> fetchKevytHakukohdeDTOsWithoutHakemukset(Long sijoitteluajoId, List<String> hakemusOids) {
+        DBCursor hakukohdeIterable = morphiaDS.getDB().getCollection("Hakukohde").find(
+                BasicDBObjectBuilder.start("sijoitteluajoId", sijoitteluajoId)
+                        .push("valintatapajonot.hakemukset.hakemusOid")
+                        .add("$in", hakemusOids)
+                        .get(),
+                BasicDBObjectBuilder
+                        .start("_id", 0)
+                        .add("sijoitteluajoId", 0)
+                        .add("tila", 0)
+                        .add("hakijaryhmat", 0)
+                        .add("valintatapajonot.tasasijasaanto", 0)
+                        .add("valintatapajonot.tila", 0)
+                        .add("valintatapajonot.nimi", 0)
+                        .add("valintatapajonot.prioriteetti", 0)
+                        .add("valintatapajonot.aloituspaikat", 0)
+                        .add("valintatapajonot.kaikkiEhdonTayttavatHyvaksytaan", 0)
+                        .add("valintatapajonot.poissaOlevaTaytto", 0)
+                        .add("valintatapajonot.varasijat", 0)
+                        .add("valintatapajonot.varasijaTayttoPaivat", 0)
+                        .add("valintatapajonot.tayttojono", 0)
+                        .add("valintatapajonot.hyvaksytty", 0)
+                        .add("valintatapajonot.varalla", 0)
+                        .add("valintatapajonot.alinHyvaksyttyPistemaara", 0)
+                        .add("valintatapajonot.hakemukset", 0)
+                        .get()
+        );
+        Map<String, KevytHakukohdeDTO> hakukohteet = new HashMap<>();
+        for (DBObject o : hakukohdeIterable) {
+            KevytHakukohdeDTO hk = parseKevytHakukohdeDTO(o);
+            hakukohteet.put(hk.getOid(), hk);
+        }
+        return hakukohteet;
+    }
+
+    private KevytHakukohdeDTO parseKevytHakukohdeDTO(DBObject o) {
+        KevytHakukohdeDTO hk = new KevytHakukohdeDTO();
+        hk.setOid((String) o.get("oid"));
+        String tila = (String) o.get("tila");
+        hk.setTarjoajaOid((String) o.get("tarjoajaOid"));
+        if (null != o.get("kaikkiJonotSijoiteltu")) {
+            hk.setKaikkiJonotSijoiteltu((boolean) o.get("kaikkiJonotSijoiteltu"));
+        }
+        List<DBObject> valintatapajonot = (List<DBObject>) o.get("valintatapajonot");
+        for (DBObject j : valintatapajonot == null ? Collections.<DBObject>emptyList() : valintatapajonot) {
+            hk.getValintatapajonot().add(parseKevytValintatapajonoDTO(j));
+        }
+        return hk;
+    }
+
+    private KevytValintatapajonoDTO parseKevytValintatapajonoDTO(DBObject j) {
+        KevytValintatapajonoDTO jono = new KevytValintatapajonoDTO();
+        jono.setOid((String) j.get("oid"));
+        jono.setEiVarasijatayttoa((Boolean) j.get("eiVarasijatayttoa"));
+        jono.setVarasijojaKaytetaanAlkaen((Date) j.get("varasijojaKaytetaanAlkaen"));
+        jono.setVarasijojaTaytetaanAsti((Date) j.get("varasijojaTaytetaanAsti"));
+        return jono;
     }
 
     private Iterator<DBObject> getHakemusIterator(Long sijoitteluajoId, List<String> hakemusOids, long skip, long limit) {
