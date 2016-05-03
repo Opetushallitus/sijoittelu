@@ -174,6 +174,7 @@ public class ValintatulosDaoImpl implements ValintatulosDao {
             UpdateOperations<Valintatulos> update = morphiaDS.createUpdateOperations(Valintatulos.class)
                     .set("ilmoittautumisTila",tulos.getIlmoittautumisTila())
                     .set("julkaistavissa", tulos.getJulkaistavissa())
+                    .set("ehdollisestiHyvaksyttavissa", tulos.getEhdollisestiHyvaksyttavissa())
                     .set("hyvaksyttyVarasijalta", tulos.getHyvaksyttyVarasijalta())
                     .set("hyvaksyPeruuntunut", tulos.getHyvaksyPeruuntunut());
             List<LogEntry> diff = new ArrayList<>(tulos.getLogEntries());
