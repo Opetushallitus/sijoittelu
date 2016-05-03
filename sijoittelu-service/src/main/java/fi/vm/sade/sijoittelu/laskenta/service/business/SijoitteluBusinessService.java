@@ -607,6 +607,7 @@ public class SijoitteluBusinessService {
                 .add("julkaistavissa", v.getJulkaistavissa())
                 .add("hyvaksyttyvarasijalta", v.getHyvaksyttyVarasijalta())
                 .add("hyvaksyperuuntunut", v.getHyvaksyPeruuntunut())
+                .add("ehdollisestihyvaksyttavissa", v.getEhdollisestiHyvaksyttavissa())
                 .add("selite", selite)
                 .setOperaatio(ValintaperusteetOperation.HAKEMUS_TILAMUUTOS)
                 .build());
