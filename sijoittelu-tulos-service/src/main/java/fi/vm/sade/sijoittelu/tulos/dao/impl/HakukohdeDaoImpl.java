@@ -119,13 +119,50 @@ public class HakukohdeDaoImpl implements HakukohdeDao {
             }
             hakukohteet.put(hk.getOid(), hk);
         }
-        // db.Hakukohde.aggregate([{$match: {"sijoitteluajoId": NumberLong("1456410250214")}},
-        // {$unwind: "$valintatapajonot"},
-        // {$unwind: "$valintatapajonot.hakemukset"},
-        // {$match: {"valintatapajonot.hakemukset.hakemusOid": {$in: oids}}},
-        // {$group: {_id: {"oid": "$oid", "valintatapajonoOid": "$valintatapajonot.oid"}, hakemukset: {$push: "$valintatapajonot.hakemukset"}}},
-        // {$group: {_id: "$_id.oid", valintatapajonot: {$push: {oid: "$_id.valintatapajonoOid", hakemukset: "$hakemukset"}}}])
-        Iterator<DBObject> hakemusIterator = morphiaDS.getDB().getCollection("Hakukohde")
+
+        return new Iterator<KevytHakukohdeDTO>() {
+            private static final long LIMIT = 500;
+            private long skip = 0;
+            private long fetched = 0;
+            private Iterator<DBObject> i = getHakemusIterator(sijoitteluajoId, hakemusOids, this.skip, LIMIT);
+
+            @Override
+            public boolean hasNext() {
+                boolean done = !i.hasNext();
+                if (done && this.fetched < LIMIT) {
+                    return false;
+                }
+                if (done) {
+                    this.skip += LIMIT;
+                    this.fetched = 0;
+                    this.i = getHakemusIterator(sijoitteluajoId, hakemusOids, this.skip, LIMIT);
+                }
+                return i.hasNext();
+            }
+
+            @Override
+            public KevytHakukohdeDTO next() {
+                DBObject o = i.next();
+                this.fetched += 1;
+                KevytHakukohdeDTO hk = hakukohteet.get((String) o.get("_id"));
+                for (DBObject j : (List<DBObject>) o.get("valintatapajonot")) {
+                    String jonoOid = (String) j.get("oid");
+                    for (KevytValintatapajonoDTO jono : hk.getValintatapajonot()) {
+                        if (jono.getOid().equals(jonoOid)) {
+                            for (DBObject h : (List<DBObject>) j.get("hakemukset")) {
+                                jono.getHakemukset().add(parseKevytHakemusDTO(h));
+                            }
+                            break;
+                        }
+                    }
+                }
+                return hk;
+            }
+        };
+    }
+
+    private Iterator<DBObject> getHakemusIterator(Long sijoitteluajoId, List<String> hakemusOids, long skip, long limit) {
+        return morphiaDS.getDB().getCollection("Hakukohde")
                 .aggregate(ImmutableList.of(
                         BasicDBObjectBuilder.start()
                                 .push("$match")
@@ -156,141 +193,10 @@ public class HakukohdeDaoImpl implements HakukohdeDao {
                                 .push("$push")
                                 .add("oid", "$_id.valintatapajonoOid")
                                 .add("hakemukset", "$hakemukset")
-                                .get()
+                                .get(),
+                        new BasicDBObject("$skip", skip),
+                        new BasicDBObject("$limit", limit)
                 )).results().iterator();
-
-        return new Iterator<KevytHakukohdeDTO>() {
-            @Override
-            public boolean hasNext() {
-                return hakemusIterator.hasNext();
-            }
-
-            @Override
-            public KevytHakukohdeDTO next() {
-                DBObject o = hakemusIterator.next();
-                KevytHakukohdeDTO hk = hakukohteet.get((String) o.get("_id"));
-                for (DBObject j : (List<DBObject>) o.get("valintatapajonot")) {
-                    String jonoOid = (String) j.get("oid");
-                    for (KevytValintatapajonoDTO jono : hk.getValintatapajonot()) {
-                        if (jono.getOid().equals(jonoOid)) {
-                            for (DBObject h : (List<DBObject>) j.get("hakemukset")) {
-                                jono.getHakemukset().add(parseKevytHakemusDTO(h));
-                            }
-                            break;
-                        }
-                    }
-                }
-                return hk;
-            }
-        };
-        /*
-        Iterator<DBObject> i = morphiaDS.getDB().getCollection("Hakukohde")
-                .find(
-                        new BasicDBObject("sijoitteluajoId", sijoitteluajoId),
-                        BasicDBObjectBuilder
-                                .start("_id", 0)
-                                .add("sijoitteluajoId", 0)
-                                .add("tila", 0)
-                                .add("hakijaryhmat", 0)
-                                .add("valintatapajonot.tasasijasaanto", 0)
-                                .add("valintatapajonot.tila", 0)
-                                .add("valintatapajonot.nimi", 0)
-                                .add("valintatapajonot.prioriteetti", 0)
-                                .add("valintatapajonot.aloituspaikat", 0)
-                                .add("valintatapajonot.kaikkiEhdonTayttavatHyvaksytaan", 0)
-                                .add("valintatapajonot.poissaOlevaTaytto", 0)
-                                .add("valintatapajonot.varasijat", 0)
-                                .add("valintatapajonot.varasijaTayttoPaivat", 0)
-                                .add("valintatapajonot.tayttojono", 0)
-                                .add("valintatapajonot.hyvaksytty", 0)
-                                .add("valintatapajonot.varalla", 0)
-                                .add("valintatapajonot.alinHyvaksyttyPistemaara", 0)
-                                .add("valintatapajonot.hakemukset.etunimi", 0)
-                                .add("valintatapajonot.hakemukset.sukunimi", 0)
-                                .add("valintatapajonot.hakemukset.onkoMuuttunutViimeSijoittelussa", 0)
-                                .add("valintatapajonot.hakemukset.tasasijaJonosija", 0)
-                                .add("valintatapajonot.hakemukset.edellinenTila", 0)
-                                .add("valintatapajonot.hakemukset.ilmoittautumisTila", 0)
-                                .add("valintatapajonot.hakemukset.hyvaksyttyHakijaryhmasta", 0)
-                                .add("valintatapajonot.hakemukset.hakijaryhmaOid", 0)
-                                .get()
-                ).iterator();
-        return new Iterator<KevytHakukohdeDTO>() {
-            @Override
-            public boolean hasNext() {
-                return i.hasNext();
-            }
-
-            @Override
-            public KevytHakukohdeDTO next() {
-                DBObject o = i.next();
-                KevytHakukohdeDTO hk = new KevytHakukohdeDTO();
-                //hk.setId((ObjectId) o.get("_id"));
-                //hk.setSijoitteluajoId((Long) o.get("sijoitteluajoId"));
-                hk.setOid((String) o.get("oid"));
-                String tila = (String) o.get("tila");
-                //hk.setTila(tila == null ? null : HakukohdeTila.valueOf(tila));
-                hk.setTarjoajaOid((String) o.get("tarjoajaOid"));
-                hk.setKaikkiJonotSijoiteltu((boolean) o.get("kaikkiJonotSijoiteltu"));
-                List<DBObject> valintatapajonot = (List<DBObject>) o.get("valintatapajonot");
-                for (DBObject j : valintatapajonot == null ? Collections.<DBObject>emptyList() : valintatapajonot) {
-                    KevytValintatapajonoDTO jono = new KevytValintatapajonoDTO();
-                    //jono.setTasasijasaanto(Tasasijasaanto.valueOf((String) j.get("tasasijasaanto")));
-                    //String jonoTila = (String) j.get("tila");
-                    //jono.setTila(jonoTila == null ? null : ValintatapajonoTila.valueOf(jonoTila));
-                    jono.setOid((String) j.get("oid"));
-                    //jono.setNimi((String) j.get("nimi"));
-                    //jono.setPrioriteetti((Integer) j.get("prioriteetti"));
-                    //jono.setAloituspaikat((Integer) j.get("aloituspaikat"));
-                    jono.setEiVarasijatayttoa((Boolean) j.get("eiVarasijatayttoa"));
-                    //jono.setKaikkiEhdonTayttavatHyvaksytaan((Boolean) j.get("kaikkiEhdonTayttavatHyvaksytaan"));
-                    //jono.setPoissaOlevaTaytto((Boolean) j.get("poissaOlevaTaytto"));
-                    //jono.setVarasijat((Integer) j.get("varasijat"));
-                    //jono.setVarasijaTayttoPaivat((Integer) j.get("varasijaTayttoPaivat"));
-                    jono.setVarasijojaKaytetaanAlkaen((Date) j.get("varasijojaKaytetaanAlkaen"));
-                    jono.setVarasijojaTaytetaanAsti((Date) j.get("varasijojaTaytetaanAsti"));
-                    //jono.setTayttojono((String) j.get("tayttojono"));
-                    //jono.setHyvaksytty((Integer) j.get("hyvaksytty"));
-                    //jono.setVaralla((Integer) j.get("varalla"));
-                    //String alinHyvaksyttyPistemaara = (String) j.get("alinHyvaksyttyPistemaara");
-                    //jono.setAlinHyvaksyttyPistemaara(Strings.isNullOrEmpty(alinHyvaksyttyPistemaara) ? null : new BigDecimal(alinHyvaksyttyPistemaara));
-                    for (DBObject h : (List<DBObject>) j.get("hakemukset")) {
-                        KevytHakemusDTO hakemus = new KevytHakemusDTO();
-                        hakemus.setHakijaOid((String) h.get("hakijaOid"));
-                        hakemus.setHakemusOid((String) h.get("hakemusOid"));
-                        //hakemus.setEtunimi((String) h.get("etunimi"));
-                        //hakemus.setSukunimi((String) h.get("sukunimi"));
-                        hakemus.setPrioriteetti((Integer) h.get("prioriteetti"));
-                        hakemus.setJonosija((Integer) h.get("jonosija"));
-                        //hakemus.setOnkoMuuttunutViimeSijoittelussa((boolean) h.get("onkoMuuttunutViimeSijoittelussa"));
-                        String pisteet = (String) h.get("pisteet");
-                        hakemus.setPisteet(Strings.isNullOrEmpty(pisteet) ? null : new BigDecimal(pisteet));
-                        //hakemus.setTasasijaJonosija((Integer) h.get("tasasijaJonosija"));
-                        hakemus.setTila(fi.vm.sade.sijoittelu.tulos.dto.HakemuksenTila.valueOf((String) h.get("tila")));
-                        //hakemus.setEdellinenTila(HakemuksenTila.valueOf((String) h.get("edellinenTila")));
-                        //String ilmoittautumisTila = (String) h.get("ilmoittautumisTila");
-                        //hakemus.setIlmoittautumisTila(ilmoittautumisTila == null ? null : IlmoittautumisTila.valueOf(ilmoittautumisTila));
-                        //hakemus.setTilaHistoria(new ArrayList<>()); // TODO
-                        List<DBObject> tilaHistoria = (List<DBObject>) h.get("tilaHistoria");
-                        Date viimeisenMuutos = tilaHistoria == null ? null : (Date) tilaHistoria.get(tilaHistoria.size() - 1).get("luotu");
-                        hakemus.setViimeisenHakemuksenTilanMuutos(viimeisenMuutos);
-                        hakemus.setHyvaksyttyHarkinnanvaraisesti((boolean) h.get("hyvaksyttyHarkinnanvaraisesti"));
-                        //hakemus.setPistetiedot(new ArrayList<>()); // TODO
-                        DBObject tilanKuvaukset = (DBObject) h.get("tilanKuvaukset");
-                        for (String k : tilanKuvaukset == null ? Collections.<String>emptySet() : tilanKuvaukset.keySet()) {
-                            hakemus.getTilanKuvaukset().put(k, (String) tilanKuvaukset.get(k));
-                        }
-                        hakemus.setVarasijanNumero((Integer) h.get("varasijanNumero"));
-                        //hakemus.setHyvaksyttyHakijaryhmasta((boolean) h.get("hyvaksyttyHakijaryhmasta"));
-                        //hakemus.setHakijaryhmaOid((String) h.get("hakijaryhmaOid"));
-                        jono.getHakemukset().add(hakemus);
-                    }
-                    hk.getValintatapajonot().add(jono);
-                }
-                return hk;
-            }
-        };
-        */
     }
 
     private KevytHakemusDTO parseKevytHakemusDTO(DBObject h) {
