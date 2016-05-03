@@ -90,6 +90,15 @@ public class RaportointiServiceImpl implements RaportointiService {
     }
 
     @Override
+    public List<KevytHakijaDTO> hakemuksetVainHakukohteenTietojenKanssa(SijoitteluAjo ajo, String hakukohdeOid) {
+        Hakukohde hakukohde = hakukohdeDao.getHakukohdeForSijoitteluajo(ajo.getSijoitteluajoId(), hakukohdeOid);
+        if (hakukohde == null) {
+            return Collections.emptyList();
+        }
+        return konvertoiHakijat(hakukohde, Collections.emptyMap(), Collections.emptyIterator());
+    }
+
+    @Override
     public HakijaPaginationObject cachedHakemukset(SijoitteluAjo ajo, Boolean hyvaksytyt, Boolean ilmanHyvaksyntaa, Boolean vastaanottaneet, List<String> hakukohdeOids, Integer count, Integer index) {
         List<Valintatulos> valintatulokset = cachingRaportointiDao.getCachedValintatulokset(ajo.getHakuOid()).get();
         List<Hakukohde> hakukohteet = cachingRaportointiDao.getCachedHakukohdesForSijoitteluajo(ajo.getSijoitteluajoId()).get();
