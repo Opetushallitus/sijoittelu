@@ -95,7 +95,9 @@ public class HakukohdeDaoImpl implements HakukohdeDao {
             public KevytHakukohdeDTO next() {
                 DBObject o = i.next();
                 this.fetched += 1;
-                KevytHakukohdeDTO hk = hakukohteet.get((String) o.get("_id"));
+                String hakukohdeOid = (String) o.get("_id");
+                KevytHakukohdeDTO hk = hakukohteet.get(hakukohdeOid);
+                hakukohteet.remove(hakukohdeOid);
                 for (DBObject j : (List<DBObject>) o.get("valintatapajonot")) {
                     String jonoOid = (String) j.get("oid");
                     for (KevytValintatapajonoDTO jono : hk.getValintatapajonot()) {
