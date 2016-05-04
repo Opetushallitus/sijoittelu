@@ -21,6 +21,7 @@ public class KevytHakutoiveenValintatapajonoDTO {
     private boolean hyvaksyttyHarkinnanvaraisesti = false;
     private boolean hyvaksyttyVarasijalta;
     private boolean julkaistavissa;
+    private boolean ehdollisestiHyvaksyttavissa;
 
     private Date valintatuloksenViimeisinMuutos;
     private Date hakemuksenTilanViimeisinMuutos;
@@ -100,6 +101,14 @@ public class KevytHakutoiveenValintatapajonoDTO {
 
     public void setJulkaistavissa(boolean julkaistavissa) {
         this.julkaistavissa = julkaistavissa;
+    }
+
+    public boolean isEhdollisestiHyvaksyttavissa() {
+        return ehdollisestiHyvaksyttavissa;
+    }
+
+    public void setEhdollisestiHyvaksyttavissa(boolean ehdollisestiHyvaksyttavissa) {
+        this.ehdollisestiHyvaksyttavissa = ehdollisestiHyvaksyttavissa;
     }
 
     public BigDecimal getPisteet() {

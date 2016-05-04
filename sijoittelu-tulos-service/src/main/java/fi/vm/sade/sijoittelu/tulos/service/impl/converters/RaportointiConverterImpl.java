@@ -160,6 +160,7 @@ public class RaportointiConverterImpl implements RaportointiConverter {
                             }
                             if (valintatulos.getValintatapajonoOid().equals(valintatapajonoDTO.getValintatapajonoOid())) {
                                 valintatapajonoDTO.setJulkaistavissa(valintatulos.getJulkaistavissa());
+                                valintatapajonoDTO.setEhdollisestiHyvaksyttavissa(valintatulos.getEhdollisestiHyvaksyttavissa());
                                 valintatapajonoDTO.setHyvaksyttyVarasijalta(valintatulos.getHyvaksyttyVarasijalta());
                                 valintatapajonoDTO.setValintatuloksenViimeisinMuutos(viimeisinValintatuloksenMuutos(valintatulos));
                                 valintatapajonoDTO.setIlmoittautumisTila(EnumConverter.convert(IlmoittautumisTila.class, valintatulos.getIlmoittautumisTila()));
@@ -184,6 +185,7 @@ public class RaportointiConverterImpl implements RaportointiConverter {
                         for (RaportointiValintatulos valintatulos : valintatulokset) {
                             if (valintatulos != null && valintatulos.valintatapajonoOid.equals(valintatapajonoDTO.getValintatapajonoOid())) {
                                 valintatapajonoDTO.setJulkaistavissa(valintatulos.julkaistavissa);
+                                valintatapajonoDTO.setEhdollisestiHyvaksyttavissa(valintatulos.ehdollisestiHyvaksyttavissa);
                                 valintatapajonoDTO.setHyvaksyttyVarasijalta(valintatulos.hyvaksyttyVarasijalta);
                                 valintatapajonoDTO.setValintatuloksenViimeisinMuutos(valintatulos.viimeisinValintatuloksenMuutos);
                                 valintatapajonoDTO.setIlmoittautumisTila(valintatulos.ilmoittautumisTila);

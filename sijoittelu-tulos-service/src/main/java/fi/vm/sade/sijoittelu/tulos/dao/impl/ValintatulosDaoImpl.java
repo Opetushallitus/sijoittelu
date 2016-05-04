@@ -103,6 +103,7 @@ public class ValintatulosDaoImpl implements ValintatulosDao {
                         .add("hakemusOid", "$hakemusOid")
                         .add("valintatapajonoOid", "$valintatapajonoOid")
                         .add("julkaistavissa", "$julkaistavissa")
+                        .add("ehdollisestiHyvaksyttavissa", "$ehdollisestiHyvaksyttavissa")
                         .add("hyvaksyttyVarasijalta", "$hyvaksyttyVarasijalta")
                         .add("ilmoittautumisTila", "$ilmoittautumisTila")
                         .pop()
@@ -118,11 +119,13 @@ public class ValintatulosDaoImpl implements ValintatulosDao {
                 r.put(hakemusOid, new ArrayList<>());
             }
             Object hyvaksyttyVarasijalta = id.get("hyvaksyttyVarasijalta");
+            Object ehdollisestiHyvaksyttavissa = id.get("ehdollisestiHyvaksyttavissa");
             Object ilmoittautumisTila = id.get("ilmoittautumisTila");
             r.get(hakemusOid).add(new RaportointiValintatulos(
                     hakemusOid,
                     (String) id.get("valintatapajonoOid"),
                     (boolean) id.get("julkaistavissa"),
+                    (ehdollisestiHyvaksyttavissa != null && ((boolean) ehdollisestiHyvaksyttavissa)),
                     (hyvaksyttyVarasijalta != null && ((boolean) hyvaksyttyVarasijalta)),
                     (Date) o.get("viimeisinValintatuloksenMuutos"),
                     ilmoittautumisTila != null ? fi.vm.sade.sijoittelu.tulos.dto.IlmoittautumisTila.valueOf((String) ilmoittautumisTila) : null

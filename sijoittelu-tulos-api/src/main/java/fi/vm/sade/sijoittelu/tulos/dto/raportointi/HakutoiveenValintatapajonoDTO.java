@@ -59,6 +59,7 @@ public class HakutoiveenValintatapajonoDTO {
 
     private String tayttojono;
     private boolean julkaistavissa;
+    private boolean ehdollisestiHyvaksyttavissa;
     private boolean hyvaksyttyVarasijalta;
 
     private Date valintatuloksenViimeisinMuutos;
@@ -241,6 +242,14 @@ public class HakutoiveenValintatapajonoDTO {
 
     public boolean isJulkaistavissa() {
         return julkaistavissa;
+    }
+
+    public boolean isEhdollisestiHyvaksyttavissa() {
+        return ehdollisestiHyvaksyttavissa;
+    }
+
+    public void setEhdollisestiHyvaksyttavissa(boolean ehdollisestiHyvaksyttavissa) {
+        this.ehdollisestiHyvaksyttavissa = ehdollisestiHyvaksyttavissa;
     }
 
     public void setHyvaksyttyVarasijalta(final boolean hyvaksyttyVarasijalta) {
