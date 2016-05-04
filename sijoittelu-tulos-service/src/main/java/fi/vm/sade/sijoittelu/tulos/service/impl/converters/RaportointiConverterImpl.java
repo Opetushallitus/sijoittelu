@@ -117,7 +117,7 @@ public class RaportointiConverterImpl implements RaportointiConverter {
         }
         while (hakukohteet.hasNext()) {
             KevytHakukohdeDTO hk = hakukohteet.next();
-            if (hk.getOid() != hakukohde.getOid()) {
+            if (!Objects.equals(hk.getOid(), hakukohde.getOid())) {
                 for (KevytValintatapajonoDTO valintatapajono : hk.getValintatapajonot()) {
                     for (KevytHakemusDTO hakemusDTO : valintatapajono.getHakemukset()) {
                         if (hakijat.containsKey(hakemusDTO.getHakemusOid())) {
