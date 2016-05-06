@@ -241,6 +241,12 @@
 			<artifactId>morphia</artifactId>
 		</dependency>
 		<dependency>
+			<groupId>cglib</groupId>
+			<artifactId>cglib-nodep</artifactId>
+			<type>jar</type>
+			<!--<optional>true</optional> -->
+		</dependency>
+		<dependency>
 			<groupId>com.typesafe.akka</groupId>
 			<artifactId>akka-actor_2.11</artifactId>
 			<version>2.3.5</version>
