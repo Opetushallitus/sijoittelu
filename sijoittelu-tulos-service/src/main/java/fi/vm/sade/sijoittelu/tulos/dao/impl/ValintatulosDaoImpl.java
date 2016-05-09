@@ -125,7 +125,7 @@ public class ValintatulosDaoImpl implements ValintatulosDao {
                     (boolean) id.get("julkaistavissa"),
                     (hyvaksyttyVarasijalta != null && ((boolean) hyvaksyttyVarasijalta)),
                     (Date) o.get("viimeisinValintatuloksenMuutos"),
-                    fi.vm.sade.sijoittelu.tulos.dto.IlmoittautumisTila.valueOf((String) ilmoittautumisTila)
+                    ilmoittautumisTila != null ? fi.vm.sade.sijoittelu.tulos.dto.IlmoittautumisTila.valueOf((String) ilmoittautumisTila) : null
             ));
         }
         return r;
