@@ -130,7 +130,7 @@ public class Hakemus implements Serializable {
     @Override
     public String toString() {
         return "Hakemus{" + "hakemusOid='" + hakemusOid + '\'' + ", prioriteetti=" + prioriteetti + ", jonosija="
-                + jonosija + ", tasasijaJonosija=" + tasasijaJonosija + ", tila=" + tila + '}';
+                + jonosija + ", tasasijaJonosija=" + tasasijaJonosija + ", tila=" + tila + ", edellinenTila=" + edellinenTila + '}';
     }
 
     public String getSukunimi() {
