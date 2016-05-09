@@ -32,7 +32,6 @@ import fi.vm.sade.sijoittelu.domain.SijoitteluAjo;
 import fi.vm.sade.sijoittelu.domain.TilaHistoria;
 import fi.vm.sade.sijoittelu.domain.ValiSijoittelu;
 import fi.vm.sade.sijoittelu.domain.Valintatapajono;
-import fi.vm.sade.sijoittelu.domain.ValintatuloksenTila;
 import fi.vm.sade.sijoittelu.domain.Valintatulos;
 import fi.vm.sade.sijoittelu.domain.comparator.HakemusComparator;
 import fi.vm.sade.sijoittelu.laskenta.actors.messages.PoistaHakukohteet;
@@ -52,6 +51,7 @@ import fi.vm.sade.sijoittelu.tulos.dto.HakukohdeDTO;
 import fi.vm.sade.sijoittelu.tulos.roles.SijoitteluRole;
 import fi.vm.sade.sijoittelu.tulos.service.impl.converters.SijoitteluTulosConverter;
 import fi.vm.sade.valintalaskenta.domain.dto.valintatieto.HakuDTO;
+import org.apache.commons.lang3.tuple.Triple;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -368,6 +368,7 @@ public class SijoitteluBusinessService {
             kaikkiHakukohteet.put(hakukohde.getOid(), hakukohde);
         });
         talletaTasasijajonosijatJaEdellisenSijoittelunTilat(uudetHakukohteet, kaikkiHakukohteet);
+        kopioiTilaHistoriat(olemassaolevatHakukohteet, kaikkiHakukohteet);
         kaikkiHakukohteet.values().forEach(hakukohde -> {
                     HakukohdeItem hki = new HakukohdeItem();
                     hki.setOid(hakukohde.getOid());
@@ -376,6 +377,37 @@ public class SijoitteluBusinessService {
                 }
         );
         return new ArrayList<>(kaikkiHakukohteet.values());
+    }
+
+    private void kopioiTilaHistoriat(List<Hakukohde> olemassaolevatHakukohteet, Map<String, Hakukohde> kaikkiHakukohteet) {
+
+        Map<Triple<String, String, String>, Hakemus> hakemusIndex = new HashMap<>();
+        olemassaolevatHakukohteet.forEach(hk -> {
+            String hakukohdeOid = hk.getOid();
+            hk.getValintatapajonot().forEach(j -> {
+                String valintatapajonoOid = j.getOid();
+                j.getHakemukset().forEach(h -> {
+                    String hakemusOid = h.getHakemusOid();
+                    Triple id = Triple.of(hakukohdeOid, valintatapajonoOid, hakemusOid);
+                    hakemusIndex.put(id, h);
+                });
+            });
+        });
+
+        kaikkiHakukohteet.values().forEach(hk -> {
+            String hakukohdeOid = hk.getOid();
+            hk.getValintatapajonot().forEach(j -> {
+                String valintatapajonoOid = j.getOid();
+                j.getHakemukset().forEach(h -> {
+                    String hakemusOid = h.getHakemusOid();
+                    Triple id = Triple.of(hakukohdeOid, valintatapajonoOid, hakemusOid);
+                    if(hakemusIndex.containsKey(id)) {
+                        Hakemus alkuperainen = hakemusIndex.get(id);
+                        h.setTilaHistoria(alkuperainen.getTilaHistoria());
+                    }
+                });
+            });
+        });
     }
 
     private void talletaTasasijajonosijatJaEdellisenSijoittelunTilat(List<Hakukohde> uudetHakukohteet, Map<String, Hakukohde> kaikkiHakukohteet) {
