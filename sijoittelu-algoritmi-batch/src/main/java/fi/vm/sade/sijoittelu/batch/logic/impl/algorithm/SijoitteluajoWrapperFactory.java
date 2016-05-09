@@ -158,15 +158,6 @@ public class SijoitteluajoWrapperFactory {
                     hyvaksyVarasijalta(hakemus, valintatulos);
                 } else if (valintatulos.getHyvaksyttyVarasijalta()) {
                     hyvaksyVarasijalta(hakemus, valintatulos);
-                } else if (HakemuksenTila.PERUUNTUNUT == hakemus.getEdellinenTila() && vastaanotettuHakukohde.isPresent()) {
-                    // ei muuteta peruuntunutta jos on jo vastaanottanut paikan samalle aloituskaudelle
-                    if (voiTullaHyvaksytyksi(hakemus) || hakemus.getEdellinenTila() == HakemuksenTila.PERUUNTUNUT) {
-                        hakemus.setTila(HakemuksenTila.PERUUNTUNUT);
-                        if (hakemus.getEdellinenTila() != HakemuksenTila.PERUUNTUNUT || hakemus.getTilanKuvaukset() == null || hakemus.getTilanKuvaukset().isEmpty()) {
-                            hakemus.setTilanKuvaukset(TilanKuvaukset.peruuntunutVastaanottanutToisenOpiskelupaikanYhdenPaikanSaannonPiirissa());
-                        }
-                    }
-                    voidaanVaihtaa = false;
                 } else if (HakemuksenTila.PERUUNTUNUT == hakemus.getEdellinenTila() && valintatulos.getHyvaksyPeruuntunut()) {
                     hyvaksy(hakemus, valintatulos);
                     hakemusWrapper.hyvaksyPeruuntunut();
