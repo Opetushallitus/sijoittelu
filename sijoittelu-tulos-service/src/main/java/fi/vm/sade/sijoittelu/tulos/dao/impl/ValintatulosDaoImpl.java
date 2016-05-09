@@ -117,13 +117,15 @@ public class ValintatulosDaoImpl implements ValintatulosDao {
             if (!r.containsKey(hakemusOid)) {
                 r.put(hakemusOid, new ArrayList<>());
             }
+            Object hyvaksyttyVarasijalta = id.get("hyvaksyttyVarasijalta");
+            Object ilmoittautumisTila = id.get("ilmoittautumisTila");
             r.get(hakemusOid).add(new RaportointiValintatulos(
                     hakemusOid,
                     (String) id.get("valintatapajonoOid"),
                     (boolean) id.get("julkaistavissa"),
-                    (id.get("hyvaksyttyVarasijalta") == null ? false : ((boolean) id.get("hyvaksyttyVarasijalta"))),
+                    (hyvaksyttyVarasijalta != null && ((boolean) hyvaksyttyVarasijalta)),
                     (Date) o.get("viimeisinValintatuloksenMuutos"),
-                    fi.vm.sade.sijoittelu.tulos.dto.IlmoittautumisTila.valueOf((String) id.get("ilmoittautumisTila"))
+                    ilmoittautumisTila != null ? fi.vm.sade.sijoittelu.tulos.dto.IlmoittautumisTila.valueOf((String) ilmoittautumisTila) : null
             ));
         }
         return r;

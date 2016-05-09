@@ -183,7 +183,7 @@ public class SijoitteluajoWrapperFactory {
                     hakemus.getHakemusOid(),
                     hakemus.getTila(),
                     hakemus.getEdellinenTila(),
-                    valintatulos.getTila(),
+                    valintatulos != null ? valintatulos.getTila() : "- (ei valintatulosta)",
                     vastaanotettuHakukohde.get());
         }
     }
