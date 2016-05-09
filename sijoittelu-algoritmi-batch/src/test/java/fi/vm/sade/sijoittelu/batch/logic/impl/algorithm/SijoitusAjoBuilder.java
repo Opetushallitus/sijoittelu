@@ -87,6 +87,7 @@ class SijoitusAjoBuilder {
         hakukohde.getHakijaryhmat().addAll(hakijaryhmat);
 
         List<Valintatulos> valintatulokset = new ArrayList<>();
+        Map<String, String> aiemmatVastaanotot = new HashMap<>();
         for (JonoBuilder jonoBuilder : jonot) {
             hakukohde.getValintatapajonot().add(buildValintatapaJono(jonoBuilder));
             List<Hakemus> julkaistutHakemukset = jonoBuilder.julkaistutHakemukset;
@@ -103,9 +104,11 @@ class SijoitusAjoBuilder {
                 valintatulos.setJulkaistavissa(true, "Init");
                 valintatulokset.add(valintatulos);
             }
+            jonoBuilder.vastaanotot.forEach(hakija -> aiemmatVastaanotot.put(hakija, "hakukohde-eri-kuin-1"));
         }
 
-        return SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(sijoitteluAjo, Arrays.asList(hakukohde), valintatulokset, Collections.emptyMap());
+
+        return SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(sijoitteluAjo, Arrays.asList(hakukohde), valintatulokset, aiemmatVastaanotot);
     }
 
     private SijoitusAjoBuilder verify() {
@@ -150,6 +153,7 @@ class SijoitusAjoBuilder {
         private int alkuperainenJonosija;
         private List<Hakemus> julkaistutHakemukset = new ArrayList<>();
         private Map<String, ValintatuloksenTila> vastaanottotilat = new HashMap<>();
+        private Set<String> vastaanotot = new HashSet<>();
 
         public JonoBuilder(int aloituspaikat, Tasasijasaanto tasasijasaanto, int valintatapajonoPrioriteetti) {
             this.aloituspaikat = aloituspaikat;
@@ -160,6 +164,11 @@ class SijoitusAjoBuilder {
 
         public JonoBuilder vastaanottotila(String hakija, ValintatuloksenTila vastaanottotila) {
             vastaanottotilat.put(hakija, vastaanottotila);
+            return this;
+        }
+
+        public JonoBuilder vastaanottanutToisessaHaussa(String hakija) {
+            vastaanotot.add(hakija);
             return this;
         }
 

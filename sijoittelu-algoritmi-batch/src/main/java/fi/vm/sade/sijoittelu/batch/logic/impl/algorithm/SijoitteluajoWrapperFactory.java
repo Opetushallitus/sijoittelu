@@ -115,8 +115,17 @@ public class SijoitteluajoWrapperFactory {
                                                          Valintatulos valintatulos,
                                                          Optional<String> vastaanotettuHakukohde) {
         Hakemus hakemus = hakemusWrapper.getHakemus();
-        if (valintatulos != null && valintatulos.getTila() != null) {
-            if (!vastaanotonTilaSaaMuuttaaHakemuksenTilaa(hakemus) && valintatulos.getTila() != ValintatuloksenTila.OTTANUT_VASTAAN_TOISEN_PAIKAN) {
+        String hakukohdeOid = hakemusWrapper.getValintatapajono().getHakukohdeWrapper().getHakukohde().getOid();
+        if (vastaanotettuHakukohde.isPresent() && !vastaanotettuHakukohde.get().equals(hakukohdeOid)) {
+            if (voiTullaHyvaksytyksi(hakemus) || hakemus.getEdellinenTila() == HakemuksenTila.PERUUNTUNUT) {
+                hakemus.setTila(HakemuksenTila.PERUUNTUNUT);
+                if (hakemus.getEdellinenTila() != HakemuksenTila.PERUUNTUNUT || hakemus.getTilanKuvaukset() == null || hakemus.getTilanKuvaukset().isEmpty()) {
+                    hakemus.setTilanKuvaukset(TilanKuvaukset.peruuntunutVastaanottanutToisenOpiskelupaikanYhdenPaikanSaannonPiirissa());
+                }
+            }
+            hakemusWrapper.setTilaVoidaanVaihtaa(false);
+        } else if (valintatulos != null && valintatulos.getTila() != null) {
+            if (!vastaanotonTilaSaaMuuttaaHakemuksenTilaa(hakemus)) {
                 // Don't write a log entry
                 valintatulos.setTila(ValintatuloksenTila.KESKEN, ValintatuloksenTila.KESKEN, "", "");
             }
@@ -129,15 +138,7 @@ public class SijoitteluajoWrapperFactory {
                     valintatulos.getTila());
             ValintatuloksenTila tila = valintatulos.getTila();
             boolean voidaanVaihtaa = false;
-            if (tila == ValintatuloksenTila.OTTANUT_VASTAAN_TOISEN_PAIKAN) {
-                if (voiTullaHyvaksytyksi(hakemus) || hakemus.getEdellinenTila() == HakemuksenTila.PERUUNTUNUT) {
-                    hakemus.setTila(HakemuksenTila.PERUUNTUNUT);
-                    if (hakemus.getEdellinenTila() != HakemuksenTila.PERUUNTUNUT || hakemus.getTilanKuvaukset() == null || hakemus.getTilanKuvaukset().isEmpty()) {
-                        hakemus.setTilanKuvaukset(TilanKuvaukset.peruuntunutVastaanottanutToisenOpiskelupaikanYhdenPaikanSaannonPiirissa());
-                    }
-                }
-                voidaanVaihtaa = false;
-            } else if (tila == ValintatuloksenTila.PERUNUT) {
+            if (tila == ValintatuloksenTila.PERUNUT) {
                 hakemus.setTila(HakemuksenTila.PERUNUT);
             } else if (asList(VASTAANOTTANUT_SITOVASTI, EHDOLLISESTI_VASTAANOTTANUT).contains(tila) && viimeisinHyvaksyttyJono(hakemusWrapper)) {
                 if (hakemus.getEdellinenTila() == HakemuksenTila.VARALLA || hakemus.getEdellinenTila() == HakemuksenTila.VARASIJALTA_HYVAKSYTTY) {
@@ -171,22 +172,19 @@ public class SijoitteluajoWrapperFactory {
             }
             hakemusWrapper.setTilaVoidaanVaihtaa(voidaanVaihtaa);
             hakemusWrapper.getHenkilo().getValintatulos().add(valintatulos);
-        } else if (valintatulos == null && vastaanotettuHakukohde.isPresent()) {
-            String hakukohdeOid = hakemusWrapper.getValintatapajono().getHakukohdeWrapper().getHakukohde().getOid();
-            if (vastaanotettuHakukohde.get().equals(hakukohdeOid)) {
-                LOG.warn(String.format("Hakijalle %s löytyy vastaanotto hakukohteeseen %s vaikka valintatulosta ei löydy",
-                        hakemus.getHakijaOid(), hakukohdeOid));
-            } else {
-                if (voiTullaHyvaksytyksi(hakemus) || hakemus.getEdellinenTila() == HakemuksenTila.PERUUNTUNUT) {
-                    hakemus.setTila(HakemuksenTila.PERUUNTUNUT);
-                    if (hakemus.getEdellinenTila() != HakemuksenTila.PERUUNTUNUT || hakemus.getTilanKuvaukset() == null || hakemus.getTilanKuvaukset().isEmpty()) {
-                        hakemus.setTilanKuvaukset(TilanKuvaukset.peruuntunutVastaanottanutToisenOpiskelupaikanYhdenPaikanSaannonPiirissa());
-                    }
-                }
-                hakemusWrapper.setTilaVoidaanVaihtaa(false);
-            }
         } else if (hakemus.getTila().equals(HakemuksenTila.HYLATTY)) {
             hakemusWrapper.setTilaVoidaanVaihtaa(false);
+        } else if (vastaanotettuHakukohde.isPresent()) {
+            LOG.warn("Ei muutettu hakemuksen tilaa vastaanoton perusteella. " +
+                    "Hakukohde: {}, valintatapajono: {}, hakemus: {}, hakemuksen tila: {}, " +
+                    "hakemuksen edellinen tila: {}, vastaanoton tila: {}, vastaanotettu hakukohde: {}",
+                    hakemusWrapper.getValintatapajono().getHakukohdeWrapper().getHakukohde().getOid(),
+                    hakemusWrapper.getValintatapajono().getValintatapajono().getOid(),
+                    hakemus.getHakemusOid(),
+                    hakemus.getTila(),
+                    hakemus.getEdellinenTila(),
+                    valintatulos.getTila(),
+                    vastaanotettuHakukohde.get());
         }
     }
 
