@@ -6,6 +6,7 @@ import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.postsijoitteluprocessor.
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.presijoitteluprocessor.*;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.*;
 import fi.vm.sade.sijoittelu.domain.*;
+import fi.vm.sade.sijoittelu.domain.dto.VastaanottoDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,7 +21,7 @@ public abstract class SijoitteluAlgorithm {
                                              SijoitteluAjo sijoitteluAjo,
                                              List<Hakukohde> hakukohteet,
                                              List<Valintatulos> valintatulokset,
-                                             Map<String, String> aiemmanVastaanotonHakukohdePerHakija) {
+                                             Map<String, VastaanottoDTO> aiemmanVastaanotonHakukohdePerHakija) {
         return sijoittele(preProcessors, postProcessors, SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(sijoitteluAjo, hakukohteet, valintatulokset, aiemmanVastaanotonHakukohdePerHakija));
     }
 

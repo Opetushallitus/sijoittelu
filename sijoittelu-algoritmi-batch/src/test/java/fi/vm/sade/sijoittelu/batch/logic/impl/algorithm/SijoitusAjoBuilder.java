@@ -4,6 +4,7 @@ import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.util.SijoitteluAlgorithm
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.HakukohdeWrapper;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.SijoitteluajoWrapper;
 import fi.vm.sade.sijoittelu.domain.*;
+import fi.vm.sade.sijoittelu.domain.dto.VastaanottoDTO;
 
 import java.util.*;
 import java.util.function.Consumer;
@@ -87,7 +88,7 @@ class SijoitusAjoBuilder {
         hakukohde.getHakijaryhmat().addAll(hakijaryhmat);
 
         List<Valintatulos> valintatulokset = new ArrayList<>();
-        Map<String, String> aiemmatVastaanotot = new HashMap<>();
+        Map<String, VastaanottoDTO> aiemmatVastaanotot = new HashMap<>();
         for (JonoBuilder jonoBuilder : jonot) {
             hakukohde.getValintatapajonot().add(buildValintatapaJono(jonoBuilder));
             List<Hakemus> julkaistutHakemukset = jonoBuilder.julkaistutHakemukset;
@@ -104,11 +105,19 @@ class SijoitusAjoBuilder {
                 valintatulos.setJulkaistavissa(true, "Init");
                 valintatulokset.add(valintatulos);
             }
-            jonoBuilder.vastaanotot.forEach(hakija -> aiemmatVastaanotot.put(hakija, "hakukohde-eri-kuin-1"));
+            jonoBuilder.vastaanotot.forEach(hakija -> aiemmatVastaanotot.put(hakija, createVastaanottoDto(hakija, "hakukohde-eri-kuin-1")));
         }
 
 
         return SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(sijoitteluAjo, Arrays.asList(hakukohde), valintatulokset, aiemmatVastaanotot);
+    }
+
+    private VastaanottoDTO createVastaanottoDto(String hakija, String hakukohdeOid) {
+        VastaanottoDTO vastaanottoDTO = new VastaanottoDTO();
+        vastaanottoDTO.setHenkiloOid(hakija);
+        vastaanottoDTO.setAction(VastaanottoDTO.VastaanottoType.VastaanotaSitovasti.name());
+        vastaanottoDTO.setHakukohdeOid(hakukohdeOid);
+        return vastaanottoDTO;
     }
 
     private SijoitusAjoBuilder verify() {
