@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import java.util.*;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static fi.vm.sade.sijoittelu.domain.ValintatuloksenTila.EHDOLLISESTI_VASTAANOTTANUT;
 import static fi.vm.sade.sijoittelu.domain.ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI;
@@ -116,8 +117,7 @@ public class SijoitteluajoWrapperFactory {
                                                          Valintatulos valintatulos,
                                                          Optional<VastaanottoDTO> aiempiVastaanottoSamalleKaudelle) {
         Hakemus hakemus = hakemusWrapper.getHakemus();
-        String hakukohdeOid = hakemusWrapper.getValintatapajono().getHakukohdeWrapper().getHakukohde().getOid();
-        if (aiempiVastaanottoSamalleKaudelle.isPresent() && !aiempiVastaanottoSamalleKaudelle.get().getHakukohdeOid().equals(hakukohdeOid)) {
+        if (estaaVastaanotonYhdenPaikanSaannoksenTakia(aiempiVastaanottoSamalleKaudelle, hakemusWrapper)) {
             if (voiTullaHyvaksytyksi(hakemus) || hakemus.getEdellinenTila() == HakemuksenTila.PERUUNTUNUT) {
                 hakemus.setTila(HakemuksenTila.PERUUNTUNUT);
                 if (hakemus.getEdellinenTila() != HakemuksenTila.PERUUNTUNUT || hakemus.getTilanKuvaukset() == null || hakemus.getTilanKuvaukset().isEmpty()) {
@@ -187,6 +187,22 @@ public class SijoitteluajoWrapperFactory {
                     valintatulos != null ? valintatulos.getTila() : "- (ei valintatulosta)",
                     aiempiVastaanottoSamalleKaudelle.get().getHakukohdeOid());
         }
+    }
+
+    private static boolean estaaVastaanotonYhdenPaikanSaannoksenTakia(Optional<VastaanottoDTO> aiempiVastaanottoOptional, HakemusWrapper hakemusWrapper) {
+        if (!aiempiVastaanottoOptional.isPresent()) {
+            return false;
+        }
+        VastaanottoDTO aiempiVastaanotto = aiempiVastaanottoOptional.get();
+        if (aiempiVastaanotto.typeOfVastaanotto().sitova) {
+            return true;
+        }
+        return onEriHaun(aiempiVastaanotto, hakemusWrapper);
+    }
+
+    private static boolean onEriHaun(VastaanottoDTO aiempiVastaanotto, HakemusWrapper hakemusWrapper) {
+        return hakemusWrapper.getHenkilo().getHakemukset().stream().noneMatch(h ->
+            h.getValintatapajono().getHakukohdeWrapper().getHakukohde().getOid().equals(aiempiVastaanotto.getHakukohdeOid()));
     }
 
     private static void hyvaksyVarasijalta(final Hakemus hakemus, final Valintatulos valintatulos) {
