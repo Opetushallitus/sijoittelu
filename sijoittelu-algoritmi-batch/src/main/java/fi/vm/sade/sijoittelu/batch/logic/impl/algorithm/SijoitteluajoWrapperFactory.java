@@ -5,6 +5,7 @@ import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.util.TilaTaulukot;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.util.TilanKuvaukset;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.*;
 import fi.vm.sade.sijoittelu.domain.*;
+import fi.vm.sade.sijoittelu.domain.dto.VastaanottoDTO;
 import org.apache.commons.lang3.tuple.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,7 +26,7 @@ public class SijoitteluajoWrapperFactory {
     public static SijoitteluajoWrapper createSijoitteluAjoWrapper(SijoitteluAjo sijoitteluAjo,
                                                                   List<Hakukohde> hakukohteet,
                                                                   List<Valintatulos> valintatulokset,
-                                                                  Map<String, String> aiemmanVastaanotonHakukohdePerHakija) {
+                                                                  Map<String, VastaanottoDTO> aiemmanVastaanotonHakukohdePerHakija) {
         LOG.info("Luodaan SijoitteluAjoWrapper haulle {}", sijoitteluAjo.getHakuOid());
         final Map<String, Map<String, Map<String, Valintatulos>>> indeksoidutTulokset = indexValintatulokset(valintatulokset);
         SijoitteluajoWrapper sijoitteluajoWrapper = new SijoitteluajoWrapper(sijoitteluAjo);
@@ -113,10 +114,10 @@ public class SijoitteluajoWrapperFactory {
 
     private static void setHakemuksenValintatuloksenTila(HakemusWrapper hakemusWrapper,
                                                          Valintatulos valintatulos,
-                                                         Optional<String> vastaanotettuHakukohde) {
+                                                         Optional<VastaanottoDTO> aiempiVastaanottoSamalleKaudelle) {
         Hakemus hakemus = hakemusWrapper.getHakemus();
         String hakukohdeOid = hakemusWrapper.getValintatapajono().getHakukohdeWrapper().getHakukohde().getOid();
-        if (vastaanotettuHakukohde.isPresent() && !vastaanotettuHakukohde.get().equals(hakukohdeOid)) {
+        if (aiempiVastaanottoSamalleKaudelle.isPresent() && !aiempiVastaanottoSamalleKaudelle.get().getHakukohdeOid().equals(hakukohdeOid)) {
             if (voiTullaHyvaksytyksi(hakemus) || hakemus.getEdellinenTila() == HakemuksenTila.PERUUNTUNUT) {
                 hakemus.setTila(HakemuksenTila.PERUUNTUNUT);
                 if (hakemus.getEdellinenTila() != HakemuksenTila.PERUUNTUNUT || hakemus.getTilanKuvaukset() == null || hakemus.getTilanKuvaukset().isEmpty()) {
@@ -174,7 +175,7 @@ public class SijoitteluajoWrapperFactory {
             hakemusWrapper.getHenkilo().getValintatulos().add(valintatulos);
         } else if (hakemus.getTila().equals(HakemuksenTila.HYLATTY)) {
             hakemusWrapper.setTilaVoidaanVaihtaa(false);
-        } else if (vastaanotettuHakukohde.isPresent()) {
+        } else if (aiempiVastaanottoSamalleKaudelle.isPresent()) {
             LOG.warn("Ei muutettu hakemuksen tilaa vastaanoton perusteella. " +
                     "Hakukohde: {}, valintatapajono: {}, hakemus: {}, hakemuksen tila: {}, " +
                     "hakemuksen edellinen tila: {}, vastaanoton tila: {}, vastaanotettu hakukohde: {}",
@@ -184,7 +185,7 @@ public class SijoitteluajoWrapperFactory {
                     hakemus.getTila(),
                     hakemus.getEdellinenTila(),
                     valintatulos != null ? valintatulos.getTila() : "- (ei valintatulosta)",
-                    vastaanotettuHakukohde.get());
+                    aiempiVastaanottoSamalleKaudelle.get().getHakukohdeOid());
         }
     }
 

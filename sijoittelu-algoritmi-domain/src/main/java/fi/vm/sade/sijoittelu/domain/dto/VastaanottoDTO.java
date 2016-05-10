@@ -1,4 +1,4 @@
-package fi.vm.sade.sijoittelu.laskenta.external.resource.dto;
+package fi.vm.sade.sijoittelu.domain.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
@@ -39,13 +39,13 @@ public class VastaanottoDTO {
     }
 
     public enum VastaanottoType {
-        VastaanotaSitovasti(false),
-        VastaanotaEhdollisesti(true);
+        VastaanotaSitovasti(true),
+        VastaanotaEhdollisesti(false);
 
-        public final boolean ehdollinen;
+        public final boolean sitova;
 
-        VastaanottoType(boolean ehdollinen) {
-            this.ehdollinen = ehdollinen;
+        VastaanottoType(boolean sitova) {
+            this.sitova = sitova;
         }
     }
 }
