@@ -2,12 +2,11 @@ package fi.vm.sade.sijoittelu.laskenta.external.resource;
 
 import fi.vm.sade.sijoittelu.domain.Valintatulos;
 import fi.vm.sade.sijoittelu.domain.VastaanotettavuusDTO;
-import fi.vm.sade.sijoittelu.laskenta.external.resource.dto.VastaanottoDTO;
+import fi.vm.sade.sijoittelu.domain.dto.VastaanottoDTO;
 import fi.vm.sade.sijoittelu.laskenta.external.resource.dto.VastaanottoEventDto;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 import java.util.List;
 
 @Path("/virkailija")
