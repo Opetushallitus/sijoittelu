@@ -80,12 +80,13 @@ public class Valintatulos implements Serializable {
 
     public Valintatulos(String hakemusOid, String hakijaOid, String hakukohdeOid, String hakuOid,
                         int hakutoive, boolean hyvaksyttyVarasijalta, IlmoittautumisTila ilmoittautumisTila,
-                        boolean julkaistavissa, ValintatuloksenTila tila, String valintatapajonoOid) {
+                        boolean julkaistavissa, ValintatuloksenTila tila, boolean ehdollisestiHyvaksyttavissa, String valintatapajonoOid) {
         this.hakemusOid = hakemusOid;
         this.hakijaOid = hakijaOid;
         this.hakukohdeOid = hakukohdeOid;
         this.hakuOid = hakuOid;
         this.hakutoive = hakutoive;
+        this.ehdollisestiHyvaksyttavissa = ehdollisestiHyvaksyttavissa;
         this.ilmoittautumisTila = ilmoittautumisTila;
         this.julkaistavissa = julkaistavissa;
         this.tila= tila;

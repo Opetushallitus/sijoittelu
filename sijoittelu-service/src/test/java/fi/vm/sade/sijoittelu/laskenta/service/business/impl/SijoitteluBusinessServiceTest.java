@@ -1,8 +1,5 @@
 package fi.vm.sade.sijoittelu.laskenta.service.business.impl;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
-
 import fi.vm.sade.authentication.business.service.Authorizer;
 import fi.vm.sade.generic.service.exception.NotAuthorizedException;
 import fi.vm.sade.sijoittelu.domain.IlmoittautumisTila;
@@ -21,10 +18,12 @@ import fi.vm.sade.sijoittelu.tulos.roles.SijoitteluRole;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
-import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.Date;
 import java.util.Optional;
+
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
 
 public class SijoitteluBusinessServiceTest {
     final String HAKU_OID = TestDataGenerator.HAKU_OID;
@@ -83,6 +82,7 @@ public class SijoitteluBusinessServiceTest {
                 IlmoittautumisTila.EI_TEHTY,
                 julkaistavissa,
                 ValintatuloksenTila.PERUNUT,
+                false,
                 VALINTATAPAJONO_OID);
         sijoitteluBusinessService.vaihdaHakemuksenTila(HAKU_OID,
                 sijoitteluBusinessService.getHakukohde(HAKU_OID, HAKUKOHDE_OID),
@@ -118,6 +118,7 @@ public class SijoitteluBusinessServiceTest {
                 IlmoittautumisTila.EI_TEHTY,
                 julkaistavissa,
                 ValintatuloksenTila.PERUNUT,
+                false,
                 VALINTATAPAJONO_OID);
         sijoitteluBusinessService.vaihdaHakemuksenTila(HAKU_OID,
                 sijoitteluBusinessService.getHakukohde(HAKU_OID, HAKUKOHDE_OID),
@@ -153,6 +154,7 @@ public class SijoitteluBusinessServiceTest {
                 IlmoittautumisTila.EI_TEHTY,
                 julkaistavissa,
                 ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI,
+                false,
                 VALINTATAPAJONO_OID);
         sijoitteluBusinessService.vaihdaHakemuksenTila(HAKU_OID,
                 sijoitteluBusinessService.getHakukohde(HAKU_OID, HAKUKOHDE_OID),
@@ -206,6 +208,7 @@ public class SijoitteluBusinessServiceTest {
                 IlmoittautumisTila.LASNA_KOKO_LUKUVUOSI,
                 julkaistavissa,
                 ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI,
+                false,
                 VALINTATAPAJONO_OID);
         sijoitteluBusinessService.vaihdaHakemuksenTila(HAKU_OID,
                 sijoitteluBusinessService.getHakukohde(HAKU_OID, HAKUKOHDE_OID),
@@ -241,6 +244,7 @@ public class SijoitteluBusinessServiceTest {
                 IlmoittautumisTila.POISSA_KOKO_LUKUVUOSI,
                 julkaistavissa,
                 ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI,
+                false,
                 VALINTATAPAJONO_OID);
         sijoitteluBusinessService.vaihdaHakemuksenTila(HAKU_OID,
                 sijoitteluBusinessService.getHakukohde(HAKU_OID, HAKUKOHDE_OID),
@@ -276,6 +280,7 @@ public class SijoitteluBusinessServiceTest {
                 IlmoittautumisTila.EI_ILMOITTAUTUNUT,
                 julkaistavissa,
                 ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI,
+                false,
                 VALINTATAPAJONO_OID);
         sijoitteluBusinessService.vaihdaHakemuksenTila(HAKU_OID,
                 sijoitteluBusinessService.getHakukohde(HAKU_OID, HAKUKOHDE_OID),
@@ -311,6 +316,7 @@ public class SijoitteluBusinessServiceTest {
                 IlmoittautumisTila.LASNA_SYKSY,
                 julkaistavissa,
                 ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI,
+                false,
                 VALINTATAPAJONO_OID);
         sijoitteluBusinessService.vaihdaHakemuksenTila(HAKU_OID,
                 sijoitteluBusinessService.getHakukohde(HAKU_OID, HAKUKOHDE_OID),
@@ -346,6 +352,7 @@ public class SijoitteluBusinessServiceTest {
                 IlmoittautumisTila.POISSA_SYKSY,
                 julkaistavissa,
                 ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI,
+                false,
                 VALINTATAPAJONO_OID);
         sijoitteluBusinessService.vaihdaHakemuksenTila(HAKU_OID,
                 sijoitteluBusinessService.getHakukohde(HAKU_OID, HAKUKOHDE_OID),
@@ -381,6 +388,7 @@ public class SijoitteluBusinessServiceTest {
                 IlmoittautumisTila.LASNA,
                 julkaistavissa,
                 ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI,
+                false,
                 VALINTATAPAJONO_OID);
         sijoitteluBusinessService.vaihdaHakemuksenTila(HAKU_OID,
                 sijoitteluBusinessService.getHakukohde(HAKU_OID, HAKUKOHDE_OID),
@@ -416,6 +424,7 @@ public class SijoitteluBusinessServiceTest {
                 IlmoittautumisTila.POISSA,
                 julkaistavissa,
                 ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI,
+                false,
                 VALINTATAPAJONO_OID);
         sijoitteluBusinessService.vaihdaHakemuksenTila(HAKU_OID,
                 sijoitteluBusinessService.getHakukohde(HAKU_OID, HAKUKOHDE_OID),
@@ -482,6 +491,7 @@ public class SijoitteluBusinessServiceTest {
                 IlmoittautumisTila.EI_TEHTY,
                 true,
                 ValintatuloksenTila.KESKEN,
+                false,
                 VALINTATAPAJONO_OID);
         sijoitteluBusinessService.vaihdaHakemuksenTila(HAKU_OID, testDataGenerator.createHakukohdes(1).get(0), v, SELITE, "");
     }
@@ -501,6 +511,7 @@ public class SijoitteluBusinessServiceTest {
                 IlmoittautumisTila.POISSA,
                 julkaistavissa,
                 ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI,
+                false,
                 VALINTATAPAJONO_OID);
         v.setHyvaksyPeruuntunut(hyvaksyPeruuntunut, "");
         sijoitteluBusinessService.vaihdaHakemuksenTila(HAKU_OID,

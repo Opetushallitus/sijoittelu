@@ -30,6 +30,8 @@ public class ErillishaunHakijaDTO {
     //public int hakutoive; // aina ensimmainen?
     @ApiModelProperty(value = "Valintatuloksen tila", required = false)
     public ValintatuloksenTila valintatuloksenTila;
+    @ApiModelProperty(value = "Ehdollinen valinta", required = false)
+    public boolean ehdollisestiHyvaksyttavissa;
     @ApiModelProperty(value = "Ilmoittautumisen tila", required = false)
     public IlmoittautumisTila ilmoittautumisTila;
     @ApiModelProperty(value = "Hakemuksen tila", required = false)
@@ -41,7 +43,7 @@ public class ErillishaunHakijaDTO {
 
     public boolean poistetaankoTulokset = false;
 
-    public ErillishaunHakijaDTO(String valintatapajonoOid, String hakemusOid, String hakukohdeOid, boolean julkaistavissa, String hakijaOid, String hakuOid, String tarjoajaOid, ValintatuloksenTila valintatuloksenTila, IlmoittautumisTila ilmoittautumisTila, HakemuksenTila hakemuksenTila, String etunimi, String sukunimi, Optional<Boolean> poistetaankoTulokset) {
+    public ErillishaunHakijaDTO(String valintatapajonoOid, String hakemusOid, String hakukohdeOid, boolean julkaistavissa, String hakijaOid, String hakuOid, String tarjoajaOid, ValintatuloksenTila valintatuloksenTila, boolean ehdollisestiHyvaksyttavissa, IlmoittautumisTila ilmoittautumisTila, HakemuksenTila hakemuksenTila, String etunimi, String sukunimi, Optional<Boolean> poistetaankoTulokset) {
         this.valintatapajonoOid = valintatapajonoOid;
         this.hakemusOid = hakemusOid;
         this.hakukohdeOid = hakukohdeOid;
@@ -50,6 +52,7 @@ public class ErillishaunHakijaDTO {
         this.hakuOid = hakuOid;
         this.tarjoajaOid = tarjoajaOid;
         this.valintatuloksenTila = valintatuloksenTila;
+        this.ehdollisestiHyvaksyttavissa = ehdollisestiHyvaksyttavissa;
         this.ilmoittautumisTila = ilmoittautumisTila;
         this.hakemuksenTila = hakemuksenTila;
         this.etunimi = etunimi;
@@ -164,6 +167,15 @@ public class ErillishaunHakijaDTO {
         this.poistetaankoTulokset = poistetaankoTulokset;
     }
 
+    public boolean isEhdollisestiHyvaksyttavissa() {
+        return ehdollisestiHyvaksyttavissa;
+    }
+
+    public void setEhdollisestiHyvaksyttavissa(boolean ehdollisestiHyvaksyttavissa) {
+        this.ehdollisestiHyvaksyttavissa = ehdollisestiHyvaksyttavissa;
+    }
+
+
     public Valintatulos asValintatulos() {
         return new Valintatulos(
                 hakemusOid,
@@ -175,6 +187,7 @@ public class ErillishaunHakijaDTO {
                 ilmoittautumisTila,
                 julkaistavissa,
                 valintatuloksenTila,
+                ehdollisestiHyvaksyttavissa,
                 valintatapajonoOid);
     }
 }
