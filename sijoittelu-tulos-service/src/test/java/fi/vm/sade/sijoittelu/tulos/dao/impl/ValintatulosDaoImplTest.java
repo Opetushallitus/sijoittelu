@@ -57,6 +57,7 @@ public class ValintatulosDaoImplTest {
             setIlmoittautumisTila(IlmoittautumisTila.LASNA, "");
             setValintatapajonoOid("14090336922663576781797489829886", "");
             setJulkaistavissa(true, "");
+            setEhdollisestiHyvaksyttavissa(true, "", JARJESTELMA);
         }};
 
         final List<Valintatulos> mergattu = valintatulosDao.mergaaValintatulos(Arrays.asList(kohde), Arrays.asList(tulos));
@@ -64,6 +65,7 @@ public class ValintatulosDaoImplTest {
         assertEquals(ValintatuloksenTila.KESKEN, mergattu.get(0).getTila());
         assertEquals(IlmoittautumisTila.EI_TEHTY, mergattu.get(0).getIlmoittautumisTila());
         assertEquals(true, mergattu.get(0).getJulkaistavissa());
+        assertEquals(true, mergattu.get(0).getEhdollisestiHyvaksyttavissa());
     }
 
     @Test
