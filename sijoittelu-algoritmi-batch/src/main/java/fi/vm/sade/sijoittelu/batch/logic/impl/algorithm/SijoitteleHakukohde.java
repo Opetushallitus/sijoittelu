@@ -110,7 +110,7 @@ public class SijoitteleHakukohde {
                         h.getValintatulos().ifPresent(v -> {
                             v.setTila(ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI,
                                     "Ehdollinen vastaanotto ylimmässä mahdollisessa hakutoiveessa sitovaksi");
-                            sijoitteluAjo.getMuuttuneetValintatulokset().add(v);
+                            sijoitteluAjo.addMuuttuneetValintatulokset(v);
                         });
                     }
                 });
@@ -254,7 +254,7 @@ public class SijoitteleHakukohde {
                                     Valintatulos muokattava = jononTulos.get();
                                     Valintatulos nykyinen = siirraValintatulosHyvaksyttyynJonoon(hakemus, h, hyvaksyttyJono, muokattava);
                                     // Lisää muokatut valintatulokset listaan tallennusta varten
-                                    sijoitteluAjo.getMuuttuneetValintatulokset().addAll(Arrays.asList(muokattava, nykyinen));
+                                    sijoitteluAjo.addMuuttuneetValintatulokset(muokattava, nykyinen);
                                 }
                                 if (vanhaTila == HakemuksenTila.HYVAKSYTTY) {
                                     asetaTilaksiHyvaksytty(hakemus);

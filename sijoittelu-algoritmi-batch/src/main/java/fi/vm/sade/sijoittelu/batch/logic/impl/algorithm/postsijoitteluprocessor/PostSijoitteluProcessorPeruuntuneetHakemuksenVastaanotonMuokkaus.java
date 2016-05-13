@@ -6,7 +6,6 @@ import fi.vm.sade.sijoittelu.domain.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -22,7 +21,7 @@ public class PostSijoitteluProcessorPeruuntuneetHakemuksenVastaanotonMuokkaus im
                     v.getHakemusOid(), v.getTila(), v.getHakukohdeOid(), v.getValintatapajonoOid());
             poistaVastaanottoTieto(v);
             if (!sijoitteluajoWrapper.getMuuttuneetValintatulokset().contains(v)) {
-                sijoitteluajoWrapper.getMuuttuneetValintatulokset().add(v);
+                sijoitteluajoWrapper.addMuuttuneetValintatulokset(v);
             }
         });
         LOG.info("Lopetetaan peruuntuneiden hakemusten vastaanottojen muokkaus.");

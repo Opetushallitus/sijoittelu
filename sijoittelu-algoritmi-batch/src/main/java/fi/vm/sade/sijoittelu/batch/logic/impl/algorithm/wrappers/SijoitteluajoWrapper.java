@@ -212,4 +212,8 @@ public class SijoitteluajoWrapper {
         }
         return getToday().isAfter(varasijaTayttoPaattyy);
     }
+
+    public void addMuuttuneetValintatulokset(Valintatulos... valintatulokset) {
+        Collections.addAll(muuttuneetValintatulokset, valintatulokset);
+    }
 }

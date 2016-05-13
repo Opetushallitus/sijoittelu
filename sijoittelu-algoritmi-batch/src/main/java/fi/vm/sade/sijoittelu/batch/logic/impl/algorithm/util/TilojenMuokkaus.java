@@ -4,8 +4,6 @@ import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.HakemusWrapper;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.SijoitteluajoWrapper;
 import fi.vm.sade.sijoittelu.domain.*;
 
-import java.util.Date;
-import java.util.HashMap;
 import java.util.Optional;
 
 public class TilojenMuokkaus {
@@ -109,7 +107,7 @@ public class TilojenMuokkaus {
         } else {
             valintatulos.setTila(ValintatuloksenTila.EHDOLLISESTI_VASTAANOTTANUT, VASTAANOTTOTIETO_PERIYTYNYT_ALEMMALTA_HAKUTOIVEELTA);
         }
-        sijoitteluajo.getMuuttuneetValintatulokset().add(valintatulos);
+        sijoitteluajo.addMuuttuneetValintatulokset(valintatulos);
     }
 
     private static void poistaHakijaryhmastaHyvaksymistiedot(Hakemus h) {
