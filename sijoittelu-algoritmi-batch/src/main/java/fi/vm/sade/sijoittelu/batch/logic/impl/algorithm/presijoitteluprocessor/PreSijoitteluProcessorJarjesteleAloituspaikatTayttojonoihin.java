@@ -6,6 +6,7 @@ import com.google.common.collect.Queues;
 import com.google.common.collect.Sets;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoitteluSilmukkaException;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.HakemusWrapper;
+import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.HakukohdeWrapper;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.SijoitteluajoWrapper;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.ValintatapajonoWrapper;
 import fi.vm.sade.sijoittelu.domain.HakemuksenTila;
@@ -16,7 +17,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 class PreSijoitteluProcessorJarjesteleAloituspaikatTayttojonoihin implements PreSijoitteluProcessor {
 
@@ -32,45 +32,46 @@ class PreSijoitteluProcessorJarjesteleAloituspaikatTayttojonoihin implements Pre
     @Override
     public void process(SijoitteluajoWrapper sijoitteluajoWrapper) {
 
-        // Hae kaikki sijoitteluajon kaikkien hakukohteiden valintatapajonot
-        List<ValintatapajonoWrapper> vtjws = sijoitteluajoWrapper
-                .getHakukohteet().stream()
-                .flatMap(s -> s.getValintatapajonot().stream())
-                .collect(Collectors.toList());
+        // Käy läpi jokaisen sijoitteluajon hakukohteen valintatapajonot
+        for (HakukohdeWrapper hakukohde : sijoitteluajoWrapper.getHakukohteet()) {
+            List<ValintatapajonoWrapper> vtjws = hakukohde.getValintatapajonot();
 
-        // Populoi oid2valintatapajono map
-        vtjws.forEach(vtj -> oid2valintatapajono.put(vtj.getValintatapajono().getOid(), vtj));
+            // Populoi oid2valintatapajono map
+            oid2valintatapajono = Maps.newHashMap();
+            vtjws.forEach(vtj -> oid2valintatapajono.put(vtj.getValintatapajono().getOid(), vtj));
 
-        Queue<ValintatapajonoWrapper> toBeProcessed = Queues.newConcurrentLinkedQueue(vtjws);
+            Queue<ValintatapajonoWrapper> toBeProcessed = Queues.newConcurrentLinkedQueue(vtjws);
 
-        // Iteroidaan jokaisen jonon ja täyttöjonojen läpi
-        int iterationCount = 0;
-        while (!toBeProcessed.isEmpty()) {
-            if(iterationCount++ > LIMIT)
-                throw new SijoitteluSilmukkaException();
+            // Iteroidaan jokaisen jonon ja täyttöjonojen läpi
+            int iterationCount = 0;
+            while (!toBeProcessed.isEmpty()) {
+                if (iterationCount++ > LIMIT)
+                    throw new SijoitteluSilmukkaException();
 
-            ValintatapajonoWrapper vtjw = toBeProcessed.poll();
+                ValintatapajonoWrapper vtjw = toBeProcessed.poll();
 
-            List<HakemusWrapper> hakemusWrappers = vtjw.getHakemukset();
-            Valintatapajono valintatapajono = vtjw.getValintatapajono();
+                List<HakemusWrapper> hakemusWrappers = vtjw.getHakemukset();
+                Valintatapajono valintatapajono = vtjw.getValintatapajono();
 
-            // Laske hakemuksista kaikki HYVAKSYTTY, VARASIJALTA_HYVAKSYTTY ja VARALLA
-            int jonossaHyvaksyttavissa = Collections2.filter(hakemusWrappers,
-                    hakemusWrapper -> hyvaksyttavissaTilat.contains(hakemusWrapper.getHakemus().getEdellinenTila())
-            ).size();
+                // Laske hakemuksista kaikki HYVAKSYTTY, VARASIJALTA_HYVAKSYTTY ja VARALLA
+                int jonossaHyvaksyttavissa = Collections2.filter(hakemusWrappers,
+                        hakemusWrapper -> hyvaksyttavissaTilat.contains(hakemusWrapper.getHakemus().getEdellinenTila())
+                ).size();
 
-            int jaljellaolevatAloituspaikat = valintatapajono.getAloituspaikat() - jonossaHyvaksyttavissa;
-            if (jaljellaolevatAloituspaikat > 0 && StringUtils.isNotBlank(valintatapajono.getTayttojono())) {
+                int jaljellaolevatAloituspaikat = valintatapajono.getAloituspaikat() - jonossaHyvaksyttavissa;
+                if (jaljellaolevatAloituspaikat > 0 && StringUtils.isNotBlank(valintatapajono.getTayttojono())) {
 
-                // Sirrä ylijäämä aloituspaikat täyttöjonolle
-                ValintatapajonoWrapper tayttojonoWrapper = oid2valintatapajono.get(valintatapajono.getTayttojono());
-                Valintatapajono tayttojono = tayttojonoWrapper.getValintatapajono();
-                tayttojono.setAloituspaikat(tayttojono.getAloituspaikat() + jaljellaolevatAloituspaikat);
-                valintatapajono.setAloituspaikat(valintatapajono.getAloituspaikat() - jaljellaolevatAloituspaikat);
+                    // Sirrä ylijäämä aloituspaikat täyttöjonolle
+                    ValintatapajonoWrapper tayttojonoWrapper = oid2valintatapajono.get(valintatapajono.getTayttojono());
+                    Valintatapajono tayttojono = tayttojonoWrapper.getValintatapajono();
+                    tayttojono.setAloituspaikat(tayttojono.getAloituspaikat() + jaljellaolevatAloituspaikat);
+                    valintatapajono.setAloituspaikat(valintatapajono.getAloituspaikat() - jaljellaolevatAloituspaikat);
 
-                // Tarkistetaan täyttöjono vielä uudestaan.
-                toBeProcessed.add(tayttojonoWrapper);
+                    // Tarkistetaan täyttöjono vielä uudestaan.
+                    toBeProcessed.add(tayttojonoWrapper);
+                }
             }
+
         }
 
     }
