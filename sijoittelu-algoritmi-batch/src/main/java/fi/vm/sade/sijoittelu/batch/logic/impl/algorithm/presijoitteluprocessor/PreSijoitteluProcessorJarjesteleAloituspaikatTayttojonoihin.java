@@ -45,9 +45,14 @@ class PreSijoitteluProcessorJarjesteleAloituspaikatTayttojonoihin implements Pre
             // Iteroidaan jokaisen jonon ja täyttöjonojen läpi
             int iterationCount = 0;
             while (!toBeProcessed.isEmpty()) {
-                if (iterationCount++ > LIMIT)
-                    throw new SijoitteluSilmukkaException();
-
+                if (iterationCount++ > LIMIT) {
+                    throw new SijoitteluSilmukkaException(
+                            String.format(
+                                    "Täyttöjono loop detected for sijoitteluajo %s, hakukohde %s with %s valintajonos",
+                                    sijoitteluajoWrapper.getSijoitteluAjoId(),
+                                    hakukohde.getHakukohde().getOid(),
+                                    vtjws.size()));
+                }
                 ValintatapajonoWrapper vtjw = toBeProcessed.poll();
 
                 List<HakemusWrapper> hakemusWrappers = vtjw.getHakemukset();
