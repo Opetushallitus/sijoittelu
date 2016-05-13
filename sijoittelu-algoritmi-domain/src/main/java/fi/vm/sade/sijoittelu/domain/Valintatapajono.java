@@ -28,6 +28,8 @@ public class Valintatapajono implements Serializable {
 
     private Integer aloituspaikat;
 
+    private Integer alkuperaisetAloituspaikat;
+
     private Boolean eiVarasijatayttoa;
 
     private Boolean kaikkiEhdonTayttavatHyvaksytaan;
@@ -208,5 +210,13 @@ public class Valintatapajono implements Serializable {
 
     public void setAlinHyvaksyttyPistemaara(BigDecimal alinHyvaksyttyPistemaara) {
         this.alinHyvaksyttyPistemaara = alinHyvaksyttyPistemaara;
+    }
+
+    public Integer getAlkuperaisetAloituspaikat() {
+        return alkuperaisetAloituspaikat;
+    }
+
+    public void setAlkuperaisetAloituspaikat(Integer alkuperaisetAloituspaikat) {
+        this.alkuperaisetAloituspaikat = alkuperaisetAloituspaikat;
     }
 }

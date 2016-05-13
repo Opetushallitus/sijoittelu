@@ -36,9 +36,13 @@ class PreSijoitteluProcessorJarjesteleAloituspaikatTayttojonoihin implements Pre
         for (HakukohdeWrapper hakukohde : sijoitteluajoWrapper.getHakukohteet()) {
             List<ValintatapajonoWrapper> vtjws = hakukohde.getValintatapajonot();
 
-            // Populoi oid2valintatapajono map
+            // Populoi oid2valintatapajono map ja alusta alkuperaiset aloituspaikat
             oid2valintatapajono = Maps.newHashMap();
-            vtjws.forEach(vtj -> oid2valintatapajono.put(vtj.getValintatapajono().getOid(), vtj));
+            vtjws.forEach(vtj -> {
+                Valintatapajono valintatapajono = vtj.getValintatapajono();
+                valintatapajono.setAlkuperaisetAloituspaikat(valintatapajono.getAloituspaikat());
+                oid2valintatapajono.put(valintatapajono.getOid(), vtj);
+            });
 
             Queue<ValintatapajonoWrapper> toBeProcessed = Queues.newConcurrentLinkedQueue(vtjws);
 

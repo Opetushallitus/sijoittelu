@@ -230,6 +230,30 @@ public class PreSijoitteluProcessorJarjesteleAloituspaikatTayttojonoihinTest ext
         p.process(sijoitteluAjo);
     }
 
+    @Test
+    public void testHasCorrectAlkuperaisetAloituspaikat() {
+        List<Hakukohde> hakukohteet = Lists.newArrayList();
+        hakukohteet.add(new HakukohdeBuilder()
+                .withValintatapajono(
+                        new ValintatapajonoBuilder()
+                                .withAloituspaikat(100)
+                                .build())
+                .build());
+        final SijoitteluajoWrapper sijoitteluAjo = SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(
+                new SijoitteluAjo(), hakukohteet, new ArrayList<>(), Collections.emptyMap());
+
+        p.process(sijoitteluAjo);
+
+        assertEquals(100, sijoitteluAjo
+                .getHakukohteet()
+                .get(0)
+                .getValintatapajonot()
+                .get(0)
+                .getValintatapajono()
+                .getAlkuperaisetAloituspaikat()
+                .intValue());
+    }
+
     // =================================
     // Helpers
 
