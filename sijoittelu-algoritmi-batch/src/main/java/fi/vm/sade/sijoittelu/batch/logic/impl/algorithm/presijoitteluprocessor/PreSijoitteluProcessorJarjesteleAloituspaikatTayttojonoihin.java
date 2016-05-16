@@ -22,7 +22,7 @@ class PreSijoitteluProcessorJarjesteleAloituspaikatTayttojonoihin implements Pre
 
     private static final int LIMIT = 1000;
 
-    private Map<String, ValintatapajonoWrapper> oid2valintatapajono = Maps.newHashMap();
+    private Map<String, ValintatapajonoWrapper> oid2Valintatapajono;
     private Set<HakemuksenTila> hyvaksyttavissaTilat = Sets.newHashSet(
             null,
             HakemuksenTila.HYVAKSYTTY,
@@ -34,17 +34,11 @@ class PreSijoitteluProcessorJarjesteleAloituspaikatTayttojonoihin implements Pre
 
         // Käy läpi jokaisen sijoitteluajon hakukohteen valintatapajonot
         for (HakukohdeWrapper hakukohde : sijoitteluajoWrapper.getHakukohteet()) {
-            List<ValintatapajonoWrapper> vtjws = hakukohde.getValintatapajonot();
 
-            // Populoi oid2valintatapajono map ja alusta alkuperaiset aloituspaikat
-            oid2valintatapajono = Maps.newHashMap();
-            vtjws.forEach(vtj -> {
-                Valintatapajono valintatapajono = vtj.getValintatapajono();
-                valintatapajono.setAlkuperaisetAloituspaikat(valintatapajono.getAloituspaikat());
-                oid2valintatapajono.put(valintatapajono.getOid(), vtj);
-            });
+            setAlkuperaisetAloituspaikat(hakukohde);
+            populateOid2Valintatapajono(hakukohde);
 
-            Queue<ValintatapajonoWrapper> toBeProcessed = Queues.newConcurrentLinkedQueue(vtjws);
+            Queue<ValintatapajonoWrapper> toBeProcessed = Queues.newConcurrentLinkedQueue(hakukohde.getValintatapajonot());
 
             // Iteroidaan jokaisen jonon ja täyttöjonojen läpi
             int iterationCount = 0;
@@ -55,12 +49,12 @@ class PreSijoitteluProcessorJarjesteleAloituspaikatTayttojonoihin implements Pre
                                     "Täyttöjono loop detected for sijoitteluajo %s, hakukohde %s with %s valintajonos",
                                     sijoitteluajoWrapper.getSijoitteluAjoId(),
                                     hakukohde.getHakukohde().getOid(),
-                                    vtjws.size()));
+                                    hakukohde.getValintatapajonot().size()));
                 }
-                ValintatapajonoWrapper vtjw = toBeProcessed.poll();
+                ValintatapajonoWrapper valintatapajonoWrapper = toBeProcessed.poll();
 
-                List<HakemusWrapper> hakemusWrappers = vtjw.getHakemukset();
-                Valintatapajono valintatapajono = vtjw.getValintatapajono();
+                List<HakemusWrapper> hakemusWrappers = valintatapajonoWrapper.getHakemukset();
+                Valintatapajono valintatapajono = valintatapajonoWrapper.getValintatapajono();
 
                 // Laske hakemuksista kaikki HYVAKSYTTY, VARASIJALTA_HYVAKSYTTY ja VARALLA
                 int jonossaHyvaksyttavissa = Collections2.filter(hakemusWrappers,
@@ -71,7 +65,7 @@ class PreSijoitteluProcessorJarjesteleAloituspaikatTayttojonoihin implements Pre
                 if (jaljellaolevatAloituspaikat > 0 && StringUtils.isNotBlank(valintatapajono.getTayttojono())) {
 
                     // Sirrä ylijäämä aloituspaikat täyttöjonolle
-                    ValintatapajonoWrapper tayttojonoWrapper = oid2valintatapajono.get(valintatapajono.getTayttojono());
+                    ValintatapajonoWrapper tayttojonoWrapper = oid2Valintatapajono.get(valintatapajono.getTayttojono());
                     Valintatapajono tayttojono = tayttojonoWrapper.getValintatapajono();
                     tayttojono.setAloituspaikat(tayttojono.getAloituspaikat() + jaljellaolevatAloituspaikat);
                     valintatapajono.setAloituspaikat(valintatapajono.getAloituspaikat() - jaljellaolevatAloituspaikat);
@@ -85,5 +79,18 @@ class PreSijoitteluProcessorJarjesteleAloituspaikatTayttojonoihin implements Pre
 
     }
 
+    private void setAlkuperaisetAloituspaikat(HakukohdeWrapper hakukohde) {
+        hakukohde.getValintatapajonot().forEach(valintatapajonoWrapper -> {
+            Valintatapajono valintatapajono = valintatapajonoWrapper.getValintatapajono();
+            valintatapajono.setAlkuperaisetAloituspaikat(valintatapajono.getAloituspaikat());
+        });
+    }
+
+    private void populateOid2Valintatapajono(HakukohdeWrapper hakukohde) {
+        oid2Valintatapajono = Maps.newHashMap();
+        hakukohde.getValintatapajonot().forEach(valintatapajonoWrapper ->
+            oid2Valintatapajono.put(valintatapajonoWrapper.getValintatapajono().getOid(), valintatapajonoWrapper)
+        );
+    }
 
 }
