@@ -190,7 +190,7 @@ public class SijoitteluajoWrapperFactory {
     }
 
     private static boolean estaaVastaanotonYhdenPaikanSaannoksenTakia(Optional<VastaanottoDTO> aiempiVastaanottoOptional, HakemusWrapper hakemusWrapper) {
-        if (!aiempiVastaanottoOptional.isPresent()) {
+        if (!aiempiVastaanottoOptional.isPresent() || hakemusWrapper.getHakukohdeOid().equals(aiempiVastaanottoOptional.get().getHakukohdeOid())) {
             return false;
         }
         VastaanottoDTO aiempiVastaanotto = aiempiVastaanottoOptional.get();
@@ -202,7 +202,7 @@ public class SijoitteluajoWrapperFactory {
 
     private static boolean onEriHaun(VastaanottoDTO aiempiVastaanotto, HakemusWrapper hakemusWrapper) {
         return hakemusWrapper.getHenkilo().getHakemukset().stream().noneMatch(h ->
-            h.getValintatapajono().getHakukohdeWrapper().getHakukohde().getOid().equals(aiempiVastaanotto.getHakukohdeOid()));
+            h.getHakukohdeOid().equals(aiempiVastaanotto.getHakukohdeOid()));
     }
 
     private static void hyvaksyVarasijalta(final Hakemus hakemus, final Valintatulos valintatulos) {

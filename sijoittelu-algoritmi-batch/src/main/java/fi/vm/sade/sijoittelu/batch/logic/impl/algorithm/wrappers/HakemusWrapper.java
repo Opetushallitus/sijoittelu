@@ -81,6 +81,11 @@ public class HakemusWrapper {
             }
         });
     }
+
+    public String getHakukohdeOid() {
+        return valintatapajono.getHakukohdeWrapper().getHakukohde().getOid();
+    }
+
     public void setHakemus(Hakemus hakemus) {
         this.hakemus = hakemus;
     }
