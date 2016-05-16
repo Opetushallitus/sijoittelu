@@ -1,10 +1,23 @@
 package fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.presijoitteluprocessor;
 
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.util.TilanKuvaukset;
-import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.*;
-import fi.vm.sade.sijoittelu.domain.*;
+import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.HakemusWrapper;
+import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.HenkiloWrapper;
+import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.SijoitteluajoWrapper;
+import fi.vm.sade.sijoittelu.domain.HakemuksenTila;
+import fi.vm.sade.sijoittelu.domain.Hakemus;
+import fi.vm.sade.sijoittelu.domain.IlmoittautumisTila;
+import fi.vm.sade.sijoittelu.domain.ValintatuloksenTila;
+import fi.vm.sade.sijoittelu.domain.Valintatulos;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 import java.util.function.Consumer;
 
 /**
@@ -12,6 +25,8 @@ import java.util.function.Consumer;
  * Kaytannossa tata tarvitaan jos algoritmi on tyytyvainen nykytilanteeseeen eika koskaan muuta henkilon tilaa, jolloin varalla olevat jaavat koskemattomiksi.
  */
 public class PreSijoitteluProcessorPeruutaAlemmatPeruneetJaHyvaksytyt implements PreSijoitteluProcessor {
+    private static final Logger LOG = LoggerFactory.getLogger(PreSijoitteluProcessorPeruutaAlemmatPeruneetJaHyvaksytyt.class);
+
     private final List<ValintatuloksenTila> vastaanotot = Arrays.asList(ValintatuloksenTila.EHDOLLISESTI_VASTAANOTTANUT, ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI);
     private final List<HakemuksenTila> yliajettavat = Arrays.asList(HakemuksenTila.HYVAKSYTTY, HakemuksenTila.VARALLA, HakemuksenTila.VARASIJALTA_HYVAKSYTTY);
 
@@ -200,10 +215,21 @@ public class PreSijoitteluProcessorPeruutaAlemmatPeruneetJaHyvaksytyt implements
     }
 
     private void lisaaMuokattavaValintatulos(SijoitteluajoWrapper sijoitteluajoWrapper, Valintatulos nykyinen) {
-        nykyinen.setIlmoittautumisTila(IlmoittautumisTila.EI_TEHTY, "Peruutettu alempi hakutoive");
-        nykyinen.setTila(ValintatuloksenTila.KESKEN, "Peruutettu alempi hakutoive");
-        nykyinen.setHyvaksyttyVarasijalta(false, "Peruutettu alempi hakutoive");
-        sijoitteluajoWrapper.addMuuttuneetValintatulokset(nykyinen);
+        IlmoittautumisTila uusiIlmoittautumistila = IlmoittautumisTila.EI_TEHTY;
+        ValintatuloksenTila uusiValintatuloksenTila = ValintatuloksenTila.KESKEN;
+        boolean uusiHyvaksyttyVarasijaltaArvo = false;
+        boolean muokattavatArvotOvatSamatKuinEnnen =
+            uusiIlmoittautumistila.equals(nykyinen.getIlmoittautumisTila()) &&
+            uusiValintatuloksenTila.equals(nykyinen.getTila()) &&
+            uusiHyvaksyttyVarasijaltaArvo == nykyinen.getHyvaksyttyVarasijalta();
+        if (muokattavatArvotOvatSamatKuinEnnen) {
+            LOG.debug(String.format("Ei lisätä valintatulosta muuttuneisiin, koska muokattavat arvot ovat samat kuin ennen. Valintatulos: %s", nykyinen));
+        } else {
+            nykyinen.setIlmoittautumisTila(uusiIlmoittautumistila, "Peruutettu alempi hakutoive");
+            nykyinen.setTila(uusiValintatuloksenTila, "Peruutettu alempi hakutoive");
+            nykyinen.setHyvaksyttyVarasijalta(uusiHyvaksyttyVarasijaltaArvo, "Peruutettu alempi hakutoive");
+            sijoitteluajoWrapper.addMuuttuneetValintatulokset(nykyinen);
+        }
     }
 
     private Optional<Valintatulos> sitovastiVastaanottanut(HenkiloWrapper henkiloWrapper) {
