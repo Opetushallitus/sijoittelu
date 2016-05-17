@@ -19,6 +19,8 @@ public class ValintatapajonoDTO implements Serializable {
 
     private Integer aloituspaikat;
 
+    private Integer alkuperaisetAloituspaikat;
+
     private BigDecimal alinHyvaksyttyPistemaara;
 
     private Boolean eiVarasijatayttoa;
@@ -195,5 +197,13 @@ public class ValintatapajonoDTO implements Serializable {
 
     public void setTayttojono(String tayttojono) {
         this.tayttojono = tayttojono;
+    }
+
+    public Integer getAlkuperaisetAloituspaikat() {
+        return alkuperaisetAloituspaikat;
+    }
+
+    public void setAlkuperaisetAloituspaikat(Integer alkuperaisetAloituspaikat) {
+        this.alkuperaisetAloituspaikat = alkuperaisetAloituspaikat;
     }
 }
