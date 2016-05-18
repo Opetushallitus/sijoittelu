@@ -28,6 +28,7 @@ class PreSijoitteluProcessorJarjesteleAloituspaikatTayttojonoihin implements Pre
             HakemuksenTila.HYVAKSYTTY,
             HakemuksenTila.VARALLA,
             HakemuksenTila.VARASIJALTA_HYVAKSYTTY);
+    private Queue<ValintatapajonoWrapper> toBeProcessed;
 
     @Override
     public void process(SijoitteluajoWrapper sijoitteluajoWrapper) {
@@ -38,7 +39,7 @@ class PreSijoitteluProcessorJarjesteleAloituspaikatTayttojonoihin implements Pre
             setAlkuperaisetAloituspaikat(hakukohde);
             populateOid2Valintatapajono(hakukohde);
 
-            Queue<ValintatapajonoWrapper> toBeProcessed = Queues.newConcurrentLinkedQueue(hakukohde.getValintatapajonot());
+            toBeProcessed = Queues.newConcurrentLinkedQueue(hakukohde.getValintatapajonot());
 
             // Iteroidaan jokaisen jonon ja täyttöjonojen läpi
             int iterationCount = 0;
@@ -51,32 +52,17 @@ class PreSijoitteluProcessorJarjesteleAloituspaikatTayttojonoihin implements Pre
                                     hakukohde.getHakukohde().getOid(),
                                     hakukohde.getValintatapajonot().size()));
                 }
+
                 ValintatapajonoWrapper valintatapajonoWrapper = toBeProcessed.poll();
-
-                List<HakemusWrapper> hakemusWrappers = valintatapajonoWrapper.getHakemukset();
                 Valintatapajono valintatapajono = valintatapajonoWrapper.getValintatapajono();
+                int ylijaamaPaikat = getJaljellaOlevatAloituspaikat(valintatapajonoWrapper);
 
-                // Laske hakemuksista kaikki HYVAKSYTTY, VARASIJALTA_HYVAKSYTTY ja VARALLA
-                int jonossaHyvaksyttavissa = Collections2.filter(hakemusWrappers,
-                        hakemusWrapper -> hyvaksyttavissaTilat.contains(hakemusWrapper.getHakemus().getEdellinenTila())
-                ).size();
-
-                int jaljellaolevatAloituspaikat = valintatapajono.getAloituspaikat() - jonossaHyvaksyttavissa;
-                if (jaljellaolevatAloituspaikat > 0 && StringUtils.isNotBlank(valintatapajono.getTayttojono())) {
-
-                    // Sirrä ylijäämä aloituspaikat täyttöjonolle
-                    ValintatapajonoWrapper tayttojonoWrapper = oid2Valintatapajono.get(valintatapajono.getTayttojono());
-                    Valintatapajono tayttojono = tayttojonoWrapper.getValintatapajono();
-                    tayttojono.setAloituspaikat(tayttojono.getAloituspaikat() + jaljellaolevatAloituspaikat);
-                    valintatapajono.setAloituspaikat(valintatapajono.getAloituspaikat() - jaljellaolevatAloituspaikat);
-
-                    // Tarkistetaan täyttöjono vielä uudestaan.
-                    toBeProcessed.add(tayttojonoWrapper);
+                if (ylijaamaPaikat > 0 && StringUtils.isNotBlank(valintatapajono.getTayttojono())) {
+                    siirraYlijaamaPaikatTayttojonolle(valintatapajono, ylijaamaPaikat);
+                    reCheckTayttojono(valintatapajono);
                 }
             }
-
         }
-
     }
 
     private void setAlkuperaisetAloituspaikat(HakukohdeWrapper hakukohde) {
@@ -93,4 +79,23 @@ class PreSijoitteluProcessorJarjesteleAloituspaikatTayttojonoihin implements Pre
         );
     }
 
+    private int getJaljellaOlevatAloituspaikat(ValintatapajonoWrapper wrapper) {
+        return wrapper.getValintatapajono().getAloituspaikat() - getHyvaksyttavatHakemuksetSize(wrapper.getHakemukset());
+    }
+
+    private int getHyvaksyttavatHakemuksetSize(List<HakemusWrapper> hakemuksetWrapper) {
+        return Collections2.filter(hakemuksetWrapper,
+                hakemusWrapper -> hyvaksyttavissaTilat.contains(hakemusWrapper.getHakemus().getEdellinenTila())
+        ).size();
+    }
+
+    private void siirraYlijaamaPaikatTayttojonolle(Valintatapajono valintatapajono, int jaljellaOlevatAloituspaikat) {
+        Valintatapajono tayttojono = oid2Valintatapajono.get(valintatapajono.getTayttojono()).getValintatapajono();
+        tayttojono.setAloituspaikat(tayttojono.getAloituspaikat() + jaljellaOlevatAloituspaikat);
+        valintatapajono.setAloituspaikat(valintatapajono.getAloituspaikat() - jaljellaOlevatAloituspaikat);
+    }
+
+    private void reCheckTayttojono(Valintatapajono valintatapajono) {
+        toBeProcessed.add(oid2Valintatapajono.get(valintatapajono.getTayttojono()));
+    }
 }
