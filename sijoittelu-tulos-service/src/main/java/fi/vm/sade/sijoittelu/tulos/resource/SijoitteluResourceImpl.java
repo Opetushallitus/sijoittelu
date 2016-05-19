@@ -14,6 +14,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 
+import fi.vm.sade.sijoittelu.tulos.dao.HakukohdeDao;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,6 +46,9 @@ public class SijoitteluResourceImpl implements SijoitteluResource {
 
     @Autowired
     private RaportointiService raportointiService;
+
+    @Autowired
+    private HakukohdeDao hakukohdeDao;
 
     @GET
     @Path("/{hakuOid}")
@@ -182,5 +186,20 @@ public class SijoitteluResourceImpl implements SijoitteluResource {
         } else {
             return raportointiService.getSijoitteluAjo(Long.parseLong(sijoitteluajoId));
         }
+    }
+
+    @Override
+    @PreAuthorize(READ_UPDATE_CRUD)
+    @GET
+    @Produces(APPLICATION_JSON)
+    @ApiOperation("Kertoo jos valintatapajono on sijoittelun käytössä")
+    @Path("/{hakuOid}/valintatapajonoInUse/{valintatapajonoOid}")
+    public boolean isValintapajonoInUse(
+            @ApiParam(value = "Haun tunniste", required = true) @PathParam("hakuOid") String hakuOid,
+            @ApiParam(value = "Valintatapajonon tunniste", required = true) @PathParam("valintatapajonoOid") String valintatapajonoOid
+    ) {
+        return raportointiService.latestSijoitteluAjoForHaku(hakuOid)
+                .map(latestSijoitteluAjo -> hakukohdeDao.isValintapajonoInUse(latestSijoitteluAjo.getSijoitteluajoId(), valintatapajonoOid))
+                .orElse(false);
     }
 }

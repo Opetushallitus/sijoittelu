@@ -257,4 +257,12 @@ public class HakukohdeDaoImpl implements HakukohdeDao {
                 .map(dbObject -> new Mapper().fromDBObject(Hakukohde.class, (DBObject) dbObject.get("value"), new DefaultEntityCache()))
                 .collect(Collectors.toList());
     }
+
+    @Override
+    public Boolean isValintapajonoInUse(Long sijoitteluAjoId, String valintatapajonoOid) {
+        Query<Hakukohde> q = morphiaDS.createQuery(Hakukohde.class);
+        q.criteria("sijoitteluajoId").equal(sijoitteluAjoId);
+        q.criteria("valintatapajonot.oid").equal(valintatapajonoOid);
+        return q.countAll() > 0;
+    }
 }

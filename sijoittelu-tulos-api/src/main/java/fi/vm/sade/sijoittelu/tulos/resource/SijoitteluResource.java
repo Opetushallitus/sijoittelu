@@ -98,4 +98,12 @@ public interface SijoitteluResource {
             @ApiParam(value = "Haun tunniste", required = true) @PathParam("hakuOid") String hakuOid,
             @ApiParam(value = "Sijoitteluajon tunniste tai 'latest' avainsana", required = true) @PathParam("sijoitteluajoId") String sijoitteluajoId,
             @ApiParam(value = "Hakemuksen tunniste", required = true) @PathParam("hakemusOid") String hakemusOid);
+
+    @GET
+    @Produces(APPLICATION_JSON)
+    @Path("/{hakuOid}/valintatapajonoInUse/{valintatapajonoOid}")
+    boolean isValintapajonoInUse(
+            @ApiParam(value = "Haun tunniste", required = true) @PathParam("hakuOid") String hakuOid,
+            @ApiParam(value = "Valintatapajonon tunniste", required = true) @PathParam("valintatapajonoOid") String valintatapajonoOid);
+
 }
