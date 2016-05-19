@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -73,13 +74,18 @@ public class HakemusWrapper {
 
     public Stream<HakemusWrapper> getYlemmatTaiSamanarvoisetMuttaKorkeammallaJonoPrioriteetillaOlevatHakutoiveet() {
         return henkilo.getHakemukset().stream().filter(h -> {
-            if(h.hakemus.getPrioriteetti() == this.hakemus.getPrioriteetti()) {
+            if (Objects.equals(h.hakemus.getPrioriteetti(), this.hakemus.getPrioriteetti())) {
                 return h.valintatapajono.getValintatapajono().getPrioriteetti() < this.valintatapajono.getValintatapajono().getPrioriteetti();
             } else {
                 return h.hakemus.getPrioriteetti() < this.hakemus.getPrioriteetti();
             }
         });
     }
+
+    public String getHakukohdeOid() {
+        return valintatapajono.getHakukohdeWrapper().getHakukohde().getOid();
+    }
+
     public void setHakemus(Hakemus hakemus) {
         this.hakemus = hakemus;
     }
