@@ -193,7 +193,7 @@ public class SijoitteluResourceImpl implements SijoitteluResource {
     @GET
     @Produces(APPLICATION_JSON)
     @ApiOperation("Kertoo jos valintatapajono on sijoittelun käytössä")
-    @Path("/{hakuOid}/valintatapajonoInUse/{valintatapajonoOid}")
+    @Path("/{hakuOid}/valintatapajono-in-use/{valintatapajonoOid}")
     public boolean isValintapajonoInUse(
             @ApiParam(value = "Haun tunniste", required = true) @PathParam("hakuOid") String hakuOid,
             @ApiParam(value = "Valintatapajonon tunniste", required = true) @PathParam("valintatapajonoOid") String valintatapajonoOid
