@@ -37,32 +37,36 @@ class PreSijoitteluProcessorJarjesteleAloituspaikatTayttojonoihin implements Pre
         for (HakukohdeWrapper hakukohde : sijoitteluajoWrapper.getHakukohteet()) {
 
             setAlkuperaisetAloituspaikat(hakukohde);
-            populateOid2Valintatapajono(hakukohde);
 
-            toBeProcessed = Queues.newConcurrentLinkedQueue(hakukohde.getValintatapajonot());
+            if(sijoitteluajoWrapper.isKKHaku() && sijoitteluajoWrapper.varasijaSaannotVoimassa()) {
+                populateOid2Valintatapajono(hakukohde);
 
-            // Iteroidaan jokaisen jonon ja täyttöjonojen läpi
-            int iterationCount = 0;
-            while (!toBeProcessed.isEmpty()) {
-                if (iterationCount++ > LIMIT) {
-                    throw new SijoitteluSilmukkaException(
-                            String.format(
-                                    "Täyttöjono loop detected for sijoitteluajo %s, hakukohde %s with %s valintajonos",
-                                    sijoitteluajoWrapper.getSijoitteluAjoId(),
-                                    hakukohde.getHakukohde().getOid(),
-                                    hakukohde.getValintatapajonot().size()));
-                }
+                toBeProcessed = Queues.newConcurrentLinkedQueue(hakukohde.getValintatapajonot());
 
-                ValintatapajonoWrapper valintatapajonoWrapper = toBeProcessed.poll();
-                Valintatapajono valintatapajono = valintatapajonoWrapper.getValintatapajono();
-                int ylijaamaPaikat = getJaljellaOlevatAloituspaikat(valintatapajonoWrapper);
+                // Iteroidaan jokaisen jonon ja täyttöjonojen läpi
+                int iterationCount = 0;
+                while (!toBeProcessed.isEmpty()) {
+                    if (iterationCount++ > LIMIT) {
+                        throw new SijoitteluSilmukkaException(
+                                String.format(
+                                        "Täyttöjono loop detected for sijoitteluajo %s, hakukohde %s with %s valintajonos",
+                                        sijoitteluajoWrapper.getSijoitteluAjoId(),
+                                        hakukohde.getHakukohde().getOid(),
+                                        hakukohde.getValintatapajonot().size()));
+                    }
 
-                if (ylijaamaPaikat > 0 && StringUtils.isNotBlank(valintatapajono.getTayttojono())) {
-                    siirraYlijaamaPaikatTayttojonolle(valintatapajono, ylijaamaPaikat);
-                    reCheckTayttojono(valintatapajono);
+                    ValintatapajonoWrapper valintatapajonoWrapper = toBeProcessed.poll();
+                    Valintatapajono valintatapajono = valintatapajonoWrapper.getValintatapajono();
+                    int ylijaamaPaikat = getJaljellaOlevatAloituspaikat(valintatapajonoWrapper);
+
+                    if (ylijaamaPaikat > 0 && StringUtils.isNotBlank(valintatapajono.getTayttojono())) {
+                        siirraYlijaamaPaikatTayttojonolle(valintatapajono, ylijaamaPaikat);
+                        reCheckTayttojono(valintatapajono);
+                    }
                 }
             }
         }
+
     }
 
     private void setAlkuperaisetAloituspaikat(HakukohdeWrapper hakukohde) {

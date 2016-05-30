@@ -9,6 +9,7 @@ import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.Valintatapajono
 import fi.vm.sade.sijoittelu.domain.*;
 import org.junit.Test;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -40,8 +41,9 @@ public class PreSijoitteluProcessorJarjesteleAloituspaikatTayttojonoihinTest ext
                                 .withAloituspaikat(0)
                                 .build())
                 .build());
-        final SijoitteluajoWrapper sijoitteluAjo = SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(
-                new SijoitteluAjo(), hakukohteet, new ArrayList<>(), Collections.emptyMap());
+
+        final SijoitteluajoWrapper sijoitteluAjo = new SijoitteluajoWrapperBuilder(hakukohteet)
+                .withKKHaku(true).withVarasijaSaannotAstuvatVoimaan(LocalDateTime.now().minusDays(1)).build();
 
         p.process(sijoitteluAjo);
 
@@ -74,8 +76,8 @@ public class PreSijoitteluProcessorJarjesteleAloituspaikatTayttojonoihinTest ext
                                 .withAloituspaikat(0)
                                 .build())
                 .build());
-        final SijoitteluajoWrapper sijoitteluAjo = SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(
-                new SijoitteluAjo(), hakukohteet, new ArrayList<>(), Collections.emptyMap());
+        final SijoitteluajoWrapper sijoitteluAjo = new SijoitteluajoWrapperBuilder(hakukohteet)
+                .withKKHaku(true).withVarasijaSaannotAstuvatVoimaan(LocalDateTime.now().minusDays(1)).build();
 
         p.process(sijoitteluAjo);
 
@@ -105,8 +107,8 @@ public class PreSijoitteluProcessorJarjesteleAloituspaikatTayttojonoihinTest ext
                                 .withAloituspaikat(0)
                                 .build())
                 .build());
-        final SijoitteluajoWrapper sijoitteluAjo = SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(
-                new SijoitteluAjo(), hakukohteet, new ArrayList<>(), Collections.emptyMap());
+        final SijoitteluajoWrapper sijoitteluAjo = new SijoitteluajoWrapperBuilder(hakukohteet)
+                .withKKHaku(true).withVarasijaSaannotAstuvatVoimaan(LocalDateTime.now().minusDays(1)).build();
 
         p.process(sijoitteluAjo);
 
@@ -137,8 +139,8 @@ public class PreSijoitteluProcessorJarjesteleAloituspaikatTayttojonoihinTest ext
                                 .withAloituspaikat(0)
                                 .build())
                 .build());
-        final SijoitteluajoWrapper sijoitteluAjo = SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(
-                new SijoitteluAjo(), hakukohteet, new ArrayList<>(), Collections.emptyMap());
+        final SijoitteluajoWrapper sijoitteluAjo = new SijoitteluajoWrapperBuilder(hakukohteet)
+                .withKKHaku(true).withVarasijaSaannotAstuvatVoimaan(LocalDateTime.now().minusDays(1)).build();
 
         p.process(sijoitteluAjo);
 
@@ -169,8 +171,40 @@ public class PreSijoitteluProcessorJarjesteleAloituspaikatTayttojonoihinTest ext
                                 .withAloituspaikat(0)
                                 .build())
                 .build());
-        final SijoitteluajoWrapper sijoitteluAjo = SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(
-                new SijoitteluAjo(), hakukohteet, new ArrayList<>(), Collections.emptyMap());
+        final SijoitteluajoWrapper sijoitteluAjo = new SijoitteluajoWrapperBuilder(hakukohteet)
+                .withKKHaku(true).withVarasijaSaannotAstuvatVoimaan(LocalDateTime.now().plusDays(1)).build();
+
+        p.process(sijoitteluAjo);
+
+        assertEquals(1, sijoitteluAjo.getHakukohteet().size());
+        assertEquals(2, sijoitteluAjo.getHakukohteet().get(0).getValintatapajonot().size());
+        List<ValintatapajonoWrapper> vtjs = sijoitteluAjo.getHakukohteet().get(0).getValintatapajonot();
+        assertEquals(2, vtjs.get(0).getValintatapajono().getHakemukset().size());
+        assertEquals(0, vtjs.get(1).getValintatapajono().getHakemukset().size());
+        assertEquals(2, vtjs.get(0).getValintatapajono().getAloituspaikat().intValue());
+        assertEquals(0, vtjs.get(1).getValintatapajono().getAloituspaikat().intValue());
+    }
+
+    @Test
+    public void testDoesnotMoveAloituspaikkaFromJonoToTayttojono2() {
+        List<Hakukohde> hakukohteet = Lists.newArrayList();
+        hakukohteet.add(new HakukohdeBuilder()
+                .withValintatapajono(
+                        new ValintatapajonoBuilder()
+                                .withOid("jono1")
+                                .withAloituspaikat(2)
+                                .withTayttojono("jono2")
+                                .withHakemus(VARALLA)
+                                .withHakemus(VARASIJALTA_HYVAKSYTTY)
+                                .build())
+                .withValintatapajono(
+                        new ValintatapajonoBuilder()
+                                .withOid("jono2")
+                                .withAloituspaikat(0)
+                                .build())
+                .build());
+        final SijoitteluajoWrapper sijoitteluAjo = new SijoitteluajoWrapperBuilder(hakukohteet)
+                .withKKHaku(false).withVarasijaSaannotAstuvatVoimaan(LocalDateTime.now().minusDays(1)).build();
 
         p.process(sijoitteluAjo);
 
@@ -195,8 +229,8 @@ public class PreSijoitteluProcessorJarjesteleAloituspaikatTayttojonoihinTest ext
                                 .build())
 
                 .build());
-        final SijoitteluajoWrapper sijoitteluAjo = SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(
-                new SijoitteluAjo(), hakukohteet, new ArrayList<>(), Collections.emptyMap());
+        final SijoitteluajoWrapper sijoitteluAjo = new SijoitteluajoWrapperBuilder(hakukohteet)
+                .withKKHaku(true).withVarasijaSaannotAstuvatVoimaan(LocalDateTime.now().minusDays(1)).build();
 
         p.process(sijoitteluAjo);
     }
@@ -224,8 +258,8 @@ public class PreSijoitteluProcessorJarjesteleAloituspaikatTayttojonoihinTest ext
                                 .withTayttojono("jono1")
                                 .build())
                 .build());
-        final SijoitteluajoWrapper sijoitteluAjo = SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(
-                new SijoitteluAjo(), hakukohteet, new ArrayList<>(), Collections.emptyMap());
+        final SijoitteluajoWrapper sijoitteluAjo = new SijoitteluajoWrapperBuilder(hakukohteet)
+                .withKKHaku(true).withVarasijaSaannotAstuvatVoimaan(LocalDateTime.now().minusDays(1)).build();
 
         p.process(sijoitteluAjo);
     }
@@ -256,6 +290,28 @@ public class PreSijoitteluProcessorJarjesteleAloituspaikatTayttojonoihinTest ext
 
     // =================================
     // Helpers
+
+    private class SijoitteluajoWrapperBuilder {
+        private final SijoitteluajoWrapper wrapper;
+
+        SijoitteluajoWrapperBuilder(List<Hakukohde> hakukohteet) {
+            this.wrapper = SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(
+                    new SijoitteluAjo(), hakukohteet, new ArrayList<>(), Collections.emptyMap());
+        }
+
+        SijoitteluajoWrapperBuilder withVarasijaSaannotAstuvatVoimaan(LocalDateTime varasijaSaannotAstuvatVoimaan) {
+            wrapper.setVarasijaSaannotAstuvatVoimaan(varasijaSaannotAstuvatVoimaan);
+            return this;
+        }
+
+        SijoitteluajoWrapperBuilder withKKHaku(boolean kkHaku) {
+            wrapper.setKKHaku(kkHaku);
+            return this;
+        }
+
+        SijoitteluajoWrapper build() { return wrapper; }
+
+    }
 
     private class HakukohdeBuilder {
         private final Hakukohde hk;
