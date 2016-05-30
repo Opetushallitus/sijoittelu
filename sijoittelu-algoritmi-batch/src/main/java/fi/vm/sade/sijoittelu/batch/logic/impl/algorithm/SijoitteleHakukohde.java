@@ -36,7 +36,8 @@ public class SijoitteleHakukohde {
             // Hakijaryhmäkäsittelyssä alitäyttösääntö käytetty
             return muuttuneetHakukohteet;
         }
-        List<HakemusWrapper> eiKorvattavissaOlevatHyvaksytytHakemukset = valintatapajononHyvaksytytHakemuksetJoitaEiVoiKorvata(valintatapajono);
+        List<HakemusWrapper> eiKorvattavissaOlevatHyvaksytytHakemukset =
+                valintatapajononHyvaksytytHakemuksetJoitaEiVoiKorvata(valintatapajono, sijoitteluAjo);
         List<HakemusWrapper> valituksiHaluavatHakemukset =
             valintatapajono.getHakemukset().stream()
                 .filter(h -> !eiKorvattavissaOlevatHyvaksytytHakemukset.contains(h))
@@ -116,11 +117,16 @@ public class SijoitteleHakukohde {
                 });
     }
 
-    private static List<HakemusWrapper> valintatapajononHyvaksytytHakemuksetJoitaEiVoiKorvata(ValintatapajonoWrapper valintatapajono) {
+    private static List<HakemusWrapper> valintatapajononHyvaksytytHakemuksetJoitaEiVoiKorvata(
+            ValintatapajonoWrapper valintatapajono, SijoitteluajoWrapper sijoitteluajo) {
         List<Predicate<HakemusWrapper>> filters = new ArrayList<>();
         filters.add(h -> kuuluuHyvaksyttyihinTiloihin(hakemuksenTila(h)));
         if (taytetaankoPoissaOlevat(valintatapajono)) {
-            filters.add(h -> !kuuluuPoissaoloTiloihin(h.getHakemus().getIlmoittautumisTila()));
+            if (sijoitteluajo.isKKHaku()) {
+                filters.add(h -> !kuuluuPoissaoloTiloihin(h.getHakemus().getIlmoittautumisTila()));
+            } else {
+                filters.add(h -> !kuuluuPoissaoloTiloihin2Aste(h.getHakemus().getIlmoittautumisTila()));
+            }
         }
         return valintatapajono.getHakemukset()
             .stream()
