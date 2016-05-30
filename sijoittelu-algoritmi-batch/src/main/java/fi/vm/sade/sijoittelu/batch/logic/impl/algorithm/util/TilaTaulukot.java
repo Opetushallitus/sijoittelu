@@ -16,6 +16,9 @@ public class TilaTaulukot {
     private static final Set<IlmoittautumisTila> poissaoloTilat = Sets.newHashSet(
             IlmoittautumisTila.POISSA, IlmoittautumisTila.POISSA_KOKO_LUKUVUOSI, IlmoittautumisTila.POISSA_SYKSY
     );
+    private static final Set<IlmoittautumisTila> poissaoloTilat2Aste = Sets.newHashSet(
+            IlmoittautumisTila.POISSA, IlmoittautumisTila.POISSA_KOKO_LUKUVUOSI
+    );
     private static final Set<HakemuksenTila> hylatytTilat = Sets.newHashSet(
             HakemuksenTila.PERUNUT, HakemuksenTila.PERUUTETTU, HakemuksenTila.HYLATTY
     );
@@ -36,6 +39,10 @@ public class TilaTaulukot {
 
     public static boolean kuuluuPoissaoloTiloihin(IlmoittautumisTila tila) {
         return poissaoloTilat.contains(tila);
+    }
+
+    public static boolean kuuluuPoissaoloTiloihin2Aste(IlmoittautumisTila tila) {
+        return poissaoloTilat2Aste.contains(tila);
     }
 
     public static boolean kuuluuHylattyihinTiloihin(HakemuksenTila tila) {
