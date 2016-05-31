@@ -1,5 +1,6 @@
 package fi.vm.sade.sijoittelu;
 
+import com.google.common.collect.Lists;
 import com.lordofthejars.nosqlunit.annotation.UsingDataSet;
 import com.lordofthejars.nosqlunit.core.LoadStrategyEnum;
 import com.lordofthejars.nosqlunit.mongodb.MongoDbRule;
@@ -7,7 +8,6 @@ import de.flapdoodle.embed.process.collections.Collections;
 import fi.vm.sade.sijoittelu.batch.logic.impl.DomainConverter;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.PrintHelper;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoitteluajoWrapperFactory;
-import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoitteluAlgorithm;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoittelunTila;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.util.SijoitteluAlgorithmUtil;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.util.TilanKuvaukset;
@@ -30,8 +30,6 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.Period;
 import java.time.ZoneId;
-import java.time.ZoneOffset;
-import java.time.temporal.TemporalUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -559,55 +557,65 @@ public class SijoitteluMontaJonoaTest {
 
     }
 
+    private void sijoitteleAndPrintResult(List<Hakukohde> hakukohteet, List<Valintatulos> valintatulokset, boolean isKorkeakoulu) {
+        SijoitteluajoWrapper sijoitteluAjo = SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(
+                new SijoitteluAjo(), tallennaEdellisetTilat(hakukohteet), valintatulokset, java.util.Collections.emptyMap());
+        sijoitteluAjo.setKKHaku(isKorkeakoulu);
+        SijoittelunTila sijoittelunTila = SijoitteluAlgorithmUtil.sijoittele(sijoitteluAjo);
+        System.out.println(PrintHelper.tulostaSijoittelu(sijoittelunTila));
+    }
 
-    @Test
-    @UsingDataSet(locations = "poissa_oleva_taytto.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
-    public void testPoissaOloTaytto2() throws IOException {
-
+    private void testPoissaOloTaytto(List<IlmoittautumisTila> ilmoittautumiset,
+                                     boolean isKorkeakoulu, int expectedHyvaksyttyCount) {
         HakuDTO haku = valintatietoService.haeValintatiedot("haku1");
 
-        List<Hakukohde> hakukohteet = haku.getHakukohteet().parallelStream().map(DomainConverter::convertToHakukohde).collect(Collectors.toList());
-        SijoittelunTila s = SijoitteluAlgorithmUtil.sijoittele(new SijoitteluAjo(), tallennaEdellisetTilat(hakukohteet), new ArrayList(), java.util.Collections.emptyMap());
+        List<Hakukohde> hakukohteet = haku.getHakukohteet().parallelStream()
+                .map(DomainConverter::convertToHakukohde).collect(Collectors.toList());
 
-        System.out.println(PrintHelper.tulostaSijoittelu(s));
+        List<Valintatulos> valintatulokset = getValintatulosForPoissaoloTest();
 
-        Valintatulos tulos1 = createTulos("oid1", "hakukohde1", "jono1");
-        Valintatulos tulos2 = createTulos("oid2", "hakukohde1", "jono1");
+        sijoitteleAndPrintResult(hakukohteet, valintatulokset, isKorkeakoulu);
 
-        Valintatulos tulos3 = createTulos("oid3", "hakukohde1", "jono1");
-        Valintatulos tulos4 = createTulos("oid4", "hakukohde1", "jono1");
+        for (int i = 0; i < ilmoittautumiset.size(); i ++) {
+            IlmoittautumisTila ilmoittautuminen = ilmoittautumiset.get(i);
+            valintatulokset.get(i).setTila(ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI, "");
+            valintatulokset.get(i).setIlmoittautumisTila(ilmoittautuminen, "");
+        }
 
-        Valintatulos tulos5 = createTulos("oid5", "hakukohde1", "jono1");
-        Valintatulos tulos6 = createTulos("oid6", "hakukohde1", "jono1");
-
-        Valintatulos tulos7 = createTulos("oid7", "hakukohde1", "jono1");
-        Valintatulos tulos8 = createTulos("oid8", "hakukohde1", "jono1");
-
-        Valintatulos tulos9 = createTulos("oid9", "hakukohde1", "jono1");
-        Valintatulos tulos10 = createTulos("oid10", "hakukohde1", "jono1");
-        s = SijoitteluAlgorithmUtil.sijoittele(new SijoitteluAjo(), tallennaEdellisetTilat(hakukohteet), Arrays.asList(tulos1, tulos2, tulos3, tulos4, tulos5, tulos6, tulos7, tulos8, tulos9, tulos10), java.util.Collections.emptyMap());
-
-        System.out.println(PrintHelper.tulostaSijoittelu(s));
-
-        tulos1.setTila(ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI, "");
-        tulos1.setIlmoittautumisTila(IlmoittautumisTila.POISSA, "");
-
-        tulos2.setTila(ValintatuloksenTila.PERUNUT, "");
-
-        tulos3.setTila(ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI, "");
-        tulos3.setIlmoittautumisTila(IlmoittautumisTila.POISSA, "");
-        s = SijoitteluAlgorithmUtil.sijoittele(new SijoitteluAjo(), tallennaEdellisetTilat(hakukohteet), Arrays.asList(tulos1, tulos2, tulos3, tulos4, tulos5, tulos6, tulos7, tulos8, tulos9, tulos10), java.util.Collections.emptyMap());
-
-        System.out.println(PrintHelper.tulostaSijoittelu(s));
+        sijoitteleAndPrintResult(hakukohteet, valintatulokset, isKorkeakoulu);
 
         int koko = hakukohteet.get(0).getValintatapajonot().get(0)
                 .getHakemukset().stream()
                 .filter(hak->hak.getTila() == HakemuksenTila.HYVAKSYTTY || hak.getTila() == HakemuksenTila.VARASIJALTA_HYVAKSYTTY)
                 .collect(Collectors.toList()).size();
 
-        Assert.assertEquals(koko, 7);
+        Assert.assertEquals(expectedHyvaksyttyCount, koko);
+    }
 
+    private List<Valintatulos> getValintatulosForPoissaoloTest() {
+        List<Valintatulos> valintatulokset = new ArrayList<>();
+        for (int i = 1; i <= 10; i ++) {
+            valintatulokset.add(createTulos("oid" + i, "hakukohde1", "jono1"));
+        }
+        return valintatulokset;
+    }
 
+    @Test
+    @UsingDataSet(locations = "poissa_oleva_taytto.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
+    public void testPoissaOloTaytto2() throws IOException {
+        testPoissaOloTaytto(Lists.newArrayList(IlmoittautumisTila.POISSA, IlmoittautumisTila.POISSA), false, 7);
+    }
+
+    @Test
+    @UsingDataSet(locations = "poissa_oleva_taytto.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
+    public void testPoissaOloKevat2AstePaikkaaEiTayteta() throws IOException {
+        testPoissaOloTaytto(Lists.newArrayList(IlmoittautumisTila.POISSA_SYKSY, IlmoittautumisTila.POISSA), false, 6);
+    }
+
+    @Test
+    @UsingDataSet(locations = "poissa_oleva_taytto.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
+    public void testPoissaOloKevatKorkeakouluPaikkaTaytetaan() throws IOException {
+        testPoissaOloTaytto(Lists.newArrayList(IlmoittautumisTila.POISSA_SYKSY, IlmoittautumisTila.POISSA), true, 7);
     }
 
     @Test
