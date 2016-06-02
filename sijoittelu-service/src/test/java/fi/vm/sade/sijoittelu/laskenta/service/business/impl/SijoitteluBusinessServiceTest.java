@@ -176,12 +176,6 @@ public class SijoitteluBusinessServiceTest {
         return valintatulos;
     }
 
-    private Valintatulos getValintatulos(ValintatuloksenTila tila, boolean hyvaksyPeruuntunut) {
-        Valintatulos valintatulos = getValintatulos(tila);
-        valintatulos.setHyvaksyPeruuntunut(hyvaksyPeruuntunut, "");
-        return valintatulos;
-    }
-
     @Test
     public void testVaihdaIlmoittautumisTilaLasnaKokoLukuvuosi() throws Exception {
         Sijoittelu sijoittelu = testDataGenerator.generateTestData();
