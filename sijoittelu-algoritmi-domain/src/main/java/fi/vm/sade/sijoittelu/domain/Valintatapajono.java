@@ -52,6 +52,8 @@ public class Valintatapajono implements Serializable {
 
     private BigDecimal alinHyvaksyttyPistemaara;
 
+    private Boolean valintaesitysHyvaksytty;
+
     @Embedded
     private List<Hakemus> hakemukset = new ArrayList<Hakemus>();
 
@@ -218,5 +220,13 @@ public class Valintatapajono implements Serializable {
 
     public void setAlkuperaisetAloituspaikat(Integer alkuperaisetAloituspaikat) {
         this.alkuperaisetAloituspaikat = alkuperaisetAloituspaikat;
+    }
+
+    public Boolean getValintaesitysHyvaksytty() {
+        return valintaesitysHyvaksytty;
+    }
+
+    public void setValintaesitysHyvaksytty(Boolean valintaesitysHyvaksytty) {
+        this.valintaesitysHyvaksytty = valintaesitysHyvaksytty;
     }
 }

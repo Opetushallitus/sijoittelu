@@ -168,6 +168,30 @@ public class TilaResource {
 
     @POST
     @Produces(MediaType.APPLICATION_JSON)
+    @Path("/haku/{hakuOid}/hakukohde/{hakukohdeOid}/valintatapajono/{valintatapajonoOid}/valintaesitys")
+    @PreAuthorize(UPDATE_CRUD)
+    @ApiOperation(value = "Valintaesityksen merkkaaminen hyväksytyksi")
+    public Response merkkaaJononValintaesitysHyvaksytyksi(@PathParam("hakuOid") String hakuOid,
+                                                    @PathParam("hakukohdeOid") String hakukohdeOid,
+                                                    @PathParam("valintatapajonoOid") String valintatapajonoOid,
+                                                    @QueryParam("hyvaksytty") Boolean hyvaksytty) {
+        try {
+            Hakukohde hakukohde = sijoitteluBusinessService.getHakukohde(hakuOid, hakukohdeOid);
+            sijoitteluBusinessService.asetaJononValintaesitysHyvaksytyksi(hakukohde, valintatapajonoOid, hyvaksytty);
+            return Response.status(Response.Status.OK)
+                            .entity(hakukohde)
+                            .build();
+        } catch (Exception e) {
+            LOGGER.error("valintaesityksen hyväksymismerkintä(={}) epäonnistui. haku: {}, hakukohde: {}, valintatapajono: {valintatapajonoOid}", hyvaksytty, hakuOid, hakukohdeOid, valintatapajonoOid, e);
+            Map error = new HashMap();
+            error.put("message", e.toString());
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity(error).build();
+        }
+    }
+
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)
     @Path("/erillishaku/haku/{hakuOid}/hakukohde/{hakukohdeOid}")
     @PreAuthorize(UPDATE_CRUD)
     @ApiOperation(value = "Valintatulosten tuonti erillishaun hakukohteelle")

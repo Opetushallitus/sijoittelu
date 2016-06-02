@@ -2,10 +2,7 @@ package fi.vm.sade.sijoittelu.laskenta.service.business.impl;
 
 import fi.vm.sade.authentication.business.service.Authorizer;
 import fi.vm.sade.generic.service.exception.NotAuthorizedException;
-import fi.vm.sade.sijoittelu.domain.IlmoittautumisTila;
-import fi.vm.sade.sijoittelu.domain.Sijoittelu;
-import fi.vm.sade.sijoittelu.domain.ValintatuloksenTila;
-import fi.vm.sade.sijoittelu.domain.Valintatulos;
+import fi.vm.sade.sijoittelu.domain.*;
 import fi.vm.sade.sijoittelu.laskenta.external.resource.ValintaTulosServiceResource;
 import fi.vm.sade.sijoittelu.laskenta.external.resource.dto.ParametriArvoDTO;
 import fi.vm.sade.sijoittelu.laskenta.external.resource.dto.ParametriDTO;
@@ -18,6 +15,7 @@ import fi.vm.sade.sijoittelu.tulos.roles.SijoitteluRole;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
+import org.mockito.internal.matchers.Any;
 
 import java.util.Date;
 import java.util.Optional;
@@ -254,6 +252,23 @@ public class SijoitteluBusinessServiceTest {
         verify(valintatulosDaoMock).createOrUpdateValintatulos(argument.capture());
         Valintatulos valintatulos = argument.getValue();
         assertEquals(IlmoittautumisTila.POISSA_KOKO_LUKUVUOSI, valintatulos.getIlmoittautumisTila());
+    }
+
+    @Test
+    public void testAsetaJononValintaehdotusHyväksytyksi() throws Exception {
+        Sijoittelu sijoittelu = testDataGenerator.generateTestData();
+
+        when(sijoitteluDao.getSijoitteluByHakuOid(HAKU_OID))
+                .thenReturn(Optional.of(sijoittelu));
+        when(hakukohdeDao.getHakukohdeForSijoitteluajo(TestDataGenerator.SIJOITTELU_AJO_ID_2, HAKUKOHDE_OID))
+                .thenReturn(testDataGenerator.createHakukohdes(1).get(0));
+
+        sijoitteluBusinessService.asetaJononValintaesitysHyvaksytyksi(sijoitteluBusinessService.getHakukohde(HAKU_OID, HAKUKOHDE_OID), VALINTATAPAJONO_OID, true);
+
+        ArgumentCaptor<Hakukohde> argument = ArgumentCaptor.forClass(Hakukohde.class);
+        verify(hakukohdeDao).persistHakukohde(argument.capture());
+        Hakukohde hakukohde = argument.getValue();
+        assertEquals(true, SijoitteluBusinessService.getValintatapajono(VALINTATAPAJONO_OID, hakukohde).getValintaesitysHyvaksytty());
     }
 
     @Test

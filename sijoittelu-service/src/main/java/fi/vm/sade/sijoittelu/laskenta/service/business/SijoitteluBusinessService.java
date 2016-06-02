@@ -558,6 +558,13 @@ public class SijoitteluBusinessService {
                 .stream().collect(Collectors.toMap(VastaanottoDTO::getHenkiloOid, Function.identity()));
     }
 
+    public void asetaJononValintaesitysHyvaksytyksi(Hakukohde hakukohde, String valintatapajonoOid, boolean hyvaksytty) {
+        LOG.info("Asetetaan hakukohteen {} valintatapajonon {} valintaesitys hyväksytyksi: {}", hakukohde.getOid(), valintatapajonoOid, hyvaksytty);
+        Valintatapajono valintatapajono = getValintatapajono(valintatapajonoOid, hakukohde);
+        valintatapajono.setValintaesitysHyvaksytty(hyvaksytty);
+        hakukohdeDao.persistHakukohde(hakukohde);
+    }
+
     public void vaihdaHakemuksenTila(String hakuoid, Hakukohde hakukohde, Valintatulos change, String selite, String muokkaaja) {
         String valintatapajonoOid = change.getValintatapajonoOid();
         String hakemusOid = change.getHakemusOid();
@@ -682,7 +689,7 @@ public class SijoitteluBusinessService {
         hakukohdeDao.persistHakukohde(hakukohde);
     }
 
-    private static Valintatapajono getValintatapajono(String valintatapajonoOid, Hakukohde hakukohde) {
+    public static Valintatapajono getValintatapajono(String valintatapajonoOid, Hakukohde hakukohde) {
         return hakukohde.getValintatapajonot().stream()
                 .filter(v -> valintatapajonoOid.equals(v.getOid()))
                 .findFirst()

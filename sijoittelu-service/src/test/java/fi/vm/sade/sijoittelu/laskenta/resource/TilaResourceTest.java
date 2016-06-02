@@ -12,6 +12,7 @@ import fi.vm.sade.sijoittelu.laskenta.external.resource.dto.ResultHakuDTO;
 import fi.vm.sade.sijoittelu.laskenta.service.business.SijoitteluBusinessService;
 import fi.vm.sade.sijoittelu.laskenta.service.business.StaleReadException;
 import fi.vm.sade.sijoittelu.laskenta.service.exception.HakemustaEiLoytynytException;
+import fi.vm.sade.sijoittelu.tulos.dao.HakukohdeDao;
 import fi.vm.sade.sijoittelu.tulos.dto.HakukohdeDTO;
 import fi.vm.sade.valinta.http.HttpResource;
 import junit.framework.Assert;
@@ -64,6 +65,21 @@ public class TilaResourceTest {
         assertEquals(200, response.getStatus());
         assertNull("ei viestiä", statuses.message);
         assertTrue("ei virheitä", statuses.statuses.isEmpty());
+    }
+
+    @Test
+    public void onnistunutJononHyvaksyntaPalauttaaOk() {
+        Hakukohde hakukohde = new Hakukohde();
+        Valintatapajono jono = new Valintatapajono();
+        jono.setOid(valintatapajonoOid);
+        hakukohde.getValintatapajonot().add(jono);
+        TilaResource r = new TilaResource();
+        r.sijoitteluBusinessService = sijoitteluBusinessServiceMock(hakukohde);
+
+        Response response = r.merkkaaJononValintaesitysHyvaksytyksi(hakuOid, hakukohdeOid, valintatapajonoOid, true);
+        assertEquals(200, response.getStatus());
+        Hakukohde updated = (Hakukohde) response.getEntity();
+        assertEquals(hakukohde, updated);
     }
 
     @Test
@@ -258,10 +274,14 @@ public class TilaResourceTest {
     }
 
     private static SijoitteluBusinessService sijoitteluBusinessServiceMock(Hakukohde hakukohde) {
-        return new SijoitteluBusinessService(0,null,null,null,null,null,null,null,null,null,null) {
+        return new SijoitteluBusinessService(0, null, null, null, null, null, null, null, null, null, null) {
             @Override
             public Hakukohde getHakukohde(String hakuOid, String hakukohdeOid) {
                 return hakukohde;
+            }
+
+            @Override
+            public void asetaJononValintaesitysHyvaksytyksi(Hakukohde hakukohde, String valintatapajonoOid, boolean hyvaksytty) {
             }
 
             @Override
