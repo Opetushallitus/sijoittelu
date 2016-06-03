@@ -361,7 +361,7 @@ public class SijoitteluBusinessService {
             kaikkiHakukohteet.put(hakukohde.getOid(), hakukohde);
         });
         talletaTasasijajonosijatJaEdellisenSijoittelunTilat(uudetHakukohteet, kaikkiHakukohteet);
-        kopioiTilaHistoriat(olemassaolevatHakukohteet, kaikkiHakukohteet);
+        kopioiHakemuksenTietoja(olemassaolevatHakukohteet, kaikkiHakukohteet);
         kaikkiHakukohteet.values().forEach(hakukohde -> {
                     HakukohdeItem hki = new HakukohdeItem();
                     hki.setOid(hakukohde.getOid());
@@ -372,7 +372,7 @@ public class SijoitteluBusinessService {
         return new ArrayList<>(kaikkiHakukohteet.values());
     }
 
-    private void kopioiTilaHistoriat(List<Hakukohde> olemassaolevatHakukohteet, Map<String, Hakukohde> kaikkiHakukohteet) {
+    private void kopioiHakemuksenTietoja(List<Hakukohde> olemassaolevatHakukohteet, Map<String, Hakukohde> kaikkiHakukohteet) {
 
         Map<Triple<String, String, String>, Hakemus> hakemusIndex = new HashMap<>();
         olemassaolevatHakukohteet.forEach(hk -> {
@@ -397,6 +397,8 @@ public class SijoitteluBusinessService {
                     if(hakemusIndex.containsKey(id)) {
                         Hakemus alkuperainen = hakemusIndex.get(id);
                         h.setTilaHistoria(alkuperainen.getTilaHistoria());
+                        h.setVarasijanNumero(alkuperainen.getVarasijanNumero());
+                        h.setIlmoittautumisTila(alkuperainen.getIlmoittautumisTila());
                     }
                 });
             });
