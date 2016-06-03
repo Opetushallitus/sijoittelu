@@ -1,7 +1,7 @@
 package fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.postsijoitteluprocessor;
 
 import com.google.common.hash.HashCode;
-
+import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.HakemusWrapper;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.SijoitteluajoWrapper;
 
 /**
@@ -16,7 +16,7 @@ public class PostSijoitteluProcessorMuutostiedonAsetus implements PostSijoittelu
                 .flatMap(h -> h.getValintatapajonot().stream())
                 .flatMap(v -> v.getHakemukset().stream())
                 .forEach(h -> {
-                    HashCode newHash = h.luoHash();
+                    final HashCode newHash = HakemusWrapper.luoHash(h.getHakemus());
                     h.getHakemus().setOnkoMuuttunutViimeSijoittelussa(!newHash.equals(h.getLahtotilanteenHash()));
                 });
     }
