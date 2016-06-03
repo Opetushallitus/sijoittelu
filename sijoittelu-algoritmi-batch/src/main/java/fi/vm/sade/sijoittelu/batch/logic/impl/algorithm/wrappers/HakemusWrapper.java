@@ -115,29 +115,29 @@ public class HakemusWrapper {
         this.hyvaksyttyHakijaryhmasta = hyvaksyttyHakijaryhmasta;
     }
 
-    private final String VALUE_DELIMETER_HAKEMUS = "_HAKEMUS_";
-    private final String VALUE_DELIMETER_EDELLINEN_TILA = "_EDELLINEN_TILA_";
-    private final String VALUE_DELIMETER_HAKEMUSOID = "_HAKEMUSOID_";
-    private final String VALUE_DELIMETER_ILMOITTAUTUMISTILA = "_ILMOITTAUTUMISTILA_";
-    private final String VALUE_DELIMETER_JONOSIJA = "_JONOSIJA_";
-    private final String VALUE_DELIMETER_PISTEET = "_PISTEET_";
-    private final String VALUE_DELIMETER_PISTETIETO = "_PISTETIETO_";
-    private final String VALUE_DELIMETER_PISTETIETO_ARVO = "_ARVO_";
-    private final String VALUE_DELIMETER_PISTETIETO_LASKENNANLLINEN_ARVO = "_LASKENNALLINEN_ARVO_";
-    private final String VALUE_DELIMETER_PISTETIETO_OSALLISTUMINEN = "_OSALLISTUMINEN_";
-    private final String VALUE_DELIMETER_PISTETIETO_TUNNISTE = "_TUNNISTE_";
-    private final String VALUE_DELIMETER_PRIORITEETTI = "_PRIORITEETTI_";
-    private final String VALUE_DELIMETER_TASASIJAJONOSIJA = "_TASASIJAJONOSIJA_";
-    private final String VALUE_DELIMETER_TILA = "_TILA_";
-    private final String VALUE_DELIMETER_VARASIJAN_NUMERO = "_VARASIJAN_NUMERO_";
+    private static final String VALUE_DELIMETER_HAKEMUS = "_HAKEMUS_";
+    private static final String VALUE_DELIMETER_EDELLINEN_TILA = "_EDELLINEN_TILA_";
+    private static final String VALUE_DELIMETER_HAKEMUSOID = "_HAKEMUSOID_";
+    private static final String VALUE_DELIMETER_ILMOITTAUTUMISTILA = "_ILMOITTAUTUMISTILA_";
+    private static final String VALUE_DELIMETER_JONOSIJA = "_JONOSIJA_";
+    private static final String VALUE_DELIMETER_PISTEET = "_PISTEET_";
+    private static final String VALUE_DELIMETER_PISTETIETO = "_PISTETIETO_";
+    private static final String VALUE_DELIMETER_PISTETIETO_ARVO = "_ARVO_";
+    private static final String VALUE_DELIMETER_PISTETIETO_LASKENNANLLINEN_ARVO = "_LASKENNALLINEN_ARVO_";
+    private static final String VALUE_DELIMETER_PISTETIETO_OSALLISTUMINEN = "_OSALLISTUMINEN_";
+    private static final String VALUE_DELIMETER_PISTETIETO_TUNNISTE = "_TUNNISTE_";
+    private static final String VALUE_DELIMETER_PRIORITEETTI = "_PRIORITEETTI_";
+    private static final String VALUE_DELIMETER_TASASIJAJONOSIJA = "_TASASIJAJONOSIJA_";
+    private static final String VALUE_DELIMETER_TILA = "_TILA_";
+    private static final String VALUE_DELIMETER_VARASIJAN_NUMERO = "_VARASIJAN_NUMERO_";
 
-    public HashCode luoHash() {
+    public static HashCode luoHash(Hakemus hakemus) {
         Hasher hasher = Hashing.md5().newHasher();
-        hash(hasher);
+        hash(hasher, hakemus);
         return hasher.hash();
     }
 
-    public void hash(Hasher hf) {
+    public static void hash(Hasher hf, Hakemus hakemus) {
         if (hakemus != null) {
             Supplier<Void> undefined = () -> {
                 hf.putUnencodedChars(SijoitteluajoWrapper.VALUE_FOR_HASH_FUNCTION_WHEN_UNDEFINED);

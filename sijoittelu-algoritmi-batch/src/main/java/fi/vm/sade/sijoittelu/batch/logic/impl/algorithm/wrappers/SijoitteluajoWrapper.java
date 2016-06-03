@@ -1,6 +1,14 @@
 package fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers;
 
-import static java.util.Optional.ofNullable;
+import com.google.common.hash.HashCode;
+import com.google.common.hash.HashFunction;
+import com.google.common.hash.Hasher;
+import com.google.common.hash.Hashing;
+import fi.vm.sade.sijoittelu.domain.Hakukohde;
+import fi.vm.sade.sijoittelu.domain.SijoitteluAjo;
+import fi.vm.sade.sijoittelu.domain.Valintatulos;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -9,17 +17,7 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.google.common.hash.HashCode;
-import com.google.common.hash.HashFunction;
-import com.google.common.hash.Hasher;
-import com.google.common.hash.Hashing;
-
-import fi.vm.sade.sijoittelu.domain.Hakukohde;
-import fi.vm.sade.sijoittelu.domain.SijoitteluAjo;
-import fi.vm.sade.sijoittelu.domain.Valintatulos;
+import static java.util.Optional.ofNullable;
 
 public class SijoitteluajoWrapper {
     private static final Logger LOG = LoggerFactory.getLogger(SijoitteluajoWrapper.class);
@@ -28,6 +26,8 @@ public class SijoitteluajoWrapper {
     private SijoitteluAjo sijoitteluajo;
 
     private List<HakukohdeWrapper> hakukohteet = new ArrayList<HakukohdeWrapper>();
+
+    private Optional<List<Hakukohde>> edellisenSijoittelunHakukohteet = Optional.empty();
 
     private List<Valintatulos> muuttuneetValintatulokset = new ArrayList<>();
 
@@ -163,7 +163,7 @@ public class SijoitteluajoWrapper {
         hakukohteet.stream().sorted().forEach(h -> {
             Hasher hakemuksetHasher = hashSupplier.get();
             hakemuksetHasher.putUnencodedChars(VALUE_DELIMETER_HAKUKOHDE);
-            h.hakukohteenHakemukset().forEach(hk -> hk.hash(hakemuksetHasher));
+            h.hakukohteenHakemukset().forEach(hw -> HakemusWrapper.hash(hakemuksetHasher, hw.getHakemus()));
             Hasher valintatuloksetHasher = hashSupplier.get();
             valintatuloksetHasher.putUnencodedChars(VALUE_DELIMETER_VALINTATULOKSET);
             h.hakukohteenHakijat().forEach(hk -> hk.hash(valintatuloksetHasher));
@@ -202,5 +202,13 @@ public class SijoitteluajoWrapper {
 
     public void addMuuttuneetValintatulokset(Valintatulos... valintatulokset) {
         Collections.addAll(muuttuneetValintatulokset, valintatulokset);
+    }
+
+    public Optional<List<Hakukohde>> getEdellisenSijoittelunHakukohteet() {
+        return edellisenSijoittelunHakukohteet;
+    }
+
+    public void setEdellisenSijoittelunHakukohteet(List<Hakukohde> edellisenSijoittelunHakukohteet) {
+        this.edellisenSijoittelunHakukohteet = Optional.of(edellisenSijoittelunHakukohteet);
     }
 }
