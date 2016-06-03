@@ -189,19 +189,6 @@ public class SijoitteluajoWrapper {
         }
     }
 
-    // ei juuri yhtaan nopeampi ja epavarmempi
-    private HashCode valivaiheetonHashStrategia(HashFunction hashFunction) {
-        long t0 = System.currentTimeMillis();
-        final Hasher hasher = hashFunction.newHasher();
-        hakukohteet.stream().forEach(h -> {
-            h.hakukohteenHakemukset().forEach(hk -> hk.hash(hasher));
-            h.hakukohteenHakijat().forEach(hk -> hk.hash(hasher));
-        });
-        HashCode hash = hasher.hash();
-        LOG.debug("Sijoitteluajon HASH {} (kesto {}ms)", hash, (System.currentTimeMillis() - t0));
-        return hash;
-    }
-
     public boolean onkoVarasijaTayttoPaattynyt(ValintatapajonoWrapper valintatapajono) {
         Date varasijojaTaytetaanAsti = valintatapajono.getValintatapajono().getVarasijojaTaytetaanAsti();
         LocalDateTime varasijaTayttoPaattyy = this.getVarasijaTayttoPaattyy();
