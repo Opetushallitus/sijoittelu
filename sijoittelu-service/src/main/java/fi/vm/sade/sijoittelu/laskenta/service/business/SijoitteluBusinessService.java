@@ -399,6 +399,7 @@ public class SijoitteluBusinessService {
                         h.setTilaHistoria(alkuperainen.getTilaHistoria());
                         h.setVarasijanNumero(alkuperainen.getVarasijanNumero());
                         h.setIlmoittautumisTila(alkuperainen.getIlmoittautumisTila());
+                        h.setEdellinenTila(alkuperainen.getEdellinenTila());
                     }
                 });
             });
