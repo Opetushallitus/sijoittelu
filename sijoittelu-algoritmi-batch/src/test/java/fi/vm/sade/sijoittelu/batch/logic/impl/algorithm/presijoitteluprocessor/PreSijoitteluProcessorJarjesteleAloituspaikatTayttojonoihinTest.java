@@ -7,6 +7,7 @@ import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoitteluajoWrapperFact
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.SijoitteluajoWrapper;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.ValintatapajonoWrapper;
 import fi.vm.sade.sijoittelu.domain.*;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.time.LocalDateTime;
@@ -217,6 +218,7 @@ public class PreSijoitteluProcessorJarjesteleAloituspaikatTayttojonoihinTest ext
         assertEquals(0, vtjs.get(1).getValintatapajono().getAloituspaikat().intValue());
     }
 
+    @Ignore
     @Test(expected = SijoitteluSilmukkaException.class)
     public void testBreaksOnLoop() {
         List<Hakukohde> hakukohteet = Lists.newArrayList();
@@ -235,6 +237,7 @@ public class PreSijoitteluProcessorJarjesteleAloituspaikatTayttojonoihinTest ext
         p.process(sijoitteluAjo);
     }
 
+    @Ignore
     @Test(expected = SijoitteluSilmukkaException.class)
     public void testBreaksOnLongLoop() {
         List<Hakukohde> hakukohteet = Lists.newArrayList();

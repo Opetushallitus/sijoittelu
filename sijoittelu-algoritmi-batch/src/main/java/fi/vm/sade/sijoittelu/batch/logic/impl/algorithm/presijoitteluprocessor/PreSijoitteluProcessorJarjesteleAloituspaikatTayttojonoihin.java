@@ -12,6 +12,8 @@ import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.Valintatapajono
 import fi.vm.sade.sijoittelu.domain.HakemuksenTila;
 import fi.vm.sade.sijoittelu.domain.Valintatapajono;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.Map;
@@ -19,6 +21,8 @@ import java.util.Queue;
 import java.util.Set;
 
 class PreSijoitteluProcessorJarjesteleAloituspaikatTayttojonoihin implements PreSijoitteluProcessor {
+
+    private static final Logger LOG = LoggerFactory.getLogger(PreSijoitteluProcessorJarjesteleAloituspaikatTayttojonoihin.class);
 
     private static final int LIMIT = 1000;
 
@@ -61,7 +65,8 @@ class PreSijoitteluProcessorJarjesteleAloituspaikatTayttojonoihin implements Pre
 
                     if (ylijaamaPaikat > 0 && StringUtils.isNotBlank(valintatapajono.getTayttojono())) {
                         siirraYlijaamaPaikatTayttojonolle(valintatapajono, ylijaamaPaikat);
-                        reCheckTayttojono(valintatapajono);
+                        // Poistettu loopin mahdollisuus
+                        //reCheckTayttojono(valintatapajono);
                     }
                 }
             }
@@ -94,9 +99,14 @@ class PreSijoitteluProcessorJarjesteleAloituspaikatTayttojonoihin implements Pre
     }
 
     private void siirraYlijaamaPaikatTayttojonolle(Valintatapajono valintatapajono, int jaljellaOlevatAloituspaikat) {
-        Valintatapajono tayttojono = oid2Valintatapajono.get(valintatapajono.getTayttojono()).getValintatapajono();
-        tayttojono.setAloituspaikat(tayttojono.getAloituspaikat() + jaljellaOlevatAloituspaikat);
-        valintatapajono.setAloituspaikat(valintatapajono.getAloituspaikat() - jaljellaOlevatAloituspaikat);
+        ValintatapajonoWrapper valintatapajonoWrapper = oid2Valintatapajono.get(valintatapajono.getTayttojono());
+        if(valintatapajonoWrapper != null) {
+            Valintatapajono tayttojono = oid2Valintatapajono.get(valintatapajono.getTayttojono()).getValintatapajono();
+            tayttojono.setAloituspaikat(tayttojono.getAloituspaikat() + jaljellaOlevatAloituspaikat);
+            valintatapajono.setAloituspaikat(valintatapajono.getAloituspaikat() - jaljellaOlevatAloituspaikat);
+        } else {
+            LOG.warn("Valintatapajonon {} (OID: {}) täyttöjonoa (OID: {}) ei löytynyt.", valintatapajono.getNimi(), valintatapajono.getOid(), valintatapajono.getTayttojono());
+        }
     }
 
     private void reCheckTayttojono(Valintatapajono valintatapajono) {
