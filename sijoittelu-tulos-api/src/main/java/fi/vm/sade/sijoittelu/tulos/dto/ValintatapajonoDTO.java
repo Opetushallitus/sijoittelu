@@ -29,6 +29,8 @@ public class ValintatapajonoDTO implements Serializable {
 
     private Boolean poissaOlevaTaytto;
 
+    private Boolean valintaesitysHyvaksytty;
+
     private List<HakemusDTO> hakemukset = new ArrayList<HakemusDTO>();
 
     private Integer hakeneet;
@@ -205,5 +207,13 @@ public class ValintatapajonoDTO implements Serializable {
 
     public void setAlkuperaisetAloituspaikat(Integer alkuperaisetAloituspaikat) {
         this.alkuperaisetAloituspaikat = alkuperaisetAloituspaikat;
+    }
+
+    public Boolean getValintaesitysHyvaksytty() {
+        return valintaesitysHyvaksytty;
+    }
+
+    public void setValintaesitysHyvaksytty(Boolean valintaesitysHyvaksytty) {
+        this.valintaesitysHyvaksytty = valintaesitysHyvaksytty;
     }
 }
