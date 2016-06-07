@@ -342,6 +342,7 @@ public class Valintatulos implements Serializable {
                 ", mailStatus=" + mailStatus +
                 ", tila=" + tila +
                 ", tilaHakijalle=" + tilaHakijalle +
+                ", hyvaksymiskirjeLahetetty=" + hyvaksymiskirjeLahetetty +
                 ", logEntries=" + logEntries +
                 ", read=" + read +
                 ", viimeinenMuutos=" + viimeinenMuutos +
