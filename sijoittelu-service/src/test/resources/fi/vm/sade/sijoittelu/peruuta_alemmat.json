@@ -1,294 +1,387 @@
 {
+    "Jonosija": [
+        {
+            "_id": {
+                "$oid": "541bef0ae4b0e1d22689e600"
+            },
+            "etunimi": "Lisa Maria",
+            "hakemusOid": "hakija1",
+            "hakijaOid": "1.2.246.562.24.34552787533",
+            "hakutoiveprioriteetti": 3,
+            "harkinnanvarainen": false,
+            "jarjestyskriteeritulokset": [
+                {
+                    "arvo": "10",
+                    "nimi": "Testikriteeri",
+                    "prioriteetti": 0,
+                    "tila": "HYVAKSYTTAVISSA"
+                }
+            ],
+            "sukunimi": "Nevala"
+        },
+        {
+            "_id": {
+                "$oid": "541bef0ae4b0e1d22689e601"
+            },
+            "etunimi": "Olli-Pekka",
+            "hakemusOid": "hakija2",
+            "hakijaOid": "1.2.246.562.24.42438870792",
+            "hakutoiveprioriteetti": 2,
+            "harkinnanvarainen": false,
+            "jarjestyskriteeritulokset": [
+                {
+                    "arvo": "9",
+                    "nimi": "Testikriteeri",
+                    "prioriteetti": 0,
+                    "tila": "HYVAKSYTTAVISSA"
+                }
+            ],
+            "sukunimi": "Riikonen"
+        },
+        {
+            "_id": {
+                "$oid": "541bef0ae4b0e1d22689e602"
+            },
+            "etunimi": "Joonas-Petteri",
+            "hakemusOid": "hakija3",
+            "hakijaOid": "1.2.246.562.24.45661259022",
+            "hakutoiveprioriteetti": 2,
+            "harkinnanvarainen": false,
+            "jarjestyskriteeritulokset": [
+                {
+                    "arvo": "8",
+                    "nimi": "Testikriteeri",
+                    "prioriteetti": 0,
+                    "tila": "HYVAKSYTTAVISSA"
+                }
+            ],
+            "sukunimi": "Valkola"
+        },
+        {
+            "_id": {
+                "$oid": "541bef0ae4b0e1d22689e603"
+            },
+            "etunimi": "Joonas-Petteri",
+            "hakemusOid": "hakija4",
+            "hakijaOid": "1.2.246.562.24.45661259022",
+            "hakutoiveprioriteetti": 2,
+            "harkinnanvarainen": false,
+            "jarjestyskriteeritulokset": [
+                {
+                    "arvo": "7",
+                    "nimi": "Testikriteeri",
+                    "prioriteetti": 0,
+                    "tila": "HYVAKSYTTAVISSA"
+                }
+            ],
+            "sukunimi": "Valkola"
+        },
+        {
+            "_id": {
+                "$oid": "541bef0ae4b0e1d22689e604"
+            },
+            "etunimi": "Joonas-Petteri",
+            "hakemusOid": "hakija5",
+            "hakijaOid": "1.2.246.562.24.45661259022",
+            "hakutoiveprioriteetti": 2,
+            "harkinnanvarainen": false,
+            "jarjestyskriteeritulokset": [
+                {
+                    "arvo": "6",
+                    "nimi": "Testikriteeri",
+                    "prioriteetti": 0,
+                    "tila": "HYVAKSYTTAVISSA"
+                }
+            ],
+            "sukunimi": "Valkola"
+        },
+        {
+            "_id": {
+                "$oid": "541bef0ae4b0e1d22689e605"
+            },
+            "etunimi": "Joonas-Petteri",
+            "hakemusOid": "hakija6",
+            "hakijaOid": "1.2.246.562.24.45661259022",
+            "hakutoiveprioriteetti": 2,
+            "harkinnanvarainen": false,
+            "jarjestyskriteeritulokset": [
+                {
+                    "arvo": "5",
+                    "nimi": "Testikriteeri",
+                    "prioriteetti": 0,
+                    "tila": "HYVAKSYTTAVISSA"
+                }
+            ],
+            "sukunimi": "Valkola"
+        },
+        {
+            "_id": {
+                "$oid": "541bef0ae4b0e1d22689e606"
+            },
+            "etunimi": "Lisa Maria",
+            "hakemusOid": "hakija1",
+            "hakijaOid": "1.2.246.562.24.34552787533",
+            "hakutoiveprioriteetti": 2,
+            "harkinnanvarainen": false,
+            "jarjestyskriteeritulokset": [
+                {
+                    "arvo": "10",
+                    "nimi": "Testikriteeri",
+                    "prioriteetti": 0,
+                    "tila": "HYVAKSYTTAVISSA"
+                }
+            ],
+            "sukunimi": "Nevala"
+        },
+        {
+            "_id": {
+                "$oid": "541bef0ae4b0e1d22689e607"
+            },
+            "etunimi": "Lisa Maria",
+            "hakemusOid": "hakija1",
+            "hakijaOid": "1.2.246.562.24.34552787533",
+            "hakutoiveprioriteetti": 1,
+            "harkinnanvarainen": false,
+            "jarjestyskriteeritulokset": [
+                {
+                    "arvo": "10",
+                    "nimi": "Testikriteeri",
+                    "prioriteetti": 0,
+                    "tila": "HYVAKSYTTAVISSA"
+                }
+            ],
+            "sukunimi": "Nevala"
+        },
+        {
+            "_id": {
+                "$oid": "541bef0ae4b0e1d22689e608"
+            },
+            "etunimi": "Olli-Pekka",
+            "hakemusOid": "hakija2",
+            "hakijaOid": "1.2.246.562.24.42438870792",
+            "hakutoiveprioriteetti": 1,
+            "harkinnanvarainen": false,
+            "jarjestyskriteeritulokset": [
+                {
+                    "arvo": "9",
+                    "nimi": "Testikriteeri",
+                    "prioriteetti": 0,
+                    "tila": "HYVAKSYTTAVISSA"
+                }
+            ],
+            "sukunimi": "Riikonen"
+        },
+        {
+            "_id": {
+                "$oid": "541bef0ae4b0e1d22689e609"
+            },
+            "etunimi": "Joonas-Petteri",
+            "hakemusOid": "hakija3",
+            "hakijaOid": "1.2.246.562.24.45661259022",
+            "hakutoiveprioriteetti": 1,
+            "harkinnanvarainen": false,
+            "jarjestyskriteeritulokset": [
+                {
+                    "arvo": "8",
+                    "nimi": "Testikriteeri",
+                    "prioriteetti": 0,
+                    "tila": "HYVAKSYTTAVISSA"
+                }
+            ],
+            "sukunimi": "Valkola"
+        },
+        {
+            "_id": {
+                "$oid": "541bef0ae4b0e1d22689e610"
+            },
+            "etunimi": "Joonas-Petteri",
+            "hakemusOid": "hakija4",
+            "hakijaOid": "1.2.246.562.24.45661259022",
+            "hakutoiveprioriteetti": 1,
+            "harkinnanvarainen": false,
+            "jarjestyskriteeritulokset": [
+                {
+                    "arvo": "7",
+                    "nimi": "Testikriteeri",
+                    "prioriteetti": 0,
+                    "tila": "HYVAKSYTTAVISSA"
+                }
+            ],
+            "sukunimi": "Valkola"
+        },
+        {
+            "_id": {
+                "$oid": "541bef0ae4b0e1d22689e611"
+            },
+            "etunimi": "Joonas-Petteri",
+            "hakemusOid": "hakija5",
+            "hakijaOid": "1.2.246.562.24.45661259022",
+            "hakutoiveprioriteetti": 1,
+            "harkinnanvarainen": false,
+            "jarjestyskriteeritulokset": [
+                {
+                    "arvo": "6",
+                    "nimi": "Testikriteeri",
+                    "prioriteetti": 0,
+                    "tila": "HYVAKSYTTAVISSA"
+                }
+            ],
+            "sukunimi": "Valkola"
+        },
+        {
+            "_id": {
+                "$oid": "541bef0ae4b0e1d22689e612"
+            },
+            "etunimi": "Joonas-Petteri",
+            "hakemusOid": "hakija6",
+            "hakijaOid": "1.2.246.562.24.45661259022",
+            "hakutoiveprioriteetti": 1,
+            "harkinnanvarainen": false,
+            "jarjestyskriteeritulokset": [
+                {
+                    "arvo": "5",
+                    "nimi": "Testikriteeri",
+                    "prioriteetti": 0,
+                    "tila": "HYVAKSYTTAVISSA"
+                }
+            ],
+            "sukunimi": "Valkola"
+        }
+    ],
     "Valinnanvaihe": [
         {
-            "jarjestysnumero" : 1,
-            "hakuOid" : "haku1",
-            "hakukohdeOid" : "hakukohde2",
-            "valinnanvaiheOid" : "valinnanvaihe2",
-            "tarjoajaOid" : "tarjoaja2",
-            "nimi" : "Varsinainen valinta",
-            "valintatapajonot" : [
-                {"$ref": "Valintatapajono", "$id": {"$oid": "541bef0ae4b0e1d22689e606"}}
+            "hakuOid": "haku1",
+            "hakukohdeOid": "hakukohde2",
+            "jarjestysnumero": 1,
+            "nimi": "Varsinainen valinta",
+            "tarjoajaOid": "tarjoaja2",
+            "valinnanvaiheOid": "valinnanvaihe2",
+            "valintatapajonot": [
+                {
+                    "$id": {
+                        "$oid": "541bef0ae4b0e1d22689e606"
+                    },
+                    "$ref": "Valintatapajono"
+                }
             ]
         },
         {
-            "jarjestysnumero" : 1,
-            "hakuOid" : "haku1",
-            "hakukohdeOid" : "hakukohde3",
-            "valinnanvaiheOid" : "valinnanvaihe3",
-            "tarjoajaOid" : "tarjoaja3",
-            "nimi" : "Varsinainen valinta",
-            "valintatapajonot" : [
-                {"$ref": "Valintatapajono", "$id": {"$oid": "541bef0ae4b0e1d22689e607"}}
+            "hakuOid": "haku1",
+            "hakukohdeOid": "hakukohde3",
+            "jarjestysnumero": 1,
+            "nimi": "Varsinainen valinta",
+            "tarjoajaOid": "tarjoaja3",
+            "valinnanvaiheOid": "valinnanvaihe3",
+            "valintatapajonot": [
+                {
+                    "$id": {
+                        "$oid": "541bef0ae4b0e1d22689e607"
+                    },
+                    "$ref": "Valintatapajono"
+                }
             ]
         },
-
         {
-            "jarjestysnumero" : 1,
-            "hakuOid" : "haku1",
-            "hakukohdeOid" : "hakukohde1",
-            "valinnanvaiheOid" : "valinnanvaihe1",
-            "tarjoajaOid" : "tarjoaja1",
-            "nimi" : "Varsinainen valinta",
-            "valintatapajonot" : [
-                {"$ref": "Valintatapajono", "$id": {"$oid": "541bef0ae4b0e1d22689e608"}}
+            "hakuOid": "haku1",
+            "hakukohdeOid": "hakukohde1",
+            "jarjestysnumero": 1,
+            "nimi": "Varsinainen valinta",
+            "tarjoajaOid": "tarjoaja1",
+            "valinnanvaiheOid": "valinnanvaihe1",
+            "valintatapajonot": [
+                {
+                    "$id": {
+                        "$oid": "541bef0ae4b0e1d22689e608"
+                    },
+                    "$ref": "Valintatapajono"
+                }
             ]
         }
-
     ],
     "Valintatapajono": [
         {
             "_id": {
                 "$oid": "541bef0ae4b0e1d22689e606"
             },
-            "valintatapajonoOid" : "jono2",
-            "nimi" : "Jono2",
-            "prioriteetti" : 0,
-            "aloituspaikat" : 2,
-            "siirretaanSijoitteluun" : true,
-            "tasasijasaanto" : "ARVONTA",
-            "eiVarasijatayttoa" : false,
-            "valmisSijoiteltavaksi" : true,
-            "jonosijat": [
+            "aloituspaikat": 2,
+            "eiVarasijatayttoa": false,
+            "jonosijaIdt": [
                 {
-                    "hakemusOid" : "hakija1",
-                    "hakijaOid" : "1.2.246.562.24.34552787533",
-                    "etunimi" : "Lisa Maria",
-                    "sukunimi" : "Nevala",
-                    "hakutoiveprioriteetti" : 3,
-                    "harkinnanvarainen" : false,
-                    "jarjestyskriteeritulokset" : [
-                        {
-                            "prioriteetti" : 0,
-                            "arvo" : "10",
-                            "tila" : "HYVAKSYTTAVISSA",
-                            "nimi" : "Testikriteeri"
-                        }
-                    ]
+                    "$oid": "541bef0ae4b0e1d22689e600"
                 },
                 {
-                    "hakemusOid" : "hakija2",
-                    "hakijaOid" : "1.2.246.562.24.42438870792",
-                    "etunimi" : "Olli-Pekka",
-                    "sukunimi" : "Riikonen",
-                    "hakutoiveprioriteetti" : 2,
-                    "harkinnanvarainen" : false,
-                    "jarjestyskriteeritulokset" : [
-                        {
-                            "prioriteetti" : 0,
-                            "arvo" : "9",
-                            "tila" : "HYVAKSYTTAVISSA",
-                            "nimi" : "Testikriteeri"
-                        }
-                    ]
+                    "$oid": "541bef0ae4b0e1d22689e601"
                 },
                 {
-                    "hakemusOid" : "hakija3",
-                    "hakijaOid" : "1.2.246.562.24.45661259022",
-                    "etunimi" : "Joonas-Petteri",
-                    "sukunimi" : "Valkola",
-                    "hakutoiveprioriteetti" : 2,
-                    "harkinnanvarainen" : false,
-                    "jarjestyskriteeritulokset" : [
-                        {
-                            "prioriteetti" : 0,
-                            "arvo" : "8",
-                            "tila" : "HYVAKSYTTAVISSA",
-                            "nimi" : "Testikriteeri"
-                        }
-                    ]
+                    "$oid": "541bef0ae4b0e1d22689e602"
                 },
                 {
-                    "hakemusOid" : "hakija4",
-                    "hakijaOid" : "1.2.246.562.24.45661259022",
-                    "etunimi" : "Joonas-Petteri",
-                    "sukunimi" : "Valkola",
-                    "hakutoiveprioriteetti" : 2,
-                    "harkinnanvarainen" : false,
-                    "jarjestyskriteeritulokset" : [
-                        {
-                            "prioriteetti" : 0,
-                            "arvo" : "7",
-                            "tila" : "HYVAKSYTTAVISSA",
-                            "nimi" : "Testikriteeri"
-                        }
-                    ]
+                    "$oid": "541bef0ae4b0e1d22689e603"
                 },
                 {
-                    "hakemusOid" : "hakija5",
-                    "hakijaOid" : "1.2.246.562.24.45661259022",
-                    "etunimi" : "Joonas-Petteri",
-                    "sukunimi" : "Valkola",
-                    "hakutoiveprioriteetti" : 2,
-                    "harkinnanvarainen" : false,
-                    "jarjestyskriteeritulokset" : [
-                        {
-                            "prioriteetti" : 0,
-                            "arvo" : "6",
-                            "tila" : "HYVAKSYTTAVISSA",
-                            "nimi" : "Testikriteeri"
-                        }
-                    ]
+                    "$oid": "541bef0ae4b0e1d22689e604"
                 },
                 {
-                    "hakemusOid" : "hakija6",
-                    "hakijaOid" : "1.2.246.562.24.45661259022",
-                    "etunimi" : "Joonas-Petteri",
-                    "sukunimi" : "Valkola",
-                    "hakutoiveprioriteetti" : 2,
-                    "harkinnanvarainen" : false,
-                    "jarjestyskriteeritulokset" : [
-                        {
-                            "prioriteetti" : 0,
-                            "arvo" : "5",
-                            "tila" : "HYVAKSYTTAVISSA",
-                            "nimi" : "Testikriteeri"
-                        }
-                    ]
+                    "$oid": "541bef0ae4b0e1d22689e605"
                 }
-            ]
+            ],
+            "nimi": "Jono2",
+            "prioriteetti": 0,
+            "siirretaanSijoitteluun": true,
+            "tasasijasaanto": "ARVONTA",
+            "valintatapajonoOid": "jono2",
+            "valmisSijoiteltavaksi": true
         },
         {
             "_id": {
                 "$oid": "541bef0ae4b0e1d22689e607"
             },
-            "valintatapajonoOid" : "jono3",
-            "nimi" : "Jono3",
-            "prioriteetti" : 0,
-            "aloituspaikat" : 2,
-            "siirretaanSijoitteluun" : true,
-            "tasasijasaanto" : "ARVONTA",
-            "eiVarasijatayttoa" : false,
-            "valmisSijoiteltavaksi" : true,
-            "jonosijat": [
+            "aloituspaikat": 2,
+            "eiVarasijatayttoa": false,
+            "jonosijaIdt": [
                 {
-                    "hakemusOid" : "hakija1",
-                    "hakijaOid" : "1.2.246.562.24.34552787533",
-                    "etunimi" : "Lisa Maria",
-                    "sukunimi" : "Nevala",
-                    "hakutoiveprioriteetti" : 2,
-                    "harkinnanvarainen" : false,
-                    "jarjestyskriteeritulokset" : [
-                        {
-                            "prioriteetti" : 0,
-                            "arvo" : "10",
-                            "tila" : "HYVAKSYTTAVISSA",
-                            "nimi" : "Testikriteeri"
-                        }
-                    ]
+                    "$oid": "541bef0ae4b0e1d22689e606"
                 }
-            ]
+            ],
+            "nimi": "Jono3",
+            "prioriteetti": 0,
+            "siirretaanSijoitteluun": true,
+            "tasasijasaanto": "ARVONTA",
+            "valintatapajonoOid": "jono3",
+            "valmisSijoiteltavaksi": true
         },
         {
             "_id": {
                 "$oid": "541bef0ae4b0e1d22689e608"
             },
-            "valintatapajonoOid" : "jono1",
-            "nimi" : "Jono1",
-            "prioriteetti" : 0,
-            "aloituspaikat" : 2,
-            "siirretaanSijoitteluun" : true,
-            "tasasijasaanto" : "ARVONTA",
-            "eiVarasijatayttoa" : false,
-            "valmisSijoiteltavaksi" : true,
-            "jonosijat": [
+            "aloituspaikat": 2,
+            "eiVarasijatayttoa": false,
+            "jonosijaIdt": [
                 {
-                    "hakemusOid" : "hakija1",
-                    "hakijaOid" : "1.2.246.562.24.34552787533",
-                    "etunimi" : "Lisa Maria",
-                    "sukunimi" : "Nevala",
-                    "hakutoiveprioriteetti" : 1,
-                    "harkinnanvarainen" : false,
-                    "jarjestyskriteeritulokset" : [
-                        {
-                            "prioriteetti" : 0,
-                            "arvo" : "10",
-                            "tila" : "HYVAKSYTTAVISSA",
-                            "nimi" : "Testikriteeri"
-                        }
-                    ]
+                    "$oid": "541bef0ae4b0e1d22689e607"
                 },
                 {
-                    "hakemusOid" : "hakija2",
-                    "hakijaOid" : "1.2.246.562.24.42438870792",
-                    "etunimi" : "Olli-Pekka",
-                    "sukunimi" : "Riikonen",
-                    "hakutoiveprioriteetti" : 1,
-                    "harkinnanvarainen" : false,
-                    "jarjestyskriteeritulokset" : [
-                        {
-                            "prioriteetti" : 0,
-                            "arvo" : "9",
-                            "tila" : "HYVAKSYTTAVISSA",
-                            "nimi" : "Testikriteeri"
-                        }
-                    ]
+                    "$oid": "541bef0ae4b0e1d22689e608"
                 },
                 {
-                    "hakemusOid" : "hakija3",
-                    "hakijaOid" : "1.2.246.562.24.45661259022",
-                    "etunimi" : "Joonas-Petteri",
-                    "sukunimi" : "Valkola",
-                    "hakutoiveprioriteetti" : 1,
-                    "harkinnanvarainen" : false,
-                    "jarjestyskriteeritulokset" : [
-                        {
-                            "prioriteetti" : 0,
-                            "arvo" : "8",
-                            "tila" : "HYVAKSYTTAVISSA",
-                            "nimi" : "Testikriteeri"
-                        }
-                    ]
+                    "$oid": "541bef0ae4b0e1d22689e609"
                 },
                 {
-                    "hakemusOid" : "hakija4",
-                    "hakijaOid" : "1.2.246.562.24.45661259022",
-                    "etunimi" : "Joonas-Petteri",
-                    "sukunimi" : "Valkola",
-                    "hakutoiveprioriteetti" : 1,
-                    "harkinnanvarainen" : false,
-                    "jarjestyskriteeritulokset" : [
-                        {
-                            "prioriteetti" : 0,
-                            "arvo" : "7",
-                            "tila" : "HYVAKSYTTAVISSA",
-                            "nimi" : "Testikriteeri"
-                        }
-                    ]
+                    "$oid": "541bef0ae4b0e1d22689e610"
                 },
                 {
-                    "hakemusOid" : "hakija5",
-                    "hakijaOid" : "1.2.246.562.24.45661259022",
-                    "etunimi" : "Joonas-Petteri",
-                    "sukunimi" : "Valkola",
-                    "hakutoiveprioriteetti" : 1,
-                    "harkinnanvarainen" : false,
-                    "jarjestyskriteeritulokset" : [
-                        {
-                            "prioriteetti" : 0,
-                            "arvo" : "6",
-                            "tila" : "HYVAKSYTTAVISSA",
-                            "nimi" : "Testikriteeri"
-                        }
-                    ]
+                    "$oid": "541bef0ae4b0e1d22689e611"
                 },
                 {
-                    "hakemusOid" : "hakija6",
-                    "hakijaOid" : "1.2.246.562.24.45661259022",
-                    "etunimi" : "Joonas-Petteri",
-                    "sukunimi" : "Valkola",
-                    "hakutoiveprioriteetti" : 1,
-                    "harkinnanvarainen" : false,
-                    "jarjestyskriteeritulokset" : [
-                        {
-                            "prioriteetti" : 0,
-                            "arvo" : "5",
-                            "tila" : "HYVAKSYTTAVISSA",
-                            "nimi" : "Testikriteeri"
-                        }
-                    ]
+                    "$oid": "541bef0ae4b0e1d22689e612"
                 }
-            ]
+            ],
+            "nimi": "Jono1",
+            "prioriteetti": 0,
+            "siirretaanSijoitteluun": true,
+            "tasasijasaanto": "ARVONTA",
+            "valintatapajonoOid": "jono1",
+            "valmisSijoiteltavaksi": true
         }
     ]
 }
