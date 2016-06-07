@@ -20,4 +20,6 @@ public interface HakukohdeDao {
     Hakukohde getHakukohdeForSijoitteluajo(Long ajoId, String hakukohdeOid);
 
     List<Hakukohde> haeHakukohteetJoihinHakemusOsallistuu(Long sijoitteluajoId, String hakemusOid);
+
+    Boolean isValintapajonoInUse(Long sijoitteluAjoId, String valintatapajonoOid);
 }

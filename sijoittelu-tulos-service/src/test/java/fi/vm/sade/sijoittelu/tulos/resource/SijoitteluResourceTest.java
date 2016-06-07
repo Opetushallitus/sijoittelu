@@ -93,6 +93,19 @@ public class SijoitteluResourceTest {
         assertEquals(0, sijoitteluResource.hakemukset(hakuOid, "1234", true, null, null, null, null, null).getResults().size());
     }
 
+    @Test
+    @UsingDataSet(locations = {"sijoittelu-basedata.json", "hyvaksytty-ilmoitettu.json"}, loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
+    public void testValintatapajonoInUse() {
+        assertEquals(true, sijoitteluResource.isValintapajonoInUse(hakuOid, "14090336922663576781797489829886"));
+        assertEquals(false, sijoitteluResource.isValintapajonoInUse(hakuOid, "nonExistingOid"));
+    }
+
+    @Test
+    @UsingDataSet(locations = {"sijoittelu-basedata.json", "hyvaksytty-ilmoitettu.json"}, loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
+    public void testValintatapajonoInUseWhenSijoitteluHasNotBeenExecuted() {
+        assertEquals(false, sijoitteluResource.isValintapajonoInUse("nonExistingHaku", "14090336922663576781797489829886"));
+    }
+
     private void verifyHakemus(final List<HakijaDTO> hakijat) throws JsonProcessingException {
         assertEquals(1, hakijat.size());
         assertEquals(hakijatAsString, objectMapper.writeValueAsString(hakijat));

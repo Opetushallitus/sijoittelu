@@ -41,15 +41,25 @@ public class SijoitteluDaoImpl implements SijoitteluDao {
                 .add("_id", 0)
                 .add("sijoitteluajo", 1).get();
 
-        Iterator<DBObject> i = morphiaDS.getDB().getCollection("Sijoittelu").aggregate(ImmutableList.of(
-                match, unwind, endMilsProject, sort, limit, sijoitteluajoIdProject
-        )).results().iterator();
+        Iterator<DBObject> i = findSijoittelu(match, unwind, endMilsProject, sort, limit, sijoitteluajoIdProject);
 
         if (i.hasNext()) {
             DBObject o = (DBObject) i.next().get("sijoitteluajo");
             return Optional.of(new Mapper().fromDBObject(SijoitteluAjo.class, o, new DefaultEntityCache()));
         }
         return Optional.empty();
+    }
+
+    private Iterator<DBObject> findSijoittelu(DBObject match, DBObject unwind, DBObject endMilsProject, DBObject sort, DBObject limit, DBObject sijoitteluajoIdProject) {
+        Iterator<DBObject> sijoitteluIterator = morphiaDS.getDB().getCollection("Sijoittelu").aggregate(ImmutableList.of(
+            match, unwind, endMilsProject, sort, limit, sijoitteluajoIdProject
+        )).results().iterator();
+        if (sijoitteluIterator.hasNext()) {
+            return sijoitteluIterator;
+        }
+        return morphiaDS.getDB().getCollection("ErillisSijoittelu").aggregate(ImmutableList.of(
+                match, unwind, endMilsProject, sort, limit, sijoitteluajoIdProject
+        )).results().iterator();
     }
 
     @Override

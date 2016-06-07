@@ -59,6 +59,7 @@ public class SijoitteluTulosConverterImpl implements SijoitteluTulosConverter {
                                        Hakukohde hakukohde) {
         ValintatapajonoDTO dto = new ValintatapajonoDTO();
         dto.setAloituspaikat(valintatapajono.getAloituspaikat());
+        dto.setAlkuperaisetAloituspaikat(valintatapajono.getAlkuperaisetAloituspaikat());
         dto.setEiVarasijatayttoa(valintatapajono.getEiVarasijatayttoa());
         dto.setKaikkiEhdonTayttavatHyvaksytaan(valintatapajono.getKaikkiEhdonTayttavatHyvaksytaan());
         dto.setPoissaOlevaTaytto(valintatapajono.getPoissaOlevaTaytto());
