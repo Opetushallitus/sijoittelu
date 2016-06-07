@@ -59,6 +59,11 @@ public class RaportointiServiceImpl implements RaportointiService {
     }
 
     @Override
+    public Optional<SijoitteluAjo> latestSijoitteluAjoForHakukohde(String hakuOid, String hakukohdeOid) {
+        return sijoitteluDao.getLatestSijoitteluajo(hakuOid, hakukohdeOid);
+    }
+
+    @Override
     public HakijaDTO hakemus(SijoitteluAjo sijoitteluAjo, String hakemusOid) {
         List<Hakukohde> hakukohteetJoihinHakemusOsallistuu = hakukohdeDao.haeHakukohteetJoihinHakemusOsallistuu(sijoitteluAjo.getSijoitteluajoId(), hakemusOid);
         List<Valintatulos> valintatulokset = valintatulosDao.loadValintatuloksetForHakemus(hakemusOid);

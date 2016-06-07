@@ -18,4 +18,6 @@ public interface SijoitteluDao {
     Optional<SijoitteluAjo> getSijoitteluajo(Long sijoitteluajoId);
 
     Optional<SijoitteluAjo> getLatestSijoitteluajo(String hakuOid);
+
+    Optional<SijoitteluAjo> getLatestSijoitteluajo(String hakuOid, String hakukohdeOid);
 }
