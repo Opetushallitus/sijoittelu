@@ -40,4 +40,12 @@ public class WrapperHelperMethods {
     public static Boolean jononKaikkiEhdonTayttavatHyvaksytaan(HakemusWrapper hakemusWrapper) {
         return hakemusWrapper.getValintatapajono().getValintatapajono().getKaikkiEhdonTayttavatHyvaksytaan();
     }
+
+    public static boolean siirtynytToisestaValintatapajonosta(HakemusWrapper hakemusWrapper) {
+        return hakemusWrapper.getHakemus().getSiirtynytToisestaValintatapajonosta();
+    }
+
+    public static void asetaSiirtynytToisestaValintatapajonosta(HakemusWrapper hakemusWrapper, boolean b) {
+        hakemusWrapper.getHakemus().setSiirtynytToisestaValintatapajonosta(b);
+    }
 }
