@@ -190,6 +190,33 @@ public class TilaResource {
         }
     }
 
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("/checkStaleRead")
+    @PreAuthorize(UPDATE_CRUD)
+    @ApiOperation(value = "Tarkista onko Valintatuloksia muutettu hakemisen jälkeen")
+    public Response tarkistaEtteiMuutoksiaHakemisenJalkeen(List<Valintatulos> valintatulokset) {
+        if (valintatulokset.stream().allMatch(valintatulos -> {
+            Valintatulos fromDb = valintatulosDao.loadValintatulos(
+                    valintatulos.getHakukohdeOid(),
+                    valintatulos.getValintatapajonoOid(),
+                    valintatulos.getHakemusOid()
+            );
+            boolean fresh = fromDb.getViimeinenMuutos() == null ||
+                            fromDb.getViimeinenMuutos().before(valintatulos.getRead());
+            if (!fresh) {
+                LOGGER.warn("Stale read of {}, when checking {}", fromDb, valintatulos);
+            }
+            return fresh;
+        })) {
+            return Response.status(Status.OK).build();
+        } else {
+            return Response.status(Status.INTERNAL_SERVER_ERROR)
+                    .entity("Yritettiin muokata muuttunutta valintatulosta")
+                    .build();
+        }
+    }
+
     private void processVaihdaHakemuksienTilat(List<ValintatulosUpdateStatus> statuses, List<Valintatulos> valintatulokset, String hakuOid, String hakukohdeOid, Hakukohde hakukohde,  String selite) {
         for (Valintatulos v : valintatulokset) {
             try {
