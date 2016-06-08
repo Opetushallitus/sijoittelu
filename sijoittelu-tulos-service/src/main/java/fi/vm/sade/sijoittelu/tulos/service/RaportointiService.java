@@ -13,6 +13,8 @@ public interface RaportointiService {
 
     Optional<SijoitteluAjo> latestSijoitteluAjoForHaku(String hakuOid);
 
+    Optional<SijoitteluAjo> latestSijoitteluAjoForHakukohde(String hakuOid, String hakukohdeOid);
+
     HakijaDTO hakemus(SijoitteluAjo sijoitteluAjo, String hakemusOid);
 
     HakijaPaginationObject hakemukset(SijoitteluAjo ajo,Boolean hyvaksytyt, Boolean ilmanHyvaksyntaa,Boolean vastaanottaneet, List <String> hakukohdeOid, Integer count, Integer index);

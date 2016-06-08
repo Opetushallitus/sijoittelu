@@ -16,6 +16,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
@@ -41,7 +43,8 @@ public class SijoitteluDaoImpl implements SijoitteluDao {
                 .add("_id", 0)
                 .add("sijoitteluajo", 1).get();
 
-        Iterator<DBObject> i = findSijoittelu(match, unwind, endMilsProject, sort, limit, sijoitteluajoIdProject);
+        List<DBObject> sijoitteluPipelineSteps = new ArrayList<>(Arrays.asList(match, unwind, endMilsProject, sort, limit, sijoitteluajoIdProject));
+        Iterator<DBObject> i = findSijoittelu(sijoitteluPipelineSteps, sijoitteluPipelineSteps);
 
         if (i.hasNext()) {
             DBObject o = (DBObject) i.next().get("sijoitteluajo");
@@ -50,16 +53,37 @@ public class SijoitteluDaoImpl implements SijoitteluDao {
         return Optional.empty();
     }
 
-    private Iterator<DBObject> findSijoittelu(DBObject match, DBObject unwind, DBObject endMilsProject, DBObject sort, DBObject limit, DBObject sijoitteluajoIdProject) {
-        Iterator<DBObject> sijoitteluIterator = morphiaDS.getDB().getCollection("Sijoittelu").aggregate(ImmutableList.of(
-            match, unwind, endMilsProject, sort, limit, sijoitteluajoIdProject
-        )).results().iterator();
+    private Iterator<DBObject> findSijoittelu(List<DBObject> normaalisijoitteluPipelineSteps, List<DBObject> erillisSijoitteluPipelineSteps) {
+        Iterator<DBObject> sijoitteluIterator = morphiaDS.getDB().getCollection("Sijoittelu").aggregate(normaalisijoitteluPipelineSteps).results().iterator();
         if (sijoitteluIterator.hasNext()) {
             return sijoitteluIterator;
         }
-        return morphiaDS.getDB().getCollection("ErillisSijoittelu").aggregate(ImmutableList.of(
-                match, unwind, endMilsProject, sort, limit, sijoitteluajoIdProject
-        )).results().iterator();
+        return morphiaDS.getDB().getCollection("ErillisSijoittelu").aggregate(erillisSijoitteluPipelineSteps).results().iterator();
+    }
+
+    @Override
+    public Optional<SijoitteluAjo> getLatestSijoitteluajo(String hakuOid, String hakukohdeOid) {
+        DBObject match = BasicDBObjectBuilder.start().push("$match").add("hakuOid", hakuOid).get();
+        DBObject unwind = BasicDBObjectBuilder.start("$unwind", "$sijoitteluajot").get();
+        DBObject matchHakukohde = BasicDBObjectBuilder.start().push("$match").add("sijoitteluajot.hakukohteet.oid", hakukohdeOid).get();
+        DBObject endMilsProject = BasicDBObjectBuilder.start().push("$project")
+                .add("sijoitteluajo", "$sijoitteluajot")
+                .push("endMils").add("$ifNull", ImmutableList.of("$sijoitteluajot.endMils", -1)).get();
+        DBObject sort = BasicDBObjectBuilder.start().push("$sort").add("endMils", -1).get();
+        DBObject limit = BasicDBObjectBuilder.start("$limit", 1).get();
+        DBObject sijoitteluajoIdProject = BasicDBObjectBuilder.start().push("$project")
+                .add("_id", 0)
+                .add("sijoitteluajo", 1).get();
+
+        List<DBObject> normaaliSijoitteluPipelineSteps = new ArrayList<>(Arrays.asList(match, unwind, endMilsProject, sort, limit, sijoitteluajoIdProject));
+        List<DBObject> erillisSijoitteluPipelineSteps = new ArrayList<>(Arrays.asList(match, unwind, matchHakukohde, endMilsProject, sort, limit, sijoitteluajoIdProject));
+        Iterator<DBObject> i = findSijoittelu(normaaliSijoitteluPipelineSteps, erillisSijoitteluPipelineSteps);
+
+        if (i.hasNext()) {
+            DBObject o = (DBObject) i.next().get("sijoitteluajo");
+            return Optional.of(new Mapper().fromDBObject(SijoitteluAjo.class, o, new DefaultEntityCache()));
+        }
+        return Optional.empty();
     }
 
     @Override
