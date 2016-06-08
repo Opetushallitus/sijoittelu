@@ -179,8 +179,14 @@ public class ValintatulosDaoImpl implements ValintatulosDao {
                     .set("julkaistavissa", tulos.getJulkaistavissa())
                     .set("ehdollisestiHyvaksyttavissa", tulos.getEhdollisestiHyvaksyttavissa())
                     .set("hyvaksyttyVarasijalta", tulos.getHyvaksyttyVarasijalta())
-                    .set("hyvaksyPeruuntunut", tulos.getHyvaksyPeruuntunut())
-                    .set("hyvaksymiskirjeLahetetty", tulos.getHyvaksymiskirjeLahetetty());
+                    .set("hyvaksyPeruuntunut", tulos.getHyvaksyPeruuntunut());
+
+            // Kenttä hyvaksymiskirjeLahetetty on null, ellei virkailija ole määritellyt kirjettä erikseen lähetetyksi.
+            // Tämä tilanne täytyy käsitellä erikseen, koska UpdateOperations-olio ei hyväksy null-arvoja.
+            if (tulos.getHyvaksymiskirjeLahetetty() != null) {
+                update.set("hyvaksymiskirjeLahetetty", tulos.getHyvaksymiskirjeLahetetty());
+            }
+
             List<LogEntry> diff = new ArrayList<>(tulos.getLogEntries());
             diff.removeAll(tulos.getOriginalLogEntries());
             if(!diff.isEmpty()) {
