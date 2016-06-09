@@ -18,6 +18,7 @@ import fi.vm.sade.sijoittelu.batch.logic.impl.DomainConverter;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoitteluAlgorithm;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoitteluajoWrapperFactory;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.postsijoitteluprocessor.PostSijoitteluProcessor;
+import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.util.TilaTaulukot;
 import fi.vm.sade.sijoittelu.laskenta.external.resource.ValintaTulosServiceResource;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.presijoitteluprocessor.PreSijoitteluProcessor;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.SijoitteluajoWrapper;
@@ -329,6 +330,9 @@ public class SijoitteluBusinessService {
                         if(edellinen != null && hakemus.isHyvaksyttyHakijaryhmasta() == false) {
                             hakemus.setHyvaksyttyHakijaryhmasta(edellinen.isHyvaksyttyHakijaryhmasta());
                             hakemus.setHakijaryhmaOid(edellinen.getHakijaryhmaOid());
+                        }
+                        if(edellinen != null && TilaTaulukot.kuuluuHyvaksyttyihinTiloihin(hakemus.getTila()) && hakemus.isOnkoMuuttunutViimeSijoittelussa() == false) {
+                            hakemus.setSiirtynytToisestaValintatapajonosta(edellinen.getSiirtynytToisestaValintatapajonosta());
                         }
                     }
                 };
