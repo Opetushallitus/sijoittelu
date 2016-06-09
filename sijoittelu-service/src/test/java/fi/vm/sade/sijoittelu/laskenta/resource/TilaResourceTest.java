@@ -16,6 +16,7 @@ import fi.vm.sade.sijoittelu.tulos.dto.HakukohdeDTO;
 import fi.vm.sade.valinta.http.HttpResource;
 import junit.framework.Assert;
 import org.apache.cxf.jaxrs.client.WebClient;
+import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.web.context.support.WebApplicationContextUtils;
@@ -27,6 +28,7 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -94,7 +96,7 @@ public class TilaResourceTest {
                     case "2":
                         throw new NotAuthorizedException();
                     case "3":
-                        throw new StaleReadException(hakuoid, hakukohdeOid, valintatapajonoOid, hakemusOid);
+                        throw new StaleReadException(hakuoid, hakukohdeOid, valintatapajonoOid, hakemusOid, new Date(), new DateTime().minusMinutes(1).toDate());
                     case "4":
                         throw new IllegalArgumentException();
                 }

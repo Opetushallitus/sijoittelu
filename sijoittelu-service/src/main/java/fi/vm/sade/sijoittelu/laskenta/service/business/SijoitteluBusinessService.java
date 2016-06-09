@@ -580,7 +580,7 @@ public class SijoitteluBusinessService {
             return;
         }
         if (v.getViimeinenMuutos() != null && v.getViimeinenMuutos().after(change.getRead())) {
-            throw new StaleReadException(hakuoid, hakukohdeOid, valintatapajonoOid, hakemusOid);
+            throw new StaleReadException(hakuoid, hakukohdeOid, valintatapajonoOid, hakemusOid, v.getViimeinenMuutos(), change.getRead());
         }
 
         authorizeJulkaistavissa(hakuoid, v.getJulkaistavissa(), change.getJulkaistavissa());
