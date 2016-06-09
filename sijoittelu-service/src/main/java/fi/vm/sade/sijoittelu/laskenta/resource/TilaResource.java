@@ -205,7 +205,8 @@ public class TilaResource {
                     valintatulos.getValintatapajonoOid(),
                     valintatulos.getHakemusOid()
                 );
-                boolean fresh = fromDb.getViimeinenMuutos() == null ||
+                boolean fresh = fromDb == null ||
+                    fromDb.getViimeinenMuutos() == null ||
                     fromDb.getViimeinenMuutos().before(valintatulos.getRead());
                 if (!fresh) {
                     statuses.add(new ValintatulosUpdateStatus(Status.CONFLICT.getStatusCode(), "Stale read of valintatulos", fromDb.getValintatapajonoOid(), fromDb.getHakemusOid()));
