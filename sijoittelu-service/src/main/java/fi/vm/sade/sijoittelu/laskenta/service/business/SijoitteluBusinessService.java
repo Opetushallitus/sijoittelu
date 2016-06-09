@@ -327,13 +327,16 @@ public class SijoitteluBusinessService {
                             varasija++;
                             hakemus.setVarasijanNumero(varasija);
                         }
-                        if(edellinen != null && hakemus.isHyvaksyttyHakijaryhmasta() == false) {
-                            hakemus.setHyvaksyttyHakijaryhmasta(edellinen.isHyvaksyttyHakijaryhmasta());
-                            hakemus.setHakijaryhmaOid(edellinen.getHakijaryhmaOid());
+                        if(edellinen != null && TilaTaulukot.kuuluuHyvaksyttyihinTiloihin(hakemus.getTila())) {
+                            if(hakemus.isHyvaksyttyHakijaryhmasta() == false) {
+                                hakemus.setHyvaksyttyHakijaryhmasta(edellinen.isHyvaksyttyHakijaryhmasta());
+                                hakemus.setHakijaryhmaOid(edellinen.getHakijaryhmaOid());
+                            }
+                            if(hakemus.getSiirtynytToisestaValintatapajonosta() == false) {
+                                hakemus.setSiirtynytToisestaValintatapajonosta(edellinen.getSiirtynytToisestaValintatapajonosta());
+                            }
                         }
-                        if(edellinen != null && TilaTaulukot.kuuluuHyvaksyttyihinTiloihin(hakemus.getTila()) && hakemus.getSiirtynytToisestaValintatapajonosta() == false) {
-                            hakemus.setSiirtynytToisestaValintatapajonosta(edellinen.getSiirtynytToisestaValintatapajonosta());
-                        }
+
                     }
                 };
     }
