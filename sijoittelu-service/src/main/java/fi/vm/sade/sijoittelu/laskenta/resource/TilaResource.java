@@ -3,6 +3,7 @@ package fi.vm.sade.sijoittelu.laskenta.resource;
 import static fi.vm.sade.sijoittelu.laskenta.roles.SijoitteluRole.READ_UPDATE_CRUD;
 import static fi.vm.sade.sijoittelu.laskenta.roles.SijoitteluRole.UPDATE_CRUD;
 import static fi.vm.sade.sijoittelu.laskenta.util.SijoitteluAudit.username;
+import com.google.common.collect.ImmutableMap;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
@@ -209,10 +210,12 @@ public class TilaResource {
             }
             return fresh;
         })) {
-            return Response.status(Status.OK).build();
+            return Response.status(Status.OK)
+                    .entity(ImmutableMap.builder().put("message", String.format("%d valintatulosta OK.", valintatulokset.size())))
+                    .build();
         } else {
             return Response.status(Status.INTERNAL_SERVER_ERROR)
-                    .entity("Yritettiin muokata muuttunutta valintatulosta")
+                    .entity(ImmutableMap.builder().put("message", "Yritettiin muokata muuttunutta valintatulosta"))
                     .build();
         }
     }
