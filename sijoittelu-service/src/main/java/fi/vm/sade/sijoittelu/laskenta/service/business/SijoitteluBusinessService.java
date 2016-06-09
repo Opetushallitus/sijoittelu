@@ -331,7 +331,7 @@ public class SijoitteluBusinessService {
                             hakemus.setHyvaksyttyHakijaryhmasta(edellinen.isHyvaksyttyHakijaryhmasta());
                             hakemus.setHakijaryhmaOid(edellinen.getHakijaryhmaOid());
                         }
-                        if(edellinen != null && TilaTaulukot.kuuluuHyvaksyttyihinTiloihin(hakemus.getTila()) && hakemus.isOnkoMuuttunutViimeSijoittelussa() == false) {
+                        if(edellinen != null && TilaTaulukot.kuuluuHyvaksyttyihinTiloihin(hakemus.getTila()) && hakemus.getSiirtynytToisestaValintatapajonosta() == false) {
                             hakemus.setSiirtynytToisestaValintatapajonosta(edellinen.getSiirtynytToisestaValintatapajonosta());
                         }
                     }
