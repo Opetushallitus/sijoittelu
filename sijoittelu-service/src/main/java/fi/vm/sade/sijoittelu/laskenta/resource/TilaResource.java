@@ -197,25 +197,29 @@ public class TilaResource {
     @PreAuthorize(UPDATE_CRUD)
     @ApiOperation(value = "Tarkista onko Valintatuloksia muutettu hakemisen jälkeen")
     public Response tarkistaEtteiMuutoksiaHakemisenJalkeen(List<Valintatulos> valintatulokset) {
-        if (valintatulokset.stream().allMatch(valintatulos -> {
-            Valintatulos fromDb = valintatulosDao.loadValintatulos(
+        List<ValintatulosUpdateStatus> statuses = new ArrayList<>();
+        try {
+            valintatulokset.stream().forEach(valintatulos -> {
+                Valintatulos fromDb = valintatulosDao.loadValintatulos(
                     valintatulos.getHakukohdeOid(),
                     valintatulos.getValintatapajonoOid(),
                     valintatulos.getHakemusOid()
-            );
-            boolean fresh = fromDb.getViimeinenMuutos() == null ||
-                            fromDb.getViimeinenMuutos().before(valintatulos.getRead());
-            if (!fresh) {
-                LOGGER.warn("Stale read of {}, when checking {}", fromDb, valintatulos);
-            }
-            return fresh;
-        })) {
-            return Response.status(Status.OK)
-                    .entity(ImmutableMap.builder().put("message", String.format("%d valintatulosta OK.", valintatulokset.size())))
-                    .build();
-        } else {
+                );
+                boolean fresh = fromDb.getViimeinenMuutos() == null ||
+                    fromDb.getViimeinenMuutos().before(valintatulos.getRead());
+                if (!fresh) {
+                    statuses.add(new ValintatulosUpdateStatus(Status.CONFLICT.getStatusCode(), "Stale read of valintatulos", fromDb.getValintatapajonoOid(), fromDb.getHakemusOid()));
+                    LOGGER.warn("Stale read of {}, when checking {}", fromDb, valintatulos);
+                }
+            });
+            Status s = statuses.isEmpty() ? Status.OK : Status.INTERNAL_SERVER_ERROR;
+            return Response.status(s)
+                .entity(new HakukohteenValintatulosUpdateStatuses(statuses))
+                .build();
+        } catch (Exception e) {
+            LOGGER.error(String.format("Poikkeus tarkistettaessa %d valintatuloksen tuoreutta", valintatulokset.size()), e);
             return Response.status(Status.INTERNAL_SERVER_ERROR)
-                    .entity(ImmutableMap.builder().put("message", "Yritettiin muokata muuttunutta valintatulosta"))
+                    .entity(new HakukohteenValintatulosUpdateStatuses(e.getMessage(), statuses))
                     .build();
         }
     }
