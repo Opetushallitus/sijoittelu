@@ -195,7 +195,7 @@ public class TilaResource {
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/checkStaleRead")
     @PreAuthorize(UPDATE_CRUD)
-    @ApiOperation(value = "Tarkista onko Valintatuloksia muutettu hakemisen jälkeen")
+    @ApiOperation(value = "Tarkista onko Valintatuloksia muutettu hakemisen jälkeen. Palauttaa aina onnistuessaan 200 OK ja \"stale read\" -virheet vain rivikohtaisesti vastauksessa.")
     public Response tarkistaEtteiMuutoksiaHakemisenJalkeen(List<Valintatulos> valintatulokset) {
         List<ValintatulosUpdateStatus> statuses = new ArrayList<>();
         try {
@@ -205,16 +205,17 @@ public class TilaResource {
                     valintatulos.getValintatapajonoOid(),
                     valintatulos.getHakemusOid()
                 );
-                boolean fresh = fromDb == null ||
-                    fromDb.getViimeinenMuutos() == null ||
-                    fromDb.getViimeinenMuutos().before(valintatulos.getRead());
+                Date latestChangeInDB = fromDb == null ? null : fromDb.getViimeinenMuutos();
+                boolean fresh = latestChangeInDB == null ||
+                    latestChangeInDB.before(valintatulos.getRead());
                 if (!fresh) {
-                    statuses.add(new ValintatulosUpdateStatus(Status.CONFLICT.getStatusCode(), "Stale read of valintatulos", fromDb.getValintatapajonoOid(), fromDb.getHakemusOid()));
-                    LOGGER.warn("Stale read of {}, when checking {}", fromDb, valintatulos);
+                    statuses.add(new ValintatulosUpdateStatus(Status.CONFLICT.getStatusCode(), "Yritettiin muokata muuttunutta valintatulosta", fromDb.getValintatapajonoOid(), fromDb.getHakemusOid()));
+                    long disparityMillis = latestChangeInDB.getTime() - valintatulos.getRead().getTime();
+                    LOGGER.warn("Stale read: latest change from db {}, change read at {}, difference {} ms - of {}, when checking {}",
+                        latestChangeInDB, valintatulos.getRead(), disparityMillis, fromDb, valintatulos);
                 }
             });
-            Status s = statuses.isEmpty() ? Status.OK : Status.INTERNAL_SERVER_ERROR;
-            return Response.status(s)
+            return Response.status(Status.OK)
                 .entity(new HakukohteenValintatulosUpdateStatuses(statuses))
                 .build();
         } catch (Exception e) {
