@@ -303,6 +303,10 @@ public class Valintatulos implements Serializable {
         this.ehdollisestiHyvaksyttavissa = ehdollisestiHyvaksyttavissa;
     }
 
+    public void setRead(Date read) {
+        this.read = read;
+    }
+
     public Date getRead() {
         return read;
     }

@@ -3,6 +3,7 @@ package fi.vm.sade.sijoittelu.laskenta.resource;
 import static fi.vm.sade.sijoittelu.laskenta.roles.SijoitteluRole.READ_UPDATE_CRUD;
 import static fi.vm.sade.sijoittelu.laskenta.roles.SijoitteluRole.UPDATE_CRUD;
 import static fi.vm.sade.sijoittelu.laskenta.util.SijoitteluAudit.username;
+import com.google.common.collect.ImmutableMap;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
@@ -184,6 +185,41 @@ public class TilaResource {
                     .build();
         } catch (Exception e) {
             LOGGER.error("haku: {}, hakukohde: {}", hakuOid, hakukohdeOid, e);
+            return Response.status(Status.INTERNAL_SERVER_ERROR)
+                    .entity(new HakukohteenValintatulosUpdateStatuses(e.getMessage(), statuses))
+                    .build();
+        }
+    }
+
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("/checkStaleRead")
+    @PreAuthorize(UPDATE_CRUD)
+    @ApiOperation(value = "Tarkista onko Valintatuloksia muutettu hakemisen jälkeen. Palauttaa aina onnistuessaan 200 OK ja \"stale read\" -virheet vain rivikohtaisesti vastauksessa.")
+    public Response tarkistaEtteiMuutoksiaHakemisenJalkeen(List<Valintatulos> valintatulokset) {
+        List<ValintatulosUpdateStatus> statuses = new ArrayList<>();
+        try {
+            valintatulokset.stream().forEach(valintatulos -> {
+                Valintatulos fromDb = valintatulosDao.loadValintatulos(
+                    valintatulos.getHakukohdeOid(),
+                    valintatulos.getValintatapajonoOid(),
+                    valintatulos.getHakemusOid()
+                );
+                Date latestChangeInDB = fromDb == null ? null : fromDb.getViimeinenMuutos();
+                boolean fresh = latestChangeInDB == null ||
+                    latestChangeInDB.before(valintatulos.getRead());
+                if (!fresh) {
+                    statuses.add(new ValintatulosUpdateStatus(Status.CONFLICT.getStatusCode(), "Yritettiin muokata muuttunutta valintatulosta", fromDb.getValintatapajonoOid(), fromDb.getHakemusOid()));
+                    long disparityMillis = latestChangeInDB.getTime() - valintatulos.getRead().getTime();
+                    LOGGER.warn("Stale read: latest change from db {}, change read at {}, difference {} ms - of {}, when checking {}",
+                        latestChangeInDB, valintatulos.getRead(), disparityMillis, fromDb, valintatulos);
+                }
+            });
+            return Response.status(Status.OK)
+                .entity(new HakukohteenValintatulosUpdateStatuses(statuses))
+                .build();
+        } catch (Exception e) {
+            LOGGER.error(String.format("Poikkeus tarkistettaessa %d valintatuloksen tuoreutta", valintatulokset.size()), e);
             return Response.status(Status.INTERNAL_SERVER_ERROR)
                     .entity(new HakukohteenValintatulosUpdateStatuses(e.getMessage(), statuses))
                     .build();
