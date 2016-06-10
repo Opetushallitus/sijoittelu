@@ -54,6 +54,8 @@ public class Hakemus implements Serializable {
 
     private String hakijaryhmaOid;
 
+    private boolean siirtynytToisestaValintatapajonosta = false;
+
     public String getHakijaryhmaOid() {
         return hakijaryhmaOid;
     }
@@ -211,5 +213,13 @@ public class Hakemus implements Serializable {
 
     public void setEdellinenTila(HakemuksenTila edellinenTila) {
         this.edellinenTila = edellinenTila;
+    }
+
+    public void setSiirtynytToisestaValintatapajonosta(boolean siirtynytToisestaValintatapajonosta) {
+        this.siirtynytToisestaValintatapajonosta = siirtynytToisestaValintatapajonosta;
+    }
+
+    public boolean getSiirtynytToisestaValintatapajonosta() {
+        return this.siirtynytToisestaValintatapajonosta;
     }
 }

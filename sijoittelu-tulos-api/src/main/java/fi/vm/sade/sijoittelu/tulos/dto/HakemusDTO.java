@@ -52,6 +52,8 @@ public class HakemusDTO implements Serializable {
 
     private String hakijaryhmaOid;
 
+    private boolean siirtynytToisestaValintatapajonosta = false;
+
     public String getHakijaryhmaOid() {
         return hakijaryhmaOid;
     }
@@ -252,5 +254,13 @@ public class HakemusDTO implements Serializable {
 
     public void setTilanKuvaukset(Map<String, String> tilanKuvaukset) {
         this.tilanKuvaukset = tilanKuvaukset;
+    }
+
+    public void setSiirtynytToisestaValintatapajonosta(boolean siirtynytToisestaValintatapajonosta) {
+        this.siirtynytToisestaValintatapajonosta = siirtynytToisestaValintatapajonosta;
+    }
+
+    public boolean getSiirtynytToisestaValintatapajonosta() {
+        return this.siirtynytToisestaValintatapajonosta;
     }
 }

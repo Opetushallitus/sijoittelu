@@ -233,6 +233,7 @@ public class SijoitteleHakukohde {
                 if (h != hakemus && hakemuksenPrioriteetti(hakemus).equals(hakemuksenPrioriteetti(h))) {
                     Valintatapajono current = h.getValintatapajono().getValintatapajono();
                     Valintatapajono hyvaksyttyJono = hakemus.getValintatapajono().getValintatapajono();
+
                     // Peruutetaan vain jonot joissa prioriteetti integer on suurempi
                     if (hyvaksyttyJono.getPrioriteetti() < current.getPrioriteetti()) {
                         // Perustapaus
@@ -240,6 +241,7 @@ public class SijoitteleHakukohde {
                             if (!kuuluuHylattyihinTiloihin(hakemuksenTila(h))) {
                                 HakemuksenTila vanhaTila = hakemuksenTila(h);
                                 asetaTilaksiPeruuntunutToinenJono(h);
+                                asetaLippuJosSiirtynytToisestaValintatapajonosta(hakemus, h);
                                 if (kuuluuHyvaksyttyihinTiloihin(vanhaTila)) {
                                     uudelleenSijoiteltavatHakukohteet.add(h);
                                 }
@@ -249,6 +251,7 @@ public class SijoitteleHakukohde {
                             HakemuksenTila vanhaTila = hakemuksenTila(h);
                             if (kuuluuHyvaksyttyihinTiloihin(vanhaTila)) {
                                 asetaTilaksiPeruuntunutToinenJono(h);
+                                asetaLippuJosSiirtynytToisestaValintatapajonosta(hakemus, h);
                                 Optional<Valintatulos> jononTulos = h.getHenkilo().getValintatulos().stream().filter(v -> v.getValintatapajonoOid().equals(current.getOid())).findFirst();
                                 if (jononTulos.isPresent() && !jononTulos.get().getTila().equals(ValintatuloksenTila.KESKEN)) {
                                     Valintatulos muokattava = jononTulos.get();
@@ -272,6 +275,14 @@ public class SijoitteleHakukohde {
 
     private static List<HakemusWrapper> muuttuneetHyvaksytyt(List<HakemusWrapper> hakemukset) {
         return hakemukset.stream().filter(h -> !kuuluuHyvaksyttyihinTiloihin(hakemuksenTila(h))).collect(Collectors.toList());
+    }
+
+    private static void asetaLippuJosSiirtynytToisestaValintatapajonosta(HakemusWrapper hakemus, HakemusWrapper currentHakemus) {
+        if (currentHakemus.getHakemus().getEdellinenTila() != null
+                && kuuluuHyvaksyttyihinTiloihin(currentHakemus.getHakemus().getEdellinenTila())
+                && !siirtynytToisestaValintatapajonosta(hakemus)) {
+            asetaSiirtynytToisestaValintatapajonosta(hakemus, true);
+        }
     }
 
     private static List<HakemusWrapper> getTasasijaHakemus(List<HakemusWrapper> valituksiHaluavatHakemukset, Tasasijasaanto saanto) {

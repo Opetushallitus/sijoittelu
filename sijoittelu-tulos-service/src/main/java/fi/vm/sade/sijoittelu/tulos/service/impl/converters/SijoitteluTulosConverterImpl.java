@@ -93,6 +93,7 @@ public class SijoitteluTulosConverterImpl implements SijoitteluTulosConverter {
         dto.setJonosija(ha.getJonosija());
         dto.setPrioriteetti(ha.getPrioriteetti());
         dto.setSukunimi(ha.getSukunimi());
+        dto.setSiirtynytToisestaValintatapajonosta(ha.getSiirtynytToisestaValintatapajonosta());
         dto.setTasasijaJonosija(ha.getTasasijaJonosija());
         dto.setTila(EnumConverter.convert(HakemuksenTila.class, ha.getTila()));
         dto.setTilanKuvaukset(ha.getTilanKuvaukset());
