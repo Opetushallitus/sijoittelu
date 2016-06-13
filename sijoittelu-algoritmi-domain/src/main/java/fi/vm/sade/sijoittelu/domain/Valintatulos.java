@@ -48,6 +48,8 @@ public class Valintatulos implements Serializable {
 
     private ValintatulosMailStatus mailStatus = new ValintatulosMailStatus();
 
+    private Date hyvaksymiskirjeLahetetty;
+
     @Transient
     private ValintatuloksenTila tila;
 
@@ -309,6 +311,23 @@ public class Valintatulos implements Serializable {
         return read;
     }
 
+    public Date getHyvaksymiskirjeLahetetty() {
+        return hyvaksymiskirjeLahetetty;
+    }
+
+    public void setHyvaksymiskirjeLahetetty(Date hyvaksymiskirjeLahetetty) {
+        setHyvaksymiskirjeLahetetty(hyvaksymiskirjeLahetetty, "");
+    }
+
+    public void setHyvaksymiskirjeLahetetty(Date hyvaksymiskirjeLahetetty, String selite) {
+        setHyvaksymiskirjeLahetetty(hyvaksymiskirjeLahetetty, selite, JARJESTELMA);
+    }
+
+    public void setHyvaksymiskirjeLahetetty(Date hyvaksymiskirjeLahetetty, String selite, String muokkaaja) {
+        modified("hyvaksymiskirjeLahetetty", this.hyvaksymiskirjeLahetetty, hyvaksymiskirjeLahetetty, muokkaaja, selite);
+        this.hyvaksymiskirjeLahetetty = hyvaksymiskirjeLahetetty;
+    }
+
     @Override
     public String toString() {
         return "Valintatulos{" +
@@ -327,6 +346,7 @@ public class Valintatulos implements Serializable {
                 ", mailStatus=" + mailStatus +
                 ", tila=" + tila +
                 ", tilaHakijalle=" + tilaHakijalle +
+                ", hyvaksymiskirjeLahetetty=" + hyvaksymiskirjeLahetetty +
                 ", logEntries=" + logEntries +
                 ", read=" + read +
                 ", viimeinenMuutos=" + viimeinenMuutos +

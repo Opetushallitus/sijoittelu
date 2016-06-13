@@ -609,6 +609,7 @@ public class SijoitteluBusinessService {
         v.setEhdollisestiHyvaksyttavissa(change.getEhdollisestiHyvaksyttavissa(), selite, muokkaaja);
         v.setHyvaksyttyVarasijalta(change.getHyvaksyttyVarasijalta(), selite, muokkaaja);
         v.setHyvaksyPeruuntunut(change.getHyvaksyPeruuntunut(), selite, muokkaaja);
+        v.setHyvaksymiskirjeLahetetty(change.getHyvaksymiskirjeLahetetty(), selite, muokkaaja);
         valintatulosDao.createOrUpdateValintatulos(v);
 
         AUDIT.log(builder()
@@ -619,6 +620,7 @@ public class SijoitteluBusinessService {
                 .valintatapajonoOid(v.getValintatapajonoOid())
                 .add("ilmoittautumistila", v.getIlmoittautumisTila())
                 .add("julkaistavissa", v.getJulkaistavissa())
+                .add("hyvaksymiskirjeLahetetty", v.getHyvaksymiskirjeLahetetty())
                 .add("hyvaksyttyvarasijalta", v.getHyvaksyttyVarasijalta())
                 .add("hyvaksyperuuntunut", v.getHyvaksyPeruuntunut())
                 .add("ehdollisestihyvaksyttavissa", v.getEhdollisestiHyvaksyttavissa())
