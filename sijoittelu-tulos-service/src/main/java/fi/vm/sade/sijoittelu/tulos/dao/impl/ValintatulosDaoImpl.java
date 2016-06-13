@@ -182,9 +182,13 @@ public class ValintatulosDaoImpl implements ValintatulosDao {
                     .set("hyvaksyPeruuntunut", tulos.getHyvaksyPeruuntunut());
 
             // Kenttä hyvaksymiskirjeLahetetty on null, ellei virkailija ole määritellyt kirjettä erikseen lähetetyksi.
-            // Tämä tilanne täytyy käsitellä erikseen, koska UpdateOperations-olio ei hyväksy null-arvoja.
+            // Tämä tilanne täytyy käsitellä erikseen, koska UpdateOperations-olio ei hyväksy null-arvoja. Myös ko.
+            // tiedon poistaminen täytyy käsitellä unset-metodilla.
             if (tulos.getHyvaksymiskirjeLahetetty() != null) {
                 update.set("hyvaksymiskirjeLahetetty", tulos.getHyvaksymiskirjeLahetetty());
+            }
+            else {
+                update.unset("hyvaksymiskirjeLahetetty");
             }
 
             List<LogEntry> diff = new ArrayList<>(tulos.getLogEntries());
