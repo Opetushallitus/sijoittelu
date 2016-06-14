@@ -48,6 +48,7 @@ public class SijoitteluServiceJetty {
         System.setProperty("valintalaskentakoostepalvelu.valintaperusteet.rest.url", "http://localhost");
         System.setProperty("host.ilb", "http://localhost");
         System.setProperty("valintalaskentakoostepalvelu.parametriservice.rest.url", publicServerUrl);
+        System.setProperty("valintalaskentakoostepalvelu.oppijantunnistus.rest.url", publicServerUrl);
         System.setProperty("valintalaskentakoostepalvelu.tarjonta.rest.url", publicServerUrl);
         System.setProperty("valintalaskentakoostepalvelu.valinta-tulos-service.rest.url", vtsServerUrl + "/valinta-tulos-service");
         System.setProperty("sijoittelu-service.swagger.basepath", resourcesAddress);
