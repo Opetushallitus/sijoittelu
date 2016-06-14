@@ -15,6 +15,8 @@ public class HakukohdeDTO implements Serializable {
 
     private List<ValintatapajonoDTO> valintatapajonot = new ArrayList<ValintatapajonoDTO>();
 
+    private List<HakijaryhmaDTO> hakijaryhmat = new ArrayList<HakijaryhmaDTO>();
+
     private boolean kaikkiJonotSijoiteltu = true;
 
     public Long getSijoitteluajoId() {
@@ -55,6 +57,14 @@ public class HakukohdeDTO implements Serializable {
 
     public void setValintatapajonot(List<ValintatapajonoDTO> valintatapajonot) {
         this.valintatapajonot = valintatapajonot;
+    }
+
+    public List<HakijaryhmaDTO> getHakijaryhmat() {
+        return hakijaryhmat;
+    }
+
+    public void setHakijaryhmat(List<HakijaryhmaDTO> hakijaryhmat) {
+        this.hakijaryhmat = hakijaryhmat;
     }
 
     public boolean isKaikkiJonotSijoiteltu() {

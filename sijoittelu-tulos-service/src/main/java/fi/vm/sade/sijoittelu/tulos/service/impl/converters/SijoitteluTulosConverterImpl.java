@@ -52,6 +52,9 @@ public class SijoitteluTulosConverterImpl implements SijoitteluTulosConverter {
         for (Valintatapajono valintatapajono : hakukohde.getValintatapajonot()) {
             dto.getValintatapajonot().add(convert(valintatapajono, hakukohde));
         }
+        for (Hakijaryhma hakijaryhma : hakukohde.getHakijaryhmat()) {
+            dto.getHakijaryhmat().add(convert(hakijaryhma));
+        }
         return dto;
     }
 
@@ -112,6 +115,22 @@ public class SijoitteluTulosConverterImpl implements SijoitteluTulosConverter {
         applyPistetiedot(dto, ha.getPistetiedot());
         dto.setHyvaksyttyHakijaryhmasta(ha.isHyvaksyttyHakijaryhmasta());
         dto.setHakijaryhmaOid(ha.getHakijaryhmaOid());
+        return dto;
+    }
+
+    private HakijaryhmaDTO convert(Hakijaryhma hakijaryhma) {
+        HakijaryhmaDTO dto = new HakijaryhmaDTO();
+        dto.setPrioriteetti(hakijaryhma.getPrioriteetti());
+        dto.setPaikat(hakijaryhma.getPaikat());
+        dto.setOid(hakijaryhma.getOid());
+        dto.setNimi(hakijaryhma.getNimi());
+        dto.setHakukohdeOid(hakijaryhma.getHakukohdeOid());
+        dto.setKiintio(hakijaryhma.getKiintio());
+        dto.setKaytaKaikki(hakijaryhma.isKaytaKaikki());
+        dto.setTarkkaKiintio(hakijaryhma.isTarkkaKiintio());
+        dto.setKaytetaanRyhmaanKuuluvia(hakijaryhma.isKaytetaanRyhmaanKuuluvia());
+        dto.setValintatapajonoOid(hakijaryhma.getValintatapajonoOid());
+        dto.setHakemusOid(hakijaryhma.getHakemusOid());
         return dto;
     }
 
