@@ -217,6 +217,7 @@
             "_id": {
                 "$oid": "541bef0ae4b0e1d22689e606"
             },
+            "schemaVersion": 2,
             "aloituspaikat": 1,
             "eiVarasijatayttoa": false,
             "jonosijaIdt": [
@@ -242,6 +243,7 @@
             "_id": {
                 "$oid": "541bef0ae4b0e1d22689e607"
             },
+            "schemaVersion": 2,
             "aloituspaikat": 1,
             "eiVarasijatayttoa": false,
             "jonosijaIdt": [
@@ -266,6 +268,7 @@
             "_id": {
                 "$oid": "541bef0ae4b0e1d22689e608"
             },
+            "schemaVersion": 2,
             "aloituspaikat": 1,
             "eiVarasijatayttoa": false,
             "jonosijaIdt": [
