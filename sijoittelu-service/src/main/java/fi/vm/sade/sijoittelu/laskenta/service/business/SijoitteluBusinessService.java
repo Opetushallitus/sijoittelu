@@ -312,6 +312,8 @@ public class SijoitteluBusinessService {
                         if (hakemus.getTila() == HakemuksenTila.VARALLA) {
                             varasija++;
                             hakemus.setVarasijanNumero(varasija);
+                        } else {
+                            hakemus.setVarasijanNumero(null);
                         }
                         if(edellinen != null && TilaTaulukot.kuuluuHyvaksyttyihinTiloihin(hakemus.getTila())) {
                             if(hakemus.isHyvaksyttyHakijaryhmasta() == false) {
@@ -399,7 +401,7 @@ public class SijoitteluBusinessService {
                         h.setTilaHistoria(alkuperainen.getTilaHistoria());
                         h.setVarasijanNumero(alkuperainen.getVarasijanNumero());
                         h.setIlmoittautumisTila(alkuperainen.getIlmoittautumisTila());
-                        h.setEdellinenTila(alkuperainen.getEdellinenTila());
+                        //h.setEdellinenTila(alkuperainen.getEdellinenTila());
                     }
                 });
             });
