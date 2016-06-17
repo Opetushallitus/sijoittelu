@@ -1,14 +1,17 @@
 package fi.vm.sade.sijoittelu.tulos.dao.impl;
 
-import java.util.*;
-import java.util.stream.Collectors;
-
-import javax.annotation.PostConstruct;
-import javax.annotation.concurrent.Immutable;
-
 import com.google.common.collect.ImmutableList;
-import com.mongodb.*;
-import fi.vm.sade.sijoittelu.domain.*;
+import com.mongodb.BasicDBObject;
+import com.mongodb.BasicDBObjectBuilder;
+import com.mongodb.DBCollection;
+import com.mongodb.DBObject;
+
+import fi.vm.sade.sijoittelu.domain.HakemuksenTila;
+import fi.vm.sade.sijoittelu.domain.Hakemus;
+import fi.vm.sade.sijoittelu.domain.Hakukohde;
+import fi.vm.sade.sijoittelu.domain.LogEntry;
+import fi.vm.sade.sijoittelu.domain.Valintatulos;
+import fi.vm.sade.sijoittelu.tulos.dao.ValintatulosDao;
 import fi.vm.sade.sijoittelu.tulos.dto.raportointi.RaportointiValintatulos;
 import org.apache.commons.lang.StringUtils;
 import org.mongodb.morphia.Datastore;
@@ -20,7 +23,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
 
-import fi.vm.sade.sijoittelu.tulos.dao.ValintatulosDao;
+import javax.annotation.PostConstruct;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Repository
 public class ValintatulosDaoImpl implements ValintatulosDao {
@@ -140,6 +152,7 @@ public class ValintatulosDaoImpl implements ValintatulosDao {
             throw new RuntimeException("Invalid search params, fix exception later");
         }
         Query<Valintatulos> q = morphiaDS.createQuery(Valintatulos.class);
+        q.enableSnapshotMode();
         q.criteria("hakuOid").equal(hakuOid);
         return q.asList();
     }
