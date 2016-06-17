@@ -279,18 +279,25 @@ public class SijoitteluBusinessService {
 
     private void processOldApplications(final List<Hakukohde> olemassaolevatHakukohteet, final List<Hakukohde> kaikkiHakukohteet) {
         Map<String, Hakemus> hakemusHashMap = getStringHakemusMap(olemassaolevatHakukohteet);
+        Map<String, Valintatapajono> valintatapajonoHashMap = getStringValintatapajonoMap(olemassaolevatHakukohteet);
         kaikkiHakukohteet.parallelStream().forEach(hakukohde -> {
-                    hakukohde.getValintatapajonot().forEach(processValintatapaJono(hakemusHashMap, hakukohde));
+                    hakukohde.getValintatapajonot().forEach(processValintatapaJono(valintatapajonoHashMap, hakemusHashMap, hakukohde));
                     hakukohdeDao.persistHakukohde(hakukohde);
                 }
         );
     }
 
-    private Consumer<Valintatapajono> processValintatapaJono(Map<String, Hakemus> hakemusHashMap, Hakukohde hakukohde) {
+    private Consumer<Valintatapajono> processValintatapaJono(Map<String, Valintatapajono> valintatapajonoHashMap, Map<String, Hakemus> hakemusHashMap, Hakukohde hakukohde) {
         return valintatapajono -> {
                     valintatapajono.setAlinHyvaksyttyPistemaara(alinHyvaksyttyPistemaara(valintatapajono.getHakemukset()).orElse(null));
                     valintatapajono.setHyvaksytty(getMaara(valintatapajono.getHakemukset(), Arrays.asList(HakemuksenTila.HYVAKSYTTY, HakemuksenTila.VARASIJALTA_HYVAKSYTTY)));
                     valintatapajono.setVaralla(getMaara(valintatapajono.getHakemukset(), Arrays.asList(HakemuksenTila.VARALLA)));
+
+                    Valintatapajono vanhaValintatapajono = valintatapajonoHashMap.get(valintatapajono.getOid());
+                    if(vanhaValintatapajono != null) {
+                        valintatapajono.setValintaesitysHyvaksytty(vanhaValintatapajono.getValintaesitysHyvaksytty());
+                    }
+            
                     Collections.sort(valintatapajono.getHakemukset(), hakemusComparator);
                     int varasija = 0;
                     for (Hakemus hakemus : valintatapajono.getHakemukset()) {
@@ -339,6 +346,16 @@ public class SijoitteluBusinessService {
                         )
         );
         return hakemusHashMap;
+    }
+
+    private Map<String, Valintatapajono> getStringValintatapajonoMap(List<Hakukohde> olemassaolevatHakukohteet) {
+        Map<String, Valintatapajono> valintatapajonoHashMap = new ConcurrentHashMap<>();
+        olemassaolevatHakukohteet.parallelStream().forEach(hakukohde ->
+            hakukohde.getValintatapajonot().parallelStream().forEach(valintatapajono -> {
+                valintatapajonoHashMap.put(valintatapajono.getOid(), valintatapajono);
+            })
+        );
+        return valintatapajonoHashMap;
     }
 
     private int getMaara(List<Hakemus> hakemukset, List<HakemuksenTila> tilat) {
