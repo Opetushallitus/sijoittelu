@@ -59,6 +59,10 @@ public class SijoitteluServiceJetty {
         System.setProperty("valintalaskenta-laskenta-service.mongodb.dbname", "valintalaskentadb");
         System.setProperty("valintalaskenta-laskenta-service.mongodb.uri", Optional.ofNullable(System.getProperty("valintalaskentaMongoUri")).orElse(""));
         System.setProperty("sijoittelu-service.mongodb.uri", System.getProperty("sijoitteluMongoUri"));
+        System.setProperty("omatsivut.email.application.modify.link.en", "https://en.test.domain/token/");
+        System.setProperty("omatsivut.email.application.modify.link.fi", "https://fi.test.domain/token/");
+        System.setProperty("omatsivut.email.application.modify.link.sv", "https://sv.test.domain/token/");
+
         try {
             if (server.isStopped()) {
                 String root =  ProjectRootFinder.findProjectRoot() + "/sijoittelu/sijoittelu-service";
