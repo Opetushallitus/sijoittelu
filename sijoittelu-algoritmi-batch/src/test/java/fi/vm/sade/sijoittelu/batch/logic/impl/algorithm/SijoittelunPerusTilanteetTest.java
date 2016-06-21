@@ -37,7 +37,7 @@ public class SijoittelunPerusTilanteetTest {
     public void peruutaToisenPaikanVastaanottanutHakijaYPS() {
         SijoitusAjoBuilder before = new SijoitusAjoBuilder().julkaiseKaikki();
         SijoitusAjoBuilder after = new SijoitusAjoBuilder().julkaiseKaikki();
-        before.jono(2).hyvaksytty("A", "B").varalla("C").vastaanottanutToisessaHaussa("A");
+        before.jono(2).varalla("A", "B", "C").vastaanottanutToisessaHaussa("A");
         after.jono(2).peruuntunut("A").hyvaksytty("B", "C");
         assertSijoittelu(before, after);
     }
@@ -46,15 +46,15 @@ public class SijoittelunPerusTilanteetTest {
         SijoitusAjoBuilder before = new SijoitusAjoBuilder().julkaiseKaikki();
         SijoitusAjoBuilder after = new SijoitusAjoBuilder().julkaiseKaikki();
         boolean asetaMyosEdellinenTila = true;
-        before.jono(2).perunut(asetaMyosEdellinenTila, "A").hyvaksytty("B", "C").vastaanottanutToisessaHaussa("A");
-        after.jono(2).perunut("A").hyvaksytty("B", "C");
+        before.jono(2).hylatty("A").varalla("B", "C").vastaanottanutToisessaHaussa("A");
+        after.jono(2).hylatty("A").hyvaksytty("B", "C");
         assertSijoittelu(before, after);
     }
     @Test
     public void sailytaAlkuperainenHylattyValintatila() {
         SijoitusAjoBuilder before = new SijoitusAjoBuilder().julkaiseKaikki();
         SijoitusAjoBuilder after = new SijoitusAjoBuilder().julkaiseKaikki();
-        before.jono(2).hyvaksytty("A", "B").hylatty("C").vastaanottanutToisessaHaussa("C");
+        before.jono(2).varalla("A", "B").hylatty("C").vastaanottanutToisessaHaussa("C");
         after.jono(2).hyvaksytty("A", "B").hylatty("C");
         assertSijoittelu(before, after);
     }
