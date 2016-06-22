@@ -17,6 +17,7 @@ import fi.vm.sade.sijoittelu.tulos.dto.HakukohdeDTO;
 import fi.vm.sade.valinta.http.HttpResource;
 import junit.framework.Assert;
 import org.apache.cxf.jaxrs.client.WebClient;
+import org.hamcrest.Matchers;
 import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
@@ -29,6 +30,7 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -76,10 +78,10 @@ public class TilaResourceTest {
         TilaResource r = new TilaResource();
         r.sijoitteluBusinessService = sijoitteluBusinessServiceMock(hakukohde);
 
-        Response response = r.merkkaaJononValintaesitysHyvaksytyksi(hakuOid, hakukohdeOid, valintatapajonoOid, true);
+        Response response = r.merkkaaJononValintaesitysHyvaksytyksi(hakuOid, hakukohdeOid, valintatapajonoOid, Collections.emptyList(), "Jonon hyväksyntä testistä", true);
         assertEquals(200, response.getStatus());
-        Hakukohde updated = (Hakukohde) response.getEntity();
-        assertEquals(hakukohde, updated);
+        HakukohteenValintatulosUpdateStatuses updated = (HakukohteenValintatulosUpdateStatuses) response.getEntity();
+        assertEquals(0, updated.statuses.size());
     }
 
     @Test

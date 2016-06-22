@@ -174,16 +174,25 @@ public class TilaResource {
     public Response merkkaaJononValintaesitysHyvaksytyksi(@PathParam("hakuOid") String hakuOid,
                                                     @PathParam("hakukohdeOid") String hakukohdeOid,
                                                     @PathParam("valintatapajonoOid") String valintatapajonoOid,
+                                                    List<Valintatulos> valintatulokset,
+                                                    @QueryParam("selite") String selite,
                                                     @QueryParam("hyvaksytty") Boolean hyvaksytty) {
         try {
+            List<ValintatulosUpdateStatus> statuses = new ArrayList<>();
             Hakukohde hakukohde = sijoitteluBusinessService.getHakukohde(hakuOid, hakukohdeOid);
+            processVaihdaHakemuksienTilat(statuses, valintatulokset, hakuOid, hakukohdeOid, hakukohde, selite);
+            if (!statuses.isEmpty()) {
+                return Response.status(Status.INTERNAL_SERVER_ERROR)
+                        .entity(new HakukohteenValintatulosUpdateStatuses(statuses))
+                        .build();
+            }
             sijoitteluBusinessService.asetaJononValintaesitysHyvaksytyksi(hakukohde, valintatapajonoOid, hyvaksytty);
             return Response.status(Response.Status.OK)
-                            .entity(hakukohde)
-                            .build();
+                    .entity(new HakukohteenValintatulosUpdateStatuses(statuses))
+                    .build();
         } catch (Exception e) {
             LOGGER.error("valintaesityksen hyväksymismerkintä(={}) epäonnistui. haku: {}, hakukohde: {}, valintatapajono: {valintatapajonoOid}", hyvaksytty, hakuOid, hakukohdeOid, valintatapajonoOid, e);
-            Map error = new HashMap();
+            Map<String,String> error = new HashMap<>();
             error.put("message", e.toString());
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
                     .entity(error).build();
