@@ -83,7 +83,7 @@ public class CachingRaportointiDaoImpl implements CachingRaportointiDao {
     public void updateLatestAjoCacheWith(Sijoittelu sijoittelu) {
         String hakuOid = sijoittelu.getHakuOid();
         Optional<SijoitteluAjo> latestAjo = Optional.ofNullable(sijoittelu.getLatestSijoitteluajo());
-        LOG.info("Päivitetään cacheen haun " + hakuOid + " viimeisin sijoitteluajo " + latestAjo.map(SijoitteluAjo::getId));
+        LOG.info("Päivitetään cacheen haun " + hakuOid + " viimeisin sijoitteluajo " + latestAjo.map(SijoitteluAjo::getSijoitteluajoId));
         sijoitteluAjoByHaku.put(hakuOid, latestAjo);
     }
 
