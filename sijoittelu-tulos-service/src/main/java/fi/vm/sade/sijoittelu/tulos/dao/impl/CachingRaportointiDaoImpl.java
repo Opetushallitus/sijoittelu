@@ -37,7 +37,6 @@ public class CachingRaportointiDaoImpl implements CachingRaportointiDao {
     private final Cache<Long, List<Hakukohde>> hakukohteetMap = CacheBuilder.newBuilder().expireAfterWrite(10, TimeUnit.MINUTES).build();
     private final Cache<String, List<Valintatulos>> valintatuloksetMap = CacheBuilder.newBuilder().expireAfterWrite(10, TimeUnit.MINUTES).build();
     private final Cache<String, Optional<SijoitteluAjo>> sijoitteluAjoByHaku = CacheBuilder.newBuilder().expireAfterWrite(10, TimeUnit.MINUTES).build();
-    private final Cache<String, Optional<SijoitteluAjo>> sijoitteluAjoByHakukohde = CacheBuilder.newBuilder().expireAfterWrite(10, TimeUnit.MINUTES).build();
 
     @Override
     public Optional<List<Hakukohde>> getCachedHakukohdesForSijoitteluajo(Long sijoitteluAjoId) {
@@ -73,19 +72,11 @@ public class CachingRaportointiDaoImpl implements CachingRaportointiDao {
 
     @Override
     public Optional<SijoitteluAjo> getCachedLatestSijoitteluAjo(String hakuOid, String hakukohdeOid) {
-        Optional<SijoitteluAjo> sijoitteluAjoByHakuContainingThisHakukohde = findByHakuContainingHakukohde(hakuOid, hakukohdeOid);
-        if (sijoitteluAjoByHakuContainingThisHakukohde.isPresent()) {
-            return sijoitteluAjoByHakuContainingThisHakukohde;
+        Optional<SijoitteluAjo> ajoJustByHaku = getCachedLatestSijoitteluAjo(hakuOid);
+        if (ajoJustByHaku.isPresent() && containsHakukohde(ajoJustByHaku, hakukohdeOid)) {
+            return ajoJustByHaku;
         }
-        try {
-            return sijoitteluAjoByHakukohde.get(hakukohdeOid, () -> {
-                LOG.info("Ei löytynyt viimeisintä sijoitteluajoa cachesta haun " + hakuOid + " hakukohteelle " + hakukohdeOid +
-                    " , ladataan Mongosta.");
-                return sijoitteluDao.getLatestSijoitteluajo(hakuOid, hakukohdeOid);
-            });
-        } catch (ExecutionException e) {
-            throw new RuntimeException(e);
-        }
+        return sijoitteluDao.getLatestSijoitteluajo(hakuOid, hakukohdeOid);
     }
 
     @Override
@@ -94,17 +85,6 @@ public class CachingRaportointiDaoImpl implements CachingRaportointiDao {
         Optional<SijoitteluAjo> latestAjo = Optional.ofNullable(sijoittelu.getLatestSijoitteluajo());
         LOG.info("Päivitetään cacheen haun " + hakuOid + " viimeisin sijoitteluajo " + latestAjo.map(SijoitteluAjo::getId));
         sijoitteluAjoByHaku.put(hakuOid, latestAjo);
-    }
-
-    private Optional<SijoitteluAjo> findByHakuContainingHakukohde(String hakuOid, String hakukohdeOid) {
-        Optional<SijoitteluAjo> ajoJustByHaku = getCachedLatestSijoitteluAjo(hakuOid);
-        if (!ajoJustByHaku.isPresent()) {
-            return Optional.empty();
-        }
-        if (containsHakukohde(ajoJustByHaku, hakukohdeOid)) {
-            return ajoJustByHaku;
-        }
-        return Optional.empty();
     }
 
     private boolean containsHakukohde(Optional<SijoitteluAjo> presentAjoJustByHaku, String hakukohdeOid) {
