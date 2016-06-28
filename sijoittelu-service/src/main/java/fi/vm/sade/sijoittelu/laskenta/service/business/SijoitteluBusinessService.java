@@ -25,6 +25,7 @@ import fi.vm.sade.sijoittelu.laskenta.service.it.TarjontaIntegrationService;
 import fi.vm.sade.sijoittelu.tulos.dao.*;
 import fi.vm.sade.sijoittelu.tulos.dto.HakukohdeDTO;
 import fi.vm.sade.sijoittelu.tulos.roles.SijoitteluRole;
+import fi.vm.sade.sijoittelu.tulos.service.RaportointiService;
 import fi.vm.sade.sijoittelu.tulos.service.impl.converters.SijoitteluTulosConverter;
 import fi.vm.sade.valintalaskenta.domain.dto.valintatieto.HakuDTO;
 import org.apache.commons.lang3.tuple.Triple;
@@ -67,6 +68,7 @@ public class SijoitteluBusinessService {
     private final ValintatulosDao valintatulosDao;
     private final HakukohdeDao hakukohdeDao;
     private final SijoitteluDao sijoitteluDao;
+    private final RaportointiService raportointiService;
     private final ValiSijoitteluDao valisijoitteluDao;
     private final ErillisSijoitteluDao erillisSijoitteluDao;
     private final Authorizer authorizer;
@@ -83,6 +85,7 @@ public class SijoitteluBusinessService {
                                      ValintatulosDao valintatulosDao,
                                      HakukohdeDao hakukohdeDao,
                                      SijoitteluDao sijoitteluDao,
+                                     RaportointiService raportointiService,
                                      ValiSijoitteluDao valisijoitteluDao,
                                      ErillisSijoitteluDao erillisSijoitteluDao,
                                      Authorizer authorizer,
@@ -94,6 +97,7 @@ public class SijoitteluBusinessService {
         this.valintatulosDao = valintatulosDao;
         this.hakukohdeDao = hakukohdeDao;
         this.sijoitteluDao = sijoitteluDao;
+        this.raportointiService = raportointiService;
         this.valisijoitteluDao = valisijoitteluDao;
         this.erillisSijoitteluDao = erillisSijoitteluDao;
         this.authorizer = authorizer;
@@ -550,8 +554,8 @@ public class SijoitteluBusinessService {
     }
 
     public Hakukohde getHakukohde(String hakuOid, String hakukohdeOid) {
-        return sijoitteluDao.getSijoitteluByHakuOid(hakuOid)
-                .map(sijoittelu -> hakukohdeDao.getHakukohdeForSijoitteluajo(sijoittelu.getLatestSijoitteluajo().getSijoitteluajoId(), hakukohdeOid))
+        return raportointiService.cachedLatestSijoitteluAjoForHakukohde(hakuOid, hakukohdeOid)
+                .map(sijoitteluAjo -> hakukohdeDao.getHakukohdeForSijoitteluajo(sijoitteluAjo.getSijoitteluajoId(), hakukohdeOid))
                 .orElseThrow(() -> new RuntimeException("Sijoittelua ei löytynyt haulle: " + hakuOid));
     }
 

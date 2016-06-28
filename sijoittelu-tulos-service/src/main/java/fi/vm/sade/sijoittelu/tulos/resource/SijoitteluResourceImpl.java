@@ -15,6 +15,7 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 
 import fi.vm.sade.sijoittelu.tulos.dao.HakukohdeDao;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -67,8 +68,10 @@ public class SijoitteluResourceImpl implements SijoitteluResource {
     @ApiOperation(position = 2, value = "Hakee sijoitteluajon tiedot. Paasiallinen kaytto sijoitteluun osallistuvien hakukohteiden hakemiseen", response = SijoitteluajoDTO.class)
     public SijoitteluajoDTO getSijoitteluajo(
             @ApiParam(name = "hakuOid", value = "Haun yksilollinen tunniste", required = true) @PathParam("hakuOid") String hakuOid,
-            @ApiParam(value = "Sijoitteluajon tunniste tai 'latest' avainsana", required = true) @PathParam("sijoitteluajoId") String sijoitteluajoId) {
-        Optional<SijoitteluAjo> ajo = getSijoitteluAjo(sijoitteluajoId, hakuOid);
+            @ApiParam(value = "Sijoitteluajon tunniste tai 'latest' avainsana", required = true) @PathParam("sijoitteluajoId") String sijoitteluajoId,
+            @ApiParam(name = "hakukohdeOid", value = "Hakukohteen yksilollinen tunniste") @QueryParam("hakukohdeOid") String hakukohdeOid) {
+        Optional<String> hakukohdeOidOpt = StringUtils.isBlank(hakukohdeOid) ? Optional.empty() : Optional.of(hakukohdeOid);
+        Optional<SijoitteluAjo> ajo = getSijoitteluAjo(sijoitteluajoId, hakuOid, hakukohdeOidOpt);
         return ajo.map(sijoitteluTulosService::getSijoitteluajo).orElse(new SijoitteluajoDTO());
     }
 
@@ -81,7 +84,7 @@ public class SijoitteluResourceImpl implements SijoitteluResource {
             @ApiParam(name = "hakuOid", value = "Haun tunniste", required = true) @PathParam("hakuOid") String hakuOid,
             @ApiParam(name = "sijoitteluajoId", value = "Sijoitteluajon tunniste tai 'latest' avainsana", required = true) @PathParam("sijoitteluajoId") String sijoitteluajoId,
             @ApiParam(name = "hakukohdeOid", value = "Hakukohteen tunniste", required = true) @PathParam("hakukohdeOid") String hakukohdeOid) {
-        Optional<SijoitteluAjo> sijoitteluAjo = getSijoitteluAjo(sijoitteluajoId, hakuOid);
+        Optional<SijoitteluAjo> sijoitteluAjo = getSijoitteluAjo(sijoitteluajoId, hakuOid, Optional.empty());
         return sijoitteluAjo.map(ajo -> {
             HakukohdeDTO hakukohdeBySijoitteluajo = sijoitteluTulosService.getHakukohdeBySijoitteluajo(ajo, hakukohdeOid);
             return Response.ok().entity(Optional.ofNullable(hakukohdeBySijoitteluajo).orElse(new HakukohdeDTO())).build();
@@ -98,7 +101,7 @@ public class SijoitteluResourceImpl implements SijoitteluResource {
             @ApiParam(value = "Haun tunniste", required = true) @PathParam("hakuOid") String hakuOid,
             @ApiParam(value = "Sijoitteluajon tunniste tai 'latest' avainsana", required = true) @PathParam("sijoitteluajoId") String sijoitteluajoId,
             @ApiParam(value = "Hakukohteen tunniste", required = true) @PathParam("hakukohdeOid") String hakukohdeOid) {
-        Optional<SijoitteluAjo> ajo = getSijoitteluAjo(sijoitteluajoId, hakuOid);
+        Optional<SijoitteluAjo> ajo = getSijoitteluAjo(sijoitteluajoId, hakuOid, Optional.of(hakukohdeOid));
         return ajo.map(a -> sijoitteluTulosService.getHakukohdeBySijoitteluajo(a, hakukohdeOid)).orElse(new HakukohdeDTO());
     }
 
@@ -112,7 +115,7 @@ public class SijoitteluResourceImpl implements SijoitteluResource {
             @ApiParam(value = "Haun tunniste", required = true) @PathParam("hakuOid") String hakuOid,
             @ApiParam(value = "Hakukohteen tunniste", required = true) @PathParam("hakukohdeOid") String hakukohdeOid) {
         try {
-            Optional<SijoitteluAjo> sijoitteluAjo = raportointiService.latestSijoitteluAjoForHaku(hakuOid);
+            Optional<SijoitteluAjo> sijoitteluAjo = raportointiService.cachedLatestSijoitteluAjoForHakukohde(hakuOid, hakukohdeOid);
 
             return sijoitteluAjo.map(ajo -> raportointiService.cachedHakemukset(ajo, true, null, null, Arrays.asList(hakukohdeOid), null, null)).orElseGet(HakijaPaginationObject::new);
         } catch (Exception e) {
@@ -129,7 +132,7 @@ public class SijoitteluResourceImpl implements SijoitteluResource {
     public HakijaPaginationObject hyvaksytytHakuun(
             @ApiParam(value = "Haun tunniste", required = true) @PathParam("hakuOid") String hakuOid) {
         try {
-            Optional<SijoitteluAjo> sijoitteluAjo = raportointiService.latestSijoitteluAjoForHaku(hakuOid);
+            Optional<SijoitteluAjo> sijoitteluAjo = raportointiService.cachedLatestSijoitteluAjoForHaku(hakuOid);
 
             return sijoitteluAjo.map(ajo -> raportointiService.cachedHakemukset(ajo, true, null, null, null, null, null)).orElseGet(HakijaPaginationObject::new);
         } catch (Exception e) {
@@ -153,7 +156,7 @@ public class SijoitteluResourceImpl implements SijoitteluResource {
             @ApiParam(value = "Nayta n kappaletta tuloksia. Kayta sivutuksessa", required = false) @QueryParam("count") Integer count,
             @ApiParam(value = "Aloita nayttaminen kohdasta n. Kayta sivutuksessa.", required = false) @QueryParam("index") Integer index) {
         try {
-            Optional<SijoitteluAjo> sijoitteluAjo = getSijoitteluAjo(sijoitteluajoId, hakuOid);
+            Optional<SijoitteluAjo> sijoitteluAjo = getSijoitteluAjo(sijoitteluajoId, hakuOid, Optional.empty());
             return sijoitteluAjo.map(ajo ->
                             raportointiService.hakemukset(ajo, hyvaksytyt,
                                     ilmanHyvaksyntaa, vastaanottaneet, hakukohdeOid, count,
@@ -176,13 +179,16 @@ public class SijoitteluResourceImpl implements SijoitteluResource {
             @ApiParam(value = "Sijoitteluajon tunniste tai 'latest' avainsana", required = true) @PathParam("sijoitteluajoId") String sijoitteluajoId,
             @ApiParam(value = "Hakemuksen tunniste", required = true) @PathParam("hakemusOid") String hakemusOid) {
 
-        Optional<SijoitteluAjo> ajo = getSijoitteluAjo(sijoitteluajoId, hakuOid);
+        Optional<SijoitteluAjo> ajo = getSijoitteluAjo(sijoitteluajoId, hakuOid, Optional.empty());
         return ajo.map(a -> raportointiService.hakemus(a, hakemusOid)).orElse(new HakijaDTO());
     }
 
-    private Optional<SijoitteluAjo> getSijoitteluAjo(String sijoitteluajoId, String hakuOid) {
+    private Optional<SijoitteluAjo> getSijoitteluAjo(String sijoitteluajoId, String hakuOid, Optional<String> hakukohdeOidOpt) {
         if (LATEST.equals(sijoitteluajoId)) {
-            return raportointiService.latestSijoitteluAjoForHaku(hakuOid);
+            if (hakukohdeOidOpt.isPresent()) {
+                return raportointiService.cachedLatestSijoitteluAjoForHakukohde(hakuOid, hakukohdeOidOpt.get());
+            }
+            return raportointiService.cachedLatestSijoitteluAjoForHaku(hakuOid);
         } else {
             return raportointiService.getSijoitteluAjo(Long.parseLong(sijoitteluajoId));
         }
@@ -198,7 +204,7 @@ public class SijoitteluResourceImpl implements SijoitteluResource {
             @ApiParam(value = "Haun tunniste", required = true) @PathParam("hakuOid") String hakuOid,
             @ApiParam(value = "Valintatapajonon tunniste", required = true) @PathParam("valintatapajonoOid") String valintatapajonoOid
     ) {
-        return raportointiService.latestSijoitteluAjoForHaku(hakuOid)
+        return raportointiService.cachedLatestSijoitteluAjoForHaku(hakuOid)
                 .map(latestSijoitteluAjo -> hakukohdeDao.isValintapajonoInUse(latestSijoitteluAjo.getSijoitteluajoId(), valintatapajonoOid))
                 .orElse(false);
     }

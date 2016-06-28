@@ -6,6 +6,7 @@ import com.mongodb.BasicDBObjectBuilder;
 import com.mongodb.DBObject;
 import fi.vm.sade.sijoittelu.domain.Sijoittelu;
 import fi.vm.sade.sijoittelu.domain.SijoitteluAjo;
+import fi.vm.sade.sijoittelu.tulos.dao.CachingRaportointiDao;
 import fi.vm.sade.sijoittelu.tulos.dao.SijoitteluDao;
 import org.mongodb.morphia.Datastore;
 import org.mongodb.morphia.mapping.Mapper;
@@ -29,6 +30,9 @@ public class SijoitteluDaoImpl implements SijoitteluDao {
     @Qualifier("datastore")
     @Autowired
     private Datastore morphiaDS;
+
+    @Autowired
+    private CachingRaportointiDao cachingRaportointiDao;
 
     @Override
     public Optional<SijoitteluAjo> getLatestSijoitteluajo(String hakuOid) {
@@ -127,5 +131,6 @@ public class SijoitteluDaoImpl implements SijoitteluDao {
     @Override
     public void persistSijoittelu(Sijoittelu sijoittelu) {
         morphiaDS.save(sijoittelu);
+        cachingRaportointiDao.updateLatestAjoCacheWith(sijoittelu);
     }
 }

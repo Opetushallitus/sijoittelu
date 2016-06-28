@@ -12,10 +12,10 @@ import fi.vm.sade.sijoittelu.tulos.dao.HakukohdeDao;
 import fi.vm.sade.sijoittelu.tulos.dao.SijoitteluDao;
 import fi.vm.sade.sijoittelu.tulos.dao.ValintatulosDao;
 import fi.vm.sade.sijoittelu.tulos.roles.SijoitteluRole;
+import fi.vm.sade.sijoittelu.tulos.service.RaportointiService;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
-import org.mockito.internal.matchers.Any;
 
 import java.util.Date;
 import java.util.Optional;
@@ -39,6 +39,7 @@ public class SijoitteluBusinessServiceTest {
     private Authorizer authorizer;
     private TestDataGenerator testDataGenerator;
     private TarjontaIntegrationService tarjontaIntegrationService;
+    private RaportointiService raportointiService;
 
 
     @Before
@@ -49,8 +50,9 @@ public class SijoitteluBusinessServiceTest {
         authorizer = mock(Authorizer.class);
         tarjontaIntegrationService = mock(TarjontaIntegrationService.class);
         ValintaTulosServiceResource valintaTulosServiceResourceMock = mock(ValintaTulosServiceResource.class);
+        raportointiService = mock(RaportointiService.class);
 
-        sijoitteluBusinessService = new SijoitteluBusinessService(1,valintatulosDaoMock,hakukohdeDao,sijoitteluDao,null,null,authorizer,null,null,tarjontaIntegrationService,valintaTulosServiceResourceMock);
+        sijoitteluBusinessService = new SijoitteluBusinessService(1,valintatulosDaoMock,hakukohdeDao,sijoitteluDao, raportointiService, null,null,authorizer,null,null,tarjontaIntegrationService,valintaTulosServiceResourceMock);
         testDataGenerator = new TestDataGenerator();
 
     }
@@ -60,8 +62,8 @@ public class SijoitteluBusinessServiceTest {
 
         Sijoittelu sijoittelu = testDataGenerator.generateTestData();
 
-        when(sijoitteluDao.getSijoitteluByHakuOid(HAKU_OID))
-                .thenReturn(Optional.of(sijoittelu));
+        when(raportointiService.cachedLatestSijoitteluAjoForHakukohde(HAKU_OID, HAKUKOHDE_OID))
+                .thenReturn(Optional.of(sijoittelu.getLatestSijoitteluajo()));
         when(hakukohdeDao.getHakukohdeForSijoitteluajo(TestDataGenerator.SIJOITTELU_AJO_ID_2, HAKUKOHDE_OID))
                 .thenReturn(testDataGenerator.createHakukohdes(1).get(0));
 
@@ -96,8 +98,8 @@ public class SijoitteluBusinessServiceTest {
     public void testOphVaihdaTilaPeruuntuneeksiSuoraan() throws Exception {
         Sijoittelu sijoittelu = testDataGenerator.generateTestData();
 
-        when(sijoitteluDao.getSijoitteluByHakuOid(HAKU_OID))
-                .thenReturn(Optional.of(sijoittelu));
+        when(raportointiService.cachedLatestSijoitteluAjoForHakukohde(HAKU_OID, HAKUKOHDE_OID))
+                .thenReturn(Optional.of(sijoittelu.getLatestSijoitteluajo()));
         when(hakukohdeDao.getHakukohdeForSijoitteluajo(TestDataGenerator.SIJOITTELU_AJO_ID_2, HAKUKOHDE_OID))
                 .thenReturn(testDataGenerator.createHakukohdes(1).get(0));
 
@@ -132,8 +134,8 @@ public class SijoitteluBusinessServiceTest {
     public void testOphVaihdaVarallaOlevanTila() throws Exception {
         Sijoittelu sijoittelu = testDataGenerator.generateTestData();
 
-        when(sijoitteluDao.getSijoitteluByHakuOid(HAKU_OID))
-                .thenReturn(Optional.of(sijoittelu));
+        when(raportointiService.cachedLatestSijoitteluAjoForHakukohde(HAKU_OID, HAKUKOHDE_OID))
+                .thenReturn(Optional.of(sijoittelu.getLatestSijoitteluajo()));
         when(hakukohdeDao.getHakukohdeForSijoitteluajo(TestDataGenerator.SIJOITTELU_AJO_ID_2, HAKUKOHDE_OID))
                 .thenReturn(testDataGenerator.createHakukohdes(1).get(0));
 
@@ -180,8 +182,9 @@ public class SijoitteluBusinessServiceTest {
     public void testVaihdaIlmoittautumisTilaLasnaKokoLukuvuosi() throws Exception {
         Sijoittelu sijoittelu = testDataGenerator.generateTestData();
 
-        when(sijoitteluDao.getSijoitteluByHakuOid(HAKU_OID))
-                .thenReturn(Optional.of(sijoittelu));
+        when(raportointiService.cachedLatestSijoitteluAjoForHakukohde(HAKU_OID, HAKUKOHDE_OID))
+                .thenReturn(Optional.of(sijoittelu.getLatestSijoitteluajo()));
+
         when(hakukohdeDao.getHakukohdeForSijoitteluajo(TestDataGenerator.SIJOITTELU_AJO_ID_2, HAKUKOHDE_OID))
                 .thenReturn(testDataGenerator.createHakukohdes(1).get(0));
 
@@ -216,8 +219,8 @@ public class SijoitteluBusinessServiceTest {
     public void testVaihdaIlmoittautumisTilaPoissaKokoLukuvuosi() throws Exception {
         Sijoittelu sijoittelu = testDataGenerator.generateTestData();
 
-        when(sijoitteluDao.getSijoitteluByHakuOid(HAKU_OID))
-                .thenReturn(Optional.of(sijoittelu));
+        when(raportointiService.cachedLatestSijoitteluAjoForHakukohde(HAKU_OID, HAKUKOHDE_OID))
+                .thenReturn(Optional.of(sijoittelu.getLatestSijoitteluajo()));
         when(hakukohdeDao.getHakukohdeForSijoitteluajo(TestDataGenerator.SIJOITTELU_AJO_ID_2, HAKUKOHDE_OID))
                 .thenReturn(testDataGenerator.createHakukohdes(1).get(0));
 
@@ -252,8 +255,8 @@ public class SijoitteluBusinessServiceTest {
     public void testAsetaJononValintaehdotusHyväksytyksi() throws Exception {
         Sijoittelu sijoittelu = testDataGenerator.generateTestData();
 
-        when(sijoitteluDao.getSijoitteluByHakuOid(HAKU_OID))
-                .thenReturn(Optional.of(sijoittelu));
+        when(raportointiService.cachedLatestSijoitteluAjoForHakukohde(HAKU_OID, HAKUKOHDE_OID))
+                .thenReturn(Optional.of(sijoittelu.getLatestSijoitteluajo()));
         when(hakukohdeDao.getHakukohdeForSijoitteluajo(TestDataGenerator.SIJOITTELU_AJO_ID_2, HAKUKOHDE_OID))
                 .thenReturn(testDataGenerator.createHakukohdes(1).get(0));
 
@@ -269,8 +272,8 @@ public class SijoitteluBusinessServiceTest {
     public void testVaihdaIlmoittautumisTilaEiIlmoittautunut() throws Exception {
         Sijoittelu sijoittelu = testDataGenerator.generateTestData();
 
-        when(sijoitteluDao.getSijoitteluByHakuOid(HAKU_OID))
-                .thenReturn(Optional.of(sijoittelu));
+        when(raportointiService.cachedLatestSijoitteluAjoForHakukohde(HAKU_OID, HAKUKOHDE_OID))
+                .thenReturn(Optional.of(sijoittelu.getLatestSijoitteluajo()));
         when(hakukohdeDao.getHakukohdeForSijoitteluajo(TestDataGenerator.SIJOITTELU_AJO_ID_2, HAKUKOHDE_OID))
                 .thenReturn(testDataGenerator.createHakukohdes(1).get(0));
 
@@ -305,8 +308,9 @@ public class SijoitteluBusinessServiceTest {
     public void testVaihdaIlmoittautumisTilaLasnaSyksy() throws Exception {
         Sijoittelu sijoittelu = testDataGenerator.generateTestData();
 
-        when(sijoitteluDao.getSijoitteluByHakuOid(HAKU_OID))
-                .thenReturn(Optional.of(sijoittelu));
+        when(raportointiService.cachedLatestSijoitteluAjoForHakukohde(HAKU_OID, HAKUKOHDE_OID))
+                .thenReturn(Optional.of(sijoittelu.getLatestSijoitteluajo()));
+
         when(hakukohdeDao.getHakukohdeForSijoitteluajo(TestDataGenerator.SIJOITTELU_AJO_ID_2, HAKUKOHDE_OID))
                 .thenReturn(testDataGenerator.createHakukohdes(1).get(0));
 
@@ -341,8 +345,8 @@ public class SijoitteluBusinessServiceTest {
     public void testVaihdaIlmoittautumisTilaPoissaSyksy() throws Exception {
         Sijoittelu sijoittelu = testDataGenerator.generateTestData();
 
-        when(sijoitteluDao.getSijoitteluByHakuOid(HAKU_OID))
-                .thenReturn(Optional.of(sijoittelu));
+        when(raportointiService.cachedLatestSijoitteluAjoForHakukohde(HAKU_OID, HAKUKOHDE_OID))
+                .thenReturn(Optional.of(sijoittelu.getLatestSijoitteluajo()));
         when(hakukohdeDao.getHakukohdeForSijoitteluajo(TestDataGenerator.SIJOITTELU_AJO_ID_2, HAKUKOHDE_OID))
                 .thenReturn(testDataGenerator.createHakukohdes(1).get(0));
 
@@ -377,8 +381,9 @@ public class SijoitteluBusinessServiceTest {
     public void testVaihdaIlmoittautumisTilaLasna() throws Exception {
         Sijoittelu sijoittelu = testDataGenerator.generateTestData();
 
-        when(sijoitteluDao.getSijoitteluByHakuOid(HAKU_OID))
-                .thenReturn(Optional.of(sijoittelu));
+        when(raportointiService.cachedLatestSijoitteluAjoForHakukohde(HAKU_OID, HAKUKOHDE_OID))
+                .thenReturn(Optional.of(sijoittelu.getLatestSijoitteluajo()));
+
         when(hakukohdeDao.getHakukohdeForSijoitteluajo(TestDataGenerator.SIJOITTELU_AJO_ID_2, HAKUKOHDE_OID))
                 .thenReturn(testDataGenerator.createHakukohdes(1).get(0));
 
@@ -413,8 +418,9 @@ public class SijoitteluBusinessServiceTest {
     public void testVaihdaIlmoittautumisTilaPoissa() throws Exception {
         Sijoittelu sijoittelu = testDataGenerator.generateTestData();
 
-        when(sijoitteluDao.getSijoitteluByHakuOid(HAKU_OID))
-                .thenReturn(Optional.of(sijoittelu));
+        when(raportointiService.cachedLatestSijoitteluAjoForHakukohde(HAKU_OID, HAKUKOHDE_OID))
+                .thenReturn(Optional.of(sijoittelu.getLatestSijoitteluajo()));
+
         when(hakukohdeDao.getHakukohdeForSijoitteluajo(TestDataGenerator.SIJOITTELU_AJO_ID_2, HAKUKOHDE_OID))
                 .thenReturn(testDataGenerator.createHakukohdes(1).get(0));
 

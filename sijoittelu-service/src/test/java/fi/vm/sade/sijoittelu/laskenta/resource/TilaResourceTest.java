@@ -12,12 +12,10 @@ import fi.vm.sade.sijoittelu.laskenta.external.resource.dto.ResultHakuDTO;
 import fi.vm.sade.sijoittelu.laskenta.service.business.SijoitteluBusinessService;
 import fi.vm.sade.sijoittelu.laskenta.service.business.StaleReadException;
 import fi.vm.sade.sijoittelu.laskenta.service.exception.HakemustaEiLoytynytException;
-import fi.vm.sade.sijoittelu.tulos.dao.HakukohdeDao;
 import fi.vm.sade.sijoittelu.tulos.dto.HakukohdeDTO;
 import fi.vm.sade.valinta.http.HttpResource;
 import junit.framework.Assert;
 import org.apache.cxf.jaxrs.client.WebClient;
-import org.hamcrest.Matchers;
 import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
@@ -100,7 +98,7 @@ public class TilaResourceTest {
     @Test
     public void epaonnistuneidenMuokkaustenVirheetKerataan() {
         TilaResource r = new TilaResource();
-        r.sijoitteluBusinessService = new SijoitteluBusinessService(0,null,null,null,null,null,null,null,null,null,null) {
+        r.sijoitteluBusinessService = new SijoitteluBusinessService(0,null,null,null, null, null,null,null,null,null,null,null) {
             @Override
             public Hakukohde getHakukohde(String hakuOid, String hakukohdeOid) {
                 return new Hakukohde();
@@ -263,7 +261,7 @@ public class TilaResourceTest {
     }
 
     private static SijoitteluBusinessService sijoitteluBusinessServiceMock(RuntimeException e) {
-        return new SijoitteluBusinessService(0,null,null,null,null,null,null,null,null,null,null) {
+        return new SijoitteluBusinessService(0,null,null,null, null, null,null,null,null,null,null,null) {
             @Override
             public Hakukohde getHakukohde(String hakuOid, String hakukohdeOid) {
                 throw e;
@@ -276,7 +274,7 @@ public class TilaResourceTest {
     }
 
     private static SijoitteluBusinessService sijoitteluBusinessServiceMock(Hakukohde hakukohde) {
-        return new SijoitteluBusinessService(0, null, null, null, null, null, null, null, null, null, null) {
+        return new SijoitteluBusinessService(0, null, null, null, null, null, null, null, null, null, null, null) {
             @Override
             public Hakukohde getHakukohde(String hakuOid, String hakukohdeOid) {
                 return hakukohde;

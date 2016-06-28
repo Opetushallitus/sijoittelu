@@ -1,6 +1,5 @@
 package fi.vm.sade.sijoittelu.tulos.service.impl;
 
-import java.lang.instrument.Instrumentation;
 import java.util.*;
 
 import fi.vm.sade.sijoittelu.tulos.dao.CachingRaportointiDao;
@@ -108,6 +107,16 @@ public class RaportointiServiceImpl implements RaportointiService {
         List<Valintatulos> valintatulokset = cachingRaportointiDao.getCachedValintatulokset(ajo.getHakuOid()).get();
         List<Hakukohde> hakukohteet = cachingRaportointiDao.getCachedHakukohdesForSijoitteluajo(ajo.getSijoitteluajoId()).get();
         return konvertoiHakijat(hyvaksytyt, ilmanHyvaksyntaa, vastaanottaneet, hakukohdeOids, count, index, valintatulokset, hakukohteet);
+    }
+
+    @Override
+    public Optional<SijoitteluAjo> cachedLatestSijoitteluAjoForHaku(String hakuOid) {
+        return cachingRaportointiDao.getCachedLatestSijoitteluAjo(hakuOid);
+    }
+
+    @Override
+    public Optional<SijoitteluAjo> cachedLatestSijoitteluAjoForHakukohde(String hakuOid, String hakukohdeOid) {
+        return cachingRaportointiDao.getCachedLatestSijoitteluAjo(hakuOid, hakukohdeOid);
     }
 
     private HakijaPaginationObject konvertoiHakijat(final Boolean hyvaksytyt, final Boolean ilmanHyvaksyntaa, final Boolean vastaanottaneet, final List<String> hakukohdeOids, final Integer count, final Integer index, final List<Valintatulos> valintatulokset, final List<Hakukohde> hakukohteet) {

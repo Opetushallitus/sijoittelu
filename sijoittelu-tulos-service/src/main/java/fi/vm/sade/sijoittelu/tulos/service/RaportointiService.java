@@ -24,4 +24,8 @@ public interface RaportointiService {
     List<KevytHakijaDTO> hakemuksetVainHakukohteenTietojenKanssa(SijoitteluAjo ajo, String hakukohdeOid);
 
     HakijaPaginationObject cachedHakemukset(SijoitteluAjo ajo, Boolean hyvaksytyt, Boolean ilmanHyvaksyntaa, Boolean vastaanottaneet, List<String> hakukohdeOid, Integer count, Integer index);
+
+    Optional<SijoitteluAjo> cachedLatestSijoitteluAjoForHaku(String hakuOid);
+
+    Optional<SijoitteluAjo> cachedLatestSijoitteluAjoForHakukohde(String hakuOid, String hakukohdeOid);
 }

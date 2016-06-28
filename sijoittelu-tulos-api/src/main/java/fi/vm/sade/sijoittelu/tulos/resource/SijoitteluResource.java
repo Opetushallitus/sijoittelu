@@ -56,7 +56,8 @@ public interface SijoitteluResource {
         //@ApiOperation(position = 2, value = "Hakee sijoitteluajon tiedot. Paasiallinen kaytto sijoitteluun osallistuvien hakukohteiden hakemiseen", response = SijoitteluajoDTO.class)
     SijoitteluajoDTO getSijoitteluajo(
             @ApiParam(value = "Haun tunniste", required = true) @PathParam("hakuOid") String hakuOid,
-            @ApiParam(value = "Sijoitteluajon tunniste tai 'latest' avainsana", required = true) @PathParam("sijoitteluajoId") String sijoitteluajoId);
+            @ApiParam(value = "Sijoitteluajon tunniste tai 'latest' avainsana", required = true) @PathParam("sijoitteluajoId") String sijoitteluajoId,
+            @ApiParam(name = "hakukohdeOid", value = "Hakukohteen yksilollinen tunniste") @QueryParam("hakukohdeOid") String hakukohdeOid);
 
     @GET
     @Produces(APPLICATION_JSON)
