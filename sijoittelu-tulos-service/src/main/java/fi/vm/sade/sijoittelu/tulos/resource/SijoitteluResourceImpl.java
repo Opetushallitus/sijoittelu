@@ -179,8 +179,11 @@ public class SijoitteluResourceImpl implements SijoitteluResource {
             @ApiParam(value = "Sijoitteluajon tunniste tai 'latest' avainsana", required = true) @PathParam("sijoitteluajoId") String sijoitteluajoId,
             @ApiParam(value = "Hakemuksen tunniste", required = true) @PathParam("hakemusOid") String hakemusOid) {
 
-        Optional<SijoitteluAjo> ajo = getSijoitteluAjo(sijoitteluajoId, hakuOid, Optional.empty());
-        return ajo.map(a -> raportointiService.hakemus(a, hakemusOid)).orElse(new HakijaDTO());
+        HakijaDTO hakijaDTO = raportointiService.hakemus(hakuOid, sijoitteluajoId, hakemusOid);
+        if (hakijaDTO == null) {
+            LOGGER.warn(String.format("Got null hakijaDTO for hakuOid/sijoitteluajoId/hakemusOid %s/%s/%s", hakuOid, sijoitteluajoId, hakemusOid));
+        }
+        return hakijaDTO;
     }
 
     private Optional<SijoitteluAjo> getSijoitteluAjo(String sijoitteluajoId, String hakuOid, Optional<String> hakukohdeOidOpt) {

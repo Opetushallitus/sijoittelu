@@ -3,7 +3,6 @@ package fi.vm.sade.sijoittelu.laskenta.resource;
 import static fi.vm.sade.sijoittelu.laskenta.roles.SijoitteluRole.READ_UPDATE_CRUD;
 import static fi.vm.sade.sijoittelu.laskenta.roles.SijoitteluRole.UPDATE_CRUD;
 import static fi.vm.sade.sijoittelu.laskenta.util.SijoitteluAudit.username;
-import com.google.common.collect.ImmutableMap;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
@@ -186,7 +185,7 @@ public class TilaResource {
                         .entity(new HakukohteenValintatulosUpdateStatuses(statuses))
                         .build();
             }
-            sijoitteluBusinessService.asetaJononValintaesitysHyvaksytyksi(hakukohde, valintatapajonoOid, hyvaksytty);
+            sijoitteluBusinessService.asetaJononValintaesitysHyvaksytyksi(hakukohde, valintatapajonoOid, hyvaksytty, hakuOid);
             return Response.status(Response.Status.OK)
                     .entity(new HakukohteenValintatulosUpdateStatuses(statuses))
                     .build();
@@ -374,7 +373,7 @@ public class TilaResource {
                             .findFirst()
                             .get();
                     valintatapajono.getHakemukset().remove(hakemus.get());
-                    hakukohdeDao.persistHakukohde(hakukohde.get());
+                    hakukohdeDao.persistHakukohde(hakukohde.get(), hakuOid);
 
                     // Tarkistetaan vielä löytyykö valintatuloksia ja jos löytyy niin poistetaan ne
                     Valintatulos valintatulos = valintatulosDao.loadValintatulos(hakukohdeOid, valintatapajonoOid, hakemusOid);
@@ -462,7 +461,7 @@ public class TilaResource {
         jono.setHyvaksytty(getMaara(jono.getHakemukset(), Arrays.asList(HakemuksenTila.HYVAKSYTTY, HakemuksenTila.VARASIJALTA_HYVAKSYTTY)));
         jono.setVaralla(getMaara(jono.getHakemukset(), Arrays.asList(HakemuksenTila.VARALLA)));
 
-        hakukohdeDao.persistHakukohde(hakukohde);
+        hakukohdeDao.persistHakukohde(hakukohde, hakuOid);
         sijoitteluDao.persistSijoittelu(sijoittelu);
     }
 

@@ -11,10 +11,12 @@ import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
 import com.mongodb.*;
 import fi.vm.sade.sijoittelu.domain.*;
+import fi.vm.sade.sijoittelu.tulos.dao.CachingRaportointiDao;
 import fi.vm.sade.sijoittelu.tulos.dto.KevytHakemusDTO;
 import fi.vm.sade.sijoittelu.tulos.dto.KevytHakukohdeDTO;
 import fi.vm.sade.sijoittelu.tulos.dto.KevytValintatapajonoDTO;
 import org.mongodb.morphia.Datastore;
+import org.mongodb.morphia.Key;
 import org.mongodb.morphia.mapping.Mapper;
 import org.mongodb.morphia.mapping.cache.DefaultEntityCache;
 import org.mongodb.morphia.query.Query;
@@ -31,14 +33,18 @@ public class HakukohdeDaoImpl implements HakukohdeDao {
     @Autowired
     private Datastore morphiaDS;
 
+    @Autowired
+    private CachingRaportointiDao cachingRaportointiDao;
+
     @PostConstruct
     public void ensureIndexes() {
         EnsureIndexes.ensureIndexes(morphiaDS, Hakukohde.class);
     }
 
     @Override
-    public void persistHakukohde(Hakukohde hakukohde) {
+    public void persistHakukohde(Hakukohde hakukohde, String hakuOid) {
         morphiaDS.save(hakukohde);
+        cachingRaportointiDao.updateHakukohdeCacheWith(hakukohde, hakuOid);
     }
 
     @Override

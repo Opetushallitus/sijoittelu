@@ -281,7 +281,7 @@ public class TilaResourceTest {
             }
 
             @Override
-            public void asetaJononValintaesitysHyvaksytyksi(Hakukohde hakukohde, String valintatapajonoOid, boolean hyvaksytty) {
+            public void asetaJononValintaesitysHyvaksytyksi(Hakukohde hakukohde, String valintatapajonoOid, boolean hyvaksytty, String hakuOid) {
             }
 
             @Override

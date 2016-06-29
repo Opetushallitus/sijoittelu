@@ -17,6 +17,8 @@ public interface RaportointiService {
 
     HakijaDTO hakemus(SijoitteluAjo sijoitteluAjo, String hakemusOid);
 
+    HakijaDTO hakemus(String hakuOid, String sijoitteluajoId, String hakemusOid);
+
     HakijaPaginationObject hakemukset(SijoitteluAjo ajo,Boolean hyvaksytyt, Boolean ilmanHyvaksyntaa,Boolean vastaanottaneet, List <String> hakukohdeOid, Integer count, Integer index);
 
     List<KevytHakijaDTO> hakemukset(SijoitteluAjo ajo, String hakukohdeOid);
@@ -28,4 +30,5 @@ public interface RaportointiService {
     Optional<SijoitteluAjo> cachedLatestSijoitteluAjoForHaku(String hakuOid);
 
     Optional<SijoitteluAjo> cachedLatestSijoitteluAjoForHakukohde(String hakuOid, String hakukohdeOid);
+
 }

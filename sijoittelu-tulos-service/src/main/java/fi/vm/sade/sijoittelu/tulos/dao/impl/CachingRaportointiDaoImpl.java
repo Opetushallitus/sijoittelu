@@ -2,10 +2,13 @@ package fi.vm.sade.sijoittelu.tulos.dao.impl;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import com.google.common.collect.ImmutableList;
 
+import fi.vm.sade.sijoittelu.domain.Hakemus;
 import fi.vm.sade.sijoittelu.domain.Hakukohde;
 import fi.vm.sade.sijoittelu.domain.Sijoittelu;
 import fi.vm.sade.sijoittelu.domain.SijoitteluAjo;
+import fi.vm.sade.sijoittelu.domain.Valintatapajono;
 import fi.vm.sade.sijoittelu.domain.Valintatulos;
 import fi.vm.sade.sijoittelu.tulos.dao.CachingRaportointiDao;
 import fi.vm.sade.sijoittelu.tulos.dao.HakukohdeDao;
@@ -16,6 +19,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
@@ -33,6 +39,14 @@ public class CachingRaportointiDaoImpl implements CachingRaportointiDao {
 
     @Autowired
     private SijoitteluDao sijoitteluDao;
+
+    private final List<String> hakukohdeCachettavienHakujenOidit = ImmutableList.of("1.2.246.562.29.75203638285",
+        "1.2.246.562.29.95390561488",
+        "1.2.246.562.29.10714450698",
+        "1.2.246.562.29.14662042044",
+        "1.2.246.562.29.173465377510",
+        "1.2.246.562.5.2013080813081926341927");
+    private final List<CachedHaunSijoitteluAjonHakukohteet> hakukohdeCachet = new ArrayList<>();
 
     private final Cache<Long, List<Hakukohde>> hakukohteetMap = CacheBuilder.newBuilder().expireAfterWrite(10, TimeUnit.MINUTES).build();
     private final Cache<String, List<Valintatulos>> valintatuloksetMap = CacheBuilder.newBuilder().expireAfterWrite(10, TimeUnit.MINUTES).build();
@@ -85,10 +99,142 @@ public class CachingRaportointiDaoImpl implements CachingRaportointiDao {
         Optional<SijoitteluAjo> latestAjo = Optional.ofNullable(sijoittelu.getLatestSijoitteluajo());
         LOG.info("Päivitetään cacheen haun " + hakuOid + " viimeisin sijoitteluajo " + latestAjo.map(SijoitteluAjo::getSijoitteluajoId));
         sijoitteluAjoByHaku.put(hakuOid, latestAjo);
+        if (latestAjo.isPresent() && hakukohdeCachettavienHakujenOidit.contains(hakuOid)) {
+            for (CachedHaunSijoitteluAjonHakukohteet c : hakukohdeCachet) {
+                if (c.sijoitteluAjoId == latestAjo.get().getSijoitteluajoId()) {
+                    c.fullyPopulated = true;
+                }
+            }
+        }
+    }
+
+    @Override
+    public List<Hakukohde> getCachedHakukohteetJoihinHakemusOsallistuu(String hakuOid, String sijoitteluajoIdStr, String hakemusOid) {
+        long sijoitteluaAjoId = Long.parseLong(sijoitteluajoIdStr);
+        if (hakukohdeCachettavienHakujenOidit.contains(hakuOid)) {
+            for (CachedHaunSijoitteluAjonHakukohteet c : hakukohdeCachet) {
+                if (c.hakuOid.equals(hakuOid) && c.sijoitteluAjoId == sijoitteluaAjoId) {
+                    if (c.fullyPopulated) {
+                        List<Hakukohde> kaikkiKohteet = c.hakukohteet;
+                        return filtteroidytKopiotHakemuksenHakukohteista(hakemusOid, kaikkiKohteet);
+                    } else {
+                        LOG.warn(String.format("Cache not fully populated for haku / sijoitteluajo %s / %s " +
+                            "when fetching for hakemus %s . Cache size is %s",
+                            hakuOid, sijoitteluaAjoId, hakemusOid, c.hakukohteet.size()));
+                    }
+                }
+            }
+            LOG.warn(String.format("Could not find cache entry for haku / sijoitteluajo %s / %s when fetching for hakemus %s", hakuOid, sijoitteluaAjoId, hakemusOid));
+        }
+
+        return hakukohdeDao.haeHakukohteetJoihinHakemusOsallistuu(sijoitteluaAjoId, hakemusOid);
+    }
+
+    @Override
+    public void updateHakukohdeCacheWith(Hakukohde hakukohde, String hakuOid) {
+        if (!hakukohdeCachettavienHakujenOidit.contains(hakuOid)) {
+            return;
+        }
+
+        LOG.info("Updating hakukohde cache of haku " + hakuOid + " with hakukohde " + hakukohde.getOid());
+        boolean foundBySijoitteluajoId = false;
+        for (CachedHaunSijoitteluAjonHakukohteet c : hakukohdeCachet) {
+            foundBySijoitteluajoId = c.updateWith(hakukohde, foundBySijoitteluajoId);
+        }
+        if (!foundBySijoitteluajoId) {
+            List<Hakukohde> hakukohteet = new ArrayList<>();
+            hakukohteet.add(hakukohde);
+            hakukohdeCachet.add(new CachedHaunSijoitteluAjonHakukohteet(hakuOid, hakukohde.getSijoitteluajoId(), hakukohteet));
+        }
+    }
+
+    private List<Hakukohde> filtteroidytKopiotHakemuksenHakukohteista(String hakemusOid, List<Hakukohde> kaikkiKohteet) {
+        List<Hakukohde> vainHakemuksenHakukohteetVainHakemuksenTietojenKanssa = new ArrayList<>();
+        for (Hakukohde hakukohde : kaikkiKohteet) {
+            Hakukohde filtteroityKohde = null;
+            for (Valintatapajono jono : hakukohde.getValintatapajonot()) {
+                for (Hakemus hakemus: jono.getHakemukset()) {
+                    if (hakemus.getHakemusOid().equals(hakemusOid)) {
+                        if (filtteroityKohde == null) {
+                            filtteroityKohde = new Hakukohde();
+                            vainHakemuksenHakukohteetVainHakemuksenTietojenKanssa.add(filtteroityKohde);
+                            List<Valintatapajono> filtteroidytJonot = new ArrayList<>(hakukohde.getValintatapajonot().size());
+                            filtteroityKohde.setValintatapajonot(filtteroidytJonot);
+                            filtteroityKohde.setHakijaryhmat(hakukohde.getHakijaryhmat());
+                            filtteroityKohde.setOid(hakukohde.getOid());
+                            filtteroityKohde.setId(hakukohde.getId());
+                            filtteroityKohde.setKaikkiJonotSijoiteltu(hakukohde.isKaikkiJonotSijoiteltu());
+                            filtteroityKohde.setTarjoajaOid(hakukohde.getTarjoajaOid());
+                            filtteroityKohde.setTila(hakukohde.getTila());
+                            filtteroityKohde.setSijoitteluajoId(hakukohde.getSijoitteluajoId());
+                        }
+
+                        Valintatapajono filtteroityJono = new Valintatapajono();
+                        filtteroityJono.setHakemukset(Collections.singletonList(hakemus));
+
+                        filtteroityJono.setTasasijasaanto(jono.getTasasijasaanto());
+                        filtteroityJono.setPrioriteetti(jono.getPrioriteetti());
+                        filtteroityJono.setAloituspaikat(jono.getAloituspaikat());
+                        filtteroityJono.setAlinHyvaksyttyPistemaara(jono.getAlinHyvaksyttyPistemaara());
+                        filtteroityJono.setAlkuperaisetAloituspaikat(jono.getAlkuperaisetAloituspaikat());
+                        filtteroityJono.setEiVarasijatayttoa(jono.getEiVarasijatayttoa());
+                        filtteroityJono.setHyvaksytty(jono.getHyvaksytty());
+                        filtteroityJono.setKaikkiEhdonTayttavatHyvaksytaan(jono.getKaikkiEhdonTayttavatHyvaksytaan());
+                        filtteroityJono.setNimi(jono.getNimi());
+                        filtteroityJono.setOid(jono.getOid());
+                        filtteroityJono.setPoissaOlevaTaytto(jono.getPoissaOlevaTaytto());
+                        filtteroityJono.setTayttojono(jono.getTayttojono());
+                        filtteroityJono.setValintaesitysHyvaksytty(jono.getValintaesitysHyvaksytty());
+                        filtteroityJono.setVarasijojaTaytetaanAsti(jono.getVarasijojaTaytetaanAsti());
+                        filtteroityJono.setVarasijojaKaytetaanAlkaen(jono.getVarasijojaKaytetaanAlkaen());
+                        filtteroityJono.setVarasijaTayttoPaivat(jono.getVarasijaTayttoPaivat());
+                        filtteroityJono.setVarasijat(jono.getVarasijat());
+                        filtteroityJono.setVaralla(jono.getVaralla());
+                        filtteroityJono.setTila(jono.getTila());
+                        filtteroityKohde.getValintatapajonot().add(filtteroityJono);
+                    }
+                }
+            }
+        }
+        return vainHakemuksenHakukohteetVainHakemuksenTietojenKanssa;
     }
 
     private boolean containsHakukohde(Optional<SijoitteluAjo> presentAjoJustByHaku, String hakukohdeOid) {
         return presentAjoJustByHaku.get().getHakukohteet().stream().anyMatch(hakukohdeItem ->
             hakukohdeOid.equals(hakukohdeItem.getOid()));
+    }
+
+    private static class CachedHaunSijoitteluAjonHakukohteet {
+        public final String hakuOid;
+        public final long sijoitteluAjoId;
+        public final List<Hakukohde> hakukohteet;
+        public boolean fullyPopulated = false;
+
+        private CachedHaunSijoitteluAjonHakukohteet(String hakuOid, long sijoitteluAjoId, List<Hakukohde> hakukohteet) {
+            this.hakuOid = hakuOid;
+            this.sijoitteluAjoId = sijoitteluAjoId;
+            this.hakukohteet = hakukohteet;
+        }
+
+        private synchronized boolean updateWith(Hakukohde hakukohde, boolean foundBySijoitteluajoId) {
+            if (sijoitteluAjoId == hakukohde.getSijoitteluajoId()) {
+                foundBySijoitteluajoId = true;
+                int indexOfHakukohdeToReplace = -1;
+                int i = 0;
+                Iterator<Hakukohde> hakukohdeIterator = hakukohteet.iterator();
+                while (hakukohdeIterator.hasNext() && indexOfHakukohdeToReplace == -1) {
+                    if (hakukohdeIterator.next().getOid().equals(hakukohde.getOid())) {
+                        indexOfHakukohdeToReplace = i;
+                    }
+                    i = i + 1;
+                }
+                if (indexOfHakukohdeToReplace == -1) {
+                    hakukohteet.add(hakukohde);
+                } else {
+                    hakukohteet.set(indexOfHakukohdeToReplace, hakukohde);
+                }
+            }
+            return foundBySijoitteluajoId;
+        }
     }
 }

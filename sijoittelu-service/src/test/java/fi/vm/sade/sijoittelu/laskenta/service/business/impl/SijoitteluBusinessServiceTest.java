@@ -260,10 +260,10 @@ public class SijoitteluBusinessServiceTest {
         when(hakukohdeDao.getHakukohdeForSijoitteluajo(TestDataGenerator.SIJOITTELU_AJO_ID_2, HAKUKOHDE_OID))
                 .thenReturn(testDataGenerator.createHakukohdes(1).get(0));
 
-        sijoitteluBusinessService.asetaJononValintaesitysHyvaksytyksi(sijoitteluBusinessService.getHakukohde(HAKU_OID, HAKUKOHDE_OID), VALINTATAPAJONO_OID, true);
+        sijoitteluBusinessService.asetaJononValintaesitysHyvaksytyksi(sijoitteluBusinessService.getHakukohde(HAKU_OID, HAKUKOHDE_OID), VALINTATAPAJONO_OID, true, HAKU_OID);
 
         ArgumentCaptor<Hakukohde> argument = ArgumentCaptor.forClass(Hakukohde.class);
-        verify(hakukohdeDao).persistHakukohde(argument.capture());
+        verify(hakukohdeDao).persistHakukohde(argument.capture(), HAKU_OID);
         Hakukohde hakukohde = argument.getValue();
         assertEquals(true, SijoitteluBusinessService.getValintatapajono(VALINTATAPAJONO_OID, hakukohde).getValintaesitysHyvaksytty());
     }

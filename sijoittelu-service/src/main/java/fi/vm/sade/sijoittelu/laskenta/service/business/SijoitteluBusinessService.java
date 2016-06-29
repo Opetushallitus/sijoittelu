@@ -147,7 +147,7 @@ public class SijoitteluBusinessService {
         LOG.info("Suoritetaan sijoittelu haulle {}", hakuOid);
         SijoitteluAlgorithm.sijoittele(preSijoitteluProcessors, postSijoitteluProcessors, sijoitteluajoWrapper);
         uusiSijoitteluajo.setEndMils(System.currentTimeMillis());
-        processOldApplications(olemassaolevatHakukohteet, kaikkiHakukohteet);
+        processOldApplications(olemassaolevatHakukohteet, kaikkiHakukohteet, hakuOid);
         List<Valintatulos> muuttuneetValintatulokset = sijoitteluajoWrapper.getMuuttuneetValintatulokset();
         LOG.info("Ennen mergeä muuttuneita valintatuloksia: " + muuttuneetValintatulokset.size());
         LOG.info("Ennen mergeä muuttuneet valintatulokset: " + muuttuneetValintatulokset);
@@ -254,7 +254,7 @@ public class SijoitteluBusinessService {
                 SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(uusiSijoitteluajo, kaikkiHakukohteet, valintatulokset, Collections.emptyMap())
         );
         uusiSijoitteluajo.setEndMils(System.currentTimeMillis());
-        processOldApplications(olemassaolevatHakukohteet, kaikkiHakukohteet);
+        processOldApplications(olemassaolevatHakukohteet, kaikkiHakukohteet, hakuOid);
         valisijoitteluDao.persistSijoittelu(sijoittelu);
         return kaikkiHakukohteet.parallelStream().map(h -> sijoitteluTulosConverter.convert(h)).collect(Collectors.toList());
     }
@@ -276,17 +276,17 @@ public class SijoitteluBusinessService {
                 SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(uusiSijoitteluajo, kaikkiHakukohteet, valintatulokset, kaudenAiemmatVastaanotot)
         );
         uusiSijoitteluajo.setEndMils(System.currentTimeMillis());
-        processOldApplications(olemassaolevatHakukohteet, kaikkiHakukohteet);
+        processOldApplications(olemassaolevatHakukohteet, kaikkiHakukohteet, hakuOid);
         erillisSijoitteluDao.persistSijoittelu(sijoittelu);
         return uusiSijoitteluajo.getSijoitteluajoId();
     }
 
-    private void processOldApplications(final List<Hakukohde> olemassaolevatHakukohteet, final List<Hakukohde> kaikkiHakukohteet) {
+    private void processOldApplications(final List<Hakukohde> olemassaolevatHakukohteet, final List<Hakukohde> kaikkiHakukohteet, String hakuOid) {
         Map<String, Hakemus> hakemusHashMap = getStringHakemusMap(olemassaolevatHakukohteet);
         Map<String, Valintatapajono> valintatapajonoHashMap = getStringValintatapajonoMap(olemassaolevatHakukohteet);
         kaikkiHakukohteet.parallelStream().forEach(hakukohde -> {
                     hakukohde.getValintatapajonot().forEach(processValintatapaJono(valintatapajonoHashMap, hakemusHashMap, hakukohde));
-                    hakukohdeDao.persistHakukohde(hakukohde);
+                    hakukohdeDao.persistHakukohde(hakukohde, hakuOid);
                 }
         );
     }
@@ -570,11 +570,11 @@ public class SijoitteluBusinessService {
                 .stream().collect(Collectors.toMap(VastaanottoDTO::getHenkiloOid, Function.identity()));
     }
 
-    public void asetaJononValintaesitysHyvaksytyksi(Hakukohde hakukohde, String valintatapajonoOid, boolean hyvaksytty) {
+    public void asetaJononValintaesitysHyvaksytyksi(Hakukohde hakukohde, String valintatapajonoOid, boolean hyvaksytty, String hakuOid) {
         LOG.info("Asetetaan hakukohteen {} valintatapajonon {} valintaesitys hyväksytyksi: {}", hakukohde.getOid(), valintatapajonoOid, hyvaksytty);
         Valintatapajono valintatapajono = getValintatapajono(valintatapajonoOid, hakukohde);
         valintatapajono.setValintaesitysHyvaksytty(hyvaksytty);
-        hakukohdeDao.persistHakukohde(hakukohde);
+        hakukohdeDao.persistHakukohde(hakukohde, hakuOid);
     }
 
     public void vaihdaHakemuksenTila(String hakuoid, Hakukohde hakukohde, Valintatulos change, String selite, String muokkaaja) {
@@ -585,7 +585,7 @@ public class SijoitteluBusinessService {
         }
         String tarjoajaOid = hakukohde.getTarjoajaOid();
         if (isBlank(tarjoajaOid)) {
-            updateMissingTarjoajaOidFromTarjonta(hakukohde);
+            updateMissingTarjoajaOidFromTarjonta(hakukohde, hakuoid);
         }
         // Oph-admin voi muokata aina
         // organisaatio updater voi muokata, jos hyväksytty
@@ -696,11 +696,11 @@ public class SijoitteluBusinessService {
                 v.getHyvaksyPeruuntunut() == change.getHyvaksyPeruuntunut();
     }
 
-    private void updateMissingTarjoajaOidFromTarjonta(Hakukohde hakukohde) {
+    private void updateMissingTarjoajaOidFromTarjonta(Hakukohde hakukohde, String hakuOid) {
         String oid = tarjontaIntegrationService.getTarjoajaOid(hakukohde.getOid())
                 .orElseThrow(() -> new RuntimeException("Hakukohteelle " + hakukohde.getOid() + " ei löytynyt tarjoajaOidia sijoitteluajosta: " + hakukohde.getSijoitteluajoId()));
         hakukohde.setTarjoajaOid(oid);
-        hakukohdeDao.persistHakukohde(hakukohde);
+        hakukohdeDao.persistHakukohde(hakukohde, hakuOid);
     }
 
     public static Valintatapajono getValintatapajono(String valintatapajonoOid, Hakukohde hakukohde) {

@@ -11,7 +11,7 @@ public interface HakukohdeDao {
 
     Iterator<KevytHakukohdeDTO> getHakukohdeForSijoitteluajoIterator(Long sijoitteluajoId, String hakukohdeOid);
 
-    void persistHakukohde(Hakukohde hakukohde);
+    void persistHakukohde(Hakukohde hakukohde, String hakuOid);
 
     List<Hakukohde> findAll();
 

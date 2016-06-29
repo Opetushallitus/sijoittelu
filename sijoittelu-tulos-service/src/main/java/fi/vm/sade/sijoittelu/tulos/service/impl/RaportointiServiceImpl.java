@@ -71,6 +71,15 @@ public class RaportointiServiceImpl implements RaportointiService {
         return filterHakemus(hakijat, hakemusOid);
     }
 
+    @Override
+    public HakijaDTO hakemus(String hakuOid, String sijoitteluajoId, String hakemusOid) {
+        List<Hakukohde> hakukohteetJoihinHakemusOsallistuu = cachingRaportointiDao.getCachedHakukohteetJoihinHakemusOsallistuu(hakuOid, sijoitteluajoId, hakemusOid);
+        List<Valintatulos> valintatulokset = valintatulosDao.loadValintatuloksetForHakemus(hakemusOid);
+        List<HakukohdeDTO> hakukohdeDTOs = sijoitteluTulosConverter.convert(hakukohteetJoihinHakemusOsallistuu);
+        List<HakijaDTO> hakijat = raportointiConverter.convert(hakukohdeDTOs, valintatulokset);
+        return filterHakemus(hakijat, hakemusOid);
+    }
+
     /**
      * Unfortunately this has to be done like this, on the positive side, these
      * results can be cached, only valintatulokset needs to be refreshed, EVER!
