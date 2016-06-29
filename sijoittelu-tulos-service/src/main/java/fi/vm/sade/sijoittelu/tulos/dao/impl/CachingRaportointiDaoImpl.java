@@ -52,6 +52,7 @@ public class CachingRaportointiDaoImpl implements CachingRaportointiDao {
 
     @PostConstruct
     public void populateHakukohdeCache() {
+        LOG.info("Starting hakukohdeCache populating thread for haku oids: " + hakukohdeCachettavienHakujenOidit);
         new Thread(() -> {
             LOG.info("Populating hakukohdeCache for haku oids: " + hakukohdeCachettavienHakujenOidit);
             long start = System.currentTimeMillis();
@@ -67,7 +68,7 @@ public class CachingRaportointiDaoImpl implements CachingRaportointiDao {
                 }
             });
             LOG.info("Populating hakukohdeCache took " + (System.currentTimeMillis() - start) + " ms");
-        });
+        }).start();
     }
 
     @Override
