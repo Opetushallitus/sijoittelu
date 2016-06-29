@@ -6,6 +6,7 @@ import fi.vm.sade.sijoittelu.tulos.dao.CachingRaportointiDao;
 import fi.vm.sade.sijoittelu.tulos.dao.HakukohdeDao;
 import fi.vm.sade.sijoittelu.tulos.dto.KevytHakukohdeDTO;
 import fi.vm.sade.sijoittelu.tulos.dto.raportointi.*;
+import fi.vm.sade.sijoittelu.tulos.resource.SijoitteluResource;
 import fi.vm.sade.sijoittelu.tulos.service.impl.comparators.KevytHakijaDTOComparator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -73,7 +74,17 @@ public class RaportointiServiceImpl implements RaportointiService {
 
     @Override
     public HakijaDTO hakemus(String hakuOid, String sijoitteluajoId, String hakemusOid) {
-        List<Hakukohde> hakukohteetJoihinHakemusOsallistuu = cachingRaportointiDao.getCachedHakukohteetJoihinHakemusOsallistuu(hakuOid, sijoitteluajoId, hakemusOid);
+        Long realSijoitteluAjoId;
+        if (SijoitteluResource.LATEST.equals(sijoitteluajoId)) {
+            realSijoitteluAjoId = cachingRaportointiDao.getCachedLatestSijoitteluAjo(hakuOid).map(SijoitteluAjo::getSijoitteluajoId).orElse(null);
+        } else {
+            realSijoitteluAjoId = Long.parseLong(sijoitteluajoId);
+        }
+        if (realSijoitteluAjoId == null) {
+            return null;
+        }
+
+        List<Hakukohde> hakukohteetJoihinHakemusOsallistuu = cachingRaportointiDao.getCachedHakukohteetJoihinHakemusOsallistuu(hakuOid, realSijoitteluAjoId, hakemusOid);
         List<Valintatulos> valintatulokset = valintatulosDao.loadValintatuloksetForHakemus(hakemusOid);
         List<HakukohdeDTO> hakukohdeDTOs = sijoitteluTulosConverter.convert(hakukohteetJoihinHakemusOsallistuu);
         List<HakijaDTO> hakijat = raportointiConverter.convert(hakukohdeDTOs, valintatulokset);

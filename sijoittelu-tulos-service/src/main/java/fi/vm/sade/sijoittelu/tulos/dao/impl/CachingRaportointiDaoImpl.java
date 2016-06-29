@@ -106,25 +106,24 @@ public class CachingRaportointiDaoImpl implements CachingRaportointiDao {
     }
 
     @Override
-    public List<Hakukohde> getCachedHakukohteetJoihinHakemusOsallistuu(String hakuOid, String sijoitteluajoIdStr, String hakemusOid) {
-        long sijoitteluaAjoId = Long.parseLong(sijoitteluajoIdStr);
+    public List<Hakukohde> getCachedHakukohteetJoihinHakemusOsallistuu(String hakuOid, long sijoitteluAjoId, String hakemusOid) {
         if (hakukohdeCachettavienHakujenOidit.contains(hakuOid)) {
             for (CachedHaunSijoitteluAjonHakukohteet c : hakukohdeCachet) {
-                if (c.hakuOid.equals(hakuOid) && c.sijoitteluAjoId == sijoitteluaAjoId) {
+                if (c.hakuOid.equals(hakuOid) && c.sijoitteluAjoId == sijoitteluAjoId) {
                     if (c.fullyPopulated) {
                         List<Hakukohde> kaikkiKohteet = c.hakukohteet;
                         return filtteroidytKopiotHakemuksenHakukohteista(hakemusOid, kaikkiKohteet);
                     } else {
                         LOG.warn(String.format("Cache not fully populated for haku / sijoitteluajo %s / %s " +
                             "when fetching for hakemus %s . Cache size is %s",
-                            hakuOid, sijoitteluaAjoId, hakemusOid, c.hakukohteet.size()));
+                            hakuOid, sijoitteluAjoId, hakemusOid, c.hakukohteet.size()));
                     }
                 }
             }
-            LOG.warn(String.format("Could not find cache entry for haku / sijoitteluajo %s / %s when fetching for hakemus %s", hakuOid, sijoitteluaAjoId, hakemusOid));
+            LOG.warn(String.format("Could not find cache entry for haku / sijoitteluajo %s / %s when fetching for hakemus %s", hakuOid, sijoitteluAjoId, hakemusOid));
         }
 
-        return hakukohdeDao.haeHakukohteetJoihinHakemusOsallistuu(sijoitteluaAjoId, hakemusOid);
+        return hakukohdeDao.haeHakukohteetJoihinHakemusOsallistuu(sijoitteluAjoId, hakemusOid);
     }
 
     @Override
