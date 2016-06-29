@@ -16,6 +16,7 @@ import fi.vm.sade.sijoittelu.tulos.service.RaportointiService;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Matchers;
 
 import java.util.Date;
 import java.util.Optional;
@@ -263,7 +264,7 @@ public class SijoitteluBusinessServiceTest {
         sijoitteluBusinessService.asetaJononValintaesitysHyvaksytyksi(sijoitteluBusinessService.getHakukohde(HAKU_OID, HAKUKOHDE_OID), VALINTATAPAJONO_OID, true, HAKU_OID);
 
         ArgumentCaptor<Hakukohde> argument = ArgumentCaptor.forClass(Hakukohde.class);
-        verify(hakukohdeDao).persistHakukohde(argument.capture(), HAKU_OID);
+        verify(hakukohdeDao).persistHakukohde(argument.capture(), Matchers.eq(HAKU_OID));
         Hakukohde hakukohde = argument.getValue();
         assertEquals(true, SijoitteluBusinessService.getValintatapajono(VALINTATAPAJONO_OID, hakukohde).getValintaesitysHyvaksytty());
     }
