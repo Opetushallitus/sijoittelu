@@ -16,11 +16,7 @@ import fi.vm.sade.sijoittelu.tulos.dao.SijoitteluDao;
 import fi.vm.sade.sijoittelu.tulos.dao.ValintatulosDao;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
@@ -33,7 +29,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
 @Component
-public class CachingRaportointiDaoImpl implements CachingRaportointiDao, InitializingBean {
+public class CachingRaportointiDaoImpl implements CachingRaportointiDao {
     private static final Logger LOG = LoggerFactory.getLogger(CachingRaportointiDaoImpl.class);
 
     @Autowired
@@ -54,12 +50,8 @@ public class CachingRaportointiDaoImpl implements CachingRaportointiDao, Initial
     private final Cache<String, List<Valintatulos>> valintatuloksetMap = CacheBuilder.newBuilder().expireAfterWrite(10, TimeUnit.MINUTES).build();
     private final Cache<String, Optional<SijoitteluAjo>> sijoitteluAjoByHaku = CacheBuilder.newBuilder().expireAfterWrite(10, TimeUnit.MINUTES).build();
 
-    @Override
-    public void afterPropertiesSet() throws Exception {
-        populateHakukohdeCache();
-    }
-
-    private void populateHakukohdeCache() {
+    @PostConstruct
+    public void populateHakukohdeCache() {
         new Thread(() -> {
             LOG.info("Populating hakukohdeCache for haku oids: " + hakukohdeCachettavienHakujenOidit);
             long start = System.currentTimeMillis();
