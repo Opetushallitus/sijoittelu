@@ -19,6 +19,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -48,6 +49,26 @@ public class CachingRaportointiDaoImpl implements CachingRaportointiDao {
     private final Cache<Long, List<Hakukohde>> hakukohteetMap = CacheBuilder.newBuilder().expireAfterWrite(10, TimeUnit.MINUTES).build();
     private final Cache<String, List<Valintatulos>> valintatuloksetMap = CacheBuilder.newBuilder().expireAfterWrite(10, TimeUnit.MINUTES).build();
     private final Cache<String, Optional<SijoitteluAjo>> sijoitteluAjoByHaku = CacheBuilder.newBuilder().expireAfterWrite(10, TimeUnit.MINUTES).build();
+
+    @PostConstruct
+    public void populateHakukohdeCache() {
+        new Thread(() -> {
+            LOG.info("Populating hakukohdeCache for haku oids: " + hakukohdeCachettavienHakujenOidit);
+            long start = System.currentTimeMillis();
+            hakukohdeCachettavienHakujenOidit.stream().forEach(hakuOid -> {
+                Optional<SijoitteluAjo> latestSijoitteluAjo = getCachedLatestSijoitteluAjo(hakuOid);
+                if (latestSijoitteluAjo.isPresent()) {
+                    Long sijoitteluajoId = latestSijoitteluAjo.get().getSijoitteluajoId();
+                    List<Hakukohde> hakukohteet = hakukohdeDao.getHakukohdeForSijoitteluajo(sijoitteluajoId);
+                    hakukohteet.forEach(hakukohde -> updateHakukohdeCacheWith(hakukohde, hakuOid));
+                    markHakukohdeCacheAsFullyPopulated(sijoitteluajoId);
+                } else {
+                    LOG.warn("No latest sijoitteluajo found for haku " + hakuOid);
+                }
+            });
+            LOG.info("Populating hakukohdeCache took " + (System.currentTimeMillis() - start) + " ms");
+        });
+    }
 
     @Override
     public Optional<List<Hakukohde>> getCachedHakukohdesForSijoitteluajo(Long sijoitteluAjoId) {
@@ -97,10 +118,15 @@ public class CachingRaportointiDaoImpl implements CachingRaportointiDao {
         LOG.info("Päivitetään cacheen haun " + hakuOid + " viimeisin sijoitteluajo " + latestAjo.map(SijoitteluAjo::getSijoitteluajoId));
         sijoitteluAjoByHaku.put(hakuOid, latestAjo);
         if (latestAjo.isPresent() && hakukohdeCachettavienHakujenOidit.contains(hakuOid)) {
-            for (CachedHaunSijoitteluAjonHakukohteet c : hakukohdeCachet) {
-                if (c.sijoitteluAjoId == latestAjo.get().getSijoitteluajoId()) {
-                    c.fullyPopulated = true;
-                }
+            Long sijoitteluajoId = latestAjo.get().getSijoitteluajoId();
+            markHakukohdeCacheAsFullyPopulated(sijoitteluajoId);
+        }
+    }
+
+    private void markHakukohdeCacheAsFullyPopulated(Long sijoitteluajoId) {
+        for (CachedHaunSijoitteluAjonHakukohteet c : hakukohdeCachet) {
+            if (c.sijoitteluAjoId == sijoitteluajoId) {
+                c.fullyPopulated = true;
             }
         }
     }
