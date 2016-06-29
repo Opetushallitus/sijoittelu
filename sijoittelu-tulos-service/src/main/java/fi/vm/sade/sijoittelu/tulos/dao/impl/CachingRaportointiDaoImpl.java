@@ -146,7 +146,8 @@ public class CachingRaportointiDaoImpl implements CachingRaportointiDao {
                     }
                 }
             }
-            LOG.warn(String.format("Could not find cache entry for haku / sijoitteluajo %s / %s when fetching for hakemus %s", hakuOid, sijoitteluAjoId, hakemusOid));
+            LOG.warn(String.format("Could not find cache entry for haku / sijoitteluajo %s / %s when fetching for hakemus %s . " +
+                "Total cache list size is %s", hakuOid, sijoitteluAjoId, hakemusOid, hakukohdeCachet.size()));
         }
 
         return hakukohdeDao.haeHakukohteetJoihinHakemusOsallistuu(sijoitteluAjoId, hakemusOid);
