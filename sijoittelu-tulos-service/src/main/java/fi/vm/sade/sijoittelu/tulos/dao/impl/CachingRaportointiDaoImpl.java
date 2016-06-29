@@ -40,12 +40,9 @@ public class CachingRaportointiDaoImpl implements CachingRaportointiDao {
     @Autowired
     private SijoitteluDao sijoitteluDao;
 
-    private final List<String> hakukohdeCachettavienHakujenOidit = ImmutableList.of("1.2.246.562.29.75203638285",
-        "1.2.246.562.29.95390561488",
-        "1.2.246.562.29.10714450698",
-        "1.2.246.562.29.14662042044",
-        "1.2.246.562.29.173465377510",
-        "1.2.246.562.5.2013080813081926341927");
+    private final List<String> hakukohdeCachettavienHakujenOidit = ImmutableList.of(
+        "1.2.246.562.29.75203638285", // Korkeakoulujen yhteishaku kevät 2016
+        "1.2.246.562.29.14662042044"); // Yhteishaku ammatilliseen ja lukioon, kevät 2016
     private final List<CachedHaunSijoitteluAjonHakukohteet> hakukohdeCachet = new ArrayList<>();
 
     private final Cache<Long, List<Hakukohde>> hakukohteetMap = CacheBuilder.newBuilder().expireAfterWrite(10, TimeUnit.MINUTES).build();
