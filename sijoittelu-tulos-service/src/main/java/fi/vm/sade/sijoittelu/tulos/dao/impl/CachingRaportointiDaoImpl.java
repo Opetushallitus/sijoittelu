@@ -121,6 +121,7 @@ public class CachingRaportointiDaoImpl implements CachingRaportointiDao {
         if (latestAjo.isPresent() && hakukohdeCachettavienHakujenOidit.contains(hakuOid)) {
             Long sijoitteluajoId = latestAjo.get().getSijoitteluajoId();
             markHakukohdeCacheAsFullyPopulated(sijoitteluajoId);
+            purgeHakukohteetOfOlderSijoitteluAjos(hakuOid, sijoitteluajoId);
         }
     }
 
@@ -132,6 +133,22 @@ public class CachingRaportointiDaoImpl implements CachingRaportointiDao {
                 c.fullyPopulated = true;
             }
         }
+    }
+
+    private void purgeHakukohteetOfOlderSijoitteluAjos(String hakuOid, Long latestSijoitteluAjoId) {
+        List<CachedHaunSijoitteluAjonHakukohteet> cacheEntriesToRemove = new ArrayList<>();
+        for (CachedHaunSijoitteluAjonHakukohteet c : hakukohdeCachet) {
+            if (c.hakuOid.equals(hakuOid)) {
+                if (c.sijoitteluAjoId < latestSijoitteluAjoId) {
+                    LOG.info(String.format("Purging old hakukohde cache of haku / sijoitteluajo %s / %s with %s items, because latest sijoitteluajo is %s",
+                        c.hakuOid, c.sijoitteluAjoId, c.hakukohteet.size(), latestSijoitteluAjoId));
+                    c.fullyPopulated = false;
+                    cacheEntriesToRemove.add(c);
+                }
+            }
+        }
+        LOG.info(String.format("Removing %d entries of haku %s", cacheEntriesToRemove.size(), hakuOid));
+        hakukohdeCachet.removeAll(cacheEntriesToRemove);
     }
 
     @Override
