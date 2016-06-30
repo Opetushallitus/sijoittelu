@@ -264,8 +264,11 @@ public class CachingRaportointiDaoImpl implements CachingRaportointiDao {
                     if (c.fullyPopulated) {
                         long start = System.currentTimeMillis();
                         List<Hakukohde> foundFilteredKohteet = filtteroidytKopiotHakemuksenHakukohteista(c.hakemusItems.get(hakemusOid));
-                        LOG.info(String.format("Retrieving hakuOid / sijoitteluAjoId / hakemusOid %s / %s / %s took %s milliseconds",
-                            hakuOid, sijoitteluAjoId, hakemusOid, System.currentTimeMillis() - start));
+                        long elapsed = System.currentTimeMillis() - start;
+                        if (elapsed > 100) {
+                            LOG.info(String.format("Retrieving hakuOid / sijoitteluAjoId / hakemusOid %s / %s / %s took %s milliseconds",
+                                hakuOid, sijoitteluAjoId, hakemusOid, elapsed));
+                        }
                         return Optional.of(foundFilteredKohteet);
                     } else {
                         LOG.warn(String.format("Cache not fully populated for haku / sijoitteluajo %s / %s " +
