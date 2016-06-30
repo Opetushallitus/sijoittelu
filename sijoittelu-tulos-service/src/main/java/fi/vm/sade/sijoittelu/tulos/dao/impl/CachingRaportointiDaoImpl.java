@@ -127,6 +127,8 @@ public class CachingRaportointiDaoImpl implements CachingRaportointiDao {
     private void markHakukohdeCacheAsFullyPopulated(Long sijoitteluajoId) {
         for (CachedHaunSijoitteluAjonHakukohteet c : hakukohdeCachet) {
             if (c.sijoitteluAjoId == sijoitteluajoId) {
+                LOG.info(String.format("Marking cache of haku / sijoitteluajo %s / %s as fully populated with %s items",
+                    c.hakuOid, c.sijoitteluAjoId, c.hakukohteet.size()));
                 c.fullyPopulated = true;
             }
         }
