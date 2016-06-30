@@ -3,6 +3,7 @@ package fi.vm.sade.sijoittelu.tulos.service.impl;
 import fi.vm.sade.sijoittelu.domain.Hakukohde;
 import fi.vm.sade.sijoittelu.domain.Sijoittelu;
 import fi.vm.sade.sijoittelu.domain.SijoitteluAjo;
+import fi.vm.sade.sijoittelu.tulos.dao.CachingRaportointiDao;
 import fi.vm.sade.sijoittelu.tulos.dao.ValintatulosDao;
 import fi.vm.sade.sijoittelu.tulos.dao.HakukohdeDao;
 import fi.vm.sade.sijoittelu.tulos.dao.SijoitteluDao;
@@ -23,6 +24,9 @@ public class SijoitteluTulosServiceImpl implements SijoitteluTulosService {
     private HakukohdeDao hakukohdeDao;
 
     @Autowired
+    private CachingRaportointiDao cachingRaportointiDao;
+
+    @Autowired
     private SijoitteluDao sijoitteluDao;
 
     @Autowired
@@ -30,7 +34,7 @@ public class SijoitteluTulosServiceImpl implements SijoitteluTulosService {
 
     @Override
     public HakukohdeDTO getHakukohdeBySijoitteluajo(SijoitteluAjo sijoitteluAjo, String hakukohdeOid) {
-        Hakukohde a = hakukohdeDao.getHakukohdeForSijoitteluajo(sijoitteluAjo.getSijoitteluajoId(), hakukohdeOid);
+        Hakukohde a = cachingRaportointiDao.getCachedHakukohde(sijoitteluAjo, hakukohdeOid);
         if (a == null) {
             return null;
         }

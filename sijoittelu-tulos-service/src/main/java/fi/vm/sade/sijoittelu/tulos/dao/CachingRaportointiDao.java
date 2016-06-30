@@ -16,5 +16,6 @@ public interface CachingRaportointiDao {
     void updateLatestAjoCacheWith(Sijoittelu sijoittelu);
 
     List<Hakukohde> getCachedHakukohteetJoihinHakemusOsallistuu(String hakuOid, long sijoitteluajoId, String hakemusOid);
+    Hakukohde getCachedHakukohde(SijoitteluAjo sijoitteluAjo, String hakukohdeOid);
     void updateHakukohdeCacheWith(Hakukohde hakukohde, String hakuOid);
 }

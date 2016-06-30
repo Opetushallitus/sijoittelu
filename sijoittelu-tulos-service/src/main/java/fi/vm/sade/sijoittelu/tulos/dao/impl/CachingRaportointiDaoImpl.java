@@ -174,6 +174,24 @@ public class CachingRaportointiDaoImpl implements CachingRaportointiDao {
     }
 
     @Override
+    public Hakukohde getCachedHakukohde(SijoitteluAjo sijoitteluAjo, String hakukohdeOid) {
+        String hakuOid = sijoitteluAjo.getHakuOid();
+        Long sijoitteluAjoId = sijoitteluAjo.getSijoitteluajoId();
+        if (hakukohdeCachettavienHakujenOidit.contains(hakuOid)) {
+            for (CachedHaunSijoitteluAjonHakukohteet c : hakukohdeCachet) {
+                if (c.sijoitteluAjoId == sijoitteluAjoId && c.hakuOid.equals(hakuOid)) {
+                    for (Hakukohde hakukohde : c.hakukohteet) {
+                        if (hakukohde.getOid().equals(hakukohdeOid)) {
+                            return hakukohde;
+                        }
+                    }
+                }
+            }
+        }
+        return hakukohdeDao.getHakukohdeForSijoitteluajo(sijoitteluAjoId, hakukohdeOid);
+    }
+
+    @Override
     public void updateHakukohdeCacheWith(Hakukohde hakukohde, String hakuOid) {
         if (!hakukohdeCachettavienHakujenOidit.contains(hakuOid)) {
             return;
