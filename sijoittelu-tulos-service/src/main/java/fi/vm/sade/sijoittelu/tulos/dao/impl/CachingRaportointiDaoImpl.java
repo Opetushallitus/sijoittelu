@@ -16,15 +16,20 @@ import fi.vm.sade.sijoittelu.tulos.dao.SijoitteluDao;
 import fi.vm.sade.sijoittelu.tulos.dao.ValintatulosDao;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
@@ -166,13 +171,13 @@ public class CachingRaportointiDaoImpl implements CachingRaportointiDao {
     private static class CachedHaunSijoitteluAjonHakukohteet {
         public final String hakuOid;
         public final long sijoitteluAjoId;
-        public final List<Hakukohde> hakukohteet;
+        public final List<Hakukohde> hakukohteet = new ArrayList<>();
+        public final Map<String, Set<HakemusCacheObject>> hakemusItems = new HashMap<>();
         public boolean fullyPopulated = false;
 
-        private CachedHaunSijoitteluAjonHakukohteet(String hakuOid, long sijoitteluAjoId, List<Hakukohde> hakukohteet) {
+        private CachedHaunSijoitteluAjonHakukohteet(String hakuOid, long sijoitteluAjoId) {
             this.hakuOid = hakuOid;
             this.sijoitteluAjoId = sijoitteluAjoId;
-            this.hakukohteet = hakukohteet;
         }
 
         private synchronized boolean updateWith(Hakukohde hakukohde, boolean foundBySijoitteluajoId) {
@@ -192,8 +197,32 @@ public class CachingRaportointiDaoImpl implements CachingRaportointiDao {
                 } else {
                     hakukohteet.set(indexOfHakukohdeToReplace, hakukohde);
                 }
+                updateHakemusCacheWith(hakukohde);
             }
             return foundBySijoitteluajoId;
+        }
+
+        private void updateHakemusCacheWith(Hakukohde newKohde) {
+            for (Valintatapajono newJono : newKohde.getValintatapajonot()) {
+                for (Hakemus newHakemus : newJono.getHakemukset()) {
+                    hakemusItems.compute(newHakemus.getHakemusOid(), (k, hakemusCacheObjects) -> {
+                        if (hakemusCacheObjects == null) {
+                            hakemusCacheObjects = new HashSet<>();
+                        }
+                        HakemusCacheObject toRemove = null;
+                        for (HakemusCacheObject h : hakemusCacheObjects) {
+                            if (h.hakukohde.getOid().equals(newKohde.getOid()) && h.valintatapajono.getOid().equals(newJono.getOid())) {
+                                toRemove = h;
+                            }
+                        }
+                        if (toRemove != null) {
+                            hakemusCacheObjects.remove(toRemove);
+                        }
+                        hakemusCacheObjects.add(new HakemusCacheObject(newKohde, newJono, newHakemus));
+                        return hakemusCacheObjects;
+                    });
+                }
+            }
         }
     }
 
@@ -207,7 +236,7 @@ public class CachingRaportointiDaoImpl implements CachingRaportointiDao {
                 foundBySijoitteluajoId = c.updateWith(hakukohde, foundBySijoitteluajoId);
             }
             if (!foundBySijoitteluajoId) {
-                CachedHaunSijoitteluAjonHakukohteet newCacheItem = new CachedHaunSijoitteluAjonHakukohteet(hakuOid, hakukohde.getSijoitteluajoId(), new ArrayList<>());
+                CachedHaunSijoitteluAjonHakukohteet newCacheItem = new CachedHaunSijoitteluAjonHakukohteet(hakuOid, hakukohde.getSijoitteluajoId());
                 newCacheItem.updateWith(hakukohde, false);
                 hakukohdeCachet.add(newCacheItem);
             }
@@ -233,9 +262,8 @@ public class CachingRaportointiDaoImpl implements CachingRaportointiDao {
             for (CachedHaunSijoitteluAjonHakukohteet c : hakukohdeCachet) {
                 if (c.hakuOid.equals(hakuOid) && c.sijoitteluAjoId == sijoitteluAjoId) {
                     if (c.fullyPopulated) {
-                        List<Hakukohde> kaikkiKohteet = c.hakukohteet;
                         long start = System.currentTimeMillis();
-                        List<Hakukohde> foundFilteredKohteet = filtteroidytKopiotHakemuksenHakukohteista(hakemusOid, kaikkiKohteet);
+                        List<Hakukohde> foundFilteredKohteet = filtteroidytKopiotHakemuksenHakukohteista(c.hakemusItems.get(hakemusOid));
                         LOG.info(String.format("Retrieving hakuOid / sijoitteluAjoId / hakemusOid %s / %s / %s took %s milliseconds",
                             hakuOid, sijoitteluAjoId, hakemusOid, System.currentTimeMillis() - start));
                         return Optional.of(foundFilteredKohteet);
@@ -282,55 +310,24 @@ public class CachingRaportointiDaoImpl implements CachingRaportointiDao {
             }
         }
 
-        private List<Hakukohde> filtteroidytKopiotHakemuksenHakukohteista(String hakemusOid, List<Hakukohde> kaikkiKohteet) {
-            List<Hakukohde> vainHakemuksenHakukohteetVainHakemuksenTietojenKanssa = new ArrayList<>();
-            for (Hakukohde hakukohde : kaikkiKohteet) {
-                Hakukohde filtteroityKohde = null;
-                for (Valintatapajono jono : hakukohde.getValintatapajonot()) {
-                    for (Hakemus hakemus: jono.getHakemukset()) {
-                        if (hakemus.getHakemusOid().equals(hakemusOid)) {
-                            if (filtteroityKohde == null) {
-                                filtteroityKohde = new Hakukohde();
-                                vainHakemuksenHakukohteetVainHakemuksenTietojenKanssa.add(filtteroityKohde);
-                                List<Valintatapajono> filtteroidytJonot = new ArrayList<>(hakukohde.getValintatapajonot().size());
-                                filtteroityKohde.setValintatapajonot(filtteroidytJonot);
-                                filtteroityKohde.setHakijaryhmat(hakukohde.getHakijaryhmat());
-                                filtteroityKohde.setOid(hakukohde.getOid());
-                                filtteroityKohde.setId(hakukohde.getId());
-                                filtteroityKohde.setKaikkiJonotSijoiteltu(hakukohde.isKaikkiJonotSijoiteltu());
-                                filtteroityKohde.setTarjoajaOid(hakukohde.getTarjoajaOid());
-                                filtteroityKohde.setTila(hakukohde.getTila());
-                                filtteroityKohde.setSijoitteluajoId(hakukohde.getSijoitteluajoId());
-                            }
-
-                            Valintatapajono filtteroityJono = new Valintatapajono();
-                            filtteroityJono.setHakemukset(Collections.singletonList(hakemus));
-
-                            filtteroityJono.setTasasijasaanto(jono.getTasasijasaanto());
-                            filtteroityJono.setPrioriteetti(jono.getPrioriteetti());
-                            filtteroityJono.setAloituspaikat(jono.getAloituspaikat());
-                            filtteroityJono.setAlinHyvaksyttyPistemaara(jono.getAlinHyvaksyttyPistemaara());
-                            filtteroityJono.setAlkuperaisetAloituspaikat(jono.getAlkuperaisetAloituspaikat());
-                            filtteroityJono.setEiVarasijatayttoa(jono.getEiVarasijatayttoa());
-                            filtteroityJono.setHyvaksytty(jono.getHyvaksytty());
-                            filtteroityJono.setKaikkiEhdonTayttavatHyvaksytaan(jono.getKaikkiEhdonTayttavatHyvaksytaan());
-                            filtteroityJono.setNimi(jono.getNimi());
-                            filtteroityJono.setOid(jono.getOid());
-                            filtteroityJono.setPoissaOlevaTaytto(jono.getPoissaOlevaTaytto());
-                            filtteroityJono.setTayttojono(jono.getTayttojono());
-                            filtteroityJono.setValintaesitysHyvaksytty(jono.getValintaesitysHyvaksytty());
-                            filtteroityJono.setVarasijojaTaytetaanAsti(jono.getVarasijojaTaytetaanAsti());
-                            filtteroityJono.setVarasijojaKaytetaanAlkaen(jono.getVarasijojaKaytetaanAlkaen());
-                            filtteroityJono.setVarasijaTayttoPaivat(jono.getVarasijaTayttoPaivat());
-                            filtteroityJono.setVarasijat(jono.getVarasijat());
-                            filtteroityJono.setVaralla(jono.getVaralla());
-                            filtteroityJono.setTila(jono.getTila());
-                            filtteroityKohde.getValintatapajonot().add(filtteroityJono);
-                        }
+        private List<Hakukohde> filtteroidytKopiotHakemuksenHakukohteista(Set<HakemusCacheObject> hakemusCacheObjects) {
+            Map<String, Hakukohde> filteredHakukohteetByOid = new HashMap<>();
+            for (HakemusCacheObject cacheObject : hakemusCacheObjects) {
+                Hakukohde filteredHakuKohde = filteredHakukohteetByOid.compute(cacheObject.hakukohde.getOid(), (k, kohde) -> {
+                    if (kohde == null) {
+                        kohde = new Hakukohde();
+                        BeanUtils.copyProperties(cacheObject.hakukohde, kohde);
+                        kohde.setValintatapajonot(new ArrayList<>());
                     }
-                }
+                    return kohde;
+                });
+
+                Valintatapajono filteredJono = new Valintatapajono();
+                BeanUtils.copyProperties(cacheObject.valintatapajono, filteredJono);
+                filteredJono.setHakemukset(Collections.singletonList(cacheObject.hakemus));
+                filteredHakuKohde.getValintatapajonot().add(filteredJono);
             }
-            return vainHakemuksenHakukohteetVainHakemuksenTietojenKanssa;
+            return new ArrayList<>(filteredHakukohteetByOid.values());
         }
     }
 }
