@@ -48,7 +48,7 @@ public class CachingRaportointiDaoImpl implements CachingRaportointiDao {
 
     private final Cache<Long, List<Hakukohde>> hakukohteetMap = CacheBuilder.newBuilder().expireAfterWrite(10, TimeUnit.MINUTES).build();
     private final Cache<String, List<Valintatulos>> valintatuloksetMap = CacheBuilder.newBuilder().expireAfterWrite(10, TimeUnit.MINUTES).build();
-    private final Cache<String, Optional<SijoitteluAjo>> sijoitteluAjoByHaku = CacheBuilder.newBuilder().expireAfterWrite(10, TimeUnit.MINUTES).build();
+    private final Cache<String, Optional<SijoitteluAjo>> sijoitteluAjoByHaku = CacheBuilder.newBuilder().build();
 
     @PostConstruct
     public void populateHakukohdeCache() {
