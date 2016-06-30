@@ -81,7 +81,7 @@ public class SijoitteluBusinessService {
     private final Collection<PreSijoitteluProcessor> preSijoitteluProcessors;
 
     @Autowired
-    public SijoitteluBusinessService(@Value("${sijoittelu.maxAjojenMaara:75}") int maxAjoMaara,
+    public SijoitteluBusinessService(@Value("${sijoittelu.maxAjojenMaara:20}") int maxAjoMaara,
                                      ValintatulosDao valintatulosDao,
                                      HakukohdeDao hakukohdeDao,
                                      SijoitteluDao sijoitteluDao,
