@@ -48,6 +48,7 @@ public class SijoitteluServiceJetty {
         System.setProperty("valintalaskentakoostepalvelu.valintaperusteet.rest.url", "http://localhost");
         System.setProperty("host.ilb", "http://localhost");
         System.setProperty("valintalaskentakoostepalvelu.parametriservice.rest.url", publicServerUrl);
+        System.setProperty("valintalaskentakoostepalvelu.oppijantunnistus.rest.url", publicServerUrl);
         System.setProperty("valintalaskentakoostepalvelu.tarjonta.rest.url", publicServerUrl);
         System.setProperty("valintalaskentakoostepalvelu.valinta-tulos-service.rest.url", vtsServerUrl + "/valinta-tulos-service");
         System.setProperty("sijoittelu-service.swagger.basepath", resourcesAddress);
@@ -58,6 +59,10 @@ public class SijoitteluServiceJetty {
         System.setProperty("valintalaskenta-laskenta-service.mongodb.dbname", "valintalaskentadb");
         System.setProperty("valintalaskenta-laskenta-service.mongodb.uri", Optional.ofNullable(System.getProperty("valintalaskentaMongoUri")).orElse(""));
         System.setProperty("sijoittelu-service.mongodb.uri", System.getProperty("sijoitteluMongoUri"));
+        System.setProperty("omatsivut.email.application.modify.link.en", "https://en.test.domain/token/");
+        System.setProperty("omatsivut.email.application.modify.link.fi", "https://fi.test.domain/token/");
+        System.setProperty("omatsivut.email.application.modify.link.sv", "https://sv.test.domain/token/");
+
         try {
             if (server.isStopped()) {
                 String root =  ProjectRootFinder.findProjectRoot() + "/sijoittelu/sijoittelu-service";

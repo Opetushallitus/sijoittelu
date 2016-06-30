@@ -44,6 +44,8 @@ public class SijoitteluTulosConverterImpl implements SijoitteluTulosConverter {
             return null;
         }
         HakukohdeDTO dto = new HakukohdeDTO();
+        BigDecimal ensikertalaisuusHakijaryhmanAlimmatHyvaksytytPisteet = Optional.ofNullable(hakukohde.getHakijaryhmat()).orElse(Collections.emptyList()).stream().findFirst().map(Hakijaryhma::getAlinHyvaksyttyPistemaara).orElse(null);
+        dto.setEnsikertalaisuusHakijaryhmanAlimmatHyvaksytytPisteet(ensikertalaisuusHakijaryhmanAlimmatHyvaksytytPisteet);
         dto.setOid(hakukohde.getOid());
         dto.setSijoitteluajoId(hakukohde.getSijoitteluajoId());
         dto.setTarjoajaOid(hakukohde.getTarjoajaOid());

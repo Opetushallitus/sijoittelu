@@ -3,6 +3,7 @@ package fi.vm.sade.sijoittelu.domain;
 import org.mongodb.morphia.annotations.Embedded;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,7 +30,17 @@ public class Hakijaryhma implements Serializable {
 
     private String valintatapajonoOid;
 
+    private BigDecimal alinHyvaksyttyPistemaara;
+
     private List<String> hakemusOid = new ArrayList<String>();
+
+    public BigDecimal getAlinHyvaksyttyPistemaara() {
+        return alinHyvaksyttyPistemaara;
+    }
+
+    public void setAlinHyvaksyttyPistemaara(BigDecimal alinHyvaksyttyPistemaara) {
+        this.alinHyvaksyttyPistemaara = alinHyvaksyttyPistemaara;
+    }
 
     public List<String> getHakemusOid() {
         return hakemusOid;

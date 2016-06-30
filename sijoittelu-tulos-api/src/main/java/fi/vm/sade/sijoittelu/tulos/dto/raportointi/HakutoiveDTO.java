@@ -3,6 +3,7 @@ package fi.vm.sade.sijoittelu.tulos.dto.raportointi;
 import fi.vm.sade.sijoittelu.tulos.dto.PistetietoDTO;
 import fi.vm.sade.sijoittelu.tulos.dto.ValintatuloksenTila;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,6 +25,16 @@ public class HakutoiveDTO implements Comparable<HakutoiveDTO> {
     private List<HakutoiveenValintatapajonoDTO> hakutoiveenValintatapajonot = new ArrayList<HakutoiveenValintatapajonoDTO>();
 
     private boolean kaikkiJonotSijoiteltu = true;
+
+    private BigDecimal ensikertalaisuusHakijaryhmanAlimmatHyvaksytytPisteet;
+
+    public BigDecimal getEnsikertalaisuusHakijaryhmanAlimmatHyvaksytytPisteet() {
+        return ensikertalaisuusHakijaryhmanAlimmatHyvaksytytPisteet;
+    }
+
+    public void setEnsikertalaisuusHakijaryhmanAlimmatHyvaksytytPisteet(BigDecimal ensikertalaisuusHakijaryhmanAlimmatHyvaksytytPisteet) {
+        this.ensikertalaisuusHakijaryhmanAlimmatHyvaksytytPisteet = ensikertalaisuusHakijaryhmanAlimmatHyvaksytytPisteet;
+    }
 
     @Override
     public int compareTo(HakutoiveDTO o) {

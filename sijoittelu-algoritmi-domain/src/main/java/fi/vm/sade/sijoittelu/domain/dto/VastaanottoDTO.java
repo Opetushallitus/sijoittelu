@@ -48,13 +48,4 @@ public class VastaanottoDTO {
             this.sitova = sitova;
         }
     }
-
-    @Override
-    public String toString() {
-        return "VastaanottoDTO{" +
-                "henkiloOid='" + henkiloOid + '\'' +
-                ", hakukohdeOid='" + hakukohdeOid + '\'' +
-                ", action='" + action + '\'' +
-                '}';
-    }
 }

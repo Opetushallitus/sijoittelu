@@ -1,6 +1,7 @@
 package fi.vm.sade.sijoittelu.tulos.dto;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,6 +20,15 @@ public class HakukohdeDTO implements Serializable {
 
     private boolean kaikkiJonotSijoiteltu = true;
 
+    private BigDecimal ensikertalaisuusHakijaryhmanAlimmatHyvaksytytPisteet;
+
+    public BigDecimal getEnsikertalaisuusHakijaryhmanAlimmatHyvaksytytPisteet() {
+        return ensikertalaisuusHakijaryhmanAlimmatHyvaksytytPisteet;
+    }
+
+    public void setEnsikertalaisuusHakijaryhmanAlimmatHyvaksytytPisteet(BigDecimal ensikertalaisuusHakijaryhmanAlimmatHyvaksytytPisteet) {
+        this.ensikertalaisuusHakijaryhmanAlimmatHyvaksytytPisteet = ensikertalaisuusHakijaryhmanAlimmatHyvaksytytPisteet;
+    }
     public Long getSijoitteluajoId() {
         return sijoitteluajoId;
     }

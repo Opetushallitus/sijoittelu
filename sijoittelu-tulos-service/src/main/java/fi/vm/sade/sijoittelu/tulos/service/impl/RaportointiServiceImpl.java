@@ -1,28 +1,30 @@
 package fi.vm.sade.sijoittelu.tulos.service.impl;
 
-import java.util.*;
-
+import com.google.common.collect.Sets;
+import fi.vm.sade.sijoittelu.domain.*;
 import fi.vm.sade.sijoittelu.tulos.dao.CachingRaportointiDao;
 import fi.vm.sade.sijoittelu.tulos.dao.HakukohdeDao;
+import fi.vm.sade.sijoittelu.tulos.dao.SijoitteluDao;
+import fi.vm.sade.sijoittelu.tulos.dao.ValintatulosDao;
+import fi.vm.sade.sijoittelu.tulos.dto.HakukohdeDTO;
 import fi.vm.sade.sijoittelu.tulos.dto.KevytHakukohdeDTO;
+import fi.vm.sade.sijoittelu.tulos.dto.ValintatuloksenTila;
 import fi.vm.sade.sijoittelu.tulos.dto.raportointi.*;
 import fi.vm.sade.sijoittelu.tulos.resource.SijoitteluResource;
+import fi.vm.sade.sijoittelu.tulos.service.RaportointiService;
+import fi.vm.sade.sijoittelu.tulos.service.impl.comparators.HakijaDTOComparator;
 import fi.vm.sade.sijoittelu.tulos.service.impl.comparators.KevytHakijaDTOComparator;
+import fi.vm.sade.sijoittelu.tulos.service.impl.converters.RaportointiConverter;
+import fi.vm.sade.sijoittelu.tulos.service.impl.converters.SijoitteluTulosConverter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import fi.vm.sade.sijoittelu.domain.Hakukohde;
-import fi.vm.sade.sijoittelu.domain.SijoitteluAjo;
-import fi.vm.sade.sijoittelu.domain.Valintatulos;
-import fi.vm.sade.sijoittelu.tulos.dao.SijoitteluDao;
-import fi.vm.sade.sijoittelu.tulos.dao.ValintatulosDao;
-import fi.vm.sade.sijoittelu.tulos.dto.HakemuksenTila;
-import fi.vm.sade.sijoittelu.tulos.dto.HakukohdeDTO;
-import fi.vm.sade.sijoittelu.tulos.dto.ValintatuloksenTila;
-import fi.vm.sade.sijoittelu.tulos.service.RaportointiService;
-import fi.vm.sade.sijoittelu.tulos.service.impl.comparators.HakijaDTOComparator;
-import fi.vm.sade.sijoittelu.tulos.service.impl.converters.RaportointiConverter;
-import fi.vm.sade.sijoittelu.tulos.service.impl.converters.SijoitteluTulosConverter;
+import java.math.BigDecimal;
+import java.util.*;
+import java.util.function.Predicate;
+import java.util.stream.Stream;
+
+import static java.util.Collections.*;
 
 /**
  * Sijoittelun raportointiin liittyvat metodit. Erotettu varsinaisesta
@@ -99,7 +101,34 @@ public class RaportointiServiceImpl implements RaportointiService {
     public HakijaPaginationObject hakemukset(SijoitteluAjo ajo, Boolean hyvaksytyt, Boolean ilmanHyvaksyntaa, Boolean vastaanottaneet, List<String> hakukohdeOids, Integer count, Integer index) {
         List<Valintatulos> valintatulokset = valintatulosDao.loadValintatulokset(ajo.getHakuOid());
         List<Hakukohde> hakukohteet = hakukohdeDao.getHakukohdeForSijoitteluajo(ajo.getSijoitteluajoId());
+        laskeAlinHyvaksyttyPisteetEnsimmaiselleHakijaryhmalle(hakukohteet);
         return konvertoiHakijat(hyvaksytyt, ilmanHyvaksyntaa, vastaanottaneet, hakukohdeOids, count, index, valintatulokset, hakukohteet);
+    }
+
+    private void laskeAlinHyvaksyttyPisteetEnsimmaiselleHakijaryhmalle(List<Hakukohde> hakukohteet) {
+        Predicate<Hakemus> isHyvaksytty = hakemus -> HakemuksenTila.HYVAKSYTTY.equals(hakemus.getTila()) || HakemuksenTila.VARASIJALTA_HYVAKSYTTY.equals(hakemus.getTila());
+        hakukohteet.stream().forEach(
+                h -> {
+                    Optional<Hakijaryhma> ensimmainenHakijaryhma = h.getHakijaryhmat().stream().findFirst();
+                    Optional<Hakijaryhma> ensimmainenHakijaryhmaJosHyvaksyttyjaHakijoita = ensimmainenHakijaryhma.filter(r -> r.getHakemusOid() != null && !r.getHakemusOid().isEmpty());
+                    ensimmainenHakijaryhmaJosHyvaksyttyjaHakijoita.ifPresent(
+                            ensisijaistenHakijaryhma -> {
+                                Set<String> hyvaksytyt = Sets.newHashSet(ensisijaistenHakijaryhma.getHakemusOid());
+                                Stream<Hakemus> hakemuksetKaikissaJonoissa = h.getValintatapajonot()
+                                        .stream().flatMap(jono -> Optional.ofNullable(jono.getHakemukset()).orElse(emptyList()).stream());
+
+                                Optional<BigDecimal> minimiPisteet = hakemuksetKaikissaJonoissa.
+                                        // hakijalla pisteita
+                                                filter(hakemus -> hakemus.getPisteet() != null)
+                                        // hakija hyvaksytty
+                                        .filter(isHyvaksytty).filter(hyvaksytyt::contains)
+                                        // reduce to pienimmat pisteet
+                                        .map(Hakemus::getPisteet).reduce((a, b) -> a.compareTo(b) < 0 ? a : b);
+
+                                ensisijaistenHakijaryhma.setAlinHyvaksyttyPistemaara(minimiPisteet.orElse(null));
+                            });
+                }
+        );
     }
 
     @Override
@@ -108,7 +137,7 @@ public class RaportointiServiceImpl implements RaportointiService {
         Iterator<KevytHakukohdeDTO> hakukohteet = hakukohdeDao.getHakukohdeForSijoitteluajoIterator(ajo.getSijoitteluajoId(), hakukohdeOid);
         Hakukohde hakukohde = hakukohdeDao.getHakukohdeForSijoitteluajo(ajo.getSijoitteluajoId(), hakukohdeOid);
         if (hakukohde == null) {
-            return Collections.emptyList();
+            return emptyList();
         }
         return konvertoiHakijat(hakukohde, hakukohteenValintatulokset, hakukohteet);
     }
@@ -117,15 +146,16 @@ public class RaportointiServiceImpl implements RaportointiService {
     public List<KevytHakijaDTO> hakemuksetVainHakukohteenTietojenKanssa(SijoitteluAjo ajo, String hakukohdeOid) {
         Hakukohde hakukohde = hakukohdeDao.getHakukohdeForSijoitteluajo(ajo.getSijoitteluajoId(), hakukohdeOid);
         if (hakukohde == null) {
-            return Collections.emptyList();
+            return emptyList();
         }
-        return konvertoiHakijat(hakukohde, Collections.emptyMap(), Collections.emptyIterator());
+        return konvertoiHakijat(hakukohde, emptyMap(), emptyIterator());
     }
 
     @Override
     public HakijaPaginationObject cachedHakemukset(SijoitteluAjo ajo, Boolean hyvaksytyt, Boolean ilmanHyvaksyntaa, Boolean vastaanottaneet, List<String> hakukohdeOids, Integer count, Integer index) {
         List<Valintatulos> valintatulokset = cachingRaportointiDao.getCachedValintatulokset(ajo.getHakuOid()).get();
         List<Hakukohde> hakukohteet = cachingRaportointiDao.getCachedHakukohdesForSijoitteluajo(ajo.getSijoitteluajoId()).get();
+        laskeAlinHyvaksyttyPisteetEnsimmaiselleHakijaryhmalle(hakukohteet);
         return konvertoiHakijat(hyvaksytyt, ilmanHyvaksyntaa, vastaanottaneet, hakukohdeOids, count, index, valintatulokset, hakukohteet);
     }
 
@@ -142,7 +172,7 @@ public class RaportointiServiceImpl implements RaportointiService {
     private HakijaPaginationObject konvertoiHakijat(final Boolean hyvaksytyt, final Boolean ilmanHyvaksyntaa, final Boolean vastaanottaneet, final List<String> hakukohdeOids, final Integer count, final Integer index, final List<Valintatulos> valintatulokset, final List<Hakukohde> hakukohteet) {
         List<HakukohdeDTO> hakukohdeDTOs = sijoitteluTulosConverter.convert(hakukohteet);
         List<HakijaDTO> hakijat = raportointiConverter.convert(hakukohdeDTOs, valintatulokset);
-        Collections.sort(hakijat, new HakijaDTOComparator());
+        sort(hakijat, new HakijaDTOComparator());
         HakijaPaginationObject paginationObject = new HakijaPaginationObject();
         List<HakijaDTO> result = new ArrayList<>();
         for (HakijaDTO hakija : hakijat) {
@@ -157,7 +187,7 @@ public class RaportointiServiceImpl implements RaportointiService {
 
     private List<KevytHakijaDTO> konvertoiHakijat(Hakukohde hakukohde, Map<String, List<RaportointiValintatulos>> valintatulokset, Iterator<KevytHakukohdeDTO> hakukohteet) {
         List<KevytHakijaDTO> hakijat = raportointiConverter.convertHakukohde(sijoitteluTulosConverter.convert(hakukohde), hakukohteet, valintatulokset);
-        Collections.sort(hakijat, new KevytHakijaDTOComparator());
+        sort(hakijat, new KevytHakijaDTOComparator());
         return hakijat;
     }
 
@@ -174,7 +204,7 @@ public class RaportointiServiceImpl implements RaportointiService {
                 isVastaanottanut = true;
             }
             for (HakutoiveenValintatapajonoDTO valintatapajono : hakutoiveDTO.getHakutoiveenValintatapajonot()) {
-                if (valintatapajono.getTila() == HakemuksenTila.HYVAKSYTTY || valintatapajono.getTila() == HakemuksenTila.VARASIJALTA_HYVAKSYTTY) {
+                if (valintatapajono.getTila() == fi.vm.sade.sijoittelu.tulos.dto.HakemuksenTila.HYVAKSYTTY || valintatapajono.getTila() == fi.vm.sade.sijoittelu.tulos.dto.HakemuksenTila.VARASIJALTA_HYVAKSYTTY) {
                     isHyvaksytty = true;
                 }
             }

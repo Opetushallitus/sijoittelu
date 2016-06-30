@@ -259,6 +259,7 @@ public class RaportointiConverterImpl implements RaportointiConverter {
             hakutoiveDTO.setTarjoajaOid(hakemusDTO.getTarjoajaOid());
             hakutoiveDTO.setHakukohdeOid(hakemusDTO.getHakukohdeOid());
             hakutoiveDTO.setKaikkiJonotSijoiteltu(hakukohde.isKaikkiJonotSijoiteltu());
+            hakutoiveDTO.setEnsikertalaisuusHakijaryhmanAlimmatHyvaksytytPisteet(hakukohde.getEnsikertalaisuusHakijaryhmanAlimmatHyvaksytytPisteet());
             hakutoiveDTO.setHakutoive(hakemusDTO.getPrioriteetti());
             hakijaDTO.getHakutoiveet().add(hakutoiveDTO);
         }
