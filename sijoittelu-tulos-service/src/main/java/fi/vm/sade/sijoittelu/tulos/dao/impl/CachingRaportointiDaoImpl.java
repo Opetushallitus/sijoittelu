@@ -47,8 +47,8 @@ public class CachingRaportointiDaoImpl implements CachingRaportointiDao {
     @Autowired
     private SijoitteluDao sijoitteluDao;
 
-    @Value("${sijoittelu-service.hakukohdeCache.populate:true}")
-    private boolean populateHakukohdeCache;
+    @Value(value = "${sijoittelu-service.hakukohdeCache.populate:true}")
+    private String populateHakukohdeCache;
 
     private final List<String> hakukohdeCachettavienHakujenOidit = ImmutableList.of(
         "1.2.246.562.29.75203638285", // Korkeakoulujen yhteishaku kevät 2016
@@ -62,7 +62,7 @@ public class CachingRaportointiDaoImpl implements CachingRaportointiDao {
 
     @PostConstruct
     public void populateHakukohdeCache() {
-        if (populateHakukohdeCache) {
+        if ("true".equals(populateHakukohdeCache)) {
             LOG.info("Starting hakukohdeCache populating thread for haku oids: " + hakukohdeCachettavienHakujenOidit);
             new Thread(() -> {
                 LOG.info("Populating hakukohdeCache for haku oids: " + hakukohdeCachettavienHakujenOidit);
