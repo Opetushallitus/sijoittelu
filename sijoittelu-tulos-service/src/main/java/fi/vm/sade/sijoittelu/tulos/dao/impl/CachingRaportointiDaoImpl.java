@@ -207,9 +207,9 @@ public class CachingRaportointiDaoImpl implements CachingRaportointiDao {
                 foundBySijoitteluajoId = c.updateWith(hakukohde, foundBySijoitteluajoId);
             }
             if (!foundBySijoitteluajoId) {
-                List<Hakukohde> hakukohteet = new ArrayList<>();
-                hakukohteet.add(hakukohde);
-                hakukohdeCachet.add(new CachedHaunSijoitteluAjonHakukohteet(hakuOid, hakukohde.getSijoitteluajoId(), hakukohteet));
+                CachedHaunSijoitteluAjonHakukohteet newCacheItem = new CachedHaunSijoitteluAjonHakukohteet(hakuOid, hakukohde.getSijoitteluajoId(), new ArrayList<>());
+                newCacheItem.updateWith(hakukohde, false);
+                hakukohdeCachet.add(newCacheItem);
             }
         }
 
