@@ -18,6 +18,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
@@ -46,9 +47,13 @@ public class CachingRaportointiDaoImpl implements CachingRaportointiDao {
     @Autowired
     private SijoitteluDao sijoitteluDao;
 
+    @Value("${sijoittelu-service.hakukohdeCache.populate:true}")
+    private boolean populateHakukohdeCache;
+
     private final List<String> hakukohdeCachettavienHakujenOidit = ImmutableList.of(
         "1.2.246.562.29.75203638285", // Korkeakoulujen yhteishaku kevät 2016
         "1.2.246.562.29.14662042044"); // Yhteishaku ammatilliseen ja lukioon, kevät 2016
+
     private final HakukohdeCache hakukohdeCache = new HakukohdeCache();
 
     private final Cache<Long, List<Hakukohde>> hakukohteetMap = CacheBuilder.newBuilder().expireAfterWrite(10, TimeUnit.MINUTES).build();
@@ -57,23 +62,27 @@ public class CachingRaportointiDaoImpl implements CachingRaportointiDao {
 
     @PostConstruct
     public void populateHakukohdeCache() {
-        LOG.info("Starting hakukohdeCache populating thread for haku oids: " + hakukohdeCachettavienHakujenOidit);
-        new Thread(() -> {
-            LOG.info("Populating hakukohdeCache for haku oids: " + hakukohdeCachettavienHakujenOidit);
-            long start = System.currentTimeMillis();
-            hakukohdeCachettavienHakujenOidit.stream().forEach(hakuOid -> {
-                Optional<SijoitteluAjo> latestSijoitteluAjo = getCachedLatestSijoitteluAjo(hakuOid);
-                if (latestSijoitteluAjo.isPresent()) {
-                    Long sijoitteluajoId = latestSijoitteluAjo.get().getSijoitteluajoId();
-                    List<Hakukohde> hakukohteet = hakukohdeDao.getHakukohdeForSijoitteluajo(sijoitteluajoId);
-                    hakukohteet.forEach(hakukohde -> updateHakukohdeCacheWith(hakukohde, hakuOid));
-                    hakukohdeCache.markAsFullyPopulated(sijoitteluajoId);
-                } else {
-                    LOG.warn("No latest sijoitteluajo found for haku " + hakuOid);
-                }
-            });
-            LOG.info("Populating hakukohdeCache took " + (System.currentTimeMillis() - start) + " ms");
-        }).start();
+        if (populateHakukohdeCache) {
+            LOG.info("Starting hakukohdeCache populating thread for haku oids: " + hakukohdeCachettavienHakujenOidit);
+            new Thread(() -> {
+                LOG.info("Populating hakukohdeCache for haku oids: " + hakukohdeCachettavienHakujenOidit);
+                long start = System.currentTimeMillis();
+                hakukohdeCachettavienHakujenOidit.stream().forEach(hakuOid -> {
+                    Optional<SijoitteluAjo> latestSijoitteluAjo = getCachedLatestSijoitteluAjo(hakuOid);
+                    if (latestSijoitteluAjo.isPresent()) {
+                        Long sijoitteluajoId = latestSijoitteluAjo.get().getSijoitteluajoId();
+                        List<Hakukohde> hakukohteet = hakukohdeDao.getHakukohdeForSijoitteluajo(sijoitteluajoId);
+                        hakukohteet.forEach(hakukohde -> updateHakukohdeCacheWith(hakukohde, hakuOid));
+                        hakukohdeCache.markAsFullyPopulated(sijoitteluajoId);
+                    } else {
+                        LOG.warn("No latest sijoitteluajo found for haku " + hakuOid);
+                    }
+                });
+                LOG.info("Populating hakukohdeCache took " + (System.currentTimeMillis() - start) + " ms");
+            }).start();
+        } else {
+            LOG.info("Not populating hakukohdeCache");
+        }
     }
 
     @Override
