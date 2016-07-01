@@ -16,12 +16,12 @@ import fi.vm.sade.sijoittelu.tulos.dto.KevytHakemusDTO;
 import fi.vm.sade.sijoittelu.tulos.dto.KevytHakukohdeDTO;
 import fi.vm.sade.sijoittelu.tulos.dto.KevytValintatapajonoDTO;
 import org.mongodb.morphia.Datastore;
-import org.mongodb.morphia.Key;
 import org.mongodb.morphia.mapping.Mapper;
 import org.mongodb.morphia.mapping.cache.DefaultEntityCache;
 import org.mongodb.morphia.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 
 import fi.vm.sade.sijoittelu.tulos.dao.HakukohdeDao;
@@ -35,6 +35,9 @@ public class HakukohdeDaoImpl implements HakukohdeDao {
 
     @Autowired
     private CachingRaportointiDao cachingRaportointiDao;
+
+    @Value("${sijoittelu-service.hakukohdeDao.batchSize}")
+    private int batchSize;
 
     @PostConstruct
     public void ensureIndexes() {
@@ -78,21 +81,20 @@ public class HakukohdeDaoImpl implements HakukohdeDao {
         Map<String, KevytHakukohdeDTO> hakukohteet = fetchKevytHakukohdeDTOsWithoutHakemukset(sijoitteluajoId, hakemusOids);
 
         return new Iterator<KevytHakukohdeDTO>() {
-            private static final long LIMIT = 500;
             private long skip = 0;
             private long fetched = 0;
-            private Iterator<DBObject> i = getHakemusIterator(sijoitteluajoId, hakemusOids, this.skip, LIMIT);
+            private Iterator<DBObject> i = getHakemusIterator(sijoitteluajoId, hakemusOids, this.skip, batchSize);
 
             @Override
             public boolean hasNext() {
                 boolean done = !i.hasNext();
-                if (done && this.fetched < LIMIT) {
+                if (done && this.fetched < batchSize) {
                     return false;
                 }
                 if (done) {
-                    this.skip += LIMIT;
+                    this.skip += batchSize;
                     this.fetched = 0;
-                    this.i = getHakemusIterator(sijoitteluajoId, hakemusOids, this.skip, LIMIT);
+                    this.i = getHakemusIterator(sijoitteluajoId, hakemusOids, this.skip, batchSize);
                 }
                 return i.hasNext();
             }

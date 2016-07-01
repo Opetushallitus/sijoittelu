@@ -9,6 +9,10 @@
     <context:annotation-config/>
     <context:component-scan base-package="fi.vm.sade.sijoittelu.tulos"/>
 
+    <context:property-placeholder
+            location="classpath:common.properties"
+            ignore-resource-not-found="false"/>
+
     <bean id="mongodFactory" class="de.flapdoodle.embed.mongo.tests.MongodForTestsFactory" destroy-method="shutdown"/>
     <bean id="mongo" class="com.mongodb.MongoClient" factory-bean="mongodFactory" factory-method="newMongo"/>
 
