@@ -39,8 +39,8 @@ public class SijoitteluSiivousActor extends AbstractActor {
 
     public SijoitteluSiivousActor() {
         receive(ReceiveBuilder.match(PoistaVanhatAjotSijoittelulta.class, sijoittelu -> {
-            log.info("Poistetaan vanhat sijoitteluajot sijoittelulta {} - ajojen maksimimäärä {}",
-                    sijoittelu.getSijoitteluId(), sijoittelu.getAjojenMaaraMax());
+            log.info("Poistetaan vanhat sijoitteluajot haun {} sijoittelulta {} - ajojen maksimimäärä {}",
+                    sijoittelu.getHakuOid(), sijoittelu.getSijoitteluId(), sijoittelu.getAjojenMaaraMax());
             Optional<Sijoittelu> sijoitteluOpt = sijoitteluDao.getSijoitteluById(sijoittelu.getSijoitteluId());
             sijoitteluOpt.ifPresent(s -> {
                 if(s.getSijoitteluajot().size() > sijoittelu.getAjojenMaaraMax()) {
@@ -58,16 +58,20 @@ public class SijoitteluSiivousActor extends AbstractActor {
                     common.addAll(saastettavat);
                     common.retainAll(poistettavat);
                     if(common.size() > 0) {
-                        log.error("Säästettävissä ja poistettavissa ajoissa on yhtäläisyyksiä kpl: {}", common.size());
+                        log.error("Säästettävissä ja poistettavissa ajoissa on yhtäläisyyksiä kpl: {} , hakuOid: ", common.size(), sijoittelu.getHakuOid());
                     }
                     if (!saastettavat.isEmpty() && common.size() == 0) {
+                        log.info("Säästetään haulle {} sijoitteluajoja {} kpl, poistetaan {} kpl", sijoittelu.getHakuOid(), saastettavat.size(), poistettavat.size());
                         s.getSijoitteluajot().clear();
                         s.getSijoitteluajot().addAll(saastettavat);
                         sijoitteluDao.persistSijoittelu(s);
                         poistettavat.stream().forEach(a -> {
                             List<Hakukohde> kohde = hakukohdeDao.getHakukohdeForSijoitteluajo(a.getSijoitteluajoId());
+                            log.info("Poistetaan haun {} sijoitteluajolta {} hakukohteita {} kpl", sijoittelu.getHakuOid(), a.getSijoitteluajoId(), kohde.size());
                             kohde.stream().forEach(hakukohdeDao::removeHakukohde);
                         });
+                    } else {
+                        log.warning("Ei poisteta haun {} vanhoja sijoitteluajoja. Säästettäviä {} , päällekkäisiä {}", sijoittelu.getHakuOid(), saastettavat.size(), common.size());
                     }
                 }
             });

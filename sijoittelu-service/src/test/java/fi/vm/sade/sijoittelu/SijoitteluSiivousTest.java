@@ -2,7 +2,6 @@ package fi.vm.sade.sijoittelu;
 
 import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
-import akka.actor.Props;
 import akka.actor.Terminated;
 import akka.testkit.JavaTestKit;
 import com.google.gson.GsonBuilder;
@@ -10,7 +9,6 @@ import com.lordofthejars.nosqlunit.annotation.UsingDataSet;
 import com.lordofthejars.nosqlunit.core.LoadStrategyEnum;
 import com.lordofthejars.nosqlunit.mongodb.MongoDbRule;
 import fi.vm.sade.sijoittelu.domain.*;
-import fi.vm.sade.sijoittelu.laskenta.actors.SijoitteluSiivousActor;
 import fi.vm.sade.sijoittelu.laskenta.actors.messages.PoistaVanhatAjotSijoittelulta;
 import fi.vm.sade.sijoittelu.tulos.dao.HakukohdeDao;
 import fi.vm.sade.sijoittelu.tulos.dao.SijoitteluDao;
@@ -82,7 +80,7 @@ public class SijoitteluSiivousTest {
             Sijoittelu original = sijoitteluDao.getSijoitteluById(sijoitteluId).get();
             final Long latest = original.getLatestSijoitteluajo().getSijoitteluajoId();
 
-            target.tell(new PoistaVanhatAjotSijoittelulta(sijoitteluId, maara), ActorRef.noSender());
+            target.tell(new PoistaVanhatAjotSijoittelulta(sijoitteluId, maara, "hakuoid-tahan"), ActorRef.noSender());
 
             final Terminated msg = probe.expectMsgClass(Terminated.class);
 
