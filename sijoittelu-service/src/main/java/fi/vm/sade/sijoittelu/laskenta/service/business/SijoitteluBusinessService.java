@@ -157,14 +157,13 @@ public class SijoitteluBusinessService {
         List<String> varasijapomput = sijoitteluajoWrapper.getVarasijapomput();
         varasijapomput.forEach(LOG::info);
         LOG.info("Haun {} sijoittelussa muuttui {} kpl valintatuloksia, pomppuja {} kpl", hakuOid, mergatut.size(), varasijapomput.size());
-        ActorRef siivoaja = actorService.getSiivousActor();
         try {
             sijoitteluDao.persistSijoittelu(sijoittelu);
             LOG.info("Sijoittelu persistoitu haulle {}. Poistetaan vanhoja ajoja. Säästettävien ajojen määrää {}", sijoittelu.getHakuOid(), maxAjoMaara);
-            siivoaja.tell(new PoistaVanhatAjotSijoittelulta(sijoittelu.getSijoitteluId(), maxAjoMaara, hakuOid), ActorRef.noSender());
+            siivoaVanhatAjotSijoittelulta(hakuOid, sijoittelu);
         } catch (Exception e) {
             LOG.error("Sijoittelun persistointi haulle {} epäonnistui. Rollback hakukohteet", sijoittelu.getHakuOid());
-            siivoaja.tell(new PoistaHakukohteet(sijoittelu, uusiSijoitteluajo.getSijoitteluajoId()), ActorRef.noSender());
+            actorService.getSiivousActor().tell(new PoistaHakukohteet(sijoittelu, uusiSijoitteluajo.getSijoitteluajoId()), ActorRef.noSender());
             throw e;
         }
     }
@@ -639,6 +638,11 @@ public class SijoitteluBusinessService {
                 .add("selite", selite)
                 .setOperaatio(ValintaperusteetOperation.HAKEMUS_TILAMUUTOS)
                 .build());
+    }
+
+    public void siivoaVanhatAjotSijoittelulta(String hakuOid, Sijoittelu sijoittelu) {
+        ActorRef siivoaja = actorService.getSiivousActor();
+        siivoaja.tell(new PoistaVanhatAjotSijoittelulta(sijoittelu.getSijoitteluId(), maxAjoMaara, hakuOid), ActorRef.noSender());
     }
 
     private void authorizeJulkaistavissa(String hakuOid, boolean v, boolean change) {

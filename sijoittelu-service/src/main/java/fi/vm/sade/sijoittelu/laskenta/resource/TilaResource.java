@@ -3,6 +3,7 @@ package fi.vm.sade.sijoittelu.laskenta.resource;
 import static fi.vm.sade.sijoittelu.laskenta.roles.SijoitteluRole.READ_UPDATE_CRUD;
 import static fi.vm.sade.sijoittelu.laskenta.roles.SijoitteluRole.UPDATE_CRUD;
 import static fi.vm.sade.sijoittelu.laskenta.util.SijoitteluAudit.username;
+import static fi.vm.sade.sijoittelu.tulos.roles.SijoitteluRole.CRUD;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
 import com.wordnik.swagger.annotations.ApiParam;
@@ -513,6 +514,29 @@ public class TilaResource {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
                     .entity(error).build();
         }
+    }
+
+    @PreAuthorize(CRUD)
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    @ApiOperation("Käynnistää vanhojen sijoitteluajojen siivoamisen annetuilta hauilta")
+    @Path("/siivoaVanhatSijoitteluAjot")
+    public List<String> siivoaVanhatSijoitteluajot(List<String> hakuOids) {
+        List<String> resultMessages = new ArrayList<>();
+        LOGGER.info(String.format("Käynnistetään %s annetun haun vanhojen sijoitteluajojen siivous", hakuOids.size()));
+        LOGGER.info("Hakujen oidit: " + hakuOids);
+        for (String hakuOid : hakuOids) {
+            Optional<Sijoittelu> sijoittelu = sijoitteluDao.getSijoitteluByHakuOid(hakuOid);
+            if (sijoittelu.isPresent()) {
+                sijoitteluBusinessService.siivoaVanhatAjotSijoittelulta(hakuOid, sijoittelu.get());
+                resultMessages.add("Lähetettiin siivouspyyntö haun " + hakuOid + " sijoittelulle " + sijoittelu.get().getSijoitteluId());
+            } else {
+                String msg = "Ei löytynyt sijoittelua siivottavaksi haulle " + hakuOid;
+                LOGGER.warn(msg);
+                resultMessages.add(msg);
+            }
+        }
+        return resultMessages;
     }
 
     private int getMaara(List<Hakemus> hakemukset, List<HakemuksenTila> tilat) {

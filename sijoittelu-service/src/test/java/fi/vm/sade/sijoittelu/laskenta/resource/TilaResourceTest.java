@@ -15,7 +15,9 @@ import fi.vm.sade.sijoittelu.laskenta.service.exception.HakemustaEiLoytynytExcep
 import fi.vm.sade.sijoittelu.tulos.dto.HakukohdeDTO;
 import fi.vm.sade.valinta.http.HttpResource;
 import junit.framework.Assert;
+import org.apache.commons.io.IOUtils;
 import org.apache.cxf.jaxrs.client.WebClient;
+import org.hamcrest.Matchers;
 import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
@@ -26,6 +28,8 @@ import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -34,8 +38,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static javafx.scene.input.KeyCode.M;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.when;
+import com.google.gson.Gson;
 
 public class TilaResourceTest {
     String hakuOid = "1.2.246.562.5.2013080813081926341928";
@@ -242,6 +248,23 @@ public class TilaResourceTest {
         // Tarkistetaan, että poistui kannasta
         assertEquals(0, haeTulokset("hakemus1").size());
         assertEquals(0, haeHakukohde(hakuOid, hakukohdeOid).getValintatapajonot().stream().filter(j -> j.getOid().equals("jono1")).findFirst().get().getHakemukset().size());
+    }
+
+    @Test
+    public void vanhojenSijoitteluajojenSiivous() throws IOException {
+        final String url = "http://localhost:" + SharedTomcat.port + "/sijoittelu-service/resources/tila/siivoaVanhatSijoitteluAjot";
+        String inexistentHakuOid = "oid-of-haku-that-is-not";
+        List<String> hakuOidit = Arrays.asList(hakuOid, inexistentHakuOid);
+        final Response response = createClient(url)
+                .query("valintatapajononNimi", "varsinainen jono")
+                .type(MediaType.APPLICATION_JSON_TYPE)
+                .accept(MediaType.APPLICATION_JSON_TYPE)
+                .post(Entity.entity(hakuOidit, MediaType.APPLICATION_JSON));
+
+        assertEquals(200, response.getStatus());
+        String responseAsString = IOUtils.toString((InputStream) response.getEntity());
+        assertThat(responseAsString, Matchers.containsString("Lähetettiin siivouspyyntö haun " + hakuOid + " sijoittelulle 1409055160621"));
+        assertThat(responseAsString, Matchers.containsString("Ei löytynyt sijoittelua siivottavaksi haulle " + inexistentHakuOid));
     }
 
     private List<Valintatulos> haeTulokset(String hakemusOid) {
