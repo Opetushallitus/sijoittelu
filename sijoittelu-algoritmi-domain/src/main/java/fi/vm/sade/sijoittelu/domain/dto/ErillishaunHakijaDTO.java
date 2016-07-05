@@ -8,6 +8,7 @@ import fi.vm.sade.sijoittelu.domain.IlmoittautumisTila;
 import fi.vm.sade.sijoittelu.domain.ValintatuloksenTila;
 import fi.vm.sade.sijoittelu.domain.Valintatulos;
 
+import java.util.Date;
 import java.util.Optional;
 
 @ApiModel("Erillishaunhakija")
@@ -40,24 +41,43 @@ public class ErillishaunHakijaDTO {
     public String etunimi;
     @ApiModelProperty(value = "Hakijan sukunimi", required = false)
     public String sukunimi;
+    @ApiModelProperty(value = "Hyväksymiskirje lähetetty hakijalle", required = false)
+    public Date hyvaksymiskirjeLahetetty;
 
     public boolean poistetaankoTulokset = false;
 
-    public ErillishaunHakijaDTO(String valintatapajonoOid, String hakemusOid, String hakukohdeOid, boolean julkaistavissa, String hakijaOid, String hakuOid, String tarjoajaOid, ValintatuloksenTila valintatuloksenTila, boolean ehdollisestiHyvaksyttavissa, IlmoittautumisTila ilmoittautumisTila, HakemuksenTila hakemuksenTila, String etunimi, String sukunimi, Optional<Boolean> poistetaankoTulokset) {
-        this.valintatapajonoOid = valintatapajonoOid;
-        this.hakemusOid = hakemusOid;
-        this.hakukohdeOid = hakukohdeOid;
-        this.julkaistavissa = julkaistavissa;
-        this.hakijaOid = hakijaOid;
-        this.hakuOid = hakuOid;
-        this.tarjoajaOid = tarjoajaOid;
-        this.valintatuloksenTila = valintatuloksenTila;
+    public ErillishaunHakijaDTO(
+            String              valintatapajonoOid,
+            String              hakemusOid,
+            String              hakukohdeOid,
+            boolean             julkaistavissa,
+            String              hakijaOid,
+            String              hakuOid,
+            String              tarjoajaOid,
+            ValintatuloksenTila valintatuloksenTila,
+            boolean             ehdollisestiHyvaksyttavissa,
+            IlmoittautumisTila  ilmoittautumisTila,
+            HakemuksenTila      hakemuksenTila,
+            String              etunimi,
+            String              sukunimi,
+            Optional<Boolean>   poistetaankoTulokset,
+            Date                hyvaksymiskirjeLahetetty) {
+
+        this.valintatapajonoOid         = valintatapajonoOid;
+        this.hakemusOid                 = hakemusOid;
+        this.hakukohdeOid               = hakukohdeOid;
+        this.julkaistavissa             = julkaistavissa;
+        this.hakijaOid                  = hakijaOid;
+        this.hakuOid                    = hakuOid;
+        this.tarjoajaOid                = tarjoajaOid;
+        this.valintatuloksenTila        = valintatuloksenTila;
         this.ehdollisestiHyvaksyttavissa = ehdollisestiHyvaksyttavissa;
-        this.ilmoittautumisTila = ilmoittautumisTila;
-        this.hakemuksenTila = hakemuksenTila;
-        this.etunimi = etunimi;
-        this.sukunimi = sukunimi;
-        this.poistetaankoTulokset = poistetaankoTulokset.orElse(false);
+        this.ilmoittautumisTila         = ilmoittautumisTila;
+        this.hakemuksenTila             = hakemuksenTila;
+        this.etunimi                    = etunimi;
+        this.sukunimi                   = sukunimi;
+        this.poistetaankoTulokset       = poistetaankoTulokset.orElse(false);
+        this.hyvaksymiskirjeLahetetty   = hyvaksymiskirjeLahetetty;
     }
 
     public ErillishaunHakijaDTO() {
@@ -175,6 +195,13 @@ public class ErillishaunHakijaDTO {
         this.ehdollisestiHyvaksyttavissa = ehdollisestiHyvaksyttavissa;
     }
 
+    public Date getHyvaksymiskirjeLahetetty() {
+        return hyvaksymiskirjeLahetetty;
+    }
+
+    public void setHyvaksymiskirjeLahetetty(Date hyvaksymiskirjeLahetetty) {
+        this.hyvaksymiskirjeLahetetty = hyvaksymiskirjeLahetetty;
+    }
 
     public Valintatulos asValintatulos() {
         return new Valintatulos(
@@ -188,6 +215,7 @@ public class ErillishaunHakijaDTO {
                 julkaistavissa,
                 valintatuloksenTila,
                 ehdollisestiHyvaksyttavissa,
-                valintatapajonoOid);
+                valintatapajonoOid,
+                hyvaksymiskirjeLahetetty);
     }
 }

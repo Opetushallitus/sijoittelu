@@ -82,9 +82,10 @@ public class Valintatulos implements Serializable {
         this.hakutoive = hakutoive;
     }
 
+    @Deprecated
     public Valintatulos(String hakemusOid, String hakijaOid, String hakukohdeOid, String hakuOid,
-                        int hakutoive, boolean hyvaksyttyVarasijalta, IlmoittautumisTila ilmoittautumisTila,
-                        boolean julkaistavissa, ValintatuloksenTila tila, boolean ehdollisestiHyvaksyttavissa, String valintatapajonoOid) {
+                         int hakutoive, boolean hyvaksyttyVarasijalta, IlmoittautumisTila ilmoittautumisTila,
+                         boolean julkaistavissa, ValintatuloksenTila tila, boolean ehdollisestiHyvaksyttavissa, String valintatapajonoOid) {
         this.hakemusOid = hakemusOid;
         this.hakijaOid = hakijaOid;
         this.hakukohdeOid = hakukohdeOid;
@@ -96,6 +97,24 @@ public class Valintatulos implements Serializable {
         this.tila= tila;
         this.valintatapajonoOid = valintatapajonoOid;
         this.hyvaksyttyVarasijalta = hyvaksyttyVarasijalta;
+    }
+
+    public Valintatulos(String hakemusOid, String hakijaOid, String hakukohdeOid, String hakuOid,
+                        int hakutoive, boolean hyvaksyttyVarasijalta, IlmoittautumisTila ilmoittautumisTila,
+                        boolean julkaistavissa, ValintatuloksenTila tila, boolean ehdollisestiHyvaksyttavissa,
+                        String valintatapajonoOid, Date hyvaksymiskirjeLahetetty) {
+        this.hakemusOid = hakemusOid;
+        this.hakijaOid = hakijaOid;
+        this.hakukohdeOid = hakukohdeOid;
+        this.hakuOid = hakuOid;
+        this.hakutoive = hakutoive;
+        this.ehdollisestiHyvaksyttavissa = ehdollisestiHyvaksyttavissa;
+        this.ilmoittautumisTila = ilmoittautumisTila;
+        this.julkaistavissa = julkaistavissa;
+        this.tila= tila;
+        this.valintatapajonoOid = valintatapajonoOid;
+        this.hyvaksyttyVarasijalta = hyvaksyttyVarasijalta;
+        this.hyvaksymiskirjeLahetetty = hyvaksymiskirjeLahetetty;
     }
 
     public List<LogEntry> getOriginalLogEntries() {
