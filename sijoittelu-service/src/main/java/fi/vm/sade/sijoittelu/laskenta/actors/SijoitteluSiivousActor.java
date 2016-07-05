@@ -45,12 +45,12 @@ public class SijoitteluSiivousActor extends AbstractActor {
             sijoitteluOpt.ifPresent(s -> {
                 if(s.getSijoitteluajot().size() > sijoittelu.getAjojenMaaraMax()) {
                     Set<SijoitteluAjo> saastettavat = s.getSijoitteluajot().stream()
-                            .sorted((a1, a2) -> -(a1.getEndMils().compareTo(a2.getEndMils())))
+                            .sorted((a1, a2) -> -(getEndMilsOrMinusOne(a1).compareTo(getEndMilsOrMinusOne(a2))))
                             .limit(sijoittelu.getAjojenMaaraMax())
-                            .sorted((a1, a2) -> a1.getEndMils().compareTo(a2.getEndMils()))
+                            .sorted((a1, a2) -> getEndMilsOrMinusOne(a1).compareTo(getEndMilsOrMinusOne(a2)))
                             .collect(Collectors.toSet());
                     Set<SijoitteluAjo> poistettavat = s.getSijoitteluajot().stream()
-                            .sorted((a1, a2) -> a1.getEndMils().compareTo(a2.getEndMils()))
+                            .sorted((a1, a2) -> getEndMilsOrMinusOne(a1).compareTo(getEndMilsOrMinusOne(a2)))
                             .limit(s.getSijoitteluajot().size() - sijoittelu.getAjojenMaaraMax())
                             .collect(Collectors.toSet());
 
@@ -103,5 +103,7 @@ public class SijoitteluSiivousActor extends AbstractActor {
         }).build());
     }
 
-
+    private Long getEndMilsOrMinusOne(SijoitteluAjo a1) {
+        return a1.getEndMils() == null ? -1 : a1.getEndMils();
+    }
 }
