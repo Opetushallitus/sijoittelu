@@ -70,9 +70,12 @@ public class SijoitteluSiivousActor extends AbstractActor {
                             log.info("Poistetaan haun {} sijoitteluajolta {} hakukohteita {} kpl", sijoittelu.getHakuOid(), a.getSijoitteluajoId(), kohde.size());
                             kohde.stream().forEach(hakukohdeDao::removeHakukohde);
                         });
+                        log.info("Haun {} vanhojen sijoitteluajojen siivous on valmis.");
                     } else {
                         log.warning("Ei poisteta haun {} vanhoja sijoitteluajoja. Säästettäviä {} , päällekkäisiä {}", sijoittelu.getHakuOid(), saastettavat.size(), common.size());
                     }
+                } else {
+                    log.info("Sijoitteluajojen määrä on {} ja maksimimäärä {}, ei poisteta ajoja.", s.getSijoitteluajot().size(), sijoittelu.getAjojenMaaraMax());
                 }
             });
             self().tell(PoisonPill.getInstance(), ActorRef.noSender());
