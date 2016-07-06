@@ -14,7 +14,8 @@ import java.util.*;
         @Index("hakukohdeOid, valintatapajonoOid"),
         @Index("hakukohdeOid"),
         @Index("hakemusOid"),
-        @Index("hakuOid, julkaistavissa, mailStatus.sent, mailStatus.previousCheck")
+        @Index("hakuOid, julkaistavissa, mailStatus.sent, mailStatus.previousCheck"),
+        @Index("hakuOid")
 })
 public class Valintatulos implements Serializable {
 
