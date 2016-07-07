@@ -319,6 +319,12 @@ public class SijoitteluBusinessService {
         ErillisSijoittelu sijoittelu = getOrCreateErillisSijoittelu(hakuOid);
         List<Hakukohde> uudetHakukohteet = sijoitteluTyyppi.getHakukohteet().parallelStream().map(DomainConverter::convertToHakukohde).collect(Collectors.toList());
         List<Hakukohde> olemassaolevatHakukohteet = Collections.<Hakukohde>emptyList();
+
+        SijoitteluAjo viimeisinSijoitteluajo = sijoittelu.getLatestSijoitteluajo();
+        if (viimeisinSijoitteluajo != null) {
+            olemassaolevatHakukohteet = hakukohdeDao.getHakukohdeForSijoitteluajo(viimeisinSijoitteluajo.getSijoitteluajoId());
+        }
+
         SijoitteluAjo uusiSijoitteluajo = createErillisSijoitteluAjo(sijoittelu);
         List<Hakukohde> kaikkiHakukohteet = merge(uusiSijoitteluajo, olemassaolevatHakukohteet, uudetHakukohteet);
         List<Valintatulos> valintatulokset = valintatulosWithVastaanotto.forHaku(hakuOid);
