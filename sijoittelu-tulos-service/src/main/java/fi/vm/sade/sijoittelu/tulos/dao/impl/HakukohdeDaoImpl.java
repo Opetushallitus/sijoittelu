@@ -65,7 +65,6 @@ public class HakukohdeDaoImpl implements HakukohdeDao {
         Query<Hakukohde> q = morphiaDS.createQuery(Hakukohde.class);
         q.criteria("sijoitteluajoId").equal(sijoitteluajoId);
         q.criteria("oid").equal(hakukohdeOid);
-        q.enableSnapshotMode();
         return q.get();
     }
 
@@ -73,7 +72,6 @@ public class HakukohdeDaoImpl implements HakukohdeDao {
     public List<Hakukohde> getHakukohdeForSijoitteluajo(Long sijoitteluajoId) {
         Query<Hakukohde> q = morphiaDS.createQuery(Hakukohde.class);
         q.criteria("sijoitteluajoId").equal(sijoitteluajoId);
-        q.enableSnapshotMode();
         return q.asList();
     }
 
