@@ -521,14 +521,16 @@ public class TilaResource {
     @Produces(MediaType.APPLICATION_JSON)
     @ApiOperation("Käynnistää vanhojen sijoitteluajojen siivoamisen annetuilta hauilta")
     @Path("/siivoaVanhatSijoitteluAjot")
-    public List<String> siivoaVanhatSijoitteluajot(List<String> hakuOids) {
+    public List<String> siivoaVanhatSijoitteluajot(List<String> hakuOids,
+                                                   @ApiParam(value = "Montako ajoa säästetään") @QueryParam("saastettavienAjojenMaara") Integer saastettavienAjojenMaaraParam) {
         List<String> resultMessages = new ArrayList<>();
-        LOGGER.info(String.format("Käynnistetään %s annetun haun vanhojen sijoitteluajojen siivous", hakuOids.size()));
+        int ajojaSaastetaan = saastettavienAjojenMaaraParam == null ? sijoitteluBusinessService.getMaxAjoMaara() : saastettavienAjojenMaaraParam;
+        LOGGER.info(String.format("Käynnistetään %s annetun haun vanhojen sijoitteluajojen siivous. Säästetään korkeintaan %s ajoa.", hakuOids.size(), ajojaSaastetaan));
         LOGGER.info("Hakujen oidit: " + hakuOids);
         for (String hakuOid : hakuOids) {
             Optional<Sijoittelu> sijoittelu = sijoitteluDao.getSijoitteluByHakuOid(hakuOid);
             if (sijoittelu.isPresent()) {
-                sijoitteluBusinessService.siivoaVanhatAjotSijoittelulta(hakuOid, sijoittelu.get());
+                sijoitteluBusinessService.siivoaVanhatAjotSijoittelulta(hakuOid, sijoittelu.get(), ajojaSaastetaan);
                 resultMessages.add("Lähetettiin siivouspyyntö haun " + hakuOid + " sijoittelulle " + sijoittelu.get().getSijoitteluId());
             } else {
                 String msg = "Ei löytynyt sijoittelua siivottavaksi haulle " + hakuOid;
