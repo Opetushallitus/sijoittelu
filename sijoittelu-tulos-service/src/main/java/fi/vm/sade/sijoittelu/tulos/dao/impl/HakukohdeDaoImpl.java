@@ -15,6 +15,7 @@ import fi.vm.sade.sijoittelu.tulos.dao.CachingRaportointiDao;
 import fi.vm.sade.sijoittelu.tulos.dto.KevytHakemusDTO;
 import fi.vm.sade.sijoittelu.tulos.dto.KevytHakukohdeDTO;
 import fi.vm.sade.sijoittelu.tulos.dto.KevytValintatapajonoDTO;
+import org.apache.commons.lang3.BooleanUtils;
 import org.mongodb.morphia.Datastore;
 import org.mongodb.morphia.mapping.Mapper;
 import org.mongodb.morphia.mapping.cache.DefaultEntityCache;
@@ -237,7 +238,7 @@ public class HakukohdeDaoImpl implements HakukohdeDao {
         List<DBObject> tilaHistoria = (List<DBObject>) h.get("tilaHistoria");
         Date viimeisenMuutos = tilaHistoria == null ? null : (Date) tilaHistoria.get(tilaHistoria.size() - 1).get("luotu");
         hakemus.setViimeisenHakemuksenTilanMuutos(viimeisenMuutos);
-        hakemus.setHyvaksyttyHarkinnanvaraisesti((boolean) h.get("hyvaksyttyHarkinnanvaraisesti"));
+        hakemus.setHyvaksyttyHarkinnanvaraisesti(BooleanUtils.isTrue((Boolean) h.get("hyvaksyttyHarkinnanvaraisesti")));
         DBObject tilanKuvaukset = (DBObject) h.get("tilanKuvaukset");
         for (String k : tilanKuvaukset == null ? Collections.<String>emptySet() : tilanKuvaukset.keySet()) {
             hakemus.getTilanKuvaukset().put(k, (String) tilanKuvaukset.get(k));
