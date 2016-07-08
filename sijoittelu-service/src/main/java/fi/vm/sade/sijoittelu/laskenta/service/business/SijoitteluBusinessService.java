@@ -345,7 +345,6 @@ public class SijoitteluBusinessService {
         long startTime = System.currentTimeMillis();
         String hakuOid = sijoitteluTyyppi.getHakuOid();
         final ErillisSijoittelu sijoittelu = getOrCreateErillisSijoittelu(hakuOid);
-        final Long latest = sijoittelu.getLatestSijoitteluajo().getSijoitteluajoId();
         List<Hakukohde> uudetHakukohteet = sijoitteluTyyppi.getHakukohteet().parallelStream().map(DomainConverter::convertToHakukohde).collect(Collectors.toList());
         List<Hakukohde> olemassaolevatHakukohteet = Collections.<Hakukohde>emptyList();
 
@@ -378,7 +377,7 @@ public class SijoitteluBusinessService {
                             // hakukohde has been removed
                         } else {
                             h.setId(null);
-                            h.setSijoitteluajoId(latest);
+                            h.setSijoitteluajoId(uusiSijoitteluajo.getSijoitteluajoId());
                             hakukohdeDao.persistHakukohde(h, hakuOid);
                             HakukohdeItem item = new HakukohdeItem();
                             item.setOid(hakukohdeOid);
