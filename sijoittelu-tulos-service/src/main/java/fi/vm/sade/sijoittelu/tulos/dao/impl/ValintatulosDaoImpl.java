@@ -54,6 +54,7 @@ public class ValintatulosDaoImpl implements ValintatulosDao {
         }
         Query<Valintatulos> q = morphiaDS.createQuery(Valintatulos.class);
         q.criteria("hakemusOid").equal(hakemusOid);
+        q.enableSnapshotMode();
         return q.asList();
     }
 
@@ -69,6 +70,7 @@ public class ValintatulosDaoImpl implements ValintatulosDao {
         q.criteria("hakukohdeOid").equal(hakukohdeOid);
         q.criteria("valintatapajonoOid").equal(valintatapajonoOid);
         q.criteria("hakemusOid").equal(hakemusOid);
+        q.enableSnapshotMode();
         return q.get();
     }
 
@@ -85,7 +87,7 @@ public class ValintatulosDaoImpl implements ValintatulosDao {
                 q.criteria("hakukohdeOid").equal(hakukohdeOid),
                 //
                 q.criteria("valintatapajonoOid").equal(valintatapajonoOid));
-
+        q.enableSnapshotMode();
         return q.asList();
     }
 
@@ -97,6 +99,7 @@ public class ValintatulosDaoImpl implements ValintatulosDao {
         }
         Query<Valintatulos> q = morphiaDS.createQuery(Valintatulos.class);
         q.or(q.criteria("hakukohdeOid").equal(hakukohdeOid));
+        q.enableSnapshotMode();
         return q.asList();
     }
 
@@ -164,6 +167,7 @@ public class ValintatulosDaoImpl implements ValintatulosDao {
         }
         Query<Valintatulos> q = morphiaDS.createQuery(Valintatulos.class);
         q.criteria("hakuOid").equal(hakuOid);
+        q.enableSnapshotMode();
         return q.iterator();
     }
 
@@ -174,6 +178,7 @@ public class ValintatulosDaoImpl implements ValintatulosDao {
         }
         Query<Valintatulos> q = morphiaDS.createQuery(Valintatulos.class);
         q.criteria("hakemusOid").equal(hakemusOid);
+        q.enableSnapshotMode();
         return q.asList();
     }
 
