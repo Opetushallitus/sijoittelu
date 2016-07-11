@@ -60,6 +60,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StopWatch;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -142,10 +143,14 @@ public class SijoitteluBusinessService {
 
     public void sijoittele(HakuDTO sijoitteluTyyppi, Set<String> valintaperusteidenJonot) {
         long startTime = System.currentTimeMillis();
+        StopWatch stopWatch = new StopWatch("Haun " + sijoitteluTyyppi.getHakuOid() + " sijoittelu");
         String hakuOid = sijoitteluTyyppi.getHakuOid();
         LOG.info("Sijoittelu haulle {} alkaa.", hakuOid);
+        stopWatch.start("Päätellään viimeisin sijoitteluajo");
         Sijoittelu sijoittelu = getOrCreateSijoittelu(hakuOid);
         SijoitteluAjo viimeisinSijoitteluajo = sijoittelu.getLatestSijoitteluajo();
+        stopWatch.stop();
+        stopWatch.start("Päätellään hakukohde- ja valintatapajonotiedot");
         List<Hakukohde> uudetHakukohteet = sijoitteluTyyppi.getHakukohteet().stream().map(DomainConverter::convertToHakukohde).collect(Collectors.toList());
         List<Hakukohde> olemassaolevatHakukohteet = Collections.<Hakukohde>emptyList();
         if (viimeisinSijoitteluajo != null) {
@@ -156,40 +161,66 @@ public class SijoitteluBusinessService {
             if (poistuneetJonot.size() > 0 && valintaperusteidenVaatimat.size() > 0) {
                 String msg = "Edellisessa sijoittelussa olleet jonot [" + join(poistuneetJonot, ", ") + "] puuttuvat vaikka valintaperusteet yha vaativat jonot [" + join(valintaperusteidenVaatimat, ", ") + "]";
                 LOG.error(msg);
+                stopWatch.stop();
+                LOG.info(stopWatch.prettyPrint());
                 throw new RuntimeException(msg);
             }
         }
+        stopWatch.stop();
         SijoitteluAjo uusiSijoitteluajo = createSijoitteluAjo(sijoittelu);
+        stopWatch.start("Mergataan hakukohteet");
         List<Hakukohde> kaikkiHakukohteet = merge(uusiSijoitteluajo, olemassaolevatHakukohteet, uudetHakukohteet);
+        stopWatch.stop();
+        stopWatch.start("Haetaan valintatulokset vastaanottoineen");
         List<Valintatulos> valintatulokset = valintatulosWithVastaanotto.forHaku(hakuOid);
+        stopWatch.stop();
+        stopWatch.start("Haetaan kauden aiemmat vastaanotot");
         Map<String, VastaanottoDTO> kaudenAiemmatVastaanotot = aiemmanVastaanotonHakukohdePerHakija(hakuOid);
+        stopWatch.stop();
         LOG.info("Haun {} sijoittelun koko: {} olemassaolevaa, {} uutta, {} valintatulosta", hakuOid, olemassaolevatHakukohteet.size(), uudetHakukohteet.size(), valintatulokset.size());
+        stopWatch.start("Luodaan sijoitteluajoWrapper ja asetetaan parametrit");
         final SijoitteluajoWrapper sijoitteluajoWrapper = SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(uusiSijoitteluajo, kaikkiHakukohteet, valintatulokset, kaudenAiemmatVastaanotot);
         asetaSijoittelunParametrit(hakuOid, sijoitteluajoWrapper);
+        stopWatch.stop();
         uusiSijoitteluajo.setStartMils(startTime);
         sijoitteluajoWrapper.setEdellisenSijoittelunHakukohteet(olemassaolevatHakukohteet);
         LOG.info("Suoritetaan sijoittelu haulle {}", hakuOid);
+        stopWatch.start("Suoritetaan sijoittelu");
         SijoitteluAlgorithm.sijoittele(preSijoitteluProcessors, postSijoitteluProcessors, sijoitteluajoWrapper);
         uusiSijoitteluajo.setEndMils(System.currentTimeMillis());
+        stopWatch.stop();
+        stopWatch.start("processOldApplications");
         processOldApplications(olemassaolevatHakukohteet, kaikkiHakukohteet, hakuOid);
+        stopWatch.stop();
         List<Valintatulos> muuttuneetValintatulokset = sijoitteluajoWrapper.getMuuttuneetValintatulokset();
         LOG.info("Ennen mergeä muuttuneita valintatuloksia: " + muuttuneetValintatulokset.size());
         LOG.info("Ennen mergeä muuttuneet valintatulokset: " + muuttuneetValintatulokset);
+        stopWatch.start("Mergataan valintatulokset");
         List<Valintatulos> mergatut = valintatulosDao.mergaaValintatulos(kaikkiHakukohteet, muuttuneetValintatulokset);
+        stopWatch.stop();
+        stopWatch.start("Persistoidaan valintatulokset");
         valintatulosWithVastaanotto.persistValintatulokset(mergatut);
+        stopWatch.stop();
         sijoitteluajoWrapper.setMuuttuneetValintatulokset(mergatut);
         List<String> varasijapomput = sijoitteluajoWrapper.getVarasijapomput();
         varasijapomput.forEach(LOG::info);
         LOG.info("Haun {} sijoittelussa muuttui {} kpl valintatuloksia, pomppuja {} kpl", hakuOid, mergatut.size(), varasijapomput.size());
         try {
+            stopWatch.start("Persistoidaan sijoittelu");
             sijoitteluDao.persistSijoittelu(sijoittelu);
+            stopWatch.stop();
             LOG.info("Sijoittelu persistoitu haulle {}. Poistetaan vanhoja ajoja. Säästettävien ajojen määrää {}", sijoittelu.getHakuOid(), maxAjoMaara);
+            stopWatch.start("Siivotaan vanhat ajot sijoittelulta");
             siivoaVanhatAjotSijoittelulta(hakuOid, sijoittelu, maxAjoMaara);
+            stopWatch.stop();
         } catch (Exception e) {
             LOG.error("Sijoittelun persistointi haulle {} epäonnistui. Rollback hakukohteet", sijoittelu.getHakuOid());
             actorService.getSiivousActor().tell(new PoistaHakukohteet(sijoittelu, uusiSijoitteluajo.getSijoitteluajoId()), ActorRef.noSender());
+            stopWatch.stop();
+            LOG.info(stopWatch.prettyPrint());
             throw e;
         }
+        LOG.info(stopWatch.prettyPrint());
     }
 
     private void asetaSijoittelunParametrit(String hakuOid, SijoitteluajoWrapper sijoitteluAjo) {
