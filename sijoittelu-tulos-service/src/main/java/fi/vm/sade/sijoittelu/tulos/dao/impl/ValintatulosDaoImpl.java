@@ -97,7 +97,6 @@ public class ValintatulosDaoImpl implements ValintatulosDao {
         }
         Query<Valintatulos> q = morphiaDS.createQuery(Valintatulos.class);
         q.or(q.criteria("hakukohdeOid").equal(hakukohdeOid));
-        q.enableSnapshotMode();
         return q.asList();
     }
 
