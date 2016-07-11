@@ -210,7 +210,7 @@ public class SijoitteluBusinessService {
             sijoitteluDao.persistSijoittelu(sijoittelu);
             stopWatch.stop();
             LOG.info("Sijoittelu persistoitu haulle {}. Poistetaan vanhoja ajoja. Säästettävien ajojen määrää {}", sijoittelu.getHakuOid(), maxAjoMaara);
-            stopWatch.start("Siivotaan vanhat ajot sijoittelulta");
+            stopWatch.start("Käynnistetään vanhojen sijoitteluajojen siivouksen taustaprosessi");
             siivoaVanhatAjotSijoittelulta(hakuOid, sijoittelu, maxAjoMaara);
             stopWatch.stop();
         } catch (Exception e) {
