@@ -38,10 +38,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static javafx.scene.input.KeyCode.M;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.when;
-import com.google.gson.Gson;
 
 public class TilaResourceTest {
     String hakuOid = "1.2.246.562.5.2013080813081926341928";
@@ -104,7 +102,7 @@ public class TilaResourceTest {
     @Test
     public void epaonnistuneidenMuokkaustenVirheetKerataan() {
         TilaResource r = new TilaResource();
-        r.sijoitteluBusinessService = new SijoitteluBusinessService(0,null,null,null, null, null,null,null,null,null,null,null) {
+        r.sijoitteluBusinessService = new SijoitteluBusinessService(0,null,null,null, null, null, null,null,null,null,null) {
             @Override
             public Hakukohde getHakukohde(String hakuOid, String hakukohdeOid) {
                 return new Hakukohde();
@@ -284,7 +282,7 @@ public class TilaResourceTest {
     }
 
     private static SijoitteluBusinessService sijoitteluBusinessServiceMock(RuntimeException e) {
-        return new SijoitteluBusinessService(0,null,null,null, null, null,null,null,null,null,null,null) {
+        return new SijoitteluBusinessService(0,null,null,null, null, null, null,null,null,null,null) {
             @Override
             public Hakukohde getHakukohde(String hakuOid, String hakukohdeOid) {
                 throw e;
@@ -297,7 +295,7 @@ public class TilaResourceTest {
     }
 
     private static SijoitteluBusinessService sijoitteluBusinessServiceMock(Hakukohde hakukohde) {
-        return new SijoitteluBusinessService(0, null, null, null, null, null, null, null, null, null, null, null) {
+        return new SijoitteluBusinessService(0, null, null, null, null, null, null, null, null, null, null) {
             @Override
             public Hakukohde getHakukohde(String hakuOid, String hakukohdeOid) {
                 return hakukohde;

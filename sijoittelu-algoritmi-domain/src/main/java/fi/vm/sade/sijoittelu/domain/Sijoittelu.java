@@ -35,6 +35,8 @@ public class Sijoittelu implements Serializable {
     @Embedded
     private List<SijoitteluAjo> sijoitteluajot = new ArrayList<SijoitteluAjo>();
 
+    private SijoitteluType sijoitteluType = SijoitteluType.SIJOITTELU_TYPE;
+
     public SijoitteluAjo getLatestSijoitteluajo() {
         SijoitteluAjo latest = null;
         for(SijoitteluAjo sijoitteluAjo : sijoitteluajot) {
@@ -87,5 +89,13 @@ public class Sijoittelu implements Serializable {
 
     public void setValintatulokset(List<Valintatulos> valintatulokset) {
         this.valintatulokset = valintatulokset;
+    }
+
+    public void setSijoitteluType(SijoitteluType sijoitteluType) {
+        this.sijoitteluType = sijoitteluType;
+    }
+
+    public static enum SijoitteluType {
+        SIJOITTELU_TYPE, ERILLISSIJOITTELU_TYPE;
     }
 }

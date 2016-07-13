@@ -201,31 +201,6 @@ public class TilaResource {
 
     @POST
     @Produces(MediaType.APPLICATION_JSON)
-    @Path("/erillishaku/haku/{hakuOid}/hakukohde/{hakukohdeOid}")
-    @PreAuthorize(UPDATE_CRUD)
-    @ApiOperation(value = "Valintatulosten tuonti erillishaun hakukohteelle")
-    public Response muutaErillishaunHakemustenTilaa(@PathParam("hakuOid") String hakuOid,
-                                         @PathParam("hakukohdeOid") String hakukohdeOid,
-                                         List<Valintatulos> valintatulokset,
-                                         @QueryParam("selite") String selite) {
-        List<ValintatulosUpdateStatus> statuses = new ArrayList<>();
-        try {
-            Hakukohde hakukohde = sijoitteluBusinessService.getErillishaunHakukohde(hakuOid, hakukohdeOid);
-            processVaihdaHakemuksienTilat(statuses,valintatulokset,hakuOid,hakukohdeOid,hakukohde,selite);
-            Status s = statuses.isEmpty() ? Status.OK : Status.INTERNAL_SERVER_ERROR;
-            return Response.status(s)
-                    .entity(new HakukohteenValintatulosUpdateStatuses(statuses))
-                    .build();
-        } catch (Exception e) {
-            LOGGER.error("haku: {}, hakukohde: {}", hakuOid, hakukohdeOid, e);
-            return Response.status(Status.INTERNAL_SERVER_ERROR)
-                    .entity(new HakukohteenValintatulosUpdateStatuses(e.getMessage(), statuses))
-                    .build();
-        }
-    }
-
-    @POST
-    @Produces(MediaType.APPLICATION_JSON)
     @Path("/checkStaleRead")
     @PreAuthorize(UPDATE_CRUD)
     @ApiOperation(value = "Tarkista onko Valintatuloksia muutettu hakemisen jälkeen. Palauttaa aina onnistuessaan 200 OK ja \"stale read\" -virheet vain rivikohtaisesti vastauksessa.")
