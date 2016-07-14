@@ -82,7 +82,7 @@ public class SijoitteluResource {
             LOGGER.info("Sijoittelu suoritettu onnistuneesti haulle {}", hakuOid);
             return "true";
         } catch (Exception e) {
-            LOGGER.error("Sijoittelu epäonnistui haulle " + hakuOid, e);
+            LOGGER.error("Sijoittelu epäonnistui haulle " + hakuOid + " : " + e.getMessage(), e);
             return "false";
         }
     }
