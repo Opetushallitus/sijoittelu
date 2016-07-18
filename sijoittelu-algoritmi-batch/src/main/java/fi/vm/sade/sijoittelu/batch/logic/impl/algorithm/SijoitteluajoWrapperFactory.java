@@ -103,10 +103,14 @@ public class SijoitteluajoWrapperFactory {
     }
 
     private static boolean voiTullaHyvaksytyksi(Hakemus hakemus) {
-        final Set<HakemuksenTila> hyvaksymiseenMahdollisestiJohtavatTilat =
-                ImmutableSet.of(HakemuksenTila.HYVAKSYTTY, HakemuksenTila.VARASIJALTA_HYVAKSYTTY, HakemuksenTila.VARALLA);
-        return ((hakemus.getEdellinenTila() == null && hyvaksymiseenMahdollisestiJohtavatTilat.contains(hakemus.getTila()))
-                || hyvaksymiseenMahdollisestiJohtavatTilat.contains(hakemus.getEdellinenTila()));
+        if (hakemus.getTila() == HakemuksenTila.HYLATTY) {
+            return false;
+        }
+        if (hakemus.getTila() == HakemuksenTila.VARALLA) {
+            return true;
+        }
+        throw new RuntimeException(String.format("Hakemuksen tilan piti olla HYLATTY tai VARALLA, oli %s. Hakemus %s",
+                hakemus.getTila(), hakemus));
     }
 
     private static boolean vastaanotonTilaSaaMuuttaaHakemuksenTilaa(Hakemus hakemus) {

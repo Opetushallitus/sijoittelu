@@ -23,12 +23,14 @@ public class PreSijoitteluProcessorPeruutaAlemmatPeruneetJaHyvaksytytTest {
         Hakemus h = new Hakemus();
         h.setPrioriteetti(1);
         h.setTila(HakemuksenTila.HYVAKSYTTY);
+        h.setHakemusOid("hakemus1Oid");
         hakemus.setHakemus(h);
         hakemus.setValintatapajono(sijoitteluajoWrapper.getHakukohteet().get(0).getValintatapajonot().get(0));
 
         Hakemus h2 = new Hakemus();
         h2.setPrioriteetti(2);
         h2.setTila(HakemuksenTila.VARALLA);
+        h2.setHakemusOid("hakemus2Oid");
         hakemus2.setHakemus(h2);
         hakemus2.setValintatapajono(sijoitteluajoWrapper.getHakukohteet().get(1).getValintatapajonot().get(0));
 
@@ -213,8 +215,8 @@ public class PreSijoitteluProcessorPeruutaAlemmatPeruneetJaHyvaksytytTest {
             h.setPrioriteetti(1);
             h.setTila(HakemuksenTila.VARALLA);
             h.setHakemusOid("123");
-            hakemus.setTilaVoidaanVaihtaa(false);
             hakemus.setHakemus(h);
+            hakemus.setTilaVoidaanVaihtaa(false);
             hakemus.setValintatapajono(sijoitteluajoWrapper.getHakukohteet().get(0).getValintatapajonot().get(0));
 
 
@@ -295,8 +297,8 @@ public class PreSijoitteluProcessorPeruutaAlemmatPeruneetJaHyvaksytytTest {
         h.setPrioriteetti(1);
         h.setTila(HakemuksenTila.VARALLA);
         h.setHakemusOid("123");
-        hakemus.setTilaVoidaanVaihtaa(false);
         hakemus.setHakemus(h);
+        hakemus.setTilaVoidaanVaihtaa(false);
         hakemus.setValintatapajono(sijoitteluajoWrapper.getHakukohteet().get(0).getValintatapajonot().get(0));
 
 
