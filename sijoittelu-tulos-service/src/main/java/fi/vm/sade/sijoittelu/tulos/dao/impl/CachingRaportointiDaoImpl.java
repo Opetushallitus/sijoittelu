@@ -326,6 +326,9 @@ public class CachingRaportointiDaoImpl implements CachingRaportointiDao {
         }
 
         private List<Hakukohde> filtteroidytKopiotHakemuksenHakukohteista(Set<HakemusCacheObject> hakemusCacheObjects) {
+            if (hakemusCacheObjects == null) {
+                return new ArrayList<>();
+            }
             Map<String, Hakukohde> filteredHakukohteetByOid = new HashMap<>();
             for (HakemusCacheObject cacheObject : hakemusCacheObjects) {
                 Hakukohde filteredHakuKohde = filteredHakukohteetByOid.compute(cacheObject.hakukohde.getOid(), (k, kohde) -> {
