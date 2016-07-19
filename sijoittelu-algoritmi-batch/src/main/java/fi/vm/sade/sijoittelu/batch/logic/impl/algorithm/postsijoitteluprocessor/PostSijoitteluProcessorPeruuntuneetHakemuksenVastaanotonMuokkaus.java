@@ -6,8 +6,7 @@ import fi.vm.sade.sijoittelu.domain.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class PostSijoitteluProcessorPeruuntuneetHakemuksenVastaanotonMuokkaus implements PostSijoitteluProcessor {
@@ -33,15 +32,25 @@ public class PostSijoitteluProcessorPeruuntuneetHakemuksenVastaanotonMuokkaus im
     }
 
     private static List<Valintatulos> peruuntuneetJaVastaanotetutValintatulokset(SijoitteluajoWrapper sijoitteluajoWrapper) {
-        return sijoitteluajoWrapper.getHakukohteet().stream()
-                .flatMap(hk -> hk.getValintatapajonot().stream())
-                .flatMap(j -> j.getHakemukset().stream())
-                .filter(h -> HakemuksenTila.PERUUNTUNUT == h.getHakemus().getTila())
-                .map(HakemusWrapper::getValintatulos)
-                .filter(Optional::isPresent)
-                .map(Optional::get)
-                .filter(PostSijoitteluProcessorPeruuntuneetHakemuksenVastaanotonMuokkaus::vastaanottanut)
-                .collect(Collectors.toList());
+        List<Valintatulos> peruuntuneetJaVastaanotetutValintatulokset = new ArrayList<>();
+        sijoitteluajoWrapper.getHakukohteet().forEach(hk -> {
+                Set<String> hakukohteenHyvaksytytHakemukset =  hk.getValintatapajonot().stream()
+                        .flatMap(j -> j.getHakemukset().stream())
+                        .filter(h -> HakemuksenTila.HYVAKSYTTY == h.getHakemus().getTila() || HakemuksenTila.VARASIJALTA_HYVAKSYTTY == h.getHakemus().getTila())
+                        .map(h -> h.getHakemus().getHakemusOid())
+                        .collect(Collectors.toSet());
+                peruuntuneetJaVastaanotetutValintatulokset.addAll(hk.getValintatapajonot().stream()
+                        .flatMap(j -> j.getHakemukset().stream())
+                        .filter(h -> HakemuksenTila.PERUUNTUNUT == h.getHakemus().getTila() && !hakukohteenHyvaksytytHakemukset.contains(h.getHakemus().getHakemusOid()))
+                        .map(HakemusWrapper::getValintatulos)
+                        .filter(Optional::isPresent)
+                        .map(Optional::get)
+                        .filter(PostSijoitteluProcessorPeruuntuneetHakemuksenVastaanotonMuokkaus::vastaanottanut)
+                        .collect(Collectors.toList())
+                );
+            }
+        );
+        return peruuntuneetJaVastaanotetutValintatulokset;
     }
 
     private static void poistaVastaanottoTieto(Valintatulos valintatulos) {

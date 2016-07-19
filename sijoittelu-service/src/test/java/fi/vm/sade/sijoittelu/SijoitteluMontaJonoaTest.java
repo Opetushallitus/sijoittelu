@@ -102,8 +102,8 @@ public class SijoitteluMontaJonoaTest {
                 Assert.assertEquals(IlmoittautumisTila.LASNA_KOKO_LUKUVUOSI, v.getIlmoittautumisTila());
             }
             if(v.getValintatapajonoOid().equals("oid2")) {
-                Assert.assertEquals(ValintatuloksenTila.KESKEN, v.getTila());
-                Assert.assertEquals(IlmoittautumisTila.EI_TEHTY, v.getIlmoittautumisTila());
+                Assert.assertEquals(ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI, v.getTila());
+                Assert.assertEquals(IlmoittautumisTila.LASNA_KOKO_LUKUVUOSI, v.getIlmoittautumisTila());
             }
         });
 
