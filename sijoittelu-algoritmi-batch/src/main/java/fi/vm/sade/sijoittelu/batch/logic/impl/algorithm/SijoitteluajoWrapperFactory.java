@@ -1,24 +1,39 @@
 package fi.vm.sade.sijoittelu.batch.logic.impl.algorithm;
 
-import com.google.common.collect.ImmutableSet;
-import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.util.TilaTaulukot;
-import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.util.TilanKuvaukset;
-import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.*;
-import fi.vm.sade.sijoittelu.domain.*;
-import fi.vm.sade.sijoittelu.domain.dto.VastaanottoDTO;
-import org.apache.commons.lang3.tuple.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.util.*;
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
 import static fi.vm.sade.sijoittelu.domain.ValintatuloksenTila.EHDOLLISESTI_VASTAANOTTANUT;
+import static fi.vm.sade.sijoittelu.domain.ValintatuloksenTila.KESKEN;
 import static fi.vm.sade.sijoittelu.domain.ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI;
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyMap;
+
+import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.util.TilaTaulukot;
+import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.util.TilanKuvaukset;
+import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.HakemusWrapper;
+import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.HakijaryhmaWrapper;
+import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.HakukohdeWrapper;
+import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.HenkiloWrapper;
+import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.SijoitteluajoWrapper;
+import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.ValintatapajonoWrapper;
+import fi.vm.sade.sijoittelu.domain.HakemuksenTila;
+import fi.vm.sade.sijoittelu.domain.Hakemus;
+import fi.vm.sade.sijoittelu.domain.Hakijaryhma;
+import fi.vm.sade.sijoittelu.domain.Hakukohde;
+import fi.vm.sade.sijoittelu.domain.SijoitteluAjo;
+import fi.vm.sade.sijoittelu.domain.TilaHistoria;
+import fi.vm.sade.sijoittelu.domain.ValintatuloksenTila;
+import fi.vm.sade.sijoittelu.domain.Valintatulos;
+import fi.vm.sade.sijoittelu.domain.dto.VastaanottoDTO;
+import org.apache.commons.lang3.tuple.Pair;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.Comparator;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class SijoitteluajoWrapperFactory {
 
@@ -153,6 +168,7 @@ public class SijoitteluajoWrapperFactory {
                         hyvaksy(hakemus, valintatulos);
                     }
                 } else {
+                    valintatulos.setTila(KESKEN, "Peitetään vastaanottotieto ei-hyväksytyltä jonolta"); // See ValintatulosWithVastaanotto.persistValintatulokset check
                     voidaanVaihtaa = false;
                 }
             } else if (tila == ValintatuloksenTila.EI_VASTAANOTETTU_MAARA_AIKANA) {
