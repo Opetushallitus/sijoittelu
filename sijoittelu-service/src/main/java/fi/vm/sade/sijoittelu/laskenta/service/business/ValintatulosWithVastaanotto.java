@@ -78,7 +78,7 @@ public class ValintatulosWithVastaanotto {
                     Set<Valintatulos> eiKeskenTilaiset = list.stream()
                             .filter(v -> v.getTila() != ValintatuloksenTila.KESKEN)
                             .collect(Collectors.toSet());
-                    if(eiKeskenTilaiset.size() > 1) {
+                    if (eiKeskenTilaiset.size() > 1) {
                         throw new RuntimeException("Hakijalle löytyi useampi kuin yksi ei-kesken-tilainen valintatulos: " + list);
                     }
                     Valintatulos vt = (!eiKeskenTilaiset.isEmpty() ? eiKeskenTilaiset.stream().findFirst().get() : list.get(0));
