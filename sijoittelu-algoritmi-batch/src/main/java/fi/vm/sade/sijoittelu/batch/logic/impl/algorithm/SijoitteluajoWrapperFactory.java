@@ -14,14 +14,7 @@ import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.HakukohdeWrappe
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.HenkiloWrapper;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.SijoitteluajoWrapper;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.ValintatapajonoWrapper;
-import fi.vm.sade.sijoittelu.domain.HakemuksenTila;
-import fi.vm.sade.sijoittelu.domain.Hakemus;
-import fi.vm.sade.sijoittelu.domain.Hakijaryhma;
-import fi.vm.sade.sijoittelu.domain.Hakukohde;
-import fi.vm.sade.sijoittelu.domain.SijoitteluAjo;
-import fi.vm.sade.sijoittelu.domain.TilaHistoria;
-import fi.vm.sade.sijoittelu.domain.ValintatuloksenTila;
-import fi.vm.sade.sijoittelu.domain.Valintatulos;
+import fi.vm.sade.sijoittelu.domain.*;
 import fi.vm.sade.sijoittelu.domain.dto.VastaanottoDTO;
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
@@ -75,6 +68,7 @@ public class SijoitteluajoWrapperFactory {
                 Map<String, Valintatulos> hakemusIndex = jonoIndex.getOrDefault(valintatapajonoWrapper.getValintatapajono().getOid(), emptyMap());
                 valintatapajonoWrapper.getHakemukset().forEach(hakemusWrapper -> {
                     setHakemuksenValintatuloksenTila(
+                            hakukohdeWrapper,
                             hakemusWrapper,
                             hakemusIndex.get(hakemusWrapper.getHakemus().getHakemusOid()),
                             Optional.ofNullable(aiemmanVastaanotonHakukohdePerHakija.get(hakemusWrapper.getHenkilo().getHakijaOid()))
@@ -132,7 +126,8 @@ public class SijoitteluajoWrapperFactory {
         return TilaTaulukot.kuuluuVastaanotonMuokattavissaTiloihin(hakemus.getEdellinenTila());
     }
 
-    private static void setHakemuksenValintatuloksenTila(HakemusWrapper hakemusWrapper,
+    private static void setHakemuksenValintatuloksenTila(HakukohdeWrapper hakukohdeWrapper,
+                                                         HakemusWrapper hakemusWrapper,
                                                          Valintatulos valintatulos,
                                                          Optional<VastaanottoDTO> aiempiVastaanottoSamalleKaudelle) {
         Hakemus hakemus = hakemusWrapper.getHakemus();
@@ -185,8 +180,20 @@ public class SijoitteluajoWrapperFactory {
                 } else if (valintatulos.getHyvaksyttyVarasijalta()) {
                     hyvaksyVarasijalta(hakemus, valintatulos);
                 } else if (HakemuksenTila.PERUUNTUNUT == hakemus.getEdellinenTila() && valintatulos.getHyvaksyPeruuntunut()) {
-                    hyvaksy(hakemus, valintatulos);
-                    hakemusWrapper.hyvaksyPeruuntunut();
+                    if (hasHigherJulkaistuHyvaksytty(hakukohdeWrapper, hakemusWrapper)) {
+                        LOG.info("Ei hyväksytä peruuntunutta jonosta vaikka hyvaksyPeruuntunut päällä, koska korkeamman prioriteetin jonossa on jo julkaistu hyväksytty: " +
+                                 "Hakukohde: {}, valintatapajono: {}, hakemus: {}, hakemuksen tila: {}, " +
+                                 "hakemuksen edellinen tila: {}, vastaanoton tila: {}",
+                                    hakemusWrapper.getValintatapajono().getHakukohdeWrapper().getHakukohde().getOid(),
+                                    hakemusWrapper.getValintatapajono().getValintatapajono().getOid(),
+                                    hakemus.getHakemusOid(),
+                                    hakemus.getTila(),
+                                    hakemus.getEdellinenTila(),
+                                    tila);
+                    } else {
+                        hyvaksy(hakemus, valintatulos);
+                        hakemusWrapper.hyvaksyPeruuntunut();
+                    }
                 } else if (HakemuksenTila.HYLATTY == hakemus.getTila()) {
                     voidaanVaihtaa = false;
                 } else {
@@ -211,6 +218,24 @@ public class SijoitteluajoWrapperFactory {
                     valintatulos != null ? valintatulos.getTila() : "- (ei valintatulosta)",
                     aiempiVastaanottoSamalleKaudelle.get().getHakukohdeOid());
         }
+    }
+
+    private static boolean hasHigherJulkaistuHyvaksytty(HakukohdeWrapper hakukohdeWrapper,
+                                                        HakemusWrapper hakemusWrapper) {
+        Valintatapajono currentJono = hakemusWrapper.getValintatapajono().getValintatapajono();
+        for (ValintatapajonoWrapper toinenJono: hakukohdeWrapper.getValintatapajonot()) {
+            if (toinenJono.getValintatapajono().getPrioriteetti() < currentJono.getPrioriteetti()) {
+                for (HakemusWrapper hakemus: toinenJono.getHakemukset()) {
+                    if (hakemus.getHakemus().getHakemusOid().equals(hakemusWrapper.getHakemus().getHakemusOid())) {
+                        if (hakemus.getValintatulos().isPresent() && hakemus.getValintatulos().get().getJulkaistavissa() && hakemus.getHakemus().getEdellinenTila() == HakemuksenTila.HYVAKSYTTY || hakemus.getHakemus().getEdellinenTila() == HakemuksenTila.VARASIJALTA_HYVAKSYTTY) {
+                            return true;
+                        }
+                        break;
+                    }
+                }
+            }
+        }
+        return false;
     }
 
     private static boolean estaaVastaanotonYhdenPaikanSaannoksenTakia(Optional<VastaanottoDTO> aiempiVastaanottoOptional, HakemusWrapper hakemusWrapper) {

@@ -1,5 +1,6 @@
 package fi.vm.sade.sijoittelu.batch.logic.impl.algorithm;
 
+import com.google.common.collect.Lists;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.util.TilanKuvaukset;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.HakemusWrapper;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.SijoitteluajoWrapper;
@@ -8,6 +9,7 @@ import org.junit.Test;
 import org.junit.experimental.runners.Enclosed;
 import org.junit.runner.RunWith;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -74,17 +76,50 @@ public class SijoitteluajoWrapperFactoryTest {
         }
 
         @Test
-        public void hyvaksyPeruuntunut_flag_hyvaksyy_hakemuksen() {
-            Valintatulos valintatulos = valintatulosWithTila(ValintatuloksenTila.KESKEN);
-            valintatulos.setHyvaksyPeruuntunut(true, "");
-            List<Hakemus> hakemukset = generateHakemuksetEdellisellaTilalla(HakemuksenTila.PERUUNTUNUT, HakemuksenTila.PERUUNTUNUT);
-            SijoitteluajoWrapper sijoitteluAjo = sijoitteluAjo(valintatulos, hakemukset);
+        public void hyvaksyPeruuntunut_flag_hyvaksyy_hakemuksen_jos_ei_korkeampaa_hyvaksyttya() {
+            Valintatulos valintatulosYlempi = valintatulosWithTila(ValintatuloksenTila.KESKEN);
+            valintatulosYlempi.setHyvaksyPeruuntunut(true, "");
+            valintatulosYlempi.setJulkaistavissa(true, "");
+            List<Hakemus> hakemuksetYlempiJono = generateHakemuksetEdellisellaTilalla(HakemuksenTila.PERUUNTUNUT, HakemuksenTila.PERUUNTUNUT);
 
-            HakemusWrapper hakemusWrapper = sijoitteluAjo.getHakukohteet().get(0).getValintatapajonot().get(0).getHakemukset().get(0);
-            assertHyvaksytty(hakemusWrapper);
-            assertFalse(hakemusWrapper.isTilaVoidaanVaihtaa());
+            Valintatulos valintatulosAlempi = valintatulosWithTila(ValintatuloksenTila.KESKEN, "123");
+            valintatulosAlempi.setHyvaksyPeruuntunut(true, "");
+            valintatulosAlempi.setJulkaistavissa(true, "");
+            List<Hakemus> hakemuksetAlempiJono = generateHakemuksetEdellisellaTilalla(HakemuksenTila.HYVAKSYTTY, HakemuksenTila.HYVAKSYTTY);
+
+            SijoitteluajoWrapper sijoitteluAjo = sijoitteluAjo(Lists.newArrayList(valintatulosYlempi, valintatulosAlempi), hakemuksetYlempiJono, hakemuksetAlempiJono);
+
+            HakemusWrapper hakemusWrapperYlempi = sijoitteluAjo.getHakukohteet().get(0).getValintatapajonot().get(0).getHakemukset().get(0);
+            assertHyvaksytty(hakemusWrapperYlempi);
+            assertFalse(hakemusWrapperYlempi.isTilaVoidaanVaihtaa());
+
+            HakemusWrapper hakemusWrapperAlempi = sijoitteluAjo.getHakukohteet().get(0).getValintatapajonot().get(0).getHakemukset().get(0);
+            assertHyvaksytty(hakemusWrapperAlempi);
+            assertFalse(hakemusWrapperAlempi.isTilaVoidaanVaihtaa());
         }
 
+        @Test
+        public void hyvaksyPeruuntunut_flag_ei_hyvaksy_hakemusta_jos_korkeampi_jo_hyvaksytty() {
+            Valintatulos valintatulosYlempi = valintatulosWithTila(ValintatuloksenTila.KESKEN);
+            valintatulosYlempi.setHyvaksyPeruuntunut(true, "");
+            valintatulosYlempi.setJulkaistavissa(true, "");
+            List<Hakemus> hakemuksetYlempiJono = generateHakemuksetEdellisellaTilalla(HakemuksenTila.HYVAKSYTTY, HakemuksenTila.HYVAKSYTTY);
+
+            Valintatulos valintatulosAlempi = valintatulosWithTila(ValintatuloksenTila.KESKEN, "123");
+            valintatulosAlempi.setHyvaksyPeruuntunut(true, "");
+            valintatulosAlempi.setJulkaistavissa(true, "");
+            List<Hakemus> hakemuksetAlempiJono = generateHakemuksetEdellisellaTilalla(HakemuksenTila.PERUUNTUNUT, HakemuksenTila.PERUUNTUNUT);
+
+            SijoitteluajoWrapper sijoitteluAjo = sijoitteluAjo(Lists.newArrayList(valintatulosYlempi, valintatulosAlempi), hakemuksetYlempiJono, hakemuksetAlempiJono);
+
+            HakemusWrapper hakemusWrapperYlempi = sijoitteluAjo.getHakukohteet().get(0).getValintatapajonot().get(0).getHakemukset().get(0);
+            assertHyvaksytty(hakemusWrapperYlempi);
+            assertFalse(hakemusWrapperYlempi.isTilaVoidaanVaihtaa());
+
+            HakemusWrapper hakemusWrapperAlempi = sijoitteluAjo.getHakukohteet().get(0).getValintatapajonot().get(1).getHakemukset().get(0);
+            assertPeruuntunut(hakemusWrapperAlempi);
+            assertFalse(hakemusWrapperAlempi.isTilaVoidaanVaihtaa());
+        }
 
         @Test
         public void hyvaksyVarasijalta_flag_hyvaksyy_hakemuksen() {
@@ -123,6 +158,11 @@ public class SijoitteluajoWrapperFactoryTest {
         assertEquals(TilanKuvaukset.tyhja, hakemusWrapper.getHakemus().getTilanKuvaukset());
     }
 
+    private static void assertPeruuntunut(final HakemusWrapper hakemusWrapper) {
+        assertEquals(HakemuksenTila.PERUUNTUNUT, hakemusWrapper.getHakemus().getTila());
+        assertEquals(TilanKuvaukset.tyhja, hakemusWrapper.getHakemus().getTilanKuvaukset());
+    }
+
     private static SijoitteluajoWrapper sijoitteluAjo(Valintatulos valintatulos) {
         return sijoitteluAjo(valintatulos, yksiHakemus());
     }
@@ -136,15 +176,22 @@ public class SijoitteluajoWrapperFactoryTest {
     }
 
     private static SijoitteluajoWrapper sijoitteluAjo(Valintatulos valintatulos, List<Hakemus> hakemukset) {
+        return sijoitteluAjo(Collections.singletonList(valintatulos), hakemukset);
+    }
+
+    private static SijoitteluajoWrapper sijoitteluAjo(List<Valintatulos> valintatulokset, List<Hakemus>... hakemukset) {
         List<Valintatapajono> valintatapajonot = generateValintatapajono(hakemukset);
         final List<Hakukohde> hakukohteet = generateHakukohteet(valintatapajonot);
-        final List<Valintatulos> valintatulokset = Collections.singletonList(valintatulos);
         return SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(new SijoitteluAjo(), hakukohteet, valintatulokset, Collections.emptyMap());
     }
 
     private static Valintatulos valintatulosWithTila(ValintatuloksenTila tila) {
+        return valintatulosWithTila(tila, "023");
+    }
+
+    private static Valintatulos valintatulosWithTila(ValintatuloksenTila tila, String jonoId) {
         Valintatulos valintatulos = new Valintatulos();
-        valintatulos.setValintatapajonoOid("123", "");
+        valintatulos.setValintatapajonoOid(jonoId, "");
         valintatulos.setHakukohdeOid("123", "");
         valintatulos.setHakemusOid("123", "");
         valintatulos.setTila(tila, "");
@@ -158,11 +205,16 @@ public class SijoitteluajoWrapperFactoryTest {
         return Collections.singletonList(hakukohde);
     }
 
-    private static List<Valintatapajono> generateValintatapajono(List<Hakemus> hakemukset) {
-        Valintatapajono valintatapajono = new Valintatapajono();
-        valintatapajono.setOid("123");
-        valintatapajono.setHakemukset(hakemukset);
-        return Collections.singletonList(valintatapajono);
+    private static List<Valintatapajono> generateValintatapajono(List<Hakemus>[] hakemukset) {
+        List<Valintatapajono> jonot = new ArrayList<>(hakemukset.length);
+        for (int i = 0; i < hakemukset.length; i++) {
+            Valintatapajono valintatapajono = new Valintatapajono();
+            valintatapajono.setOid(i + "23");
+            valintatapajono.setHakemukset(hakemukset[i]);
+            valintatapajono.setPrioriteetti(i);
+            jonot.add(valintatapajono);
+        }
+        return jonot;
     }
 
     private static List<Hakemus> generateHakemuksetEdellisellaTilalla(HakemuksenTila edellinenTila, HakemuksenTila tila) {
