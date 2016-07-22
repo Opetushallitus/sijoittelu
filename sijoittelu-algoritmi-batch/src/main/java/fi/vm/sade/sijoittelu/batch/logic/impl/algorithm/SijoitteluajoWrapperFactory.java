@@ -145,11 +145,15 @@ public class SijoitteluajoWrapperFactory {
             boolean voidaanVaihtaa = false;
             if (tila == ValintatuloksenTila.PERUNUT) {
                 hakemus.setTila(HakemuksenTila.PERUNUT);
-            } else if (asList(VASTAANOTTANUT_SITOVASTI, EHDOLLISESTI_VASTAANOTTANUT).contains(tila) && viimeisinHyvaksyttyJono(hakemusWrapper)) {
-                if (hakemus.getEdellinenTila() == HakemuksenTila.VARALLA || hakemus.getEdellinenTila() == HakemuksenTila.VARASIJALTA_HYVAKSYTTY) {
-                    hyvaksyVarasijalta(hakemus, valintatulos);
+            } else if (asList(VASTAANOTTANUT_SITOVASTI, EHDOLLISESTI_VASTAANOTTANUT).contains(tila)) {
+                if (viimeisinHyvaksyttyJono(hakemusWrapper)) {
+                    if (hakemus.getEdellinenTila() == HakemuksenTila.VARALLA || hakemus.getEdellinenTila() == HakemuksenTila.VARASIJALTA_HYVAKSYTTY) {
+                        hyvaksyVarasijalta(hakemus, valintatulos);
+                    } else {
+                        hyvaksy(hakemus, valintatulos);
+                    }
                 } else {
-                    hyvaksy(hakemus, valintatulos);
+                    voidaanVaihtaa = false;
                 }
             } else if (tila == ValintatuloksenTila.EI_VASTAANOTETTU_MAARA_AIKANA) {
                 hakemus.setTila(HakemuksenTila.PERUNUT);
