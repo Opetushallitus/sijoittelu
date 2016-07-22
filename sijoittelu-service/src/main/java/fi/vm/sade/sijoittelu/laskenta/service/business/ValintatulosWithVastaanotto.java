@@ -79,8 +79,16 @@ public class ValintatulosWithVastaanotto {
                             .filter(v -> v.getTila() != ValintatuloksenTila.KESKEN)
                             .collect(Collectors.toSet());
                     if (eiKeskenTilaiset.size() > 1) {
-                        throw new RuntimeException("Hakijalle löytyi useampi kuin yksi ei-kesken-tilainen valintatulos: " + list);
+                        ValintatuloksenTila ensimmainenEiKeskenTila = eiKeskenTilaiset.iterator().next().getTila();
+                        if (eiKeskenTilaiset.stream().anyMatch(v -> !v.getTila().equals(ensimmainenEiKeskenTila))) {
+                            throw new RuntimeException("Hakijalle löytyi useampi kuin yksi ei-kesken-tilainen valintatulos, joilla on eri tilat: " + list);
+                        } else {
+                            LOG.warn("Hakijalle löytyi useampi kuin yksi ei-kesken-tilainen valintatulos:" + list);
+                        }
                     }
+                    // TODO jos ei kesken -tilaisia on useampia kuin yksi, olisi periaatteessa hyvä valita niistä valinta-tulos-serviceen
+                    // tallennettavaksi sellainen, joka on oikeasta jonosta. Varsinaisen vastaanoton tallennuksen kannalta sillä ei ole
+                    // väliä, mutta lokimerkintä voi mennä väärälle jonolle.
                     Valintatulos vt = (!eiKeskenTilaiset.isEmpty() ? eiKeskenTilaiset.stream().findFirst().get() : list.get(0));
                     return new VastaanottoEventDto(
                             vt.getHakijaOid(), vt.getHakemusOid(), vt.getValintatapajonoOid(), vt.getHakukohdeOid(), vt.getHakuOid(), vt.getTila(),
