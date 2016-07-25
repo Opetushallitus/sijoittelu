@@ -141,7 +141,7 @@ public class SijoitteluajoWrapperFactoryTest {
 
             HakemusWrapper hakemusWrapperAlempi = sijoitteluAjo.getHakukohteet().get(0).getValintatapajonot().get(1).getHakemukset().get(0);
             assertPeruuntunut(hakemusWrapperAlempi);
-            assertFalse(hakemusWrapperAlempi.isTilaVoidaanVaihtaa());
+            assertTrue(hakemusWrapperAlempi.isTilaVoidaanVaihtaa());
         }
 
         @Test
