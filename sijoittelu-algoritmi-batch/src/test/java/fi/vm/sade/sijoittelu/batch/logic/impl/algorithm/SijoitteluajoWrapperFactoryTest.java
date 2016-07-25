@@ -122,6 +122,29 @@ public class SijoitteluajoWrapperFactoryTest {
         }
 
         @Test
+        public void hyvaksyttyVarasijalta_flag_ei_hyvaksy_hakemusta_jos_korkeampi_jo_hyvaksytty() {
+            Valintatulos valintatulosYlempi = valintatulosWithTila(ValintatuloksenTila.KESKEN);
+            valintatulosYlempi.setHyvaksyttyVarasijalta(true, "");
+            valintatulosYlempi.setJulkaistavissa(true, "");
+            List<Hakemus> hakemuksetYlempiJono = generateHakemuksetEdellisellaTilalla(HakemuksenTila.HYVAKSYTTY, HakemuksenTila.HYVAKSYTTY);
+
+            Valintatulos valintatulosAlempi = valintatulosWithTila(ValintatuloksenTila.KESKEN, "123");
+            valintatulosAlempi.setHyvaksyttyVarasijalta(true, "");
+            valintatulosAlempi.setJulkaistavissa(true, "");
+            List<Hakemus> hakemuksetAlempiJono = generateHakemuksetEdellisellaTilalla(HakemuksenTila.PERUUNTUNUT, HakemuksenTila.PERUUNTUNUT);
+
+            SijoitteluajoWrapper sijoitteluAjo = sijoitteluAjo(Lists.newArrayList(valintatulosYlempi, valintatulosAlempi), hakemuksetYlempiJono, hakemuksetAlempiJono);
+
+            HakemusWrapper hakemusWrapperYlempi = sijoitteluAjo.getHakukohteet().get(0).getValintatapajonot().get(0).getHakemukset().get(0);
+            assertHyvaksytty(hakemusWrapperYlempi);
+            assertFalse(hakemusWrapperYlempi.isTilaVoidaanVaihtaa());
+
+            HakemusWrapper hakemusWrapperAlempi = sijoitteluAjo.getHakukohteet().get(0).getValintatapajonot().get(1).getHakemukset().get(0);
+            assertPeruuntunut(hakemusWrapperAlempi);
+            assertFalse(hakemusWrapperAlempi.isTilaVoidaanVaihtaa());
+        }
+
+        @Test
         public void hyvaksyVarasijalta_flag_hyvaksyy_hakemuksen() {
             Valintatulos valintatulos = valintatulosWithTila(ValintatuloksenTila.KESKEN);
             valintatulos.setHyvaksyttyVarasijalta(true, "");

@@ -178,18 +178,14 @@ public class SijoitteluajoWrapperFactory {
                 } else if (valintatulos.getJulkaistavissa() && hakemus.getEdellinenTila() == HakemuksenTila.VARASIJALTA_HYVAKSYTTY) {
                     hyvaksyVarasijalta(hakemus, valintatulos);
                 } else if (valintatulos.getHyvaksyttyVarasijalta()) {
-                    hyvaksyVarasijalta(hakemus, valintatulos);
+                    if (hasHigherJulkaistuHyvaksytty(hakukohdeWrapper, hakemusWrapper)) {
+                        logDidNotHyvaksy(hakemusWrapper, tila, "hyvaksyttyVarasijalta");
+                    } else {
+                        hyvaksyVarasijalta(hakemus, valintatulos);
+                    }
                 } else if (HakemuksenTila.PERUUNTUNUT == hakemus.getEdellinenTila() && valintatulos.getHyvaksyPeruuntunut()) {
                     if (hasHigherJulkaistuHyvaksytty(hakukohdeWrapper, hakemusWrapper)) {
-                        LOG.info("Ei hyväksytä peruuntunutta jonosta vaikka hyvaksyPeruuntunut päällä, koska korkeamman prioriteetin jonossa on jo julkaistu hyväksytty: " +
-                                 "Hakukohde: {}, valintatapajono: {}, hakemus: {}, hakemuksen tila: {}, " +
-                                 "hakemuksen edellinen tila: {}, vastaanoton tila: {}",
-                                    hakemusWrapper.getValintatapajono().getHakukohdeWrapper().getHakukohde().getOid(),
-                                    hakemusWrapper.getValintatapajono().getValintatapajono().getOid(),
-                                    hakemus.getHakemusOid(),
-                                    hakemus.getTila(),
-                                    hakemus.getEdellinenTila(),
-                                    tila);
+                        logDidNotHyvaksy(hakemusWrapper, tila, "hyvaksyPeruuntunut");
                     } else {
                         hyvaksy(hakemus, valintatulos);
                         hakemusWrapper.hyvaksyPeruuntunut();
@@ -220,14 +216,29 @@ public class SijoitteluajoWrapperFactory {
         }
     }
 
+    private static void logDidNotHyvaksy(HakemusWrapper hakemusWrapper, ValintatuloksenTila tila, String flagName) {
+        Hakemus hakemus = hakemusWrapper.getHakemus();
+        LOG.info("Ei hyväksytä jonosta vaikka {} päällä, koska korkeamman prioriteetin jonossa on jo julkaistu hyväksytty: " +
+                        "Hakukohde: {}, valintatapajono: {}, hakemus: {}, hakemuksen tila: {}, " +
+                        "hakemuksen edellinen tila: {}, vastaanoton tila: {}",
+                flagName,
+                hakemusWrapper.getValintatapajono().getHakukohdeWrapper().getHakukohde().getOid(),
+                hakemusWrapper.getValintatapajono().getValintatapajono().getOid(),
+                hakemus.getHakemusOid(),
+                hakemus.getTila(),
+                hakemus.getEdellinenTila(),
+                tila);
+    }
+
     private static boolean hasHigherJulkaistuHyvaksytty(HakukohdeWrapper hakukohdeWrapper,
                                                         HakemusWrapper hakemusWrapper) {
         Valintatapajono currentJono = hakemusWrapper.getValintatapajono().getValintatapajono();
-        for (ValintatapajonoWrapper toinenJono: hakukohdeWrapper.getValintatapajonot()) {
+        for (ValintatapajonoWrapper toinenJono : hakukohdeWrapper.getValintatapajonot()) {
             if (toinenJono.getValintatapajono().getPrioriteetti() < currentJono.getPrioriteetti()) {
-                for (HakemusWrapper hakemus: toinenJono.getHakemukset()) {
+                for (HakemusWrapper hakemus : toinenJono.getHakemukset()) {
                     if (hakemus.getHakemus().getHakemusOid().equals(hakemusWrapper.getHakemus().getHakemusOid())) {
-                        if (hakemus.getValintatulos().isPresent() && hakemus.getValintatulos().get().getJulkaistavissa() && hakemus.getHakemus().getEdellinenTila() == HakemuksenTila.HYVAKSYTTY || hakemus.getHakemus().getEdellinenTila() == HakemuksenTila.VARASIJALTA_HYVAKSYTTY) {
+                        if (hakemus.getValintatulos().map(v -> v.getJulkaistavissa()).orElse(false)
+                                && TilaTaulukot.kuuluuHyvaksyttyihinTiloihin(hakemus.getHakemus().getEdellinenTila())) {
                             return true;
                         }
                         break;
