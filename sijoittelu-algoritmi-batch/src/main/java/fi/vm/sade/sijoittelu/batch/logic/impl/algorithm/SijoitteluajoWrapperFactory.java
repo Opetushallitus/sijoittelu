@@ -179,12 +179,14 @@ public class SijoitteluajoWrapperFactory {
                     hyvaksyVarasijalta(hakemus, valintatulos);
                 } else if (valintatulos.getHyvaksyttyVarasijalta()) {
                     if (hasHigherJulkaistuHyvaksytty(hakukohdeWrapper, hakemusWrapper)) {
+                        voidaanVaihtaa = true;
                         logDidNotHyvaksy(hakemusWrapper, tila, "hyvaksyttyVarasijalta");
                     } else {
                         hyvaksyVarasijalta(hakemus, valintatulos);
                     }
                 } else if (HakemuksenTila.PERUUNTUNUT == hakemus.getEdellinenTila() && valintatulos.getHyvaksyPeruuntunut()) {
                     if (hasHigherJulkaistuHyvaksytty(hakukohdeWrapper, hakemusWrapper)) {
+                        voidaanVaihtaa = true;
                         logDidNotHyvaksy(hakemusWrapper, tila, "hyvaksyPeruuntunut");
                     } else {
                         hyvaksy(hakemus, valintatulos);
