@@ -10,7 +10,7 @@ import java.util.*;
 
 @Entity("Valintatulos")
 @Indexes({
-        @Index("hakukohdeOid, valintatapajonoOid, hakemusOid"),
+        @Index(value = "hakukohdeOid, valintatapajonoOid, hakemusOid", unique = true),
         @Index("hakukohdeOid, valintatapajonoOid"),
         @Index("hakukohdeOid"),
         @Index("hakemusOid"),
