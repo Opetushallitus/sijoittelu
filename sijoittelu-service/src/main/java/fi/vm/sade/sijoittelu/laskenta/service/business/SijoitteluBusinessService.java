@@ -359,12 +359,13 @@ public class SijoitteluBusinessService {
         );
         uusiSijoitteluajo.setEndMils(System.currentTimeMillis());
         processOldApplications(olemassaolevatHakukohteet, kaikkiHakukohteet, hakuOid);
-        Map<String, Set<Long>> hakukohdeToSijoitteluAjoId = hakukohdeToSijoitteluAjoId(sijoittelu);
-        final Set<String> uudetHakukohdeOids = uudetHakukohteet.stream().map(u -> u.getOid()).collect(Collectors.toSet());
+
+        Map<String, Set<Long>> kaikkiHakukohteetJotkaOnJoskusSijoiteltuToSijoitteluAjoIds = hakukohdeToSijoitteluAjoId(sijoittelu);
+        final Set<String> kaikkiHakukohdeOids = kaikkiHakukohteet.stream().map(u -> u.getOid()).collect(Collectors.toSet());
         // Clone previous hakukohdes
-        hakukohdeToSijoitteluAjoId.forEach(
+        kaikkiHakukohteetJotkaOnJoskusSijoiteltuToSijoitteluAjoIds.forEach(
                 (hakukohdeOid, sijoitteluAjoIds) -> {
-                    if(!uudetHakukohdeOids.contains(hakukohdeOid)) {
+                    if(!kaikkiHakukohdeOids.contains(hakukohdeOid)) {
                         Long latestForThisHakukohde = Sets.newTreeSet(sijoitteluAjoIds).last();
                         Hakukohde h = hakukohdeDao.getHakukohdeForSijoitteluajo(latestForThisHakukohde, hakukohdeOid);
                         if(h == null) {
