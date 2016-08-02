@@ -49,10 +49,9 @@ public class SijoitteluDaoImpl implements SijoitteluDao {
 
         List<DBObject> sijoitteluPipelineSteps = new ArrayList<>(Arrays.asList(match, unwind, endMilsProject, sort, limit, sijoitteluajoIdProject));
         Iterator<DBObject> i = findSijoittelu(sijoitteluPipelineSteps, sijoitteluPipelineSteps);
-
         if (i.hasNext()) {
             DBObject o = (DBObject) i.next().get("sijoitteluajo");
-            return Optional.of(new Mapper().fromDBObject(SijoitteluAjo.class, o, new DefaultEntityCache()));
+            return Optional.of(new Mapper().fromDBObject(null, SijoitteluAjo.class, o, new DefaultEntityCache()));
         }
         return Optional.empty();
     }
@@ -85,7 +84,7 @@ public class SijoitteluDaoImpl implements SijoitteluDao {
 
         if (i.hasNext()) {
             DBObject o = (DBObject) i.next().get("sijoitteluajo");
-            return Optional.of(new Mapper().fromDBObject(SijoitteluAjo.class, o, new DefaultEntityCache()));
+            return Optional.of(new Mapper().fromDBObject(null, SijoitteluAjo.class, o, new DefaultEntityCache()));
         }
         return Optional.empty();
     }
@@ -100,8 +99,17 @@ public class SijoitteluDaoImpl implements SijoitteluDao {
                 new BasicDBObject("sijoitteluajot.sijoitteluajoId", sijoitteluajoId),
                 BasicDBObjectBuilder.start().push("sijoitteluajot").push("$elemMatch").add("sijoitteluajoId", sijoitteluajoId).get()
         );
-        return Optional.of(new Mapper().fromDBObject(Sijoittelu.class, o, new DefaultEntityCache()).getSijoitteluajot().get(0));
+        return Optional.of(new Mapper().fromDBObject(null, Sijoittelu.class, o, new DefaultEntityCache()).getSijoitteluajot().get(0));
     }
+
+
+
+
+
+
+
+
+
 
     @Override
     public Optional<Sijoittelu> getSijoitteluByHakuOid(final String hakuOid) {

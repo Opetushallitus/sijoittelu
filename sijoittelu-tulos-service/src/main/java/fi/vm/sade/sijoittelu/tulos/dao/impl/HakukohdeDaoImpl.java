@@ -263,7 +263,7 @@ public class HakukohdeDaoImpl implements HakukohdeDao {
         MapReduceOutput out = collection.mapReduce(cmd);
 
         return StreamSupport.stream(out.results().spliterator(), false)
-                .map(dbObject -> new Mapper().fromDBObject(Hakukohde.class, (DBObject) dbObject.get("value"), new DefaultEntityCache()))
+                .map(dbObject -> new Mapper().fromDBObject(null, Hakukohde.class, (DBObject) dbObject.get("value"), new DefaultEntityCache()))
                 .collect(Collectors.toList());
     }
 

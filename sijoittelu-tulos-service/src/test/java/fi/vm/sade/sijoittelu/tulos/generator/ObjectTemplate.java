@@ -24,7 +24,7 @@ public class ObjectTemplate {
         @SuppressWarnings("unchecked") T result = (T) templates.get(clazz);
         if (result == null) {
             final DBObject mongoObject = MongoMockData.collectionElements(templateData, collection).get(0);
-            result = new Mapper().fromDBObject(clazz, mongoObject, new DefaultEntityCache());
+            result = new Mapper().fromDBObject(null, clazz, mongoObject, new DefaultEntityCache());
             templates.put(clazz, result);
         }
         return SerializationUtils.clone(result);
