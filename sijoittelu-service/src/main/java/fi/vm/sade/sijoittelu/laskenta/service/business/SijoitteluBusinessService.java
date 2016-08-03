@@ -64,16 +64,7 @@ import org.springframework.util.StopWatch;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -325,13 +316,13 @@ public class SijoitteluBusinessService {
         }
     }
 
-    private Map<String,Set<Long>> hakukohdeToSijoitteluAjoId(final Sijoittelu sijoittelu) {
+    private Map<String,Long> hakukohdeToLastSijoitteluAjoId(final Sijoittelu sijoittelu) {
         return sijoittelu.getSijoitteluajot().stream()
                 .flatMap(s -> s.getHakukohteet().stream().map(h -> new HakukohdeOidAndSijoitteluAjoId(h.getOid(),s.getSijoitteluajoId())))
                 .collect(Collectors.toMap(
                         HakukohdeOidAndSijoitteluAjoId::getHakukohdeOid,
-                        s -> Sets.newHashSet(s.getSijoitteluAjoId()),
-                        (u,v) -> Sets.union(u,v)
+                        s -> s.getSijoitteluAjoId(),
+                        (sijoitteluAjoId1, sijoitteluAjoId2) -> sijoitteluAjoId1 > sijoitteluAjoId2 ? sijoitteluAjoId1 : sijoitteluAjoId2
                 ));
     }
 
@@ -365,14 +356,13 @@ public class SijoitteluBusinessService {
         uusiSijoitteluajo.setEndMils(System.currentTimeMillis());
         processOldApplications(olemassaolevatHakukohteet, tamanSijoittelunHakukohteet, hakuOid);
 
-        Map<String, Set<Long>> kaikkiHakukohteetJotkaOnJoskusSijoiteltuToSijoitteluAjoIds = hakukohdeToSijoitteluAjoId(sijoittelu);
+        Map<String, Long> kaikkiHakukohteetJotkaOnJoskusSijoiteltuToLastSijoitteluAjoId = hakukohdeToLastSijoitteluAjoId(sijoittelu);
         final Set<String> tamanSijoittelunHakukohdeOids = tamanSijoittelunHakukohteet.stream().map(u -> u.getOid()).collect(Collectors.toSet());
         // Clone previous hakukohdes
-        kaikkiHakukohteetJotkaOnJoskusSijoiteltuToSijoitteluAjoIds.forEach(
-                (hakukohdeOid, sijoitteluAjoIds) -> {
+        kaikkiHakukohteetJotkaOnJoskusSijoiteltuToLastSijoitteluAjoId.forEach(
+                (hakukohdeOid, latestSijoitteluForHakukohde) -> {
                     if(!tamanSijoittelunHakukohdeOids.contains(hakukohdeOid)) {
-                        Long latestForThisHakukohde = Sets.newTreeSet(sijoitteluAjoIds).last();
-                        Hakukohde h = hakukohdeDao.getHakukohdeForSijoitteluajo(latestForThisHakukohde, hakukohdeOid);
+                        Hakukohde h = hakukohdeDao.getHakukohdeForSijoitteluajo(latestSijoitteluForHakukohde, hakukohdeOid);
                         if(h == null) {
                             // hakukohde has been removed
                         } else {
