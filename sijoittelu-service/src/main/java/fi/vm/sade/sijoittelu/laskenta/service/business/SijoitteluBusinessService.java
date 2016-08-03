@@ -322,7 +322,7 @@ public class SijoitteluBusinessService {
                 .collect(Collectors.toMap(
                         HakukohdeOidAndSijoitteluAjoId::getHakukohdeOid,
                         s -> s.getSijoitteluAjoId(),
-                        (sijoitteluAjoId1, sijoitteluAjoId2) -> sijoitteluAjoId1 > sijoitteluAjoId2 ? sijoitteluAjoId1 : sijoitteluAjoId2
+                        (sijoitteluAjoId1, sijoitteluAjoId2) -> Math.max(sijoitteluAjoId1, sijoitteluAjoId2)
                 ));
     }
 
