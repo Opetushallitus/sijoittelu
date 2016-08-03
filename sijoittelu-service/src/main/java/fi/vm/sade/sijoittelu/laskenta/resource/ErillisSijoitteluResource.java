@@ -42,9 +42,9 @@ public class ErillisSijoitteluResource {
     @Path("/{hakuOid}")
     @Consumes("application/json")
     @PreAuthorize(CRUD)
-    @ApiOperation(consumes = "application/json", value = "Valintatapajonon vienti taulukkolaskentaan", response = Long.class)
+    @ApiOperation(consumes = "application/json", value = "Suorita erillissijoittelu", response = Long.class)
     public Long sijoittele(@PathParam("hakuOid") String hakuOid, ValisijoitteluDTO hakukohteet) {
-        LOGGER.info("Valintatietoja valmistetaan valisijottelulle haussa {}", hakuOid);
+        LOGGER.info("Valintatietoja valmistetaan erillissijoittelulle haussa {}", hakuOid);
         HakuDTO haku = valintatietoService.haeValintatiedotJonoille(hakuOid, hakukohteet.getHakukohteet());
         LOGGER.info("Valintatiedot haettu serviceltä haulle {}!", hakuOid);
         Timeout timeout = new Timeout(Duration.create(60, "minutes"));
