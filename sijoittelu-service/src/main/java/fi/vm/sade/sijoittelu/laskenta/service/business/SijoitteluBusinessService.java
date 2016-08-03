@@ -340,32 +340,37 @@ public class SijoitteluBusinessService {
         String hakuOid = sijoitteluTyyppi.getHakuOid();
         final Sijoittelu sijoittelu = getOrCreateErillisSijoittelu(hakuOid);
         List<Hakukohde> uudetHakukohteet = sijoitteluTyyppi.getHakukohteet().parallelStream().map(DomainConverter::convertToHakukohde).collect(Collectors.toList());
-        List<Hakukohde> olemassaolevatHakukohteet = Collections.<Hakukohde>emptyList();
+        List<Hakukohde> olemassaolevatHakukohteet = new ArrayList<>();
 
         SijoitteluAjo viimeisinSijoitteluajo = sijoittelu.getLatestSijoitteluajo();
         if (viimeisinSijoitteluajo != null) {
-            olemassaolevatHakukohteet = hakukohdeDao.getHakukohdeForSijoitteluajo(viimeisinSijoitteluajo.getSijoitteluajoId());
+            for (Hakukohde hakukohde: uudetHakukohteet) {
+                Hakukohde vanhaTulos = hakukohdeDao.getHakukohdeForSijoitteluajo(viimeisinSijoitteluajo.getSijoitteluajoId(), hakukohde.getOid());
+                if(vanhaTulos != null) {
+                    olemassaolevatHakukohteet.add(vanhaTulos);
+                }
+            }
         }
 
         SijoitteluAjo uusiSijoitteluajo = createErillisSijoitteluAjo(sijoittelu);
-        List<Hakukohde> kaikkiHakukohteet = merge(uusiSijoitteluajo, olemassaolevatHakukohteet, uudetHakukohteet);
+        List<Hakukohde> tamanSijoittelunHakukohteet = merge(uusiSijoitteluajo, olemassaolevatHakukohteet, uudetHakukohteet);
         List<Valintatulos> valintatulokset = valintatulosWithVastaanotto.forHaku(hakuOid);
         Map<String, VastaanottoDTO> kaudenAiemmatVastaanotot = aiemmanVastaanotonHakukohdePerHakija(hakuOid);
         uusiSijoitteluajo.setStartMils(startTime);
         SijoitteluAlgorithm.sijoittele(
                 preSijoitteluProcessors,
                 postSijoitteluProcessors,
-                SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(uusiSijoitteluajo, kaikkiHakukohteet, valintatulokset, kaudenAiemmatVastaanotot)
+                SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(uusiSijoitteluajo, tamanSijoittelunHakukohteet, valintatulokset, kaudenAiemmatVastaanotot)
         );
         uusiSijoitteluajo.setEndMils(System.currentTimeMillis());
-        processOldApplications(olemassaolevatHakukohteet, kaikkiHakukohteet, hakuOid);
+        processOldApplications(olemassaolevatHakukohteet, tamanSijoittelunHakukohteet, hakuOid);
 
         Map<String, Set<Long>> kaikkiHakukohteetJotkaOnJoskusSijoiteltuToSijoitteluAjoIds = hakukohdeToSijoitteluAjoId(sijoittelu);
-        final Set<String> kaikkiHakukohdeOids = kaikkiHakukohteet.stream().map(u -> u.getOid()).collect(Collectors.toSet());
+        final Set<String> tamanSijoittelunHakukohdeOids = tamanSijoittelunHakukohteet.stream().map(u -> u.getOid()).collect(Collectors.toSet());
         // Clone previous hakukohdes
         kaikkiHakukohteetJotkaOnJoskusSijoiteltuToSijoitteluAjoIds.forEach(
                 (hakukohdeOid, sijoitteluAjoIds) -> {
-                    if(!kaikkiHakukohdeOids.contains(hakukohdeOid)) {
+                    if(!tamanSijoittelunHakukohdeOids.contains(hakukohdeOid)) {
                         Long latestForThisHakukohde = Sets.newTreeSet(sijoitteluAjoIds).last();
                         Hakukohde h = hakukohdeDao.getHakukohdeForSijoitteluajo(latestForThisHakukohde, hakukohdeOid);
                         if(h == null) {
