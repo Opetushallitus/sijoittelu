@@ -102,7 +102,7 @@ public class TilaResourceTest {
     @Test
     public void epaonnistuneidenMuokkaustenVirheetKerataan() {
         TilaResource r = new TilaResource();
-        r.sijoitteluBusinessService = new SijoitteluBusinessService(0,null,null,null, null, null, null,null,null,null,null) {
+        r.sijoitteluBusinessService = new SijoitteluBusinessService(0,0,null,null,null, null, null, null,null,null,null,null) {
             @Override
             public Hakukohde getHakukohde(String hakuOid, String hakukohdeOid) {
                 return new Hakukohde();
@@ -282,7 +282,7 @@ public class TilaResourceTest {
     }
 
     private static SijoitteluBusinessService sijoitteluBusinessServiceMock(RuntimeException e) {
-        return new SijoitteluBusinessService(0,null,null,null, null, null, null,null,null,null,null) {
+        return new SijoitteluBusinessService(0, 0, null,null,null, null, null, null,null,null,null,null) {
             @Override
             public Hakukohde getHakukohde(String hakuOid, String hakukohdeOid) {
                 throw e;
@@ -295,7 +295,7 @@ public class TilaResourceTest {
     }
 
     private static SijoitteluBusinessService sijoitteluBusinessServiceMock(Hakukohde hakukohde) {
-        return new SijoitteluBusinessService(0, null, null, null, null, null, null, null, null, null, null) {
+        return new SijoitteluBusinessService(0, 0, null, null, null, null, null, null, null, null, null, null) {
             @Override
             public Hakukohde getHakukohde(String hakuOid, String hakukohdeOid) {
                 return hakukohde;

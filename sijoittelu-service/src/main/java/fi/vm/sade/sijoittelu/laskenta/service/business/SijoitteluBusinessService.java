@@ -79,6 +79,7 @@ public class SijoitteluBusinessService {
 
 
     private final int maxAjoMaara;
+    private final int maxErillisAjoMaara;
     private final ValintatulosDao valintatulosDao;
     private final HakukohdeDao hakukohdeDao;
     private final SijoitteluDao sijoitteluDao;
@@ -95,6 +96,7 @@ public class SijoitteluBusinessService {
 
     @Autowired
     public SijoitteluBusinessService(@Value("${sijoittelu.maxAjojenMaara:20}") int maxAjoMaara,
+                                     @Value("${sijoittelu.maxErillisAjojenMaara:300}") int maxErillisAjoMaara,
                                      ValintatulosDao valintatulosDao,
                                      HakukohdeDao hakukohdeDao,
                                      SijoitteluDao sijoitteluDao,
@@ -106,6 +108,7 @@ public class SijoitteluBusinessService {
                                      TarjontaIntegrationService tarjontaIntegrationService,
                                      ValintaTulosServiceResource valintaTulosServiceResource) {
         this.maxAjoMaara = maxAjoMaara;
+        this.maxErillisAjoMaara = maxErillisAjoMaara;
         this.valintatulosDao = valintatulosDao;
         this.hakukohdeDao = hakukohdeDao;
         this.sijoitteluDao = sijoitteluDao;
@@ -397,7 +400,7 @@ public class SijoitteluBusinessService {
         );
         stopWatch.stop();
 
-        persistSijoittelu(stopWatch, hakuOid, sijoittelu, uusiSijoitteluajo, maxAjoMaara * 10);
+        persistSijoittelu(stopWatch, hakuOid, sijoittelu, uusiSijoitteluajo, maxErillisAjoMaara);
         LOG.info(stopWatch.prettyPrint());
         return uusiSijoitteluajo.getSijoitteluajoId();
     }

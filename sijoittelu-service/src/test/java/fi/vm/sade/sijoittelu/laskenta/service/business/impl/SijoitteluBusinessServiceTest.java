@@ -53,7 +53,7 @@ public class SijoitteluBusinessServiceTest {
         ValintaTulosServiceResource valintaTulosServiceResourceMock = mock(ValintaTulosServiceResource.class);
         raportointiService = mock(RaportointiService.class);
 
-        sijoitteluBusinessService = new SijoitteluBusinessService(1,valintatulosDaoMock,hakukohdeDao,sijoitteluDao, raportointiService, null, authorizer,null,null,tarjontaIntegrationService,valintaTulosServiceResourceMock);
+        sijoitteluBusinessService = new SijoitteluBusinessService(1,1,valintatulosDaoMock,hakukohdeDao,sijoitteluDao, raportointiService, null, authorizer,null,null,tarjontaIntegrationService,valintaTulosServiceResourceMock);
         testDataGenerator = new TestDataGenerator();
 
     }
