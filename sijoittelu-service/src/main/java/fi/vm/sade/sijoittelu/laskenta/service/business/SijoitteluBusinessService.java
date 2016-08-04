@@ -187,7 +187,7 @@ public class SijoitteluBusinessService {
         List<String> varasijapomput = sijoitteluajoWrapper.getVarasijapomput();
         varasijapomput.forEach(LOG::info);
         LOG.info("Haun {} sijoittelussa muuttui {} kpl valintatuloksia, pomppuja {} kpl", hakuOid, mergatut.size(), varasijapomput.size());
-        persistSijoittelu(stopWatch, hakuOid, sijoittelu, uusiSijoitteluajo, maxAjoMaara);
+        persistSijoitteluAndSiivoaVanhatAjot(stopWatch, hakuOid, sijoittelu, uusiSijoitteluajo, maxAjoMaara);
         LOG.info(stopWatch.prettyPrint());
     }
 
@@ -200,14 +200,14 @@ public class SijoitteluBusinessService {
         stopWatch.stop();
     }
 
-    private void persistSijoittelu(StopWatch stopWatch, String hakuOid, Sijoittelu sijoittelu, SijoitteluAjo uusiSijoitteluajo, int maxAjoMaara) {
+    private void persistSijoitteluAndSiivoaVanhatAjot(StopWatch stopWatch, String hakuOid, Sijoittelu sijoittelu, SijoitteluAjo uusiSijoitteluajo, int sailytettavaAjoMaara) {
         try {
             stopWatch.start("Persistoidaan sijoittelu");
             sijoitteluDao.persistSijoittelu(sijoittelu);
             stopWatch.stop();
-            LOG.info("Sijoittelu persistoitu haulle {}. Poistetaan vanhoja ajoja. Säästettävien ajojen määrää {}", sijoittelu.getHakuOid(), maxAjoMaara);
+            LOG.info("Sijoittelu persistoitu haulle {}. Poistetaan vanhoja ajoja. Säästettävien ajojen määrää {}", sijoittelu.getHakuOid(), sailytettavaAjoMaara);
             stopWatch.start("Käynnistetään vanhojen sijoitteluajojen siivouksen taustaprosessi");
-            siivoaVanhatAjotSijoittelulta(hakuOid, sijoittelu, maxAjoMaara);
+            siivoaVanhatAjotSijoittelulta(hakuOid, sijoittelu, sailytettavaAjoMaara);
             stopWatch.stop();
         } catch (Exception e) {
             LOG.error("Sijoittelun persistointi haulle {} epäonnistui. Rollback hakukohteet", sijoittelu.getHakuOid());
@@ -400,7 +400,7 @@ public class SijoitteluBusinessService {
         );
         stopWatch.stop();
 
-        persistSijoittelu(stopWatch, hakuOid, sijoittelu, uusiSijoitteluajo, maxErillisAjoMaara);
+        persistSijoitteluAndSiivoaVanhatAjot(stopWatch, hakuOid, sijoittelu, uusiSijoitteluajo, maxErillisAjoMaara);
         LOG.info(stopWatch.prettyPrint());
         return uusiSijoitteluajo.getSijoitteluajoId();
     }
