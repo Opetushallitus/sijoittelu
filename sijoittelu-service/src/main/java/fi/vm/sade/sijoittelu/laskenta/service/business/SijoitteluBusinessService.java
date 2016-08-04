@@ -9,7 +9,7 @@ import static java.util.stream.Collectors.toSet;
 import static org.apache.commons.lang.StringUtils.isBlank;
 import static org.apache.commons.lang.StringUtils.join;
 import static org.springframework.security.core.context.SecurityContextHolder.getContext;
-import com.google.common.collect.Sets;
+
 import com.google.common.collect.Sets.SetView;
 
 import akka.actor.ActorRef;
@@ -167,17 +167,10 @@ public class SijoitteluBusinessService {
         stopWatch.start("Luodaan sijoitteluajoWrapper ja asetetaan parametrit");
         final SijoitteluajoWrapper sijoitteluajoWrapper = SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(uusiSijoitteluajo, kaikkiHakukohteet, valintatulokset, kaudenAiemmatVastaanotot);
         asetaSijoittelunParametrit(hakuOid, sijoitteluajoWrapper);
-        stopWatch.stop();
-        uusiSijoitteluajo.setStartMils(startTime);
         sijoitteluajoWrapper.setEdellisenSijoittelunHakukohteet(olemassaolevatHakukohteet);
-        LOG.info("Suoritetaan sijoittelu haulle {}", hakuOid);
-        stopWatch.start("Suoritetaan sijoittelu");
-        SijoitteluAlgorithm.sijoittele(preSijoitteluProcessors, postSijoitteluProcessors, sijoitteluajoWrapper);
-        uusiSijoitteluajo.setEndMils(System.currentTimeMillis());
         stopWatch.stop();
-        stopWatch.start("processOldApplications");
-        processOldApplications(olemassaolevatHakukohteet, kaikkiHakukohteet, hakuOid);
-        stopWatch.stop();
+        suoritaSijoittelu(startTime, stopWatch, hakuOid, uusiSijoitteluajo, sijoitteluajoWrapper);
+        processOldApplications(stopWatch, olemassaolevatHakukohteet, kaikkiHakukohteet, hakuOid);
         List<Valintatulos> muuttuneetValintatulokset = sijoitteluajoWrapper.getMuuttuneetValintatulokset();
         LOG.info("Ennen mergeä muuttuneita valintatuloksia: " + muuttuneetValintatulokset.size());
         LOG.info("Ennen mergeä muuttuneet valintatulokset: " + muuttuneetValintatulokset);
@@ -191,6 +184,20 @@ public class SijoitteluBusinessService {
         List<String> varasijapomput = sijoitteluajoWrapper.getVarasijapomput();
         varasijapomput.forEach(LOG::info);
         LOG.info("Haun {} sijoittelussa muuttui {} kpl valintatuloksia, pomppuja {} kpl", hakuOid, mergatut.size(), varasijapomput.size());
+        persistSijoittelu(stopWatch, hakuOid, sijoittelu, uusiSijoitteluajo, maxAjoMaara);
+        LOG.info(stopWatch.prettyPrint());
+    }
+
+    private void suoritaSijoittelu(long startTime, StopWatch stopWatch, String hakuOid, SijoitteluAjo uusiSijoitteluajo, SijoitteluajoWrapper sijoitteluajoWrapper) {
+        LOG.info("Suoritetaan sijoittelu haulle {}", hakuOid);
+        stopWatch.start("Suoritetaan sijoittelu");
+        uusiSijoitteluajo.setStartMils(startTime);
+        SijoitteluAlgorithm.sijoittele(preSijoitteluProcessors, postSijoitteluProcessors, sijoitteluajoWrapper);
+        uusiSijoitteluajo.setEndMils(System.currentTimeMillis());
+        stopWatch.stop();
+    }
+
+    private void persistSijoittelu(StopWatch stopWatch, String hakuOid, Sijoittelu sijoittelu, SijoitteluAjo uusiSijoitteluajo, int maxAjoMaara) {
         try {
             stopWatch.start("Persistoidaan sijoittelu");
             sijoitteluDao.persistSijoittelu(sijoittelu);
@@ -206,7 +213,6 @@ public class SijoitteluBusinessService {
             LOG.info(stopWatch.prettyPrint());
             throw e;
         }
-        LOG.info(stopWatch.prettyPrint());
     }
 
     private void asetaSijoittelunParametrit(String hakuOid, SijoitteluajoWrapper sijoitteluAjo) {
@@ -281,22 +287,27 @@ public class SijoitteluBusinessService {
     public List<HakukohdeDTO> valisijoittele(HakuDTO sijoitteluTyyppi) {
         long startTime = System.currentTimeMillis();
         String hakuOid = sijoitteluTyyppi.getHakuOid();
+        StopWatch stopWatch = new StopWatch("Haun " + hakuOid + " välisijoittelu");
+
+        stopWatch.start("Alustetaan uusi välisijoittelu ja haetaan hakukohteet");
         ValiSijoittelu sijoittelu = getOrCreateValiSijoittelu(hakuOid);
         List<Hakukohde> uudetHakukohteet = sijoitteluTyyppi.getHakukohteet().parallelStream().map(DomainConverter::convertToHakukohde).collect(Collectors.toList());
         List<Hakukohde> olemassaolevatHakukohteet = Collections.<Hakukohde>emptyList();
         SijoitteluAjo uusiSijoitteluajo = createValiSijoitteluAjo(sijoittelu);
         List<Hakukohde> kaikkiHakukohteet = merge(uusiSijoitteluajo, olemassaolevatHakukohteet, uudetHakukohteet);
-        List<Valintatulos> valintatulokset = Collections.emptyList();
-        uusiSijoitteluajo.setStartMils(startTime);
-        SijoitteluAlgorithm.sijoittele(
-                preSijoitteluProcessors,
-                postSijoitteluProcessors,
-                SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(uusiSijoitteluajo, kaikkiHakukohteet, valintatulokset, Collections.emptyMap())
-        );
-        uusiSijoitteluajo.setEndMils(System.currentTimeMillis());
-        processOldApplications(olemassaolevatHakukohteet, kaikkiHakukohteet, hakuOid);
+        SijoitteluajoWrapper sijoitteluajoWrapper = SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(uusiSijoitteluajo, kaikkiHakukohteet, Collections.emptyList(), Collections.emptyMap());
+        stopWatch.stop();
+
+        suoritaSijoittelu(startTime, stopWatch, hakuOid, uusiSijoitteluajo, sijoitteluajoWrapper);
+        processOldApplications(stopWatch, olemassaolevatHakukohteet, kaikkiHakukohteet, hakuOid);
+
+        stopWatch.start("Persistoidaan välisijoittelu");
         valisijoitteluDao.persistSijoittelu(sijoittelu);
-        return kaikkiHakukohteet.parallelStream().map(h -> sijoitteluTulosConverter.convert(h)).collect(Collectors.toList());
+        stopWatch.stop();
+
+        List<HakukohdeDTO> result = kaikkiHakukohteet.parallelStream().map(h -> sijoitteluTulosConverter.convert(h)).collect(Collectors.toList());
+        LOG.info(stopWatch.prettyPrint());
+        return result;
     }
 
     private static class HakukohdeOidAndSijoitteluAjoId {
@@ -328,11 +339,14 @@ public class SijoitteluBusinessService {
 
     public long erillissijoittele(HakuDTO sijoitteluTyyppi) {
         long startTime = System.currentTimeMillis();
+        StopWatch stopWatch = new StopWatch("Haun " + sijoitteluTyyppi.getHakuOid() + " erillissijoittelu");
         String hakuOid = sijoitteluTyyppi.getHakuOid();
+        LOG.info("Sijoittelu haulle {} alkaa.", hakuOid);
+
+        stopWatch.start("Alustetaan uusi erillissijoitteluajo ja haetaan sen hakukohteet");
         final Sijoittelu sijoittelu = getOrCreateErillisSijoittelu(hakuOid);
         List<Hakukohde> uudetHakukohteet = sijoitteluTyyppi.getHakukohteet().parallelStream().map(DomainConverter::convertToHakukohde).collect(Collectors.toList());
         List<Hakukohde> olemassaolevatHakukohteet = new ArrayList<>();
-
         SijoitteluAjo viimeisinSijoitteluajo = sijoittelu.getLatestSijoitteluajo();
         if (viimeisinSijoitteluajo != null) {
             for (Hakukohde hakukohde: uudetHakukohteet) {
@@ -342,20 +356,25 @@ public class SijoitteluBusinessService {
                 }
             }
         }
-
         SijoitteluAjo uusiSijoitteluajo = createErillisSijoitteluAjo(sijoittelu);
         List<Hakukohde> tamanSijoittelunHakukohteet = merge(uusiSijoitteluajo, olemassaolevatHakukohteet, uudetHakukohteet);
-        List<Valintatulos> valintatulokset = valintatulosWithVastaanotto.forHaku(hakuOid);
-        Map<String, VastaanottoDTO> kaudenAiemmatVastaanotot = aiemmanVastaanotonHakukohdePerHakija(hakuOid);
-        uusiSijoitteluajo.setStartMils(startTime);
-        SijoitteluAlgorithm.sijoittele(
-                preSijoitteluProcessors,
-                postSijoitteluProcessors,
-                SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(uusiSijoitteluajo, tamanSijoittelunHakukohteet, valintatulokset, kaudenAiemmatVastaanotot)
-        );
-        uusiSijoitteluajo.setEndMils(System.currentTimeMillis());
-        processOldApplications(olemassaolevatHakukohteet, tamanSijoittelunHakukohteet, hakuOid);
+        stopWatch.stop();
 
+        stopWatch.start("Haetaan valintatulokset vastaanottoineen");
+        List<Valintatulos> valintatulokset = valintatulosWithVastaanotto.forHaku(hakuOid);
+        stopWatch.stop();
+        stopWatch.start("Haetaan kauden aiemmat vastaanotot");
+        Map<String, VastaanottoDTO> kaudenAiemmatVastaanotot = aiemmanVastaanotonHakukohdePerHakija(hakuOid);
+        stopWatch.stop();
+
+        stopWatch.start("Luodaan sijoitteluajoWrapper");
+        final SijoitteluajoWrapper sijoitteluajoWrapper = SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(uusiSijoitteluajo, tamanSijoittelunHakukohteet, valintatulokset, kaudenAiemmatVastaanotot);
+        stopWatch.stop();
+
+        suoritaSijoittelu(startTime, stopWatch, hakuOid, uusiSijoitteluajo, sijoitteluajoWrapper);
+        processOldApplications(stopWatch, olemassaolevatHakukohteet, tamanSijoittelunHakukohteet, hakuOid);
+
+        stopWatch.start("Lisätään muut kuin tässä sijoittelussa mukana olleet hakukohteet");
         Map<String, Long> kaikkiHakukohteetJotkaOnJoskusSijoiteltuToLastSijoitteluAjoId = hakukohdeToLastSijoitteluAjoId(sijoittelu);
         final Set<String> tamanSijoittelunHakukohdeOids = tamanSijoittelunHakukohteet.stream().map(u -> u.getOid()).collect(Collectors.toSet());
         // Clone previous hakukohdes
@@ -376,11 +395,15 @@ public class SijoitteluBusinessService {
                     }
                 }
         );
-        sijoitteluDao.persistSijoittelu(sijoittelu);
+        stopWatch.stop();
+
+        persistSijoittelu(stopWatch, hakuOid, sijoittelu, uusiSijoitteluajo, maxAjoMaara * 10);
+        LOG.info(stopWatch.prettyPrint());
         return uusiSijoitteluajo.getSijoitteluajoId();
     }
 
-    private void processOldApplications(final List<Hakukohde> olemassaolevatHakukohteet, final List<Hakukohde> kaikkiHakukohteet, String hakuOid) {
+    private void processOldApplications(StopWatch stopWatch, final List<Hakukohde> olemassaolevatHakukohteet, final List<Hakukohde> kaikkiHakukohteet, String hakuOid) {
+        stopWatch.start("processOldApplications");
         Map<String, Hakemus> hakemusHashMap = getStringHakemusMap(olemassaolevatHakukohteet);
         Map<String, Valintatapajono> valintatapajonoHashMap = getStringValintatapajonoMap(olemassaolevatHakukohteet);
         kaikkiHakukohteet.parallelStream().forEach(hakukohde -> {
@@ -388,6 +411,7 @@ public class SijoitteluBusinessService {
                     hakukohdeDao.persistHakukohde(hakukohde, hakuOid);
                 }
         );
+        stopWatch.stop();
     }
 
     private Consumer<Valintatapajono> processValintatapaJono(Map<String, Valintatapajono> valintatapajonoHashMap, Map<String, Hakemus> hakemusHashMap, Hakukohde hakukohde) {
