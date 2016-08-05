@@ -26,9 +26,8 @@ public class SijoitteleHakukohde {
     }
 
     private static Set<HakukohdeWrapper> sijoitteleValintatapajono(SijoitteluajoWrapper sijoitteluAjo, ValintatapajonoWrapper valintatapajono) {
-        final boolean varasijaTayttoPaattyy = sijoitteluAjo.onkoVarasijaTayttoPaattynyt(valintatapajono);
-        // Muutetaan ehdolliset vastaanotot sitoviksi jos jonon varasijatäyttö on päättynyt
-        if (sijoitteluAjo.isKKHaku() && varasijaTayttoPaattyy) {
+        // Muutetaan ehdolliset vastaanotot sitoviksi
+        if (sijoitteluAjo.isKKHaku()) {
             muutaEhdollisetVastaanototSitoviksi(sijoitteluAjo, valintatapajono);
         }
         Set<HakukohdeWrapper> muuttuneetHakukohteet = new HashSet<>();
@@ -50,7 +49,7 @@ public class SijoitteleHakukohde {
         }
         // Hakukierros on päättynyt tai käsiteltävän jonon varasijasäännöt eivät ole enää voimassa.
         // Asetetaan kaikki hakemukset joiden tila voidaan vaihtaa tilaan peruuntunut
-        if (sijoitteluAjo.hakukierrosOnPaattynyt() || varasijaTayttoPaattyy) {
+        if (sijoitteluAjo.hakukierrosOnPaattynyt() || sijoitteluAjo.onkoVarasijaTayttoPaattynyt(valintatapajono)) {
             hakukierrosPaattynyt(valituksiHaluavatHakemukset);
             return muuttuneetHakukohteet;
         }
