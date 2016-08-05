@@ -1,19 +1,12 @@
-package fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.postsijoitteluprocessor;
+package fi.vm.sade.sijoittelu.batch.logic.impl.algorithm;
 
-import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.PrintHelper;
-import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoitteluajoWrapperFactory;
-import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoitteluAlgorithm;
-import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoittelunTila;
-import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.TestHelper;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.util.SijoitteluAlgorithmUtil;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.SijoitteluajoWrapper;
 import fi.vm.sade.sijoittelu.domain.*;
 
-import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.junit.Test;
 import static junit.framework.Assert.*;
 
-import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 
