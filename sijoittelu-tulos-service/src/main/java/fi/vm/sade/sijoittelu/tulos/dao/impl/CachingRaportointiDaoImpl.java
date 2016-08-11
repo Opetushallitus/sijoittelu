@@ -242,7 +242,7 @@ public class CachingRaportointiDaoImpl implements CachingRaportointiDao {
         private final List<CachedHaunSijoitteluAjonHakukohteet> hakukohdeCachet = new ArrayList<>();
 
         private synchronized void updateWith(String hakuOid, Hakukohde hakukohde) {
-            LOG.info("Updating hakukohde cache of haku " + hakuOid + " with hakukohde " + hakukohde.getOid());
+            LOG.debug("Updating hakukohde cache of haku " + hakuOid + " with hakukohde " + hakukohde.getOid());
             boolean foundBySijoitteluajoId = false;
             for (CachedHaunSijoitteluAjonHakukohteet c : hakukohdeCachet) {
                 foundBySijoitteluajoId = c.updateWith(hakukohde, foundBySijoitteluajoId);
@@ -278,7 +278,7 @@ public class CachingRaportointiDaoImpl implements CachingRaportointiDao {
                         List<Hakukohde> foundFilteredKohteet = filtteroidytKopiotHakemuksenHakukohteista(c.hakemusItems.get(hakemusOid));
                         long elapsed = System.currentTimeMillis() - start;
                         if (elapsed > 100) {
-                            LOG.info(String.format("Retrieving hakuOid / sijoitteluAjoId / hakemusOid %s / %s / %s took %s milliseconds",
+                            LOG.warn(String.format("Retrieving hakuOid / sijoitteluAjoId / hakemusOid %s / %s / %s took %s milliseconds",
                                 hakuOid, sijoitteluAjoId, hakemusOid, elapsed));
                         }
                         return Optional.of(foundFilteredKohteet);
