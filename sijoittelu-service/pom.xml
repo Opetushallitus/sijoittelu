@@ -129,18 +129,6 @@
 					<artifactId>jackson-xc</artifactId>
 				</exclusion>
 				<exclusion>
-					<groupId>com.sun.jersey</groupId>
-					<artifactId>jersey-server</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>com.sun.jersey</groupId>
-					<artifactId>jersey-json</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>com.sun.jersey.contribs</groupId>
-					<artifactId>jersey-spring</artifactId>
-				</exclusion>
-				<exclusion>
 					<groupId>com.wordnik</groupId>
 					<artifactId>swagger-jersey-jaxrs_2.11</artifactId>
 				</exclusion>
@@ -330,6 +318,20 @@
         <dependency>
             <groupId>fi.vm.sade.tarjonta</groupId>
             <artifactId>tarjonta-api</artifactId>
+            <exclusions>
+                <exclusion>
+                    <artifactId>swagger-jaxrs_2.10</artifactId>
+                    <groupId>com.wordnik</groupId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.springframework</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.cxf</groupId>
+                    <artifactId>cxf-bundle</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 		<dependency>
 			<groupId>org.hibernate</groupId>
