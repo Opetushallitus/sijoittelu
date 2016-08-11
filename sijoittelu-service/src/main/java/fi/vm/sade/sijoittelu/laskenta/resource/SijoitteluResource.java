@@ -62,7 +62,6 @@ public class SijoitteluResource {
         final Map<String, HakijaryhmaValintatapajonoDTO> hakijaryhmaByOid = haeMahdollisestiMuuttuneetHakijaryhmat(haku);
         final Map<String, Map<String, ValintatapajonoDTO>> hakukohdeMapToValintatapajonoByOid = Maps.newHashMap(haeMahdollisestiMuuttuneetValintatapajonot(haku));
 
-        List<String> kaikkiaJonojaEiOleSijoiteltu = new ArrayList<>();
         haku.getHakukohteet().forEach(hakukohde -> {
             updateHakijaRyhmat(hakijaryhmaByOid, hakukohde);
             Map<String, ValintatapajonoDTO> valintatapajonoByOid = hakukohdeMapToValintatapajonoByOid.getOrDefault(hakukohde.getOid(), new HashMap<>());
@@ -70,11 +69,10 @@ public class SijoitteluResource {
                 updateValintatapajonotAndRemoveUsed(valintatapajonoByOid, vaihe);
             });
             if (!valintatapajonoByOid.isEmpty()) {
-                kaikkiaJonojaEiOleSijoiteltu.add(hakukohde.getOid());
+                LOGGER.warn("Kaikkia jonoja ei ole sijoiteltu {} hakukohteessa {}: {}", hakuOid, hakukohde.getOid(), valintatapajonoByOid.keySet());
                 hakukohde.setKaikkiJonotSijoiteltu(false);
             }
         });
-        LOGGER.warn("Kaikkia jonoja ei ole sijoiteltu: {}", kaikkiaJonojaEiOleSijoiteltu);
         LOGGER.info("Valintaperusteet asetettu {}!", hakuOid);
 
         try {
@@ -156,7 +154,7 @@ public class SijoitteluResource {
                 LOGGER.error("Hakijaryhmien hakeminen epäonnistui virheeseen!", e);
                 throw e;
             }
-            LOGGER.info("Saatiin hakukohteille {} yhteensä {} aktiivista hakijaryhmää", Arrays.toString(hakukohdeOidsWithHakijaryhma.toArray()),
+            LOGGER.info("Saatiin haun {} {}:lle hakukohteelle yhteensä {} aktiivista hakijaryhmää", haku.getHakuOid(), haku.getHakukohteet().size(),
                     hakijaryhmaByOid.size());
         }
         return hakijaryhmaByOid;
@@ -172,7 +170,7 @@ public class SijoitteluResource {
                 .map(hakukohde -> hakukohde.getOid()).collect(toSet());
 
         if (!hakukohdeOidsWithAktiivisetJonot.isEmpty()) {
-            LOGGER.info("Haetaan valintatapajonoja sijoittelua varten haulle {} ja hakukohteille {}", haku.getHakuOid(), Arrays.toString(hakukohdeOidsWithAktiivisetJonot.toArray()));
+            LOGGER.info("Haetaan valintatapajonoja sijoittelua varten haun {} {}:lle hakukohteelle", haku.getHakuOid(), hakukohdeOidsWithAktiivisetJonot.size());
             try {
                 return valintalaskentakoostepalveluResource.haeValintatapajonotSijoittelulle(Lists.newArrayList(hakukohdeOidsWithAktiivisetJonot))
                         .entrySet()
