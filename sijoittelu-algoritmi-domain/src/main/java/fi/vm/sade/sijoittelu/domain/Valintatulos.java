@@ -10,12 +10,13 @@ import java.util.*;
 
 @Entity("Valintatulos")
 @Indexes({
-        @Index(value = "hakukohdeOid, valintatapajonoOid, hakemusOid", unique = true),
-        @Index("hakukohdeOid, valintatapajonoOid"),
-        @Index("hakukohdeOid"),
-        @Index("hakemusOid"),
-        @Index("hakuOid, julkaistavissa, mailStatus.sent, mailStatus.previousCheck"),
-        @Index("hakuOid")
+        @Index(fields = {@Field("hakukohdeOid"), @Field("valintatapajonoOid"), @Field("hakemusOid")},
+                options = @IndexOptions(unique = true)),
+        @Index(fields = {@Field("hakukohdeOid"), @Field("valintatapajonoOid")}),
+        @Index(fields = {@Field("hakukohdeOid")}),
+        @Index(fields = {@Field("hakemusOid")}),
+        @Index(fields = {@Field("hakuOid"), @Field("julkaistavissa"), @Field("mailStatus.sent"), @Field("mailStatus.previousCheck")}),
+        @Index(fields = {@Field("hakuOid")})
 })
 public class Valintatulos implements Serializable {
 

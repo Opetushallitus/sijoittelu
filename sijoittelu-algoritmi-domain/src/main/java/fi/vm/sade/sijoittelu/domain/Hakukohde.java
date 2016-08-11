@@ -8,11 +8,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity("Hakukohde")
-@Indexes( {
-        @Index("oid, sijoitteluajoId"),
-        @Index("sijoitteluajoId"),
-        @Index("sijoitteluajoId, valintatapajonot.hakemukset.hakemusOid")}
-)
+@Indexes({
+        @Index(fields = {@Field("oid"), @Field("sijoitteluajoId")}),
+        @Index(fields = {@Field("sijoitteluajoId")}),
+        @Index(fields = {@Field("sijoitteluajoId"), @Field("valintatapajonot.hakemukset.hakemusOid")})
+})
 public class Hakukohde implements Serializable {
     @Id
     private ObjectId id;
