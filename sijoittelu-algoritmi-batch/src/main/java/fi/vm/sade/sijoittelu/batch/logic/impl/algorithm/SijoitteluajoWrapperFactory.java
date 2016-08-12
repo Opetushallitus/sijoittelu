@@ -205,7 +205,7 @@ public class SijoitteluajoWrapperFactory {
         } else if (hakemus.getTila().equals(HakemuksenTila.HYLATTY)) {
             hakemusWrapper.setTilaVoidaanVaihtaa(false);
         } else if (aiempiVastaanottoSamalleKaudelle.isPresent()) {
-            LOG.info("Ei muutettu hakemuksen tilaa aiemman saman kauden vastaanoton perusteella. " +
+            LOG.warn("Ei muutettu hakemuksen tilaa aiemman saman kauden vastaanoton perusteella. " +
                     "Hakukohde: {}, valintatapajono: {}, hakemus: {}, hakemuksen tila: {}, " +
                     "hakemuksen edellinen tila: {}, vastaanoton tila: {}, aiemmin vastaanotettu hakukohde: {} {},",
                     hakemusWrapper.getValintatapajono().getHakukohdeWrapper().getHakukohde().getOid(),
