@@ -9,7 +9,10 @@ import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoitteluajoWrapperFact
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoitteluAlgorithm;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoittelunTila;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.util.SijoitteluAlgorithmUtil;
+import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.HakijaryhmaWrapper;
+import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.HakukohdeWrapper;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.SijoitteluajoWrapper;
+import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.ValintatapajonoWrapper;
 import fi.vm.sade.sijoittelu.domain.*;
 import fi.vm.sade.valintalaskenta.domain.dto.valintatieto.HakuDTO;
 import fi.vm.sade.valintalaskenta.tulos.service.impl.ValintatietoService;
@@ -27,8 +30,10 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -134,6 +139,7 @@ public class HakijaryhmaTest {
         HakuDTO haku = valintatietoService.haeValintatiedot("1.2.246.562.29.173465377510");
 
         List<Hakukohde> hakukohteet = haku.getHakukohteet().parallelStream().map(DomainConverter::convertToHakukohde).collect(Collectors.toList());
+
         final SijoitteluajoWrapper sijoitteluAjo = SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(new SijoitteluAjo(), hakukohteet, Collections.<Valintatulos>newArrayList(), java.util.Collections.emptyMap());
         sijoitteluAjo.setKaikkiKohteetSijoittelussa(LocalDateTime.now().plusDays(10));
         SijoittelunTila s = SijoitteluAlgorithmUtil.sijoittele(sijoitteluAjo);
@@ -199,6 +205,53 @@ public class HakijaryhmaTest {
         Assert.assertEquals(0, hyvaksytyt.size());
 
 
+    }
+
+    @Test
+    @UsingDataSet(locations = "hakijaryhma_varasijasaannot_paattyneet.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
+    public void testSijoitteluVarasijaSaannotPaattyneet() throws IOException {
+
+        HakuDTO haku = valintatietoService.haeValintatiedot("1.2.246.562.29.173465377510");
+        List<Hakukohde> hakukohteet = haku.getHakukohteet().parallelStream().map(DomainConverter::convertToHakukohde).collect(Collectors.toList());
+
+        final SijoitteluajoWrapper sijoitteluAjo = SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(new SijoitteluAjo(), hakukohteet, Collections.newArrayList(), java.util.Collections.emptyMap());
+        sijoitteluAjo.setKaikkiKohteetSijoittelussa(LocalDateTime.now().plusDays(10));
+
+        /**
+         * Luodaan alkutilanne:
+         *
+         * valintatapajono1: A (HYVÄKSYTTY), B (VARALLA)
+         * valintatapajono2: C (HYVÄKSYTTY), D (VARALLA)
+         */
+        SijoittelunTila s = SijoitteluAlgorithmUtil.sijoittele(sijoitteluAjo);
+        System.out.println(tulostaSijoittelu(s));
+
+        assertoiAinoastaanValittu(hakukohteet.get(0).getValintatapajonot().get(0), "A");
+        assertoiAinoastaanValittu(hakukohteet.get(0).getValintatapajonot().get(1), "C");
+
+        /**
+         * Muokataan kiintiöitä, että B ja D uudelleen sijoitellaan. Lisäksi
+         * lisätään ensimmäiselle valintatapajonolle varasijatäyttö päättyneeksi,
+         * joten D tulisi ainoastaan hyväksyä tässä sijoittelussa.
+         */
+        s.sijoitteluAjo.getHakukohteet().stream()
+                .flatMap(hk -> hk.getHakijaryhmaWrappers().stream())
+                .map(HakijaryhmaWrapper::getHakijaryhma)
+                .forEach(hk -> hk.setKiintio(4));
+        s.sijoitteluAjo.getHakukohteet().forEach(hk -> {
+            List<Valintatapajono> valintatapajonot = hk.getValintatapajonot().stream().map(ValintatapajonoWrapper::getValintatapajono).collect(Collectors.toList());
+            valintatapajonot.forEach(vtj -> vtj.setAloituspaikat(2));
+            valintatapajonot.stream().filter(v -> v.getNimi().equals("valintatapajono1")).forEach(v -> {
+                Date kolmePaivaaSitten = Date.from(LocalDateTime.now().minusDays(3L).atZone(ZoneId.systemDefault()).toInstant());
+                v.setVarasijojaTaytetaanAsti(kolmePaivaaSitten);
+            });
+        });
+
+        SijoittelunTila s2 = SijoitteluAlgorithmUtil.sijoittele(s.sijoitteluAjo);
+        System.out.println(tulostaSijoittelu(s2));
+
+        assertoiAinoastaanValittu(hakukohteet.get(0).getValintatapajonot().get(0), "A");
+        assertoiAinoastaanValittu(hakukohteet.get(0).getValintatapajonot().get(1), "C", "D");
     }
 
     public final static void assertoiAinoastaanValittu(Valintatapajono h, String... oids) {

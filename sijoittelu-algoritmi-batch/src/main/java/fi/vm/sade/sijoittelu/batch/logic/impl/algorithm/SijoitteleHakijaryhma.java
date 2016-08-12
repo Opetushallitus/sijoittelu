@@ -18,6 +18,7 @@ import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.SijoitteluajoWr
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.ValintatapajonoWrapper;
 import fi.vm.sade.sijoittelu.domain.HakemuksenTila;
 import fi.vm.sade.sijoittelu.domain.Tasasijasaanto;
+import fi.vm.sade.sijoittelu.domain.Valintatapajono;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -50,7 +51,8 @@ public class SijoitteleHakijaryhma {
         if (tarkkaKiintio && hyvaksyttyjenMaara >= kiintio) {
             asetaEiHyvaksyttavissaHakijaryhmanJalkeen(sijoitteluAjo, ryhmaanKuuluvat);
         } else if (hyvaksyttyjenMaara < kiintio) {
-            kasitteleValituksiHaluavat(sijoitteluAjo, hakijaryhmaWrapper, liittyvatJonot, ryhmaanKuuluvat, muuttuneet, muuttuneetHakemukset);
+            final List<ValintatapajonoWrapper> liittyvatJonotVarasijatayttoVoimassa = liittyvatJonot.stream().filter(vtj -> !sijoitteluAjo.onkoVarasijaTayttoPaattynyt(vtj)).collect(Collectors.toList());
+            kasitteleValituksiHaluavat(sijoitteluAjo, hakijaryhmaWrapper, liittyvatJonotVarasijatayttoVoimassa, ryhmaanKuuluvat, muuttuneet, muuttuneetHakemukset);
         }
         muuttuneet.addAll(SijoitteleHakukohde.uudelleenSijoiteltavatHakukohteet(muuttuneetHakemukset));
         return muuttuneet;
@@ -83,8 +85,10 @@ public class SijoitteleHakijaryhma {
     }
 
     private static void kasitteleValituksiHaluavat(SijoitteluajoWrapper sijoitteluAjo, HakijaryhmaWrapper hakijaryhmaWrapper, List<ValintatapajonoWrapper> liittyvatJonot, List<HakemusWrapper> ryhmaanKuuluvat, Set<HakukohdeWrapper> muuttuneet, List<HakemusWrapper> muuttuneetHakemukset) {
+        List<Valintatapajono> valintatapajonot = liittyvatJonot.stream().map(ValintatapajonoWrapper::getValintatapajono).collect(Collectors.toList());
         List<HakemusWrapper> valituksiHaluavat = ryhmaanKuuluvat
                 .stream()
+                .filter(h -> valintatapajonot.contains(h.getValintatapajono().getValintatapajono())) // Varmistetaan, että hakemuksen valintatapajonon varasijasäännöt täyttyvät
                 .filter(h -> hakemuksenTila(h).equals(HakemuksenTila.VARALLA))
                 .filter(h -> SijoitteleHakukohde.hakijaHaluaa(h) && SijoitteleHakukohde.saannotSallii(sijoitteluAjo, h))
                 .collect(Collectors.toList());
