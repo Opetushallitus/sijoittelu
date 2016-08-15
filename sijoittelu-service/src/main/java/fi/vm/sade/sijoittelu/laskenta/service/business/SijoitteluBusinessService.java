@@ -231,6 +231,8 @@ public class SijoitteluBusinessService {
                 hakuOid, sijoitteluAjo.isKKHaku(), sijoitteluAjo.getKaikkiKohteetSijoittelussa(), sijoitteluAjo.getHakuKierrosPaattyy(), sijoitteluAjo.getVarasijaSaannotAstuvatVoimaan(), sijoitteluAjo.varasijaSaannotVoimassa());
     }
 
+
+
     private void setParametersFromTarjonta(String hakuOid, SijoitteluajoWrapper sijoitteluAjo) {
         try {
             ParametriDTO parametri = tarjontaIntegrationService.getHaunParametrit(hakuOid);
@@ -372,6 +374,7 @@ public class SijoitteluBusinessService {
 
         stopWatch.start("Luodaan sijoitteluajoWrapper");
         final SijoitteluajoWrapper sijoitteluajoWrapper = SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(uusiSijoitteluajo, tamanSijoittelunHakukohteet, valintatulokset, kaudenAiemmatVastaanotot);
+        asetaSijoittelunParametrit(hakuOid, sijoitteluajoWrapper);
         stopWatch.stop();
 
         suoritaSijoittelu(startTime, stopWatch, hakuOid, uusiSijoitteluajo, sijoitteluajoWrapper);
