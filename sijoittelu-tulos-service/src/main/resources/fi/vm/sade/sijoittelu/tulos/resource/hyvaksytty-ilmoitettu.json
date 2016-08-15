@@ -49,6 +49,26 @@
                                 }
                             ],
                             "hyvaksyttyHarkinnanvaraisesti": false
+                        },
+                        {
+                            "hakijaOid": "1.2.246.562.24.14229104474",
+                            "hakemusOid": "1.2.246.562.11.00000441370",
+                            "etunimi": "Simo",
+                            "sukunimi": "Testaaja",
+                            "prioriteetti": 1,
+                            "jonosija": 2,
+                            "pisteet": "5",
+                            "tasasijaJonosija": 2,
+                            "tila": "HYLATTY",
+                            "tilaHistoria": [
+                                {
+                                    "luotu": {
+                                        "$date": "2014-08-26T15:12:40.623Z"
+                                    },
+                                    "tila": "HYLATTY"
+                                }
+                            ],
+                            "hyvaksyttyHarkinnanvaraisesti": false
                         }
                     ]
                 }

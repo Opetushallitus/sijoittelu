@@ -48,31 +48,37 @@ public class SijoitteluResourceTest {
     public void resultForApplication() throws JsonProcessingException {
         HakijaDTO hakemus = sijoitteluResource.hakemus(hakuOid, sijoitteluAjoId, hakemusOid);
         assertEquals("Teppo", hakemus.getEtunimi());
-        assertEquals(hakijaAsString, objectMapper.writeValueAsString(hakemus));
+        assertEquals(2, (int)hakemus.getHakutoiveet().iterator().next().getHakutoiveenValintatapajonot().iterator().next().getHakeneet());
     }
 
     @Test
     @UsingDataSet(locations = {"sijoittelu-basedata.json", "hyvaksytty-ilmoitettu.json"}, loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
     public void hyvaksytytHakukohteeseen() throws JsonProcessingException {
-        verifyHakemus(sijoitteluResource.hyvaksytytHakukohteeseen(hakuOid, hakukohde).getResults());
+        List<HakijaDTO> results = sijoitteluResource.hyvaksytytHakukohteeseen(hakuOid, hakukohde).getResults();
+        assertEquals(1, results.size());
+        assertEquals("Teppo", results.iterator().next().getEtunimi());
     }
 
     @Test
     @UsingDataSet(locations = {"sijoittelu-basedata.json", "hyvaksytty-ilmoitettu.json"}, loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
     public void hakemuksetVainHyvaksytytHakukohteelle() throws JsonProcessingException {
-        verifyHakemus(sijoitteluResource.hakemukset(hakuOid, "latest", true, null, null, asList(hakukohde), null, null).getResults());
+        List<HakijaDTO> results = sijoitteluResource.hakemukset(hakuOid, "latest", true, null, null, asList(hakukohde), null, null).getResults();
+        assertEquals(1, results.size());
+        assertEquals("Teppo", results.iterator().next().getEtunimi());
     }
 
     @Test
     @UsingDataSet(locations = {"sijoittelu-basedata.json", "hyvaksytty-ilmoitettu.json"}, loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
     public void hakemuksetVainIlmanhyvaksyntaa() throws JsonProcessingException {
-        assertEquals(0, sijoitteluResource.hakemukset(hakuOid, "latest", null, true, null, null, null, null).getResults().size());
+        assertEquals(1, sijoitteluResource.hakemukset(hakuOid, "latest", null, true, null, null, null, null).getResults().size());
     }
 
     @Test
     @UsingDataSet(locations = {"sijoittelu-basedata.json", "hyvaksytty-ilmoitettu.json"}, loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
     public void hakemuksetKaikilleHakukohteelle() throws JsonProcessingException {
-        verifyHakemus(sijoitteluResource.hakemukset(hakuOid, "latest", true, null, null, null, null, null).getResults());
+        List<HakijaDTO> results = sijoitteluResource.hakemukset(hakuOid, "latest", true, null, null, null, null, null).getResults();
+        assertEquals(1, results.size());
+        assertEquals("Teppo", results.iterator().next().getEtunimi());
     }
 
     @Test
@@ -84,7 +90,10 @@ public class SijoitteluResourceTest {
     @Test
     @UsingDataSet(locations = {"sijoittelu-basedata.json", "hyvaksytty-ilmoitettu.json"}, loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
     public void hakemuksetTietylleSijoitteluajolle() throws JsonProcessingException {
-        verifyHakemus(sijoitteluResource.hakemukset(hakuOid, "1409055160621", true, null, null, null, null, null).getResults());
+        List<HakijaDTO> results =
+                sijoitteluResource.hakemukset(hakuOid, "1409055160621", true, null, null, null, null, null).getResults();
+        assertEquals(1, results.size());
+        assertEquals("Teppo", results.iterator().next().getEtunimi());
     }
 
     @Test
@@ -104,11 +113,6 @@ public class SijoitteluResourceTest {
     @UsingDataSet(locations = {"sijoittelu-basedata.json", "hyvaksytty-ilmoitettu.json"}, loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
     public void testValintatapajonoInUseWhenSijoitteluHasNotBeenExecuted() {
         assertEquals(false, sijoitteluResource.isValintapajonoInUse("nonExistingHaku", "14090336922663576781797489829886"));
-    }
-
-    private void verifyHakemus(final List<HakijaDTO> hakijat) throws JsonProcessingException {
-        assertEquals(1, hakijat.size());
-        assertEquals(hakijatAsString, objectMapper.writeValueAsString(hakijat));
     }
 
 }
