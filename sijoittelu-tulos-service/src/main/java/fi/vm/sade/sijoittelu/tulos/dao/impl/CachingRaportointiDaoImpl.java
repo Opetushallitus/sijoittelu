@@ -216,6 +216,7 @@ public class CachingRaportointiDaoImpl implements CachingRaportointiDao {
 
         private void updateHakemusCacheWith(Hakukohde newKohde) {
             for (Valintatapajono newJono : newKohde.getValintatapajonot()) {
+                newJono.setHakemustenMaara(newJono.getHakemukset().size());
                 for (Hakemus newHakemus : newJono.getHakemukset()) {
                     hakemusItems.compute(newHakemus.getHakemusOid(), (k, hakemusCacheObjects) -> {
                         if (hakemusCacheObjects == null) {
