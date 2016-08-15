@@ -4,6 +4,7 @@ import fi.vm.sade.sijoittelu.domain.converter.BigDecimalConverter;
 import org.mongodb.morphia.annotations.Converters;
 import org.mongodb.morphia.annotations.Embedded;
 import org.mongodb.morphia.annotations.Indexed;
+import org.mongodb.morphia.annotations.Transient;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -54,8 +55,19 @@ public class Valintatapajono implements Serializable {
 
     private Boolean valintaesitysHyvaksytty;
 
+    @Transient
+    private Integer hakemustenMaara;
+
     @Embedded
     private List<Hakemus> hakemukset = new ArrayList<Hakemus>();
+
+    public Integer getHakemustenMaara() {
+        return hakemustenMaara;
+    }
+
+    public void setHakemustenMaara(Integer hakemustenMaara) {
+        this.hakemustenMaara = hakemustenMaara;
+    }
 
     public ValintatapajonoTila getTila() {
         return tila;
