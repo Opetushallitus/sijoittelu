@@ -63,6 +63,7 @@ public class SijoitteluTulosConverterImpl implements SijoitteluTulosConverter {
     private ValintatapajonoDTO convert(Valintatapajono valintatapajono,
                                        Hakukohde hakukohde) {
         ValintatapajonoDTO dto = new ValintatapajonoDTO();
+        dto.setHakeneet(countHakeneet(valintatapajono));
         dto.setAloituspaikat(valintatapajono.getAloituspaikat());
         dto.setAlkuperaisetAloituspaikat(valintatapajono.getAlkuperaisetAloituspaikat());
         dto.setEiVarasijatayttoa(valintatapajono.getEiVarasijatayttoa());
@@ -87,6 +88,11 @@ public class SijoitteluTulosConverterImpl implements SijoitteluTulosConverter {
         dto.setVaralla(valintatapajono.getVaralla());
         sortHakemukset(dto);
         return dto;
+    }
+
+    private Integer countHakeneet(Valintatapajono valintatapajono) {
+        List<Hakemus> hakemuses = Optional.ofNullable(valintatapajono.getHakemukset()).orElse(Collections.emptyList());
+        return Optional.ofNullable(valintatapajono.getHakemustenMaara()).orElse(hakemuses.size());
     }
 
     private HakemusDTO convert(Hakemus ha, Valintatapajono valintatapajono, Hakukohde hakukohde) {
@@ -194,10 +200,6 @@ public class SijoitteluTulosConverterImpl implements SijoitteluTulosConverter {
     @Override
     public void sortHakemukset(ValintatapajonoDTO valintatapajonoDTO) {
         Collections.sort(valintatapajonoDTO.getHakemukset(), hakemusDTOComparator);
-        valintatapajonoDTO.setHakeneet(getCount(valintatapajonoDTO));
     }
 
-    private int getCount(ValintatapajonoDTO dto) {
-        return dto.getHakemukset().size();
-    }
 }

@@ -55,7 +55,6 @@ public class Valintatapajono implements Serializable {
 
     private Boolean valintaesitysHyvaksytty;
 
-    @Transient
     private Integer hakemustenMaara;
 
     @Embedded
