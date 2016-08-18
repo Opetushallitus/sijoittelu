@@ -1,9 +1,7 @@
 package fi.vm.sade.sijoittelu.domain;
 
-import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.mongodb.morphia.annotations.Embedded;
-import org.mongodb.morphia.annotations.Id;
-import org.bson.types.ObjectId;
 
 import java.io.Serializable;
 import java.util.Date;

@@ -2,8 +2,8 @@ package fi.vm.sade.sijoittelu.laskenta.resource;
 
 import akka.pattern.Patterns;
 import akka.util.Timeout;
-import com.wordnik.swagger.annotations.Api;
-import com.wordnik.swagger.annotations.ApiOperation;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import fi.vm.sade.service.valintaperusteet.dto.ValintatapajonoDTO;
 import fi.vm.sade.service.valintaperusteet.resource.ValintalaskentakoostepalveluResource;
 import fi.vm.sade.sijoittelu.laskenta.service.business.ActorService;

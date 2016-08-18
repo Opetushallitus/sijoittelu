@@ -2,8 +2,8 @@ package fi.vm.sade.sijoittelu.laskenta.resource;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.wordnik.swagger.annotations.Api;
-import com.wordnik.swagger.annotations.ApiOperation;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import fi.vm.sade.service.valintaperusteet.dto.HakijaryhmaValintatapajonoDTO;
 import fi.vm.sade.service.valintaperusteet.dto.ValintatapajonoDTO;
 import fi.vm.sade.service.valintaperusteet.resource.ValintalaskentakoostepalveluResource;

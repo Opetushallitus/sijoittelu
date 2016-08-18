@@ -1,8 +1,8 @@
 package fi.vm.sade.sijoittelu.tulos.resource;
 
-import com.wordnik.swagger.annotations.Api;
-import com.wordnik.swagger.annotations.ApiOperation;
-import com.wordnik.swagger.annotations.ApiParam;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import fi.vm.sade.sijoittelu.tulos.dto.HakukohdeDTO;
 
 import javax.ws.rs.*;
