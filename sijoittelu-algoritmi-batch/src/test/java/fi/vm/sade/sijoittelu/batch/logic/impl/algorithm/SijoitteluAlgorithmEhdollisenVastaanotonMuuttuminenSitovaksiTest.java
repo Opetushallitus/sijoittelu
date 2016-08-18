@@ -8,8 +8,8 @@ import org.junit.Test;
 import java.util.Collections;
 import java.util.List;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class SijoitteluAlgorithmEhdollisenVastaanotonMuuttuminenSitovaksiTest {
     List<Hakukohde> hakukohdeList = TestHelper.readHakukohteetListFromJson("testdata/sijoittelu_hakukohde_ylemman_hakukohteen_vastaanotto_paattynyt.json");

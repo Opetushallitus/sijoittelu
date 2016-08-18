@@ -15,7 +15,7 @@ import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.SijoitteluajoWr
 import fi.vm.sade.sijoittelu.domain.*;
 import fi.vm.sade.valintalaskenta.domain.dto.valintatieto.HakuDTO;
 import fi.vm.sade.valintalaskenta.tulos.service.impl.ValintatietoService;
-import junit.framework.Assert;
+import org.junit.Assert;
 import org.apache.commons.lang3.time.DateUtils;
 import org.junit.Ignore;
 import org.junit.Rule;

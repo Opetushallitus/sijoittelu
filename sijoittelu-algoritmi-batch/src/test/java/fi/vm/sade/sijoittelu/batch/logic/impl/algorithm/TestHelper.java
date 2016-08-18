@@ -8,7 +8,7 @@ import com.google.common.collect.Sets;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.SijoitteluajoWrapper;
 import fi.vm.sade.sijoittelu.domain.*;
 import fi.vm.sade.valintalaskenta.domain.dto.valintatieto.HakuDTO;
-import junit.framework.Assert;
+import org.junit.Assert;
 
 import java.util.*;
 import java.util.function.Function;
