@@ -184,7 +184,7 @@ public class SijoitteluajoWrapperFactory {
                     } else {
                         hyvaksyVarasijalta(hakemus, valintatulos);
                     }
-                } else if (HakemuksenTila.PERUUNTUNUT == hakemus.getEdellinenTila() && valintatulos.getHyvaksyPeruuntunut()) {
+                } else if (valintatulos.getHyvaksyPeruuntunut()) {
                     if (hasHigherJulkaistuHyvaksytty(hakukohdeWrapper, hakemusWrapper)) {
                         voidaanVaihtaa = true;
                         logDidNotHyvaksy(hakemusWrapper, tila, "hyvaksyPeruuntunut");
