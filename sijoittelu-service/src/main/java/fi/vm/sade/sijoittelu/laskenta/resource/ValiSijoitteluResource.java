@@ -30,6 +30,7 @@ import javax.annotation.PreDestroy;
 import javax.ws.rs.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static fi.vm.sade.sijoittelu.laskenta.actors.creators.SpringExtension.SpringExtProvider;
 import static fi.vm.sade.valintalaskenta.tulos.roles.ValintojenToteuttaminenRole.CRUD;
@@ -78,7 +79,7 @@ public class ValiSijoitteluResource {
     @ApiOperation(value = "Välisijoittelun suorittaminen")
     public List<HakukohdeDTO> sijoittele(@PathParam("hakuOid") String hakuOid, ValisijoitteluDTO hakukohteet) {
         LOGGER.info("Valintatietoja valmistetaan valisijottelulle haussa {}", hakuOid);
-        HakuDTO haku = valintatietoService.haeValintatiedotJonoille(hakuOid, hakukohteet.getHakukohteet());
+        HakuDTO haku = valintatietoService.haeValintatiedotJonoille(hakuOid, hakukohteet.getHakukohteet(), Optional.empty());
 
         // Asetetaan välisijoittelun vaatimat valintaperusteet
         haku.getHakukohteet().forEach(hakukohde -> {
