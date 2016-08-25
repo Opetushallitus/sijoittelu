@@ -1,14 +1,12 @@
 package fi.vm.sade.sijoittelu.tulos.resource;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-import fi.vm.sade.sijoittelu.tulos.dto.HakukohdeDTO;
-
-import javax.ws.rs.*;
-import javax.ws.rs.core.Response;
-
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
+
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.Response;
 
 /**
  *         Autentikointi annotaatiot implementaatiossa!
