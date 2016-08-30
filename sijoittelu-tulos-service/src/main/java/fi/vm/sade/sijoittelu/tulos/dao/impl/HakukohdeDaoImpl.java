@@ -123,10 +123,10 @@ public class HakukohdeDaoImpl implements HakukohdeDao {
         };
     }
 
+
     private List fetchHakukohteenHakemusOids(Long sijoitteluajoId, String hakukohdeOid) {
-        return morphiaDS.getDB().getCollection("Hakukohde")
-                .distinct("valintatapajonot.hakemukset.hakemusOid",
-                        BasicDBObjectBuilder.start("sijoitteluajoId", sijoitteluajoId).add("oid", hakukohdeOid).get());
+        // Query is too slow. Distinct + snapshot is not supported feature. Fix if needed.
+        return Collections.emptyList();
     }
 
     private Map<String, KevytHakukohdeDTO> fetchKevytHakukohdeDTOsWithoutHakemukset(Long sijoitteluajoId, List<String> hakemusOids) {
