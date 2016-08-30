@@ -7,6 +7,6 @@ import java.io.IOException;
 
 public class MongodV3ForTestsFactory extends MongodForTestsFactory {
     public MongodV3ForTestsFactory() throws IOException {
-        super(Version.Main.V2_4);
+        super(Version.Main.V3_0);
     }
 }
