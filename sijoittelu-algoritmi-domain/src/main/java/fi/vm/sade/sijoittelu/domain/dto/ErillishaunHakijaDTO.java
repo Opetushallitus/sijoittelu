@@ -9,6 +9,7 @@ import fi.vm.sade.sijoittelu.domain.ValintatuloksenTila;
 import fi.vm.sade.sijoittelu.domain.Valintatulos;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 
 @ApiModel("Erillishaunhakija")
@@ -45,6 +46,9 @@ public class ErillishaunHakijaDTO {
     public Date hyvaksymiskirjeLahetetty;
 
     public boolean poistetaankoTulokset = false;
+
+    @ApiModelProperty(value = "Hakemuksen tilankuvaukset", required = false)
+    public List<String> tilanKuvaukset;
 
     public ErillishaunHakijaDTO(
             String              valintatapajonoOid,

@@ -9,15 +9,8 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 
 import fi.vm.sade.generic.service.exception.NotAuthorizedException;
-import fi.vm.sade.sijoittelu.domain.HakemuksenTila;
-import fi.vm.sade.sijoittelu.domain.Hakemus;
-import fi.vm.sade.sijoittelu.domain.Hakukohde;
-import fi.vm.sade.sijoittelu.domain.HakukohdeItem;
-import fi.vm.sade.sijoittelu.domain.Sijoittelu;
-import fi.vm.sade.sijoittelu.domain.SijoitteluAjo;
-import fi.vm.sade.sijoittelu.domain.TilaHistoria;
-import fi.vm.sade.sijoittelu.domain.Valintatapajono;
-import fi.vm.sade.sijoittelu.domain.Valintatulos;
+import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.util.TilanKuvaukset;
+import fi.vm.sade.sijoittelu.domain.*;
 import fi.vm.sade.sijoittelu.domain.dto.ErillishaunHakijaDTO;
 import fi.vm.sade.sijoittelu.laskenta.service.business.IllegalVTSRequestException;
 import fi.vm.sade.sijoittelu.laskenta.service.business.PriorAcceptanceException;
@@ -36,24 +29,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Controller
@@ -301,7 +281,8 @@ public class TilaResource {
                             e.tarjoajaOid, e.hakuOid,
                             e.hakukohdeOid, e.hakemusOid,
                             e.hakemuksenTila, Optional.empty(), Optional.ofNullable(e.valintatapajonoOid),
-                            Optional.ofNullable(e.etunimi), Optional.ofNullable(e.sukunimi)));
+                            Optional.ofNullable(e.etunimi), Optional.ofNullable(e.sukunimi),
+                            Optional.ofNullable(e.getValintatuloksenTila())));
 
 
             ryhmitelty.getOrDefault(false, new ArrayList<>())
@@ -365,7 +346,8 @@ public class TilaResource {
                             String tarjoajaOid, String hakuOid, String hakukohdeOid, String hakemusOid,
                             HakemuksenTila tila, Optional<List<String>> tilanKuvaukset,
                             Optional<String> valintatapajonoOid,
-                            Optional<String> etunimi, Optional<String> sukunimi) {
+                            Optional<String> etunimi, Optional<String> sukunimi,
+                            Optional<ValintatuloksenTila> valintatuloksenTila) {
         Sijoittelu sijoittelu = sijoitteluDao.getSijoitteluByHakuOid(hakuOid).orElseGet(() -> {
             Sijoittelu s = new Sijoittelu();
             s.setCreated(new Date());
@@ -424,13 +406,18 @@ public class TilaResource {
         }
         hakemus.setTila(tila);
         hakemus.getTilaHistoria().add(new TilaHistoria(tila));
-        tilanKuvaukset.ifPresent(kuvaukset -> {
-            if (kuvaukset.size() == 3) {
-                hakemus.getTilanKuvaukset().put("FI", kuvaukset.get(0));
-                hakemus.getTilanKuvaukset().put("SV", kuvaukset.get(1));
-                hakemus.getTilanKuvaukset().put("EN", kuvaukset.get(2));
+        if (tilanKuvaukset.isPresent()) {
+            if (tilanKuvaukset.get().size() == 3) {
+                hakemus.getTilanKuvaukset().put("FI", tilanKuvaukset.get().get(0));
+                hakemus.getTilanKuvaukset().put("SV", tilanKuvaukset.get().get(1));
+                hakemus.getTilanKuvaukset().put("EN", tilanKuvaukset.get().get(2));
             }
-        });
+        } else if (valintatuloksenTila.isPresent() && valintatuloksenTila.get().equals(ValintatuloksenTila.OTTANUT_VASTAAN_TOISEN_PAIKAN)) {
+            hakemus.setTilanKuvaukset(TilanKuvaukset.peruuntunutYlempiToive());
+        } else {
+            hakemus.setTilanKuvaukset(TilanKuvaukset.tyhja);
+        }
+
         etunimi.ifPresent(hakemus::setEtunimi);
         sukunimi.ifPresent(hakemus::setSukunimi);
 
@@ -479,7 +466,7 @@ public class TilaResource {
             }
             Optional<List<String>> kuvaukset = Optional.ofNullable(tilaObj.getTilanKuvaukset());
             muutaTilaa(valintatapajononNimi, tarjoajaOid, hakuOid, hakukohdeOid, hakemusOid, tila, kuvaukset,
-                    Optional.empty(), Optional.empty(), Optional.empty());
+                    Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty());
             return Response.status(Response.Status.OK).build();
 
         } catch (Exception e) {
