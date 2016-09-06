@@ -1,5 +1,6 @@
 package fi.vm.sade.sijoittelu.laskenta.resource;
 
+import com.google.common.collect.Lists;
 import fi.vm.sade.generic.service.exception.NotAuthorizedException;
 import fi.vm.sade.integrationtest.tomcat.EmbeddedTomcat;
 import fi.vm.sade.integrationtest.tomcat.SharedTomcat;
@@ -182,11 +183,12 @@ public class TilaResourceTest {
         hakija.setHakemusOid(hakemusOid);
         hakija.setHakijaOid(hakijaOid);
         hakija.setHakukohdeOid(hakukohdeOid);
+        hakija.setTilanKuvaukset(Lists.newArrayList());
         hakija.setIlmoittautumisTila(IlmoittautumisTila.EI_ILMOITTAUTUNUT);
         hakija.setJulkaistavissa(true);
         hakija.setTarjoajaOid(tarjoajaOid);
         hakija.setValintatapajonoOid(valintatapajonoOid);
-        hakija.setValintatuloksenTila(ValintatuloksenTila.EHDOLLISESTI_VASTAANOTTANUT);
+        hakija.setValintatuloksenTila(ValintatuloksenTila.OTTANUT_VASTAAN_TOISEN_PAIKAN);
         List<ErillishaunHakijaDTO> hakijat = Arrays.asList(hakija);
         final String url = "http://localhost:" + SharedTomcat.port + "/sijoittelu-service/resources/tila/erillishaku/"+hakuOid+"/hakukohde/"+hakukohdeOid;
         final Response response = createClient(url)
@@ -210,6 +212,7 @@ public class TilaResourceTest {
         hakija.setSukunimi("sukunimi");
         hakija.setHakemuksenTila(HakemuksenTila.HYLATTY);
         hakija.setHakuOid(hakuOid);
+        hakija.setTilanKuvaukset(Lists.newArrayList());
         hakija.setHakemusOid("hakemus1");
         hakija.setHakijaOid("hakija1");
         hakija.setHakukohdeOid(hakukohdeOid);

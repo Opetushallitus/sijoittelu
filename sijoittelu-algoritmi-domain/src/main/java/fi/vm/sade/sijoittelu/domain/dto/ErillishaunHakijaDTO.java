@@ -65,7 +65,8 @@ public class ErillishaunHakijaDTO {
             String              etunimi,
             String              sukunimi,
             Optional<Boolean>   poistetaankoTulokset,
-            Date                hyvaksymiskirjeLahetetty) {
+            Date                hyvaksymiskirjeLahetetty,
+            List<String>        tilanKuvaukset) {
 
         this.valintatapajonoOid         = valintatapajonoOid;
         this.hakemusOid                 = hakemusOid;
@@ -82,6 +83,7 @@ public class ErillishaunHakijaDTO {
         this.sukunimi                   = sukunimi;
         this.poistetaankoTulokset       = poistetaankoTulokset.orElse(false);
         this.hyvaksymiskirjeLahetetty   = hyvaksymiskirjeLahetetty;
+        this.tilanKuvaukset             = tilanKuvaukset;
     }
 
     public ErillishaunHakijaDTO() {
@@ -205,6 +207,14 @@ public class ErillishaunHakijaDTO {
 
     public void setHyvaksymiskirjeLahetetty(Date hyvaksymiskirjeLahetetty) {
         this.hyvaksymiskirjeLahetetty = hyvaksymiskirjeLahetetty;
+    }
+
+    public List<String> getTilanKuvaukset() {
+        return tilanKuvaukset;
+    }
+
+    public void setTilanKuvaukset(List<String> tilanKuvaukset) {
+        this.tilanKuvaukset = tilanKuvaukset;
     }
 
     public Valintatulos asValintatulos() {
