@@ -59,7 +59,7 @@ import java.util.stream.Collectors;
 @Controller
 @Path("tila")
 @PreAuthorize("isAuthenticated()")
-@Api(value = "tila", description = "Resurssi sijoittelun tilojen käsittelyyn")
+@Api(value = "tila", description = "Resurssi sijoittelun tilojen kasittelyyn")
 public class TilaResource {
     private final static Logger LOGGER = LoggerFactory.getLogger(TilaResource.class);
 
@@ -100,7 +100,7 @@ public class TilaResource {
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/{hakemusOid}/{hakuOid}/{hakukohdeOid}/{valintatapajonoOid}/")
     @PreAuthorize(READ_UPDATE_CRUD)
-    @ApiOperation(value = "Hakemuksen valintatulosten haku tietyssä hakukohteessa ja valintatapajonossa")
+    @ApiOperation(value = "Hakemuksen valintatulosten haku tietyssa hakukohteessa ja valintatapajonossa")
     public Valintatulos hakemus(@PathParam("hakuOid") String hakuOid,
                                 @PathParam("hakukohdeOid") String hakukohdeOid,
                                 @PathParam("valintatapajonoOid") String valintatapajonoOid,
@@ -170,7 +170,7 @@ public class TilaResource {
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/haku/{hakuOid}/hakukohde/{hakukohdeOid}/valintatapajono/{valintatapajonoOid}/valintaesitys")
     @PreAuthorize(UPDATE_CRUD)
-    @ApiOperation(value = "Valintaesityksen merkkaaminen hyväksytyksi")
+    @ApiOperation(value = "Valintaesityksen merkkaaminen hyvaksytyksi")
     public Response merkkaaJononValintaesitysHyvaksytyksi(@PathParam("hakuOid") String hakuOid,
                                                     @PathParam("hakukohdeOid") String hakukohdeOid,
                                                     @PathParam("valintatapajonoOid") String valintatapajonoOid,
@@ -203,7 +203,7 @@ public class TilaResource {
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/checkStaleRead")
     @PreAuthorize(UPDATE_CRUD)
-    @ApiOperation(value = "Tarkista onko Valintatuloksia muutettu hakemisen jälkeen. Palauttaa aina onnistuessaan 200 OK ja \"stale read\" -virheet vain rivikohtaisesti vastauksessa.")
+    @ApiOperation(value = "Tarkista onko Valintatuloksia muutettu hakemisen jalkeen. Palauttaa aina onnistuessaan 200 OK ja \"stale read\" -virheet vain rivikohtaisesti vastauksessa.")
     public Response tarkistaEtteiMuutoksiaHakemisenJalkeen(List<Valintatulos> valintatulokset) {
         List<ValintatulosUpdateStatus> statuses = new ArrayList<>();
         try {
@@ -494,10 +494,10 @@ public class TilaResource {
     @PreAuthorize(CRUD)
     @POST
     @Produces(MediaType.APPLICATION_JSON)
-    @ApiOperation("Käynnistää vanhojen sijoitteluajojen siivoamisen annetuilta hauilta")
+    @ApiOperation("Kaynnistaa vanhojen sijoitteluajojen siivoamisen annetuilta hauilta")
     @Path("/siivoaVanhatSijoitteluAjot")
     public List<String> siivoaVanhatSijoitteluajot(List<String> hakuOids,
-                                                   @ApiParam(value = "Montako ajoa säästetään") @QueryParam("saastettavienAjojenMaara") Integer saastettavienAjojenMaaraParam) {
+                                                   @ApiParam(value = "Montako ajoa saastetaan") @QueryParam("saastettavienAjojenMaara") Integer saastettavienAjojenMaaraParam) {
         List<String> resultMessages = new ArrayList<>();
         int ajojaSaastetaan = saastettavienAjojenMaaraParam == null ? sijoitteluBusinessService.getMaxAjoMaara() : saastettavienAjojenMaaraParam;
         LOGGER.info(String.format("Käynnistetään %s annetun haun vanhojen sijoitteluajojen siivous. Säästetään korkeintaan %s ajoa.", hakuOids.size(), ajojaSaastetaan));
