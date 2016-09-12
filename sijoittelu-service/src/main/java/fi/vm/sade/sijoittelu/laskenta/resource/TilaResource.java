@@ -413,7 +413,7 @@ public class TilaResource {
                 hakemus.getTilanKuvaukset().put("EN", tilanKuvaukset.get().get(2));
             }
         } else if (valintatuloksenTila.isPresent() && valintatuloksenTila.get().equals(ValintatuloksenTila.OTTANUT_VASTAAN_TOISEN_PAIKAN)) {
-            hakemus.setTilanKuvaukset(TilanKuvaukset.peruuntunutYlempiToive());
+            hakemus.setTilanKuvaukset(TilanKuvaukset.peruuntunutVastaanottanutToisenOpiskelupaikan());
         } else {
             hakemus.setTilanKuvaukset(TilanKuvaukset.tyhja);
         }
