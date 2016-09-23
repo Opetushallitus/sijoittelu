@@ -1,5 +1,6 @@
 package fi.vm.sade.sijoittelu.tulos.resource;
 
+import fi.vm.sade.authentication.business.service.Authorizer;
 import static fi.vm.sade.sijoittelu.tulos.roles.SijoitteluRole.READ_UPDATE_CRUD;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 
@@ -14,7 +15,14 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 
+import fi.vm.sade.sijoittelu.domain.Hakukohde;
 import fi.vm.sade.sijoittelu.tulos.dao.HakukohdeDao;
+import fi.vm.sade.sijoittelu.tulos.dao.SijoitteluDao;
+import fi.vm.sade.sijoittelu.tulos.dao.impl.HakukohdeDaoImpl;
+import fi.vm.sade.sijoittelu.tulos.dao.impl.SijoitteluDaoImpl;
+import fi.vm.sade.sijoittelu.tulos.dto.JsonViews;
+import fi.vm.sade.sijoittelu.tulos.dto.raportointi.HakutoiveDTO;
+import fi.vm.sade.sijoittelu.tulos.roles.SijoitteluRole;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,6 +43,8 @@ import fi.vm.sade.sijoittelu.tulos.dto.raportointi.HakijaPaginationObject;
 import fi.vm.sade.sijoittelu.tulos.service.RaportointiService;
 import fi.vm.sade.sijoittelu.tulos.service.SijoitteluTulosService;
 
+import fi.vm.sade.sijoittelu.domain.Sijoittelu;
+
 @Path("sijoittelu")
 @Controller
 @PreAuthorize("isAuthenticated()")
@@ -50,6 +60,9 @@ public class SijoitteluResourceImpl implements SijoitteluResource {
 
     @Autowired
     private HakukohdeDao hakukohdeDao;
+
+    @Autowired
+    private Authorizer authorizer;
 
     @GET
     @Path("/{hakuOid}")
@@ -70,6 +83,8 @@ public class SijoitteluResourceImpl implements SijoitteluResource {
             @ApiParam(name = "hakuOid", value = "Haun yksilollinen tunniste", required = true) @PathParam("hakuOid") String hakuOid,
             @ApiParam(value = "Sijoitteluajon tunniste tai 'latest' avainsana", required = true) @PathParam("sijoitteluajoId") String sijoitteluajoId,
             @ApiParam(name = "hakukohdeOid", value = "Hakukohteen yksilollinen tunniste") @QueryParam("hakukohdeOid") String hakukohdeOid) {
+        tarkistaOikeudetHakukohteeseen(hakukohdeOid);
+
         Optional<String> hakukohdeOidOpt = StringUtils.isBlank(hakukohdeOid) ? Optional.empty() : Optional.of(hakukohdeOid);
         Optional<SijoitteluAjo> ajo = getSijoitteluAjo(sijoitteluajoId, hakuOid, hakukohdeOidOpt);
         return ajo.map(sijoitteluTulosService::getSijoitteluajo).orElse(new SijoitteluajoDTO());
@@ -84,6 +99,8 @@ public class SijoitteluResourceImpl implements SijoitteluResource {
             @ApiParam(name = "hakuOid", value = "Haun tunniste", required = true) @PathParam("hakuOid") String hakuOid,
             @ApiParam(name = "sijoitteluajoId", value = "Sijoitteluajon tunniste tai 'latest' avainsana", required = true) @PathParam("sijoitteluajoId") String sijoitteluajoId,
             @ApiParam(name = "hakukohdeOid", value = "Hakukohteen tunniste", required = true) @PathParam("hakukohdeOid") String hakukohdeOid) {
+
+        tarkistaOikeudetHakukohteeseen(hakukohdeOid);
         Optional<SijoitteluAjo> sijoitteluAjo = getSijoitteluAjo(sijoitteluajoId, hakuOid, Optional.empty());
         return sijoitteluAjo.map(ajo -> {
             HakukohdeDTO hakukohdeBySijoitteluajo = sijoitteluTulosService.getHakukohdeBySijoitteluajo(ajo, hakukohdeOid);
@@ -101,6 +118,7 @@ public class SijoitteluResourceImpl implements SijoitteluResource {
             @ApiParam(value = "Haun tunniste", required = true) @PathParam("hakuOid") String hakuOid,
             @ApiParam(value = "Sijoitteluajon tunniste tai 'latest' avainsana", required = true) @PathParam("sijoitteluajoId") String sijoitteluajoId,
             @ApiParam(value = "Hakukohteen tunniste", required = true) @PathParam("hakukohdeOid") String hakukohdeOid) {
+        tarkistaOikeudetHakukohteeseen(hakukohdeOid);
         Optional<SijoitteluAjo> ajo = getSijoitteluAjo(sijoitteluajoId, hakuOid, Optional.of(hakukohdeOid));
         return ajo.map(a -> sijoitteluTulosService.getHakukohdeBySijoitteluajo(a, hakukohdeOid)).orElse(new HakukohdeDTO());
     }
@@ -115,6 +133,8 @@ public class SijoitteluResourceImpl implements SijoitteluResource {
             @ApiParam(value = "Haun tunniste", required = true) @PathParam("hakuOid") String hakuOid,
             @ApiParam(value = "Hakukohteen tunniste", required = true) @PathParam("hakukohdeOid") String hakukohdeOid) {
         try {
+            tarkistaOikeudetHakukohteeseen(hakukohdeOid);
+
             Optional<SijoitteluAjo> sijoitteluAjo = raportointiService.cachedLatestSijoitteluAjoForHakukohde(hakuOid, hakukohdeOid);
 
             return sijoitteluAjo.map(ajo -> raportointiService.cachedHakemukset(ajo, true, null, null, Arrays.asList(hakukohdeOid), null, null)).orElseGet(HakijaPaginationObject::new);
@@ -215,5 +235,16 @@ public class SijoitteluResourceImpl implements SijoitteluResource {
         return raportointiService.cachedLatestSijoitteluAjoForHaku(hakuOid)
                 .map(latestSijoitteluAjo -> hakukohdeDao.isValintapajonoInUse(latestSijoitteluAjo.getSijoitteluajoId(), valintatapajonoOid))
                 .orElse(false);
+    }
+
+
+    private void tarkistaOikeudetHakukohteeseen(String hakukohdeOid) {
+        if(hakukohdeOid != null) {
+            Hakukohde hakukohde = hakukohdeDao.findByHakukohdeOid(hakukohdeOid);
+            if (hakukohde != null) {
+                String tarjoajaOid = hakukohde.getTarjoajaOid();
+                authorizer.checkOrganisationAccess(tarjoajaOid, SijoitteluRole.READ_ROLE, SijoitteluRole.CRUD_ROLE, SijoitteluRole.UPDATE_ROLE);
+            }
+        }
     }
 }

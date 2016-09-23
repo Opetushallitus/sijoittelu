@@ -12,9 +12,8 @@ import com.google.common.collect.ImmutableList;
 import com.mongodb.*;
 import fi.vm.sade.sijoittelu.domain.*;
 import fi.vm.sade.sijoittelu.tulos.dao.CachingRaportointiDao;
-import fi.vm.sade.sijoittelu.tulos.dto.KevytHakemusDTO;
-import fi.vm.sade.sijoittelu.tulos.dto.KevytHakukohdeDTO;
-import fi.vm.sade.sijoittelu.tulos.dto.KevytValintatapajonoDTO;
+import fi.vm.sade.sijoittelu.tulos.dto.*;
+import fi.vm.sade.sijoittelu.tulos.dto.JsonViews;
 import org.apache.commons.lang3.BooleanUtils;
 import org.mongodb.morphia.Datastore;
 import org.mongodb.morphia.mapping.Mapper;
@@ -49,6 +48,11 @@ public class HakukohdeDaoImpl implements HakukohdeDao {
     public void persistHakukohde(Hakukohde hakukohde, String hakuOid) {
         morphiaDS.save(hakukohde);
         cachingRaportointiDao.updateHakukohdeCacheWith(hakukohde, hakuOid);
+    }
+
+    @Override
+    public Hakukohde findByHakukohdeOid(String hakukohdeOid){
+        return morphiaDS.createQuery(Hakukohde.class).field("oid").equal(hakukohdeOid).get();
     }
 
     @Override
