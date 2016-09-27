@@ -75,8 +75,12 @@ public class SijoitteluResourceImpl implements SijoitteluResource {
     @ApiOperation(position = 1, value = "Hakee sijoittelun tiedot haulle. Paa-asiallinen kaytto sijoitteluajojen tunnisteiden hakuun.", response = SijoitteluDTO.class)
     public SijoitteluDTO getSijoitteluByHakuOid(
             @ApiParam(name = "hakuOid", value = "Haun yksilollinen tunniste", required = true) @PathParam("hakuOid") String hakuOid) {
-        tarkistaPaakayttajaoikeudet();
-        return sijoitteluTulosService.getSijoitteluByHakuOid(hakuOid);
+        try{
+            tarkistaPaakayttajaoikeudet();
+            return sijoitteluTulosService.getSijoitteluByHakuOid(hakuOid);
+        } catch(Exception e) {
+            return new SijoitteluDTO();
+        }
     }
 
     @GET
@@ -88,10 +92,14 @@ public class SijoitteluResourceImpl implements SijoitteluResource {
             @ApiParam(name = "hakuOid", value = "Haun yksilollinen tunniste", required = true) @PathParam("hakuOid") String hakuOid,
             @ApiParam(value = "Sijoitteluajon tunniste tai 'latest' avainsana", required = true) @PathParam("sijoitteluajoId") String sijoitteluajoId,
             @ApiParam(name = "hakukohdeOid", value = "Hakukohteen yksilollinen tunniste") @QueryParam("hakukohdeOid") String hakukohdeOid) {
-        if (hakukohdeOid != null) {
-            tarkistaOikeudetHakukohteeseen(hakukohdeOid);
-        } else {
-            tarkistaPaakayttajaoikeudet();
+        try {
+            if (hakukohdeOid != null) {
+                tarkistaOikeudetHakukohteeseen(hakukohdeOid);
+            } else {
+                tarkistaPaakayttajaoikeudet();
+            }
+        } catch(Exception e){
+            return new SijoitteluajoDTO();
         }
         Optional<String> hakukohdeOidOpt = StringUtils.isBlank(hakukohdeOid) ? Optional.empty() : Optional.of(hakukohdeOid);
         Optional<SijoitteluAjo> ajo = getSijoitteluAjo(sijoitteluajoId, hakuOid, hakukohdeOidOpt);
@@ -107,8 +115,11 @@ public class SijoitteluResourceImpl implements SijoitteluResource {
             @ApiParam(name = "hakuOid", value = "Haun tunniste", required = true) @PathParam("hakuOid") String hakuOid,
             @ApiParam(name = "sijoitteluajoId", value = "Sijoitteluajon tunniste tai 'latest' avainsana", required = true) @PathParam("sijoitteluajoId") String sijoitteluajoId,
             @ApiParam(name = "hakukohdeOid", value = "Hakukohteen tunniste", required = true) @PathParam("hakukohdeOid") String hakukohdeOid) {
-
-        tarkistaOikeudetHakukohteeseen(hakukohdeOid);
+        try {
+            tarkistaOikeudetHakukohteeseen(hakukohdeOid);
+        } catch(Exception e){
+            return Response.noContent().build();
+        }
         Optional<SijoitteluAjo> sijoitteluAjo = getSijoitteluAjo(sijoitteluajoId, hakuOid, Optional.empty());
         return sijoitteluAjo.map(ajo -> {
             HakukohdeDTO hakukohdeBySijoitteluajo = sijoitteluTulosService.getHakukohdeBySijoitteluajo(ajo, hakukohdeOid);
@@ -126,7 +137,11 @@ public class SijoitteluResourceImpl implements SijoitteluResource {
             @ApiParam(value = "Haun tunniste", required = true) @PathParam("hakuOid") String hakuOid,
             @ApiParam(value = "Sijoitteluajon tunniste tai 'latest' avainsana", required = true) @PathParam("sijoitteluajoId") String sijoitteluajoId,
             @ApiParam(value = "Hakukohteen tunniste", required = true) @PathParam("hakukohdeOid") String hakukohdeOid) {
-        tarkistaOikeudetHakukohteeseen(hakukohdeOid);
+        try {
+            tarkistaOikeudetHakukohteeseen(hakukohdeOid);
+        } catch(Exception e){
+            return new HakukohdeDTO();
+        }
         Optional<SijoitteluAjo> ajo = getSijoitteluAjo(sijoitteluajoId, hakuOid, Optional.of(hakukohdeOid));
         return ajo.map(a -> sijoitteluTulosService.getHakukohdeBySijoitteluajo(a, hakukohdeOid)).orElse(new HakukohdeDTO());
     }
@@ -247,7 +262,7 @@ public class SijoitteluResourceImpl implements SijoitteluResource {
     }
 
 
-    private void tarkistaOikeudetHakukohteeseen(String hakukohdeOid) {
+    private void tarkistaOikeudetHakukohteeseen(String hakukohdeOid) throws Exception {
         if(hakukohdeOid != null) {
             Hakukohde hakukohde = hakukohdeDao.findByHakukohdeOid(hakukohdeOid);
             if (hakukohde != null) {
@@ -257,7 +272,7 @@ public class SijoitteluResourceImpl implements SijoitteluResource {
         }
     }
 
-    private void tarkistaPaakayttajaoikeudet() {
+    private void tarkistaPaakayttajaoikeudet() throws Exception {
         authorizer.checkOrganisationAccess(OPH_tarjoajaOid, SijoitteluRole.READ_ROLE, SijoitteluRole.CRUD_ROLE, SijoitteluRole.UPDATE_ROLE);
     }
 
