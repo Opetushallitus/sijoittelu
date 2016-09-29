@@ -75,7 +75,7 @@ public class SijoitteluResourceImpl implements SijoitteluResource {
     @ApiOperation(position = 1, value = "Hakee sijoittelun tiedot haulle. Paa-asiallinen kaytto sijoitteluajojen tunnisteiden hakuun.", response = SijoitteluDTO.class)
     public SijoitteluDTO getSijoitteluByHakuOid(
             @ApiParam(name = "hakuOid", value = "Haun yksilollinen tunniste", required = true) @PathParam("hakuOid") String hakuOid) {
-        try{
+        try {
             tarkistaPaakayttajaoikeudet();
             return sijoitteluTulosService.getSijoitteluByHakuOid(hakuOid);
         } catch(Exception e) {
@@ -263,8 +263,8 @@ public class SijoitteluResourceImpl implements SijoitteluResource {
 
 
     private void tarkistaOikeudetHakukohteeseen(String hakukohdeOid) throws Exception {
-        if(hakukohdeOid != null) {
-            Hakukohde hakukohde = hakukohdeDao.findByHakukohdeOid(hakukohdeOid);
+        if (hakukohdeOid != null) {
+            Hakukohde hakukohde = hakukohdeDao.findTarjoajaOidByHakukohdeOid(hakukohdeOid);
             if (hakukohde != null) {
                 String tarjoajaOid = hakukohde.getTarjoajaOid();
                 authorizer.checkOrganisationAccess(tarjoajaOid, SijoitteluRole.READ_ROLE, SijoitteluRole.CRUD_ROLE, SijoitteluRole.UPDATE_ROLE);

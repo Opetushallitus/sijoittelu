@@ -51,8 +51,9 @@ public class HakukohdeDaoImpl implements HakukohdeDao {
     }
 
     @Override
-    public Hakukohde findByHakukohdeOid(String hakukohdeOid){
-        return morphiaDS.createQuery(Hakukohde.class).field("oid").equal(hakukohdeOid).get();
+    public Hakukohde findTarjoajaOidByHakukohdeOid(String hakukohdeOid){
+        // tässä ei eritellä mikä sijoitteluajo on kyseessä, mutta kaikissa pitäisi olla sama tarjoajaOid
+        return morphiaDS.createQuery(Hakukohde.class).field("oid").equal(hakukohdeOid).retrievedFields(true, "tarjoajaOid").get();
     }
 
     @Override
