@@ -2,15 +2,12 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:context="http://www.springframework.org/schema/context"
-       xmlns:util="http://www.springframework.org/schema/util"
-       xmlns:jaxrs-client="http://cxf.apache.org/jaxrs-client" xmlns:jaxrs="http://cxf.apache.org/jaxrs"
+       xmlns:jaxrs="http://cxf.apache.org/jaxrs"
        xmlns:http="http://cxf.apache.org/transports/http/configuration"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
          http://cxf.apache.org/jaxrs http://cxf.apache.org/schemas/jaxrs.xsd
-         http://cxf.apache.org/jaxrs-client http://cxf.apache.org/schemas/jaxrs-client.xsd
          http://cxf.apache.org/transports/http/configuration http://cxf.apache.org/schemas/configuration/http-conf.xsd
-         http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd
-         http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
+         http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd">
 
     <context:annotation-config/>
     <import resource="classpath:META-INF/cxf/cxf.xml" />
@@ -47,19 +44,6 @@
       <context:component-scan base-package="fi.vm.sade.valintalaskenta.tulos.resource.impl"/>
       <context:component-scan base-package="fi.vm.sade.valintalaskenta.tulos.service.impl.converters"/>
 
-        <!-- Swagger writers -->
-      <bean id="swaggerResource" class="io.swagger.jaxrs.listing.ApiListingResource" />
-   		<bean id="swaggerWriter" class="io.swagger.jaxrs.listing.SwaggerSerializers" />
-
-        <!-- Swagger configuration -->
-        <bean id="swaggerConfig" class="io.swagger.jaxrs.config.BeanConfig">
-            <property name="resourcePackage" value="fi.vm.sade.sijoittelu"/>
-            <property name="version" value="1.0"/>
-
-            <property name="title" value="Swagger API documentation"/>
-            <property name="scan" value="true"/>
-        </bean>
-
       <bean id="modelMapper" class="fi.vm.sade.valintalaskenta.tulos.mapping.ValintalaskentaModelMapper"/>
 
       <bean id="sijoitteluModelMapper" class="fi.vm.sade.sijoittelu.laskenta.mapping.SijoitteluModelMapper"/>
@@ -73,14 +57,10 @@
             <ref bean="valiSijoitteluResource"/>
             <ref bean="sijoitteluResourceImpl"/>
             <ref bean="sessionResource"/>
-
-            <ref bean="swaggerResource"/>
         </jaxrs:serviceBeans>
         <jaxrs:providers>
             <ref bean="jsonProvider" />
             <ref bean="cors-filter"/>
-
-            <ref bean="swaggerWriter"/>
         </jaxrs:providers>
     </jaxrs:server>
     </beans>

@@ -108,18 +108,14 @@
         <context:component-scan base-package="fi.vm.sade.valintalaskenta.tulos.service.impl"/>
         <context:component-scan base-package="fi.vm.sade.valintalaskenta.tulos.service.impl.converters"/>
 
-        <!-- Swagger writers -->
-        <bean id="swaggerResource" class="io.swagger.jaxrs.listing.ApiListingResource" />
-        <bean id="swaggerWriter" class="io.swagger.jaxrs.listing.SwaggerSerializers" />
+        <!-- CXF Swagger2Feature -->
+        <bean id="swagger2Feature" class="org.apache.cxf.jaxrs.swagger.Swagger2Feature">
+            <property name="resourcePackage" value="fi.vm.sade.sijoittelu"/>
+            <property name="version" value="1.0"/>
+            <property name="basePath" value="${sijoittelu-service.swagger.basepath}"/>
 
-        <!-- Swagger configuration -->
-        <bean id="swaggerConfig" class="io.swagger.jaxrs.config.BeanConfig">
-        <property name="resourcePackage" value="fi.vm.sade.sijoittelu"/>
-        <property name="version" value="1.0"/>
-        <property name="basePath" value="${sijoittelu-service.swagger.basepath}"/>
-
-        <property name="title" value="Swagger API documentation"/>
-        <property name="scan" value="true"/>
+            <property name="title" value="Swagger API documentation"/>
+            <property name="scan" value="true"/>
         </bean>
 
         <import resource="application-context-db.xml" />
@@ -157,15 +153,14 @@
                 <ref bean="sijoitteluResourceImpl"/>
                 <ref bean="erillisSijoitteluResourceImpl"/>
                 <ref bean="sessionResource"/>
-
-                <ref bean="swaggerResource"/>
             </jaxrs:serviceBeans>
             <jaxrs:providers>
                 <ref bean="jsonProvider" />
                 <ref bean="cors-filter" />
-
-                <ref bean="swaggerWriter" />
             </jaxrs:providers>
+            <jaxrs:features>
+                <ref bean="swagger2Feature" />
+            </jaxrs:features>
         </jaxrs:server>
     </beans>
 </beans>

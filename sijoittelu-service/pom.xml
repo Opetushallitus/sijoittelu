@@ -21,13 +21,6 @@
       <groupId>fi.vm.sade.java-utils</groupId>
       <artifactId>opintopolku-cas-servlet-filter</artifactId>
 	  </dependency>
-		<!-- Jersey, REST, Json -->
-		<dependency>
-			<groupId>io.swagger</groupId>
-			<artifactId>swagger-jersey2-jaxrs</artifactId>
-			<version>${swagger.version}</version>
-		</dependency>
-
 		<dependency>
 			<groupId>org.jasig.cas.client</groupId>
 			<artifactId>cas-client-support-distributed-ehcache</artifactId>
