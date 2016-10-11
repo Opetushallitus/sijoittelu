@@ -40,28 +40,79 @@ public class SijoitteluServiceJetty {
 
     public final static String resourcesAddress = "http://localhost:" + port + "/sijoittelu-service/resources";
 
-    public static void startShared() {
-        SpringProfile.setProfile("test");
+    private static void setDefaultSystemProperties() {
+        setCommonSystemProperties();
         String publicServerUrl = Optional.ofNullable(System.getProperty("public_server")).orElse("http://localhost");
         String vtsServerUrl = Optional.ofNullable(System.getProperty("vts_server")).orElse("http://localhost");
-        System.setProperty("root.organisaatio.oid","");
         System.setProperty("valintalaskentakoostepalvelu.valintaperusteet.rest.url", "http://localhost");
         System.setProperty("host.ilb", "http://localhost");
         System.setProperty("valintalaskentakoostepalvelu.parametriservice.rest.url", publicServerUrl);
         System.setProperty("valintalaskentakoostepalvelu.oppijantunnistus.rest.url", publicServerUrl);
         System.setProperty("valintalaskentakoostepalvelu.tarjonta.rest.url", publicServerUrl);
+        System.setProperty("valintalaskentakoostepalvelu.valintatulosservice.rest.url", vtsServerUrl + "/valinta-tulos-service");
         System.setProperty("valintalaskentakoostepalvelu.valinta-tulos-service.rest.url", vtsServerUrl + "/valinta-tulos-service");
-        System.setProperty("sijoittelu-service.swagger.basepath", resourcesAddress);
+    }
+
+    private static void setCommonSystemProperties() {
+        System.setProperty("root.organisaatio.oid","");
         System.setProperty("cas.callback.sijoittelu-service", "http://localhost");
         System.setProperty("cas.service.sijoittelu-service", "http://localhost");
         System.setProperty("cas.service.organisaatio-service", "http://localhost");
-        System.setProperty("sijoittelu-service.mongodb.dbname", Optional.ofNullable(System.getProperty("sijoitteludbName")).orElse("sijoitteludb"));
         System.setProperty("valintalaskenta-laskenta-service.mongodb.dbname", "valintalaskentadb");
         System.setProperty("valintalaskenta-laskenta-service.mongodb.uri", Optional.ofNullable(System.getProperty("valintalaskentaMongoUri")).orElse(""));
+        System.setProperty("sijoittelu-service.swagger.basepath", resourcesAddress);
+        System.setProperty("sijoittelu-service.mongodb.dbname", Optional.ofNullable(System.getProperty("sijoitteludbName")).orElse("sijoitteludb"));
         System.setProperty("sijoittelu-service.mongodb.uri", System.getProperty("sijoitteluMongoUri"));
+        System.setProperty("sijoittelu-service.hakukohdeDao.batchSize", "300");
         System.setProperty("omatsivut.email.application.modify.link.en", "https://en.test.domain/token/");
         System.setProperty("omatsivut.email.application.modify.link.fi", "https://fi.test.domain/token/");
         System.setProperty("omatsivut.email.application.modify.link.sv", "https://sv.test.domain/token/");
+    }
+
+    private static void setLuokkaSystemProperties() {
+        setCommonSystemProperties();
+        System.setProperty("host.ilb", "https://itest-virkailija.oph.ware.fi");
+        System.setProperty("valintalaskentakoostepalvelu.valintaperusteService.url", "https://itest-virkailija.oph.ware.fi/valintaperusteet-service/services/ws/valintaperusteService");
+        System.setProperty("valintalaskentakoostepalvelu.valintalaskentaService.url", "https://itest-virkailija.oph.ware.fi/valintalaskenta-laskenta-service/services/valintalaskentaService");
+        System.setProperty("valintalaskentakoostepalvelu.valintaTulosService.url", "https://itest-virkailija.oph.ware.fi/valintalaskenta-laskenta-service/services/valintatietoService");
+        System.setProperty("valintalaskentakoostepalvelu.sijoitteluService.url", "https://itest-virkailija.oph.ware.fi/sijoittelu-service/services/sijoitteluService");
+        System.setProperty("valintalaskentakoostepalvelu.viestintapalvelu.url", "https://itest-virkailija.oph.ware.fi/viestintapalvelu");
+        System.setProperty("valintalaskentakoostepalvelu.tarjontaService.url", "https://itest-virkailija.oph.ware.fi/tarjonta-service/services/tarjontaPublicService");
+        System.setProperty("valintalaskentakoostepalvelu.organisaatioService.url", "https://itest-virkailija.oph.ware.fi/organisaatio-service/services/organisaatioService");
+        System.setProperty("valintalaskentakoostepalvelu.organisaatioService.rest.url", "https://itest-virkailija.oph.ware.fi/organisaatio-service/rest");
+        System.setProperty("valintalaskentakoostepalvelu.hakemusService.url", "https://itest-virkailija.oph.ware.fi/haku-app/services/ws/hakemusService");
+        System.setProperty("valintalaskentakoostepalvelu.tarjonta.rest.url", "https://itest-virkailija.oph.ware.fi/tarjonta-service/rest");
+        System.setProperty("valintalaskentakoostepalvelu.valintatulosservice.rest.url", "https://itest-virkailija.oph.ware.fi/valinta-tulos-service");
+        System.setProperty("valintalaskentakoostepalvelu.valinta-tulos-service.rest.url", "https://itest-virkailija.oph.ware.fi/valinta-tulos-service");
+        System.setProperty("valintalaskentakoostepalvelu.oppijantunnistus.rest.url", "https://itest-virkailija.oph.ware.fi/oppijan-tunnistus");
+        System.setProperty("valintalaskentakoostepalvelu.hakemus.rest.url", "https://itest-virkailija.oph.ware.fi/haku-app");
+        System.setProperty("valintalaskentakoostepalvelu.authentication.rest.url", "https://itest-virkailija.oph.ware.fi/authentication-service");
+        System.setProperty("valintalaskentakoostepalvelu.koodisto.rest.url", "https://itest-virkailija.oph.ware.fi/koodisto-service/rest");
+        System.setProperty("valintalaskentakoostepalvelu.sijoittelu.rest.url", "https://itest-virkailija.oph.ware.fi/sijoittelu-service/resources");
+        System.setProperty("valintalaskentakoostepalvelu.valintalaskenta.rest.url", "https://itest-virkailija.oph.ware.fi/valintalaskenta-laskenta-service/resources");
+        System.setProperty("valintalaskentakoostepalvelu.koodiService.url", "https://itest-virkailija.oph.ware.fi/koodisto-service/services/koodiService");
+        System.setProperty("valintalaskentakoostepalvelu.dokumenttipalvelu.rest.url", "https://itest-virkailija.oph.ware.fi/dokumenttipalvelu-service/resources");
+        System.setProperty("valintalaskentakoostepalvelu.swagger.basepath", "/valintalaskentakoostepalvelu/resources");
+        System.setProperty("valintalaskentakoostepalvelu.valintaperusteet.rest.url", "https://itest-virkailija.oph.ware.fi/valintaperusteet-service/resources");
+        System.setProperty("valintalaskentakoostepalvelu.parametriservice.rest.url", "https://itest-virkailija.oph.ware.fi/ohjausparametrit-service/api");
+        System.setProperty("valintalaskentakoostepalvelu.valintaperusteet.ilb.url", "https://itest-virkailija.oph.ware.fi/valintaperusteet-service/resources");
+        System.setProperty("valintalaskenta-laskenta-service.mongodb.uri", "mongodb://luokka:EV3pWXJgtpkX@taulu.hard.ware.fi:27017/valintalaskentadb");
+    }
+
+    public static void startShared() {
+        SpringProfile.setProfile("test");
+
+        Optional<String> useLuokka = Optional.ofNullable(System.getProperty("useLuokka"));
+        if(useLuokka.isPresent() && "TRUE".equalsIgnoreCase(useLuokka.get())) {
+            setLuokkaSystemProperties();
+        } else {
+            setDefaultSystemProperties();
+        }
+
+        Optional<String> debugProperties = Optional.ofNullable(System.getProperty("debugProperties"));
+        if(debugProperties.isPresent() && "TRUE".equalsIgnoreCase(debugProperties.get())) {
+            System.getProperties().keySet().stream().forEach(k -> System.out.println(k + "=" + System.getProperty((String)k)));
+        }
 
         try {
             if (server.isStopped()) {
