@@ -47,7 +47,7 @@ public class SijoitteleHakijaryhmaTest {
         valintatapajono.setAloituspaikat(17);
         valintatapajono.setPrioriteetti(0);
         valintatapajono.setTasasijasaanto(Tasasijasaanto.ARVONTA);
-        valintatapajono.setHakemukset(generateHakemukset(N_OF_HAKEMUKSET_TO_GENERATE));
+        valintatapajono.setHakemukset(generateHakemukset(N_OF_HAKEMUKSET_TO_GENERATE, hakijaryhma));
 
         hakukohde.setOid("hakukohdeOid");
         hakukohde.setValintatapajonot(Collections.singletonList(valintatapajono));
@@ -64,15 +64,15 @@ public class SijoitteleHakijaryhmaTest {
         hakijaryhmaWrapper = hakukohdeWrapper.getHakijaryhmaWrappers().get(0);
     }
 
-    private List<Hakemus> generateHakemukset(int nToGenerate) {
+    private static List<Hakemus> generateHakemukset(int nToGenerate, Hakijaryhma hakijaryhma) {
         List<Hakemus> results = new ArrayList<>(nToGenerate);
         for (int i = 0; i < nToGenerate; i++) {
-            results.add(generateHakemus(i));
+            results.add(generateHakemus(i, hakijaryhma));
         }
         return results;
     }
 
-    private Hakemus generateHakemus(int i) {
+    private static Hakemus generateHakemus(int i, Hakijaryhma hakijaryhma) {
         Hakemus h = new Hakemus();
         h.setJonosija(i);
         h.setPrioriteetti(0);
@@ -80,7 +80,6 @@ public class SijoitteleHakijaryhmaTest {
         h.setHakijaOid("hakija" + i);
         hakijaryhma.getHakemusOid().add(h.getHakemusOid());
         h.setPisteet(new BigDecimal(i));
-        h.setHakijaryhmaOid(hakijaryhmaOid);
         h.setTila(HakemuksenTila.VARALLA);
         return h;
     }
@@ -127,5 +126,178 @@ public class SijoitteleHakijaryhmaTest {
         }
 
         SijoitteleHakijaryhma.sijoitteleHakijaryhma(ajoWrapper, hakijaryhmaWrapper);
+    }
+
+    @Test
+    public void hakijaryhmaSijoitteluHyvaksyyVainKiintioonMahtuvatAlitayttojonosta() {
+        Hakijaryhma hakijaryhma = new Hakijaryhma();
+        hakijaryhma.setOid("hakijaryhmaOid");
+        hakijaryhma.setHakukohdeOid("hakukohdeOid");
+        hakijaryhma.setKiintio(3);
+
+        Valintatapajono valintatapajono = new Valintatapajono();
+        valintatapajono.setAloituspaikat(3);
+        valintatapajono.setPrioriteetti(0);
+        valintatapajono.setTasasijasaanto(Tasasijasaanto.ALITAYTTO);
+        valintatapajono.setHakemukset(generateHakemukset(4, hakijaryhma));
+        hakijaryhma.getHakemusOid().remove(3);
+
+        Hakukohde hakukohde = new Hakukohde();
+        hakukohde.setOid("hakukohdeOid");
+        hakukohde.setValintatapajonot(Collections.singletonList(valintatapajono));
+        hakukohde.setHakijaryhmat(Collections.singletonList(hakijaryhma));
+
+        SijoitteluajoWrapper ajoWrapper =
+                SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(
+                        new SijoitteluAjo(),
+                        Collections.singletonList(hakukohde),
+                        Collections.emptyList(),
+                        Collections.emptyMap()
+                );
+        HakukohdeWrapper hakukohdeWrapper = ajoWrapper.getHakukohteet().get(0);
+        HakijaryhmaWrapper hakijaryhmaWrapper = hakukohdeWrapper.getHakijaryhmaWrappers().get(0);
+
+        hakukohdeWrapper.getValintatapajonot().get(0).getHakemukset().get(1).getHakemus().setJonosija(1);
+        hakukohdeWrapper.getValintatapajonot().get(0).getHakemukset().get(2).getHakemus().setJonosija(1);
+        hakukohdeWrapper.getValintatapajonot().get(0).getHakemukset().get(3).getHakemus().setJonosija(1);
+
+        SijoitteleHakukohde.sijoitteleHakukohde(ajoWrapper, hakukohdeWrapper);
+        Assert.assertEquals(HakemuksenTila.HYVAKSYTTY, hakukohdeWrapper.getValintatapajonot().get(0).getHakemukset().get(0).getHakemus().getTila());
+        Assert.assertEquals(HakemuksenTila.HYVAKSYTTY, hakukohdeWrapper.getValintatapajonot().get(0).getHakemukset().get(1).getHakemus().getTila());
+        Assert.assertEquals(HakemuksenTila.HYVAKSYTTY, hakukohdeWrapper.getValintatapajonot().get(0).getHakemukset().get(2).getHakemus().getTila());
+        Assert.assertEquals(HakemuksenTila.VARALLA, hakukohdeWrapper.getValintatapajonot().get(0).getHakemukset().get(3).getHakemus().getTila());
+        Assert.assertEquals("hakijaryhmaOid", hakukohdeWrapper.getValintatapajonot().get(0).getHakemukset().get(0).getHakemus().getHakijaryhmaOid());
+        Assert.assertEquals("hakijaryhmaOid", hakukohdeWrapper.getValintatapajonot().get(0).getHakemukset().get(1).getHakemus().getHakijaryhmaOid());
+        Assert.assertEquals("hakijaryhmaOid", hakukohdeWrapper.getValintatapajonot().get(0).getHakemukset().get(2).getHakemus().getHakijaryhmaOid());
+        Assert.assertNull(hakukohdeWrapper.getValintatapajonot().get(0).getHakemukset().get(3).getHakemus().getHakijaryhmaOid());
+    }
+
+    @Test
+    public void hakijaryhmaSijoitteluNoudattaaJononAlitayttoaJosKaikkiKuuluvatHakijaryhmaan() {
+        Hakijaryhma hakijaryhma = new Hakijaryhma();
+        hakijaryhma.setOid("hakijaryhmaOid");
+        hakijaryhma.setHakukohdeOid("hakukohdeOid");
+        hakijaryhma.setKiintio(4);
+
+        Valintatapajono valintatapajono = new Valintatapajono();
+        valintatapajono.setAloituspaikat(3);
+        valintatapajono.setPrioriteetti(0);
+        valintatapajono.setTasasijasaanto(Tasasijasaanto.ALITAYTTO);
+        valintatapajono.setHakemukset(generateHakemukset(4, hakijaryhma));
+
+        Hakukohde hakukohde = new Hakukohde();
+        hakukohde.setOid("hakukohdeOid");
+        hakukohde.setValintatapajonot(Collections.singletonList(valintatapajono));
+        hakukohde.setHakijaryhmat(Collections.singletonList(hakijaryhma));
+
+        SijoitteluajoWrapper ajoWrapper =
+                SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(
+                        new SijoitteluAjo(),
+                        Collections.singletonList(hakukohde),
+                        Collections.emptyList(),
+                        Collections.emptyMap()
+                );
+        HakukohdeWrapper hakukohdeWrapper = ajoWrapper.getHakukohteet().get(0);
+        HakijaryhmaWrapper hakijaryhmaWrapper = hakukohdeWrapper.getHakijaryhmaWrappers().get(0);
+
+        hakukohdeWrapper.getValintatapajonot().get(0).getHakemukset().get(1).getHakemus().setJonosija(1);
+        hakukohdeWrapper.getValintatapajonot().get(0).getHakemukset().get(2).getHakemus().setJonosija(1);
+        hakukohdeWrapper.getValintatapajonot().get(0).getHakemukset().get(3).getHakemus().setJonosija(1);
+
+        SijoitteleHakukohde.sijoitteleHakukohde(ajoWrapper, hakukohdeWrapper);
+        Assert.assertEquals(HakemuksenTila.HYVAKSYTTY, hakukohdeWrapper.getValintatapajonot().get(0).getHakemukset().get(0).getHakemus().getTila());
+        Assert.assertEquals(HakemuksenTila.VARALLA, hakukohdeWrapper.getValintatapajonot().get(0).getHakemukset().get(1).getHakemus().getTila());
+        Assert.assertEquals(HakemuksenTila.VARALLA, hakukohdeWrapper.getValintatapajonot().get(0).getHakemukset().get(2).getHakemus().getTila());
+        Assert.assertEquals(HakemuksenTila.VARALLA, hakukohdeWrapper.getValintatapajonot().get(0).getHakemukset().get(3).getHakemus().getTila());
+        Assert.assertEquals("hakijaryhmaOid", hakukohdeWrapper.getValintatapajonot().get(0).getHakemukset().get(0).getHakemus().getHakijaryhmaOid());
+        Assert.assertNull(hakukohdeWrapper.getValintatapajonot().get(0).getHakemukset().get(1).getHakemus().getHakijaryhmaOid());
+        Assert.assertNull(hakukohdeWrapper.getValintatapajonot().get(0).getHakemukset().get(2).getHakemus().getHakijaryhmaOid());
+        Assert.assertNull(hakukohdeWrapper.getValintatapajonot().get(0).getHakemukset().get(3).getHakemus().getHakijaryhmaOid());
+    }
+
+    @Test
+    public void hakijaryhmaSijoitteluYlitayttaaJononJaKiintionJosYlitaytto() {
+        Hakijaryhma hakijaryhma = new Hakijaryhma();
+        hakijaryhma.setOid("hakijaryhmaOid");
+        hakijaryhma.setHakukohdeOid("hakukohdeOid");
+        hakijaryhma.setKiintio(3);
+
+        Valintatapajono valintatapajono = new Valintatapajono();
+        valintatapajono.setAloituspaikat(3);
+        valintatapajono.setPrioriteetti(0);
+        valintatapajono.setTasasijasaanto(Tasasijasaanto.YLITAYTTO);
+        valintatapajono.setHakemukset(generateHakemukset(4, hakijaryhma));
+
+        Hakukohde hakukohde = new Hakukohde();
+        hakukohde.setOid("hakukohdeOid");
+        hakukohde.setValintatapajonot(Collections.singletonList(valintatapajono));
+        hakukohde.setHakijaryhmat(Collections.singletonList(hakijaryhma));
+
+        SijoitteluajoWrapper ajoWrapper =
+                SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(
+                        new SijoitteluAjo(),
+                        Collections.singletonList(hakukohde),
+                        Collections.emptyList(),
+                        Collections.emptyMap()
+                );
+        HakukohdeWrapper hakukohdeWrapper = ajoWrapper.getHakukohteet().get(0);
+        HakijaryhmaWrapper hakijaryhmaWrapper = hakukohdeWrapper.getHakijaryhmaWrappers().get(0);
+
+        hakukohdeWrapper.getValintatapajonot().get(0).getHakemukset().get(1).getHakemus().setJonosija(1);
+        hakukohdeWrapper.getValintatapajonot().get(0).getHakemukset().get(2).getHakemus().setJonosija(1);
+        hakukohdeWrapper.getValintatapajonot().get(0).getHakemukset().get(3).getHakemus().setJonosija(1);
+
+        SijoitteleHakukohde.sijoitteleHakukohde(ajoWrapper, hakukohdeWrapper);
+        Assert.assertEquals(HakemuksenTila.HYVAKSYTTY, hakukohdeWrapper.getValintatapajonot().get(0).getHakemukset().get(0).getHakemus().getTila());
+        Assert.assertEquals(HakemuksenTila.HYVAKSYTTY, hakukohdeWrapper.getValintatapajonot().get(0).getHakemukset().get(1).getHakemus().getTila());
+        Assert.assertEquals(HakemuksenTila.HYVAKSYTTY, hakukohdeWrapper.getValintatapajonot().get(0).getHakemukset().get(2).getHakemus().getTila());
+        Assert.assertEquals(HakemuksenTila.HYVAKSYTTY, hakukohdeWrapper.getValintatapajonot().get(0).getHakemukset().get(3).getHakemus().getTila());
+        Assert.assertEquals("hakijaryhmaOid", hakukohdeWrapper.getValintatapajonot().get(0).getHakemukset().get(0).getHakemus().getHakijaryhmaOid());
+        Assert.assertEquals("hakijaryhmaOid", hakukohdeWrapper.getValintatapajonot().get(0).getHakemukset().get(1).getHakemus().getHakijaryhmaOid());
+        Assert.assertEquals("hakijaryhmaOid", hakukohdeWrapper.getValintatapajonot().get(0).getHakemukset().get(2).getHakemus().getHakijaryhmaOid());
+        Assert.assertEquals("hakijaryhmaOid", hakukohdeWrapper.getValintatapajonot().get(0).getHakemukset().get(3).getHakemus().getHakijaryhmaOid());
+    }
+
+    @Test
+    public void hakijaryhmaSijoitteluTayttaaTasanJosArvonta() {
+        Hakijaryhma hakijaryhma = new Hakijaryhma();
+        hakijaryhma.setOid("hakijaryhmaOid");
+        hakijaryhma.setHakukohdeOid("hakukohdeOid");
+        hakijaryhma.setKiintio(3);
+
+        Valintatapajono valintatapajono = new Valintatapajono();
+        valintatapajono.setAloituspaikat(3);
+        valintatapajono.setPrioriteetti(0);
+        valintatapajono.setTasasijasaanto(Tasasijasaanto.ARVONTA);
+        valintatapajono.setHakemukset(generateHakemukset(4, hakijaryhma));
+
+        Hakukohde hakukohde = new Hakukohde();
+        hakukohde.setOid("hakukohdeOid");
+        hakukohde.setValintatapajonot(Collections.singletonList(valintatapajono));
+        hakukohde.setHakijaryhmat(Collections.singletonList(hakijaryhma));
+
+        SijoitteluajoWrapper ajoWrapper =
+                SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(
+                        new SijoitteluAjo(),
+                        Collections.singletonList(hakukohde),
+                        Collections.emptyList(),
+                        Collections.emptyMap()
+                );
+        HakukohdeWrapper hakukohdeWrapper = ajoWrapper.getHakukohteet().get(0);
+        HakijaryhmaWrapper hakijaryhmaWrapper = hakukohdeWrapper.getHakijaryhmaWrappers().get(0);
+
+        hakukohdeWrapper.getValintatapajonot().get(0).getHakemukset().get(1).getHakemus().setJonosija(1);
+        hakukohdeWrapper.getValintatapajonot().get(0).getHakemukset().get(2).getHakemus().setJonosija(1);
+        hakukohdeWrapper.getValintatapajonot().get(0).getHakemukset().get(3).getHakemus().setJonosija(1);
+
+        SijoitteleHakukohde.sijoitteleHakukohde(ajoWrapper, hakukohdeWrapper);
+        Assert.assertEquals(HakemuksenTila.HYVAKSYTTY, hakukohdeWrapper.getValintatapajonot().get(0).getHakemukset().get(0).getHakemus().getTila());
+        Assert.assertEquals(HakemuksenTila.HYVAKSYTTY, hakukohdeWrapper.getValintatapajonot().get(0).getHakemukset().get(1).getHakemus().getTila());
+        Assert.assertEquals(HakemuksenTila.HYVAKSYTTY, hakukohdeWrapper.getValintatapajonot().get(0).getHakemukset().get(2).getHakemus().getTila());
+        Assert.assertEquals(HakemuksenTila.VARALLA, hakukohdeWrapper.getValintatapajonot().get(0).getHakemukset().get(3).getHakemus().getTila());
+        Assert.assertEquals("hakijaryhmaOid", hakukohdeWrapper.getValintatapajonot().get(0).getHakemukset().get(0).getHakemus().getHakijaryhmaOid());
+        Assert.assertEquals("hakijaryhmaOid", hakukohdeWrapper.getValintatapajonot().get(0).getHakemukset().get(1).getHakemus().getHakijaryhmaOid());
+        Assert.assertEquals("hakijaryhmaOid", hakukohdeWrapper.getValintatapajonot().get(0).getHakemukset().get(2).getHakemus().getHakijaryhmaOid());
+        Assert.assertNull(hakukohdeWrapper.getValintatapajonot().get(0).getHakemukset().get(3).getHakemus().getHakijaryhmaOid());
     }
 }
