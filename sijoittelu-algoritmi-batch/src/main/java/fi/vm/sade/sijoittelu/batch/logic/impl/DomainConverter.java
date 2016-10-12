@@ -81,6 +81,7 @@ public class DomainConverter {
             hakijaryhma.setPrioriteetti(h.getPrioriteetti());
             hakijaryhma.setKaytaKaikki(h.isKaytaKaikki());
             hakijaryhma.setKaytetaanRyhmaanKuuluvia(h.isKaytetaanRyhmaanKuuluvia());
+            hakijaryhma.setHakijaryhmatyyppikoodiUri(h.getHakijaryhmatyyppikoodiUri());
             hakijaryhma.setHakukohdeOid(h.getHakukohdeOid());
             hakijaryhma.setTarkkaKiintio(h.isTarkkaKiintio());
             hakijaryhma.setValintatapajonoOid(h.getValintatapajonoOid());

@@ -28,6 +28,8 @@ public class Hakijaryhma implements Serializable {
 
     private boolean kaytetaanRyhmaanKuuluvia;
 
+    private String hakijaryhmatyyppikoodiUri;
+
     private String valintatapajonoOid;
 
     private BigDecimal alinHyvaksyttyPistemaara;
@@ -135,5 +137,13 @@ public class Hakijaryhma implements Serializable {
 
     public void setValintatapajonoOid(String valintatapajonoOid) {
         this.valintatapajonoOid = valintatapajonoOid;
+    }
+
+    public String getHakijaryhmatyyppikoodiUri() {
+        return hakijaryhmatyyppikoodiUri;
+    }
+
+    public void setHakijaryhmatyyppikoodiUri(String hakijaryhmatyyppikoodiUri) {
+        this.hakijaryhmatyyppikoodiUri = hakijaryhmatyyppikoodiUri;
     }
 }
