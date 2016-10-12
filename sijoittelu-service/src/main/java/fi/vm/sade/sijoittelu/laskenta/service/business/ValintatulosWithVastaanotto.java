@@ -1,12 +1,9 @@
 package fi.vm.sade.sijoittelu.laskenta.service.business;
 
-import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.HakemusWrapper;
-import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.SijoitteluajoWrapper;
-import fi.vm.sade.sijoittelu.domain.HakemuksenTila;
 import fi.vm.sade.sijoittelu.domain.LogEntry;
 import fi.vm.sade.sijoittelu.domain.ValintatuloksenTila;
 import fi.vm.sade.sijoittelu.domain.Valintatulos;
-import fi.vm.sade.sijoittelu.laskenta.external.resource.ValintaTulosServiceResource;
+import fi.vm.sade.sijoittelu.laskenta.external.resource.VirkailijaValintaTulosServiceResource;
 import fi.vm.sade.sijoittelu.laskenta.external.resource.dto.VastaanottoEventDto;
 import fi.vm.sade.sijoittelu.tulos.dao.ValintatulosDao;
 import org.apache.commons.lang3.tuple.Pair;
@@ -16,17 +13,16 @@ import org.slf4j.LoggerFactory;
 
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class ValintatulosWithVastaanotto {
 
     private static final Logger LOG = LoggerFactory.getLogger(ValintatulosWithVastaanotto.class);
 
     final private ValintatulosDao valintatulosDao;
-    final private ValintaTulosServiceResource valintaTulosServiceResource;
+    final private VirkailijaValintaTulosServiceResource valintaTulosServiceResource;
 
     public ValintatulosWithVastaanotto(ValintatulosDao valintatulosDao,
-                                       ValintaTulosServiceResource valintaTulosServiceResource) {
+                                       VirkailijaValintaTulosServiceResource valintaTulosServiceResource) {
         this.valintatulosDao = valintatulosDao;
         this.valintaTulosServiceResource = valintaTulosServiceResource;
     }

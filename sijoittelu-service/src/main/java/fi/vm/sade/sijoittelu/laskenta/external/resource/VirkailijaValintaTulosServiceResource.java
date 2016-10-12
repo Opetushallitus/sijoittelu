@@ -10,7 +10,7 @@ import javax.ws.rs.core.MediaType;
 import java.util.List;
 
 @Path("/virkailija")
-public interface ValintaTulosServiceResource {
+public interface VirkailijaValintaTulosServiceResource {
 
     @GET
     @Path("/henkilo/{hakijaOid}/hakemus/{hakemusOid}/hakukohde/{hakukohdeOid}/vastaanotettavuus")

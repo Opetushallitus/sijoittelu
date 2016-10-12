@@ -26,7 +26,7 @@ import fi.vm.sade.sijoittelu.domain.comparator.HakemusComparator;
 import fi.vm.sade.sijoittelu.domain.dto.VastaanottoDTO;
 import fi.vm.sade.sijoittelu.laskenta.actors.messages.PoistaHakukohteet;
 import fi.vm.sade.sijoittelu.laskenta.actors.messages.PoistaVanhatAjotSijoittelulta;
-import fi.vm.sade.sijoittelu.laskenta.external.resource.ValintaTulosServiceResource;
+import fi.vm.sade.sijoittelu.laskenta.external.resource.VirkailijaValintaTulosServiceResource;
 import fi.vm.sade.sijoittelu.laskenta.external.resource.dto.ParametriArvoDTO;
 import fi.vm.sade.sijoittelu.laskenta.external.resource.dto.ParametriDTO;
 import fi.vm.sade.sijoittelu.laskenta.service.exception.HakemustaEiLoytynytException;
@@ -98,7 +98,7 @@ public class SijoitteluBusinessService {
     private final SijoitteluTulosConverter sijoitteluTulosConverter;
     private final ActorService actorService;
     private final TarjontaIntegrationService tarjontaIntegrationService;
-    private final ValintaTulosServiceResource valintaTulosServiceResource;
+    private final VirkailijaValintaTulosServiceResource valintaTulosServiceResource;
     private final ValintatulosWithVastaanotto valintatulosWithVastaanotto;
     private final Collection<PostSijoitteluProcessor> postSijoitteluProcessors;
     private final Collection<PreSijoitteluProcessor> preSijoitteluProcessors;
@@ -115,7 +115,7 @@ public class SijoitteluBusinessService {
                                      SijoitteluTulosConverter sijoitteluTulosConverter,
                                      ActorService actorService,
                                      TarjontaIntegrationService tarjontaIntegrationService,
-                                     ValintaTulosServiceResource valintaTulosServiceResource) {
+                                     VirkailijaValintaTulosServiceResource valintaTulosServiceResource) {
         this.maxAjoMaara = maxAjoMaara;
         this.maxErillisAjoMaara = maxErillisAjoMaara;
         this.valintatulosDao = valintatulosDao;
