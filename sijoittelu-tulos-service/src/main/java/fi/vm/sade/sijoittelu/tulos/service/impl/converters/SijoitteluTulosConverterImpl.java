@@ -139,6 +139,7 @@ public class SijoitteluTulosConverterImpl implements SijoitteluTulosConverter {
         dto.setKaytetaanRyhmaanKuuluvia(hakijaryhma.isKaytetaanRyhmaanKuuluvia());
         dto.setValintatapajonoOid(hakijaryhma.getValintatapajonoOid());
         dto.setHakemusOid(hakijaryhma.getHakemusOid());
+        dto.setHakijaryhmatyyppikoodiUri(hakijaryhma.getHakijaryhmatyyppikoodiUri());
         return dto;
     }
 
@@ -158,6 +159,8 @@ public class SijoitteluTulosConverterImpl implements SijoitteluTulosConverter {
             pistetietoDTO.setLaskennallinenArvo(pistetieto.getLaskennallinenArvo());
             pistetietoDTO.setOsallistuminen(pistetieto.getOsallistuminen());
             pistetietoDTO.setTunniste(pistetieto.getTunniste());
+            pistetietoDTO.setTyypinKoodiUri(pistetieto.getTyypinKoodiUri());
+            pistetietoDTO.setTilastoidaan(pistetieto.isTilastoidaan());
             dto.getPistetiedot().add(pistetietoDTO);
         }
     }

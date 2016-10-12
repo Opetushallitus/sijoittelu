@@ -18,6 +18,7 @@ public class HakijaryhmaDTO implements Serializable {
     private boolean         kaytaKaikki;
     private boolean         tarkkaKiintio;
     private boolean         kaytetaanRyhmaanKuuluvia;
+    private String          hakijaryhmatyyppikoodiUri;
     private String          valintatapajonoOid;
     private List<String>    hakemusOid = new ArrayList<String>();
 
@@ -107,5 +108,13 @@ public class HakijaryhmaDTO implements Serializable {
 
     public void setHakemusOid(List<String> hakemusOid) {
         this.hakemusOid = hakemusOid;
+    }
+
+    public String getHakijaryhmatyyppikoodiUri() {
+        return hakijaryhmatyyppikoodiUri;
+    }
+
+    public void setHakijaryhmatyyppikoodiUri(String hakijaryhmatyyppikoodiUri) {
+        this.hakijaryhmatyyppikoodiUri = hakijaryhmatyyppikoodiUri;
     }
 }

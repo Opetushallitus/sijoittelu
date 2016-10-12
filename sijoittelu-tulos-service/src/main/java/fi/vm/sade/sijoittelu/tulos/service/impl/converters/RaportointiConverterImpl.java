@@ -243,6 +243,8 @@ public class RaportointiConverterImpl implements RaportointiConverter {
                 pt.setLaskennallinenArvo(pistetieto.getLaskennallinenArvo());
                 pt.setOsallistuminen(pistetieto.getOsallistuminen());
                 pt.setTunniste(pistetieto.getTunniste());
+                pt.setTyypinKoodiUri(pistetieto.getTyypinKoodiUri());
+                pt.setTilastoidaan(pistetieto.isTilastoidaan());
             }
         }
     }

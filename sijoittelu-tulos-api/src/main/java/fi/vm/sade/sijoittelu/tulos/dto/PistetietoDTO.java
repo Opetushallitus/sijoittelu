@@ -11,6 +11,10 @@ public class PistetietoDTO implements Serializable {
 
     private String osallistuminen;
 
+    private String tyypinKoodiUri;
+
+    private boolean tilastoidaan;
+
     public String getOsallistuminen() {
         return osallistuminen;
     }
@@ -41,5 +45,21 @@ public class PistetietoDTO implements Serializable {
 
     public void setArvo(String arvo) {
         this.arvo = arvo;
+    }
+
+    public String getTyypinKoodiUri() {
+        return tyypinKoodiUri;
+    }
+
+    public void setTyypinKoodiUri(String tyypinKoodiUri) {
+        this.tyypinKoodiUri = tyypinKoodiUri;
+    }
+
+    public boolean isTilastoidaan() {
+        return tilastoidaan;
+    }
+
+    public void setTilastoidaan(boolean tilastoidaan) {
+        this.tilastoidaan = tilastoidaan;
     }
 }
