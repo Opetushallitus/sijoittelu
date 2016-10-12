@@ -133,6 +133,8 @@ public class DomainConverter {
             pistetieto.setLaskennallinenArvo(arvo.getLaskennallinenArvo());
             pistetieto.setOsallistuminen(arvo.getOsallistuminen());
             pistetieto.setTunniste(arvo.getTunniste());
+            pistetieto.setTyypinKoodiUri(arvo.getTyypinKoodiUri());
+            pistetieto.setTilastoidaan(arvo.isTilastoidaan());
             hakemus.getPistetiedot().add(pistetieto);
         });
     }
