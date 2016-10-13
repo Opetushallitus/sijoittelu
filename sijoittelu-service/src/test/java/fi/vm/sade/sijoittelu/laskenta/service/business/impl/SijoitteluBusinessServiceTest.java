@@ -3,6 +3,7 @@ package fi.vm.sade.sijoittelu.laskenta.service.business.impl;
 import fi.vm.sade.authentication.business.service.Authorizer;
 import fi.vm.sade.generic.service.exception.NotAuthorizedException;
 import fi.vm.sade.sijoittelu.domain.*;
+import fi.vm.sade.sijoittelu.laskenta.external.resource.SijoitteluValintaTulosServiceResource;
 import fi.vm.sade.sijoittelu.laskenta.external.resource.VirkailijaValintaTulosServiceResource;
 import fi.vm.sade.sijoittelu.laskenta.external.resource.dto.ParametriArvoDTO;
 import fi.vm.sade.sijoittelu.laskenta.external.resource.dto.ParametriDTO;
@@ -41,6 +42,7 @@ public class SijoitteluBusinessServiceTest {
     private TestDataGenerator testDataGenerator;
     private TarjontaIntegrationService tarjontaIntegrationService;
     private RaportointiService raportointiService;
+    private SijoitteluValintaTulosServiceResource sijoitteluValintaTulosServiceResource;
 
 
     @Before
@@ -52,8 +54,11 @@ public class SijoitteluBusinessServiceTest {
         tarjontaIntegrationService = mock(TarjontaIntegrationService.class);
         VirkailijaValintaTulosServiceResource valintaTulosServiceResourceMock = mock(VirkailijaValintaTulosServiceResource.class);
         raportointiService = mock(RaportointiService.class);
+        sijoitteluValintaTulosServiceResource = mock(SijoitteluValintaTulosServiceResource.class);
 
-        sijoitteluBusinessService = new SijoitteluBusinessService(1,1,valintatulosDaoMock,hakukohdeDao,sijoitteluDao, raportointiService, null, authorizer,null,null,tarjontaIntegrationService,valintaTulosServiceResourceMock);
+        sijoitteluBusinessService = new SijoitteluBusinessService(1,1,valintatulosDaoMock,hakukohdeDao,sijoitteluDao,
+                raportointiService, null, authorizer,null,null,tarjontaIntegrationService,valintaTulosServiceResourceMock,
+                sijoitteluValintaTulosServiceResource);
         testDataGenerator = new TestDataGenerator();
 
     }
