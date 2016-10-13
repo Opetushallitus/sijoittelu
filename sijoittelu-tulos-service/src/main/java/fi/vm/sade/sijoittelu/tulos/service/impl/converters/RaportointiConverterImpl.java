@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import fi.vm.sade.sijoittelu.domain.Valintatulos;
 import fi.vm.sade.sijoittelu.tulos.dto.*;
 import fi.vm.sade.sijoittelu.tulos.dto.raportointi.*;
+import fi.vm.sade.sijoittelu.tulos.dto.raportointi.HakijaryhmaDTO;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
@@ -53,6 +54,7 @@ public class RaportointiConverterImpl implements RaportointiConverter {
         hakutoiveenValintatapajonoDTO.setValintatapajonoOid(valintatapajono.getOid());
         hakutoiveenValintatapajonoDTO.setHakemuksenTilanViimeisinMuutos(viimeisinHakemuksenTilanMuutos(hakemusDTO));
         applyPistetiedot(raportointiHakutoiveDTO, hakemusDTO.getPistetiedot());
+        applyHakijaryhmat(hakemusDTO, raportointiHakutoiveDTO, hakukohde);
     }
 
     private void kevytPopulateHakija(KevytHakukohdeDTO hakukohde, KevytValintatapajonoDTO valintatapajono, KevytHakemusDTO hakemusDTO, KevytHakijaDTO hakijaRaportointiDTO) {
@@ -245,6 +247,25 @@ public class RaportointiConverterImpl implements RaportointiConverter {
                 pt.setTunniste(pistetieto.getTunniste());
                 pt.setTyypinKoodiUri(pistetieto.getTyypinKoodiUri());
                 pt.setTilastoidaan(pistetieto.isTilastoidaan());
+            }
+        }
+    }
+
+    private void applyHakijaryhmat(HakemusDTO hakemusDTO, HakutoiveDTO dto, HakukohdeDTO hakukohde) {
+        for (fi.vm.sade.sijoittelu.tulos.dto.HakijaryhmaDTO hakijaryhma : hakukohde.getHakijaryhmat()) {
+            if (hakijaryhma.getOid() != null && hakijaryhma.getHakemusOid().contains(hakemusDTO.getHakemusOid())) {
+                for (HakijaryhmaDTO added : dto.getHakijaryhmat()) {
+                    if (added.getOid().equals(hakijaryhma.getOid())) {
+                        return;
+                    }
+                }
+                HakijaryhmaDTO add = new HakijaryhmaDTO();
+                add.setOid(hakijaryhma.getOid());
+                add.setNimi(hakijaryhma.getNimi());
+                add.setHakijaryhmatyyppikoodiUri(hakijaryhma.getHakijaryhmatyyppikoodiUri());
+                add.setValintatapajonoOid(hakijaryhma.getValintatapajonoOid());
+                add.setKiintio(hakijaryhma.getKiintio());
+                dto.getHakijaryhmat().add(add);
             }
         }
     }

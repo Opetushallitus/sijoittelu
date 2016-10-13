@@ -24,6 +24,8 @@ public class HakutoiveDTO implements Comparable<HakutoiveDTO> {
 
     private List<HakutoiveenValintatapajonoDTO> hakutoiveenValintatapajonot = new ArrayList<HakutoiveenValintatapajonoDTO>();
 
+    private List<HakijaryhmaDTO> hakijaryhmat = new ArrayList<HakijaryhmaDTO>();
+
     private boolean kaikkiJonotSijoiteltu = true;
 
     private BigDecimal ensikertalaisuusHakijaryhmanAlimmatHyvaksytytPisteet;
@@ -112,5 +114,13 @@ public class HakutoiveDTO implements Comparable<HakutoiveDTO> {
 
     public void setVastaanottotieto(ValintatuloksenTila vastaanottotieto) {
         this.vastaanottotieto = vastaanottotieto;
+    }
+
+    public List<HakijaryhmaDTO> getHakijaryhmat() {
+        return hakijaryhmat;
+    }
+
+    public void setHakijaryhmat(List<HakijaryhmaDTO> hakijaryhmat) {
+        this.hakijaryhmat = hakijaryhmat;
     }
 }
