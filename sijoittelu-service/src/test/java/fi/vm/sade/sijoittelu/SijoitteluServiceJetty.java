@@ -82,8 +82,6 @@ public class SijoitteluServiceJetty {
         System.setProperty("valintalaskentakoostepalvelu.organisaatioService.rest.url", "https://itest-virkailija.oph.ware.fi/organisaatio-service/rest");
         System.setProperty("valintalaskentakoostepalvelu.hakemusService.url", "https://itest-virkailija.oph.ware.fi/haku-app/services/ws/hakemusService");
         System.setProperty("valintalaskentakoostepalvelu.tarjonta.rest.url", "https://itest-virkailija.oph.ware.fi/tarjonta-service/rest");
-        System.setProperty("valintalaskentakoostepalvelu.valintatulosservice.rest.url", "https://itest-virkailija.oph.ware.fi/valinta-tulos-service");
-        System.setProperty("valintalaskentakoostepalvelu.valinta-tulos-service.rest.url", "https://itest-virkailija.oph.ware.fi/valinta-tulos-service");
         System.setProperty("valintalaskentakoostepalvelu.oppijantunnistus.rest.url", "https://itest-virkailija.oph.ware.fi/oppijan-tunnistus");
         System.setProperty("valintalaskentakoostepalvelu.hakemus.rest.url", "https://itest-virkailija.oph.ware.fi/haku-app");
         System.setProperty("valintalaskentakoostepalvelu.authentication.rest.url", "https://itest-virkailija.oph.ware.fi/authentication-service");
@@ -96,7 +94,11 @@ public class SijoitteluServiceJetty {
         System.setProperty("valintalaskentakoostepalvelu.valintaperusteet.rest.url", "https://itest-virkailija.oph.ware.fi/valintaperusteet-service/resources");
         System.setProperty("valintalaskentakoostepalvelu.parametriservice.rest.url", "https://itest-virkailija.oph.ware.fi/ohjausparametrit-service/api");
         System.setProperty("valintalaskentakoostepalvelu.valintaperusteet.ilb.url", "https://itest-virkailija.oph.ware.fi/valintaperusteet-service/resources");
-        System.setProperty("valintalaskenta-laskenta-service.mongodb.uri", "mongodb://luokka:EV3pWXJgtpkX@taulu.hard.ware.fi:27017/valintalaskentadb");
+        System.setProperty("valintalaskenta-laskenta-service.mongodb.uri", Optional.ofNullable(System.getProperty("valintalaskentaMongoUri")).orElse(""));
+
+
+        System.setProperty("valintalaskentakoostepalvelu.valinta-tulos-service.rest.url", "http://localhost:8097/valinta-tulos-service");
+        System.setProperty("valintalaskentakoostepalvelu.valintatulosservice.rest.url", "http://localhost:8097/valinta-tulos-service");
     }
 
     public static void startShared() {
