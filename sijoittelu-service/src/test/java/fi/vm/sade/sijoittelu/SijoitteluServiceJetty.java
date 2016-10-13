@@ -79,8 +79,6 @@ public class SijoitteluServiceJetty {
         System.setProperty("valintalaskentakoostepalvelu.organisaatioService.rest.url", "https://itest-virkailija.oph.ware.fi/organisaatio-service/rest");
         System.setProperty("valintalaskentakoostepalvelu.hakemusService.url", "https://itest-virkailija.oph.ware.fi/haku-app/services/ws/hakemusService");
         System.setProperty("valintalaskentakoostepalvelu.tarjonta.rest.url", "https://itest-virkailija.oph.ware.fi/tarjonta-service/rest");
-        System.setProperty("valintalaskentakoostepalvelu.valintatulosservice.rest.url", "https://itest-virkailija.oph.ware.fi/valinta-tulos-service");
-        System.setProperty("valintalaskentakoostepalvelu.valinta-tulos-service.rest.url", "https://itest-virkailija.oph.ware.fi/valinta-tulos-service");
         System.setProperty("valintalaskentakoostepalvelu.oppijantunnistus.rest.url", "https://itest-virkailija.oph.ware.fi/oppijan-tunnistus");
         System.setProperty("valintalaskentakoostepalvelu.hakemus.rest.url", "https://itest-virkailija.oph.ware.fi/haku-app");
         System.setProperty("valintalaskentakoostepalvelu.authentication.rest.url", "https://itest-virkailija.oph.ware.fi/authentication-service");
