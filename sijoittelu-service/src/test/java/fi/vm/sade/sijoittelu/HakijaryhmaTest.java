@@ -96,7 +96,7 @@ public class HakijaryhmaTest {
         SijoittelunTila s = SijoitteluAlgorithmUtil.sijoittele(new SijoitteluAjo(), hakukohteet, new ArrayList(), java.util.Collections.emptyMap());
 
         System.out.println(tulostaSijoittelu(s));
-
+        Assert.assertEquals(2, hakukohteet.get(0).getHakijaryhmat().size());
         assertoiAinoastaanValittu(hakukohteet.get(0).getValintatapajonot().get(0), "1.2.246.562.11.00001068863", "1.2.246.562.11.00001067411");
     }
 
@@ -111,6 +111,7 @@ public class HakijaryhmaTest {
 
         System.out.println(tulostaSijoittelu(s));
 
+        Assert.assertEquals(0, hakukohteet.get(0).getHakijaryhmat().size());
         assertoiAinoastaanValittu(hakukohteet.get(0).getValintatapajonot().get(0), "1.2.246.562.11.00001068863", "1.2.246.562.11.00001090792", "1.2.246.562.11.00001067411");
     }
 
