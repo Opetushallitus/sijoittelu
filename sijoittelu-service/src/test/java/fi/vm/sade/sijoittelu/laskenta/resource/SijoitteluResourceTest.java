@@ -1,6 +1,7 @@
 package fi.vm.sade.sijoittelu.laskenta.resource;
 
 import fi.vm.sade.service.valintaperusteet.dto.HakijaryhmaValintatapajonoDTO;
+import fi.vm.sade.service.valintaperusteet.dto.KoodiDTO;
 import fi.vm.sade.service.valintaperusteet.dto.ValintatapajonoDTO;
 import fi.vm.sade.service.valintaperusteet.dto.model.Tasapistesaanto;
 import fi.vm.sade.service.valintaperusteet.resource.ValintalaskentakoostepalveluResource;
@@ -95,6 +96,7 @@ public class SijoitteluResourceTest {
                 assertNotSame(hakijaryhma.getKuvaus(), alkuperainen.getKuvaus());
                 assertNotSame(hakijaryhma.getNimi(), alkuperainen.getNimi());
                 assertNotSame(hakijaryhma.isTarkkaKiintio(), alkuperainen.isTarkkaKiintio());
+                assertNotSame(hakijaryhma.getHakijaryhmatyyppikoodiUri(), alkuperainen.getHakijaryhmatyyppikoodiUri());
 
                 assertThat(hakijaryhma.isKaytaKaikki(), is(hakijaryhmavalintaperusteista.isKaytaKaikki()));
                 assertThat(hakijaryhma.isKaytetaanRyhmaanKuuluvia(), is(hakijaryhmavalintaperusteista.isKaytetaanRyhmaanKuuluvia()));
@@ -102,6 +104,7 @@ public class SijoitteluResourceTest {
                 assertThat(hakijaryhma.getKuvaus(), is(hakijaryhmavalintaperusteista.getKuvaus()));
                 assertThat(hakijaryhma.getNimi(), is(hakijaryhmavalintaperusteista.getNimi()));
                 assertThat(hakijaryhma.isTarkkaKiintio(), is(hakijaryhmavalintaperusteista.isTarkkaKiintio()));
+                assertThat(hakijaryhma.getHakijaryhmatyyppikoodiUri(), is(hakijaryhmavalintaperusteista.getHakijaryhmatyyppikoodi().getUri()));
             }
         } finally{
             reset(sijoitteluBusinessService, valintatietoService, valintalaskentakoostepalveluResource);
@@ -170,6 +173,7 @@ public class SijoitteluResourceTest {
         hakijaryhma.setKuvaus(EMPTY);
         hakijaryhma.setNimi(EMPTY);
         hakijaryhma.setTarkkaKiintio(false);
+        hakijaryhma.setHakijaryhmatyyppikoodiUri(EMPTY);
         return hakijaryhma;
     }
     private HakijaryhmaValintatapajonoDTO createHakijaryhmaValintatapajonoDTO(String hakijaryhmaOid) {
@@ -182,6 +186,9 @@ public class SijoitteluResourceTest {
         hakijaryhmaValintatapajonoDTO.setKuvaus(UUID.randomUUID().toString());
         hakijaryhmaValintatapajonoDTO.setNimi(UUID.randomUUID().toString());
         hakijaryhmaValintatapajonoDTO.setTarkkaKiintio(true);
+        KoodiDTO koodi = new KoodiDTO();
+        koodi.setUri("koodi_uri");
+        hakijaryhmaValintatapajonoDTO.setHakijaryhmatyyppikoodi(koodi);
         return hakijaryhmaValintatapajonoDTO;
     }
 }

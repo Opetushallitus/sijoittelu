@@ -130,6 +130,7 @@ public class SijoitteluResource {
                         hakijaryhma.setNimi(h.getNimi());
                         hakijaryhma.setTarkkaKiintio(h.isTarkkaKiintio());
                         hakijaryhma.setPrioriteetti(h.getPrioriteetti());
+                        hakijaryhma.setHakijaryhmatyyppikoodiUri(h.getHakijaryhmatyyppikoodi() != null ? h.getHakijaryhmatyyppikoodi().getUri() : null);
                     }
                 }
         );
