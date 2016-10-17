@@ -9,6 +9,7 @@ public class HakijaryhmaDTO implements Serializable {
     private int             kiintio;
     private String          hakijaryhmatyyppikoodiUri;
     private String          valintatapajonoOid;
+    private boolean         hyvaksyttyHakijaryhmasta;
 
     public String getOid() {
         return oid;
@@ -48,5 +49,13 @@ public class HakijaryhmaDTO implements Serializable {
 
     public void setHakijaryhmatyyppikoodiUri(String hakijaryhmatyyppikoodiUri) {
         this.hakijaryhmatyyppikoodiUri = hakijaryhmatyyppikoodiUri;
+    }
+
+    public boolean isHyvaksyttyHakijaryhmasta() {
+        return hyvaksyttyHakijaryhmasta;
+    }
+
+    public void setHyvaksyttyHakijaryhmasta(boolean hyvaksyttyHakijaryhmasta) {
+        this.hyvaksyttyHakijaryhmasta = hyvaksyttyHakijaryhmasta;
     }
 }

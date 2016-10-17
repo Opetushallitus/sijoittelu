@@ -54,7 +54,7 @@ public class RaportointiConverterImpl implements RaportointiConverter {
         hakutoiveenValintatapajonoDTO.setValintatapajonoOid(valintatapajono.getOid());
         hakutoiveenValintatapajonoDTO.setHakemuksenTilanViimeisinMuutos(viimeisinHakemuksenTilanMuutos(hakemusDTO));
         applyPistetiedot(raportointiHakutoiveDTO, hakemusDTO.getPistetiedot());
-        applyHakijaryhmat(hakemusDTO, raportointiHakutoiveDTO, hakukohde);
+        applyHakijaryhmat(raportointiHakutoiveDTO, hakemusDTO, hakukohde);
     }
 
     private void kevytPopulateHakija(KevytHakukohdeDTO hakukohde, KevytValintatapajonoDTO valintatapajono, KevytHakemusDTO hakemusDTO, KevytHakijaDTO hakijaRaportointiDTO) {
@@ -251,7 +251,7 @@ public class RaportointiConverterImpl implements RaportointiConverter {
         }
     }
 
-    private void applyHakijaryhmat(HakemusDTO hakemusDTO, HakutoiveDTO dto, HakukohdeDTO hakukohde) {
+    private void applyHakijaryhmat(HakutoiveDTO dto, HakemusDTO hakemusDTO, HakukohdeDTO hakukohde) {
         for (fi.vm.sade.sijoittelu.tulos.dto.HakijaryhmaDTO hakijaryhma : hakukohde.getHakijaryhmat()) {
             if (hakijaryhma.getOid() != null && hakijaryhma.getHakemusOid().contains(hakemusDTO.getHakemusOid())) {
                 for (HakijaryhmaDTO added : dto.getHakijaryhmat()) {
@@ -265,6 +265,11 @@ public class RaportointiConverterImpl implements RaportointiConverter {
                 add.setHakijaryhmatyyppikoodiUri(hakijaryhma.getHakijaryhmatyyppikoodiUri());
                 add.setValintatapajonoOid(hakijaryhma.getValintatapajonoOid());
                 add.setKiintio(hakijaryhma.getKiintio());
+                if(hakemusDTO.isHyvaksyttyHakijaryhmasta() && hakijaryhma.getOid().equals(hakemusDTO.getHakijaryhmaOid())) {
+                    add.setHyvaksyttyHakijaryhmasta(true);
+                } else {
+                    add.setHyvaksyttyHakijaryhmasta(false);
+                }
                 dto.getHakijaryhmat().add(add);
             }
         }
