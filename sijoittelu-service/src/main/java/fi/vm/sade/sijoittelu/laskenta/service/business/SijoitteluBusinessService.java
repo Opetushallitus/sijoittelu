@@ -456,10 +456,6 @@ public class SijoitteluBusinessService {
                             hakemus.setVarasijanNumero(null);
                         }
                         if(edellinen != null && TilaTaulukot.kuuluuHyvaksyttyihinTiloihin(hakemus.getTila())) {
-                            if(hakemus.isHyvaksyttyHakijaryhmasta() == false) {
-                                hakemus.setHyvaksyttyHakijaryhmasta(edellinen.isHyvaksyttyHakijaryhmasta());
-                                hakemus.setHakijaryhmaOid(edellinen.getHakijaryhmaOid());
-                            }
                             if(hakemus.getSiirtynytToisestaValintatapajonosta() == false) {
                                 hakemus.setSiirtynytToisestaValintatapajonosta(edellinen.getSiirtynytToisestaValintatapajonosta());
                             }
