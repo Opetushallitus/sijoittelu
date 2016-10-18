@@ -164,7 +164,10 @@ public class SijoitteleHakijaryhma {
             // Hyväksytään valittavat
             valittavatJaVarasijat.getLeft().forEach(h -> {
                 if (!h.getHakemus().isHyvaksyttyHakijaryhmasta()) {
-                    throw new IllegalStateException("");
+                    throw new IllegalStateException(String.format(
+                            "Hakijaryhmän %s sijoittelussa yritettiin hyväksyä merkitsemätöntä hakemusta",
+                            hakijaryhmaWrapper.getHakijaryhma().getOid()
+                    ));
                 }
                 h.setHyvaksyttyHakijaryhmasta(true);
                 muuttuneetHakemukset.addAll(SijoitteleHakukohde.hyvaksyHakemus(sijoitteluAjo, h));
