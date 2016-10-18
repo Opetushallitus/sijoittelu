@@ -30,7 +30,9 @@ public class SijoitteleHakijaryhma {
         List<MutableTriple<Integer, Tasasijasaanto, LinkedList<Hakemus>>> jonojenTiedot = liittyvatJonot.stream()
                 .map(j -> MutableTriple.of(
                         j.getValintatapajono().getAloituspaikat() - (int)j.getHakemukset().stream()
-                                .filter(h -> kuuluuHyvaksyttyihinTiloihin(hakemuksenTila(h)) && !hakijaryhmaanKuuluvat.contains(h.getHakemus().getHakemusOid()))
+                                .filter(h -> kuuluuHyvaksyttyihinTiloihin(hakemuksenTila(h)))
+                                .filter(h -> !(j.getValintatapajono().getTasasijasaanto() == Tasasijasaanto.YLITAYTTO && voidaanKorvata(h)))
+                                .filter(h -> !hakijaryhmaanKuuluvat.contains(h.getHakemus().getHakemusOid()))
                                 .count(),
                         j.getValintatapajono().getTasasijasaanto(),
                         j.getHakemukset().stream()
