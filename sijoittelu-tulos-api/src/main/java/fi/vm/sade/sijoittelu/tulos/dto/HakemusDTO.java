@@ -2,10 +2,7 @@ package fi.vm.sade.sijoittelu.tulos.dto;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class HakemusDTO implements Serializable {
     private String hakijaOid;
@@ -48,26 +45,16 @@ public class HakemusDTO implements Serializable {
 
     private boolean onkoMuuttunutViimeSijoittelussa = false;
 
-    private boolean hyvaksyttyHakijaryhmasta = false;
-
-    private String hakijaryhmaOid;
+    private Set<String> hyvaksyttyHakijaryhmista = new HashSet<>();
 
     private boolean siirtynytToisestaValintatapajonosta = false;
 
-    public String getHakijaryhmaOid() {
-        return hakijaryhmaOid;
+    public Set<String> getHyvaksyttyHakijaryhmista() {
+        return this.hyvaksyttyHakijaryhmista;
     }
 
-    public void setHakijaryhmaOid(String hakijaryhmaOid) {
-        this.hakijaryhmaOid = hakijaryhmaOid;
-    }
-
-    public boolean isHyvaksyttyHakijaryhmasta() {
-        return hyvaksyttyHakijaryhmasta;
-    }
-
-    public void setHyvaksyttyHakijaryhmasta(boolean hyvaksyttyHakijaryhmasta) {
-        this.hyvaksyttyHakijaryhmasta = hyvaksyttyHakijaryhmasta;
+    public void setHyvaksyttyHakijaryhmista(Set<String> hyvaksyttyHakijaryhmista) {
+        this.hyvaksyttyHakijaryhmista = hyvaksyttyHakijaryhmista;
     }
 
     public int getTodellinenJonosija() {

@@ -1,9 +1,7 @@
 package fi.vm.sade.sijoittelu.domain;
 
-import org.mongodb.morphia.annotations.Converters;
-import org.mongodb.morphia.annotations.Embedded;
+import org.mongodb.morphia.annotations.*;
 import fi.vm.sade.sijoittelu.domain.converter.BigDecimalConverter;
-import org.mongodb.morphia.annotations.Indexed;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -50,26 +48,37 @@ public class Hakemus implements Serializable {
 
     private Integer varasijanNumero;
 
-    private boolean hyvaksyttyHakijaryhmasta = false;
-
+    @Deprecated
     private String hakijaryhmaOid;
+
+    private Set<String> hyvaksyttyHakijaryhmista = new HashSet<>();
 
     private boolean siirtynytToisestaValintatapajonosta = false;
 
+    @PostLoad
+    public void migrateHyvaksyttyHakijaryhmista() {
+        if (hakijaryhmaOid != null && hyvaksyttyHakijaryhmista.isEmpty()) {
+            hyvaksyttyHakijaryhmista.add(hakijaryhmaOid);
+            hakijaryhmaOid = null;
+        }
+    }
+
+    @Deprecated
     public String getHakijaryhmaOid() {
-        return hakijaryhmaOid;
+        throw new RuntimeException("Deprecated");
     }
 
+    @Deprecated
     public void setHakijaryhmaOid(String hakijaryhmaOid) {
-        this.hakijaryhmaOid = hakijaryhmaOid;
+        throw new RuntimeException("Deprecated");
     }
 
-    public boolean isHyvaksyttyHakijaryhmasta() {
-        return hyvaksyttyHakijaryhmasta;
+    public Set<String> getHyvaksyttyHakijaryhmista() {
+        return this.hyvaksyttyHakijaryhmista;
     }
 
-    public void setHyvaksyttyHakijaryhmasta(boolean hyvaksyttyHakijaryhmasta) {
-        this.hyvaksyttyHakijaryhmasta = hyvaksyttyHakijaryhmasta;
+    public void setHyvaksyttyHakijaryhmista(Set<String> hyvaksyttyHakijaryhmista) {
+        this.hyvaksyttyHakijaryhmista = hyvaksyttyHakijaryhmista;
     }
 
     public Integer getPrioriteetti() {

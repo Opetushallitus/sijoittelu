@@ -81,8 +81,7 @@ public class SijoitteleHakijaryhma {
                     }
                     for (Hakemus h : hyvaksyttavat) {
                         hyvaksytyt.put(h.getHakemusOid(), h);
-                        h.setHyvaksyttyHakijaryhmasta(true);
-                        h.setHakijaryhmaOid(hakijaryhmaWrapper.getHakijaryhma().getOid());
+                        h.getHyvaksyttyHakijaryhmista().add(hakijaryhmaWrapper.getHakijaryhma().getOid());
                     }
                     jononTiedot.setLeft(paikkoja - hyvaksyttavat.size());
                 }
@@ -165,7 +164,7 @@ public class SijoitteleHakijaryhma {
             });
             // Hyväksytään valittavat
             valittavatJaVarasijat.getLeft().forEach(h -> {
-                if (!h.getHakemus().isHyvaksyttyHakijaryhmasta()) {
+                if (!h.getHakemus().getHyvaksyttyHakijaryhmista().contains(hakijaryhmaWrapper.getHakijaryhma().getOid())) {
                     throw new IllegalStateException(String.format(
                             "Hakijaryhmän %s sijoittelussa yritettiin hyväksyä merkitsemätöntä hakemusta",
                             hakijaryhmaWrapper.getHakijaryhma().getOid()

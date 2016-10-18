@@ -265,7 +265,7 @@ public class RaportointiConverterImpl implements RaportointiConverter {
                 add.setHakijaryhmatyyppikoodiUri(hakijaryhma.getHakijaryhmatyyppikoodiUri());
                 add.setValintatapajonoOid(hakijaryhma.getValintatapajonoOid());
                 add.setKiintio(hakijaryhma.getKiintio());
-                if(hakemusDTO.isHyvaksyttyHakijaryhmasta() && hakijaryhma.getOid().equals(hakemusDTO.getHakijaryhmaOid())) {
+                if(hakemusDTO.getHyvaksyttyHakijaryhmista().contains(hakijaryhma.getOid())) {
                     add.setHyvaksyttyHakijaryhmasta(true);
                 } else {
                     add.setHyvaksyttyHakijaryhmasta(false);

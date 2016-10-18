@@ -14,7 +14,6 @@ public class TilojenMuokkaus {
     public static void asetaTilaksiVaralla(HakemusWrapper hakemusWrapper) {
         hakemusWrapper.getHakemus().setTila(HakemuksenTila.VARALLA);
         hakemusWrapper.getHakemus().getTilanKuvaukset().clear();
-        poistaHakijaryhmastaHyvaksymistiedot(hakemusWrapper.getHakemus());
     }
 
     public static void asetaTilaksiHyvaksytty(HakemusWrapper hakemus) {
@@ -25,13 +24,11 @@ public class TilojenMuokkaus {
     public static void asetaTilaksiPeruuntunutToinenJono(HakemusWrapper h) {
         h.getHakemus().setTila(HakemuksenTila.PERUUNTUNUT);
         h.getHakemus().setTilanKuvaukset(TilanKuvaukset.peruuntunutHyvaksyttyToisessaJonossa());
-        poistaHakijaryhmastaHyvaksymistiedot(h.getHakemus());
     }
 
     public static void asetaTilaksiPeruuntunutYlempiToive(HakemusWrapper h) {
         h.getHakemus().setTila(HakemuksenTila.PERUUNTUNUT);
         h.getHakemus().setTilanKuvaukset(TilanKuvaukset.peruuntunutYlempiToive());
-        poistaHakijaryhmastaHyvaksymistiedot(h.getHakemus());
     }
 
     public static void asetaTilaksiVarasijaltaHyvaksytty(HakemusWrapper hakemus) {
@@ -42,13 +39,11 @@ public class TilojenMuokkaus {
     public static void asetaTilaksiPeruuntunutEiMahduKasiteltaviinSijoihin(HakemusWrapper hakemusWrapper) {
         hakemusWrapper.getHakemus().setTila(HakemuksenTila.PERUUNTUNUT);
         hakemusWrapper.getHakemus().setTilanKuvaukset(TilanKuvaukset.peruuntunutEiMahduKasiteltavienVarasijojenMaaraan());
-        poistaHakijaryhmastaHyvaksymistiedot(hakemusWrapper.getHakemus());
     }
 
     public static void asetaTilaksiPeruuntunutAloituspaikatTaynna(HakemusWrapper hakemusWrapper) {
         hakemusWrapper.getHakemus().setTila(HakemuksenTila.PERUUNTUNUT);
         hakemusWrapper.getHakemus().setTilanKuvaukset(TilanKuvaukset.peruuntunutAloituspaikatTaynna());
-        poistaHakijaryhmastaHyvaksymistiedot(hakemusWrapper.getHakemus());
     }
 
     public static void asetaTilaksiPeruuntunutHakukierrosPaattynyt(HakemusWrapper hk) {
@@ -108,12 +103,5 @@ public class TilojenMuokkaus {
             valintatulos.setTila(ValintatuloksenTila.EHDOLLISESTI_VASTAANOTTANUT, VASTAANOTTOTIETO_PERIYTYNYT_ALEMMALTA_HAKUTOIVEELTA);
         }
         sijoitteluajo.addMuuttuneetValintatulokset(valintatulos);
-    }
-
-    private static void poistaHakijaryhmastaHyvaksymistiedot(Hakemus h) {
-        if(h != null) {
-            h.setHyvaksyttyHakijaryhmasta(false);
-            h.setHakijaryhmaOid(null);
-        }
     }
 }
