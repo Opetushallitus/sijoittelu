@@ -13,6 +13,7 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.tuple.MutablePair;
 import org.apache.commons.lang3.tuple.MutableTriple;
 import org.apache.commons.lang3.tuple.Pair;
+import org.apache.commons.lang3.tuple.Triple;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -31,11 +32,12 @@ public class SijoitteleHakijaryhma {
                 .map(j -> MutableTriple.of(
                         j.getValintatapajono().getAloituspaikat() - (int)j.getHakemukset().stream()
                                 .filter(h -> kuuluuHyvaksyttyihinTiloihin(hakemuksenTila(h)))
-                                .filter(h -> !(j.getValintatapajono().getTasasijasaanto() == Tasasijasaanto.YLITAYTTO && voidaanKorvata(h)))
                                 .filter(h -> !hakijaryhmaanKuuluvat.contains(h.getHakemus().getHakemusOid()))
                                 .count(),
                         j.getValintatapajono().getTasasijasaanto(),
                         j.getHakemukset().stream()
+                                .filter(h -> hakijaryhmaanKuuluvat.contains(h.getHakemus().getHakemusOid()))
+                                .filter(h -> kuuluuHyvaksyttyihinTiloihin(h.getHakemus().getTila()) || kuuluuVaraTiloihin(h.getHakemus().getTila()))
                                 .sorted(new HakemusWrapperComparator())
                                 .map(h -> h.getHakemus())
                                 .collect(Collectors.toCollection(LinkedList::new))))
@@ -49,30 +51,41 @@ public class SijoitteleHakijaryhma {
                 liittyvatJonot.stream().mapToInt(j -> j.getValintatapajono().getAloituspaikat()).sum()
         );
         Map<String, Hakemus> hyvaksytyt = new HashMap<>(kiintio);
-        for (int p = 0; p <= suurinPrioriteetti; p++) {
-            for (MutableTriple<Integer, Tasasijasaanto, LinkedList<Hakemus>> jononTiedot : jonojenTiedot) {
+        boolean hyvaksyttyja = true;
+        while (hyvaksytyt.size() < kiintio && hyvaksyttyja) {
+            hyvaksyttyja = false;
+            for (Triple<Integer, Tasasijasaanto, LinkedList<Hakemus>> jononTiedot : jonojenTiedot) {
+                LinkedList<Hakemus> jono = jononTiedot.getRight();
+                while (!jono.isEmpty() && hyvaksytyt.containsKey(jono.element().getHakemusOid())) {
+                    jono.remove();
+                }
+            }
+            List<MutableTriple<Integer, Tasasijasaanto, LinkedList<Hakemus>>> foo = jonojenTiedot.stream()
+                    .sorted((j, jj) -> parasJonosija(j).orElse(-1).compareTo(parasJonosija(jj).orElse(-1)))
+                    .collect(Collectors.toList());
+            for (MutableTriple<Integer, Tasasijasaanto, LinkedList<Hakemus>> jononTiedot : foo) {
                 int paikkoja = jononTiedot.getLeft();
                 if (hyvaksytyt.size() < kiintio && paikkoja > 0) {
                     LinkedList<Hakemus> jono = jononTiedot.getRight();
                     LinkedList<Hakemus> kerrallaHyvaksyttavat = new LinkedList<>();
-                    while (!jono.isEmpty() && jono.element().getJonosija() == p) {
+                    while (!jono.isEmpty() && (kerrallaHyvaksyttavat.isEmpty() || kerrallaHyvaksyttavat.element().getJonosija() == jono.element().getJonosija())) {
                         Hakemus h = jono.remove();
-                        if (hakijaryhmaanKuuluvat.contains(h.getHakemusOid()) &&
-                                (kuuluuHyvaksyttyihinTiloihin(h.getTila()) || kuuluuVaraTiloihin(h.getTila())) &&
-                                !hyvaksytyt.containsKey(h.getHakemusOid())) {
+                        if (!hyvaksytyt.containsKey(h.getHakemusOid())) {
                             kerrallaHyvaksyttavat.add(h);
                         }
                     }
-                    List<Hakemus> hyvaksyttavat = null;
+                    List<Hakemus> hyvaksyttavat = new LinkedList<>();
+                    LinkedList<Hakemus> eiHyvaksyttavat = new LinkedList<>();
                     switch (jononTiedot.getMiddle()) {
                         case ARVONTA:
-                            hyvaksyttavat = kerrallaHyvaksyttavat.subList(0, Math.min(paikkoja, kerrallaHyvaksyttavat.size()));
+                            hyvaksyttavat.addAll(kerrallaHyvaksyttavat.subList(0, Math.min(paikkoja, kerrallaHyvaksyttavat.size())));
+                            eiHyvaksyttavat.addAll(kerrallaHyvaksyttavat.subList(Math.min(paikkoja, kerrallaHyvaksyttavat.size()), kerrallaHyvaksyttavat.size()));
                             break;
                         case ALITAYTTO:
                             if (kerrallaHyvaksyttavat.size() <= paikkoja) {
-                                hyvaksyttavat = kerrallaHyvaksyttavat;
+                                hyvaksyttavat.addAll(kerrallaHyvaksyttavat);
                             } else {
-                                hyvaksyttavat = new LinkedList<>();
+                                eiHyvaksyttavat.addAll(kerrallaHyvaksyttavat);
                             }
                             break;
                         case YLITAYTTO:
@@ -82,11 +95,22 @@ public class SijoitteleHakijaryhma {
                     for (Hakemus h : hyvaksyttavat) {
                         hyvaksytyt.put(h.getHakemusOid(), h);
                         h.getHyvaksyttyHakijaryhmista().add(hakijaryhmaWrapper.getHakijaryhma().getOid());
+                        hyvaksyttyja = true;
                     }
+                    eiHyvaksyttavat.descendingIterator().forEachRemaining(h -> {
+                        jono.addFirst(h);
+                    });
                     jononTiedot.setLeft(paikkoja - hyvaksyttavat.size());
+                }
+                if (hyvaksyttyja) {
+                    break;
                 }
             }
         }
+    }
+
+    private static Optional<Integer> parasJonosija(Triple<Integer, Tasasijasaanto, LinkedList<Hakemus>> jono) {
+        return jono.getRight().stream().map(h -> h.getJonosija()).findFirst();
     }
 
     public static Set<HakukohdeWrapper> sijoitteleHakijaryhma(SijoitteluajoWrapper sijoitteluAjo, HakijaryhmaWrapper hakijaryhmaWrapper) {
