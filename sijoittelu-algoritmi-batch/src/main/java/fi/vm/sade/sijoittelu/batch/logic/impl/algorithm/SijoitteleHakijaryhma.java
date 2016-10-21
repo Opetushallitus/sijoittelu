@@ -26,17 +26,24 @@ public class SijoitteleHakijaryhma {
         public final int aloituspaikkoja;
         public final int prioriteetti;
 
-        public HakijaryhmanValintatapajono(LinkedList<Hakemus> hakijaryhmanUlkopuoleltaHyvaksytyt,
-                                           LinkedList<Hakemus> hakijaryhmastaHyvaksyttavissa,
-                                           Tasasijasaanto tasasijasaanto,
-                                           int aloituspaikkoja,
-                                           int prioriteetti) {
+        public HakijaryhmanValintatapajono(Set<String> hakijaryhmaanKuuluvat, ValintatapajonoWrapper jono) {
+            HakemusWrapperComparator hakemusWrapperComparator = new HakemusWrapperComparator();
             this.hakijaryhmastaHyvaksytyt = new LinkedList<>();
-            this.hakijaryhmanUlkopuoleltaHyvaksytyt = hakijaryhmanUlkopuoleltaHyvaksytyt;
-            this.hakijaryhmastaHyvaksyttavissa = hakijaryhmastaHyvaksyttavissa;
-            this.tasasijasaanto = tasasijasaanto;
-            this.aloituspaikkoja = aloituspaikkoja;
-            this.prioriteetti = prioriteetti;
+            this.hakijaryhmanUlkopuoleltaHyvaksytyt = jono.getHakemukset().stream()
+                    .filter(h -> !hakijaryhmaanKuuluvat.contains(h.getHakemus().getHakemusOid()))
+                    .filter(h -> kuuluuHyvaksyttyihinTiloihin(h.getHakemus().getTila()))
+                    .sorted(hakemusWrapperComparator)
+                    .map(h -> h.getHakemus())
+                    .collect(Collectors.toCollection(LinkedList::new));
+            this.hakijaryhmastaHyvaksyttavissa = jono.getHakemukset().stream()
+                    .filter(h -> hakijaryhmaanKuuluvat.contains(h.getHakemus().getHakemusOid()))
+                    .filter(h -> kuuluuHyvaksyttyihinTiloihin(h.getHakemus().getTila()) || kuuluuVaraTiloihin(h.getHakemus().getTila()))
+                    .sorted(hakemusWrapperComparator)
+                    .map(h -> h.getHakemus())
+                    .collect(Collectors.toCollection(LinkedList::new));
+            this.tasasijasaanto = jono.getValintatapajono().getTasasijasaanto();
+            this.aloituspaikkoja = jono.getValintatapajono().getAloituspaikat();
+            this.prioriteetti = jono.getValintatapajono().getPrioriteetti();
         }
 
         public List<Hakemus> hyvaksyParhaallaJonosijallaOlevat() {
@@ -134,27 +141,10 @@ public class SijoitteleHakijaryhma {
 
     private static void merkitseHakijaryhmastaHyvaksytyt(HakijaryhmaWrapper hakijaryhmaWrapper) {
         Set<String> hakijaryhmaanKuuluvat = new HashSet<>(hakijaryhmaWrapper.getHakijaryhma().getHakemusOid());
-        HakemusWrapperComparator hakemusWrapperComparator = new HakemusWrapperComparator();
         HyvaksyComparator ylimmanPrioriteetinJonoJossaYlimmallaJonosijallaOlevaHakijaEnsin = new HyvaksyComparator();
         VaralleComparator alimmanPrioriteetinJonoJossaAlimmallaJonosijallaOlevaHakijaEnsin = new VaralleComparator();
         List<HakijaryhmanValintatapajono> valintatapajonot = hakijaryhmaanLiittyvatJonot(hakijaryhmaWrapper).stream()
-                .map(j -> new HakijaryhmanValintatapajono(
-                        j.getHakemukset().stream()
-                                .filter(h -> kuuluuHyvaksyttyihinTiloihin(h.getHakemus().getTila()))
-                                .filter(h -> !hakijaryhmaanKuuluvat.contains(h.getHakemus().getHakemusOid()))
-                                .sorted(hakemusWrapperComparator)
-                                .map(h -> h.getHakemus())
-                                .collect(Collectors.toCollection(LinkedList::new)),
-                        j.getHakemukset().stream()
-                                .filter(h -> hakijaryhmaanKuuluvat.contains(h.getHakemus().getHakemusOid()))
-                                .filter(h -> kuuluuHyvaksyttyihinTiloihin(h.getHakemus().getTila()) || kuuluuVaraTiloihin(h.getHakemus().getTila()))
-                                .sorted(hakemusWrapperComparator)
-                                .map(h -> h.getHakemus())
-                                .collect(Collectors.toCollection(LinkedList::new)),
-                        j.getValintatapajono().getTasasijasaanto(),
-                        j.getValintatapajono().getAloituspaikat(),
-                        j.getValintatapajono().getPrioriteetti()
-                ))
+                .map(j -> new HakijaryhmanValintatapajono(hakijaryhmaanKuuluvat, j))
                 .collect(Collectors.toList());
         int kiintio = hakijaryhmaWrapper.getHakijaryhma().getKiintio();
         boolean hyvaksyttiin = true;
