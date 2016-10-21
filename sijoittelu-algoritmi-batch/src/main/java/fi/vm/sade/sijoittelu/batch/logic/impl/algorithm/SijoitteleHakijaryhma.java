@@ -41,9 +41,12 @@ public class SijoitteleHakijaryhma {
 
         public List<Hakemus> hyvaksyParhaallaJonosijallaOlevat() {
             LinkedList<Hakemus> tasasijalla = new LinkedList<>();
-            while (!hakijaryhmastaHyvaksyttavat.isEmpty() && (tasasijalla.isEmpty() || tasasijalla.getLast().getJonosija() == hakijaryhmastaHyvaksyttavat.getFirst().getJonosija())) {
-                tasasijalla.addLast(hakijaryhmastaHyvaksyttavat.removeFirst());
+            if (hakijaryhmastaHyvaksyttavat.isEmpty()) {
+                return tasasijalla;
             }
+            do { tasasijalla.addLast(hakijaryhmastaHyvaksyttavat.removeFirst()); }
+            while (!hakijaryhmastaHyvaksyttavat.isEmpty() &&
+                    tasasijalla.getLast().getJonosija() == hakijaryhmastaHyvaksyttavat.getFirst().getJonosija());
             LinkedList<Hakemus> hyvaksytyt = new LinkedList<>();
             LinkedList<Hakemus> eiHyvaksytyt = new LinkedList<>();
             int paikkoja = aloituspaikkoja - hakijaryhmastaHyvaksytyt.size() - hakijaryhmanUlkopuoleltaHyvaksytyt.size();
@@ -73,9 +76,19 @@ public class SijoitteleHakijaryhma {
             });
             return hyvaksytyt;
         }
+
+        public void siirraVaralleAlimmallaJonosijallaOlevatHakijaryhmanUlkopuolisetHyvaksytyt() {
+            if (hakijaryhmanUlkopuoleltaHyvaksytyt.isEmpty()) {
+                throw new IllegalStateException("Ei hyväksyttyjä hakijaryhmän ulkopuolisia hakijoita");
+            }
+            int jonosija = hakijaryhmanUlkopuoleltaHyvaksytyt.getLast().getJonosija();
+            do { hakijaryhmanUlkopuoleltaHyvaksytyt.removeLast(); }
+            while (!hakijaryhmanUlkopuoleltaHyvaksytyt.isEmpty() &&
+                    hakijaryhmanUlkopuoleltaHyvaksytyt.getLast().getJonosija() == jonosija);
+        }
     }
 
-    private static class HakijaryhmanValintatapajonoHyvaksyttavatComparator implements Comparator<HakijaryhmanValintatapajono> {
+    private static class HyvaksyComparator implements Comparator<HakijaryhmanValintatapajono> {
         @Override
         public int compare(HakijaryhmanValintatapajono j, HakijaryhmanValintatapajono jj) {
             if (j.hakijaryhmastaHyvaksyttavat.isEmpty() && jj.hakijaryhmastaHyvaksyttavat.isEmpty()) {
@@ -95,7 +108,7 @@ public class SijoitteleHakijaryhma {
         }
     }
 
-    private static class HakijaryhmanValintatapajonoVaralleComparator implements Comparator<HakijaryhmanValintatapajono> {
+    private static class VaralleComparator implements Comparator<HakijaryhmanValintatapajono> {
         @Override
         public int compare(HakijaryhmanValintatapajono j, HakijaryhmanValintatapajono jj) {
             if (j.hakijaryhmanUlkopuoleltaHyvaksytyt.isEmpty() && jj.hakijaryhmanUlkopuoleltaHyvaksytyt.isEmpty()) {
@@ -118,8 +131,8 @@ public class SijoitteleHakijaryhma {
     private static void merkitseHakijaryhmastaHyvaksytyt(HakijaryhmaWrapper hakijaryhmaWrapper) {
         Set<String> hakijaryhmaanKuuluvat = new HashSet<>(hakijaryhmaWrapper.getHakijaryhma().getHakemusOid());
         HakemusWrapperComparator hakemusWrapperComparator = new HakemusWrapperComparator();
-        HakijaryhmanValintatapajonoHyvaksyttavatComparator hyvaksyttavatComparator = new HakijaryhmanValintatapajonoHyvaksyttavatComparator();
-        HakijaryhmanValintatapajonoVaralleComparator varalleComparator = new HakijaryhmanValintatapajonoVaralleComparator();
+        HyvaksyComparator ylimmanPrioriteetinJonoJossaYlimmallaJonosijallaOlevaHakijaEnsin = new HyvaksyComparator();
+        VaralleComparator alimmanPrioriteetinJonoJossaAlimmallaJonosijallaOlevaHakijaEnsin = new VaralleComparator();
         List<HakijaryhmanValintatapajono> valintatapajonot = hakijaryhmaanLiittyvatJonot(hakijaryhmaWrapper).stream()
                 .map(j -> new HakijaryhmanValintatapajono(
                         j.getHakemukset().stream()
@@ -141,7 +154,7 @@ public class SijoitteleHakijaryhma {
                 .collect(Collectors.toList());
         int kiintio = hakijaryhmaWrapper.getHakijaryhma().getKiintio();
         while (valintatapajonot.stream().mapToInt(v -> v.hakijaryhmastaHyvaksytyt.size()).sum() < kiintio) {
-            valintatapajonot.sort(hyvaksyttavatComparator);
+            valintatapajonot.sort(ylimmanPrioriteetinJonoJossaYlimmallaJonosijallaOlevaHakijaEnsin);
             List<Hakemus> hyvaksytyt = new LinkedList<>();
             for (HakijaryhmanValintatapajono jono : valintatapajonot) {
                 hyvaksytyt = jono.hyvaksyParhaallaJonosijallaOlevat();
@@ -156,8 +169,15 @@ public class SijoitteleHakijaryhma {
                 }
             }
             if (hyvaksytyt.isEmpty()) {
-                break;
-                // TODO siirra hyvaksyttyja varalle
+                Optional<HakijaryhmanValintatapajono> jono = valintatapajonot.stream()
+                        .filter(j -> j.tasasijasaanto == Tasasijasaanto.YLITAYTTO)
+                        .filter(j -> !j.hakijaryhmanUlkopuoleltaHyvaksytyt.isEmpty())
+                        .sorted(alimmanPrioriteetinJonoJossaAlimmallaJonosijallaOlevaHakijaEnsin)
+                        .findFirst();
+                jono.ifPresent(j -> { j.siirraVaralleAlimmallaJonosijallaOlevatHakijaryhmanUlkopuolisetHyvaksytyt(); });
+                if (!jono.isPresent()) {
+                    break;
+                }
             }
         }
     }
