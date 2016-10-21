@@ -151,7 +151,6 @@ public class SijoitteleHakijaryhma {
         while (valintatapajonot.stream().mapToInt(v -> v.hakijaryhmastaHyvaksytyt.size()).sum() < kiintio && hyvaksyttiin) {
             hyvaksyttiin = false;
             valintatapajonot.sort(ylimmanPrioriteetinJonoJossaYlimmallaJonosijallaOlevaHakijaEnsin);
-            List<Hakemus> hyvaksytyt = new LinkedList<>();
             for (HakijaryhmanValintatapajono jono : valintatapajonot) {
                 if (!hyvaksyttiin) {
                     for (Hakemus h : jono.hyvaksyParhaallaJonosijallaOlevat()) {
