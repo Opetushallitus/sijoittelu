@@ -2,18 +2,13 @@ package fi.vm.sade.sijoittelu.batch.logic.impl.algorithm;
 
 import com.google.common.collect.Lists;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.comparator.HakemusWrapperComparator;
-import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.comparator.ValintatapajonoWrapperComparator;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.*;
 import fi.vm.sade.sijoittelu.domain.HakemuksenTila;
 import fi.vm.sade.sijoittelu.domain.Hakemus;
 import fi.vm.sade.sijoittelu.domain.Tasasijasaanto;
 import fi.vm.sade.sijoittelu.domain.Valintatapajono;
-import fi.vm.sade.sijoittelu.domain.comparator.HakemusComparator;
 import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.commons.lang3.tuple.MutablePair;
-import org.apache.commons.lang3.tuple.MutableTriple;
 import org.apache.commons.lang3.tuple.Pair;
-import org.apache.commons.lang3.tuple.Triple;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -23,94 +18,148 @@ import static fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.util.TilojenMuokk
 import static fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.WrapperHelperMethods.*;
 
 public class SijoitteleHakijaryhma {
-    private static void merkitseHakijaryhmastaHyvaksytyt(HakijaryhmaWrapper hakijaryhmaWrapper) {
-        Set<String> hakijaryhmaanKuuluvat = new HashSet<>(hakijaryhmaWrapper.getHakijaryhma().getHakemusOid());
-        List<ValintatapajonoWrapper> liittyvatJonot = hakijaryhmaanLiittyvatJonot(hakijaryhmaWrapper).stream()
-                .sorted(new ValintatapajonoWrapperComparator())
-                .collect(Collectors.toList());
-        List<MutableTriple<Integer, Tasasijasaanto, LinkedList<Hakemus>>> jonojenTiedot = liittyvatJonot.stream()
-                .map(j -> MutableTriple.of(
-                        j.getValintatapajono().getAloituspaikat() - (int)j.getHakemukset().stream()
-                                .filter(h -> kuuluuHyvaksyttyihinTiloihin(hakemuksenTila(h)))
-                                .filter(h -> !hakijaryhmaanKuuluvat.contains(h.getHakemus().getHakemusOid()))
-                                .count(),
-                        j.getValintatapajono().getTasasijasaanto(),
-                        j.getHakemukset().stream()
-                                .filter(h -> hakijaryhmaanKuuluvat.contains(h.getHakemus().getHakemusOid()))
-                                .filter(h -> kuuluuHyvaksyttyihinTiloihin(h.getHakemus().getTila()) || kuuluuVaraTiloihin(h.getHakemus().getTila()))
-                                .sorted(new HakemusWrapperComparator())
-                                .map(h -> h.getHakemus())
-                                .collect(Collectors.toCollection(LinkedList::new))))
-                .collect(Collectors.toList());
-        int suurinPrioriteetti = liittyvatJonot.stream()
-                .flatMap(j -> j.getValintatapajono().getHakemukset().stream())
-                .mapToInt(h -> h.getJonosija())
-                .max().orElse(-1);
-        int kiintio = Math.min(
-                hakijaryhmaWrapper.getHakijaryhma().getKiintio(),
-                liittyvatJonot.stream().mapToInt(j -> j.getValintatapajono().getAloituspaikat()).sum()
-        );
-        Map<String, Hakemus> hyvaksytyt = new HashMap<>(kiintio);
-        boolean hyvaksyttyja = true;
-        while (hyvaksytyt.size() < kiintio && hyvaksyttyja) {
-            hyvaksyttyja = false;
-            for (Triple<Integer, Tasasijasaanto, LinkedList<Hakemus>> jononTiedot : jonojenTiedot) {
-                LinkedList<Hakemus> jono = jononTiedot.getRight();
-                while (!jono.isEmpty() && hyvaksytyt.containsKey(jono.element().getHakemusOid())) {
-                    jono.remove();
-                }
+    private static class HakijaryhmanValintatapajono {
+        public final LinkedList<Hakemus> hakijaryhmastaHyvaksytyt;
+        public final LinkedList<Hakemus> hakijaryhmanUlkopuoleltaHyvaksytyt;
+        public final LinkedList<Hakemus> hakijaryhmastaHyvaksyttavat;
+        public final Tasasijasaanto tasasijasaanto;
+        public final int aloituspaikkoja;
+        public final int prioriteetti;
+
+        public HakijaryhmanValintatapajono(LinkedList<Hakemus> hakijaryhmanUlkopuoleltaHyvaksytyt,
+                                           LinkedList<Hakemus> hakijaryhmastaHyvaksyttavat,
+                                           Tasasijasaanto tasasijasaanto,
+                                           int aloituspaikkoja,
+                                           int prioriteetti) {
+            this.hakijaryhmastaHyvaksytyt = new LinkedList<>();
+            this.hakijaryhmanUlkopuoleltaHyvaksytyt = hakijaryhmanUlkopuoleltaHyvaksytyt;
+            this.hakijaryhmastaHyvaksyttavat = hakijaryhmastaHyvaksyttavat;
+            this.tasasijasaanto = tasasijasaanto;
+            this.aloituspaikkoja = aloituspaikkoja;
+            this.prioriteetti = prioriteetti;
+        }
+
+        public List<Hakemus> hyvaksyParhaallaJonosijallaOlevat() {
+            LinkedList<Hakemus> tasasijalla = new LinkedList<>();
+            while (!hakijaryhmastaHyvaksyttavat.isEmpty() && (tasasijalla.isEmpty() || tasasijalla.getLast().getJonosija() == hakijaryhmastaHyvaksyttavat.getFirst().getJonosija())) {
+                tasasijalla.addLast(hakijaryhmastaHyvaksyttavat.removeFirst());
             }
-            List<MutableTriple<Integer, Tasasijasaanto, LinkedList<Hakemus>>> foo = jonojenTiedot.stream()
-                    .sorted((j, jj) -> parasJonosija(j).orElse(-1).compareTo(parasJonosija(jj).orElse(-1)))
-                    .collect(Collectors.toList());
-            for (MutableTriple<Integer, Tasasijasaanto, LinkedList<Hakemus>> jononTiedot : foo) {
-                int paikkoja = jononTiedot.getLeft();
-                if (hyvaksytyt.size() < kiintio && paikkoja > 0) {
-                    LinkedList<Hakemus> jono = jononTiedot.getRight();
-                    LinkedList<Hakemus> kerrallaHyvaksyttavat = new LinkedList<>();
-                    while (!jono.isEmpty() && (kerrallaHyvaksyttavat.isEmpty() || kerrallaHyvaksyttavat.element().getJonosija() == jono.element().getJonosija())) {
-                        Hakemus h = jono.remove();
-                        if (!hyvaksytyt.containsKey(h.getHakemusOid())) {
-                            kerrallaHyvaksyttavat.add(h);
-                        }
-                    }
-                    List<Hakemus> hyvaksyttavat = new LinkedList<>();
-                    LinkedList<Hakemus> eiHyvaksyttavat = new LinkedList<>();
-                    switch (jononTiedot.getMiddle()) {
-                        case ARVONTA:
-                            hyvaksyttavat.addAll(kerrallaHyvaksyttavat.subList(0, Math.min(paikkoja, kerrallaHyvaksyttavat.size())));
-                            eiHyvaksyttavat.addAll(kerrallaHyvaksyttavat.subList(Math.min(paikkoja, kerrallaHyvaksyttavat.size()), kerrallaHyvaksyttavat.size()));
-                            break;
-                        case ALITAYTTO:
-                            if (kerrallaHyvaksyttavat.size() <= paikkoja) {
-                                hyvaksyttavat.addAll(kerrallaHyvaksyttavat);
-                            } else {
-                                eiHyvaksyttavat.addAll(kerrallaHyvaksyttavat);
-                            }
-                            break;
-                        case YLITAYTTO:
-                            hyvaksyttavat = kerrallaHyvaksyttavat;
-                            break;
-                    }
-                    for (Hakemus h : hyvaksyttavat) {
-                        hyvaksytyt.put(h.getHakemusOid(), h);
-                        h.getHyvaksyttyHakijaryhmista().add(hakijaryhmaWrapper.getHakijaryhma().getOid());
-                        hyvaksyttyja = true;
-                    }
-                    eiHyvaksyttavat.descendingIterator().forEachRemaining(h -> {
-                        jono.addFirst(h);
-                    });
-                    jononTiedot.setLeft(paikkoja - hyvaksyttavat.size());
-                }
-                if (hyvaksyttyja) {
+            LinkedList<Hakemus> hyvaksytyt = new LinkedList<>();
+            LinkedList<Hakemus> eiHyvaksytyt = new LinkedList<>();
+            int paikkoja = aloituspaikkoja - hakijaryhmastaHyvaksytyt.size() - hakijaryhmanUlkopuoleltaHyvaksytyt.size();
+            switch (tasasijasaanto) {
+                case ARVONTA:
+                    hyvaksytyt.addAll(tasasijalla.subList(0, Math.min(paikkoja, tasasijalla.size())));
+                    eiHyvaksytyt.addAll(tasasijalla.subList(Math.min(paikkoja, tasasijalla.size()), tasasijalla.size()));
                     break;
-                }
+                case ALITAYTTO:
+                    if (tasasijalla.size() <= paikkoja) {
+                        hyvaksytyt.addAll(tasasijalla);
+                    } else {
+                        eiHyvaksytyt.addAll(tasasijalla);
+                    }
+                    break;
+                case YLITAYTTO:
+                    if (paikkoja > 0) {
+                        hyvaksytyt.addAll(tasasijalla);
+                    } else {
+                        eiHyvaksytyt.addAll(tasasijalla);
+                    }
+                    break;
             }
+            hakijaryhmastaHyvaksytyt.addAll(hyvaksytyt);
+            eiHyvaksytyt.descendingIterator().forEachRemaining(h -> {
+                hakijaryhmastaHyvaksyttavat.addFirst(h);
+            });
+            return hyvaksytyt;
         }
     }
 
-    private static Optional<Integer> parasJonosija(Triple<Integer, Tasasijasaanto, LinkedList<Hakemus>> jono) {
-        return jono.getRight().stream().map(h -> h.getJonosija()).findFirst();
+    private static class HakijaryhmanValintatapajonoHyvaksyttavatComparator implements Comparator<HakijaryhmanValintatapajono> {
+        @Override
+        public int compare(HakijaryhmanValintatapajono j, HakijaryhmanValintatapajono jj) {
+            if (j.hakijaryhmastaHyvaksyttavat.isEmpty() && jj.hakijaryhmastaHyvaksyttavat.isEmpty()) {
+                return 0;
+            }
+            if (j.hakijaryhmastaHyvaksyttavat.isEmpty()) {
+                return 1;
+            }
+            if (jj.hakijaryhmastaHyvaksyttavat.isEmpty()) {
+                return -1;
+            }
+            int c = Integer.compare(
+                    j.hakijaryhmastaHyvaksyttavat.getFirst().getJonosija(),
+                    jj.hakijaryhmastaHyvaksyttavat.getFirst().getJonosija()
+            );
+            return c == 0 ? Integer.compare(j.prioriteetti, jj.prioriteetti) : c;
+        }
+    }
+
+    private static class HakijaryhmanValintatapajonoVaralleComparator implements Comparator<HakijaryhmanValintatapajono> {
+        @Override
+        public int compare(HakijaryhmanValintatapajono j, HakijaryhmanValintatapajono jj) {
+            if (j.hakijaryhmanUlkopuoleltaHyvaksytyt.isEmpty() && jj.hakijaryhmanUlkopuoleltaHyvaksytyt.isEmpty()) {
+                return 0;
+            }
+            if (j.hakijaryhmanUlkopuoleltaHyvaksytyt.isEmpty()) {
+                return 1;
+            }
+            if (jj.hakijaryhmanUlkopuoleltaHyvaksytyt.isEmpty()) {
+                return -1;
+            }
+            int c = Integer.compare(
+                    jj.hakijaryhmanUlkopuoleltaHyvaksytyt.getLast().getJonosija(),
+                    j.hakijaryhmanUlkopuoleltaHyvaksytyt.getLast().getJonosija()
+            );
+            return c == 0 ? Integer.compare(jj.prioriteetti, j.prioriteetti) : c;
+        }
+    }
+
+    private static void merkitseHakijaryhmastaHyvaksytyt(HakijaryhmaWrapper hakijaryhmaWrapper) {
+        Set<String> hakijaryhmaanKuuluvat = new HashSet<>(hakijaryhmaWrapper.getHakijaryhma().getHakemusOid());
+        HakemusWrapperComparator hakemusWrapperComparator = new HakemusWrapperComparator();
+        HakijaryhmanValintatapajonoHyvaksyttavatComparator hyvaksyttavatComparator = new HakijaryhmanValintatapajonoHyvaksyttavatComparator();
+        HakijaryhmanValintatapajonoVaralleComparator varalleComparator = new HakijaryhmanValintatapajonoVaralleComparator();
+        List<HakijaryhmanValintatapajono> valintatapajonot = hakijaryhmaanLiittyvatJonot(hakijaryhmaWrapper).stream()
+                .map(j -> new HakijaryhmanValintatapajono(
+                        j.getHakemukset().stream()
+                                .filter(h -> kuuluuHyvaksyttyihinTiloihin(h.getHakemus().getTila()))
+                                .filter(h -> !hakijaryhmaanKuuluvat.contains(h.getHakemus().getHakemusOid()))
+                                .sorted(hakemusWrapperComparator)
+                                .map(h -> h.getHakemus())
+                                .collect(Collectors.toCollection(LinkedList::new)),
+                        j.getHakemukset().stream()
+                                .filter(h -> hakijaryhmaanKuuluvat.contains(h.getHakemus().getHakemusOid()))
+                                .filter(h -> kuuluuHyvaksyttyihinTiloihin(h.getHakemus().getTila()) || kuuluuVaraTiloihin(h.getHakemus().getTila()))
+                                .sorted(hakemusWrapperComparator)
+                                .map(h -> h.getHakemus())
+                                .collect(Collectors.toCollection(LinkedList::new)),
+                        j.getValintatapajono().getTasasijasaanto(),
+                        j.getValintatapajono().getAloituspaikat(),
+                        j.getValintatapajono().getPrioriteetti()
+                ))
+                .collect(Collectors.toList());
+        int kiintio = hakijaryhmaWrapper.getHakijaryhma().getKiintio();
+        while (valintatapajonot.stream().mapToInt(v -> v.hakijaryhmastaHyvaksytyt.size()).sum() < kiintio) {
+            valintatapajonot.sort(hyvaksyttavatComparator);
+            List<Hakemus> hyvaksytyt = new LinkedList<>();
+            for (HakijaryhmanValintatapajono jono : valintatapajonot) {
+                hyvaksytyt = jono.hyvaksyParhaallaJonosijallaOlevat();
+                if (!hyvaksytyt.isEmpty()) {
+                    for (Hakemus h : hyvaksytyt) {
+                        h.getHyvaksyttyHakijaryhmista().add(hakijaryhmaWrapper.getHakijaryhma().getOid());
+                        for (HakijaryhmanValintatapajono j : valintatapajonot) {
+                            j.hakijaryhmastaHyvaksyttavat.removeIf(hh -> hh.getHakemusOid().equals(h.getHakemusOid()));
+                        }
+                    }
+                    break;
+                }
+            }
+            if (hyvaksytyt.isEmpty()) {
+                break;
+                // TODO siirra hyvaksyttyja varalle
+            }
+        }
     }
 
     public static Set<HakukohdeWrapper> sijoitteleHakijaryhma(SijoitteluajoWrapper sijoitteluAjo, HakijaryhmaWrapper hakijaryhmaWrapper) {
