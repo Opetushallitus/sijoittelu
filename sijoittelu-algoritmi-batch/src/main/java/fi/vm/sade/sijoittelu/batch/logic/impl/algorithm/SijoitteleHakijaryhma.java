@@ -86,6 +86,10 @@ public class SijoitteleHakijaryhma {
             while (!hakijaryhmanUlkopuoleltaHyvaksytyt.isEmpty() &&
                     hakijaryhmanUlkopuoleltaHyvaksytyt.getLast().getJonosija() == jonosija);
         }
+
+        public void poistaHyvaksyttavista(Hakemus h) {
+            hakijaryhmastaHyvaksyttavissa.removeIf(hh -> hh.getHakemusOid().equals(h.getHakemusOid()));
+        }
     }
 
     private static class HyvaksyComparator implements Comparator<HakijaryhmanValintatapajono> {
@@ -161,9 +165,7 @@ public class SijoitteleHakijaryhma {
                 if (!hyvaksytyt.isEmpty()) {
                     for (Hakemus h : hyvaksytyt) {
                         h.getHyvaksyttyHakijaryhmista().add(hakijaryhmaWrapper.getHakijaryhma().getOid());
-                        for (HakijaryhmanValintatapajono j : valintatapajonot) {
-                            j.hakijaryhmastaHyvaksyttavissa.removeIf(hh -> hh.getHakemusOid().equals(h.getHakemusOid()));
-                        }
+                        valintatapajonot.forEach(j -> j.poistaHyvaksyttavista(h));
                     }
                     break;
                 }
