@@ -179,6 +179,9 @@ public class SijoitteleHakijaryhma {
     }
 
     public static Set<HakukohdeWrapper> sijoitteleHakijaryhma(SijoitteluajoWrapper sijoitteluAjo, HakijaryhmaWrapper hakijaryhmaWrapper) {
+        // Hakijaryhmäsijoittelu ei uudelleenkäsittele jo hyväksyttyjä hakijoita, jolloin
+        // hyväksytty hakijaryhmästä -merkintä jää asettamatta. Merkitään hakijaryhmästä hyväksytyt erillisellä
+        // algoritmilla.
         merkitseHakijaryhmastaHyvaksytyt(hakijaryhmaWrapper);
         return sijoitteleHakijaryhmaRecur(sijoitteluAjo, hakijaryhmaWrapper);
     }
