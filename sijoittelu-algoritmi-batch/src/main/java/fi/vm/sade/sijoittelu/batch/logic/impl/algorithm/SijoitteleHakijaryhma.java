@@ -32,6 +32,7 @@ public class SijoitteleHakijaryhma {
             this.hakijaryhmanUlkopuoleltaHyvaksytyt = jono.getHakemukset().stream()
                     .filter(h -> !hakijaryhmaanKuuluvat.contains(h.getHakemus().getHakemusOid()))
                     .filter(h -> kuuluuHyvaksyttyihinTiloihin(h.getHakemus().getTila()))
+                    .filter(h -> voidaanKorvata(h))
                     .sorted(hakemusWrapperComparator)
                     .map(h -> h.getHakemus())
                     .collect(Collectors.toCollection(LinkedList::new));
