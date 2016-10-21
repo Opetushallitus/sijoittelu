@@ -156,7 +156,11 @@ public class SijoitteleHakijaryhma {
                 if (!hyvaksyttiin) {
                     for (Hakemus h : jono.hyvaksyParhaallaJonosijallaOlevat()) {
                         h.getHyvaksyttyHakijaryhmista().add(hakijaryhmaWrapper.getHakijaryhma().getOid());
-                        valintatapajonot.forEach(j -> j.poistaHyvaksyttavista(h));
+                        valintatapajonot.forEach(j -> {
+                            if (j.prioriteetti > jono.prioriteetti) {
+                                j.poistaHyvaksyttavista(h);
+                            }
+                        });
                         hyvaksyttiin = true;
                     }
                 }
