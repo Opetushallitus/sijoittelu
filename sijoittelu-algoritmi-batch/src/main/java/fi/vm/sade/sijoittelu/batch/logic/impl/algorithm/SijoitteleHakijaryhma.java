@@ -162,6 +162,9 @@ public class SijoitteleHakijaryhma {
                 }
             }
             if (!hyvaksyttiin) {
+                // Toisen hakukohteen sijoittelu on voinut PERUUNNUTTAA tähän hakijaryhmään kuuluvan aiemmin hyväksytyn
+                // hakijan. Ylitäytön takia jonon aloituspaikat voivat silti olla täynnä. Tässä tapauksessa siirretään
+                // varalle hakijaryhmään kuulumattomia hakijoita, jotta hakijaryhmäkiintiö saataisiin täyteen.
                 Optional<HakijaryhmanValintatapajono> jono = valintatapajonot.stream()
                         .filter(j -> j.tasasijasaanto == Tasasijasaanto.YLITAYTTO)
                         .filter(j -> !j.hakijaryhmanUlkopuoleltaHyvaksytyt.isEmpty())
