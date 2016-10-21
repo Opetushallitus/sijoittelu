@@ -157,28 +157,29 @@ public class SijoitteleHakijaryhma {
                 ))
                 .collect(Collectors.toList());
         int kiintio = hakijaryhmaWrapper.getHakijaryhma().getKiintio();
-        while (valintatapajonot.stream().mapToInt(v -> v.hakijaryhmastaHyvaksytyt.size()).sum() < kiintio) {
+        boolean hyvaksyttiin = true;
+        while (valintatapajonot.stream().mapToInt(v -> v.hakijaryhmastaHyvaksytyt.size()).sum() < kiintio && hyvaksyttiin) {
+            hyvaksyttiin = false;
             valintatapajonot.sort(ylimmanPrioriteetinJonoJossaYlimmallaJonosijallaOlevaHakijaEnsin);
             List<Hakemus> hyvaksytyt = new LinkedList<>();
             for (HakijaryhmanValintatapajono jono : valintatapajonot) {
-                hyvaksytyt = jono.hyvaksyParhaallaJonosijallaOlevat();
-                if (!hyvaksytyt.isEmpty()) {
-                    for (Hakemus h : hyvaksytyt) {
+                if (!hyvaksyttiin) {
+                    for (Hakemus h : jono.hyvaksyParhaallaJonosijallaOlevat()) {
                         h.getHyvaksyttyHakijaryhmista().add(hakijaryhmaWrapper.getHakijaryhma().getOid());
                         valintatapajonot.forEach(j -> j.poistaHyvaksyttavista(h));
+                        hyvaksyttiin = true;
                     }
-                    break;
                 }
             }
-            if (hyvaksytyt.isEmpty()) {
+            if (!hyvaksyttiin) {
                 Optional<HakijaryhmanValintatapajono> jono = valintatapajonot.stream()
                         .filter(j -> j.tasasijasaanto == Tasasijasaanto.YLITAYTTO)
                         .filter(j -> !j.hakijaryhmanUlkopuoleltaHyvaksytyt.isEmpty())
                         .sorted(alimmanPrioriteetinJonoJossaAlimmallaJonosijallaOlevaHakijaEnsin)
                         .findFirst();
-                jono.ifPresent(j -> { j.siirraVaralleAlimmallaJonosijallaOlevatHakijaryhmanUlkopuolisetHyvaksytyt(); });
-                if (!jono.isPresent()) {
-                    break;
+                if (jono.isPresent()) {
+                    jono.get().siirraVaralleAlimmallaJonosijallaOlevatHakijaryhmanUlkopuolisetHyvaksytyt();
+                    hyvaksyttiin = true;
                 }
             }
         }
