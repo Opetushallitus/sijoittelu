@@ -7,6 +7,7 @@ import fi.vm.sade.sijoittelu.domain.HakemuksenTila;
 import fi.vm.sade.sijoittelu.domain.Hakemus;
 import fi.vm.sade.sijoittelu.domain.Tasasijasaanto;
 import fi.vm.sade.sijoittelu.domain.Valintatapajono;
+import fi.vm.sade.sijoittelu.domain.comparator.HakemusComparator;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -27,21 +28,20 @@ public class SijoitteleHakijaryhma {
         public final int prioriteetti;
 
         public HakijaryhmanValintatapajono(SijoitteluajoWrapper sijoitteluajo, Set<String> hakijaryhmaanKuuluvat, ValintatapajonoWrapper jono) {
-            HakemusWrapperComparator hakemusWrapperComparator = new HakemusWrapperComparator();
             this.hakijaryhmastaHyvaksytyt = new LinkedList<>();
             this.hakijaryhmanUlkopuoleltaHyvaksytyt = jono.getHakemukset().stream()
                     .filter(h -> !hakijaryhmaanKuuluvat.contains(h.getHakemus().getHakemusOid()))
                     .filter(h -> kuuluuHyvaksyttyihinTiloihin(h.getHakemus().getTila()))
                     .filter(h -> voidaanKorvata(h))
-                    .sorted(hakemusWrapperComparator)
+                    .sorted(new HakemusWrapperComparator())
                     .map(h -> h.getHakemus())
                     .collect(Collectors.toCollection(LinkedList::new));
             this.hakijaryhmastaHyvaksyttavissa = jono.getHakemukset().stream()
                     .filter(h -> hakijaryhmaanKuuluvat.contains(h.getHakemus().getHakemusOid()))
                     .filter(h -> kuuluuHyvaksyttyihinTiloihin(h.getHakemus().getTila()) ||
                             (kuuluuVaraTiloihin(h.getHakemus().getTila()) && SijoitteleHakukohde.hakijaHaluaa(h) && SijoitteleHakukohde.saannotSallii(sijoitteluajo, h)))
-                    .sorted(hakemusWrapperComparator)
                     .map(h -> h.getHakemus())
+                    .sorted(new HyvaksytytEnsinHakemusComparator())
                     .collect(Collectors.toCollection(LinkedList::new));
             this.tasasijasaanto = jono.getValintatapajono().getTasasijasaanto();
             this.aloituspaikkoja = jono.getValintatapajono().getAloituspaikat();
@@ -150,6 +150,21 @@ public class SijoitteleHakijaryhma {
                     j.hakijaryhmanUlkopuoleltaHyvaksytyt.getLast().getJonosija()
             );
             return c == 0 ? Integer.compare(jj.prioriteetti, j.prioriteetti) : c;
+        }
+    }
+
+    private static class HyvaksytytEnsinHakemusComparator implements Comparator<Hakemus> {
+        HakemusComparator comparator = new HakemusComparator();
+
+        @Override
+        public int compare(Hakemus h, Hakemus hh) {
+            if (kuuluuHyvaksyttyihinTiloihin(h.getTila()) && !kuuluuHyvaksyttyihinTiloihin(hh.getTila())) {
+                return -1;
+            }
+            if (!kuuluuHyvaksyttyihinTiloihin(h.getTila()) && kuuluuHyvaksyttyihinTiloihin(hh.getTila())) {
+                return 1;
+            }
+            return comparator.compare(h, hh);
         }
     }
 
