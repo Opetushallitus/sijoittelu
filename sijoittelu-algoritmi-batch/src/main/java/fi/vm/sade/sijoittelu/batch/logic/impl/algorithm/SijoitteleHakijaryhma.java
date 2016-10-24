@@ -96,17 +96,17 @@ public class SijoitteleHakijaryhma {
                     hakijaryhmanUlkopuoleltaHyvaksytyt.getLast().getJonosija() == jonosija);
         }
 
-        public void poistaHyvaksyttavista(Hakemus h) {
-            hakijaryhmastaHyvaksyttavissa.removeIf(hh -> hh.getHakemusOid().equals(h.getHakemusOid()));
+        public void poistaHyvaksyttavista(String poistettavaOid) {
+            hakijaryhmastaHyvaksyttavissa.removeIf(h -> h.getHakemusOid().equals(poistettavaOid));
         }
 
-        public Optional<Hakemus> poistaHyvaksytyista(Hakemus h) {
+        public Optional<Hakemus> poistaHyvaksytyista(String poistettavaOid) {
             Iterator<Hakemus> i = hakijaryhmastaHyvaksytyt.iterator();
             while (i.hasNext()) {
-                Hakemus poistettava = i.next();
-                if (poistettava.getHakemusOid().equals(h.getHakemusOid())) {
+                Hakemus h = i.next();
+                if (h.getHakemusOid().equals(poistettavaOid)) {
                     i.remove();
-                    return Optional.of(poistettava);
+                    return Optional.of(h);
                 }
             }
             return Optional.empty();
@@ -187,8 +187,8 @@ public class SijoitteleHakijaryhma {
                         h.getHyvaksyttyHakijaryhmista().add(hakijaryhmaOid);
                         valintatapajonot.forEach(j -> {
                             if (j.prioriteetti > jono.prioriteetti) {
-                                j.poistaHyvaksyttavista(h);
-                                j.poistaHyvaksytyista(h).ifPresent(poistettu -> {
+                                j.poistaHyvaksyttavista(h.getHakemusOid());
+                                j.poistaHyvaksytyista(h.getHakemusOid()).ifPresent(poistettu -> {
                                     poistettu.getHyvaksyttyHakijaryhmista().remove(hakijaryhmaOid);
                                 });
                             }
