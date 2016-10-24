@@ -86,14 +86,15 @@ public class SijoitteleHakijaryhma {
             return hyvaksytyt;
         }
 
-        public void siirraVaralleAlimmallaJonosijallaOlevatHakijaryhmanUlkopuolisetHyvaksytyt() {
+        public boolean siirraVaralleAlimmallaJonosijallaOlevatHakijaryhmanUlkopuolisetHyvaksytyt() {
             if (hakijaryhmanUlkopuoleltaHyvaksytyt.isEmpty()) {
-                throw new IllegalStateException("Ei hyväksyttyjä hakijaryhmän ulkopuolisia hakijoita");
+                return false;
             }
             int jonosija = hakijaryhmanUlkopuoleltaHyvaksytyt.getLast().getJonosija();
             do { hakijaryhmanUlkopuoleltaHyvaksytyt.removeLast(); }
             while (!hakijaryhmanUlkopuoleltaHyvaksytyt.isEmpty() &&
                     hakijaryhmanUlkopuoleltaHyvaksytyt.getLast().getJonosija() == jonosija);
+            return true;
         }
 
         public void poistaHyvaksyttavista(String poistettavaOid) {
@@ -201,15 +202,12 @@ public class SijoitteleHakijaryhma {
                 // Toisen hakukohteen sijoittelu on voinut PERUUNNUTTAA tähän hakijaryhmään kuuluvan aiemmin hyväksytyn
                 // hakijan. Ylitäytön takia jonon aloituspaikat voivat silti olla täynnä. Tässä tapauksessa siirretään
                 // varalle hakijaryhmään kuulumattomia hakijoita, jotta hakijaryhmäkiintiö saataisiin täyteen.
-                Optional<HakijaryhmanValintatapajono> jono = valintatapajonot.stream()
+                hyvaksyttiin = valintatapajonot.stream()
                         .filter(j -> j.tasasijasaanto == Tasasijasaanto.YLITAYTTO)
-                        .filter(j -> !j.hakijaryhmanUlkopuoleltaHyvaksytyt.isEmpty())
                         .sorted(alimmanPrioriteetinJonoJossaAlimmallaJonosijallaOlevaHakijaEnsin)
-                        .findFirst();
-                if (jono.isPresent()) {
-                    jono.get().siirraVaralleAlimmallaJonosijallaOlevatHakijaryhmanUlkopuolisetHyvaksytyt();
-                    hyvaksyttiin = true;
-                }
+                        .findFirst()
+                        .map(j -> j.siirraVaralleAlimmallaJonosijallaOlevatHakijaryhmanUlkopuolisetHyvaksytyt())
+                        .orElse(false);
             }
         }
     }
