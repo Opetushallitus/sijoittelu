@@ -26,7 +26,7 @@ public class SijoitteleHakijaryhma {
         public final int aloituspaikkoja;
         public final int prioriteetti;
 
-        public HakijaryhmanValintatapajono(Set<String> hakijaryhmaanKuuluvat, ValintatapajonoWrapper jono) {
+        public HakijaryhmanValintatapajono(SijoitteluajoWrapper sijoitteluajo, Set<String> hakijaryhmaanKuuluvat, ValintatapajonoWrapper jono) {
             HakemusWrapperComparator hakemusWrapperComparator = new HakemusWrapperComparator();
             this.hakijaryhmastaHyvaksytyt = new LinkedList<>();
             this.hakijaryhmanUlkopuoleltaHyvaksytyt = jono.getHakemukset().stream()
@@ -38,7 +38,8 @@ public class SijoitteleHakijaryhma {
                     .collect(Collectors.toCollection(LinkedList::new));
             this.hakijaryhmastaHyvaksyttavissa = jono.getHakemukset().stream()
                     .filter(h -> hakijaryhmaanKuuluvat.contains(h.getHakemus().getHakemusOid()))
-                    .filter(h -> kuuluuHyvaksyttyihinTiloihin(h.getHakemus().getTila()) || kuuluuVaraTiloihin(h.getHakemus().getTila()))
+                    .filter(h -> kuuluuHyvaksyttyihinTiloihin(h.getHakemus().getTila()) ||
+                            (kuuluuVaraTiloihin(h.getHakemus().getTila()) && SijoitteleHakukohde.hakijaHaluaa(h) && SijoitteleHakukohde.saannotSallii(sijoitteluajo, h)))
                     .sorted(hakemusWrapperComparator)
                     .map(h -> h.getHakemus())
                     .collect(Collectors.toCollection(LinkedList::new));
@@ -57,7 +58,7 @@ public class SijoitteleHakijaryhma {
                     tasasijalla.getLast().getJonosija() == hakijaryhmastaHyvaksyttavissa.getFirst().getJonosija());
             LinkedList<Hakemus> hyvaksytyt = new LinkedList<>();
             LinkedList<Hakemus> eiHyvaksytyt = new LinkedList<>();
-            int paikkoja = aloituspaikkoja - hakijaryhmastaHyvaksytyt.size() - hakijaryhmanUlkopuoleltaHyvaksytyt.size();
+            int paikkoja = Math.max(0, aloituspaikkoja - hakijaryhmastaHyvaksytyt.size() - hakijaryhmanUlkopuoleltaHyvaksytyt.size());
             switch (tasasijasaanto) {
                 case ARVONTA:
                     hyvaksytyt.addAll(tasasijalla.subList(0, Math.min(paikkoja, tasasijalla.size())));
@@ -97,6 +98,18 @@ public class SijoitteleHakijaryhma {
 
         public void poistaHyvaksyttavista(Hakemus h) {
             hakijaryhmastaHyvaksyttavissa.removeIf(hh -> hh.getHakemusOid().equals(h.getHakemusOid()));
+        }
+
+        public Optional<Hakemus> poistaHyvaksytyista(Hakemus h) {
+            Iterator<Hakemus> i = hakijaryhmastaHyvaksytyt.iterator();
+            while (i.hasNext()) {
+                Hakemus poistettava = i.next();
+                if (poistettava.getHakemusOid().equals(h.getHakemusOid())) {
+                    i.remove();
+                    return Optional.of(poistettava);
+                }
+            }
+            return Optional.empty();
         }
     }
 
@@ -140,13 +153,14 @@ public class SijoitteleHakijaryhma {
         }
     }
 
-    private static void merkitseHakijaryhmastaHyvaksytyt(HakijaryhmaWrapper hakijaryhmaWrapper) {
+    private static void merkitseHakijaryhmastaHyvaksytyt(SijoitteluajoWrapper sijoitteluajo, HakijaryhmaWrapper hakijaryhmaWrapper) {
         Set<String> hakijaryhmaanKuuluvat = new HashSet<>(hakijaryhmaWrapper.getHakijaryhma().getHakemusOid());
         HyvaksyComparator ylimmanPrioriteetinJonoJossaYlimmallaJonosijallaOlevaHakijaEnsin = new HyvaksyComparator();
         VaralleComparator alimmanPrioriteetinJonoJossaAlimmallaJonosijallaOlevaHakijaEnsin = new VaralleComparator();
         List<HakijaryhmanValintatapajono> valintatapajonot = hakijaryhmaanLiittyvatJonot(hakijaryhmaWrapper).stream()
-                .map(j -> new HakijaryhmanValintatapajono(hakijaryhmaanKuuluvat, j))
+                .map(j -> new HakijaryhmanValintatapajono(sijoitteluajo, hakijaryhmaanKuuluvat, j))
                 .collect(Collectors.toList());
+        String hakijaryhmaOid = hakijaryhmaWrapper.getHakijaryhma().getOid();
         int kiintio = hakijaryhmaWrapper.getHakijaryhma().getKiintio();
         boolean hyvaksyttiin = true;
         while (valintatapajonot.stream().mapToInt(v -> v.hakijaryhmastaHyvaksytyt.size()).sum() < kiintio && hyvaksyttiin) {
@@ -155,10 +169,13 @@ public class SijoitteleHakijaryhma {
             for (HakijaryhmanValintatapajono jono : valintatapajonot) {
                 if (!hyvaksyttiin) {
                     for (Hakemus h : jono.hyvaksyParhaallaJonosijallaOlevat()) {
-                        h.getHyvaksyttyHakijaryhmista().add(hakijaryhmaWrapper.getHakijaryhma().getOid());
+                        h.getHyvaksyttyHakijaryhmista().add(hakijaryhmaOid);
                         valintatapajonot.forEach(j -> {
                             if (j.prioriteetti > jono.prioriteetti) {
                                 j.poistaHyvaksyttavista(h);
+                                j.poistaHyvaksytyista(h).ifPresent(poistettu -> {
+                                    poistettu.getHyvaksyttyHakijaryhmista().remove(hakijaryhmaOid);
+                                });
                             }
                         });
                         hyvaksyttiin = true;
@@ -184,13 +201,37 @@ public class SijoitteleHakijaryhma {
 
     public static Set<HakukohdeWrapper> sijoitteleHakijaryhma(SijoitteluajoWrapper sijoitteluAjo, HakijaryhmaWrapper hakijaryhmaWrapper) {
         // Hakijaryhmäsijoittelu ei uudelleenkäsittele jo hyväksyttyjä hakijoita, jolloin
-        // hyväksytty hakijaryhmästä -merkintä jää asettamatta. Merkitään hakijaryhmästä hyväksytyt erillisellä
-        // algoritmilla.
-        merkitseHakijaryhmastaHyvaksytyt(hakijaryhmaWrapper);
-        return sijoitteleHakijaryhmaRecur(sijoitteluAjo, hakijaryhmaWrapper);
+        // hyväksytty hakijaryhmästä -merkintä jää asettamatta. Poistetaan mahdollisesti vanhentuneet merkinnät,
+        // ja merkitään hakijaryhmästä hyväksytyt erillisellä algoritmilla.
+        String hakijaryhmaOid = hakijaryhmaWrapper.getHakijaryhma().getOid();
+        hakijaryhmaWrapper.getHakukohdeWrapper().hakukohteenHakemukset().map(h -> h.getHakemus()).forEach(h -> {
+            h.getHyvaksyttyHakijaryhmista().remove(hakijaryhmaOid);
+        });
+        merkitseHakijaryhmastaHyvaksytyt(sijoitteluAjo, hakijaryhmaWrapper);
+        List<HakemusWrapper> muuttuneet = sijoitteleHakijaryhmaRecur(sijoitteluAjo, hakijaryhmaWrapper);
+        for (HakemusWrapper h : muuttuneet) {
+            if (kuuluuHyvaksyttyihinTiloihin(h.getHakemus().getTila()) && !h.getHakemus().getHyvaksyttyHakijaryhmista().contains(hakijaryhmaOid)) {
+                throw new IllegalStateException(String.format(
+                        "Hakijaryhmän %s sijoittelussa hyväksytty hakemus %s ei ole merkitty hakijaryhmästä hyväksytyksi",
+                        hakijaryhmaOid,
+                        h.getHakemus().getHakemusOid()
+                ));
+            }
+        }
+        hakijaryhmaWrapper.getHakukohdeWrapper().hakukohteenHakemukset().forEach(h -> {
+            if (h.getHakemus().getHyvaksyttyHakijaryhmista().contains(hakijaryhmaOid) && !kuuluuHyvaksyttyihinTiloihin(h.getHakemus().getTila())) {
+                throw new IllegalStateException(String.format(
+                        "Hakijaryhmästä %s hyväksytyksi merkitty hakemus %s on tilassa %s",
+                        hakijaryhmaOid,
+                        h.getHakemus().getHakemusOid(),
+                        h.getHakemus().getTila()
+                ));
+            }
+        });
+        return SijoitteleHakukohde.uudelleenSijoiteltavatHakukohteet(muuttuneet);
     }
 
-    public static Set<HakukohdeWrapper> sijoitteleHakijaryhmaRecur(SijoitteluajoWrapper sijoitteluAjo, HakijaryhmaWrapper hakijaryhmaWrapper) {
+    public static List<HakemusWrapper> sijoitteleHakijaryhmaRecur(SijoitteluajoWrapper sijoitteluAjo, HakijaryhmaWrapper hakijaryhmaWrapper) {
         final List<ValintatapajonoWrapper> liittyvatJonot = hakijaryhmaanLiittyvatJonot(hakijaryhmaWrapper);
         final List<HakemusWrapper> hakemusWrappers = liittyvatJonot.stream().flatMap(j -> j.getHakemukset().stream()).collect(Collectors.toList());
         final List<HakemusWrapper> ryhmaanKuuluvat = hakijaRyhmaanKuuluvat(hakemusWrappers, hakijaryhmaWrapper);
@@ -212,8 +253,7 @@ public class SijoitteleHakijaryhma {
             final List<ValintatapajonoWrapper> liittyvatJonotVarasijatayttoVoimassa = liittyvatJonot.stream().filter(vtj -> sijoitteluAjo.onkoVarasijaSaannotVoimassaJaVarasijaTayttoKaynnissa(vtj)).collect(Collectors.toList());
             kasitteleValituksiHaluavat(sijoitteluAjo, hakijaryhmaWrapper, liittyvatJonotVarasijatayttoVoimassa, ryhmaanKuuluvat, muuttuneet, muuttuneetHakemukset);
         }
-        muuttuneet.addAll(SijoitteleHakukohde.uudelleenSijoiteltavatHakukohteet(muuttuneetHakemukset));
-        return muuttuneet;
+        return muuttuneetHakemukset;
     }
 
     private static List<ValintatapajonoWrapper> hakijaryhmaanLiittyvatJonot(HakijaryhmaWrapper hakijaryhmaWrapper) {
@@ -260,19 +300,13 @@ public class SijoitteleHakijaryhma {
             });
             // Hyväksytään valittavat
             valittavatJaVarasijat.getLeft().forEach(h -> {
-                if (!h.getHakemus().getHyvaksyttyHakijaryhmista().contains(hakijaryhmaWrapper.getHakijaryhma().getOid())) {
-                    throw new IllegalStateException(String.format(
-                            "Hakijaryhmän %s sijoittelussa yritettiin hyväksyä merkitsemätöntä hakemusta",
-                            hakijaryhmaWrapper.getHakijaryhma().getOid()
-                    ));
-                }
                 h.setHyvaksyttyHakijaryhmasta(true);
                 muuttuneetHakemukset.addAll(SijoitteleHakukohde.hyvaksyHakemus(sijoitteluAjo, h));
             });
             boolean lukko = liittyvatJonot.stream().anyMatch(ValintatapajonoWrapper::isAlitayttoLukko);
             // Kiintiö ei täyty, koska alitäyttö
             if (!lukko && (!valittavatJaVarasijat.getLeft().isEmpty() || !valittavatJaVarasijat.getRight().isEmpty())) {
-                muuttuneet.addAll(sijoitteleHakijaryhmaRecur(sijoitteluAjo, hakijaryhmaWrapper));
+                muuttuneet.addAll(SijoitteleHakukohde.uudelleenSijoiteltavatHakukohteet(sijoitteleHakijaryhmaRecur(sijoitteluAjo, hakijaryhmaWrapper)));
             }
         }
     }

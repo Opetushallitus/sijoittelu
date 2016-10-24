@@ -173,6 +173,43 @@ public class SijoitteleHakijaryhmaTest {
     }
 
     @Test
+    public void hakijaryhmaSijoitteluEiMerkitseHakijaryhmastaHyvaksytyiksiJononKauttaHyvaksyttyja() {
+        Hakijaryhma hakijaryhma = new Hakijaryhma();
+        hakijaryhma.setOid("hakijaryhmaOid");
+        hakijaryhma.setHakukohdeOid("hakukohdeOid");
+        hakijaryhma.setKiintio(1);
+
+        Valintatapajono valintatapajono = new Valintatapajono();
+        valintatapajono.setAloituspaikat(3);
+        valintatapajono.setPrioriteetti(0);
+        valintatapajono.setTasasijasaanto(Tasasijasaanto.ALITAYTTO);
+        valintatapajono.setHakemukset(generateHakemukset(3, hakijaryhma));
+
+        Hakukohde hakukohde = new Hakukohde();
+        hakukohde.setOid("hakukohdeOid");
+        hakukohde.setValintatapajonot(Collections.singletonList(valintatapajono));
+        hakukohde.setHakijaryhmat(Collections.singletonList(hakijaryhma));
+
+        SijoitteluajoWrapper ajoWrapper =
+                SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(
+                        new SijoitteluAjo(),
+                        Collections.singletonList(hakukohde),
+                        Collections.emptyList(),
+                        Collections.emptyMap()
+                );
+        HakukohdeWrapper hakukohdeWrapper = ajoWrapper.getHakukohteet().get(0);
+
+        SijoitteleHakukohde.sijoitteleHakukohde(ajoWrapper, hakukohdeWrapper);
+        SijoitteleHakukohde.sijoitteleHakukohde(ajoWrapper, hakukohdeWrapper);
+        Assert.assertEquals(HakemuksenTila.HYVAKSYTTY, hakukohdeWrapper.getValintatapajonot().get(0).getHakemukset().get(0).getHakemus().getTila());
+        Assert.assertEquals(HakemuksenTila.HYVAKSYTTY, hakukohdeWrapper.getValintatapajonot().get(0).getHakemukset().get(1).getHakemus().getTila());
+        Assert.assertEquals(HakemuksenTila.HYVAKSYTTY, hakukohdeWrapper.getValintatapajonot().get(0).getHakemukset().get(2).getHakemus().getTila());
+        Assert.assertThat(hakukohdeWrapper.getValintatapajonot().get(0).getHakemukset().get(0).getHakemus().getHyvaksyttyHakijaryhmista(), Matchers.contains("hakijaryhmaOid"));
+        Assert.assertThat(hakukohdeWrapper.getValintatapajonot().get(0).getHakemukset().get(1).getHakemus().getHyvaksyttyHakijaryhmista(), Matchers.empty());
+        Assert.assertThat(hakukohdeWrapper.getValintatapajonot().get(0).getHakemukset().get(2).getHakemus().getHyvaksyttyHakijaryhmista(), Matchers.empty());
+    }
+
+    @Test
     public void hakijaryhmaSijoitteluNoudattaaJononAlitayttoaJosKaikkiKuuluvatHakijaryhmaan() {
         Hakijaryhma hakijaryhma = new Hakijaryhma();
         hakijaryhma.setOid("hakijaryhmaOid");
