@@ -180,11 +180,9 @@ public class SijoitteleHakijaryhma {
             for (HakijaryhmanValintatapajono jono : valintatapajonot) {
                 if (!hyvaksyttiin) {
                     for (Hakemus h : jono.hyvaksyParhaallaJonosijallaOlevat()) {
-                        valintatapajonot.forEach(j -> {
-                            if (j.prioriteetti > jono.prioriteetti) {
-                                j.poistaHyvaksyttavista(h.getHakemusOid());
-                                j.poistaHyvaksytyista(h.getHakemusOid());
-                            }
+                        valintatapajonot.stream().filter(j -> j.prioriteetti > jono.prioriteetti).forEach(j -> {
+                            j.poistaHyvaksyttavista(h.getHakemusOid());
+                            j.poistaHyvaksytyista(h.getHakemusOid());
                         });
                         hyvaksyttiin = true;
                     }
