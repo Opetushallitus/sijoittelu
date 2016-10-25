@@ -104,16 +104,8 @@ public class SijoitteleHakijaryhma {
             hakijaryhmastaHyvaksyttavissa.removeIf(h -> h.getHakemusOid().equals(poistettavaOid));
         }
 
-        public Optional<Hakemus> poistaHyvaksytyista(String poistettavaOid) {
-            Iterator<Hakemus> i = hakijaryhmastaHyvaksytyt.iterator();
-            while (i.hasNext()) {
-                Hakemus h = i.next();
-                if (h.getHakemusOid().equals(poistettavaOid)) {
-                    i.remove();
-                    return Optional.of(h);
-                }
-            }
-            return Optional.empty();
+        public void poistaHyvaksytyista(String poistettavaOid) {
+            hakijaryhmastaHyvaksytyt.removeIf(h -> h.getHakemusOid().equals(poistettavaOid));
         }
     }
 
@@ -188,13 +180,10 @@ public class SijoitteleHakijaryhma {
             for (HakijaryhmanValintatapajono jono : valintatapajonot) {
                 if (!hyvaksyttiin) {
                     for (Hakemus h : jono.hyvaksyParhaallaJonosijallaOlevat()) {
-                        h.getHyvaksyttyHakijaryhmista().add(hakijaryhmaOid);
                         valintatapajonot.forEach(j -> {
                             if (j.prioriteetti > jono.prioriteetti) {
                                 j.poistaHyvaksyttavista(h.getHakemusOid());
-                                j.poistaHyvaksytyista(h.getHakemusOid()).ifPresent(poistettu -> {
-                                    poistettu.getHyvaksyttyHakijaryhmista().remove(hakijaryhmaOid);
-                                });
+                                j.poistaHyvaksytyista(h.getHakemusOid());
                             }
                         });
                         hyvaksyttiin = true;
@@ -213,6 +202,9 @@ public class SijoitteleHakijaryhma {
                         .orElse(false);
             }
         }
+        valintatapajonot.stream().flatMap(jono -> jono.hakijaryhmastaHyvaksytyt.stream()).forEach(h -> {
+            h.getHyvaksyttyHakijaryhmista().add(hakijaryhmaOid);
+        });
     }
 
     public static Set<HakukohdeWrapper> sijoitteleHakijaryhma(SijoitteluajoWrapper sijoitteluAjo, HakijaryhmaWrapper hakijaryhmaWrapper) {
