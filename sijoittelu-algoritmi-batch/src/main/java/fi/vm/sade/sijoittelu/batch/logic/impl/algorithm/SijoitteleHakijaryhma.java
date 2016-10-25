@@ -39,7 +39,10 @@ public class SijoitteleHakijaryhma {
             this.hakijaryhmastaHyvaksyttavissa = jono.getHakemukset().stream()
                     .filter(h -> hakijaryhmaanKuuluvat.contains(h.getHakemus().getHakemusOid()))
                     .filter(h -> kuuluuHyvaksyttyihinTiloihin(h.getHakemus().getTila()) ||
-                            (kuuluuVaraTiloihin(h.getHakemus().getTila()) && SijoitteleHakukohde.hakijaHaluaa(h) && SijoitteleHakukohde.saannotSallii(sijoitteluajo, h)))
+                            (kuuluuVaraTiloihin(h.getHakemus().getTila()) &&
+                                    !sijoitteluajo.onkoVarasijaTayttoPaattynyt(jono) &&
+                                    SijoitteleHakukohde.hakijaHaluaa(h) &&
+                                    SijoitteleHakukohde.saannotSallii(sijoitteluajo, h)))
                     .map(h -> h.getHakemus())
                     .sorted(new HyvaksytytEnsinHakemusComparator())
                     .collect(Collectors.toCollection(LinkedList::new));
