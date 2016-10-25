@@ -173,25 +173,25 @@ public class SijoitteleHakijaryhma {
                 .collect(Collectors.toList());
         String hakijaryhmaOid = hakijaryhmaWrapper.getHakijaryhma().getOid();
         int kiintio = hakijaryhmaWrapper.getHakijaryhma().getKiintio();
-        boolean hyvaksyttiin = true;
-        while (valintatapajonot.stream().mapToInt(v -> v.hakijaryhmastaHyvaksytyt.size()).sum() < kiintio && hyvaksyttiin) {
-            hyvaksyttiin = false;
+        boolean aloituspaikkojaVielaJaljella = true;
+        while (valintatapajonot.stream().mapToInt(v -> v.hakijaryhmastaHyvaksytyt.size()).sum() < kiintio && aloituspaikkojaVielaJaljella) {
+            aloituspaikkojaVielaJaljella = false;
             valintatapajonot.sort(ylimmanPrioriteetinJonoJossaYlimmallaJonosijallaOlevaHakijaEnsin);
             for (HakijaryhmanValintatapajono jono : valintatapajonot) {
-                if (!hyvaksyttiin) {
+                if (!aloituspaikkojaVielaJaljella) {
                     Set<String> hyvaksytyt = jono.hyvaksyParhaallaJonosijallaOlevat();
                     valintatapajonot.stream().filter(j -> j.prioriteetti > jono.prioriteetti).forEach(j -> {
                         j.poistaHyvaksyttavista(hyvaksytyt);
                         j.poistaHyvaksytyista(hyvaksytyt);
                     });
-                    hyvaksyttiin = !hyvaksytyt.isEmpty();
+                    aloituspaikkojaVielaJaljella = !hyvaksytyt.isEmpty();
                 }
             }
-            if (!hyvaksyttiin) {
+            if (!aloituspaikkojaVielaJaljella) {
                 // Toisen hakukohteen sijoittelu on voinut PERUUNNUTTAA tähän hakijaryhmään kuuluvan aiemmin hyväksytyn
                 // hakijan. Ylitäytön takia jonon aloituspaikat voivat silti olla täynnä. Tässä tapauksessa siirretään
                 // varalle hakijaryhmään kuulumattomia hakijoita, jotta hakijaryhmäkiintiö saataisiin täyteen.
-                hyvaksyttiin = valintatapajonot.stream()
+                aloituspaikkojaVielaJaljella = valintatapajonot.stream()
                         .filter(j -> j.tasasijasaanto == Tasasijasaanto.YLITAYTTO)
                         .sorted(alimmanPrioriteetinJonoJossaAlimmallaJonosijallaOlevaHakijaEnsin)
                         .findFirst()
