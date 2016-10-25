@@ -51,11 +51,11 @@ public class SijoitteleHakijaryhma {
             this.prioriteetti = jono.getValintatapajono().getPrioriteetti();
         }
 
-        public List<Hakemus> hyvaksyParhaallaJonosijallaOlevat() {
-            LinkedList<Hakemus> tasasijalla = new LinkedList<>();
+        public Set<String> hyvaksyParhaallaJonosijallaOlevat() {
             if (hakijaryhmastaHyvaksyttavissa.isEmpty()) {
-                return tasasijalla;
+                return Collections.emptySet();
             }
+            LinkedList<Hakemus> tasasijalla = new LinkedList<>();
             do { tasasijalla.addLast(hakijaryhmastaHyvaksyttavissa.removeFirst()); }
             while (!hakijaryhmastaHyvaksyttavissa.isEmpty() &&
                     tasasijalla.getLast().getJonosija() == hakijaryhmastaHyvaksyttavissa.getFirst().getJonosija());
@@ -86,7 +86,7 @@ public class SijoitteleHakijaryhma {
             eiHyvaksytyt.descendingIterator().forEachRemaining(h -> {
                 hakijaryhmastaHyvaksyttavissa.addFirst(h);
             });
-            return hyvaksytyt;
+            return hyvaksytyt.stream().map(h -> h.getHakemusOid()).collect(Collectors.toSet());
         }
 
         public boolean siirraVaralleAlimmallaJonosijallaOlevatHakijaryhmanUlkopuolisetHyvaksytyt() {
@@ -100,12 +100,12 @@ public class SijoitteleHakijaryhma {
             return true;
         }
 
-        public void poistaHyvaksyttavista(String poistettavaOid) {
-            hakijaryhmastaHyvaksyttavissa.removeIf(h -> h.getHakemusOid().equals(poistettavaOid));
+        public void poistaHyvaksyttavista(Set<String> poistettavat) {
+            hakijaryhmastaHyvaksyttavissa.removeIf(h -> poistettavat.contains(h.getHakemusOid()));
         }
 
-        public void poistaHyvaksytyista(String poistettavaOid) {
-            hakijaryhmastaHyvaksytyt.removeIf(h -> h.getHakemusOid().equals(poistettavaOid));
+        public void poistaHyvaksytyista(Set<String> poistettavat) {
+            hakijaryhmastaHyvaksytyt.removeIf(h -> poistettavat.contains(h.getHakemusOid()));
         }
     }
 
@@ -179,13 +179,12 @@ public class SijoitteleHakijaryhma {
             valintatapajonot.sort(ylimmanPrioriteetinJonoJossaYlimmallaJonosijallaOlevaHakijaEnsin);
             for (HakijaryhmanValintatapajono jono : valintatapajonot) {
                 if (!hyvaksyttiin) {
-                    for (Hakemus h : jono.hyvaksyParhaallaJonosijallaOlevat()) {
-                        valintatapajonot.stream().filter(j -> j.prioriteetti > jono.prioriteetti).forEach(j -> {
-                            j.poistaHyvaksyttavista(h.getHakemusOid());
-                            j.poistaHyvaksytyista(h.getHakemusOid());
-                        });
-                        hyvaksyttiin = true;
-                    }
+                    Set<String> hyvaksytyt = jono.hyvaksyParhaallaJonosijallaOlevat();
+                    valintatapajonot.stream().filter(j -> j.prioriteetti > jono.prioriteetti).forEach(j -> {
+                        j.poistaHyvaksyttavista(hyvaksytyt);
+                        j.poistaHyvaksytyista(hyvaksytyt);
+                    });
+                    hyvaksyttiin = !hyvaksytyt.isEmpty();
                 }
             }
             if (!hyvaksyttiin) {
