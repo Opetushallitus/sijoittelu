@@ -175,19 +175,19 @@ public class SijoitteleHakijaryhma {
         int kiintio = hakijaryhmaWrapper.getHakijaryhma().getKiintio();
         boolean aloituspaikkojaVielaJaljella = true;
         while (valintatapajonot.stream().mapToInt(v -> v.hakijaryhmastaHyvaksytyt.size()).sum() < kiintio && aloituspaikkojaVielaJaljella) {
-            aloituspaikkojaVielaJaljella = false;
+            boolean hyvaksyttiin = false;
             valintatapajonot.sort(ylimmanPrioriteetinJonoJossaYlimmallaJonosijallaOlevaHakijaEnsin);
             for (HakijaryhmanValintatapajono jono : valintatapajonot) {
-                if (!aloituspaikkojaVielaJaljella) {
+                if (!hyvaksyttiin) {
                     Set<String> hyvaksytyt = jono.hyvaksyParhaallaJonosijallaOlevat();
                     valintatapajonot.stream().filter(j -> j.prioriteetti > jono.prioriteetti).forEach(j -> {
                         j.poistaHyvaksyttavista(hyvaksytyt);
                         j.poistaHyvaksytyista(hyvaksytyt);
                     });
-                    aloituspaikkojaVielaJaljella = !hyvaksytyt.isEmpty();
+                    hyvaksyttiin = !hyvaksytyt.isEmpty();
                 }
             }
-            if (!aloituspaikkojaVielaJaljella) {
+            if (!hyvaksyttiin) {
                 // Toisen hakukohteen sijoittelu on voinut PERUUNNUTTAA tähän hakijaryhmään kuuluvan aiemmin hyväksytyn
                 // hakijan. Ylitäytön takia jonon aloituspaikat voivat silti olla täynnä. Tässä tapauksessa siirretään
                 // varalle hakijaryhmään kuulumattomia hakijoita, jotta hakijaryhmäkiintiö saataisiin täyteen.
