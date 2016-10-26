@@ -51,7 +51,7 @@ public class SijoitteleHakijaryhma {
             this.prioriteetti = jono.getValintatapajono().getPrioriteetti();
         }
 
-        public List<Hakemus> hyvaksyParhaallaJonosijallaOlevat() {
+        public List<Hakemus> hyvaksyAloituspaikkoihinMahtuvatParhaallaJonosijallaOlevat() {
             int paikkoja = aloituspaikkoja - hakijaryhmastaHyvaksytyt.size() - hakijaryhmanUlkopuoleltaHyvaksytyt.size();
             if (hakijaryhmastaHyvaksyttavissa.isEmpty() || paikkoja <= 0) {
                 return Collections.emptyList();
@@ -175,7 +175,7 @@ public class SijoitteleHakijaryhma {
             valintatapajonot.sort(ylimmanPrioriteetinJonoJossaYlimmallaJonosijallaOlevaHakijaEnsin);
             for (HakijaryhmanValintatapajono jono : valintatapajonot) {
                 if (!hyvaksyttiin) {
-                    List<Hakemus> hyvaksytyt = jono.hyvaksyParhaallaJonosijallaOlevat();
+                    List<Hakemus> hyvaksytyt = jono.hyvaksyAloituspaikkoihinMahtuvatParhaallaJonosijallaOlevat();
                     if (!hyvaksytyt.isEmpty()) {
                         Set<String> oidit = hyvaksytyt.stream().map(h -> h.getHakemusOid()).collect(Collectors.toSet());
                         valintatapajonot.stream().filter(j -> j.prioriteetti > jono.prioriteetti).forEach(j -> {
