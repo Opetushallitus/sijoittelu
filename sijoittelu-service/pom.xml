@@ -377,15 +377,6 @@
 			<scope>test</scope>
 		</dependency>
 
-		<!-- EhCache Replication -->
-		<dependency>
-			<groupId>net.sf.ehcache</groupId>
-			<artifactId>ehcache-jgroupsreplication</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.jgroups</groupId>
-			<artifactId>jgroups</artifactId>
-		</dependency>
 		<dependency>
 			<groupId>org.javassist</groupId>
 			<artifactId>javassist</artifactId>
