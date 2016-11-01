@@ -216,7 +216,8 @@ public class SijoitteleHakijaryhma {
         for (HakemusWrapper h : muuttuneet) {
             if (kuuluuHyvaksyttyihinTiloihin(h.getHakemus().getTila()) && !h.getHakemus().getHyvaksyttyHakijaryhmista().contains(hakijaryhmaOid)) {
                 throw new IllegalStateException(String.format(
-                        "Hakijaryhmän %s sijoittelussa hyväksytty hakemus %s ei ole merkitty hakijaryhmästä hyväksytyksi",
+                        "Hakukohteen %s hakijaryhmän %s sijoittelussa hyväksytty hakemus %s ei ole merkitty hakijaryhmästä hyväksytyksi",
+                        hakijaryhmaWrapper.getHakukohdeWrapper().getHakukohde().getOid(),
                         hakijaryhmaOid,
                         h.getHakemus().getHakemusOid()
                 ));
@@ -225,7 +226,8 @@ public class SijoitteleHakijaryhma {
         hakijaryhmaWrapper.getHakukohdeWrapper().hakukohteenHakemukset().forEach(h -> {
             if (h.getHakemus().getHyvaksyttyHakijaryhmista().contains(hakijaryhmaOid) && !kuuluuHyvaksyttyihinTiloihin(h.getHakemus().getTila())) {
                 throw new IllegalStateException(String.format(
-                        "Hakijaryhmästä %s hyväksytyksi merkitty hakemus %s on tilassa %s",
+                        "Hakukohteen %s hakijaryhmästä %s hyväksytyksi merkitty hakemus %s on tilassa %s",
+                        hakijaryhmaWrapper.getHakukohdeWrapper().getHakukohde().getOid(),
                         hakijaryhmaOid,
                         h.getHakemus().getHakemusOid(),
                         h.getHakemus().getTila()
