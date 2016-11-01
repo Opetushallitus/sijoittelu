@@ -10,6 +10,8 @@ import fi.vm.sade.sijoittelu.domain.Valintatapajono;
 import fi.vm.sade.sijoittelu.domain.comparator.HakemusComparator;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.tuple.Pair;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -19,6 +21,8 @@ import static fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.util.TilojenMuokk
 import static fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.WrapperHelperMethods.*;
 
 public class SijoitteleHakijaryhma {
+    private static final Logger LOG = LoggerFactory.getLogger(SijoitteleHakijaryhma.class);
+
     private static class HakijaryhmanValintatapajono {
         public final LinkedList<Hakemus> hakijaryhmastaHyvaksytyt;
         public final LinkedList<Hakemus> hakijaryhmanUlkopuoleltaHyvaksytyt;
@@ -215,7 +219,7 @@ public class SijoitteleHakijaryhma {
         List<HakemusWrapper> muuttuneet = sijoitteleHakijaryhmaRecur(sijoitteluAjo, hakijaryhmaWrapper);
         for (HakemusWrapper h : muuttuneet) {
             if (kuuluuHyvaksyttyihinTiloihin(h.getHakemus().getTila()) && !h.getHakemus().getHyvaksyttyHakijaryhmista().contains(hakijaryhmaOid)) {
-                throw new IllegalStateException(String.format(
+                LOG.error(String.format(
                         "Hakukohteen %s hakijaryhmän %s sijoittelussa hyväksytty hakemus %s ei ole merkitty hakijaryhmästä hyväksytyksi",
                         hakijaryhmaWrapper.getHakukohdeWrapper().getHakukohde().getOid(),
                         hakijaryhmaOid,
@@ -225,7 +229,7 @@ public class SijoitteleHakijaryhma {
         }
         hakijaryhmaWrapper.getHakukohdeWrapper().hakukohteenHakemukset().forEach(h -> {
             if (h.getHakemus().getHyvaksyttyHakijaryhmista().contains(hakijaryhmaOid) && !kuuluuHyvaksyttyihinTiloihin(h.getHakemus().getTila())) {
-                throw new IllegalStateException(String.format(
+                LOG.error(String.format(
                         "Hakukohteen %s hakijaryhmästä %s hyväksytyksi merkitty hakemus %s on tilassa %s",
                         hakijaryhmaWrapper.getHakukohdeWrapper().getHakukohde().getOid(),
                         hakijaryhmaOid,
