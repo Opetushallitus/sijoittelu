@@ -212,7 +212,6 @@ public class SijoitteleHakijaryhma {
         // hyväksytty hakijaryhmästä -merkintä jää asettamatta. Poistetaan mahdollisesti vanhentuneet merkinnät,
         // ja merkitään hakijaryhmästä hyväksytyt erillisellä algoritmilla.
         String hakijaryhmaOid = hakijaryhmaWrapper.getHakijaryhma().getOid();
-        LOG.info("Sijoitellaan hakijaryhmä " + hakijaryhmaOid);
         hakijaryhmaWrapper.getHakukohdeWrapper().hakukohteenHakemukset().map(h -> h.getHakemus()).forEach(h -> {
             h.getHyvaksyttyHakijaryhmista().remove(hakijaryhmaOid);
         });
@@ -229,18 +228,6 @@ public class SijoitteleHakijaryhma {
                 ));
             }
         }
-        hakijaryhmaWrapper.getHakukohdeWrapper().hakukohteenHakemukset().forEach(h -> {
-            if (h.getHakemus().getHyvaksyttyHakijaryhmista().contains(hakijaryhmaOid) && !kuuluuHyvaksyttyihinTiloihin(h.getHakemus().getTila())) {
-                LOG.error(String.format(
-                        "Hakukohteen %s hakijaryhmästä %s jonossa %s hyväksytyksi merkitty hakemus %s on tilassa %s",
-                        hakijaryhmaWrapper.getHakukohdeWrapper().getHakukohde().getOid(),
-                        hakijaryhmaOid,
-                        h.getValintatapajono().getValintatapajono().getOid(),
-                        h.getHakemus().getHakemusOid(),
-                        h.getHakemus().getTila()
-                ));
-            }
-        });
         return SijoitteleHakukohde.uudelleenSijoiteltavatHakukohteet(muuttuneet);
     }
 
