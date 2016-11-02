@@ -212,6 +212,7 @@ public class SijoitteleHakijaryhma {
         // hyväksytty hakijaryhmästä -merkintä jää asettamatta. Poistetaan mahdollisesti vanhentuneet merkinnät,
         // ja merkitään hakijaryhmästä hyväksytyt erillisellä algoritmilla.
         String hakijaryhmaOid = hakijaryhmaWrapper.getHakijaryhma().getOid();
+        LOG.info("Sijoitellaan hakijaryhmä " + hakijaryhmaOid);
         hakijaryhmaWrapper.getHakukohdeWrapper().hakukohteenHakemukset().map(h -> h.getHakemus()).forEach(h -> {
             h.getHyvaksyttyHakijaryhmista().remove(hakijaryhmaOid);
         });
