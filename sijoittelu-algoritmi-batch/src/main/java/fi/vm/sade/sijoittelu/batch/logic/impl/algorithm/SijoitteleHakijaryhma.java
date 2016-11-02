@@ -220,9 +220,10 @@ public class SijoitteleHakijaryhma {
         for (HakemusWrapper h : muuttuneet) {
             if (kuuluuHyvaksyttyihinTiloihin(h.getHakemus().getTila()) && !h.getHakemus().getHyvaksyttyHakijaryhmista().contains(hakijaryhmaOid)) {
                 LOG.error(String.format(
-                        "Hakukohteen %s hakijaryhmän %s sijoittelussa hyväksytty hakemus %s ei ole merkitty hakijaryhmästä hyväksytyksi",
+                        "Hakukohteen %s hakijaryhmän %s sijoittelussa jonosta %s hyväksytty hakemus %s ei ole merkitty hakijaryhmästä hyväksytyksi",
                         hakijaryhmaWrapper.getHakukohdeWrapper().getHakukohde().getOid(),
                         hakijaryhmaOid,
+                        h.getValintatapajono().getValintatapajono().getOid(),
                         h.getHakemus().getHakemusOid()
                 ));
             }
@@ -230,9 +231,10 @@ public class SijoitteleHakijaryhma {
         hakijaryhmaWrapper.getHakukohdeWrapper().hakukohteenHakemukset().forEach(h -> {
             if (h.getHakemus().getHyvaksyttyHakijaryhmista().contains(hakijaryhmaOid) && !kuuluuHyvaksyttyihinTiloihin(h.getHakemus().getTila())) {
                 LOG.error(String.format(
-                        "Hakukohteen %s hakijaryhmästä %s hyväksytyksi merkitty hakemus %s on tilassa %s",
+                        "Hakukohteen %s hakijaryhmästä %s jonossa %s hyväksytyksi merkitty hakemus %s on tilassa %s",
                         hakijaryhmaWrapper.getHakukohdeWrapper().getHakukohde().getOid(),
                         hakijaryhmaOid,
+                        h.getValintatapajono().getValintatapajono().getOid(),
                         h.getHakemus().getHakemusOid(),
                         h.getHakemus().getTila()
                 ));
