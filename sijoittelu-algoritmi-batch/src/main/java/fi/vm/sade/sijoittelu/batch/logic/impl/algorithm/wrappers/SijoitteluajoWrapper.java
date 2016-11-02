@@ -189,15 +189,17 @@ public class SijoitteluajoWrapper {
         }
     }
 
+    public boolean onkoVarasijaSaannotVoimassaJaVarasijaTayttoKaynnissa(ValintatapajonoWrapper valintatapajono) {
+        boolean onkoVarasijaSaannotVoimassa =getToday().isAfter(varasijaSaannotAstuvatVoimaan);
+        return onkoVarasijaSaannotVoimassa && !onkoVarasijaTayttoPaattynyt(valintatapajono);
+    }
+
     public boolean onkoVarasijaTayttoPaattynyt(ValintatapajonoWrapper valintatapajono) {
-        Date varasijojaTaytetaanAsti = valintatapajono.getValintatapajono().getVarasijojaTaytetaanAsti();
-        LocalDateTime varasijaTayttoPaattyy = this.getVarasijaTayttoPaattyy();
-        if (varasijojaTaytetaanAsti != null) {
-            LocalDateTime tempDate = LocalDateTime.ofInstant(varasijojaTaytetaanAsti.toInstant(), ZoneId.systemDefault());
-            if(tempDate.isBefore(varasijaTayttoPaattyy))
-                varasijaTayttoPaattyy = tempDate;
-        }
-        return getToday().isAfter(varasijaTayttoPaattyy);
+        LocalDateTime varasijojaTaytetaanAsti =
+                asInstant(valintatapajono.getValintatapajono().getVarasijojaTaytetaanAsti())
+                .filter(d -> d.isBefore(varasijaTayttoPaattyy))
+                .orElse(varasijaTayttoPaattyy);
+        return getToday().isAfter(varasijojaTaytetaanAsti);
     }
 
     public void addMuuttuneetValintatulokset(Valintatulos... valintatulokset) {
@@ -210,5 +212,8 @@ public class SijoitteluajoWrapper {
 
     public void setEdellisenSijoittelunHakukohteet(List<Hakukohde> edellisenSijoittelunHakukohteet) {
         this.edellisenSijoittelunHakukohteet = Optional.of(edellisenSijoittelunHakukohteet);
+    }
+    private Optional<LocalDateTime> asInstant(Date d) {
+        return Optional.ofNullable(d).map(i -> LocalDateTime.ofInstant(i.toInstant(), ZoneId.systemDefault()));
     }
 }

@@ -51,7 +51,7 @@ public class SijoitteleHakijaryhma {
         if (tarkkaKiintio && hyvaksyttyjenMaara >= kiintio) {
             asetaEiHyvaksyttavissaHakijaryhmanJalkeen(sijoitteluAjo, ryhmaanKuuluvat);
         } else if (hyvaksyttyjenMaara < kiintio) {
-            final List<ValintatapajonoWrapper> liittyvatJonotVarasijatayttoVoimassa = liittyvatJonot.stream().filter(vtj -> !sijoitteluAjo.onkoVarasijaTayttoPaattynyt(vtj)).collect(Collectors.toList());
+            final List<ValintatapajonoWrapper> liittyvatJonotVarasijatayttoVoimassa = liittyvatJonot.stream().filter(vtj -> sijoitteluAjo.onkoVarasijaSaannotVoimassaJaVarasijaTayttoKaynnissa(vtj)).collect(Collectors.toList());
             kasitteleValituksiHaluavat(sijoitteluAjo, hakijaryhmaWrapper, liittyvatJonotVarasijatayttoVoimassa, ryhmaanKuuluvat, muuttuneet, muuttuneetHakemukset);
         }
         muuttuneet.addAll(SijoitteleHakukohde.uudelleenSijoiteltavatHakukohteet(muuttuneetHakemukset));
