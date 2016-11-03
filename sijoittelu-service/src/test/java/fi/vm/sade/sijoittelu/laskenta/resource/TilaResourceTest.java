@@ -14,7 +14,7 @@ import fi.vm.sade.sijoittelu.laskenta.service.business.SijoitteluBusinessService
 import fi.vm.sade.sijoittelu.laskenta.service.business.StaleReadException;
 import fi.vm.sade.sijoittelu.laskenta.service.exception.HakemustaEiLoytynytException;
 import fi.vm.sade.sijoittelu.tulos.dto.HakukohdeDTO;
-import fi.vm.sade.valinta.http.HttpResource;
+import fi.vm.sade.valinta.http.HttpResourceImpl;
 import org.junit.Assert;
 import org.apache.commons.io.IOUtils;
 import org.apache.cxf.jaxrs.client.WebClient;
@@ -281,7 +281,7 @@ public class TilaResourceTest {
     }
 
     private WebClient createClient(String url) {
-        return new HttpResource(url, 15000).getWebClient();
+        return new HttpResourceImpl(url, 15000).getWebClient();
     }
 
     private static SijoitteluBusinessService sijoitteluBusinessServiceMock(RuntimeException e) {
