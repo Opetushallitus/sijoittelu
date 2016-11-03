@@ -228,6 +228,24 @@ public class SijoitteleHakijaryhma {
                 ));
             }
         }
+        hakijaryhmaWrapper.getHakukohdeWrapper().hakukohteenHakemukset().forEach(h -> {
+            if (h.getHakemus().getHyvaksyttyHakijaryhmista().contains(hakijaryhmaOid) &&
+                    !kuuluuHyvaksyttyihinTiloihin(h.getHakemus().getTila())) {
+                // Hakijaryhmäsijoittelu on laskenut jonosijoittelussa hyväksyttyjä hakemuksia hakijaryhmäkiintiöön.
+                // Tästä (tai jostain tunnistamattomasta syystä) johtuen hakemus h on merkattu hakijaryhmästä
+                // hyväksytyksi, mutta hakijaryhmäsijoittelu ei ole hyväksynyt sitä, koska hakijaryhmäkiintiön on
+                // katsottu olevan täynnä. Logitetaan virhe ja poistetaan merkintä jotta vain hyväksytyt ovat merkkity.
+                LOG.error(String.format(
+                        "Hakukohteen %s hakijaryhmästä %s jonossa %s hyväksytyksi merkitty hakemus %s on tilassa %s",
+                        hakijaryhmaWrapper.getHakukohdeWrapper().getHakukohde().getOid(),
+                        hakijaryhmaOid,
+                        h.getValintatapajono().getValintatapajono().getOid(),
+                        h.getHakemus().getHakemusOid(),
+                        h.getHakemus().getTila()
+                ));
+                h.getHakemus().getHyvaksyttyHakijaryhmista().remove(hakijaryhmaOid);
+            }
+        });
         return SijoitteleHakukohde.uudelleenSijoiteltavatHakukohteet(muuttuneet);
     }
 
