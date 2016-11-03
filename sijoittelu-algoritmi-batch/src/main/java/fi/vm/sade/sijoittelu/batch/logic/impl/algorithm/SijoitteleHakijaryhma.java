@@ -1,13 +1,26 @@
 package fi.vm.sade.sijoittelu.batch.logic.impl.algorithm;
 
+import static fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.util.TilaTaulukot.kuuluuHylattyihinTiloihin;
+import static fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.util.TilaTaulukot.kuuluuHyvaksyttyihinTiloihin;
+import static fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.util.TilojenMuokkaus.asetaTilaksiVaralla;
+import static fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.WrapperHelperMethods.hakemuksenHakemusOid;
+import static fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.WrapperHelperMethods.hakemuksenTila;
+import static fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.WrapperHelperMethods.jononAloituspaikat;
+import static fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.WrapperHelperMethods.jononPrioriteetti;
+import static fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.WrapperHelperMethods.jononTasasijasaanto;
 import com.google.common.collect.Lists;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.comparator.HakemusWrapperComparator;
-import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.*;
 import fi.vm.sade.sijoittelu.domain.HakemuksenTila;
 import fi.vm.sade.sijoittelu.domain.Hakemus;
 import fi.vm.sade.sijoittelu.domain.Tasasijasaanto;
 import fi.vm.sade.sijoittelu.domain.Valintatapajono;
 import fi.vm.sade.sijoittelu.domain.comparator.HakemusComparator;
+import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.HakemusWrapper;
+import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.HakijaryhmaWrapper;
+import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.HakukohdeWrapper;
+import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.SijoitteluajoWrapper;
+import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.ValintatapajonoWrapper;
+import fi.vm.sade.sijoittelu.domain.*;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
@@ -17,8 +30,6 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.util.TilaTaulukot.*;
-import static fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.util.TilojenMuokkaus.asetaTilaksiVaralla;
-import static fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.WrapperHelperMethods.*;
 
 public class SijoitteleHakijaryhma {
     private static final Logger LOG = LoggerFactory.getLogger(SijoitteleHakijaryhma.class);
@@ -450,20 +461,26 @@ public class SijoitteleHakijaryhma {
 
     private static Set<HakemusWrapper> asetaVaralleHakemus(HakemusWrapper varalleAsetettavaHakemusWrapper) {
         Set<HakemusWrapper> uudelleenSijoiteltavatHakukohteet = new HashSet<>();
-        if (varalleAsetettavaHakemusWrapper.isTilaVoidaanVaihtaa()) {
-            if (kuuluuHyvaksyttyihinTiloihin(hakemuksenTila(varalleAsetettavaHakemusWrapper))) {
-                for (HakemusWrapper hakemusWrapper : varalleAsetettavaHakemusWrapper.getHenkilo().getHakemukset()) {
-                    if (hakemusWrapper.isTilaVoidaanVaihtaa()) {
-                        if (!kuuluuHylattyihinTiloihin(hakemuksenTila(hakemusWrapper))) {
-                            asetaTilaksiVaralla(hakemusWrapper);
-                            uudelleenSijoiteltavatHakukohteet.add(hakemusWrapper);
-                        }
-                    }
+        if (!varalleAsetettavaHakemusWrapper.isTilaVoidaanVaihtaa()) {
+            LOG.error("Hakemuksta {} hakukohteessa {} yritetään asettaa varalle, mutta hakemuksen tilaa ei voida vaihtaa",
+                    varalleAsetettavaHakemusWrapper.getHakemus().getHakemusOid(),
+                    varalleAsetettavaHakemusWrapper.getHakukohdeOid());
+            throw new RuntimeException("Virheellinen tila hakemuksella asetettaessa varalle");
+        } else if (!kuuluuHyvaksyttyihinTiloihin(hakemuksenTila(varalleAsetettavaHakemusWrapper))) {
+            LOG.error("Hakemuksta {} hakukohteessa {} yritetään asettaa varalle, mutta hakemus ei kuulu hyväksyttyihin tiloihin",
+                    varalleAsetettavaHakemusWrapper.getHakemus().getHakemusOid(),
+                    varalleAsetettavaHakemusWrapper.getHakukohdeOid());
+            throw new RuntimeException("Virheellinen tila hakemuksella asetettaessa varalle");
+        }
+        for (HakemusWrapper hakemusWrapper : varalleAsetettavaHakemusWrapper.getHenkilo().getHakemukset()) {
+            if (!kuuluuHylattyihinTiloihin(hakemuksenTila(hakemusWrapper))) {
+                // Mikäli valintatulos löytyy varalle asetettavalta hakemukselta, poistetaan se
+                if (hakemusWrapper.getValintatulos().isPresent() && kuuluuHyvaksyttyihinTiloihin(hakemuksenTila(hakemusWrapper))) {
+                    hakemusWrapper.getValintatulos().get().setTila(ValintatuloksenTila.KESKEN, "Asetettu varalle");
                 }
-            } else {
-                if (!kuuluuHyvaksyttyihinTiloihin(hakemuksenTila(varalleAsetettavaHakemusWrapper))) {
-                    asetaTilaksiVaralla(varalleAsetettavaHakemusWrapper);
-                }
+                asetaTilaksiVaralla(hakemusWrapper);
+                hakemusWrapper.setTilaVoidaanVaihtaa(true);
+                uudelleenSijoiteltavatHakukohteet.add(hakemusWrapper);
             }
         }
         return uudelleenSijoiteltavatHakukohteet;
