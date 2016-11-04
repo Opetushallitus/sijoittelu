@@ -459,18 +459,21 @@ public class SijoitteleHakijaryhma {
         return false;
     }
 
+    private static void logError(String virhe, String hakemusOid, String hakukohdeOid) {
+        LOG.error(virhe, hakemusOid, hakukohdeOid);
+        throw new RuntimeException("Virheellinen tila hakemuksella asetettaessa varalle");
+    }
+
     private static Set<HakemusWrapper> asetaVaralleHakemus(HakemusWrapper varalleAsetettavaHakemusWrapper) {
         Set<HakemusWrapper> uudelleenSijoiteltavatHakukohteet = new HashSet<>();
         if (!varalleAsetettavaHakemusWrapper.isTilaVoidaanVaihtaa()) {
-            LOG.error("Hakemuksta {} hakukohteessa {} yritetään asettaa varalle, mutta hakemuksen tilaa ei voida vaihtaa",
+            logError("Hakemuksta {} hakukohteessa {} yritetään asettaa varalle, mutta hakemuksen tilaa ei voida vaihtaa",
                     varalleAsetettavaHakemusWrapper.getHakemus().getHakemusOid(),
                     varalleAsetettavaHakemusWrapper.getHakukohdeOid());
-            throw new RuntimeException("Virheellinen tila hakemuksella asetettaessa varalle");
         } else if (!kuuluuHyvaksyttyihinTiloihin(hakemuksenTila(varalleAsetettavaHakemusWrapper))) {
-            LOG.error("Hakemuksta {} hakukohteessa {} yritetään asettaa varalle, mutta hakemus ei kuulu hyväksyttyihin tiloihin",
+            logError("Hakemuksta {} hakukohteessa {} yritetään asettaa varalle, mutta hakemus ei kuulu hyväksyttyihin tiloihin",
                     varalleAsetettavaHakemusWrapper.getHakemus().getHakemusOid(),
                     varalleAsetettavaHakemusWrapper.getHakukohdeOid());
-            throw new RuntimeException("Virheellinen tila hakemuksella asetettaessa varalle");
         }
         for (HakemusWrapper hakemusWrapper : varalleAsetettavaHakemusWrapper.getHenkilo().getHakemukset()) {
             if (!kuuluuHylattyihinTiloihin(hakemuksenTila(hakemusWrapper))) {
