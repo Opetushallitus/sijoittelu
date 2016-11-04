@@ -121,6 +121,9 @@ public class Valintatulos implements Serializable {
         return originalLogEntries;
     }
 
+    //This shuould only be used in in valintarekisteri!!
+    public void setOriginalLogEntries(List<LogEntry> entries) { this.originalLogEntries = entries; }
+
     public Date getViimeinenMuutos() {
         return viimeinenMuutos;
     }
