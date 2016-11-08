@@ -7,5 +7,6 @@ import java.util.List;
 public class ValintatulosMailStatus {
     public Date previousCheck;
     public Date sent;
-    public List<String> media = new ArrayList<String>();
+    public Date done;
+    public String message;
 }

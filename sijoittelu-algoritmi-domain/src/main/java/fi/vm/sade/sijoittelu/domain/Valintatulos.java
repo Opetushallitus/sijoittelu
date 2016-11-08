@@ -197,6 +197,14 @@ public class Valintatulos implements Serializable {
         this.hakijaOid = hakijaOid;
     }
 
+    public ValintatulosMailStatus getMailStatus() {
+        return mailStatus;
+    }
+
+    public void setMailStatus(ValintatulosMailStatus mailStatus) {
+        this.mailStatus = mailStatus;
+    }
+
     public ValintatuloksenTila getTila() {
         return tila;
     }
