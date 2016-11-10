@@ -190,11 +190,18 @@ public class SijoitteluajoWrapper {
     }
 
     public boolean onkoVarasijaSaannotVoimassaJaVarasijaTayttoKaynnissa(ValintatapajonoWrapper valintatapajono) {
-        boolean onkoVarasijaSaannotVoimassa =getToday().isAfter(varasijaSaannotAstuvatVoimaan);
-        return onkoVarasijaSaannotVoimassa && !onkoVarasijaTayttoPaattynyt(valintatapajono);
+        return onkoVarasijaSaannotVoimassa() && !onkoVarasijaTayttoPaattynyt(valintatapajono);
     }
 
-    public boolean onkoVarasijaTayttoPaattynyt(ValintatapajonoWrapper valintatapajono) {
+    public boolean onkoVarasijaSaannotVoimassaJaVarasijaTayttoPaattynyt(ValintatapajonoWrapper valintatapajono) {
+        return onkoVarasijaSaannotVoimassa() && onkoVarasijaTayttoPaattynyt(valintatapajono);
+    }
+
+    private boolean onkoVarasijaSaannotVoimassa() {
+        return getToday().isAfter(varasijaSaannotAstuvatVoimaan);
+    }
+
+    private boolean onkoVarasijaTayttoPaattynyt(ValintatapajonoWrapper valintatapajono) {
         LocalDateTime varasijojaTaytetaanAsti =
                 asInstant(valintatapajono.getValintatapajono().getVarasijojaTaytetaanAsti())
                 .filter(d -> d.isBefore(varasijaTayttoPaattyy))

@@ -49,7 +49,7 @@ public class SijoitteleHakukohde {
         }
         // Hakukierros on päättynyt tai käsiteltävän jonon varasijasäännöt eivät ole enää voimassa.
         // Asetetaan kaikki hakemukset joiden tila voidaan vaihtaa tilaan peruuntunut
-        if (sijoitteluAjo.hakukierrosOnPaattynyt() || sijoitteluAjo.onkoVarasijaTayttoPaattynyt(valintatapajono)) {
+        if (sijoitteluAjo.hakukierrosOnPaattynyt() || sijoitteluAjo.onkoVarasijaSaannotVoimassaJaVarasijaTayttoPaattynyt(valintatapajono)) {
             hakukierrosPaattynyt(valituksiHaluavatHakemukset);
             return muuttuneetHakukohteet;
         }
@@ -105,7 +105,7 @@ public class SijoitteleHakukohde {
                             // On varalla olevia ylempiarvoisia hakutoiveita
                             .filter(HakemusWrapper::isVaralla)
                             // eika varasijataytto ole viela paattynyt niissa
-                            .filter(h0 -> !sijoitteluAjo.onkoVarasijaTayttoPaattynyt(h0.getValintatapajono()))
+                            .filter(h0 -> !sijoitteluAjo.onkoVarasijaSaannotVoimassaJaVarasijaTayttoPaattynyt(h0.getValintatapajono()))
                             .findAny().isPresent()) {
                         h.getValintatulos().ifPresent(v -> {
                             v.setTila(ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI,
