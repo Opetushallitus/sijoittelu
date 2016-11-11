@@ -44,7 +44,7 @@ public class SijoitteleHakijaryhma {
                     .filter(h -> hakijaryhmaanKuuluvat.contains(h.getHakemus().getHakemusOid()))
                     .filter(h -> kuuluuHyvaksyttyihinTiloihin(h.getHakemus().getTila()) ||
                             (kuuluuVaraTiloihin(h.getHakemus().getTila()) &&
-                                    !sijoitteluajo.onkoVarasijaTayttoPaattynyt(jono) &&
+                                    !sijoitteluajo.onkoVarasijaSaannotVoimassaJaVarasijaTayttoPaattynyt(jono) &&
                                     SijoitteleHakukohde.hakijaHaluaa(h) &&
                                     SijoitteleHakukohde.saannotSallii(sijoitteluajo, h)))
                     .map(h -> h.getHakemus())
