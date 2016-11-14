@@ -51,7 +51,12 @@ public class SijoitteleHakijaryhma {
                     .sorted(new HyvaksytytEnsinHakemusComparator())
                     .collect(Collectors.toCollection(LinkedList::new));
             this.tasasijasaanto = jono.getValintatapajono().getTasasijasaanto();
-            this.aloituspaikkoja = jono.getValintatapajono().getAloituspaikat();
+            if (jono.getValintatapajono().getKaikkiEhdonTayttavatHyvaksytaan() != null &&
+                    jono.getValintatapajono().getKaikkiEhdonTayttavatHyvaksytaan()) {
+                this.aloituspaikkoja = Integer.MAX_VALUE;
+            } else {
+                this.aloituspaikkoja = jono.getValintatapajono().getAloituspaikat();
+            }
             this.prioriteetti = jono.getValintatapajono().getPrioriteetti();
         }
 
