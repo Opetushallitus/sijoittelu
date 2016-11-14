@@ -10,12 +10,12 @@ public class ValintarekisteriServiceConfiguration {
 
     private Properties properties;
 
-    public ValintarekisteriServiceConfiguration(@Value("${valinta-tulos-service.valintarekisteri.db.user}") String  valintarekisteriDbUser,
-                                                @Value("${valinta-tulos-service.valintarekisteri.db.password}") String  valintarekisteriDbPassword,
-                                                @Value("${valinta-tulos-service.valintarekisteri.db.url}") String valintarekisteriDbUrl,
-                                                @Value("${valinta-tulos-service.tarjonta-service.url}") String tarjontaUrl,
-                                                @Value("${valinta-tulos-service.parseleniently.tarjonta}") String tarjontaParseLeniently,
-                                                @Value("${valinta-tulos-service.koodisto-service.url}") String koodistoUrl) {
+    public ValintarekisteriServiceConfiguration(@Value("${valintarekisteri.db.user}") String  valintarekisteriDbUser,
+                                                @Value("${valintarekisteri.db.password}") String  valintarekisteriDbPassword,
+                                                @Value("${valintarekisteri.db.url}") String valintarekisteriDbUrl,
+                                                @Value("${valintarekisteri.tarjonta-service.url}") String tarjontaUrl,
+                                                @Value("${valintarekisteri.parseleniently.tarjonta}") String tarjontaParseLeniently,
+                                                @Value("${valintarekisteri.koodisto-service.url}") String koodistoUrl) {
         this.properties = new Properties();
         this.properties.setProperty("valinta-tulos-service.valintarekisteri.db.user", valintarekisteriDbUser);
         this.properties.setProperty("valinta-tulos-service.valintarekisteri.db.password", valintarekisteriDbPassword);

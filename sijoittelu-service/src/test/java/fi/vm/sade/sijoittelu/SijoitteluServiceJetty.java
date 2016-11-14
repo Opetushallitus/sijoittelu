@@ -93,12 +93,12 @@ public class SijoitteluServiceJetty {
         System.setProperty("valintalaskentakoostepalvelu.valintaperusteet.ilb.url", "https://itest-virkailija.oph.ware.fi/valintaperusteet-service/resources");
         System.setProperty("valintalaskenta-laskenta-service.mongodb.uri", Optional.ofNullable(System.getProperty("valintalaskentaMongoUri")).orElse(""));
 
-        System.setProperty("valinta-tulos-service.valintarekisteri.db.user", "oph");
-        System.setProperty("valinta-tulos-service.valintarekisteri.db.password", "oph");
-        System.setProperty("valinta-tulos-service.valintarekisteri.db.url", "jdbc:postgresql://localhost:7449/valintarekisteri");
-        System.setProperty("valinta-tulos-service.tarjonta-service.url", "https://itest-virkailija.oph.ware.fi/tarjonta-service");
-        System.setProperty("valinta-tulos-service.parseleniently.tarjonta", "true");
-        System.setProperty("valinta-tulos-service.koodisto-service.url", "https://itest-virkailija.oph.ware.fi/koodisto-service/");
+        System.setProperty("valintarekisteri.db.user", "oph");
+        System.setProperty("valintarekisteri.db.password", "oph");
+        System.setProperty("valintarekisteri.db.url", "jdbc:postgresql://localhost:7449/valintarekisteri");
+        System.setProperty("valintarekisteri.tarjonta-service.url", "https://itest-virkailija.oph.ware.fi/tarjonta-service");
+        System.setProperty("valintarekisteri.parseleniently.tarjonta", "true");
+        System.setProperty("valintarekisteri.koodisto-service.url", "https://itest-virkailija.oph.ware.fi/koodisto-service/");
 
         System.setProperty("valintalaskentakoostepalvelu.valinta-tulos-service.rest.url", "http://localhost:8097/valinta-tulos-service");
         System.setProperty("valintalaskentakoostepalvelu.valintatulosservice.rest.url", "http://localhost:8097/valinta-tulos-service");
