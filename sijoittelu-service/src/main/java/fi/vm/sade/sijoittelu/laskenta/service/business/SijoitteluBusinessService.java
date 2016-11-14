@@ -16,7 +16,6 @@ import fi.vm.sade.sijoittelu.domain.comparator.HakemusComparator;
 import fi.vm.sade.sijoittelu.domain.dto.VastaanottoDTO;
 import fi.vm.sade.sijoittelu.laskenta.actors.messages.PoistaHakukohteet;
 import fi.vm.sade.sijoittelu.laskenta.actors.messages.PoistaVanhatAjotSijoittelulta;
-import fi.vm.sade.sijoittelu.laskenta.external.resource.SijoitteluValintaTulosServiceResource;
 import fi.vm.sade.sijoittelu.laskenta.external.resource.VirkailijaValintaTulosServiceResource;
 import fi.vm.sade.sijoittelu.laskenta.external.resource.dto.ParametriArvoDTO;
 import fi.vm.sade.sijoittelu.laskenta.external.resource.dto.ParametriDTO;
@@ -83,7 +82,7 @@ public class SijoitteluBusinessService {
     private final ValintatulosWithVastaanotto valintatulosWithVastaanotto;
     private final Collection<PostSijoitteluProcessor> postSijoitteluProcessors;
     private final Collection<PreSijoitteluProcessor> preSijoitteluProcessors;
-    private final SijoitteluValintaTulosServiceResource sijoitteluValintaTulosServiceResource;
+    private final ValintarekisteriService valintarekisteriService;
 
     @Autowired
     public SijoitteluBusinessService(@Value("${sijoittelu.maxAjojenMaara:20}") int maxAjoMaara,
@@ -98,7 +97,7 @@ public class SijoitteluBusinessService {
                                      ActorService actorService,
                                      TarjontaIntegrationService tarjontaIntegrationService,
                                      VirkailijaValintaTulosServiceResource valintaTulosServiceResource,
-                                     SijoitteluValintaTulosServiceResource sijoitteluValintaTulosServiceResource) {
+                                     ValintarekisteriService valintarekisteriService) {
         this.maxAjoMaara = maxAjoMaara;
         this.maxErillisAjoMaara = maxErillisAjoMaara;
         this.valintatulosDao = valintatulosDao;
@@ -114,7 +113,7 @@ public class SijoitteluBusinessService {
         this.valintatulosWithVastaanotto = new ValintatulosWithVastaanotto(valintatulosDao, valintaTulosServiceResource);
         this.preSijoitteluProcessors = PreSijoitteluProcessor.defaultPreProcessors();
         this.postSijoitteluProcessors = PostSijoitteluProcessor.defaultPostProcessors();
-        this.sijoitteluValintaTulosServiceResource = sijoitteluValintaTulosServiceResource;
+        this.valintarekisteriService = valintarekisteriService;
     }
 
     private static Set<String> hakukohteidenJonoOidit(List<Hakukohde> hakukohteet) {
@@ -185,6 +184,7 @@ public class SijoitteluBusinessService {
         stopWatch.stop();
         stopWatch.start("Persistoidaan valintatulokset");
         valintatulosWithVastaanotto.persistValintatulokset(mergatut);
+
         stopWatch.stop();
         sijoitteluajoWrapper.setMuuttuneetValintatulokset(mergatut);
         List<String> varasijapomput = sijoitteluajoWrapper.getVarasijapomput();
@@ -192,6 +192,10 @@ public class SijoitteluBusinessService {
         LOG.info("Haun {} sijoittelussa muuttui {} kpl valintatuloksia, pomppuja {} kpl", hakuOid, mergatut.size(), varasijapomput.size());
         persistSijoitteluAndSiivoaVanhatAjot(stopWatch, hakuOid, sijoittelu, uusiSijoitteluajo, maxAjoMaara);
         LOG.info(stopWatch.prettyPrint());
+
+        stopWatch.start("Tallennetaan sijoitteluajo, hakukohteet ja valintatulokset Valintarekisteriin");
+        valintarekisteriService.tallennaSijoittelu(uusiSijoitteluajo, kaikkiHakukohteet, mergatut);
+        stopWatch.stop();
     }
 
     private void suoritaSijoittelu(long startTime, StopWatch stopWatch, String hakuOid, SijoitteluAjo uusiSijoitteluajo, SijoitteluajoWrapper sijoitteluajoWrapper) {
@@ -209,7 +213,6 @@ public class SijoitteluBusinessService {
             sijoitteluDao.persistSijoittelu(sijoittelu);
             stopWatch.stop();
             stopWatch.start("Sijoitteluajo valintatulosserviceen");
-            sijoitteluValintaTulosServiceResource.storeSijoitteluajo(uusiSijoitteluajo);
             stopWatch.stop();
             LOG.info("Sijoittelu persistoitu haulle {}. Poistetaan vanhoja ajoja. Säästettävien ajojen määrää {}", sijoittelu.getHakuOid(), sailytettavaAjoMaara);
             stopWatch.start("Käynnistetään vanhojen sijoitteluajojen siivouksen taustaprosessi");

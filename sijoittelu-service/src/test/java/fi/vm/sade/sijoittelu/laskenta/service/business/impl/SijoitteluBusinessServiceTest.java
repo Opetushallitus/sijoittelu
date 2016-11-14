@@ -3,11 +3,11 @@ package fi.vm.sade.sijoittelu.laskenta.service.business.impl;
 import fi.vm.sade.authentication.business.service.Authorizer;
 import fi.vm.sade.generic.service.exception.NotAuthorizedException;
 import fi.vm.sade.sijoittelu.domain.*;
-import fi.vm.sade.sijoittelu.laskenta.external.resource.SijoitteluValintaTulosServiceResource;
 import fi.vm.sade.sijoittelu.laskenta.external.resource.VirkailijaValintaTulosServiceResource;
 import fi.vm.sade.sijoittelu.laskenta.external.resource.dto.ParametriArvoDTO;
 import fi.vm.sade.sijoittelu.laskenta.external.resource.dto.ParametriDTO;
 import fi.vm.sade.sijoittelu.laskenta.service.business.SijoitteluBusinessService;
+import fi.vm.sade.sijoittelu.laskenta.service.business.ValintarekisteriService;
 import fi.vm.sade.sijoittelu.laskenta.service.it.TarjontaIntegrationService;
 import fi.vm.sade.sijoittelu.tulos.dao.HakukohdeDao;
 import fi.vm.sade.sijoittelu.tulos.dao.SijoitteluDao;
@@ -42,8 +42,7 @@ public class SijoitteluBusinessServiceTest {
     private TestDataGenerator testDataGenerator;
     private TarjontaIntegrationService tarjontaIntegrationService;
     private RaportointiService raportointiService;
-    private SijoitteluValintaTulosServiceResource sijoitteluValintaTulosServiceResource;
-
+    private ValintarekisteriService valintarekisteriService;
 
     @Before
     public void setUp() throws Exception {
@@ -54,11 +53,11 @@ public class SijoitteluBusinessServiceTest {
         tarjontaIntegrationService = mock(TarjontaIntegrationService.class);
         VirkailijaValintaTulosServiceResource valintaTulosServiceResourceMock = mock(VirkailijaValintaTulosServiceResource.class);
         raportointiService = mock(RaportointiService.class);
-        sijoitteluValintaTulosServiceResource = mock(SijoitteluValintaTulosServiceResource.class);
+        valintarekisteriService = mock(ValintarekisteriService.class);
 
         sijoitteluBusinessService = new SijoitteluBusinessService(1,1,valintatulosDaoMock,hakukohdeDao,sijoitteluDao,
                 raportointiService, null, authorizer,null,null,tarjontaIntegrationService,valintaTulosServiceResourceMock,
-                sijoitteluValintaTulosServiceResource);
+                valintarekisteriService); 
         testDataGenerator = new TestDataGenerator();
 
     }
