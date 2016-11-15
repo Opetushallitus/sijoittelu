@@ -14,7 +14,6 @@
     <mockito:mock id="valintalaskentakoostepalvelu" class="fi.vm.sade.service.valintaperusteet.resource.ValintalaskentakoostepalveluResource" />
     <mockito:mock id="virkailijaValintaTulosServiceResource" class="fi.vm.sade.sijoittelu.laskenta.external.resource.VirkailijaValintaTulosServiceResource" />
     <mockito:mock id="sijoitteluValintaTulosServiceResource" class="fi.vm.sade.sijoittelu.laskenta.external.resource.SijoitteluValintaTulosServiceResource" />
-    <mockito:mock id="valintaTulosServiceResource" class="fi.vm.sade.sijoittelu.laskenta.external.resource.VirkailijaValintaTulosServiceResource" />
     <mockito:mock id="authorizer" class="fi.vm.sade.authentication.business.service.Authorizer" />
     <mockito:mock id="valintarekisteriService" class="fi.vm.sade.sijoittelu.laskenta.service.business.ValintarekisteriService" />
 

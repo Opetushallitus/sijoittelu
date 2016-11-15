@@ -32,7 +32,6 @@
       <mockito:mock id="hakukohdeV1Resource" class="fi.vm.sade.sijoittelu.laskenta.external.resource.HakukohdeV1Resource" />
       <mockito:mock id="virkailijaValintaTulosServiceResource" class="fi.vm.sade.sijoittelu.laskenta.external.resource.VirkailijaValintaTulosServiceResource" />
       <mockito:mock id="sijoitteluValintaTulosServiceResource" class="fi.vm.sade.sijoittelu.laskenta.external.resource.SijoitteluValintaTulosServiceResource" />
-      <mockito:mock id="valintaTulosServiceResource" class="fi.vm.sade.sijoittelu.laskenta.external.resource.VirkailijaValintaTulosServiceResource" />
       <mockito:mock id="valintarekisteriService" class="fi.vm.sade.sijoittelu.laskenta.service.business.ValintarekisteriService" />
 
       <context:component-scan base-package="fi.vm.sade.sijoittelu.tulos"/>
