@@ -48,21 +48,26 @@ public class SijoitteluResourceTest {
     public void testaaSijoitteluReitti() {
         final String hakukohdeOid = UUID.randomUUID().toString();
         final String hakijaryhmaOid = UUID.randomUUID().toString();
+        final String valintatapajononHakijaryhmaOid = UUID.randomUUID().toString();
         try {
             ValintatietoValinnanvaiheDTO laskennasta = createValintatietoValinnanvaiheDTO();
             ValintatapajonoDTO valintaperusteista = createValintatapajonoDTO();
             HakijaryhmaValintatapajonoDTO hakijaryhmavalintaperusteista = createHakijaryhmaValintatapajonoDTO(hakijaryhmaOid);
-            valintaperusteista.setOid(laskennasta.getValintatapajonot().iterator().next().getOid());
-            HakuDTO haku = createHakuDTO(hakukohdeOid, createHakijaryhmaDTO(hakijaryhmaOid), laskennasta);
+            HakijaryhmaValintatapajonoDTO valintatapajononHakijaryhmavalintaperusteista = createHakijaryhmaValintatapajonoDTO(valintatapajononHakijaryhmaOid);
+            final String valintatapajonoOid = laskennasta.getValintatapajonot().iterator().next().getOid();
+            valintaperusteista.setOid(valintatapajonoOid);
+            HakuDTO haku = createHakuDTO(hakukohdeOid, createHakijaryhmaDTO(hakijaryhmaOid), createHakijaryhmaDTO(valintatapajononHakijaryhmaOid), laskennasta);
             {
                 when(valintatietoService.haeValintatiedot(anyString())).thenReturn(haku);
                 when(valintalaskentakoostepalveluResource.readByHakukohdeOids(anyList())).thenReturn(asList(hakijaryhmavalintaperusteista));
+                when(valintalaskentakoostepalveluResource.readByValintatapajonoOids(anyList())).thenReturn(asList(valintatapajononHakijaryhmavalintaperusteista));
                 final HashMap<String, List<ValintatapajonoDTO>> vpMap = new HashMap<>();
                 vpMap.put(hakukohdeOid, Arrays.asList(valintaperusteista));
                 when(valintalaskentakoostepalveluResource.haeValintatapajonotSijoittelulle(anyList())).thenReturn(vpMap);
                 sijoitteluResource.sijoittele(EMPTY);
             }
             verify(valintalaskentakoostepalveluResource, times(1)).readByHakukohdeOids(asList(hakukohdeOid));
+            verify(valintalaskentakoostepalveluResource, times(1)).readByValintatapajonoOids(asList(valintatapajonoOid));
             verify(valintalaskentakoostepalveluResource, times(1)).haeValintatapajonotSijoittelulle(asList(hakukohdeOid));
             verify(sijoitteluBusinessService, times(1)).sijoittele(haku, new HashSet<>());
 
@@ -89,6 +94,25 @@ public class SijoitteluResourceTest {
             {
                 HakijaryhmaDTO hakijaryhma = hakukohde.getHakijaryhma().iterator().next();
                 HakijaryhmaDTO alkuperainen = createHakijaryhmaDTO(hakijaryhmaOid);
+
+                assertNotSame(hakijaryhma.isKaytaKaikki(), alkuperainen.isKaytaKaikki());
+                assertNotSame(hakijaryhma.isKaytetaanRyhmaanKuuluvia(), alkuperainen.isKaytetaanRyhmaanKuuluvia());
+                assertNotSame(hakijaryhma.getKiintio(), alkuperainen.getKiintio());
+                assertNotSame(hakijaryhma.getKuvaus(), alkuperainen.getKuvaus());
+                assertNotSame(hakijaryhma.getNimi(), alkuperainen.getNimi());
+                assertNotSame(hakijaryhma.isTarkkaKiintio(), alkuperainen.isTarkkaKiintio());
+                assertNotSame(hakijaryhma.getHakijaryhmatyyppikoodiUri(), alkuperainen.getHakijaryhmatyyppikoodiUri());
+
+                assertThat(hakijaryhma.isKaytaKaikki(), is(hakijaryhmavalintaperusteista.isKaytaKaikki()));
+                assertThat(hakijaryhma.isKaytetaanRyhmaanKuuluvia(), is(hakijaryhmavalintaperusteista.isKaytetaanRyhmaanKuuluvia()));
+                assertThat(hakijaryhma.getKiintio(), is(hakijaryhmavalintaperusteista.getKiintio()));
+                assertThat(hakijaryhma.getKuvaus(), is(hakijaryhmavalintaperusteista.getKuvaus()));
+                assertThat(hakijaryhma.getNimi(), is(hakijaryhmavalintaperusteista.getNimi()));
+                assertThat(hakijaryhma.isTarkkaKiintio(), is(hakijaryhmavalintaperusteista.isTarkkaKiintio()));
+                assertThat(hakijaryhma.getHakijaryhmatyyppikoodiUri(), is(hakijaryhmavalintaperusteista.getHakijaryhmatyyppikoodi().getUri()));
+
+                hakijaryhma = hakukohde.getHakijaryhma().iterator().next();
+                alkuperainen = createHakijaryhmaDTO(valintatapajononHakijaryhmaOid);
 
                 assertNotSame(hakijaryhma.isKaytaKaikki(), alkuperainen.isKaytaKaikki());
                 assertNotSame(hakijaryhma.isKaytetaanRyhmaanKuuluvia(), alkuperainen.isKaytetaanRyhmaanKuuluvia());
@@ -154,11 +178,11 @@ public class SijoitteluResourceTest {
         return valintatietoValinnanvaiheDTO;
     }
 
-    private HakuDTO createHakuDTO(String hakukohdeOid, HakijaryhmaDTO hakijaryhma, ValintatietoValinnanvaiheDTO valinnanvaihe) {
+    private HakuDTO createHakuDTO(String hakukohdeOid, HakijaryhmaDTO hakijaryhma, HakijaryhmaDTO valintatapajononHakijaryhma, ValintatietoValinnanvaiheDTO valinnanvaihe) {
         HakuDTO haku = new HakuDTO();
         HakukohdeDTO hakukohde = new HakukohdeDTO();
         hakukohde.setOid(hakukohdeOid);
-        hakukohde.setHakijaryhma(asList(hakijaryhma));
+        hakukohde.setHakijaryhma(asList(hakijaryhma, valintatapajononHakijaryhma));
         hakukohde.setValinnanvaihe(asList(valinnanvaihe));
         haku.setHakukohteet(asList(hakukohde));
         return haku;

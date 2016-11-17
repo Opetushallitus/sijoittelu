@@ -140,17 +140,34 @@ public class SijoitteluResource {
         Set<String> hakukohdeOidsWithHakijaryhma = haku.getHakukohteet().stream()
                 .filter(hakukohde -> hakukohde.getHakijaryhma() != null && !hakukohde.getHakijaryhma().isEmpty())
                 .map(hakukohde -> hakukohde.getOid()).collect(toSet());
+        Set<String> valintatapajonoOidsWithHakijaryhma = haku.getHakukohteet().stream()
+                .filter(hakukohde -> hakukohde.getHakijaryhma() != null && !hakukohde.getHakijaryhma().isEmpty())
+                .flatMap(hakukohde -> hakukohde.getValinnanvaihe().stream())
+                .flatMap(valinnanvaihe -> valinnanvaihe.getValintatapajonot().stream())
+                .map(jono -> jono.getOid()).collect(toSet());
 
         Map<String, HakijaryhmaValintatapajonoDTO> hakijaryhmaByOid = Collections.emptyMap();
         if (!hakukohdeOidsWithHakijaryhma.isEmpty()) {
             LOGGER.info("Haetaan hakijaryhmät sijoittelua varten");
             try {
+                LOGGER.info("Haetaan haetaan hakukohdekohtaiset hakijaryhmät sijoittelua varten seuraaville hakukohteille: {}", hakukohdeOidsWithHakijaryhma);
                 hakijaryhmaByOid =
                         valintalaskentakoostepalveluResource.readByHakukohdeOids(Lists.newArrayList(hakukohdeOidsWithHakijaryhma))
                                 .stream()
                                         // Valintaperusteet pitaisi palauttaa vain aktiivisia mutta filtteroidaan varmuuden vuoksi
                                 .filter(v -> TRUE.equals(v.getAktiivinen()))
                                 .collect(Collectors.toMap(v -> v.getOid(), v -> v));
+
+                LOGGER.info("Haetaan haetaan valintatapajonokohtaiset hakijaryhmät sijoittelua varten seuraaville valintatapajonoille: {}", valintatapajonoOidsWithHakijaryhma);
+                Map<String, HakijaryhmaValintatapajonoDTO> valintatapajonojenHakijaryhmaByOid =
+                        valintalaskentakoostepalveluResource.readByValintatapajonoOids(Lists.newArrayList(valintatapajonoOidsWithHakijaryhma))
+                                .stream()
+                                // Valintaperusteet pitaisi palauttaa vain aktiivisia mutta filtteroidaan varmuuden vuoksi
+                                .filter(v -> TRUE.equals(v.getAktiivinen()))
+                                .collect(Collectors.toMap(v -> v.getOid(), v -> v));
+
+                hakijaryhmaByOid.putAll(valintatapajonojenHakijaryhmaByOid);
+
             } catch (Exception e) {
                 LOGGER.error("Hakijaryhmien hakeminen epäonnistui virheeseen!", e);
                 throw e;
