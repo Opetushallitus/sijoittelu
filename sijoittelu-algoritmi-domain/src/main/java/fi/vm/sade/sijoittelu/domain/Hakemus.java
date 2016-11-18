@@ -1,7 +1,10 @@
 package fi.vm.sade.sijoittelu.domain;
 
-import org.mongodb.morphia.annotations.*;
 import fi.vm.sade.sijoittelu.domain.converter.BigDecimalConverter;
+import org.mongodb.morphia.annotations.Converters;
+import org.mongodb.morphia.annotations.Embedded;
+import org.mongodb.morphia.annotations.Indexed;
+import org.mongodb.morphia.annotations.PostLoad;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -45,6 +48,8 @@ public class Hakemus implements Serializable {
     private List<Pistetieto> pistetiedot = new ArrayList<Pistetieto>();
 
     private Map<String,String> tilanKuvaukset = new HashMap<String,String>();
+
+    private TilankuvauksenTarkenne tilankuvauksenTarkenne;
 
     private Integer varasijanNumero;
 
@@ -230,5 +235,53 @@ public class Hakemus implements Serializable {
 
     public boolean getSiirtynytToisestaValintatapajonosta() {
         return this.siirtynytToisestaValintatapajonosta;
+    }
+
+    public TilankuvauksenTarkenne getTilankuvauksenTarkenne() {
+        return tilankuvauksenTarkenne;
+    }
+
+    public void setTilankuvauksenTarkenne(TilankuvauksenTarkenne tilankuvauksenTarkenne) {
+        this.tilankuvauksenTarkenne = tilankuvauksenTarkenne;
+    }
+
+    @PostLoad
+    public void postLoad() {
+        if (tilankuvauksenTarkenne == null) {
+            tilankuvauksenTarkenne = getTilankuvauksenTarkenneFor(tilanKuvaukset);
+        }
+    }
+
+    private TilankuvauksenTarkenne getTilankuvauksenTarkenneFor(Map<String, String> tilanKuvaukset) {
+        if (tilanKuvaukset != null && tilanKuvaukset.get("FI") != null) {
+            String tkFi = tilanKuvaukset.get("FI");
+            switch (tkFi) {
+                case "Peruuntunut, hyväksytty ylemmälle hakutoiveelle":
+                    return TilankuvauksenTarkenne.PERUUNTUNUT_HYVAKSYTTY_YLEMMALLE_HAKUTOIVEELLE;
+                case "Peruuntunut, aloituspaikat täynnä":
+                    return TilankuvauksenTarkenne.PERUUNTUNUT_ALOITUSPAIKAT_TAYNNA;
+                case "Peruuntunut, hyväksytty toisessa valintatapajonossa":
+                    return TilankuvauksenTarkenne.PERUUNTUNUT_HYVAKSYTTY_TOISESSA_JONOSSA;
+                case "Varasijalta hyväksytty":
+                    return TilankuvauksenTarkenne.HYVAKSYTTY_VARASIJALTA;
+                case "Peruuntunut, ei vastaanottanut määräaikana":
+                    return TilankuvauksenTarkenne.PERUUNTUNUT_EI_VASTAANOTTANUT_MAARAAIKANA;
+                case "Peruuntunut, ottanut vastaan toisen opiskelupaikan":
+                    return TilankuvauksenTarkenne.PERUUNTUNUT_VASTAANOTTANUT_TOISEN_PAIKAN;
+                case "Peruuntunut, varasija ei mahdu käsiteltävien varasijojen määrään":
+                    return TilankuvauksenTarkenne.PERUUNTUNUT_EI_MAHDU_VARASIJOJEN_MAARAAN;
+                case "Peruuntunut, varasijatäyttö päättynyt":
+                    return TilankuvauksenTarkenne.PERUUNTUNUT_HAKUKIERROS_PAATTYNYT;
+                case "Peruuntunut, ei varasijatäyttöä":
+                    return TilankuvauksenTarkenne.PERUUNTUNUT_EI_VARASIJATAYTTOA;
+                case "Peruuntunut, vastaanottanut toisen korkeakoulupaikan":
+                    return TilankuvauksenTarkenne.PERUUNTUNUT_VASTAANOTTANUT_TOISEN_PAIKAN_YHDEN_SAANNON_PAIKAN_PIIRISSA;
+            }
+            if (tkFi.startsWith("Hyväksytty täyttöjonosäännöllä valintatapajonosta:"))
+                return TilankuvauksenTarkenne.HYVAKSYTTY_TAYTTOJONO_SAANNOLLA;
+            if (tkFi.startsWith("Hylätty, ei kuulu hakijaryhmään:"))
+                return TilankuvauksenTarkenne.HYLATTY_HAKIJARYHMAAN_KUULUMATTOMANA;
+        }
+        return TilankuvauksenTarkenne.EI_TILANKUVAUKSEN_TARKENNETTA;
     }
 }
