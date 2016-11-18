@@ -150,7 +150,7 @@ public class SijoitteluResource {
         if (!hakukohdeOidsWithHakijaryhma.isEmpty()) {
             LOGGER.info("Haetaan hakijaryhmät sijoittelua varten");
             try {
-                LOGGER.info("Haetaan haetaan hakukohdekohtaiset hakijaryhmät sijoittelua varten seuraaville hakukohteille: {}", hakukohdeOidsWithHakijaryhma);
+                LOGGER.info("Haetaan hakukohdekohtaiset hakijaryhmät sijoittelua");
                 hakijaryhmaByOid =
                         valintalaskentakoostepalveluResource.readByHakukohdeOids(Lists.newArrayList(hakukohdeOidsWithHakijaryhma))
                                 .stream()
@@ -158,7 +158,7 @@ public class SijoitteluResource {
                                 .filter(v -> TRUE.equals(v.getAktiivinen()))
                                 .collect(Collectors.toMap(v -> v.getOid(), v -> v));
 
-                LOGGER.info("Haetaan haetaan valintatapajonokohtaiset hakijaryhmät sijoittelua varten seuraaville valintatapajonoille: {}", valintatapajonoOidsWithHakijaryhma);
+                LOGGER.info("Haetaan valintatapajonokohtaiset hakijaryhmät sijoittelua varten");
                 Map<String, HakijaryhmaValintatapajonoDTO> valintatapajonojenHakijaryhmaByOid =
                         valintalaskentakoostepalveluResource.readByValintatapajonoOids(Lists.newArrayList(valintatapajonoOidsWithHakijaryhma))
                                 .stream()
