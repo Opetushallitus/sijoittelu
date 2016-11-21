@@ -189,10 +189,6 @@ public class SijoitteluajoWrapper {
         }
     }
 
-    public boolean onkoVarasijaSaannotVoimassaJaVarasijaTayttoKaynnissa(ValintatapajonoWrapper valintatapajono) {
-        return onkoVarasijaSaannotVoimassa() && !onkoVarasijaTayttoPaattynyt(valintatapajono);
-    }
-
     public boolean onkoVarasijaSaannotVoimassaJaVarasijaTayttoPaattynyt(ValintatapajonoWrapper valintatapajono) {
         return onkoVarasijaSaannotVoimassa() && onkoVarasijaTayttoPaattynyt(valintatapajono);
     }
