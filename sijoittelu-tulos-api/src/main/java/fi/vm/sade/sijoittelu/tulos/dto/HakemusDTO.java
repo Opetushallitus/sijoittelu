@@ -45,7 +45,7 @@ public class HakemusDTO implements Serializable {
 
     private boolean onkoMuuttunutViimeSijoittelussa = false;
 
-    private Set<String> hyvaksyttyHakijaryhmista = new HashSet<>();
+    private Set<String> hyvaksyttyHakijaryhmista = new HashSet<String>();
 
     private boolean siirtynytToisestaValintatapajonosta = false;
 

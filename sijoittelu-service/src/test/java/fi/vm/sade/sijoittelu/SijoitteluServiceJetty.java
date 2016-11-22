@@ -95,7 +95,7 @@ public class SijoitteluServiceJetty {
 
         System.setProperty("valintarekisteri.db.user", "oph");
         System.setProperty("valintarekisteri.db.password", "oph");
-        System.setProperty("valintarekisteri.db.url", "jdbc:postgresql://localhost:7449/valintarekisteri");
+        System.setProperty("valintarekisteri.db.url", "jdbc:postgresql://localhost:54541/valintarekisteri");
         System.setProperty("valintarekisteri.tarjonta-service.url", "https://itest-virkailija.oph.ware.fi/tarjonta-service");
         System.setProperty("valintarekisteri.parseleniently.tarjonta", "true");
         System.setProperty("valintarekisteri.koodisto-service.url", "https://itest-virkailija.oph.ware.fi/koodisto-service/");
