@@ -44,10 +44,12 @@ public class Hakemus implements Serializable {
 
     private List<Pistetieto> pistetiedot = new ArrayList<Pistetieto>();
 
-    private Map<String,String> tilanKuvaukset = new HashMap<String,String>();
+    private Map<String, String> tilanKuvaukset = new HashMap<String, String>();
 
     @Transient
     private TilankuvauksenTarkenne tilankuvauksenTarkenne;
+
+    private String tarkenteenLisatieto;
 
     private Integer varasijanNumero;
 
@@ -243,11 +245,28 @@ public class Hakemus implements Serializable {
         this.tilankuvauksenTarkenne = tilankuvauksenTarkenne;
     }
 
+    public String getTarkenteenLisatieto() {
+        return tarkenteenLisatieto == null ? getTilankuvauksenTarkenteenLisatieto(tilankuvauksenTarkenne, tilanKuvaukset) : tarkenteenLisatieto;
+    }
+
+    public void setTarkenteenLisatieto(String tarkenteenLisatieto) {
+        this.tarkenteenLisatieto = tarkenteenLisatieto;
+    }
+
     @PostLoad
     public void postLoad() {
         if (tilankuvauksenTarkenne == null) {
             tilankuvauksenTarkenne = getTilankuvauksenTarkenneFor(tilanKuvaukset);
+            tarkenteenLisatieto = getTilankuvauksenTarkenteenLisatieto(tilankuvauksenTarkenne, tilanKuvaukset);
         }
+    }
+
+    private String getTilankuvauksenTarkenteenLisatieto(TilankuvauksenTarkenne tarkenne, Map<String, String> tilanKuvaukset) {
+        if (tarkenne == null) return null;
+        else if (tarkenne.equals(TilankuvauksenTarkenne.HYVAKSYTTY_TAYTTOJONO_SAANNOLLA) || tarkenne.equals(TilankuvauksenTarkenne.HYLATTY_HAKIJARYHMAAN_KUULUMATTOMANA)) {
+            String tkFi = tilanKuvaukset.get("FI");
+            return tkFi.substring(tkFi.lastIndexOf(":") + 1).trim();
+        } else return null;
     }
 
     private TilankuvauksenTarkenne getTilankuvauksenTarkenneFor(Map<String, String> tilanKuvaukset) {
