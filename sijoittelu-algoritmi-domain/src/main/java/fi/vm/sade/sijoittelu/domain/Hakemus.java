@@ -1,10 +1,7 @@
 package fi.vm.sade.sijoittelu.domain;
 
 import fi.vm.sade.sijoittelu.domain.converter.BigDecimalConverter;
-import org.mongodb.morphia.annotations.Converters;
-import org.mongodb.morphia.annotations.Embedded;
-import org.mongodb.morphia.annotations.Indexed;
-import org.mongodb.morphia.annotations.PostLoad;
+import org.mongodb.morphia.annotations.*;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -49,6 +46,7 @@ public class Hakemus implements Serializable {
 
     private Map<String,String> tilanKuvaukset = new HashMap<String,String>();
 
+    @Transient
     private TilankuvauksenTarkenne tilankuvauksenTarkenne;
 
     private Integer varasijanNumero;
@@ -238,7 +236,7 @@ public class Hakemus implements Serializable {
     }
 
     public TilankuvauksenTarkenne getTilankuvauksenTarkenne() {
-        return tilankuvauksenTarkenne;
+        return null == tilankuvauksenTarkenne ? getTilankuvauksenTarkenneFor(tilanKuvaukset) : tilankuvauksenTarkenne;
     }
 
     public void setTilankuvauksenTarkenne(TilankuvauksenTarkenne tilankuvauksenTarkenne) {
