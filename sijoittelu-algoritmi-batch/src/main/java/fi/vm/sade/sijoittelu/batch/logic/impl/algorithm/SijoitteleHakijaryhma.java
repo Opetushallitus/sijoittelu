@@ -278,18 +278,17 @@ public class SijoitteleHakijaryhma {
             // hakijaryhmän kiintiö on suurempi kuin mahdolliset aloituspaikat, asetetaan kiintiöksi aloituspaikka määrä
             kiintio = aloituspaikat;
         }
-        Set<HakukohdeWrapper> muuttuneet = new HashSet<>();
-        List<HakemusWrapper> muuttuneetHakemukset = new ArrayList<>();
 
         if (tarkkaKiintio && hyvaksyttyjenMaara >= kiintio) {
             asetaEiHyvaksyttavissaHakijaryhmanJalkeen(sijoitteluAjo, ryhmaanKuuluvat);
+            return new ArrayList<>();
         } else if (hyvaksyttyjenMaara < kiintio) {
             final List<ValintatapajonoWrapper> liittyvatJonotVarasijatayttoVoimassa = liittyvatJonot.stream()
                     .filter(vtj -> !sijoitteluAjo.onkoVarasijaSaannotVoimassaJaVarasijaTayttoPaattynyt(vtj))
                     .collect(Collectors.toList());
-            kasitteleValituksiHaluavat(sijoitteluAjo, hakijaryhmaWrapper, liittyvatJonotVarasijatayttoVoimassa, ryhmaanKuuluvat, muuttuneet, muuttuneetHakemukset);
+            return kasitteleValituksiHaluavat(sijoitteluAjo, hakijaryhmaWrapper, liittyvatJonotVarasijatayttoVoimassa, ryhmaanKuuluvat);
         }
-        return muuttuneetHakemukset;
+        return new ArrayList<>();
     }
 
     private static List<ValintatapajonoWrapper> hakijaryhmaanLiittyvatJonot(HakijaryhmaWrapper hakijaryhmaWrapper) {
@@ -318,7 +317,11 @@ public class SijoitteleHakijaryhma {
                 .forEach(h -> h.setHyvaksyttavissaHakijaryhmanJalkeen(false));
     }
 
-    private static void kasitteleValituksiHaluavat(SijoitteluajoWrapper sijoitteluAjo, HakijaryhmaWrapper hakijaryhmaWrapper, List<ValintatapajonoWrapper> liittyvatJonot, List<HakemusWrapper> ryhmaanKuuluvat, Set<HakukohdeWrapper> muuttuneet, List<HakemusWrapper> muuttuneetHakemukset) {
+    private static List<HakemusWrapper> kasitteleValituksiHaluavat(SijoitteluajoWrapper sijoitteluAjo,
+                                                                   HakijaryhmaWrapper hakijaryhmaWrapper,
+                                                                   List<ValintatapajonoWrapper> liittyvatJonot,
+                                                                   List<HakemusWrapper> ryhmaanKuuluvat) {
+        List<HakemusWrapper> muuttuneetHakemukset = new ArrayList<>();
         List<Valintatapajono> valintatapajonot = liittyvatJonot.stream().map(ValintatapajonoWrapper::getValintatapajono).collect(Collectors.toList());
         List<HakemusWrapper> valituksiHaluavat = ryhmaanKuuluvat
                 .stream()
@@ -342,9 +345,10 @@ public class SijoitteleHakijaryhma {
             boolean lukko = liittyvatJonot.stream().anyMatch(ValintatapajonoWrapper::isAlitayttoLukko);
             // Kiintiö ei täyty, koska alitäyttö
             if (!lukko && (!valittavatJaVarasijat.getLeft().isEmpty() || !valittavatJaVarasijat.getRight().isEmpty())) {
-                muuttuneet.addAll(SijoitteleHakukohde.uudelleenSijoiteltavatHakukohteet(sijoitteleHakijaryhmaRecur(sijoitteluAjo, hakijaryhmaWrapper)));
+                muuttuneetHakemukset.addAll(sijoitteleHakijaryhmaRecur(sijoitteluAjo, hakijaryhmaWrapper));
             }
         }
+        return muuttuneetHakemukset;
     }
 
     private static void tarkistaEttaKaikkienTilaaVoidaanVaihtaa(List<HakemusWrapper> valituksiHaluavat) {
