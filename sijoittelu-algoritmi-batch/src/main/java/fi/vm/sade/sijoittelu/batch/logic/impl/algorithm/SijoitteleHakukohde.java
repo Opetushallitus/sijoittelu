@@ -319,18 +319,11 @@ public class SijoitteleHakukohde {
     }
 
     private static boolean onkoPaikkojenSisalla(HakemusWrapper hakemusWrapper, int aloituspaikat, List<HakemusWrapper> hakemukset) {
-        int i = 0;
-        for (HakemusWrapper h : hakemukset) {
-            if (hakemuksenTila(h) != HakemuksenTila.HYLATTY) {
-                i++;
-            }
-            if (h == hakemusWrapper && i <= aloituspaikat) { //vertaa instanssia
-                return true;
-            } else if (i > aloituspaikat) {
-                return false;
-            }
-        }
-        return true;
+        return aloituspaikat - hakemukset.stream()
+                .filter(h -> h != hakemusWrapper)
+                .filter(h -> hakemuksenTila(h) != HakemuksenTila.HYLATTY)
+                .filter(h -> hakemuksenTila(h) != HakemuksenTila.VARALLA)
+                .count() > 0;
     }
 
     private static boolean hakijaKasiteltavienVarasijojenSisalla(HakemusWrapper hakemusWrapper, Integer varasijat) {
