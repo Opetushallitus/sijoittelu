@@ -339,7 +339,7 @@ public class SijoitteleHakijaryhma {
             });
             // Hyväksytään valittavat
             valittavatJaVarasijat.getLeft().forEach(h -> {
-                h.setHyvaksyttyHakijaryhmasta(true);
+                h.setHyvaksyttyHakijaryhmastaTallaKierroksella(true);
                 muuttuneetHakemukset.addAll(SijoitteleHakukohde.hyvaksyHakemus(sijoitteluAjo, h));
             });
             boolean lukko = liittyvatJonot.stream().anyMatch(ValintatapajonoWrapper::isAlitayttoLukko);
@@ -529,7 +529,7 @@ public class SijoitteleHakijaryhma {
             voidaanKorvata = false;
         }
         // Hyväksytty hakijaryhmästä, ei voida enää korvata käynnissä olevan ajokierroksen aikana
-        if (hakemusWrapper.isHyvaksyttyHakijaryhmasta()) {
+        if (hakemusWrapper.isHyvaksyttyHakijaryhmastaTallaKierroksella()) {
             voidaanKorvata = false;
         }
         return voidaanKorvata;

@@ -14,7 +14,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
@@ -33,7 +32,7 @@ public class HakemusWrapper {
     private HashCode lahtotilanteenHash;
 
     // Yhden hakukohderekursion aikainen lippu, jolla katsotaan voidaanko korvata
-    private boolean hyvaksyttyHakijaryhmasta = false;
+    private boolean hyvaksyttyHakijaryhmastaTallaKierroksella = false;
 
     private boolean hyvaksyttavissaHakijaryhmanJalkeen = true;
 
@@ -107,12 +106,12 @@ public class HakemusWrapper {
         this.tilaVoidaanVaihtaa = tilaVoidaanVaihtaa;
     }
 
-    public boolean isHyvaksyttyHakijaryhmasta() {
-        return hyvaksyttyHakijaryhmasta;
+    public boolean isHyvaksyttyHakijaryhmastaTallaKierroksella() {
+        return hyvaksyttyHakijaryhmastaTallaKierroksella;
     }
 
-    public void setHyvaksyttyHakijaryhmasta(boolean hyvaksyttyHakijaryhmasta) {
-        this.hyvaksyttyHakijaryhmasta = hyvaksyttyHakijaryhmasta;
+    public void setHyvaksyttyHakijaryhmastaTallaKierroksella(boolean hyvaksyttyHakijaryhmastaTallaKierroksella) {
+        this.hyvaksyttyHakijaryhmastaTallaKierroksella = hyvaksyttyHakijaryhmastaTallaKierroksella;
     }
 
     private static final String VALUE_DELIMETER_HAKEMUS = "_HAKEMUS_";

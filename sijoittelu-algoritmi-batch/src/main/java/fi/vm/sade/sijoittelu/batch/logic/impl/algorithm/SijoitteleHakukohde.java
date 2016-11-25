@@ -86,7 +86,7 @@ public class SijoitteleHakukohde {
         hakukohde.getValintatapajonot().forEach(v -> {
             v.setAlitayttoLukko(false);
             v.getHakemukset().forEach(h -> {
-                h.setHyvaksyttyHakijaryhmasta(false);
+                h.setHyvaksyttyHakijaryhmastaTallaKierroksella(false);
                 h.setHyvaksyttavissaHakijaryhmanJalkeen(true);
             });
         });
