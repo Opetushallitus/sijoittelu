@@ -319,11 +319,22 @@ public class SijoitteleHakukohde {
     }
 
     private static boolean onkoPaikkojenSisalla(HakemusWrapper hakemusWrapper, int aloituspaikat, List<HakemusWrapper> hakemukset) {
-        return aloituspaikat - hakemukset.stream()
+
+        Set<HakemusWrapper> aloituspaikkojaVievat = hakemukset.stream()
                 .filter(h -> h != hakemusWrapper)
+                .filter(h -> h.getHakemus().getJonosija() < hakemusWrapper.getHakemus().getJonosija())
                 .filter(h -> hakemuksenTila(h) != HakemuksenTila.HYLATTY)
-                .filter(h -> hakemuksenTila(h) != HakemuksenTila.VARALLA)
-                .count() > 0;
+                .collect(Collectors.toSet());
+
+        Set<HakemusWrapper> hakijaryhmastaHyvaksytyt = hakemukset.stream()
+                .filter(h -> h != hakemusWrapper)
+                .filter(h -> hakemusWrapper.isHyvaksyttyHakijaryhmasta())
+                .collect(Collectors.toSet());
+
+        aloituspaikkojaVievat.addAll(hakijaryhmastaHyvaksytyt);
+
+        return aloituspaikat - aloituspaikkojaVievat.size() > 0;
+        
     }
 
     private static boolean hakijaKasiteltavienVarasijojenSisalla(HakemusWrapper hakemusWrapper, Integer varasijat) {
