@@ -328,7 +328,8 @@ public class SijoitteleHakukohde {
 
         Set<HakemusWrapper> hakijaryhmastaHyvaksytyt = hakemukset.stream()
                 .filter(h -> h != hakemusWrapper)
-                .filter(h -> hakemusWrapper.isHyvaksyttyHakijaryhmasta())
+                .filter(h -> kuuluuHyvaksyttyihinTiloihin(hakemuksenTila(h)))
+                .filter(h -> !h.getHakemus().getHyvaksyttyHakijaryhmista().isEmpty())
                 .collect(Collectors.toSet());
 
         aloituspaikkojaVievat.addAll(hakijaryhmastaHyvaksytyt);
