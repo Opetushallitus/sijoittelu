@@ -84,6 +84,9 @@ public class SijoitteluBusinessService {
     private final Collection<PreSijoitteluProcessor> preSijoitteluProcessors;
     private final ValintarekisteriService valintarekisteriService;
 
+    @Value(value = "${sijoittelu-service.saveSijoitteluToValintarekisteri}")
+    private boolean saveSijoitteluToValintarekisteri;
+
     @Autowired
     public SijoitteluBusinessService(@Value("${sijoittelu.maxAjojenMaara:20}") int maxAjoMaara,
                                      @Value("${sijoittelu.maxErillisAjojenMaara:300}") int maxErillisAjoMaara,
@@ -194,7 +197,7 @@ public class SijoitteluBusinessService {
         LOG.info(stopWatch.prettyPrint());
 
         stopWatch.start("Tallennetaan sijoitteluajo, hakukohteet ja valintatulokset Valintarekisteriin");
-        valintarekisteriService.tallennaSijoittelu(uusiSijoitteluajo, kaikkiHakukohteet, mergatut);
+        if (saveSijoitteluToValintarekisteri) valintarekisteriService.tallennaSijoittelu(uusiSijoitteluajo, kaikkiHakukohteet, mergatut);
         stopWatch.stop();
     }
 
