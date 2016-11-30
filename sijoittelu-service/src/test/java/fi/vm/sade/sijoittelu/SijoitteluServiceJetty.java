@@ -61,6 +61,7 @@ public class SijoitteluServiceJetty {
         System.setProperty("sijoittelu-service.mongodb.dbname", Optional.ofNullable(System.getProperty("sijoitteludbName")).orElse("sijoitteludb"));
         System.setProperty("sijoittelu-service.mongodb.uri", System.getProperty("sijoitteluMongoUri"));
         System.setProperty("sijoittelu-service.hakukohdeDao.batchSize", "300");
+        System.setProperty("sijoittelu-service.saveSijoitteluToValintarekisteri", "true");
         System.setProperty("omatsivut.email.application.modify.link.en", "https://en.test.domain/token/");
         System.setProperty("omatsivut.email.application.modify.link.fi", "https://fi.test.domain/token/");
         System.setProperty("omatsivut.email.application.modify.link.sv", "https://sv.test.domain/token/");
