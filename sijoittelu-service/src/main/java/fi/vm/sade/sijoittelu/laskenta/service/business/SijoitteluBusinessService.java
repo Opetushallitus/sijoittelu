@@ -197,7 +197,10 @@ public class SijoitteluBusinessService {
         LOG.info(stopWatch.prettyPrint());
 
         stopWatch.start("Tallennetaan sijoitteluajo, hakukohteet ja valintatulokset Valintarekisteriin");
-        if (saveSijoitteluToValintarekisteri) valintarekisteriService.tallennaSijoittelu(uusiSijoitteluajo, kaikkiHakukohteet, mergatut);
+        if (saveSijoitteluToValintarekisteri) {
+            LOG.info("Tallennetaan haun {} sijoittelu valintarekisteriin", hakuOid);
+            valintarekisteriService.tallennaSijoittelu(uusiSijoitteluajo, kaikkiHakukohteet, mergatut);
+        } else LOG.info("Skipataan haun {} sijoittelun tallennus valintarekisteriin", hakuOid);
         stopWatch.stop();
     }
 
