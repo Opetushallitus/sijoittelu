@@ -202,23 +202,23 @@ public class SijoitteluBusinessService {
         stopWatch.start("Tallennetaan sijoitteluajo, hakukohteet ja valintatulokset Valintarekisteriin");
         if (saveSijoitteluToValintarekisteri) {
             LOG.info("Tallennetaan haun {} sijoittelu valintarekisteriin", hakuOid);
-            poistaHakijaryhmatIlmanValintatapajonoa(sijoitteluajoWrapper);
+            poistaHakijaryhmatIlmanValintatapajonoa(kaikkiHakukohteet);
             valintarekisteriService.tallennaSijoittelu(uusiSijoitteluajo, kaikkiHakukohteet, mergatut);
         } else LOG.info("Skipataan haun {} sijoittelun tallennus valintarekisteriin", hakuOid);
         stopWatch.stop();
     }
 
-    private void poistaHakijaryhmatIlmanValintatapajonoa(SijoitteluajoWrapper sijoitteluajoWrapper) {
-        sijoitteluajoWrapper.getHakukohteet().forEach(h -> {
+    private void poistaHakijaryhmatIlmanValintatapajonoa(List<Hakukohde> hakukohteet) {
+        hakukohteet.forEach(h -> {
             Set<String> hakukohteenValintatapajonoOids = h.getValintatapajonot().stream()
-                    .map(v -> v.getValintatapajono().getOid())
+                    .map(v -> v.getOid())
                     .collect(Collectors.toSet());
-            List<HakijaryhmaWrapper> hakijaryhmatWithValintatapajono = Lists.newArrayList();
-            hakijaryhmatWithValintatapajono.addAll(h.getHakijaryhmaWrappers()
-                    .stream()
-                    .filter(ryhma -> hakukohteenValintatapajonoOids.contains(ryhma.getHakijaryhma().getValintatapajonoOid()))
-                    .collect(Collectors.toList()));
-            h.setHakijaryhmaWrappers(hakijaryhmatWithValintatapajono);
+            for (Iterator<Hakijaryhma> iter = h.getHakijaryhmat().listIterator(); iter.hasNext();) {
+                Hakijaryhma ryhma = iter.next();
+                if (!hakukohteenValintatapajonoOids.contains(ryhma.getValintatapajonoOid())) {
+                    iter.remove();
+                }
+            }
         });
     }
 
