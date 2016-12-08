@@ -10,7 +10,9 @@ import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoitteluajoWrapperFact
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.postsijoitteluprocessor.PostSijoitteluProcessor;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.presijoitteluprocessor.PreSijoitteluProcessor;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.util.TilaTaulukot;
+import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.HakijaryhmaWrapper;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.SijoitteluajoWrapper;
+import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.ValintatapajonoWrapper;
 import fi.vm.sade.sijoittelu.domain.*;
 import fi.vm.sade.sijoittelu.domain.comparator.HakemusComparator;
 import fi.vm.sade.sijoittelu.domain.dto.VastaanottoDTO;
@@ -199,9 +201,24 @@ public class SijoitteluBusinessService {
         stopWatch.start("Tallennetaan sijoitteluajo, hakukohteet ja valintatulokset Valintarekisteriin");
         if (saveSijoitteluToValintarekisteri) {
             LOG.info("Tallennetaan haun {} sijoittelu valintarekisteriin", hakuOid);
+            poistaHakijaryhmatIlmanValintatapajonoa(sijoitteluajoWrapper);
             valintarekisteriService.tallennaSijoittelu(uusiSijoitteluajo, kaikkiHakukohteet, mergatut);
         } else LOG.info("Skipataan haun {} sijoittelun tallennus valintarekisteriin", hakuOid);
         stopWatch.stop();
+    }
+
+    private void poistaHakijaryhmatIlmanValintatapajonoa(SijoitteluajoWrapper sijoitteluajoWrapper) {
+        sijoitteluajoWrapper.getHakukohteet().forEach(h -> {
+            Set<String> hakukohteenValintatapajonoOids = h.getValintatapajonot().stream()
+                    .map(v -> v.getValintatapajono().getOid())
+                    .collect(Collectors.toSet());
+            for (Iterator<HakijaryhmaWrapper> iter = h.getHakijaryhmaWrappers().listIterator(); iter.hasNext();) {
+                HakijaryhmaWrapper ryhma = iter.next();
+                if (!hakukohteenValintatapajonoOids.contains(ryhma.getHakijaryhma().getValintatapajonoOid())) {
+                    iter.remove();
+                }
+            }
+        });
     }
 
     private void suoritaSijoittelu(long startTime, StopWatch stopWatch, String hakuOid, SijoitteluAjo uusiSijoitteluajo, SijoitteluajoWrapper sijoitteluajoWrapper) {
