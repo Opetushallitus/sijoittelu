@@ -1,6 +1,7 @@
 package fi.vm.sade.sijoittelu.laskenta.service.business;
 
 import akka.actor.ActorRef;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets.SetView;
 import fi.vm.sade.auditlog.valintaperusteet.ValintaperusteetOperation;
 import fi.vm.sade.authentication.business.service.Authorizer;
@@ -212,12 +213,12 @@ public class SijoitteluBusinessService {
             Set<String> hakukohteenValintatapajonoOids = h.getValintatapajonot().stream()
                     .map(v -> v.getValintatapajono().getOid())
                     .collect(Collectors.toSet());
-            for (Iterator<HakijaryhmaWrapper> iter = h.getHakijaryhmaWrappers().listIterator(); iter.hasNext();) {
-                HakijaryhmaWrapper ryhma = iter.next();
-                if (!hakukohteenValintatapajonoOids.contains(ryhma.getHakijaryhma().getValintatapajonoOid())) {
-                    iter.remove();
-                }
-            }
+            List<HakijaryhmaWrapper> hakijaryhmatWithValintatapajono = Lists.newArrayList();
+            hakijaryhmatWithValintatapajono.addAll(h.getHakijaryhmaWrappers()
+                    .stream()
+                    .filter(ryhma -> hakukohteenValintatapajonoOids.contains(ryhma.getHakijaryhma().getValintatapajonoOid()))
+                    .collect(Collectors.toList()));
+            h.setHakijaryhmaWrappers(hakijaryhmatWithValintatapajono);
         });
     }
 

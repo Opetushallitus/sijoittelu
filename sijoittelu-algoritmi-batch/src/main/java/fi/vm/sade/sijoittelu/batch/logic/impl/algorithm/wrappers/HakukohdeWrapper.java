@@ -77,6 +77,10 @@ public class HakukohdeWrapper implements Comparable<HakukohdeWrapper> {
         return hakijaryhmaWrappers;
     }
 
+    public void setHakijaryhmaWrappers(List<HakijaryhmaWrapper> hakijaryhmaWrappers) {
+        this.hakijaryhmaWrappers = hakijaryhmaWrappers;
+    }
+
     public Stream<HakemusWrapper> hakukohteenHakemukset() {
         return valintatapajonot.stream().flatMap(v -> v.getHakemukset().stream())
                 .filter(Objects::nonNull).distinct();
