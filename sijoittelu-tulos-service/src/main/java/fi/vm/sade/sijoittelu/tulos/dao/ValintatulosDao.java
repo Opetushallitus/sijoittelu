@@ -29,5 +29,9 @@ public interface ValintatulosDao {
 
     List<Valintatulos> loadValintatuloksetForHakemus(String hakemusOid);
 
+    List<Valintatulos> loadValintatuloksetForValintatapajono(String valintatapajonoOid);
+
+    Valintatulos loadValintatulosForValintatapajono(String valintatapajonoOid, String hakemusOid);
+
     void remove(Valintatulos valintatulos);
 }

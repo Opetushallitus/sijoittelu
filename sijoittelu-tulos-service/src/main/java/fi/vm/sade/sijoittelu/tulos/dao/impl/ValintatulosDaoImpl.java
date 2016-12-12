@@ -179,6 +179,39 @@ public class ValintatulosDaoImpl implements ValintatulosDao {
     }
 
     @Override
+    public List<Valintatulos> loadValintatuloksetForValintatapajono(String valintatapajonoOid) {
+        if (StringUtils.isBlank(valintatapajonoOid)) {
+            throw new IllegalArgumentException("No valintatapajono OID give");
+        }
+        Query<Valintatulos> q = morphiaDS.createQuery(Valintatulos.class);
+        q.criteria("valintatapajonoOid").equal(valintatapajonoOid);
+        return q.asList();
+    }
+
+    @Override
+    public Valintatulos loadValintatulosForValintatapajono(String valintatapajonoOid, String hakemusOid) {
+        if (StringUtils.isBlank(valintatapajonoOid)) {
+            throw new IllegalArgumentException("No valintatapajono OID give");
+        }
+        if (StringUtils.isBlank(hakemusOid)) {
+            throw new IllegalArgumentException("No hakemus OID give");
+        }
+        Query<Valintatulos> q = morphiaDS.createQuery(Valintatulos.class);
+        q.criteria("valintatapajonoOid").equal(valintatapajonoOid);
+        q.criteria("hakemusOid").equal(hakemusOid);
+        List<Valintatulos> r = q.asList();
+        if (r.size() > 1) {
+            throw new IllegalStateException(String.format(
+                    "More than one hakemus %s in valintatapajono %s", hakemusOid, valintatapajonoOid
+            ));
+        } else if (r.size() > 0) {
+            return r.get(0);
+        } else {
+            return null;
+        }
+    }
+
+    @Override
     public void remove(Valintatulos valintatulos) {
         morphiaDS.delete(valintatulos);
     }
