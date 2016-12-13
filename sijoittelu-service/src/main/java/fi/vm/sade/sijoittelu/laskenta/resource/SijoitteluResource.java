@@ -3,6 +3,7 @@ package fi.vm.sade.sijoittelu.laskenta.resource;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import fi.vm.sade.service.valintaperusteet.dto.HakijaryhmaValintatapajonoDTO;
+import fi.vm.sade.service.valintaperusteet.dto.ValintatapajonoCreateDTO;
 import fi.vm.sade.service.valintaperusteet.dto.ValintatapajonoDTO;
 import fi.vm.sade.service.valintaperusteet.resource.ValintalaskentakoostepalveluResource;
 import fi.vm.sade.sijoittelu.laskenta.service.business.SijoitteluBusinessService;
@@ -70,7 +71,7 @@ public class SijoitteluResource {
 
         final Map<String, HakijaryhmaValintatapajonoDTO> hakijaryhmaByOid = haeMahdollisestiMuuttuneetHakijaryhmat(haku);
         final Map<String, List<ValintatapajonoDTO>> valintatapajonotSijoittelulle = haeValintatapajonotSijoittelulle(haku);
-        final Map<String, Map<String, ValintatapajonoDTO>> hakukohdeMapToValintatapajonoByOid = Maps.newHashMap(haeMahdollisestiMuuttuneetValintatapajonot(valintatapajonotSijoittelulle, true));
+        final Map<String, Map<String, ValintatapajonoDTO>> hakukohdeMapToValintatapajonoByOid = Maps.newHashMap(haeMahdollisestiMuuttuneetValintatapajonot(valintatapajonotSijoittelulle));
         final Set<String> valintaperusteidenValintatapajonot = valintatapajonotSijoittelulle.values().stream()
                 .flatMap(Collection::stream)
                 .map(ValintatapajonoDTO::getOid)
@@ -218,15 +219,15 @@ public class SijoitteluResource {
         }
     }
 
-    private Map<String, Map<String, ValintatapajonoDTO>> haeMahdollisestiMuuttuneetValintatapajonot(Map<String, List<ValintatapajonoDTO>> valintatapajonotSijoittelulle, boolean aktiiviset) {
+    private Map<String, Map<String, ValintatapajonoDTO>> haeMahdollisestiMuuttuneetValintatapajonot(Map<String, List<ValintatapajonoDTO>> valintatapajonotSijoittelulle) {
         return valintatapajonotSijoittelulle
             .entrySet()
             .stream()
-            .collect(Collectors.toMap(v -> v.getKey(), v -> {
+            .collect(Collectors.toMap(Map.Entry::getKey, v -> {
                 Map<String, ValintatapajonoDTO> jonot =
-                        v.getValue().stream().filter(v0 -> v0.getAktiivinen() == aktiiviset).collect(Collectors.toMap(v0 -> v0.getOid(), v0 -> {
-                            return v0;
-                        }));
+                        v.getValue().stream()
+                                .filter(ValintatapajonoCreateDTO::getAktiivinen)
+                                .collect(Collectors.toMap(ValintatapajonoDTO::getOid, v0 -> v0));
                 return jonot;
             }));
     }
