@@ -59,8 +59,11 @@ public class SijoitteluResource {
         HakuDTO haku = valintatietoService.haeValintatiedot(hakuOid);
         LOGGER.info("Valintatiedot haettu serviceltä {}!", hakuOid);
         LOGGER.info("Asetetaan valintaperusteet {}!", hakuOid);
+
         final Map<String, HakijaryhmaValintatapajonoDTO> hakijaryhmaByOid = haeMahdollisestiMuuttuneetHakijaryhmat(haku);
-        final Map<String, Map<String, ValintatapajonoDTO>> hakukohdeMapToValintatapajonoByOid = Maps.newHashMap(haeMahdollisestiMuuttuneetValintatapajonot(haku));
+        final Map<String, List<ValintatapajonoDTO>> valintatapajonotSijoittelulle = haeValintatapajonotSijoittelulle(haku);
+        final Map<String, Map<String, ValintatapajonoDTO>> hakukohdeMapToValintatapajonoByOid = Maps.newHashMap(haeMahdollisestiMuuttuneetValintatapajonot(valintatapajonotSijoittelulle, true));
+        final Map<String, Map<String, ValintatapajonoDTO>> hakukohdeMapToValintatapajonoByOidPassiivisetJonot = Maps.newHashMap(haeMahdollisestiMuuttuneetValintatapajonot(valintatapajonotSijoittelulle, false));
 
         haku.getHakukohteet().forEach(hakukohde -> {
             updateHakijaRyhmat(hakijaryhmaByOid, hakukohde);
@@ -76,7 +79,7 @@ public class SijoitteluResource {
         LOGGER.info("Valintaperusteet asetettu {}!", hakuOid);
 
         try {
-            sijoitteluBusinessService.sijoittele(haku, flatMapJonoOids(hakukohdeMapToValintatapajonoByOid));
+            sijoitteluBusinessService.sijoittele(haku, flatMapJonoOids(hakukohdeMapToValintatapajonoByOid), flatMapJonoOids(hakukohdeMapToValintatapajonoByOidPassiivisetJonot));
             LOGGER.info("Sijoittelu suoritettu onnistuneesti haulle {}", hakuOid);
             return "true";
         } catch (Exception e) {
@@ -178,7 +181,7 @@ public class SijoitteluResource {
         return hakijaryhmaByOid;
     }
 
-    private Map<String, Map<String, ValintatapajonoDTO>> haeMahdollisestiMuuttuneetValintatapajonot(HakuDTO haku) {
+    private Set<String> haeHakukohdeOidsWithAktiivisetJonot(HakuDTO haku) {
         Set<String> hakukohdeOidsWithAktiivisetJonot = haku.getHakukohteet().stream()
                 // Joku valinnanvaihe jossa aktiivinen jono
                 .filter(hakukohde ->
@@ -186,21 +189,15 @@ public class SijoitteluResource {
                                 .anyMatch(v -> v.getValintatapajonot().stream()
                                         .anyMatch(j -> TRUE.equals(j.getAktiivinen()))))
                 .map(hakukohde -> hakukohde.getOid()).collect(toSet());
+        return hakukohdeOidsWithAktiivisetJonot;
+    }
 
+    private Map<String, List<ValintatapajonoDTO>> haeValintatapajonotSijoittelulle(HakuDTO haku) {
+        final Set<String> hakukohdeOidsWithAktiivisetJonot = haeHakukohdeOidsWithAktiivisetJonot(haku);
         if (!hakukohdeOidsWithAktiivisetJonot.isEmpty()) {
             LOGGER.info("Haetaan valintatapajonoja sijoittelua varten haun {} {}:lle hakukohteelle", haku.getHakuOid(), hakukohdeOidsWithAktiivisetJonot.size());
             try {
-                return valintalaskentakoostepalveluResource.haeValintatapajonotSijoittelulle(Lists.newArrayList(hakukohdeOidsWithAktiivisetJonot))
-                        .entrySet()
-                        .stream()
-                        .collect(Collectors.toMap(v -> v.getKey(), v -> {
-                            Map<String, ValintatapajonoDTO> jonot =
-                                    v.getValue().stream().filter(v0 -> TRUE.equals(v0.getAktiivinen())).collect(Collectors.toMap(v0 -> v0.getOid(), v0 -> {
-
-                                        return v0;
-                                    }));
-                            return jonot;
-                        }));
+                return valintalaskentakoostepalveluResource.haeValintatapajonotSijoittelulle(Lists.newArrayList(hakukohdeOidsWithAktiivisetJonot));
             } catch (Exception e) {
                 LOGGER.error("Valintatapajonojen hakeminen epäonnistui virheeseen!", e);
                 throw e;
@@ -209,4 +206,18 @@ public class SijoitteluResource {
             return Collections.emptyMap();
         }
     }
+
+    private Map<String, Map<String, ValintatapajonoDTO>> haeMahdollisestiMuuttuneetValintatapajonot(Map<String, List<ValintatapajonoDTO>> valintatapajonotSijoittelulle, boolean aktiiviset) {
+        return valintatapajonotSijoittelulle
+            .entrySet()
+            .stream()
+            .collect(Collectors.toMap(v -> v.getKey(), v -> {
+                Map<String, ValintatapajonoDTO> jonot =
+                        v.getValue().stream().filter(v0 -> v0.getAktiivinen() == aktiiviset).collect(Collectors.toMap(v0 -> v0.getOid(), v0 -> {
+                            return v0;
+                        }));
+                return jonot;
+            }));
+    }
+
 }

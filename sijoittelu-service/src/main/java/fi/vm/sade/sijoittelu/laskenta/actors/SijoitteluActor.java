@@ -29,7 +29,7 @@ public class SijoitteluActor extends AbstractActor {
         receive(ReceiveBuilder.match(HakuDTO.class, haku -> {
             try {
                 log.info("Sijoittelukutsu haulle {} saapunut actorille!", haku.getHakuOid());
-                sijoitteluBusinessService.sijoittele(haku, new HashSet<>());
+                sijoitteluBusinessService.sijoittele(haku, new HashSet<>(), new HashSet<>());
                 log.info("Sijoittelu haulle {} suoritettu onnistuneesti!", haku.getHakuOid());
                 sender().tell(true, self());
             } catch (Exception e) {

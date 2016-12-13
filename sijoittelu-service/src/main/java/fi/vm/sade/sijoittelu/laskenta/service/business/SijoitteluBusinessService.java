@@ -69,6 +69,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 public class SijoitteluBusinessService {
@@ -130,7 +131,7 @@ public class SijoitteluBusinessService {
                 .collect(toSet()));
     }
 
-    public void sijoittele(HakuDTO sijoitteluTyyppi, Set<String> valintaperusteidenJonot) {
+    public void sijoittele(HakuDTO sijoitteluTyyppi, Set<String> valintaperusteidenAktiivisetJonot, Set<String> valintaperusteidenPassivisetJonot) {
         long startTime = System.currentTimeMillis();
         StopWatch stopWatch = new StopWatch("Haun " + sijoitteluTyyppi.getHakuOid() + " sijoittelu");
         String hakuOid = sijoitteluTyyppi.getHakuOid();
@@ -145,10 +146,20 @@ public class SijoitteluBusinessService {
         if (viimeisinSijoitteluajo != null) {
             olemassaolevatHakukohteet = hakukohdeDao.getHakukohdeForSijoitteluajo(viimeisinSijoitteluajo.getSijoitteluajoId());
             SetView<String> poistuneetJonot = difference(hakukohteidenJonoOidit(olemassaolevatHakukohteet), hakukohteidenJonoOidit(uudetHakukohteet));
-            SetView<String> valintaperusteidenVaatimat = intersection(valintaperusteidenJonot, poistuneetJonot);
+            SetView<String> valintaperusteidenVaatimat = intersection(valintaperusteidenAktiivisetJonot, poistuneetJonot);
             // Uuden sijoittelun jonot pitaa olla superset paitsi jos ne on poistettu valintaperusteista
             if (poistuneetJonot.size() > 0 && valintaperusteidenVaatimat.size() > 0) {
                 String msg = "Edellisessa sijoittelussa olleet jonot [" + join(poistuneetJonot, ", ") + "] puuttuvat vaikka valintaperusteet yha vaativat jonot [" + join(valintaperusteidenVaatimat, ", ") + "]";
+                LOG.error(msg);
+                stopWatch.stop();
+                LOG.info(stopWatch.prettyPrint());
+                throw new RuntimeException(msg);
+            }
+            Set<String> valintaperusteidenKaikkiJonot = Stream.concat(valintaperusteidenAktiivisetJonot.stream(), valintaperusteidenPassivisetJonot.stream()).collect(Collectors.toSet());
+            Set<String> kadonneetJonot = hakukohteidenJonoOidit(olemassaolevatHakukohteet).stream().filter(jonoOid -> !valintaperusteidenKaikkiJonot.contains(jonoOid)).collect(Collectors.toSet());
+            if(kadonneetJonot.size() > 0) {
+                String msg = "Edellisessa sijoittelussa olleet jonot [" + join(kadonneetJonot, ", ") + "] ovat kadonneet valintaperusteista";
+                System.out.println("MSG: " + msg);
                 LOG.error(msg);
                 stopWatch.stop();
                 LOG.info(stopWatch.prettyPrint());
