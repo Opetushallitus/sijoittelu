@@ -116,7 +116,7 @@ public class SijoitteluBusinessTest {
     public void testPeruutaAlemmat() throws IOException {
         HakuDTO haku = valintatietoService.haeValintatiedot("haku1");
 
-        sijoitteluService.sijoittele(haku, newHashSet("jono1", "jono2", "jono3"), newHashSet());
+        sijoitteluService.sijoittele(haku, newHashSet("jono1", "jono2", "jono3"), newHashSet("jono1", "jono2", "jono3"));
 
 
         Optional<SijoitteluAjo> latestSijoitteluajo = sijoitteluDao.getLatestSijoitteluajo("haku1");
@@ -134,7 +134,7 @@ public class SijoitteluBusinessTest {
 
         haku.getHakukohteet().remove(0);
 
-        sijoitteluService.sijoittele(haku, newHashSet("jono2", "jono3"), newHashSet("jono1"));
+        sijoitteluService.sijoittele(haku, newHashSet("jono2", "jono3"), newHashSet("jono1", "jono2", "jono3"));
 
         latestSijoitteluajo = sijoitteluDao.getLatestSijoitteluajo("haku1");
         System.out.println("SijoitteluajoID: " + latestSijoitteluajo.get().getSijoitteluajoId());
@@ -151,7 +151,7 @@ public class SijoitteluBusinessTest {
 
         haku = valintatietoService.haeValintatiedot("haku1");
 
-        sijoitteluService.sijoittele(haku, newHashSet("jono1", "jono2", "jono3"), newHashSet());
+        sijoitteluService.sijoittele(haku, newHashSet("jono1", "jono2", "jono3"), newHashSet("jono1", "jono2", "jono3"));
 
         latestSijoitteluajo = sijoitteluDao.getLatestSijoitteluajo("haku1");
         System.out.println("SijoitteluajoID: " + latestSijoitteluajo.get().getSijoitteluajoId());
@@ -177,13 +177,13 @@ public class SijoitteluBusinessTest {
 
         Set<String> valintaperusteenJonot = newHashSet("jono2");
 
-        sijoitteluService.sijoittele(haku, valintaperusteenJonot, newHashSet("jono1", "jono3"));
+        sijoitteluService.sijoittele(haku, valintaperusteenJonot, newHashSet("jono1", "jono2", "jono3"));
 
         haku.getHakukohteet().remove(0);
 
         assertEquals(getValintatapaJonoOids(haku), newHashSet("jono2", "jono3"));
 
-        sijoitteluService.sijoittele(haku, valintaperusteenJonot, newHashSet("jono1", "jono3"));
+        sijoitteluService.sijoittele(haku, valintaperusteenJonot, newHashSet("jono1", "jono2", "jono3"));
     }
 
     @Test
@@ -193,14 +193,14 @@ public class SijoitteluBusinessTest {
 
         Set<String> valintaperusteenJonot = newHashSet("jono1", "jono2", "jono3");
 
-        sijoitteluService.sijoittele(haku, valintaperusteenJonot, newHashSet());
+        sijoitteluService.sijoittele(haku, valintaperusteenJonot, newHashSet("jono1", "jono2", "jono3"));
 
         haku.getHakukohteet().remove(0);
 
         thrown.expect(RuntimeException.class);
-        thrown.expectMessage("Edellisessa sijoittelussa olleet jonot [jono1] puuttuvat vaikka valintaperusteet yha vaativat jonot [jono1]");
+        thrown.expectMessage("Edellisessä sijoittelussa olleet jonot [jono1] puuttuvat sijoittelusta, vaikka ne ovat valintaperusteissa yhä aktiivisina");
 
-        sijoitteluService.sijoittele(haku, valintaperusteenJonot, newHashSet());
+        sijoitteluService.sijoittele(haku, valintaperusteenJonot, newHashSet("jono1", "jono2", "jono3"));
     }
 
     @Test
@@ -208,14 +208,14 @@ public class SijoitteluBusinessTest {
     public void testPuuttuvaJonoKunPoistettuValintaperusteista() {
         HakuDTO haku = valintatietoService.haeValintatiedot("haku1");
 
-        sijoitteluService.sijoittele(haku, newHashSet("jono1", "jono2", "jono3"), newHashSet());
+        sijoitteluService.sijoittele(haku, newHashSet("jono1", "jono2", "jono3"), newHashSet("jono1", "jono2", "jono3"));
 
         haku.getHakukohteet().remove(0);
 
         thrown.expect(RuntimeException.class);
-        thrown.expectMessage("Edellisessa sijoittelussa olleet jonot [jono1] ovat kadonneet valintaperusteista");
+        thrown.expectMessage("Edellisessä sijoittelussa olleet jonot [jono1] ovat kadonneet valintaperusteista");
 
-        sijoitteluService.sijoittele(haku, newHashSet("jono2", "jono3"), newHashSet());
+        sijoitteluService.sijoittele(haku, newHashSet("jono2", "jono3"), newHashSet("jono2", "jono3"));
     }
 
     @Test()
@@ -223,11 +223,11 @@ public class SijoitteluBusinessTest {
     public void testPuuttuvaJonoKunPassivoituValintaperusteista() {
         HakuDTO haku = valintatietoService.haeValintatiedot("haku1");
 
-        sijoitteluService.sijoittele(haku, newHashSet("jono1", "jono2", "jono3"), newHashSet());
+        sijoitteluService.sijoittele(haku, newHashSet("jono1", "jono2", "jono3"), newHashSet("jono1", "jono2", "jono3"));
 
         haku.getHakukohteet().remove(0);
 
-        sijoitteluService.sijoittele(haku, newHashSet("jono2", "jono3"), newHashSet("jono1"));
+        sijoitteluService.sijoittele(haku, newHashSet("jono2", "jono3"), newHashSet("jono1", "jono2", "jono3"));
     }
 
     @Test()
@@ -237,16 +237,16 @@ public class SijoitteluBusinessTest {
 
         assertEquals(getValintatapaJonoOids(haku), newHashSet("jono1", "jono2", "jono3"));
 
-        sijoitteluService.sijoittele(haku, newHashSet("jono1", "jono2", "jono3"), newHashSet());
+        sijoitteluService.sijoittele(haku, newHashSet("jono1", "jono2", "jono3"), newHashSet("jono1", "jono2", "jono3"));
 
         haku.getHakukohteet().remove(0);
 
         assertEquals(getValintatapaJonoOids(haku), newHashSet("jono2", "jono3"));
 
         thrown.expect(RuntimeException.class);
-        thrown.expectMessage("Edellisessa sijoittelussa olleet jonot [jono1] puuttuvat vaikka valintaperusteet yha vaativat jonot [jono1]");
+        thrown.expectMessage("Edellisessä sijoittelussa olleet jonot [jono1] puuttuvat sijoittelusta, vaikka ne ovat valintaperusteissa yhä aktiivisina");
 
-        sijoitteluService.sijoittele(haku, newHashSet("jono1", "jono2", "jono3"), newHashSet());
+        sijoitteluService.sijoittele(haku, newHashSet("jono1", "jono2", "jono3"), newHashSet("jono1", "jono2", "jono3"));
     }
 
     @Test

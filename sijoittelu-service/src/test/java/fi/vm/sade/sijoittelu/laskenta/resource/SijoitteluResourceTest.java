@@ -1,5 +1,6 @@
 package fi.vm.sade.sijoittelu.laskenta.resource;
 
+import com.google.common.collect.Sets;
 import fi.vm.sade.service.valintaperusteet.dto.HakijaryhmaValintatapajonoDTO;
 import fi.vm.sade.service.valintaperusteet.dto.KoodiDTO;
 import fi.vm.sade.service.valintaperusteet.dto.ValintatapajonoDTO;
@@ -69,7 +70,7 @@ public class SijoitteluResourceTest {
             verify(valintalaskentakoostepalveluResource, times(1)).readByHakukohdeOids(asList(hakukohdeOid));
             verify(valintalaskentakoostepalveluResource, times(1)).readByValintatapajonoOids(asList(valintatapajonoOid));
             verify(valintalaskentakoostepalveluResource, times(1)).haeValintatapajonotSijoittelulle(asList(hakukohdeOid));
-            verify(sijoitteluBusinessService, times(1)).sijoittele(haku, new HashSet<>(), new HashSet<>());
+            verify(sijoitteluBusinessService, times(1)).sijoittele(haku, new HashSet<>(), Sets.newHashSet(valintatapajonoOid));
 
             HakukohdeDTO hakukohde = haku.getHakukohteet().iterator().next();
             /// ASSERTOIDAAN ETTA JONON TIEDOT PAIVITTYY

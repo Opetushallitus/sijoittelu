@@ -139,7 +139,7 @@ public class SijoitteluBusinessService {
                 .collect(toSet()));
     }
 
-    public void sijoittele(HakuDTO sijoitteluTyyppi, Set<String> valintaperusteidenAktiivisetJonot, Set<String> valintaperusteidenPassivisetJonot) {
+    public void sijoittele(HakuDTO sijoitteluTyyppi, Set<String> eiSijoitteluunMenevatJonot, Set<String> valintaperusteidenValintatapajonot) {
         long startTime = System.currentTimeMillis();
         StopWatch stopWatch = new StopWatch("Haun " + sijoitteluTyyppi.getHakuOid() + " sijoittelu");
         String hakuOid = sijoitteluTyyppi.getHakuOid();
@@ -155,7 +155,7 @@ public class SijoitteluBusinessService {
             olemassaolevatHakukohteet = hakukohdeDao.getHakukohdeForSijoitteluajo(viimeisinSijoitteluajo.getSijoitteluajoId());
             Set<String> joSijoitellutJonot = hakukohteidenJonoOidit(olemassaolevatHakukohteet);
             SetView<String> sijoittelustaPoistetutJonot = difference(joSijoitellutJonot, hakukohteidenJonoOidit(uudetHakukohteet));
-            SetView<String> aktiivisetSijoittelustaPoistetutJonot = intersection(valintaperusteidenAktiivisetJonot, sijoittelustaPoistetutJonot);
+            SetView<String> aktiivisetSijoittelustaPoistetutJonot = intersection(eiSijoitteluunMenevatJonot, sijoittelustaPoistetutJonot);
             if (aktiivisetSijoittelustaPoistetutJonot.size() > 0) {
                 String msg = "Edellisessä sijoittelussa olleet jonot [" + join(aktiivisetSijoittelustaPoistetutJonot, ", ") +
                         "] puuttuvat sijoittelusta, vaikka ne ovat valintaperusteissa yhä aktiivisina";
@@ -164,8 +164,7 @@ public class SijoitteluBusinessService {
                 LOG.info(stopWatch.prettyPrint());
                 throw new RuntimeException(msg);
             }
-            SetView<String> valintaperusteidenKaikkiJonot = union(valintaperusteidenAktiivisetJonot, valintaperusteidenPassivisetJonot);
-            SetView<String> valintaperusteistaPuuttuvatSijoitellutJonot = difference(joSijoitellutJonot, valintaperusteidenKaikkiJonot);
+            SetView<String> valintaperusteistaPuuttuvatSijoitellutJonot = difference(joSijoitellutJonot, valintaperusteidenValintatapajonot);
             if(valintaperusteistaPuuttuvatSijoitellutJonot.size() > 0) {
                 String msg = "Edellisessä sijoittelussa olleet jonot [" + join(valintaperusteistaPuuttuvatSijoitellutJonot, ", ") +
                         "] ovat kadonneet valintaperusteista";

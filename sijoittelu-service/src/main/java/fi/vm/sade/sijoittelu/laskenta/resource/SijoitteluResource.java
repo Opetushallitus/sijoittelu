@@ -2,8 +2,6 @@ package fi.vm.sade.sijoittelu.laskenta.resource;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
 import fi.vm.sade.service.valintaperusteet.dto.HakijaryhmaValintatapajonoDTO;
 import fi.vm.sade.service.valintaperusteet.dto.ValintatapajonoDTO;
 import fi.vm.sade.service.valintaperusteet.resource.ValintalaskentakoostepalveluResource;
@@ -15,19 +13,29 @@ import fi.vm.sade.valintalaskenta.domain.dto.valintatieto.HakuDTO;
 import fi.vm.sade.valintalaskenta.domain.dto.valintatieto.ValintatietoValinnanvaiheDTO;
 import fi.vm.sade.valintalaskenta.domain.dto.valintatieto.ValintatietoValintatapajonoDTO;
 import fi.vm.sade.valintalaskenta.tulos.service.impl.ValintatietoService;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
-import static java.lang.Boolean.TRUE;
-
-import javax.ws.rs.*;
-import java.util.*;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
-import static java.util.Optional.*;
-import static java.util.Collections.*;
+import static java.lang.Boolean.TRUE;
+import static java.util.Collections.emptyList;
+import static java.util.Collections.unmodifiableSet;
+import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toSet;
 
 @Path("sijoittele")
@@ -63,7 +71,10 @@ public class SijoitteluResource {
         final Map<String, HakijaryhmaValintatapajonoDTO> hakijaryhmaByOid = haeMahdollisestiMuuttuneetHakijaryhmat(haku);
         final Map<String, List<ValintatapajonoDTO>> valintatapajonotSijoittelulle = haeValintatapajonotSijoittelulle(haku);
         final Map<String, Map<String, ValintatapajonoDTO>> hakukohdeMapToValintatapajonoByOid = Maps.newHashMap(haeMahdollisestiMuuttuneetValintatapajonot(valintatapajonotSijoittelulle, true));
-        final Map<String, Map<String, ValintatapajonoDTO>> hakukohdeMapToValintatapajonoByOidPassiivisetJonot = Maps.newHashMap(haeMahdollisestiMuuttuneetValintatapajonot(valintatapajonotSijoittelulle, false));
+        final Set<String> valintaperusteidenValintatapajonot = valintatapajonotSijoittelulle.values().stream()
+                .flatMap(Collection::stream)
+                .map(ValintatapajonoDTO::getOid)
+                .collect(Collectors.toSet());
 
         haku.getHakukohteet().forEach(hakukohde -> {
             updateHakijaRyhmat(hakijaryhmaByOid, hakukohde);
@@ -79,7 +90,7 @@ public class SijoitteluResource {
         LOGGER.info("Valintaperusteet asetettu {}!", hakuOid);
 
         try {
-            sijoitteluBusinessService.sijoittele(haku, flatMapJonoOids(hakukohdeMapToValintatapajonoByOid), flatMapJonoOids(hakukohdeMapToValintatapajonoByOidPassiivisetJonot));
+            sijoitteluBusinessService.sijoittele(haku, flatMapJonoOids(hakukohdeMapToValintatapajonoByOid), valintaperusteidenValintatapajonot);
             LOGGER.info("Sijoittelu suoritettu onnistuneesti haulle {}", hakuOid);
             return "true";
         } catch (Exception e) {
