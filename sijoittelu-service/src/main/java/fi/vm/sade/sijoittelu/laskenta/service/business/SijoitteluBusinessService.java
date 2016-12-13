@@ -1,18 +1,7 @@
 package fi.vm.sade.sijoittelu.laskenta.service.business;
 
-import static com.google.common.collect.Sets.difference;
-import static com.google.common.collect.Sets.intersection;
-import static fi.vm.sade.auditlog.valintaperusteet.LogMessage.builder;
-import static fi.vm.sade.sijoittelu.laskenta.util.SijoitteluAudit.AUDIT;
-import static java.util.Collections.unmodifiableSet;
-import static java.util.stream.Collectors.toSet;
-import static org.apache.commons.lang.StringUtils.isBlank;
-import static org.apache.commons.lang.StringUtils.join;
-import static org.springframework.security.core.context.SecurityContextHolder.getContext;
-
-import com.google.common.collect.Sets.SetView;
-
 import akka.actor.ActorRef;
+import com.google.common.collect.Sets.SetView;
 import fi.vm.sade.auditlog.valintaperusteet.ValintaperusteetOperation;
 import fi.vm.sade.authentication.business.service.Authorizer;
 import fi.vm.sade.sijoittelu.batch.logic.impl.DomainConverter;
@@ -64,12 +53,31 @@ import org.springframework.util.StopWatch;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
+
+import static com.google.common.collect.Sets.difference;
+import static com.google.common.collect.Sets.intersection;
+import static com.google.common.collect.Sets.union;
+import static fi.vm.sade.auditlog.valintaperusteet.LogMessage.builder;
+import static fi.vm.sade.sijoittelu.laskenta.util.SijoitteluAudit.AUDIT;
+import static java.util.Collections.unmodifiableSet;
+import static java.util.stream.Collectors.toSet;
+import static org.apache.commons.lang.StringUtils.isBlank;
+import static org.apache.commons.lang.StringUtils.join;
+import static org.springframework.security.core.context.SecurityContextHolder.getContext;
 
 @Service
 public class SijoitteluBusinessService {
@@ -142,24 +150,25 @@ public class SijoitteluBusinessService {
         stopWatch.stop();
         stopWatch.start("Päätellään hakukohde- ja valintatapajonotiedot");
         List<Hakukohde> uudetHakukohteet = sijoitteluTyyppi.getHakukohteet().stream().map(DomainConverter::convertToHakukohde).collect(Collectors.toList());
-        List<Hakukohde> olemassaolevatHakukohteet = Collections.<Hakukohde>emptyList();
+        List<Hakukohde> olemassaolevatHakukohteet = Collections.emptyList();
         if (viimeisinSijoitteluajo != null) {
             olemassaolevatHakukohteet = hakukohdeDao.getHakukohdeForSijoitteluajo(viimeisinSijoitteluajo.getSijoitteluajoId());
-            SetView<String> poistuneetJonot = difference(hakukohteidenJonoOidit(olemassaolevatHakukohteet), hakukohteidenJonoOidit(uudetHakukohteet));
-            SetView<String> valintaperusteidenVaatimat = intersection(valintaperusteidenAktiivisetJonot, poistuneetJonot);
-            // Uuden sijoittelun jonot pitaa olla superset paitsi jos ne on poistettu valintaperusteista
-            if (poistuneetJonot.size() > 0 && valintaperusteidenVaatimat.size() > 0) {
-                String msg = "Edellisessa sijoittelussa olleet jonot [" + join(poistuneetJonot, ", ") + "] puuttuvat vaikka valintaperusteet yha vaativat jonot [" + join(valintaperusteidenVaatimat, ", ") + "]";
+            Set<String> joSijoitellutJonot = hakukohteidenJonoOidit(olemassaolevatHakukohteet);
+            SetView<String> sijoittelustaPoistetutJonot = difference(joSijoitellutJonot, hakukohteidenJonoOidit(uudetHakukohteet));
+            SetView<String> aktiivisetSijoittelustaPoistetutJonot = intersection(valintaperusteidenAktiivisetJonot, sijoittelustaPoistetutJonot);
+            if (aktiivisetSijoittelustaPoistetutJonot.size() > 0) {
+                String msg = "Edellisessä sijoittelussa olleet jonot [" + join(aktiivisetSijoittelustaPoistetutJonot, ", ") +
+                        "] puuttuvat sijoittelusta, vaikka ne ovat valintaperusteissa yhä aktiivisina";
                 LOG.error(msg);
                 stopWatch.stop();
                 LOG.info(stopWatch.prettyPrint());
                 throw new RuntimeException(msg);
             }
-            Set<String> valintaperusteidenKaikkiJonot = Stream.concat(valintaperusteidenAktiivisetJonot.stream(), valintaperusteidenPassivisetJonot.stream()).collect(Collectors.toSet());
-            Set<String> kadonneetJonot = hakukohteidenJonoOidit(olemassaolevatHakukohteet).stream().filter(jonoOid -> !valintaperusteidenKaikkiJonot.contains(jonoOid)).collect(Collectors.toSet());
-            if(kadonneetJonot.size() > 0) {
-                String msg = "Edellisessa sijoittelussa olleet jonot [" + join(kadonneetJonot, ", ") + "] ovat kadonneet valintaperusteista";
-                System.out.println("MSG: " + msg);
+            SetView<String> valintaperusteidenKaikkiJonot = union(valintaperusteidenAktiivisetJonot, valintaperusteidenPassivisetJonot);
+            SetView<String> valintaperusteistaPuuttuvatSijoitellutJonot = difference(joSijoitellutJonot, valintaperusteidenKaikkiJonot);
+            if(valintaperusteistaPuuttuvatSijoitellutJonot.size() > 0) {
+                String msg = "Edellisessä sijoittelussa olleet jonot [" + join(valintaperusteistaPuuttuvatSijoitellutJonot, ", ") +
+                        "] ovat kadonneet valintaperusteista";
                 LOG.error(msg);
                 stopWatch.stop();
                 LOG.info(stopWatch.prettyPrint());
