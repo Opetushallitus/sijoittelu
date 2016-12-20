@@ -203,7 +203,13 @@ public class SijoitteluBusinessService {
         if (saveSijoitteluToValintarekisteri) {
             LOG.info("Tallennetaan haun {} sijoittelu valintarekisteriin", hakuOid);
             poistaHakijaryhmatIlmanValintatapajonoa(kaikkiHakukohteet);
-            valintarekisteriService.tallennaSijoittelu(uusiSijoitteluajo, kaikkiHakukohteet, mergatut);
+            try {
+                valintarekisteriService.tallennaSijoittelu(uusiSijoitteluajo, kaikkiHakukohteet, mergatut);
+            } catch (Exception e) {
+                LOG.warn("Sijoittelujon {} tallennus valintarekisteriin epäonnistui haulle {}!!! Virhe: {}.",
+                        uusiSijoitteluajo.getSijoitteluajoId(), hakuOid, e.getMessage());
+            }
+
         } else LOG.info("Skipataan haun {} sijoittelun tallennus valintarekisteriin", hakuOid);
         stopWatch.stop();
     }
