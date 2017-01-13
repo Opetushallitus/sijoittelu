@@ -197,7 +197,6 @@ public class SijoitteluBusinessService {
         varasijapomput.forEach(LOG::info);
         LOG.info("Haun {} sijoittelussa muuttui {} kpl valintatuloksia, pomppuja {} kpl", hakuOid, mergatut.size(), varasijapomput.size());
         persistSijoitteluAndSiivoaVanhatAjot(stopWatch, hakuOid, sijoittelu, uusiSijoitteluajo, maxAjoMaara);
-        LOG.info(stopWatch.prettyPrint());
 
         stopWatch.start("Tallennetaan sijoitteluajo, hakukohteet ja valintatulokset Valintarekisteriin");
         if (saveSijoitteluToValintarekisteri) {
@@ -209,9 +208,11 @@ public class SijoitteluBusinessService {
                 LOG.warn("Sijoittelujon {} tallennus valintarekisteriin epäonnistui haulle {}!!! Virhe: {}.",
                         uusiSijoitteluajo.getSijoitteluajoId(), hakuOid, e.getMessage());
             }
-
-        } else LOG.info("Skipataan haun {} sijoittelun tallennus valintarekisteriin", hakuOid);
+        } else {
+            LOG.info("Skipataan haun {} sijoittelun tallennus valintarekisteriin", hakuOid);
+        }
         stopWatch.stop();
+        LOG.info(stopWatch.prettyPrint());
     }
 
     private void poistaHakijaryhmatIlmanValintatapajonoa(List<Hakukohde> hakukohteet) {
