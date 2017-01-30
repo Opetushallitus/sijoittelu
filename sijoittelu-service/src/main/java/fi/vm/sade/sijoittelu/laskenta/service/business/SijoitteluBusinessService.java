@@ -1,7 +1,6 @@
 package fi.vm.sade.sijoittelu.laskenta.service.business;
 
 import akka.actor.ActorRef;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Sets.SetView;
 import fi.vm.sade.auditlog.valintaperusteet.ValintaperusteetOperation;
 import fi.vm.sade.authentication.business.service.Authorizer;
@@ -11,9 +10,7 @@ import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoitteluajoWrapperFact
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.postsijoitteluprocessor.PostSijoitteluProcessor;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.presijoitteluprocessor.PreSijoitteluProcessor;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.util.TilaTaulukot;
-import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.HakijaryhmaWrapper;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.SijoitteluajoWrapper;
-import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.ValintatapajonoWrapper;
 import fi.vm.sade.sijoittelu.domain.*;
 import fi.vm.sade.sijoittelu.domain.comparator.HakemusComparator;
 import fi.vm.sade.sijoittelu.domain.dto.VastaanottoDTO;
@@ -200,17 +197,14 @@ public class SijoitteluBusinessService {
         LOG.info(stopWatch.prettyPrint());
     }
 
-    private void poistaHakijaryhmatIlmanValintatapajonoa(List<Hakukohde> hakukohteet) {
+    private void poistaValintatapajonokohtaisetHakijaryhmatJoidenJonoaEiSijoiteltu(List<Hakukohde> hakukohteet) {
         hakukohteet.forEach(h -> {
-            Set<String> hakukohteenValintatapajonoOids = h.getValintatapajonot().stream()
-                    .map(v -> v.getOid())
+            Set<String> sijoitellutJonot = h.getValintatapajonot().stream()
+                    .map(Valintatapajono::getOid)
                     .collect(Collectors.toSet());
-            for (Iterator<Hakijaryhma> iter = h.getHakijaryhmat().listIterator(); iter.hasNext();) {
-                Hakijaryhma ryhma = iter.next();
-                if (!hakukohteenValintatapajonoOids.contains(ryhma.getValintatapajonoOid())) {
-                    iter.remove();
-                }
-            }
+            h.setHakijaryhmat(h.getHakijaryhmat().stream()
+                    .filter(ryhma -> ryhma.getValintatapajonoOid() == null || sijoitellutJonot.contains(ryhma.getValintatapajonoOid()))
+                    .collect(Collectors.toList()));
         });
     }
 
@@ -241,7 +235,7 @@ public class SijoitteluBusinessService {
             if (saveSijoitteluToValintarekisteri) {
                 LOG.info("Tallennetaan haun {} sijoittelu valintarekisteriin", hakuOid);
                 stopWatch.start("Tallennetaan sijoitteluajo, hakukohteet ja valintatulokset Valintarekisteriin");
-                poistaHakijaryhmatIlmanValintatapajonoa(hakukohteet);
+                poistaValintatapajonokohtaisetHakijaryhmatJoidenJonoaEiSijoiteltu(hakukohteet);
                 try {
                     valintarekisteriService.tallennaSijoittelu(uusiSijoitteluajo, hakukohteet, valintatulokset);
                 } catch (Exception e) {
