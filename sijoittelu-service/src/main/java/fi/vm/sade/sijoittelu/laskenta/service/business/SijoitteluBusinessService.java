@@ -234,15 +234,13 @@ public class SijoitteluBusinessService {
             stopWatch.start("Persistoidaan sijoittelu");
             sijoitteluDao.persistSijoittelu(sijoittelu);
             stopWatch.stop();
-            stopWatch.start("Sijoitteluajo valintatulosserviceen");
-            stopWatch.stop();
             LOG.info("Sijoittelu persistoitu haulle {}. Poistetaan vanhoja ajoja. Säästettävien ajojen määrää {}", sijoittelu.getHakuOid(), sailytettavaAjoMaara);
             stopWatch.start("Käynnistetään vanhojen sijoitteluajojen siivouksen taustaprosessi");
             siivoaVanhatAjotSijoittelulta(hakuOid, sijoittelu, sailytettavaAjoMaara);
             stopWatch.stop();
-            stopWatch.start("Tallennetaan sijoitteluajo, hakukohteet ja valintatulokset Valintarekisteriin");
             if (saveSijoitteluToValintarekisteri) {
                 LOG.info("Tallennetaan haun {} sijoittelu valintarekisteriin", hakuOid);
+                stopWatch.start("Tallennetaan sijoitteluajo, hakukohteet ja valintatulokset Valintarekisteriin");
                 poistaHakijaryhmatIlmanValintatapajonoa(hakukohteet);
                 try {
                     valintarekisteriService.tallennaSijoittelu(uusiSijoitteluajo, hakukohteet, valintatulokset);
@@ -252,10 +250,10 @@ public class SijoitteluBusinessService {
                             uusiSijoitteluajo.getSijoitteluajoId(), hakuOid
                     ), e);
                 }
+                stopWatch.stop();
             } else {
                 LOG.info("Ohitetaan haun {} sijoittelun tallennus valintarekisteriin", hakuOid);
             }
-            stopWatch.stop();
         } catch (Exception e) {
             LOG.error("Sijoittelun persistointi haulle {} epäonnistui. Rollback hakukohteet", sijoittelu.getHakuOid());
             actorService.getSiivousActor().tell(new PoistaHakukohteet(sijoittelu, uusiSijoitteluajo.getSijoitteluajoId()), ActorRef.noSender());
