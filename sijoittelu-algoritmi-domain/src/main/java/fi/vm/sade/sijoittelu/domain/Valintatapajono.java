@@ -57,6 +57,8 @@ public class Valintatapajono implements Serializable {
 
     private Integer hakemustenMaara;
 
+    private Boolean sijoiteltuIlmanVarasijasaantojaNiidenOllessaVoimassa;
+
     @Embedded
     private List<Hakemus> hakemukset = new ArrayList<Hakemus>();
 
@@ -239,5 +241,13 @@ public class Valintatapajono implements Serializable {
 
     public void setValintaesitysHyvaksytty(Boolean valintaesitysHyvaksytty) {
         this.valintaesitysHyvaksytty = valintaesitysHyvaksytty;
+    }
+
+    public Boolean getSijoiteltuIlmanVarasijasaantojaNiidenOllessaVoimassa() {
+        return sijoiteltuIlmanVarasijasaantojaNiidenOllessaVoimassa;
+    }
+
+    public void setSijoiteltuIlmanVarasijasaantojaNiidenOllessaVoimassa(Boolean sijoiteltuIlmanVarasijasaantojaNiidenOllessaVoimassa) {
+        this.sijoiteltuIlmanVarasijasaantojaNiidenOllessaVoimassa = sijoiteltuIlmanVarasijasaantojaNiidenOllessaVoimassa;
     }
 }
