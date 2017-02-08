@@ -12,6 +12,7 @@ public interface PostSijoitteluProcessor extends Processor {
 
     static Collection<PostSijoitteluProcessor> defaultPostProcessors() {
         return ImmutableList.of(
+                new PostSijoitteluProcessorAsetaSivssnov(),
                 new PostSijoitteluProcessorPeruuntuneetHakemuksenVastaanotonMuokkaus(),
                 new PostSijoitteluProcessorMuutostiedonAsetus()
         );

@@ -2,19 +2,16 @@ package fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.presijoitteluprocessor;
 
 import com.google.common.collect.Lists;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoitteluTestSpec;
-import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoitteluajoWrapperFactory;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.SijoitteluajoWrapper;
-import fi.vm.sade.sijoittelu.domain.*;
+import fi.vm.sade.sijoittelu.domain.Hakukohde;
 import org.junit.Test;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
-import static fi.vm.sade.sijoittelu.domain.HakemuksenTila.*;
+import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.helper.HakuBuilder.*;
 
 
 public class PreSijoitteluProcessorAsetaSivssnovTest extends SijoitteluTestSpec {
@@ -137,101 +134,5 @@ public class PreSijoitteluProcessorAsetaSivssnovTest extends SijoitteluTestSpec 
 
         assertJonoSivssnov("jono1", true, sijoitteluAjo);
         assertJonoSivssnov("jono2", null, sijoitteluAjo);
-    }
-
-    private class SijoitteluajoWrapperBuilder {
-        private final SijoitteluajoWrapper wrapper;
-
-        SijoitteluajoWrapperBuilder(List<Hakukohde> hakukohteet) {
-            this.wrapper = SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(
-                    new SijoitteluAjo(), hakukohteet, new ArrayList<>(), Collections.emptyMap());
-        }
-
-        SijoitteluajoWrapperBuilder withVarasijaSaannotAstuvatVoimaan(LocalDateTime varasijaSaannotAstuvatVoimaan) {
-            wrapper.setVarasijaSaannotAstuvatVoimaan(varasijaSaannotAstuvatVoimaan);
-            return this;
-        }
-
-        SijoitteluajoWrapperBuilder withKKHaku(boolean kkHaku) {
-            wrapper.setKKHaku(kkHaku);
-            return this;
-        }
-
-        SijoitteluajoWrapper build() { return wrapper; }
-
-        SijoitteluajoWrapperBuilder withAmkopeHaku(boolean b) {
-            wrapper.setAmkopeHaku(b);
-            return this;
-        }
-    }
-
-    private class HakukohdeBuilder {
-        private final Hakukohde hk;
-
-        HakukohdeBuilder(String oid) {
-            this.hk = new Hakukohde();
-            this.hk.setOid(oid);
-        }
-
-        Hakukohde build() {
-            return hk;
-        }
-
-        HakukohdeBuilder withValintatapajono(Valintatapajono a) {
-            hk.getValintatapajonot().add(a);
-            return this;
-        }
-    }
-
-    private class ValintatapajonoBuilder {
-        private final Valintatapajono vtj;
-
-        ValintatapajonoBuilder() {
-            this.vtj = new Valintatapajono();
-        }
-
-        ValintatapajonoBuilder withOid(String a) {
-            vtj.setOid(a);
-            return this;
-        }
-
-        ValintatapajonoBuilder withTayttojono(String a) {
-            vtj.setTayttojono(a);
-            return this;
-        }
-
-        ValintatapajonoBuilder withAloituspaikat(int a) {
-            vtj.setAloituspaikat(a);
-            return this;
-        }
-
-        ValintatapajonoBuilder withHakemus(HakemuksenTila a) {
-            Hakemus h = new Hakemus();
-            h.setHakemusOid("oid");
-            h.setTila(VARALLA);
-            h.setEdellinenTila(a);
-            vtj.getHakemukset().add(h);
-            return this;
-        }
-
-        ValintatapajonoBuilder withHakemus(HakemuksenTila a, String oid) {
-            this.withHakemus(a).withOid(oid);
-            return this;
-        }
-
-        ValintatapajonoBuilder withSivssnov(Boolean sivssnov) {
-            vtj.setSijoiteltuIlmanVarasijasaantojaNiidenOllessaVoimassa(sivssnov);
-            return this;
-        }
-
-        ValintatapajonoBuilder withPrioriteetti(int prioriteetti) {
-            vtj.setPrioriteetti(prioriteetti);
-            return this;
-        }
-
-        Valintatapajono build() {
-            return vtj;
-        }
-
     }
 }

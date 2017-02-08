@@ -12,6 +12,7 @@ public interface PreSijoitteluProcessor extends Processor {
 
     static Collection<PreSijoitteluProcessor> defaultPreProcessors() {
         return ImmutableList.of(
+                new PreSijoitteluProcessorAsetaSivssnov(),
                 new PreSijoitteluProcessorTasasijaArvonta(),
                 new PreSijoitteluProcessorSort(),
                 new PreSijoitteluProcessorPeruutaAlemmatPeruneetJaHyvaksytyt(),
