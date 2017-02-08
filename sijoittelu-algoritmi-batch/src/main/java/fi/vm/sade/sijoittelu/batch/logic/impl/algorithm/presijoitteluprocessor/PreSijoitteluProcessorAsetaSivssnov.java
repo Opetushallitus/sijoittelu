@@ -11,8 +11,7 @@ public class PreSijoitteluProcessorAsetaSivssnov implements PreSijoitteluProcess
 
     @Override
     public void process(SijoitteluajoWrapper sijoitteluajoWrapper) {
-        Boolean isAmkopeHaku = true;
-        if (isAmkopeHaku && sijoitteluajoWrapper.varasijaSaannotVoimassa()) {
+        if (sijoitteluajoWrapper.isAmkopeHaku() && sijoitteluajoWrapper.varasijaSaannotVoimassa()) {
             List<ValintatapajonoWrapper> vtjs = sijoitteluajoWrapper.getHakukohteet().stream().flatMap(hkv ->
                     hkv.getValintatapajonot().stream()).collect(Collectors.toList());
 

@@ -43,6 +43,8 @@ public class SijoitteluajoWrapper {
 
     private boolean isKKHaku = false;
 
+    private boolean isAmkopeHaku = false;
+
     private List<String> varasijapomput = new ArrayList<>();
 
     public SijoitteluajoWrapper(final SijoitteluAjo sijoitteluAjo) {
@@ -99,6 +101,14 @@ public class SijoitteluajoWrapper {
 
     public void setKKHaku(boolean isKKHaku) {
         this.isKKHaku = isKKHaku;
+    }
+
+    public boolean isAmkopeHaku() {
+        return isAmkopeHaku;
+    }
+
+    public void setAmkopeHaku(boolean isAmkopeHaku) {
+        this.isAmkopeHaku = isAmkopeHaku;
     }
 
     public LocalDateTime getVarasijaSaannotAstuvatVoimaan() {

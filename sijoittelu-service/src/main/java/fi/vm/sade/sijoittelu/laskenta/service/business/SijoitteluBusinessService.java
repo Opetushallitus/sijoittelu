@@ -22,6 +22,7 @@ import fi.vm.sade.sijoittelu.laskenta.external.resource.dto.ParametriDTO;
 import fi.vm.sade.sijoittelu.laskenta.service.exception.HakemustaEiLoytynytException;
 import fi.vm.sade.sijoittelu.laskenta.service.exception.ValintatapajonoaEiLoytynytException;
 import fi.vm.sade.sijoittelu.laskenta.service.it.TarjontaIntegrationService;
+import fi.vm.sade.sijoittelu.laskenta.util.HakuUtil;
 import fi.vm.sade.sijoittelu.tulos.dao.HakukohdeDao;
 import fi.vm.sade.sijoittelu.tulos.dao.SijoitteluDao;
 import fi.vm.sade.sijoittelu.tulos.dao.ValiSijoitteluDao;
@@ -53,6 +54,7 @@ import static com.google.common.collect.Sets.difference;
 import static com.google.common.collect.Sets.intersection;
 import static fi.vm.sade.auditlog.valintaperusteet.LogMessage.builder;
 import static fi.vm.sade.sijoittelu.laskenta.util.SijoitteluAudit.AUDIT;
+import static java.util.Arrays.*;
 import static java.util.Collections.unmodifiableSet;
 import static java.util.stream.Collectors.toSet;
 import static org.apache.commons.lang.StringUtils.isBlank;
@@ -65,6 +67,12 @@ public class SijoitteluBusinessService {
     public static final String OPH_OID = "1.2.246.562.10.00000000001";
     private HakemusComparator hakemusComparator = new HakemusComparator();
     private final String KK_KOHDEJOUKKO = "haunkohdejoukko_12";
+    private final Set<String> amkopeKohdejoukonTarkenteet = new HashSet<String>() {{
+        add("haunkohdejoukontarkenne_2");
+        add("haunkohdejoukontarkenne_4");
+        add("haunkohdejoukontarkenne_5");
+    }};
+
 
 
     private final int maxAjoMaara;
@@ -258,7 +266,7 @@ public class SijoitteluBusinessService {
     }
 
     private void asetaSijoittelunParametrit(String hakuOid, SijoitteluajoWrapper sijoitteluAjo) {
-        setOptionalKorkeakouluHakuStatus(hakuOid, sijoitteluAjo);
+        setOptionalHakuAttributes(hakuOid, sijoitteluAjo);
         setParametersFromTarjonta(hakuOid, sijoitteluAjo);
         if (sijoitteluAjo.getHakuKierrosPaattyy().isBefore(sijoitteluAjo.getKaikkiKohteetSijoittelussa())) {
             throw new RuntimeException("Sijoittelua haulle " + hakuOid + " ei voida suorittaa, koska hakukierros on asetettu päättymään ennen kuin kaikkien kohteiden tulee olla sijoittelussa.");
@@ -308,12 +316,15 @@ public class SijoitteluBusinessService {
         }
     }
 
-    private void setOptionalKorkeakouluHakuStatus(String hakuOid, SijoitteluajoWrapper sijoitteluAjo) {
+    private void setOptionalHakuAttributes(String hakuOid, SijoitteluajoWrapper sijoitteluAjo) {
         try {
-            Optional<String> kohdejoukko = tarjontaIntegrationService.getHaunKohdejoukko(hakuOid);
-            if (kohdejoukko.isPresent()) {
-                if (kohdejoukko.get().equals(KK_KOHDEJOUKKO)) {
-                    sijoitteluAjo.setKKHaku(true);
+            fi.vm.sade.sijoittelu.laskenta.external.resource.dto.HakuDTO hakuDto = tarjontaIntegrationService.getHakuByHakuOid(hakuOid);
+            Optional<String> kohdejoukko = HakuUtil.getHaunKohdejoukko(hakuDto);
+            Optional<String> kohdejoukonTarkenne = HakuUtil.gethaunKohdejoukonTarkenne(hakuDto);
+            if (kohdejoukko.isPresent() && kohdejoukko.get().equals(KK_KOHDEJOUKKO)) {
+                sijoitteluAjo.setKKHaku(true);
+                if (kohdejoukonTarkenne.isPresent() && isAmmatillinenOpettajakoulutus(kohdejoukonTarkenne.get())) {
+                    sijoitteluAjo.setAmkopeHaku(true);
                 }
             } else {
                 throw new RuntimeException("Sijoittelua haulle " + hakuOid + " ei voida suorittaa, koska tarjonnasta ei saatu haun tietoja");
@@ -322,6 +333,10 @@ public class SijoitteluBusinessService {
             LOG.error("############## Haun hakeminen tarjonnasta epäonnistui ##############", e);
             throw new RuntimeException("Sijoittelua haulle " + hakuOid + " ei voida suorittaa, koska tarjonnasta ei saatu haun tietoja");
         }
+    }
+
+    private boolean isAmmatillinenOpettajakoulutus(String haunKohdeJoukonTarkenne) {
+        return amkopeKohdejoukonTarkenteet.contains(haunKohdeJoukonTarkenne);
     }
 
     private LocalDateTime fromTimestamp(Long timestamp) {
@@ -464,8 +479,8 @@ public class SijoitteluBusinessService {
     private Consumer<Valintatapajono> processValintatapaJono(Map<String, Valintatapajono> valintatapajonoHashMap, Map<String, Hakemus> hakemusHashMap, Hakukohde hakukohde) {
         return valintatapajono -> {
                     valintatapajono.setAlinHyvaksyttyPistemaara(alinHyvaksyttyPistemaara(valintatapajono.getHakemukset()).orElse(null));
-                    valintatapajono.setHyvaksytty(getMaara(valintatapajono.getHakemukset(), Arrays.asList(HakemuksenTila.HYVAKSYTTY, HakemuksenTila.VARASIJALTA_HYVAKSYTTY)));
-                    valintatapajono.setVaralla(getMaara(valintatapajono.getHakemukset(), Arrays.asList(HakemuksenTila.VARALLA)));
+                    valintatapajono.setHyvaksytty(getMaara(valintatapajono.getHakemukset(), asList(HakemuksenTila.HYVAKSYTTY, HakemuksenTila.VARASIJALTA_HYVAKSYTTY)));
+                    valintatapajono.setVaralla(getMaara(valintatapajono.getHakemukset(), asList(HakemuksenTila.VARALLA)));
 
                     Valintatapajono vanhaValintatapajono = valintatapajonoHashMap.get(valintatapajono.getOid());
                     if(vanhaValintatapajono != null) {

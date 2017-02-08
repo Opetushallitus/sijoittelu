@@ -6,6 +6,7 @@ import fi.vm.sade.sijoittelu.laskenta.external.resource.HakukohdeV1Resource;
 import fi.vm.sade.sijoittelu.laskenta.external.resource.OhjausparametriResource;
 import fi.vm.sade.sijoittelu.laskenta.external.resource.dto.*;
 import fi.vm.sade.sijoittelu.laskenta.service.it.TarjontaIntegrationService;
+import fi.vm.sade.sijoittelu.laskenta.util.HakuUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,13 +37,25 @@ public class TarjontaIntegrationServiceImpl implements TarjontaIntegrationServic
         }
     }
 
+    @Deprecated
     @Override
     public Optional<String> getHaunKohdejoukko(String hakuOid) {
         try {
             ResultHakuDTO tarjonnanHaku = hakuV1Resource.findByOid(hakuOid);
-            return Optional.ofNullable(tarjonnanHaku.getResult().getKohdejoukkoUri().split("#")[0]);
+            return HakuUtil.getHaunKohdejoukko(tarjonnanHaku.getResult());
         } catch (Exception e) {
             final String message = "Haulle " + hakuOid + " ei saatu kohdejoukkoa";
+            LOG.error(message, e);
+            throw new RuntimeException(message);
+        }
+    }
+
+    @Override
+    public HakuDTO getHakuByHakuOid(String hakuOid) {
+        try {
+            return hakuV1Resource.findByOid(hakuOid).getResult();
+        } catch (Exception e) {
+            final String message = "Hakua " + hakuOid + " ei löytynyt";
             LOG.error(message, e);
             throw new RuntimeException(message);
         }

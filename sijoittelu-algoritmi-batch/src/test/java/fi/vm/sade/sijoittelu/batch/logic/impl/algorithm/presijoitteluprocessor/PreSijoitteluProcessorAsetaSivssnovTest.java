@@ -25,10 +25,18 @@ public class PreSijoitteluProcessorAsetaSivssnovTest extends SijoitteluTestSpec 
         p = new PreSijoitteluProcessorAsetaSivssnov();
     }
 
+    private void assertJonoSivssnov(String name, Boolean assertion, SijoitteluajoWrapper sijoitteluAjo) {
+        assertEquals(name + " should have " + assertion + " sivssnov", true, sijoitteluAjo.getHakukohteet().stream()
+                .flatMap(hkw -> hkw.getValintatapajonot().stream())
+                .anyMatch(vtj ->
+                        vtj.getValintatapajono().getOid().equals(name)
+                                && vtj.getValintatapajono().getSijoiteltuIlmanVarasijasaantojaNiidenOllessaVoimassa() == assertion));
+    }
+
     @Test
     public void testShouldNotProcessWhenVarasijasaannotEiVoimassa()  {
         List<Hakukohde> hakukohteet = Lists.newArrayList();
-        hakukohteet.add(new HakukohdeBuilder()
+        hakukohteet.add(new HakukohdeBuilder("hk1")
                 .withValintatapajono(
                         new ValintatapajonoBuilder()
                                 .withOid("jono1")
@@ -47,23 +55,14 @@ public class PreSijoitteluProcessorAsetaSivssnovTest extends SijoitteluTestSpec 
 
         p.process(sijoitteluAjo);
 
-        assertEquals("jono1 should have true sivssnov", true, sijoitteluAjo.getHakukohteet().stream()
-                .flatMap(hkw -> hkw.getValintatapajonot().stream())
-                .anyMatch(vtj ->
-                    vtj.getValintatapajono().getOid().equals("jono1")
-                            && vtj.getValintatapajono().getSijoiteltuIlmanVarasijasaantojaNiidenOllessaVoimassa()));
-
-        assertEquals("jono2 should have false sivssnov", true, sijoitteluAjo.getHakukohteet().stream()
-                .flatMap(hkw -> hkw.getValintatapajonot().stream())
-                .anyMatch(vtj ->
-                    vtj.getValintatapajono().getOid().equals("jono2")
-                            && !vtj.getValintatapajono().getSijoiteltuIlmanVarasijasaantojaNiidenOllessaVoimassa()));
+        assertJonoSivssnov("jono1", true, sijoitteluAjo);
+        assertJonoSivssnov("jono2", false, sijoitteluAjo);
     }
 
     @Test
     public void testMissingFlagfShouldSetAllFlagsToFalse()  {
         List<Hakukohde> hakukohteet = Lists.newArrayList();
-        hakukohteet.add(new HakukohdeBuilder()
+        hakukohteet.add(new HakukohdeBuilder("hk1")
                 .withValintatapajono(
                         new ValintatapajonoBuilder()
                                 .withOid("jono1")
@@ -77,7 +76,7 @@ public class PreSijoitteluProcessorAsetaSivssnovTest extends SijoitteluTestSpec 
                         .build())
                 .build());
         final SijoitteluajoWrapper sijoitteluAjo = new SijoitteluajoWrapperBuilder(hakukohteet)
-                .withKKHaku(true).withVarasijaSaannotAstuvatVoimaan(LocalDateTime.now().minusDays(1)).build();
+                .withKKHaku(true).withAmkopeHaku(true).withVarasijaSaannotAstuvatVoimaan(LocalDateTime.now().minusDays(1)).build();
 
         p.process(sijoitteluAjo);
 
@@ -89,7 +88,7 @@ public class PreSijoitteluProcessorAsetaSivssnovTest extends SijoitteluTestSpec 
     @Test
     public void testTrueFlagsfShouldRemainTrue()  {
         List<Hakukohde> hakukohteet = Lists.newArrayList();
-        hakukohteet.add(new HakukohdeBuilder()
+        hakukohteet.add(new HakukohdeBuilder("hk1")
                 .withValintatapajono(
                         new ValintatapajonoBuilder()
                                 .withOid("jono1")
@@ -104,13 +103,40 @@ public class PreSijoitteluProcessorAsetaSivssnovTest extends SijoitteluTestSpec 
                                 .build())
                 .build());
         final SijoitteluajoWrapper sijoitteluAjo = new SijoitteluajoWrapperBuilder(hakukohteet)
-                .withKKHaku(true).withVarasijaSaannotAstuvatVoimaan(LocalDateTime.now().plusDays(1)).build();
+                .withKKHaku(true).withAmkopeHaku(true).withVarasijaSaannotAstuvatVoimaan(LocalDateTime.now().plusDays(1)).build();
 
         p.process(sijoitteluAjo);
 
         assertEquals("All valintatapajonot should have true sivssnov", true, sijoitteluAjo.getHakukohteet().stream()
                 .flatMap(hkw -> hkw.getValintatapajonot().stream())
                 .allMatch(vtj -> vtj.getValintatapajono().getSijoiteltuIlmanVarasijasaantojaNiidenOllessaVoimassa()));
+    }
+
+    @Test
+    public void testShouldProcessOnlyAmkopeHakus()  {
+        List<Hakukohde> hakukohteet = Lists.newArrayList();
+        hakukohteet.add(new HakukohdeBuilder("hk1")
+                .withValintatapajono(
+                        new ValintatapajonoBuilder()
+                                .withOid("jono1")
+                                .withAloituspaikat(3)
+                                .withSivssnov(true)
+                                .withPrioriteetti(1)
+                                .build())
+                .withValintatapajono(
+                        new ValintatapajonoBuilder()
+                                .withOid("jono2")
+                                .withAloituspaikat(2)
+                                .withPrioriteetti(2)
+                                .build())
+                .build());
+        final SijoitteluajoWrapper sijoitteluAjo = new SijoitteluajoWrapperBuilder(hakukohteet)
+                .withKKHaku(true).withVarasijaSaannotAstuvatVoimaan(LocalDateTime.now().minusDays(1)).build();
+
+        p.process(sijoitteluAjo);
+
+        assertJonoSivssnov("jono1", true, sijoitteluAjo);
+        assertJonoSivssnov("jono2", null, sijoitteluAjo);
     }
 
     private class SijoitteluajoWrapperBuilder {
@@ -133,13 +159,18 @@ public class PreSijoitteluProcessorAsetaSivssnovTest extends SijoitteluTestSpec 
 
         SijoitteluajoWrapper build() { return wrapper; }
 
+        SijoitteluajoWrapperBuilder withAmkopeHaku(boolean b) {
+            wrapper.setAmkopeHaku(b);
+            return this;
+        }
     }
 
     private class HakukohdeBuilder {
         private final Hakukohde hk;
 
-        HakukohdeBuilder() {
+        HakukohdeBuilder(String oid) {
             this.hk = new Hakukohde();
+            this.hk.setOid(oid);
         }
 
         Hakukohde build() {
@@ -184,16 +215,17 @@ public class PreSijoitteluProcessorAsetaSivssnovTest extends SijoitteluTestSpec 
         }
 
         ValintatapajonoBuilder withHakemus(HakemuksenTila a, String oid) {
-            Hakemus h = new Hakemus();
-            h.setHakemusOid(oid);
-            h.setTila(VARALLA);
-            h.setEdellinenTila(a);
-            vtj.getHakemukset().add(h);
+            this.withHakemus(a).withOid(oid);
             return this;
         }
 
         ValintatapajonoBuilder withSivssnov(Boolean sivssnov) {
             vtj.setSijoiteltuIlmanVarasijasaantojaNiidenOllessaVoimassa(sivssnov);
+            return this;
+        }
+
+        ValintatapajonoBuilder withPrioriteetti(int prioriteetti) {
+            vtj.setPrioriteetti(prioriteetti);
             return this;
         }
 
