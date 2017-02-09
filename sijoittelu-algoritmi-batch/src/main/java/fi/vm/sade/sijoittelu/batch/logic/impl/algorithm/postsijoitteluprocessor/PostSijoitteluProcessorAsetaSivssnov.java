@@ -17,6 +17,7 @@ public class PostSijoitteluProcessorAsetaSivssnov implements PostSijoitteluProce
             String hakuOid = sijoitteluajoWrapper.getSijoitteluajo().getHakuOid();
 
             Timer timer = Timer.start("Post-processor Aseta Sivvsnov", "AMKOPE haulle " + hakuOid, PostSijoitteluProcessorAsetaSivssnov.class);
+
             List<ValintatapajonoWrapper> vtjs = sijoitteluajoWrapper.getHakukohteet().stream()
                 .flatMap(hkv -> hkv.getValintatapajonot().stream()).collect(Collectors.toList());
 

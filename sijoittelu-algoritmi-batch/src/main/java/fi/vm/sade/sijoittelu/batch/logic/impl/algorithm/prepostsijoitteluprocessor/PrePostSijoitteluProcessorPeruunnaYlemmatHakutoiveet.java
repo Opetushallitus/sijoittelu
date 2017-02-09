@@ -4,6 +4,7 @@ package fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.prepostsijoitteluproces
 import com.google.common.collect.Sets;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.postsijoitteluprocessor.PostSijoitteluProcessor;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.presijoitteluprocessor.PreSijoitteluProcessor;
+import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.util.Timer;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.SijoitteluajoWrapper;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.ValintatapajonoWrapper;
 import fi.vm.sade.sijoittelu.domain.HakemuksenTila;
@@ -25,31 +26,36 @@ public class PrePostSijoitteluProcessorPeruunnaYlemmatHakutoiveet implements Pre
     @Override
     public void process(SijoitteluajoWrapper sijoitteluajoWrapper) {
         if (sijoitteluajoWrapper.isAmkopeHaku() && sijoitteluajoWrapper.varasijaSaannotVoimassa() ) {
+            String hakuOid = sijoitteluajoWrapper.getSijoitteluajo().getHakuOid();
+
+            Timer timer = Timer.start("Pre/Post-processor peruunna ylemmät hakutoiveet", "AMKOPE-haulle " + hakuOid, PrePostSijoitteluProcessorPeruunnaYlemmatHakutoiveet.class);
 
             List<Valintatapajono> vtjs = sijoitteluajoWrapper.getHakukohteet().stream()
                 .flatMap(hkv -> hkv.getValintatapajonot().stream())
                 .map(ValintatapajonoWrapper::getValintatapajono).collect(Collectors.toList());
 
-            if (vtjs.stream().allMatch(Valintatapajono::getSijoiteltuIlmanVarasijasaantojaNiidenOllessaVoimassa))
+            if (vtjs.stream().allMatch(Valintatapajono::getSijoiteltuIlmanVarasijasaantojaNiidenOllessaVoimassa)) {
                 vtjs.stream()
                     .flatMap(vtj -> vtj.getHakemukset().stream())
                     .collect(Collectors.groupingBy(Hakemus::getHakijaOid, Collectors.mapping(Function.identity(), Collectors.toList())))
                     .entrySet().parallelStream().forEach(es -> {
-                        List<Hakemus> hakijanHakemukset = es.getValue();
-                        hakijanHakemukset.stream()
-                            .filter(h -> hakemuksenHyvaksytytTilat.contains(h.getTila()))
-                            .forEach(hh -> hakijanHakemukset.stream()
-                                .filter(hah -> hah.getPrioriteetti() > hh.getPrioriteetti())
-                                .forEach(yph -> {
-                                    // TODO: Vahvistettava, että kosketaan vain varalla oleviin ylemmän prioriteetin hakemuksiin
-                                    // TODO: lisää tilankuvaukset peruuntumisen syystä
-                                    if (yph.getTila() == HakemuksenTila.VARALLA) {
-                                        yph.setEdellinenTila(yph.getTila());
-                                        yph.setTila(HakemuksenTila.PERUUNTUNUT);
-                                    }
-                                }));
+                    List<Hakemus> hakijanHakemukset = es.getValue();
+                    hakijanHakemukset.stream()
+                        .filter(h -> hakemuksenHyvaksytytTilat.contains(h.getTila()))
+                        .forEach(hh -> hakijanHakemukset.stream()
+                            .filter(hah -> hah.getPrioriteetti() > hh.getPrioriteetti())
+                            .forEach(yph -> {
+                                // TODO: Vahvistettava, että kosketaan vain varalla oleviin ylemmän prioriteetin hakemuksiin
+                                // TODO: lisää tilankuvaukset peruuntumisen syystä
+                                if (yph.getTila() == HakemuksenTila.VARALLA) {
+                                    yph.setEdellinenTila(yph.getTila());
+                                    yph.setTila(HakemuksenTila.PERUUNTUNUT);
+                                }
+                            }));
 
-                    });
+                });
+            }
+            timer.stop("AMKOPE-haulle " + hakuOid);
         }
     }
 }

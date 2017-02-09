@@ -1,16 +1,18 @@
 package fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.util;
 
+import com.google.common.base.Stopwatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.util.StopWatch;
+
+import java.util.concurrent.TimeUnit;
 
 public class Timer {
-    private final StopWatch watch;
+    private final Stopwatch watch;
     private final String task;
     private final Logger LOG;
 
     private Timer(String task, Class loggingClass) {
-        this.watch = new StopWatch();
+        this.watch = Stopwatch.createUnstarted();
         this.LOG = LoggerFactory.getLogger(loggingClass);
         this.task = task;
     }
@@ -27,7 +29,7 @@ public class Timer {
         final Timer t = new Timer(task, loggingClass);
         final String logMessage = (t.task + " STARTED " + logMsg).trim();
 
-        t.watch.start(task);
+        t.watch.start();
 
         t.LOG.info(logMessage);
 
@@ -41,7 +43,7 @@ public class Timer {
     public Timer stop(String logMsg) {
         this.watch.stop();
 
-        final String logMessage = (this.task + " STOPPED ( " + this.watch.getTotalTimeMillis()  + "ms ) " + logMsg).trim();
+        final String logMessage = (this.task + " STOPPED ( " + this.watch.elapsed(TimeUnit.MICROSECONDS) + " μs ) " + logMsg).trim();
 
         this.LOG.info(logMessage);
 

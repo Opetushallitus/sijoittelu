@@ -17,8 +17,14 @@ public class HakuBuilder {
         private final SijoitteluajoWrapper wrapper;
 
         public SijoitteluajoWrapperBuilder(List<Hakukohde> hakukohteet) {
+            this(hakukohteet, "test_haku");
+        }
+
+        public SijoitteluajoWrapperBuilder(List<Hakukohde> hakukohteet, String hakuOid) {
+            SijoitteluAjo sa = new SijoitteluAjo();
+            sa.setHakuOid(hakuOid);
             this.wrapper = SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(
-                new SijoitteluAjo(), hakukohteet, new ArrayList<>(), Collections.emptyMap());
+                sa, hakukohteet, new ArrayList<>(), Collections.emptyMap());
         }
 
         public SijoitteluajoWrapperBuilder withVarasijaSaannotAstuvatVoimaan(LocalDateTime varasijaSaannotAstuvatVoimaan) {
