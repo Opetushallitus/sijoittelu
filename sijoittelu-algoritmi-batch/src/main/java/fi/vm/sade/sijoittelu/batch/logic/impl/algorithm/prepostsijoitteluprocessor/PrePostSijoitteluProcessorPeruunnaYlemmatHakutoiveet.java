@@ -46,10 +46,8 @@ public class PrePostSijoitteluProcessorPeruunnaYlemmatHakutoiveet implements Pre
                         .forEach(hh -> hakijanHakemukset.stream()
                             .filter(hah -> hah.getPrioriteetti() > hh.getPrioriteetti())
                             .forEach(yph -> {
-                                // TODO: varmista edellisen tilan käsittely
                                 if (yph.getTila() == HakemuksenTila.VARALLA) {
                                     yph.setTilanKuvaukset(TilanKuvaukset.peruuntunutHyvaksyttyAlemmallaHakutoiveella());
-                                    //yph.setEdellinenTila(yph.getTila());
                                     yph.setTila(HakemuksenTila.PERUUNTUNUT);
                                 }
                             }));
