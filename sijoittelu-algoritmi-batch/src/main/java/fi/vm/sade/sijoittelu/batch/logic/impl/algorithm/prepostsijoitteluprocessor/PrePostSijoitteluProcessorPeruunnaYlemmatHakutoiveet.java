@@ -38,17 +38,16 @@ public class PrePostSijoitteluProcessorPeruunnaYlemmatHakutoiveet implements Pre
                         List<Hakemus> hakijanHakemukset = es.getValue();
                         hakijanHakemukset.stream()
                             .filter(h -> hakemuksenHyvaksytytTilat.contains(h.getTila()))
-                            .forEach(hh -> {
-                                hakijanHakemukset.stream()
-                                    .filter(hah -> hah.getPrioriteetti() > hh.getPrioriteetti())
-                                    .forEach(yph -> {
-                                        // TODO: Vahvistettava, että kosketaan vain varalla oleviin ylemmän prioriteetin hakemuksiin
-                                        if (yph.getTila() == HakemuksenTila.VARALLA) {
-                                            yph.setEdellinenTila(yph.getTila());
-                                            yph.setTila(HakemuksenTila.PERUUNTUNUT);
-                                        }
-                                    });
-                            });
+                            .forEach(hh -> hakijanHakemukset.stream()
+                                .filter(hah -> hah.getPrioriteetti() > hh.getPrioriteetti())
+                                .forEach(yph -> {
+                                    // TODO: Vahvistettava, että kosketaan vain varalla oleviin ylemmän prioriteetin hakemuksiin
+                                    // TODO: lisää tilankuvaukset peruuntumisen syystä
+                                    if (yph.getTila() == HakemuksenTila.VARALLA) {
+                                        yph.setEdellinenTila(yph.getTila());
+                                        yph.setTila(HakemuksenTila.PERUUNTUNUT);
+                                    }
+                                }));
 
                     });
         }

@@ -79,6 +79,11 @@ public class HakuBuilder {
             return this;
         }
 
+        public ValintatapajonoBuilder withHakemus(Hakemus h) {
+            this.vtj.getHakemukset().add(h);
+            return this;
+        }
+
         public ValintatapajonoBuilder withHakemus(HakemuksenTila a) {
             Hakemus h = new Hakemus();
             h.setHakemusOid("oid");
@@ -106,6 +111,42 @@ public class HakuBuilder {
         public Valintatapajono build() {
             return vtj;
         }
+    }
 
+    public static class HakemusBuilder {
+        private final Hakemus h;
+
+        public HakemusBuilder() {
+            this.h = new Hakemus();
+        }
+
+        public HakemusBuilder withOid(String val) {
+            this.h.setHakemusOid(val);
+            return this;
+        }
+
+        public HakemusBuilder withTila(HakemuksenTila val) {
+            this.h.setTila(val);
+            return this;
+        }
+
+        public HakemusBuilder withEdellinenTila(HakemuksenTila val) {
+            this.h.setEdellinenTila(val);
+            return this;
+        }
+
+        public HakemusBuilder withHakijaOid(String val) {
+            this.h.setHakijaOid(val);
+            return this;
+        }
+
+        public HakemusBuilder withPrioriteetti(int val) {
+            this.h.setPrioriteetti(val);
+            return this;
+        }
+
+        public Hakemus build() {
+            return this.h;
+        }
     }
 }
