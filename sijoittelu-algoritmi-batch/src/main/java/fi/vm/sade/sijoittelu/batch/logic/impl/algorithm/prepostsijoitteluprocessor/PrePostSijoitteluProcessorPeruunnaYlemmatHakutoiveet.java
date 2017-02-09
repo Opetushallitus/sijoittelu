@@ -25,28 +25,32 @@ public class PrePostSijoitteluProcessorPeruunnaYlemmatHakutoiveet implements Pre
     @Override
     public void process(SijoitteluajoWrapper sijoitteluajoWrapper) {
         if (sijoitteluajoWrapper.isAmkopeHaku() && sijoitteluajoWrapper.varasijaSaannotVoimassa() ) {
-            sijoitteluajoWrapper.getHakukohteet().stream()
-                .flatMap(hkv -> hkv.getValintatapajonot().stream())
-                .map(ValintatapajonoWrapper::getValintatapajono)
-                .filter(Valintatapajono::getSijoiteltuIlmanVarasijasaantojaNiidenOllessaVoimassa)
-                .flatMap(vtj -> vtj.getHakemukset().stream())
-                .collect(Collectors.groupingBy(Hakemus::getHakijaOid, Collectors.mapping(Function.identity(), Collectors.toList())))
-                .entrySet().parallelStream().forEach(es -> {
-                    List<Hakemus> hakijanHakemukset = es.getValue();
-                    hakijanHakemukset.stream()
-                        .filter(h -> hakemuksenHyvaksytytTilat.contains(h.getTila()))
-                        .forEach(hh -> {
-                            hakijanHakemukset.stream()
-                                .filter(hah -> hah.getPrioriteetti() > hh.getPrioriteetti())
-                                .forEach(yph -> {
-                                    if (yph.getTila() == HakemuksenTila.VARALLA) {
-                                        yph.setEdellinenTila(yph.getTila());
-                                        yph.setTila(HakemuksenTila.PERUUNTUNUT);
-                                    }
-                                });
-                        });
 
-                });
+            List<Valintatapajono> vtjs = sijoitteluajoWrapper.getHakukohteet().stream()
+                .flatMap(hkv -> hkv.getValintatapajonot().stream())
+                .map(ValintatapajonoWrapper::getValintatapajono).collect(Collectors.toList());
+
+            if (vtjs.stream().allMatch(Valintatapajono::getSijoiteltuIlmanVarasijasaantojaNiidenOllessaVoimassa))
+                vtjs.stream()
+                    .flatMap(vtj -> vtj.getHakemukset().stream())
+                    .collect(Collectors.groupingBy(Hakemus::getHakijaOid, Collectors.mapping(Function.identity(), Collectors.toList())))
+                    .entrySet().parallelStream().forEach(es -> {
+                        List<Hakemus> hakijanHakemukset = es.getValue();
+                        hakijanHakemukset.stream()
+                            .filter(h -> hakemuksenHyvaksytytTilat.contains(h.getTila()))
+                            .forEach(hh -> {
+                                hakijanHakemukset.stream()
+                                    .filter(hah -> hah.getPrioriteetti() > hh.getPrioriteetti())
+                                    .forEach(yph -> {
+                                        // TODO: Vahvistettava, että kosketaan vain varalla oleviin ylemmän prioriteetin hakemuksiin
+                                        if (yph.getTila() == HakemuksenTila.VARALLA) {
+                                            yph.setEdellinenTila(yph.getTila());
+                                            yph.setTila(HakemuksenTila.PERUUNTUNUT);
+                                        }
+                                    });
+                            });
+
+                    });
         }
     }
 }
