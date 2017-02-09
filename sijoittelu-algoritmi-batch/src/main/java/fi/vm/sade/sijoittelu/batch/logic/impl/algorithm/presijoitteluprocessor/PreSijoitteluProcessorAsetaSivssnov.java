@@ -17,7 +17,7 @@ public class PreSijoitteluProcessorAsetaSivssnov implements PreSijoitteluProcess
         if (sijoitteluajoWrapper.isAmkopeHaku() && sijoitteluajoWrapper.varasijaSaannotVoimassa()) {
             String hakuOid = sijoitteluajoWrapper.getSijoitteluajo().getHakuOid();
 
-            Timer timer = Timer.start("Pre-processor Aseta Sivvsnov", "AMKOPE haulle " + hakuOid, PreSijoitteluProcessorAsetaSivssnov.class);
+            Timer timer = Timer.start("Pre-processor Aseta Sivssnov", "AMKOPE haulle " + hakuOid, PreSijoitteluProcessorAsetaSivssnov.class);
 
             List<ValintatapajonoWrapper> vtjs = sijoitteluajoWrapper.getHakukohteet().stream().flatMap(hkv ->
                     hkv.getValintatapajonot().stream()).collect(Collectors.toList());
