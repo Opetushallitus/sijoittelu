@@ -15,6 +15,7 @@ import fi.vm.sade.sijoittelu.domain.Valintatapajono;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -27,9 +28,10 @@ public class PrePostSijoitteluProcessorPeruunnaYlemmatHakutoiveet implements Pre
     @Override
     public void process(SijoitteluajoWrapper sijoitteluajoWrapper) {
         if (sijoitteluajoWrapper.isAmkopeHaku() && sijoitteluajoWrapper.varasijaSaannotVoimassa() ) {
-            String hakuOid = sijoitteluajoWrapper.getSijoitteluajo().getHakuOid();
+            final String hakuOid = sijoitteluajoWrapper.getSijoitteluajo().getHakuOid();
+            final AtomicInteger peruunnutetutHakemukset = new AtomicInteger(0);
 
-            Timer timer = Timer.start("Pre/Post-processor peruunna ylemmät hakutoiveet", "AMKOPE-haulle " + hakuOid, PrePostSijoitteluProcessorPeruunnaYlemmatHakutoiveet.class);
+            final Timer timer = Timer.start("Pre/Post-processor peruunna ylemmät hakutoiveet", "AMKOPE-haulle " + hakuOid, PrePostSijoitteluProcessorPeruunnaYlemmatHakutoiveet.class);
 
             List<Valintatapajono> vtjs = sijoitteluajoWrapper.getHakukohteet().stream()
                 .flatMap(hkv -> hkv.getValintatapajonot().stream())
@@ -49,12 +51,13 @@ public class PrePostSijoitteluProcessorPeruunnaYlemmatHakutoiveet implements Pre
                                 if (yph.getTila() == HakemuksenTila.VARALLA) {
                                     yph.setTilanKuvaukset(TilanKuvaukset.peruuntunutHyvaksyttyAlemmallaHakutoiveella());
                                     yph.setTila(HakemuksenTila.PERUUNTUNUT);
+                                    peruunnutetutHakemukset.incrementAndGet();
                                 }
                             }));
 
                 });
             }
-            timer.stop("AMKOPE-haulle " + hakuOid);
+            timer.stop("AMKOPE-haulle " + hakuOid + ", peruunnutettu " + peruunnutetutHakemukset + " kpl");
         }
     }
 }
