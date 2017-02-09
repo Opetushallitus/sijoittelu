@@ -101,4 +101,12 @@ public class TilanKuvaukset {
             put("EN", "Cancelled, accepted another higher education study place");
         }};
     }
+
+    public static Map<String, String> peruuntunutHyvaksyttyAlemmallaHakutoiveella() {
+        return new HashMap<String, String>() {{
+            put("FI", "Peruuntunut, hyväksytty alemmalla hakutoiveella");
+            put("SV", "Annullerad, godkänd till ansökningsmål med lägre prioritet");
+            put("EN", "Cancelled, accepted for a study place with lower priority");
+        }};
+    }
 }

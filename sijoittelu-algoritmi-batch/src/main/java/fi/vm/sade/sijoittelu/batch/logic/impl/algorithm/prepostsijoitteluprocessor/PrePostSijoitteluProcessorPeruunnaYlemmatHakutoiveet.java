@@ -4,6 +4,7 @@ package fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.prepostsijoitteluproces
 import com.google.common.collect.Sets;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.postsijoitteluprocessor.PostSijoitteluProcessor;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.presijoitteluprocessor.PreSijoitteluProcessor;
+import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.util.TilanKuvaukset;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.util.Timer;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.SijoitteluajoWrapper;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.ValintatapajonoWrapper;
@@ -45,10 +46,10 @@ public class PrePostSijoitteluProcessorPeruunnaYlemmatHakutoiveet implements Pre
                         .forEach(hh -> hakijanHakemukset.stream()
                             .filter(hah -> hah.getPrioriteetti() > hh.getPrioriteetti())
                             .forEach(yph -> {
-                                // TODO: Vahvistettava, että kosketaan vain varalla oleviin ylemmän prioriteetin hakemuksiin
-                                // TODO: lisää tilankuvaukset peruuntumisen syystä
+                                // TODO: varmista edellisen tilan käsittely
                                 if (yph.getTila() == HakemuksenTila.VARALLA) {
-                                    yph.setEdellinenTila(yph.getTila());
+                                    yph.setTilanKuvaukset(TilanKuvaukset.peruuntunutHyvaksyttyAlemmallaHakutoiveella());
+                                    //yph.setEdellinenTila(yph.getTila());
                                     yph.setTila(HakemuksenTila.PERUUNTUNUT);
                                 }
                             }));
