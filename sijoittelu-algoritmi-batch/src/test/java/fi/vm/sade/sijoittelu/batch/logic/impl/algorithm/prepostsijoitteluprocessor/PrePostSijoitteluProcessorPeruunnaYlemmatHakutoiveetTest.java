@@ -41,7 +41,7 @@ public class PrePostSijoitteluProcessorPeruunnaYlemmatHakutoiveetTest {
                         .withHakijaOid("hakija1")
                         .withOid("hakija1_h1")
                         .withTila(HakemuksenTila.VARALLA)
-                        .withPrioriteetti(5)
+                        .withPrioriteetti(1)
                         .build())
                     .build())
             .withValintatapajono(
@@ -52,7 +52,7 @@ public class PrePostSijoitteluProcessorPeruunnaYlemmatHakutoiveetTest {
                         .withHakijaOid("hakija1")
                         .withOid("hakija1_h1")
                         .withTila(HakemuksenTila.HYLATTY)
-                        .withPrioriteetti(5)
+                        .withPrioriteetti(1)
                         .build())
                     .build())
             .build());
@@ -71,7 +71,7 @@ public class PrePostSijoitteluProcessorPeruunnaYlemmatHakutoiveetTest {
                         .withHakijaOid("hakija2")
                         .withOid("hakija2_h2")
                         .withTila(HakemuksenTila.VARALLA)
-                        .withPrioriteetti(4)
+                        .withPrioriteetti(2)
                         .build())
                     .build())
             .build());
@@ -84,7 +84,7 @@ public class PrePostSijoitteluProcessorPeruunnaYlemmatHakutoiveetTest {
                         .withHakijaOid("hakija2")
                         .withOid("hakija2_h1")
                         .withTila(HakemuksenTila.HYLATTY)
-                        .withPrioriteetti(5)
+                        .withPrioriteetti(1)
                         .build())
                     .build())
             .withValintatapajono(
@@ -95,7 +95,7 @@ public class PrePostSijoitteluProcessorPeruunnaYlemmatHakutoiveetTest {
                         .withHakijaOid("hakija2")
                         .withOid("hakija2_h1")
                         .withTila(HakemuksenTila.VARALLA)
-                        .withPrioriteetti(5)
+                        .withPrioriteetti(1)
                         .build())
                     .build())
             .build());

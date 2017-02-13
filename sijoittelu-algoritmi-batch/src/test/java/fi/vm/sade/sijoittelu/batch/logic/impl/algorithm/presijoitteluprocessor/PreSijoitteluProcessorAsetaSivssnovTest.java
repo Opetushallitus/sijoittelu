@@ -37,13 +37,11 @@ public class PreSijoitteluProcessorAsetaSivssnovTest extends SijoitteluTestSpec 
                 .withValintatapajono(
                         new ValintatapajonoBuilder()
                                 .withOid("jono1")
-                                .withAloituspaikat(3)
                                 .withSivssnov(true)
                                 .build())
                 .withValintatapajono(
                         new ValintatapajonoBuilder()
                                 .withOid("jono2")
-                                .withAloituspaikat(2)
                                 .withSivssnov(false)
                                 .build())
                 .build());
@@ -63,13 +61,11 @@ public class PreSijoitteluProcessorAsetaSivssnovTest extends SijoitteluTestSpec 
                 .withValintatapajono(
                         new ValintatapajonoBuilder()
                                 .withOid("jono1")
-                                .withAloituspaikat(3)
                                 .withSivssnov(true)
                                 .build())
                 .withValintatapajono(
                         new ValintatapajonoBuilder()
                         .withOid("jono2")
-                        .withAloituspaikat(2)
                         .build())
                 .build());
         final SijoitteluajoWrapper sijoitteluAjo = new SijoitteluajoWrapperBuilder(hakukohteet)
@@ -89,13 +85,11 @@ public class PreSijoitteluProcessorAsetaSivssnovTest extends SijoitteluTestSpec 
                 .withValintatapajono(
                         new ValintatapajonoBuilder()
                                 .withOid("jono1")
-                                .withAloituspaikat(3)
                                 .withSivssnov(true)
                                 .build())
                 .withValintatapajono(
                         new ValintatapajonoBuilder()
                                 .withOid("jono2")
-                                .withAloituspaikat(2)
                                 .withSivssnov(true)
                                 .build())
                 .build());
@@ -116,15 +110,11 @@ public class PreSijoitteluProcessorAsetaSivssnovTest extends SijoitteluTestSpec 
                 .withValintatapajono(
                         new ValintatapajonoBuilder()
                                 .withOid("jono1")
-                                .withAloituspaikat(3)
                                 .withSivssnov(true)
-                                .withPrioriteetti(1)
                                 .build())
                 .withValintatapajono(
                         new ValintatapajonoBuilder()
                                 .withOid("jono2")
-                                .withAloituspaikat(2)
-                                .withPrioriteetti(2)
                                 .build())
                 .build());
         final SijoitteluajoWrapper sijoitteluAjo = new SijoitteluajoWrapperBuilder(hakukohteet)

@@ -35,19 +35,16 @@ public class PostSijoitteluProcessorAsetaSivssnovTest {
             .withValintatapajono(
                 new HakuBuilder.ValintatapajonoBuilder()
                     .withOid("hk1_jono1")
-                    .withAloituspaikat(3)
                     .withSivssnov(true)
                     .build())
             .withValintatapajono(
                 new HakuBuilder.ValintatapajonoBuilder()
                     .withOid("hk1_jono2")
-                    .withAloituspaikat(2)
                     .withSivssnov(false)
                     .build())
             .withValintatapajono(
                 new HakuBuilder.ValintatapajonoBuilder()
                     .withOid("hk1_jono3")
-                    .withAloituspaikat(3)
                     .withSivssnov(null)
                     .build())
             .build());
@@ -55,7 +52,6 @@ public class PostSijoitteluProcessorAsetaSivssnovTest {
             .withValintatapajono(
                 new HakuBuilder.ValintatapajonoBuilder()
                     .withOid("hk2_jono1")
-                    .withAloituspaikat(3)
                     .withSivssnov(false)
                     .build())
             .build());
@@ -76,19 +72,16 @@ public class PostSijoitteluProcessorAsetaSivssnovTest {
             .withValintatapajono(
                 new HakuBuilder.ValintatapajonoBuilder()
                     .withOid("hk1_jono1")
-                    .withAloituspaikat(3)
                     .withSivssnov(true)
                     .build())
             .withValintatapajono(
                 new HakuBuilder.ValintatapajonoBuilder()
                     .withOid("hk1_jono2")
-                    .withAloituspaikat(2)
                     .withSivssnov(false)
                     .build())
             .withValintatapajono(
                 new HakuBuilder.ValintatapajonoBuilder()
                     .withOid("hk1_jono3")
-                    .withAloituspaikat(3)
                     .withSivssnov(null)
                     .build())
             .build());
@@ -96,7 +89,6 @@ public class PostSijoitteluProcessorAsetaSivssnovTest {
             .withValintatapajono(
                 new HakuBuilder.ValintatapajonoBuilder()
                     .withOid("hk2_jono1")
-                    .withAloituspaikat(3)
                     .withSivssnov(false)
                     .build())
             .build());
