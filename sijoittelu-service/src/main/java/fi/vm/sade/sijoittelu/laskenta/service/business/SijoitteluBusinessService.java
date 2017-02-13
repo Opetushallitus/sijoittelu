@@ -321,7 +321,7 @@ public class SijoitteluBusinessService {
             fi.vm.sade.sijoittelu.laskenta.external.resource.dto.HakuDTO hakuDto = tarjontaIntegrationService.getHakuByHakuOid(hakuOid);
 
             String kohdejoukko = HakuUtil.getHaunKohdejoukko(hakuDto).orElseThrow(() ->
-                new RuntimeException("Sijoittelua haulle " + hakuOid + " ei voida suorittaa, koska tarjonnasta ei saatu haun tietoja"));
+                new RuntimeException("Sijoittelua haulle " + hakuOid + " ei voida suorittaa, koska tarjonnasta ei saatu haun kohdejoukkoa"));
 
             boolean isKKHaku = kohdejoukko.equals(KK_KOHDEJOUKKO);
             sijoitteluAjo.setKKHaku(isKKHaku);
