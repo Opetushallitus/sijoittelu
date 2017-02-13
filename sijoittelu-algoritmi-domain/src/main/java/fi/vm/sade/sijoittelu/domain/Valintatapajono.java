@@ -1,10 +1,7 @@
 package fi.vm.sade.sijoittelu.domain;
 
 import fi.vm.sade.sijoittelu.domain.converter.BigDecimalConverter;
-import org.mongodb.morphia.annotations.Converters;
-import org.mongodb.morphia.annotations.Embedded;
-import org.mongodb.morphia.annotations.Indexed;
-import org.mongodb.morphia.annotations.Transient;
+import org.mongodb.morphia.annotations.*;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -57,10 +54,15 @@ public class Valintatapajono implements Serializable {
 
     private Integer hakemustenMaara;
 
-    private Boolean sijoiteltuIlmanVarasijasaantojaNiidenOllessaVoimassa;
+    private boolean sijoiteltuIlmanVarasijasaantojaNiidenOllessaVoimassa;
 
     @Embedded
     private List<Hakemus> hakemukset = new ArrayList<Hakemus>();
+
+    @PreLoad
+    public void setSivssnovIfMissing() {
+        this.setSijoiteltuIlmanVarasijasaantojaNiidenOllessaVoimassa(false);
+    }
 
     public Integer getHakemustenMaara() {
         return hakemustenMaara;
@@ -247,7 +249,7 @@ public class Valintatapajono implements Serializable {
         return sijoiteltuIlmanVarasijasaantojaNiidenOllessaVoimassa;
     }
 
-    public void setSijoiteltuIlmanVarasijasaantojaNiidenOllessaVoimassa(Boolean sijoiteltuIlmanVarasijasaantojaNiidenOllessaVoimassa) {
+    public void setSijoiteltuIlmanVarasijasaantojaNiidenOllessaVoimassa(boolean sijoiteltuIlmanVarasijasaantojaNiidenOllessaVoimassa) {
         this.sijoiteltuIlmanVarasijasaantojaNiidenOllessaVoimassa = sijoiteltuIlmanVarasijasaantojaNiidenOllessaVoimassa;
     }
 }

@@ -123,6 +123,6 @@ public class PreSijoitteluProcessorAsetaSivssnovTest extends SijoitteluTestSpec 
         p.process(sijoitteluAjo);
 
         assertJonoSivssnov("jono1", true, sijoitteluAjo);
-        assertJonoSivssnov("jono2", null, sijoitteluAjo);
+        assertJonoSivssnov("jono2", false, sijoitteluAjo);
     }
 }

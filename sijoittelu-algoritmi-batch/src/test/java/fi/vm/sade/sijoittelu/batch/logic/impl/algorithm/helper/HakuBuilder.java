@@ -104,7 +104,7 @@ public class HakuBuilder {
             return this;
         }
 
-        public ValintatapajonoBuilder withSivssnov(Boolean sivssnov) {
+        public ValintatapajonoBuilder withSivssnov(boolean sivssnov) {
             vtj.setSijoiteltuIlmanVarasijasaantojaNiidenOllessaVoimassa(sivssnov);
             return this;
         }

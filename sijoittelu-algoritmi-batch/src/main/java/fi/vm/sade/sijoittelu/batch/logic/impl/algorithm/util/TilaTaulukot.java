@@ -25,7 +25,7 @@ public class TilaTaulukot {
     private static final Set<HakemuksenTila> yliajettavatHakemuksetTilat = Sets.newHashSet(
             HakemuksenTila.HYVAKSYTTY, HakemuksenTila.VARALLA, HakemuksenTila.VARASIJALTA_HYVAKSYTTY
     );
-    private static final Set<HakemuksenTila> vastaanotonMuokattavissaTilat = Sets.newHashSet(
+    private static final Set<HakemuksenTila> hakemuksenHyvaksytytTilat = Sets.newHashSet(
             HakemuksenTila.HYVAKSYTTY, HakemuksenTila.VARASIJALTA_HYVAKSYTTY, HakemuksenTila.PERUNUT, HakemuksenTila.PERUUTETTU
     );
 
@@ -54,6 +54,10 @@ public class TilaTaulukot {
     }
 
     public static boolean kuuluuVastaanotonMuokattavissaTiloihin(HakemuksenTila tila) {
-        return vastaanotonMuokattavissaTilat.contains(tila);
+        return hakemuksenHyvaksytytTilat.contains(tila);
+    }
+
+    public static boolean kuuluuPeruunnutettaviinTiloihin(HakemuksenTila tila) {
+        return hakemuksenHyvaksytytTilat.contains(tila);
     }
 }

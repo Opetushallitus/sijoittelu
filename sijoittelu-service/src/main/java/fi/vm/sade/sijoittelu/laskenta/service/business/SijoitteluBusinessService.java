@@ -319,16 +319,16 @@ public class SijoitteluBusinessService {
     private void setOptionalHakuAttributes(String hakuOid, SijoitteluajoWrapper sijoitteluAjo) {
         try {
             fi.vm.sade.sijoittelu.laskenta.external.resource.dto.HakuDTO hakuDto = tarjontaIntegrationService.getHakuByHakuOid(hakuOid);
-            Optional<String> kohdejoukko = HakuUtil.getHaunKohdejoukko(hakuDto);
+
+            String kohdejoukko = HakuUtil.getHaunKohdejoukko(hakuDto).orElseThrow(() ->
+                new RuntimeException("Sijoittelua haulle " + hakuOid + " ei voida suorittaa, koska tarjonnasta ei saatu haun tietoja"));
+
+            boolean isKKHaku = kohdejoukko.equals(KK_KOHDEJOUKKO);
+            sijoitteluAjo.setKKHaku(isKKHaku);
+
             Optional<String> kohdejoukonTarkenne = HakuUtil.gethaunKohdejoukonTarkenne(hakuDto);
-            if (kohdejoukko.isPresent() && kohdejoukko.get().equals(KK_KOHDEJOUKKO)) {
-                sijoitteluAjo.setKKHaku(true);
-                if (kohdejoukonTarkenne.isPresent() && isAmmatillinenOpettajakoulutus(kohdejoukonTarkenne.get())) {
-                    sijoitteluAjo.setAmkopeHaku(true);
-                }
-            } else {
-                throw new RuntimeException("Sijoittelua haulle " + hakuOid + " ei voida suorittaa, koska tarjonnasta ei saatu haun tietoja");
-            }
+            sijoitteluAjo.setAmkopeHaku(isKKHaku && kohdejoukonTarkenne.map(this::isAmmatillinenOpettajakoulutus).orElse(false));
+
         } catch (Exception e) {
             LOG.error("############## Haun hakeminen tarjonnasta epäonnistui ##############", e);
             throw new RuntimeException("Sijoittelua haulle " + hakuOid + " ei voida suorittaa, koska tarjonnasta ei saatu haun tietoja");

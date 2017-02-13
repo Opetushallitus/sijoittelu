@@ -15,6 +15,9 @@ public class HakuUtil {
     }
 
     private static Optional<String> extractKoodiUri(String koodi) {
-        return Optional.ofNullable(koodi.split("#")[0]);
+        if (koodi == null) {
+            return Optional.empty();
+        }
+        return Optional.of(koodi.split("#")[0]);
     }
 }
