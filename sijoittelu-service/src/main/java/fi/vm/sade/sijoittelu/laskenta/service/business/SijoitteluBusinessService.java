@@ -266,73 +266,82 @@ public class SijoitteluBusinessService {
     }
 
     private void asetaSijoittelunParametrit(String hakuOid, SijoitteluajoWrapper sijoitteluAjo) {
-        setOptionalHakuAttributes(hakuOid, sijoitteluAjo);
-        setParametersFromTarjonta(hakuOid, sijoitteluAjo);
-        if (sijoitteluAjo.getHakuKierrosPaattyy().isBefore(sijoitteluAjo.getKaikkiKohteetSijoittelussa())) {
-            throw new RuntimeException("Sijoittelua haulle " + hakuOid + " ei voida suorittaa, koska hakukierros on asetettu päättymään ennen kuin kaikkien kohteiden tulee olla sijoittelussa.");
+        try {
+            setOptionalHakuAttributes(hakuOid, sijoitteluAjo);
+            setParametersFromTarjonta(hakuOid, sijoitteluAjo);
+            LOG.info("Sijoittelun ohjausparametrit asetettu haulle {}. onko korkeakouluhaku: {}, kaikki kohteet sijoittelussa: {}, hakukierros päätty: {}, varasijasäännöt astuvat voimaan: {}, varasijasäännöt voimassa: {}",
+                    hakuOid, sijoitteluAjo.isKKHaku(), sijoitteluAjo.getKaikkiKohteetSijoittelussa(), sijoitteluAjo.getHakuKierrosPaattyy(), sijoitteluAjo.getVarasijaSaannotAstuvatVoimaan(), sijoitteluAjo.varasijaSaannotVoimassa());
+        } catch (IllegalStateException e) {
+            throw new RuntimeException("Sijoittelua haulle " + hakuOid + " ei voida suorittaa", e);
         }
-        if (sijoitteluAjo.isKKHaku() && sijoitteluAjo.getHakuKierrosPaattyy().isBefore(sijoitteluAjo.getVarasijaSaannotAstuvatVoimaan())) {
-            throw new RuntimeException("Sijoittelua haulle " + hakuOid + " ei voida suorittaa, koska hakukierros on asetettu päättymään ennen kuin varasija säännöt astuvat voimaan");
-        }
-        LOG.info("Sijoittelun ohjausparametrit asetettu haulle {}. onko korkeakouluhaku: {}, kaikki kohteet sijoittelussa: {}, hakukierros päätty: {}, varasijasäännöt astuvat voimaan: {}, varasijasäännöt voimassa: {}",
-                hakuOid, sijoitteluAjo.isKKHaku(), sijoitteluAjo.getKaikkiKohteetSijoittelussa(), sijoitteluAjo.getHakuKierrosPaattyy(), sijoitteluAjo.getVarasijaSaannotAstuvatVoimaan(), sijoitteluAjo.varasijaSaannotVoimassa());
     }
 
 
 
     private void setParametersFromTarjonta(String hakuOid, SijoitteluajoWrapper sijoitteluAjo) {
+        ParametriDTO parametri = null;
         try {
-            ParametriDTO parametri = tarjontaIntegrationService.getHaunParametrit(hakuOid);
-            if (parametri == null || parametri.getPH_HKP() == null || parametri.getPH_HKP().getDate() == null) {
-                throw new RuntimeException("Sijoittelua haulle " + hakuOid + " ei voida suorittaa, koska hakukierroksen päättymispäivä parametria ei saatu.");
-            } else {
-                sijoitteluAjo.setHakuKierrosPaattyy(fromTimestamp(parametri.getPH_HKP().getDate()));
-            }
-            if (sijoitteluAjo.isKKHaku()
-                    && (parametri.getPH_VTSSV() == null
-                    || parametri.getPH_VTSSV().getDate() == null
-                    || parametri.getPH_VSSAV() == null
-                    || parametri.getPH_VSSAV().getDate() == null)) {
-                throw new RuntimeException("Sijoittelua haulle " + hakuOid + " ei voida suorittaa, koska kyseessä on korkeakouluhaku ja vaadittavia ohjausparametrejä (PH_VTSSV, PH_VSSAV) ei saatu haettua tai asetettua.");
-            } else if (sijoitteluAjo.isKKHaku()) {
-                LOG.info("Saadut ohjausparametrit haulle {}: kaikkikohteet sijoittelussa-> {}, varasijasäännöt astuvat voimaan-> {}", hakuOid, fromTimestamp(parametri.getPH_VTSSV().getDate()), fromTimestamp(parametri.getPH_VSSAV().getDate()));
-            }
-            if (parametri.getPH_VTSSV() != null && parametri.getPH_VTSSV().getDate() != null) {
-                sijoitteluAjo.setKaikkiKohteetSijoittelussa(fromTimestamp(parametri.getPH_VTSSV().getDate()));
-            }
-            if (parametri.getPH_VSSAV() != null && parametri.getPH_VSSAV().getDate() != null) {
-                sijoitteluAjo.setVarasijaSaannotAstuvatVoimaan(fromTimestamp(parametri.getPH_VSSAV().getDate()));
-            }
-            if (parametri.getPH_VSTP() != null && parametri.getPH_VSTP().getDate() != null) {
-                sijoitteluAjo.setVarasijaTayttoPaattyy(fromTimestamp(parametri.getPH_VSTP().getDate()));
-            }
+            parametri = tarjontaIntegrationService.getHaunParametrit(hakuOid);
         } catch (Exception e) {
-            LOG.error("############## Ohjausparametrin muuntaminen LocalDateksi epäonnistui ##############", e);
-            if (sijoitteluAjo.isKKHaku()) {
-                throw new RuntimeException("Sijoittelua haulle " + hakuOid + " ei voida suorittaa, koska kyseessä on korkeakouluhaku ja vaadittavia ohjausparametrejä (PH_VTSSV, PH_VSSAV) ei saatu haettua tai asetettua.");
-            } else {
-                throw new RuntimeException("Sijoittelua haulle " + hakuOid + " ei voida suorittaa, koska hakukierroksen päättymispäivää ei saatu haettua tai asetettua.");
+            throw new IllegalStateException("tarjonnasta ei saatu haun ohjausparametreja");
+        }
+
+        LocalDateTime hakukierrosPaattyy = Optional.ofNullable(parametri)
+                .flatMap(p -> Optional.ofNullable(p.getPH_HKP()))
+                .flatMap(p -> Optional.ofNullable(p.getDate()))
+                .map(this::fromTimestamp)
+                .orElseThrow(() -> new IllegalStateException("ohjausparametria PH_HKP (hakukierros päättyy) parametria ei ole asetettu"));
+
+        Optional<LocalDateTime> kaikkiKohteetSijoittelussa = Optional.ofNullable(parametri)
+                .flatMap(p -> Optional.ofNullable(p.getPH_VTSSV()))
+                .flatMap(p -> Optional.ofNullable(p.getDate()))
+                .map(this::fromTimestamp);
+        Optional<LocalDateTime> varasijasaannotAstuvatVoimaan = Optional.ofNullable(parametri)
+                .flatMap(p -> Optional.ofNullable(p.getPH_VSSAV()))
+                .flatMap(p -> Optional.ofNullable(p.getDate()))
+                .map(this::fromTimestamp);
+        Optional<LocalDateTime> varasijatayttoPaattyy = Optional.ofNullable(parametri)
+                .flatMap(p -> Optional.ofNullable(p.getPH_VSTP()))
+                .flatMap(p -> Optional.ofNullable(p.getDate()))
+                .map(this::fromTimestamp);
+
+        if (kaikkiKohteetSijoittelussa.isPresent() && hakukierrosPaattyy.isBefore(kaikkiKohteetSijoittelussa.get())) {
+            throw new IllegalStateException("hakukierros on asetettu päättymään ennen kuin kaikkien kohteiden tulee olla sijoittelussa");
+        }
+        if (sijoitteluAjo.isKKHaku()) {
+            if (!kaikkiKohteetSijoittelussa.isPresent()) {
+                throw new IllegalStateException("kyseessä korkeakouluhaku ja ohjausparametria PH_VTSSV (kaikki kohteet sijoittelussa) ei ole asetettu");
+            }
+            if (!varasijasaannotAstuvatVoimaan.isPresent()) {
+                throw new IllegalStateException("kyseessä korkeakouluhaku ja ohjausparametria PH_VSSAV (varasijasäännöt astuvat voimaan) ei ole asetettu");
+            }
+            if (hakukierrosPaattyy.isBefore(varasijasaannotAstuvatVoimaan.get())) {
+                throw new IllegalStateException("hakukierros on asetettu päättymään ennen kuin varasija säännöt astuvat voimaan");
             }
         }
+
+        sijoitteluAjo.setHakuKierrosPaattyy(hakukierrosPaattyy);
+        kaikkiKohteetSijoittelussa.ifPresent(sijoitteluAjo::setKaikkiKohteetSijoittelussa);
+        varasijasaannotAstuvatVoimaan.ifPresent(sijoitteluAjo::setVarasijaSaannotAstuvatVoimaan);
+        varasijatayttoPaattyy.ifPresent(sijoitteluAjo::setVarasijaTayttoPaattyy);
     }
 
     private void setOptionalHakuAttributes(String hakuOid, SijoitteluajoWrapper sijoitteluAjo) {
+        fi.vm.sade.sijoittelu.laskenta.external.resource.dto.HakuDTO hakuDto = null;
         try {
-            fi.vm.sade.sijoittelu.laskenta.external.resource.dto.HakuDTO hakuDto = tarjontaIntegrationService.getHakuByHakuOid(hakuOid);
-
-            String kohdejoukko = HakuUtil.getHaunKohdejoukko(hakuDto).orElseThrow(() ->
-                new RuntimeException("Sijoittelua haulle " + hakuOid + " ei voida suorittaa, koska tarjonnasta ei saatu haun kohdejoukkoa"));
-
-            boolean isKKHaku = kohdejoukko.equals(KK_KOHDEJOUKKO);
-            sijoitteluAjo.setKKHaku(isKKHaku);
-
-            Optional<String> kohdejoukonTarkenne = HakuUtil.gethaunKohdejoukonTarkenne(hakuDto);
-            sijoitteluAjo.setAmkopeHaku(isKKHaku && kohdejoukonTarkenne.map(this::isAmmatillinenOpettajakoulutus).orElse(false));
-
+            hakuDto = tarjontaIntegrationService.getHakuByHakuOid(hakuOid);
         } catch (Exception e) {
-            LOG.error("############## Haun hakeminen tarjonnasta epäonnistui ##############", e);
-            throw new RuntimeException("Sijoittelua haulle " + hakuOid + " ei voida suorittaa, koska tarjonnasta ei saatu haun tietoja");
+            throw new IllegalStateException("tarjonnasta ei saatu haun tietoja", e);
         }
+
+        String kohdejoukko = HakuUtil.getHaunKohdejoukko(hakuDto).orElseThrow(() ->
+                new IllegalStateException("tarjonnasta ei saatu haun kohdejoukkoa"));
+
+        boolean isKKHaku = kohdejoukko.equals(KK_KOHDEJOUKKO);
+        sijoitteluAjo.setKKHaku(isKKHaku);
+
+        Optional<String> kohdejoukonTarkenne = HakuUtil.gethaunKohdejoukonTarkenne(hakuDto);
+        sijoitteluAjo.setAmkopeHaku(isKKHaku && kohdejoukonTarkenne.map(this::isAmmatillinenOpettajakoulutus).orElse(false));
     }
 
     private boolean isAmmatillinenOpettajakoulutus(String haunKohdeJoukonTarkenne) {
