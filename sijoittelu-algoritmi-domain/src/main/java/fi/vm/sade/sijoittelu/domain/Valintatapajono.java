@@ -245,7 +245,7 @@ public class Valintatapajono implements Serializable {
         this.valintaesitysHyvaksytty = valintaesitysHyvaksytty;
     }
 
-    public Boolean getSijoiteltuIlmanVarasijasaantojaNiidenOllessaVoimassa() {
+    public boolean getSijoiteltuIlmanVarasijasaantojaNiidenOllessaVoimassa() {
         return sijoiteltuIlmanVarasijasaantojaNiidenOllessaVoimassa;
     }
 

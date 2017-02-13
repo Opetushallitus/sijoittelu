@@ -18,12 +18,10 @@ public class PostSijoitteluProcessorAsetaSivssnov implements PostSijoitteluProce
 
             Timer timer = Timer.start("Post-processor Aseta Sivssnov", "AMKOPE haulle " + hakuOid, PostSijoitteluProcessorAsetaSivssnov.class);
 
-            List<ValintatapajonoWrapper> vtjs = sijoitteluajoWrapper.getHakukohteet().stream()
-                .flatMap(hkv -> hkv.getValintatapajonot().stream()).collect(Collectors.toList());
-
-            vtjs.stream()
-                .map(ValintatapajonoWrapper::getValintatapajono)
-                .forEach(vtj -> vtj.setSijoiteltuIlmanVarasijasaantojaNiidenOllessaVoimassa(true));
+            sijoitteluajoWrapper.getHakukohteet().stream()
+                    .flatMap(hkv -> hkv.getValintatapajonot().stream())
+                    .map(ValintatapajonoWrapper::getValintatapajono)
+                    .forEach(vtj -> vtj.setSijoiteltuIlmanVarasijasaantojaNiidenOllessaVoimassa(true));
 
             timer.stop("AMKOPE haulle " + hakuOid);
         }

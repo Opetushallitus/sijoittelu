@@ -4,13 +4,12 @@ package fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.presijoitteluprocessor;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.util.Timer;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.SijoitteluajoWrapper;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.ValintatapajonoWrapper;
+import fi.vm.sade.sijoittelu.domain.Valintatapajono;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class PreSijoitteluProcessorAsetaSivssnov implements PreSijoitteluProcessor {
-
-
 
     @Override
     public void process(SijoitteluajoWrapper sijoitteluajoWrapper) {
@@ -19,17 +18,16 @@ public class PreSijoitteluProcessorAsetaSivssnov implements PreSijoitteluProcess
 
             Timer timer = Timer.start("Pre-processor Aseta Sivssnov", "AMKOPE haulle " + hakuOid, PreSijoitteluProcessorAsetaSivssnov.class);
 
-            List<ValintatapajonoWrapper> vtjs = sijoitteluajoWrapper.getHakukohteet().stream().flatMap(hkv ->
-                    hkv.getValintatapajonot().stream()).collect(Collectors.toList());
+            List<Valintatapajono> vtjs = sijoitteluajoWrapper.getHakukohteet().stream()
+                    .flatMap(hkv -> hkv.getValintatapajonot().stream())
+                    .map(ValintatapajonoWrapper::getValintatapajono)
+                    .collect(Collectors.toList());
 
-            Boolean kaikkiaJonojaEiOleSijoiteltuIlmanVarasijasaantojaNiidenOllessaVoimassa = vtjs.stream().anyMatch(x -> {
-                Boolean lippu = x.getValintatapajono().getSijoiteltuIlmanVarasijasaantojaNiidenOllessaVoimassa();
-                return (lippu == null || lippu == false);
-            });
+            boolean kaikkiaJonojaEiOleSijoiteltuIlmanVarasijasaantojaNiidenOllessaVoimassa = vtjs.stream()
+                    .anyMatch(vtj -> !vtj.getSijoiteltuIlmanVarasijasaantojaNiidenOllessaVoimassa());
 
             if (kaikkiaJonojaEiOleSijoiteltuIlmanVarasijasaantojaNiidenOllessaVoimassa) {
-                vtjs.stream().map(ValintatapajonoWrapper::getValintatapajono).forEach(vtj ->
-                        vtj.setSijoiteltuIlmanVarasijasaantojaNiidenOllessaVoimassa(false));
+                vtjs.forEach(vtj -> vtj.setSijoiteltuIlmanVarasijasaantojaNiidenOllessaVoimassa(false));
             }
 
             timer.stop("AMKOPE haulle " + hakuOid);
