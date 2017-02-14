@@ -34,6 +34,16 @@ public class ErillishaunHakijaDTO {
     public ValintatuloksenTila valintatuloksenTila;
     @ApiModelProperty(value = "Ehdollinen valinta", required = false)
     public boolean ehdollisestiHyvaksyttavissa;
+
+    @ApiModelProperty(value = "Ehdollisen hyväksymisen ehtokoodi", required = false)
+    public String ehdollisenHyvaksymisenEhtoKoodi;
+    @ApiModelProperty(value = "Ehdollisen hyväksymisen ehtokoodi muu FI", required = false)
+    public String ehdollisenHyvaksymisenEhtoFI;
+    @ApiModelProperty(value = "Ehdollisen hyväksymisen ehtokoodi muu SV", required = false)
+    public String ehdollisenHyvaksymisenEhtoSV;
+    @ApiModelProperty(value = "Ehdollisen hyväksymisen ehtokoodi muu EN", required = false)
+    public String ehdollisenHyvaksymisenEhtoEN;
+
     @ApiModelProperty(value = "Ilmoittautumisen tila", required = false)
     public IlmoittautumisTila ilmoittautumisTila;
     @ApiModelProperty(value = "Hakemuksen tila", required = false)
@@ -66,7 +76,11 @@ public class ErillishaunHakijaDTO {
             String              sukunimi,
             Optional<Boolean>   poistetaankoTulokset,
             Date                hyvaksymiskirjeLahetetty,
-            List<String>        tilanKuvaukset) {
+            List<String>        tilanKuvaukset,
+            String              ehdollisenHyvaksymisenEhtoKoodi,
+            String              ehdollisenHyvaksymisenEhtoFI,
+            String              ehdollisenHyvaksymisenEhtoSV,
+            String              ehdollisenHyvaksymisenEhtoEN) {
 
         this.valintatapajonoOid         = valintatapajonoOid;
         this.hakemusOid                 = hakemusOid;
@@ -84,6 +98,10 @@ public class ErillishaunHakijaDTO {
         this.poistetaankoTulokset       = poistetaankoTulokset.orElse(false);
         this.hyvaksymiskirjeLahetetty   = hyvaksymiskirjeLahetetty;
         this.tilanKuvaukset             = tilanKuvaukset;
+        this.ehdollisenHyvaksymisenEhtoKoodi = ehdollisenHyvaksymisenEhtoKoodi;
+        this.ehdollisenHyvaksymisenEhtoFI = ehdollisenHyvaksymisenEhtoFI;
+        this.ehdollisenHyvaksymisenEhtoSV = ehdollisenHyvaksymisenEhtoSV;
+        this.ehdollisenHyvaksymisenEhtoEN = ehdollisenHyvaksymisenEhtoEN;
     }
 
     public ErillishaunHakijaDTO() {
@@ -230,6 +248,10 @@ public class ErillishaunHakijaDTO {
                 valintatuloksenTila,
                 ehdollisestiHyvaksyttavissa,
                 valintatapajonoOid,
-                hyvaksymiskirjeLahetetty);
+                hyvaksymiskirjeLahetetty,
+                ehdollisenHyvaksymisenEhtoKoodi,
+                ehdollisenHyvaksymisenEhtoFI,
+                ehdollisenHyvaksymisenEhtoSV,
+                ehdollisenHyvaksymisenEhtoEN);
     }
 }

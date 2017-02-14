@@ -34,6 +34,11 @@ public class Valintatulos implements Serializable {
 
     private boolean ehdollisestiHyvaksyttavissa;
 
+    private String ehdollisenHyvaksymisenEhtoKoodi;
+    private String ehdollisenHyvaksymisenEhtoFI;
+    private String ehdollisenHyvaksymisenEhtoSV;
+    private String ehdollisenHyvaksymisenEhtoEN;
+
     private boolean julkaistavissa;
 
     private boolean hyvaksyttyVarasijalta;
@@ -102,7 +107,8 @@ public class Valintatulos implements Serializable {
     public Valintatulos(String hakemusOid, String hakijaOid, String hakukohdeOid, String hakuOid,
                         int hakutoive, boolean hyvaksyttyVarasijalta, IlmoittautumisTila ilmoittautumisTila,
                         boolean julkaistavissa, ValintatuloksenTila tila, boolean ehdollisestiHyvaksyttavissa,
-                        String valintatapajonoOid, Date hyvaksymiskirjeLahetetty) {
+                        String valintatapajonoOid, Date hyvaksymiskirjeLahetetty, String ehdollisenHyvaksymisenEhtoKoodi,
+                        String ehdollisenHyvaksymisenEhtoFI, String ehdollisenHyvaksymisenEhtoSV, String ehdollisenHyvaksymisenEhtoEN) {
         this.hakemusOid = hakemusOid;
         this.hakijaOid = hakijaOid;
         this.hakukohdeOid = hakukohdeOid;
@@ -115,6 +121,10 @@ public class Valintatulos implements Serializable {
         this.valintatapajonoOid = valintatapajonoOid;
         this.hyvaksyttyVarasijalta = hyvaksyttyVarasijalta;
         this.hyvaksymiskirjeLahetetty = hyvaksymiskirjeLahetetty;
+        this.ehdollisenHyvaksymisenEhtoKoodi = ehdollisenHyvaksymisenEhtoKoodi;
+        this.ehdollisenHyvaksymisenEhtoFI = ehdollisenHyvaksymisenEhtoFI;
+        this.ehdollisenHyvaksymisenEhtoSV = ehdollisenHyvaksymisenEhtoSV;
+        this.ehdollisenHyvaksymisenEhtoEN = ehdollisenHyvaksymisenEhtoEN;
     }
 
     public List<LogEntry> getOriginalLogEntries() {
@@ -360,6 +370,18 @@ public class Valintatulos implements Serializable {
         this.hyvaksymiskirjeLahetetty = hyvaksymiskirjeLahetetty;
     }
 
+    public String getEhdollisenHyvaksymisenEhtoKoodi(){ return ehdollisenHyvaksymisenEhtoKoodi; }
+    public void setEhdollisenHyvaksymisenEhtoKoodi(String ehdollisenHyvaksymisenEhtoKoodi) { this.ehdollisenHyvaksymisenEhtoKoodi = ehdollisenHyvaksymisenEhtoKoodi; }
+
+    public String getEhdollisenHyvaksymisenEhtoFI(){ return ehdollisenHyvaksymisenEhtoFI; }
+    public void setEhdollisenHyvaksymisenEhtoFI(String ehdollisenHyvaksymisenEhtoFI) { this.ehdollisenHyvaksymisenEhtoFI = ehdollisenHyvaksymisenEhtoFI; }
+
+    public String getEhdollisenHyvaksymisenEhtoSV(){ return ehdollisenHyvaksymisenEhtoSV; }
+    public void setEhdollisenHyvaksymisenEhtoSV(String ehdollisenHyvaksymisenEhtoSV) { this.ehdollisenHyvaksymisenEhtoSV = ehdollisenHyvaksymisenEhtoSV; }
+
+    public String getEhdollisenHyvaksymisenEhtoEN(){ return ehdollisenHyvaksymisenEhtoEN; }
+    public void setEhdollisenHyvaksymisenEhtoEN(String ehdollisenHyvaksymisenEhtoEN) { this.ehdollisenHyvaksymisenEhtoEN = ehdollisenHyvaksymisenEhtoEN; }
+
     @Override
     public String toString() {
         return "Valintatulos{" +
@@ -383,6 +405,10 @@ public class Valintatulos implements Serializable {
                 ", read=" + read +
                 ", viimeinenMuutos=" + viimeinenMuutos +
                 ", originalLogEntries=" + originalLogEntries +
+                ", ehdollisenHyvaksymisenEhtoKoodi=" + ehdollisenHyvaksymisenEhtoKoodi +
+                ", ehdollisenHyvaksymisenEhtoFI=" + ehdollisenHyvaksymisenEhtoFI +
+                ", ehdollisenHyvaksymisenEhtoSV=" + ehdollisenHyvaksymisenEhtoSV +
+                ", ehdollisenHyvaksymisenEhtoEN=" + ehdollisenHyvaksymisenEhtoEN +
                 '}';
     }
 }
