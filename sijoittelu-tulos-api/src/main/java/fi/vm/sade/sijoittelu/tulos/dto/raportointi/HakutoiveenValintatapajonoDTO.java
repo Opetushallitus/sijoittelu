@@ -60,6 +60,11 @@ public class HakutoiveenValintatapajonoDTO {
     private String tayttojono;
     private boolean julkaistavissa;
     private boolean ehdollisestiHyvaksyttavissa;
+    private String ehdollisenHyvaksymisenEhtoKoodi;
+    private String ehdollisenHyvaksymisenEhtoFI;
+    private String ehdollisenHyvaksymisenEhtoSV;
+    private String ehdollisenHyvaksymisenEhtoEN;
+
     private boolean hyvaksyttyVarasijalta;
 
     private Date valintatuloksenViimeisinMuutos;
@@ -254,6 +259,32 @@ public class HakutoiveenValintatapajonoDTO {
 
     public void setHyvaksyttyVarasijalta(final boolean hyvaksyttyVarasijalta) {
         this.hyvaksyttyVarasijalta = hyvaksyttyVarasijalta;
+    }
+
+    public void setEhdollisenHyvaksymisenEhtoKoodi(String ehdollisenHyvaksymisenEhtoKoodi){
+        this.ehdollisenHyvaksymisenEhtoKoodi = ehdollisenHyvaksymisenEhtoKoodi;
+    }
+    public String getEhdollisenHyvaksymisenEhtoKoodi(){
+        return this.ehdollisenHyvaksymisenEhtoKoodi;
+    }
+
+    public void setEhdollisenHyvaksymisenEhtoFI(String ehdollisenHyvaksymisenEhtoFI){
+        this.ehdollisenHyvaksymisenEhtoFI = ehdollisenHyvaksymisenEhtoFI;
+    }
+    public String getEhdollisenHyvaksymisenEhtoFI(){
+        return this.ehdollisenHyvaksymisenEhtoFI;
+    }
+    public void setEhdollisenHyvaksymisenEhtoSV(String ehdollisenHyvaksymisenEhtoSV){
+        this.ehdollisenHyvaksymisenEhtoSV = ehdollisenHyvaksymisenEhtoSV;
+    }
+    public String getEhdollisenHyvaksymisenEhtoSV(){
+        return this.ehdollisenHyvaksymisenEhtoSV;
+    }
+    public void setEhdollisenHyvaksymisenEhtoEN(String ehdollisenHyvaksymisenEhtoEN){
+        this.ehdollisenHyvaksymisenEhtoEN = ehdollisenHyvaksymisenEhtoEN;
+    }
+    public String getEhdollisenHyvaksymisenEhtoEN(){
+        return this.ehdollisenHyvaksymisenEhtoEN;
     }
 
     public boolean isHyvaksyttyVarasijalta() {
