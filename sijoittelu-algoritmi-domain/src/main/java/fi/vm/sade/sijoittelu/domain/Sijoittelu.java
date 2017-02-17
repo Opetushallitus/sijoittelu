@@ -95,6 +95,10 @@ public class Sijoittelu implements Serializable {
         this.sijoitteluType = sijoitteluType;
     }
 
+    public SijoitteluType getSijoitteluType() {
+        return sijoitteluType;
+    }
+
     public static enum SijoitteluType {
         SIJOITTELU_TYPE, ERILLISSIJOITTELU_TYPE;
     }
