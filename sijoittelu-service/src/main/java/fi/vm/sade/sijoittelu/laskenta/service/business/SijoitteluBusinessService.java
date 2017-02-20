@@ -305,9 +305,6 @@ public class SijoitteluBusinessService {
                 .flatMap(p -> Optional.ofNullable(p.getDate()))
                 .map(this::fromTimestamp);
 
-        if (kaikkiKohteetSijoittelussa.isPresent() && hakukierrosPaattyy.isBefore(kaikkiKohteetSijoittelussa.get())) {
-            throw new IllegalStateException("hakukierros on asetettu päättymään ennen kuin kaikkien kohteiden tulee olla sijoittelussa");
-        }
         if (sijoitteluAjo.isKKHaku()) {
             if (!kaikkiKohteetSijoittelussa.isPresent()) {
                 throw new IllegalStateException("kyseessä korkeakouluhaku ja ohjausparametria PH_VTSSV (kaikki kohteet sijoittelussa) ei ole asetettu");
@@ -318,6 +315,10 @@ public class SijoitteluBusinessService {
             if (hakukierrosPaattyy.isBefore(varasijasaannotAstuvatVoimaan.get())) {
                 throw new IllegalStateException("hakukierros on asetettu päättymään ennen kuin varasija säännöt astuvat voimaan");
             }
+        }
+        // Käytetään kaikkiKohteetSijoittelussa kentän oletusarvoa jos parametria PH_VTSSV ei ole asetettu
+        if (hakukierrosPaattyy.isBefore(kaikkiKohteetSijoittelussa.orElse(sijoitteluAjo.getKaikkiKohteetSijoittelussa()))) {
+            throw new IllegalStateException("hakukierros on asetettu päättymään ennen kuin kaikkien kohteiden tulee olla sijoittelussa");
         }
 
         sijoitteluAjo.setHakuKierrosPaattyy(hakukierrosPaattyy);
