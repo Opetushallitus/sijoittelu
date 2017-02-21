@@ -316,15 +316,12 @@ public class SijoitteluBusinessService {
                 throw new IllegalStateException("hakukierros on asetettu päättymään ennen kuin varasija säännöt astuvat voimaan");
             }
         }
-        if (kaikkiKohteetSijoittelussa.isPresent()) {
-            if (hakukierrosPaattyy.isBefore(kaikkiKohteetSijoittelussa.get())) {
-                throw new IllegalStateException("hakukierros on asetettu päättymään ennen kuin kaikkien kohteiden tulee olla sijoittelussa");
-            }
-        } else {
-            if (hakukierrosPaattyy.isBefore(LocalDateTime.now())) {
-                throw new IllegalStateException("hakukierros on päättynyt");
-            }
-        };
+        if (kaikkiKohteetSijoittelussa.isPresent() && hakukierrosPaattyy.isBefore(kaikkiKohteetSijoittelussa.get())) {
+            throw new IllegalStateException("hakukierros on asetettu päättymään ennen kuin kaikkien kohteiden tulee olla sijoittelussa");
+        }
+        if (hakukierrosPaattyy.isBefore(LocalDateTime.now())) {
+            throw new IllegalStateException("hakukierros on päättynyt");
+        }
 
         sijoitteluAjo.setHakuKierrosPaattyy(hakukierrosPaattyy);
         kaikkiKohteetSijoittelussa.ifPresent(sijoitteluAjo::setKaikkiKohteetSijoittelussa);
