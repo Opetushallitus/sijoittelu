@@ -795,6 +795,10 @@ public class SijoitteluBusinessService {
         }
         v.setJulkaistavissa(change.getJulkaistavissa(), selite, muokkaaja);
         v.setEhdollisestiHyvaksyttavissa(change.getEhdollisestiHyvaksyttavissa(), selite, muokkaaja);
+        v.setEhdollisenHyvaksymisenEhtoKoodi(change.getEhdollisenHyvaksymisenEhtoKoodi(), selite, muokkaaja);
+        v.setEhdollisenHyvaksymisenEhtoFI(change.getEhdollisenHyvaksymisenEhtoFI(), selite, muokkaaja);
+        v.setEhdollisenHyvaksymisenEhtoSV(change.getEhdollisenHyvaksymisenEhtoSV(), selite, muokkaaja);
+        v.setEhdollisenHyvaksymisenEhtoEN(change.getEhdollisenHyvaksymisenEhtoEN(), selite, muokkaaja);
         v.setHyvaksyttyVarasijalta(change.getHyvaksyttyVarasijalta(), selite, muokkaaja);
         v.setHyvaksyPeruuntunut(change.getHyvaksyPeruuntunut(), selite, muokkaaja);
         v.setHyvaksymiskirjeLahetetty(change.getHyvaksymiskirjeLahetetty(), selite, muokkaaja);
