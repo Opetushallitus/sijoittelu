@@ -227,6 +227,10 @@ public class ValintatulosDaoImpl implements ValintatulosDao {
                     .set("ilmoittautumisTila",tulos.getIlmoittautumisTila())
                     .set("julkaistavissa", tulos.getJulkaistavissa())
                     .set("ehdollisestiHyvaksyttavissa", tulos.getEhdollisestiHyvaksyttavissa())
+                    .set("ehdollisenHyvaksymisenEhtoKoodi", tulos.getEhdollisenHyvaksymisenEhtoKoodi())
+                    .set("ehdollisenHyvaksymisenEhtoFI", tulos.getEhdollisenHyvaksymisenEhtoFI())
+                    .set("ehdollisenHyvaksymisenEhtoSV", tulos.getEhdollisenHyvaksymisenEhtoSV())
+                    .set("ehdollisenHyvaksymisenEhtoEN", tulos.getEhdollisenHyvaksymisenEhtoEN())
                     .set("hyvaksyttyVarasijalta", tulos.getHyvaksyttyVarasijalta())
                     .set("hyvaksyPeruuntunut", tulos.getHyvaksyPeruuntunut());
 
