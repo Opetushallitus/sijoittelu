@@ -227,10 +227,6 @@ public class ValintatulosDaoImpl implements ValintatulosDao {
                     .set("ilmoittautumisTila",tulos.getIlmoittautumisTila())
                     .set("julkaistavissa", tulos.getJulkaistavissa())
                     .set("ehdollisestiHyvaksyttavissa", tulos.getEhdollisestiHyvaksyttavissa())
-                    .set("ehdollisenHyvaksymisenEhtoKoodi", tulos.getEhdollisenHyvaksymisenEhtoKoodi())
-                    .set("ehdollisenHyvaksymisenEhtoFI", tulos.getEhdollisenHyvaksymisenEhtoFI())
-                    .set("ehdollisenHyvaksymisenEhtoSV", tulos.getEhdollisenHyvaksymisenEhtoSV())
-                    .set("ehdollisenHyvaksymisenEhtoEN", tulos.getEhdollisenHyvaksymisenEhtoEN())
                     .set("hyvaksyttyVarasijalta", tulos.getHyvaksyttyVarasijalta())
                     .set("hyvaksyPeruuntunut", tulos.getHyvaksyPeruuntunut());
 
@@ -242,6 +238,18 @@ public class ValintatulosDaoImpl implements ValintatulosDao {
             }
             else {
                 update.unset("hyvaksymiskirjeLahetetty");
+            }
+
+            if(tulos.getEhdollisenHyvaksymisenEhtoKoodi() != null){
+                update.set("ehdollisenHyvaksymisenEhtoKoodi", tulos.getEhdollisenHyvaksymisenEhtoKoodi())
+                    .set("ehdollisenHyvaksymisenEhtoFI", tulos.getEhdollisenHyvaksymisenEhtoFI())
+                    .set("ehdollisenHyvaksymisenEhtoSV", tulos.getEhdollisenHyvaksymisenEhtoSV())
+                    .set("ehdollisenHyvaksymisenEhtoEN", tulos.getEhdollisenHyvaksymisenEhtoEN());
+            } else {
+                update.unset("ehdollisenHyvaksymisenEhtoKoodi")
+                        .unset("ehdollisenHyvaksymisenEhtoFI")
+                        .unset("ehdollisenHyvaksymisenEhtoSV")
+                        .unset("ehdollisenHyvaksymisenEhtoEN");
             }
 
             List<LogEntry> diff = new ArrayList<>(tulos.getLogEntries());
