@@ -785,6 +785,10 @@ public class SijoitteluBusinessService {
             throw new StaleReadException(hakuoid, hakukohdeOid, valintatapajonoOid, hakemusOid, v.getViimeinenMuutos(), change.getRead());
         }
 
+        if (!isBlank(v.getEhdollisenHyvaksymisenEhtoKoodi()) && (isBlank(v.getEhdollisenHyvaksymisenEhtoFI()) || isBlank(v.getEhdollisenHyvaksymisenEhtoSV()) || isBlank(v.getEhdollisenHyvaksymisenEhtoEN()) )) {
+            throw new HyvaksymisenEhtoException(hakuoid, hakukohdeOid, valintatapajonoOid, hakemusOid);
+        }
+
         authorizeJulkaistavissa(hakuoid, v.getJulkaistavissa(), change.getJulkaistavissa());
         authorizeHyvaksyPeruuntunutModification(tarjoajaOid, change.getHyvaksyPeruuntunut(), v);
 
@@ -816,6 +820,10 @@ public class SijoitteluBusinessService {
                 .add("hyvaksyttyvarasijalta", v.getHyvaksyttyVarasijalta())
                 .add("hyvaksyperuuntunut", v.getHyvaksyPeruuntunut())
                 .add("ehdollisestihyvaksyttavissa", v.getEhdollisestiHyvaksyttavissa())
+                .add("ehdollisenHyvaksymisenEhtoKoodi", v.getEhdollisenHyvaksymisenEhtoKoodi())
+                .add("ehdollisenHyvaksymisenEhtoFI", v.getEhdollisenHyvaksymisenEhtoFI())
+                .add("ehdollisenHyvaksymisenEhtoSV", v.getEhdollisenHyvaksymisenEhtoSV())
+                .add("ehdollisenHyvaksymisenEhtoEN", v.getEhdollisenHyvaksymisenEhtoEN())
                 .add("selite", selite)
                 .setOperaatio(ValintaperusteetOperation.HAKEMUS_TILAMUUTOS)
                 .build());
