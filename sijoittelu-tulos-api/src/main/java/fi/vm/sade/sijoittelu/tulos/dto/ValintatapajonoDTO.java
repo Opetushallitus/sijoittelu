@@ -1,11 +1,14 @@
 package fi.vm.sade.sijoittelu.tulos.dto;
 
+import io.swagger.annotations.ApiModel;
+
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+@ApiModel(value = "sijoittelu.tulos.dto.ValintatapajonoDTO", description = "Valintatapajono")
 public class ValintatapajonoDTO implements Serializable {
     private Tasasijasaanto tasasijasaanto;
 

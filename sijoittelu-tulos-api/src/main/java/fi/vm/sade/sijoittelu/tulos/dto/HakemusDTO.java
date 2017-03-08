@@ -1,9 +1,12 @@
 package fi.vm.sade.sijoittelu.tulos.dto;
 
+import io.swagger.annotations.ApiModel;
+
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.*;
 
+@ApiModel(value = "sijoittelu.tulos.dto.HakemusDTO", description = "Yhden hakemuksen tiedot")
 public class HakemusDTO implements Serializable {
     private String hakijaOid;
 
