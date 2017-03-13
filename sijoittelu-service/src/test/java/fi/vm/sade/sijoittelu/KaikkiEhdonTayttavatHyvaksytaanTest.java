@@ -24,6 +24,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -50,7 +51,7 @@ public class KaikkiEhdonTayttavatHyvaksytaanTest {
         HakuDTO haku = valintatietoService.haeValintatiedot("1.2.246.562.29.173465377510");
 
         List<Hakukohde> hakukohteet = haku.getHakukohteet().parallelStream().map(DomainConverter::convertToHakukohde).collect(Collectors.toList());
-        SijoittelunTila s = SijoitteluAlgorithmUtil.sijoittele(new SijoitteluAjo(), hakukohteet, new ArrayList(), java.util.Collections.emptyMap());
+        SijoittelunTila s = SijoitteluAlgorithmUtil.sijoittele(hakukohteet, Collections.emptyList(), java.util.Collections.emptyMap());
 
         System.out.println(PrintHelper.tulostaSijoittelu(s));
 

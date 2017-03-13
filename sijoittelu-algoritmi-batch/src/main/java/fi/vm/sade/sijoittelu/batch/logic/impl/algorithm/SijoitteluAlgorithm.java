@@ -16,15 +16,6 @@ import java.util.function.Function;
 public abstract class SijoitteluAlgorithm {
     private static final Logger LOG = LoggerFactory.getLogger(SijoitteluAlgorithm.class);
 
-    public static SijoittelunTila sijoittele(Collection<PreSijoitteluProcessor> preProcessors,
-                                             Collection<PostSijoitteluProcessor> postProcessors,
-                                             SijoitteluAjo sijoitteluAjo,
-                                             List<Hakukohde> hakukohteet,
-                                             List<Valintatulos> valintatulokset,
-                                             Map<String, VastaanottoDTO> aiemmanVastaanotonHakukohdePerHakija) {
-        return sijoittele(preProcessors, postProcessors, SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(sijoitteluAjo, hakukohteet, valintatulokset, aiemmanVastaanotonHakukohdePerHakija));
-    }
-
     public static SijoittelunTila sijoittele(Collection<PreSijoitteluProcessor> preProcessors,Collection<PostSijoitteluProcessor> postProcessors, SijoitteluajoWrapper sijoitteluAjo) {
         LOG.info("(hakuOid={}) Starting sijoitteluajo {}",
                 Optional.ofNullable(sijoitteluAjo.getSijoitteluajo()).orElse(new SijoitteluAjo()).getHakuOid(), sijoitteluAjo.getSijoitteluAjoId());
