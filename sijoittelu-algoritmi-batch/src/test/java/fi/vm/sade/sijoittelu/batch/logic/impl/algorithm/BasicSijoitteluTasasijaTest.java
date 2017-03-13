@@ -3,8 +3,6 @@ package fi.vm.sade.sijoittelu.batch.logic.impl.algorithm;
 import fi.vm.sade.sijoittelu.batch.logic.impl.DomainConverter;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.util.SijoitteluAlgorithmUtil;
 import fi.vm.sade.sijoittelu.domain.Hakukohde;
-import fi.vm.sade.sijoittelu.domain.SijoitteluAjo;
-import fi.vm.sade.sijoittelu.domain.Valintatulos;
 import fi.vm.sade.valintalaskenta.domain.dto.valintatieto.HakuDTO;
 import org.junit.Test;
 
@@ -34,7 +32,7 @@ public class BasicSijoitteluTasasijaTest {
 
 
         List<Hakukohde> hakukohteet = t.getHakukohteet().parallelStream().map(DomainConverter::convertToHakukohde).collect(Collectors.toList());
-        SijoittelunTila s = SijoitteluAlgorithmUtil.sijoittele(new SijoitteluAjo(), hakukohteet, new ArrayList(), Collections.emptyMap());
+        SijoittelunTila s = SijoitteluAlgorithmUtil.sijoittele(hakukohteet, new ArrayList(), Collections.emptyMap());
 
         PrintHelper.tallennaSijoitteluTiedostoon(s, "target/sijoittelu_basic_tasasija_case.sijoitteluresult");
 

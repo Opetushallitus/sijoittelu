@@ -4,7 +4,6 @@ import de.flapdoodle.embed.process.collections.Collections;
 import fi.vm.sade.sijoittelu.batch.logic.impl.DomainConverter;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.util.SijoitteluAlgorithmUtil;
 import fi.vm.sade.sijoittelu.domain.Hakukohde;
-import fi.vm.sade.sijoittelu.domain.SijoitteluAjo;
 import fi.vm.sade.sijoittelu.domain.Valintatulos;
 import fi.vm.sade.valintalaskenta.domain.dto.HakukohdeDTO;
 import fi.vm.sade.valintalaskenta.domain.dto.valintatieto.HakuDTO;
@@ -41,7 +40,7 @@ public class BasicSijoitteluTest {
             hakukohteet.add(hakukohde);
         }
 
-        SijoittelunTila s = SijoitteluAlgorithmUtil.sijoittele(new SijoitteluAjo(), hakukohteet, Collections.<Valintatulos>newArrayList(), java.util.Collections.emptyMap());
+        SijoittelunTila s = SijoitteluAlgorithmUtil.sijoittele(hakukohteet, Collections.<Valintatulos>newArrayList(), java.util.Collections.emptyMap());
 
         PrintHelper.tallennaSijoitteluTiedostoon(s, "target/sijoittelu_basic_case.sijoitteluresult");
 
