@@ -14,13 +14,19 @@ import java.util.List;
 import java.util.Map;
 
 public class SijoitteluAlgorithmUtil {
-
     public static SijoittelunTila sijoittele(List<Hakukohde> hakukohteet,
                                              List<Valintatulos> valintatulokset,
                                              Map<String, VastaanottoDTO> aiemmanVastaanotonHakukohdePerHakija) {
-        return SijoitteluAlgorithm.sijoittele(PreSijoitteluProcessor.defaultPreProcessors(), PostSijoitteluProcessor.defaultPostProcessors(), new SijoitteluAjo(), hakukohteet, valintatulokset, aiemmanVastaanotonHakukohdePerHakija);
+        return SijoitteluAlgorithm.sijoittele(PreSijoitteluProcessor.defaultPreProcessors(),
+            PostSijoitteluProcessor.defaultPostProcessors(),
+            new SijoitteluAjo(),
+            hakukohteet,
+            valintatulokset,
+            aiemmanVastaanotonHakukohdePerHakija);
     }
     public static SijoittelunTila sijoittele(SijoitteluajoWrapper ajo) {
-        return SijoitteluAlgorithm.sijoittele(PreSijoitteluProcessor.defaultPreProcessors(), PostSijoitteluProcessor.defaultPostProcessors(), ajo);
+        return SijoitteluAlgorithm.sijoittele(PreSijoitteluProcessor.defaultPreProcessors(),
+            PostSijoitteluProcessor.defaultPostProcessors(),
+            ajo);
     }
 }
