@@ -205,6 +205,10 @@ public class SijoitteluBusinessService {
         LOG.info(stopWatch.prettyPrint());
     }
 
+    /**
+     * TODO : Poista tämä metodi ja kutsu tähän, kun sijoittelusta on buildattu versio,
+     * jossa Valintarekisteri.tallennaSijoittelu() tekee tämän.
+     */
     private void poistaValintatapajonokohtaisetHakijaryhmatJoidenJonoaEiSijoiteltu(List<Hakukohde> hakukohteet) {
         hakukohteet.forEach(h -> {
             Set<String> sijoitellutJonot = h.getValintatapajonot().stream()
