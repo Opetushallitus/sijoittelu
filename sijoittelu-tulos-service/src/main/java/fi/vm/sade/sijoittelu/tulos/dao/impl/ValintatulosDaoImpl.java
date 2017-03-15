@@ -117,6 +117,9 @@ public class ValintatulosDaoImpl implements ValintatulosDao {
                         .add("julkaistavissa", "$julkaistavissa")
                         .add("ehdollisestiHyvaksyttavissa", "$ehdollisestiHyvaksyttavissa")
                         .add("ehdollisenHyvaksymisenEhtoKoodi", "$ehdollisenHyvaksymisenEhtoKoodi")
+                        .add("ehdollisenHyvaksymisenEhtoFI", "$ehdollisenHyvaksymisenEhtoFI")
+                        .add("ehdollisenHyvaksymisenEhtoSV", "$ehdollisenHyvaksymisenEhtoSV")
+                        .add("ehdollisenHyvaksymisenEhtoEN", "$ehdollisenHyvaksymisenEhtoEN")
                         .add("hyvaksyttyVarasijalta", "$hyvaksyttyVarasijalta")
                         .add("ilmoittautumisTila", "$ilmoittautumisTila")
                         .pop()
@@ -142,7 +145,10 @@ public class ValintatulosDaoImpl implements ValintatulosDao {
                     (hyvaksyttyVarasijalta != null && ((boolean) hyvaksyttyVarasijalta)),
                     (Date) o.get("viimeisinValintatuloksenMuutos"),
                     ilmoittautumisTila != null ? fi.vm.sade.sijoittelu.tulos.dto.IlmoittautumisTila.valueOf((String) ilmoittautumisTila) : null,
-                    (String) id.get("ehdollisenHyvaksymisenEhtoKoodi")
+                    (String) id.get("ehdollisenHyvaksymisenEhtoKoodi"),
+                    (String) id.get("ehdollisenHyvaksymisenEhtoFI"),
+                    (String) id.get("ehdollisenHyvaksymisenEhtoSV"),
+                    (String) id.get("ehdollisenHyvaksymisenEhtoEN")
             ));
         }
         return r;

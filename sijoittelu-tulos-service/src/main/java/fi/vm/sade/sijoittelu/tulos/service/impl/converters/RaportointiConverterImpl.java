@@ -163,6 +163,10 @@ public class RaportointiConverterImpl implements RaportointiConverter {
                             if (valintatulos.getValintatapajonoOid().equals(valintatapajonoDTO.getValintatapajonoOid())) {
                                 valintatapajonoDTO.setJulkaistavissa(valintatulos.getJulkaistavissa());
                                 valintatapajonoDTO.setEhdollisestiHyvaksyttavissa(valintatulos.getEhdollisestiHyvaksyttavissa());
+                                valintatapajonoDTO.setEhdollisenHyvaksymisenEhtoKoodi(valintatulos.getEhdollisenHyvaksymisenEhtoKoodi());
+                                valintatapajonoDTO.setEhdollisenHyvaksymisenEhtoFI(valintatulos.getEhdollisenHyvaksymisenEhtoFI());
+                                valintatapajonoDTO.setEhdollisenHyvaksymisenEhtoSV(valintatulos.getEhdollisenHyvaksymisenEhtoSV());
+                                valintatapajonoDTO.setEhdollisenHyvaksymisenEhtoEN(valintatulos.getEhdollisenHyvaksymisenEhtoEN());
                                 valintatapajonoDTO.setHyvaksyttyVarasijalta(valintatulos.getHyvaksyttyVarasijalta());
                                 valintatapajonoDTO.setValintatuloksenViimeisinMuutos(viimeisinValintatuloksenMuutos(valintatulos));
                                 valintatapajonoDTO.setIlmoittautumisTila(EnumConverter.convert(IlmoittautumisTila.class, valintatulos.getIlmoittautumisTila()));
@@ -188,6 +192,10 @@ public class RaportointiConverterImpl implements RaportointiConverter {
                             if (valintatulos != null && valintatulos.valintatapajonoOid.equals(valintatapajonoDTO.getValintatapajonoOid())) {
                                 valintatapajonoDTO.setJulkaistavissa(valintatulos.julkaistavissa);
                                 valintatapajonoDTO.setEhdollisestiHyvaksyttavissa(valintatulos.ehdollisestiHyvaksyttavissa);
+                                valintatapajonoDTO.setEhdollisenHyvaksymisenEhtoKoodi(valintatulos.ehdollisenHyvaksymisenEhtoKoodi);
+                                valintatapajonoDTO.setEhdollisenHyvaksymisenEhtoFI(valintatulos.ehdollisenHyvaksymisenEhtoFI);
+                                valintatapajonoDTO.setEhdollisenHyvaksymisenEhtoSV(valintatulos.ehdollisenHyvaksymisenEhtoSV);
+                                valintatapajonoDTO.setEhdollisenHyvaksymisenEhtoEN(valintatulos.ehdollisenHyvaksymisenEhtoEN);
                                 valintatapajonoDTO.setHyvaksyttyVarasijalta(valintatulos.hyvaksyttyVarasijalta);
                                 valintatapajonoDTO.setValintatuloksenViimeisinMuutos(valintatulos.viimeisinValintatuloksenMuutos);
                                 valintatapajonoDTO.setIlmoittautumisTila(valintatulos.ilmoittautumisTila);
