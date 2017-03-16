@@ -1,10 +1,13 @@
 package fi.vm.sade.sijoittelu.tulos.dto;
 
+import io.swagger.annotations.ApiModel;
+
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
+@ApiModel(value = "sijoittelu.tulos.dto.Hakukohde", description = "Hakukohde")
 public class HakukohdeDTO implements Serializable {
     private Long sijoitteluajoId;
 
