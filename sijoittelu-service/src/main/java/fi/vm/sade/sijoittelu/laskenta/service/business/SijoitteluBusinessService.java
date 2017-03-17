@@ -205,21 +205,6 @@ public class SijoitteluBusinessService {
         LOG.info(stopWatch.prettyPrint());
     }
 
-    /**
-     * TODO : Poista tämä metodi ja kutsu tähän, kun sijoittelusta on buildattu versio,
-     * jossa Valintarekisteri.tallennaSijoittelu() tekee tämän.
-     */
-    private void poistaValintatapajonokohtaisetHakijaryhmatJoidenJonoaEiSijoiteltu(List<Hakukohde> hakukohteet) {
-        hakukohteet.forEach(h -> {
-            Set<String> sijoitellutJonot = h.getValintatapajonot().stream()
-                    .map(Valintatapajono::getOid)
-                    .collect(Collectors.toSet());
-            h.setHakijaryhmat(h.getHakijaryhmat().stream()
-                    .filter(ryhma -> ryhma.getValintatapajonoOid() == null || sijoitellutJonot.contains(ryhma.getValintatapajonoOid()))
-                    .collect(Collectors.toList()));
-        });
-    }
-
     private void suoritaSijoittelu(long startTime, StopWatch stopWatch, String hakuOid, SijoitteluAjo uusiSijoitteluajo, SijoitteluajoWrapper sijoitteluajoWrapper) {
         LOG.info("Suoritetaan sijoittelu haulle {}", hakuOid);
         stopWatch.start("Suoritetaan sijoittelu");
@@ -247,7 +232,6 @@ public class SijoitteluBusinessService {
             if (saveSijoitteluToValintarekisteri) {
                 LOG.info("Tallennetaan haun {} sijoittelu valintarekisteriin", hakuOid);
                 stopWatch.start("Tallennetaan sijoitteluajo, hakukohteet ja valintatulokset Valintarekisteriin");
-                poistaValintatapajonokohtaisetHakijaryhmatJoidenJonoaEiSijoiteltu(hakukohteet);
                 try {
                     valintarekisteriService.tallennaSijoittelu(uusiSijoitteluajo, hakukohteet, valintatulokset);
                 } catch (Exception e) {
