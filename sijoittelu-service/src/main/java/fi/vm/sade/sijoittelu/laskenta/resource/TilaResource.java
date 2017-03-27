@@ -279,7 +279,7 @@ public class TilaResource {
                     e -> muutaTilaa(
                             valintatapajononNimi,
                             e.tarjoajaOid, e.hakuOid,
-                            e.hakukohdeOid, e.hakemusOid,
+                            e.hakukohdeOid, e.hakemusOid, e.hakijaOid,
                             e.hakemuksenTila, Optional.empty(), Optional.ofNullable(e.valintatapajonoOid),
                             Optional.ofNullable(e.etunimi), Optional.ofNullable(e.sukunimi),
                             Optional.ofNullable(e.getValintatuloksenTila())));
@@ -343,7 +343,7 @@ public class TilaResource {
     }
 
     private void muutaTilaa(String valintatapajononNimi,
-                            String tarjoajaOid, String hakuOid, String hakukohdeOid, String hakemusOid,
+                            String tarjoajaOid, String hakuOid, String hakukohdeOid, String hakemusOid, String hakijaOid,
                             HakemuksenTila tila, Optional<List<String>> tilanKuvaukset,
                             Optional<String> valintatapajonoOid,
                             Optional<String> etunimi, Optional<String> sukunimi,
@@ -389,6 +389,7 @@ public class TilaResource {
                 .findFirst()
                 .orElseGet(() -> {
                     Hakemus h = new Hakemus();
+                    h.setHakijaOid(hakijaOid);
                     h.setHakemusOid(hakemusOid);
                     h.setJonosija(1);
                     h.setPrioriteetti(1);
@@ -449,7 +450,9 @@ public class TilaResource {
             @QueryParam("valintatapajononNimi") String valintatapajononNimi,
             @PathParam("hakuOid") String hakuOid,
             @PathParam("hakukohdeOid") String hakukohdeOid,
-            @PathParam("hakemusOid") String hakemusOid, Tila tilaObj,
+            @PathParam("hakemusOid") String hakemusOid,
+            Tila tilaObj,
+            @QueryParam("hakijaOid") String hakijaOid,
             @QueryParam("tarjoajaOid") String tarjoajaOid) {
 
         try {
@@ -465,7 +468,7 @@ public class TilaResource {
                 }
             }
             Optional<List<String>> kuvaukset = Optional.ofNullable(tilaObj.getTilanKuvaukset());
-            muutaTilaa(valintatapajononNimi, tarjoajaOid, hakuOid, hakukohdeOid, hakemusOid, tila, kuvaukset,
+            muutaTilaa(valintatapajononNimi, tarjoajaOid, hakuOid, hakukohdeOid, hakemusOid, hakijaOid, tila, kuvaukset,
                     Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty());
             return Response.status(Response.Status.OK).build();
 
