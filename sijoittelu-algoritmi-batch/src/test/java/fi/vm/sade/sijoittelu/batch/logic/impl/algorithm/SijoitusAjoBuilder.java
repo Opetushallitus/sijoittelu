@@ -115,7 +115,7 @@ class SijoitusAjoBuilder {
     private VastaanottoDTO createVastaanottoDto(String hakija, String hakukohdeOid) {
         VastaanottoDTO vastaanottoDTO = new VastaanottoDTO();
         vastaanottoDTO.setHenkiloOid(hakija);
-        vastaanottoDTO.setAction(VastaanottoDTO.VastaanottoType.VastaanotaSitovasti.name());
+        vastaanottoDTO.setAction(ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI);
         vastaanottoDTO.setHakukohdeOid(hakukohdeOid);
         return vastaanottoDTO;
     }

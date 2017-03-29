@@ -2,11 +2,13 @@ package fi.vm.sade.sijoittelu.domain.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import fi.vm.sade.sijoittelu.domain.ValintatuloksenTila;
+
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class VastaanottoDTO {
     private String henkiloOid;
     private String hakukohdeOid;
-    private String action;
+    private ValintatuloksenTila action;
 
     public VastaanottoDTO() { }
 
@@ -26,27 +28,12 @@ public class VastaanottoDTO {
         this.hakukohdeOid = hakukohdeOid;
     }
 
-    public String getAction() {
+    public ValintatuloksenTila getAction() {
         return action;
     }
 
-    public void setAction(String action) {
+    public void setAction(ValintatuloksenTila action) {
         this.action = action;
-    }
-
-    public VastaanottoType typeOfVastaanotto() {
-        return VastaanottoType.valueOf(action);
-    }
-
-    public enum VastaanottoType {
-        VastaanotaSitovasti(true),
-        VastaanotaEhdollisesti(false);
-
-        public final boolean sitova;
-
-        VastaanottoType(boolean sitova) {
-            this.sitova = sitova;
-        }
     }
 
     @Override

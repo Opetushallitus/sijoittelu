@@ -257,7 +257,7 @@ public class SijoitteluajoWrapperFactory {
             return false;
         }
         VastaanottoDTO aiempiVastaanotto = aiempiVastaanottoOptional.get();
-        if (aiempiVastaanotto.typeOfVastaanotto().sitova) {
+        if (aiempiVastaanotto.getAction().sitova) {
             return true;
         }
         return onEriHaun(aiempiVastaanotto, hakemusWrapper);
