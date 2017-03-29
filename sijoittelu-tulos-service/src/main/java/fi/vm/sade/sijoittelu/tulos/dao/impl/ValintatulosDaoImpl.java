@@ -251,11 +251,6 @@ public class ValintatulosDaoImpl implements ValintatulosDao {
                     .set("ehdollisenHyvaksymisenEhtoFI", tulos.getEhdollisenHyvaksymisenEhtoFI())
                     .set("ehdollisenHyvaksymisenEhtoSV", tulos.getEhdollisenHyvaksymisenEhtoSV())
                     .set("ehdollisenHyvaksymisenEhtoEN", tulos.getEhdollisenHyvaksymisenEhtoEN());
-            } else {
-                update.unset("ehdollisenHyvaksymisenEhtoKoodi")
-                        .unset("ehdollisenHyvaksymisenEhtoFI")
-                        .unset("ehdollisenHyvaksymisenEhtoSV")
-                        .unset("ehdollisenHyvaksymisenEhtoEN");
             }
 
             List<LogEntry> diff = new ArrayList<>(tulos.getLogEntries());

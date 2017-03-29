@@ -167,25 +167,25 @@ public class KevytHakutoiveenValintatapajonoDTO {
         this.ehdollisenHyvaksymisenEhtoKoodi = ehdollisenHyvaksymisenEhtoKoodi;
     }
     public String getEhdollisenHyvaksymisenEhtoKoodi(){
-        return this.ehdollisenHyvaksymisenEhtoKoodi;
+        return ehdollisenHyvaksymisenEhtoKoodi;
     }
 
     public void setEhdollisenHyvaksymisenEhtoFI(String ehdollisenHyvaksymisenEhtoFI){
         this.ehdollisenHyvaksymisenEhtoFI = ehdollisenHyvaksymisenEhtoFI;
     }
     public String getEhdollisenHyvaksymisenEhtoFI(){
-        return this.ehdollisenHyvaksymisenEhtoFI;
+        return ehdollisenHyvaksymisenEhtoFI;
     }
     public void setEhdollisenHyvaksymisenEhtoSV(String ehdollisenHyvaksymisenEhtoSV){
         this.ehdollisenHyvaksymisenEhtoSV = ehdollisenHyvaksymisenEhtoSV;
     }
     public String getEhdollisenHyvaksymisenEhtoSV(){
-        return this.ehdollisenHyvaksymisenEhtoSV;
+        return ehdollisenHyvaksymisenEhtoSV;
     }
     public void setEhdollisenHyvaksymisenEhtoEN(String ehdollisenHyvaksymisenEhtoEN){
         this.ehdollisenHyvaksymisenEhtoEN = ehdollisenHyvaksymisenEhtoEN;
     }
     public String getEhdollisenHyvaksymisenEhtoEN(){
-        return this.ehdollisenHyvaksymisenEhtoEN;
+        return ehdollisenHyvaksymisenEhtoEN;
     }
 }

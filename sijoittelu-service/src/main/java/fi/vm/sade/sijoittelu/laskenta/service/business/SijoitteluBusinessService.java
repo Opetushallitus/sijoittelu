@@ -784,11 +784,7 @@ public class SijoitteluBusinessService {
         if (v.getViimeinenMuutos() != null && v.getViimeinenMuutos().after(change.getRead())) {
             throw new StaleReadException(hakuoid, hakukohdeOid, valintatapajonoOid, hakemusOid, v.getViimeinenMuutos(), change.getRead());
         }
-
-        if (!isBlank(v.getEhdollisenHyvaksymisenEhtoKoodi()) && (isBlank(v.getEhdollisenHyvaksymisenEhtoFI()) || isBlank(v.getEhdollisenHyvaksymisenEhtoSV()) || isBlank(v.getEhdollisenHyvaksymisenEhtoEN()) )) {
-            throw new HyvaksymisenEhtoException(hakuoid, hakukohdeOid, valintatapajonoOid, hakemusOid);
-        }
-
+        
         authorizeJulkaistavissa(hakuoid, v.getJulkaistavissa(), change.getJulkaistavissa());
         authorizeHyvaksyPeruuntunutModification(tarjoajaOid, change.getHyvaksyPeruuntunut(), v);
 
@@ -799,6 +795,9 @@ public class SijoitteluBusinessService {
         }
         v.setJulkaistavissa(change.getJulkaistavissa(), selite, muokkaaja);
         v.setEhdollisestiHyvaksyttavissa(change.getEhdollisestiHyvaksyttavissa(), selite, muokkaaja);
+        if (change.getEhdollisestiHyvaksyttavissa() && change.getEhdollisenHyvaksymisenEhtoKoodi() == null){
+            throw new IllegalArgumentException("Ehdollisenehdollisen hyvaksymisen syyn koodi puuttuu. " + String.format("hakuoid: %s, valintatapajonoOid: %s, hakemusOid: %s", hakuoid, valintatapajonoOid, hakemusOid));
+        }
         v.setEhdollisenHyvaksymisenEhtoKoodi(change.getEhdollisenHyvaksymisenEhtoKoodi(), selite, muokkaaja);
         v.setEhdollisenHyvaksymisenEhtoFI(change.getEhdollisenHyvaksymisenEhtoFI(), selite, muokkaaja);
         v.setEhdollisenHyvaksymisenEhtoSV(change.getEhdollisenHyvaksymisenEhtoSV(), selite, muokkaaja);

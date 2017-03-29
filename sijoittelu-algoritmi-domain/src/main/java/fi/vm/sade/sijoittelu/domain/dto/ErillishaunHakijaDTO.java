@@ -219,6 +219,22 @@ public class ErillishaunHakijaDTO {
         this.ehdollisestiHyvaksyttavissa = ehdollisestiHyvaksyttavissa;
     }
 
+    public String getEhdollisenHyvaksymisenEhtoKoodi(){ return ehdollisenHyvaksymisenEhtoKoodi; }
+
+    public void setEhdollisenHyvaksymisenEhtoKoodi(String ehdollisenHyvaksymisenEhtoKoodi){ this.ehdollisenHyvaksymisenEhtoKoodi = ehdollisenHyvaksymisenEhtoKoodi; }
+
+    public String getEhdollisenHyvaksymisenEhtoFI(){ return ehdollisenHyvaksymisenEhtoFI; }
+
+    public void setEhdollisenHyvaksymisenEhtoFI(String ehdollisenHyvaksymisenEhtoFI){ this.ehdollisenHyvaksymisenEhtoFI = ehdollisenHyvaksymisenEhtoFI; }
+
+    public String getEhdollisenHyvaksymisenEhtoSV(){ return ehdollisenHyvaksymisenEhtoSV; }
+
+    public void setEhdollisenHyvaksymisenEhtoSV(String ehdollisenHyvaksymisenEhtoSV){ this.ehdollisenHyvaksymisenEhtoSV = ehdollisenHyvaksymisenEhtoSV; }
+
+    public String getEhdollisenHyvaksymisenEhtoEN(){ return ehdollisenHyvaksymisenEhtoEN; }
+
+    public void setEhdollisenHyvaksymisenEhtoEN(String ehdollisenHyvaksymisenEhtoEN){ this.ehdollisenHyvaksymisenEhtoEN = ehdollisenHyvaksymisenEhtoEN; }
+
     public Date getHyvaksymiskirjeLahetetty() {
         return hyvaksymiskirjeLahetetty;
     }
