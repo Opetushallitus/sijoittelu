@@ -1,22 +1,23 @@
 package fi.vm.sade.sijoittelu.laskenta.resource;
 
-import static fi.vm.sade.sijoittelu.laskenta.roles.SijoitteluRole.READ_UPDATE_CRUD;
-import static fi.vm.sade.sijoittelu.laskenta.roles.SijoitteluRole.UPDATE_CRUD;
-import static fi.vm.sade.sijoittelu.laskenta.util.SijoitteluAudit.username;
-import static fi.vm.sade.sijoittelu.tulos.roles.SijoitteluRole.CRUD;
-
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-
 import fi.vm.sade.generic.service.exception.NotAuthorizedException;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.util.TilanKuvaukset;
-import fi.vm.sade.sijoittelu.domain.*;
+import fi.vm.sade.sijoittelu.domain.HakemuksenTila;
+import fi.vm.sade.sijoittelu.domain.Hakemus;
+import fi.vm.sade.sijoittelu.domain.Hakukohde;
+import fi.vm.sade.sijoittelu.domain.HakukohdeItem;
+import fi.vm.sade.sijoittelu.domain.Sijoittelu;
+import fi.vm.sade.sijoittelu.domain.SijoitteluAjo;
+import fi.vm.sade.sijoittelu.domain.TilaHistoria;
+import fi.vm.sade.sijoittelu.domain.Valintatapajono;
+import fi.vm.sade.sijoittelu.domain.ValintatuloksenTila;
+import fi.vm.sade.sijoittelu.domain.Valintatulos;
 import fi.vm.sade.sijoittelu.domain.dto.ErillishaunHakijaDTO;
 import fi.vm.sade.sijoittelu.laskenta.service.business.HyvaksymisenEhtoException;
 import fi.vm.sade.sijoittelu.laskenta.service.business.IllegalVTSRequestException;
 import fi.vm.sade.sijoittelu.laskenta.service.business.PriorAcceptanceException;
 import fi.vm.sade.sijoittelu.laskenta.service.business.SijoitteluBusinessService;
+import fi.vm.sade.sijoittelu.laskenta.service.business.SijoittelunTilaService;
 import fi.vm.sade.sijoittelu.laskenta.service.business.StaleReadException;
 import fi.vm.sade.sijoittelu.laskenta.service.exception.HakemustaEiLoytynytException;
 import fi.vm.sade.sijoittelu.laskenta.service.it.TarjontaIntegrationService;
@@ -24,6 +25,9 @@ import fi.vm.sade.sijoittelu.tulos.dao.HakukohdeDao;
 import fi.vm.sade.sijoittelu.tulos.dao.SijoitteluDao;
 import fi.vm.sade.sijoittelu.tulos.dao.ValintatulosDao;
 import fi.vm.sade.sijoittelu.tulos.service.RaportointiService;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,12 +35,30 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 
-import javax.ws.rs.*;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
+
+import static fi.vm.sade.sijoittelu.laskenta.roles.SijoitteluRole.READ_UPDATE_CRUD;
+import static fi.vm.sade.sijoittelu.laskenta.roles.SijoitteluRole.UPDATE_CRUD;
+import static fi.vm.sade.sijoittelu.laskenta.util.SijoitteluAudit.username;
+import static fi.vm.sade.sijoittelu.tulos.roles.SijoitteluRole.CRUD;
 
 @Controller
 @Path("tila")
@@ -46,6 +68,9 @@ public class TilaResource {
     private final static Logger LOGGER = LoggerFactory.getLogger(TilaResource.class);
 
     static final String LATEST = "latest";
+
+    @Autowired
+    public SijoittelunTilaService sijoittelunTilaService;
 
     @Autowired
     public SijoitteluBusinessService sijoitteluBusinessService;
@@ -71,7 +96,7 @@ public class TilaResource {
     @PreAuthorize(READ_UPDATE_CRUD)
     @ApiOperation(value = "Hakemuksen valintatulosten haku")
     public List<Valintatulos> hakemus(@PathParam("hakemusOid") String hakemusOid) {
-        List<Valintatulos> v = sijoitteluBusinessService.haeHakemuksenTila(hakemusOid);
+        List<Valintatulos> v = sijoittelunTilaService.haeHakemuksenTila(hakemusOid);
         if (v == null) {
             v = new ArrayList<>();
         }
@@ -87,7 +112,7 @@ public class TilaResource {
                                 @PathParam("hakukohdeOid") String hakukohdeOid,
                                 @PathParam("valintatapajonoOid") String valintatapajonoOid,
                                 @PathParam("hakemusOid") String hakemusOid) {
-        Valintatulos v = sijoitteluBusinessService.haeHakemuksenTila(hakuOid, hakukohdeOid, valintatapajonoOid, hakemusOid);
+        Valintatulos v = sijoittelunTilaService.haeHakemuksenTila(hakuOid, hakukohdeOid, valintatapajonoOid, hakemusOid);
         if (v == null) {
             v = new Valintatulos();
         }
@@ -102,7 +127,7 @@ public class TilaResource {
     public List<Valintatulos> haku(
             @PathParam("hakukohdeOid") String hakukohdeOid,
             @PathParam("valintatapajonoOid") String valintatapajonoOid) {
-        List<Valintatulos> v = sijoitteluBusinessService.haeHakemustenTilat(hakukohdeOid, valintatapajonoOid);
+        List<Valintatulos> v = sijoittelunTilaService.haeHakemustenTilat(hakukohdeOid, valintatapajonoOid);
         if (v == null) {
             v = new ArrayList<Valintatulos>();
         }
@@ -116,7 +141,7 @@ public class TilaResource {
     @ApiOperation(value = "Valintatulosten haku hakukohteelle ja valintatapajonolle")
     public List<Valintatulos> hakukohteelle(
             @PathParam("hakukohdeOid") String hakukohdeOid) {
-        List<Valintatulos> v = sijoitteluBusinessService.haeHakukohteenTilat(hakukohdeOid);
+        List<Valintatulos> v = sijoittelunTilaService.haeHakukohteenTilat(hakukohdeOid);
         if (v == null) {
             v = new ArrayList<Valintatulos>();
         }
@@ -134,7 +159,7 @@ public class TilaResource {
                                          @QueryParam("selite") String selite) {
         List<ValintatulosUpdateStatus> statuses = new ArrayList<>();
         try {
-            Hakukohde hakukohde = sijoitteluBusinessService.getHakukohde(hakuOid, hakukohdeOid);
+            Hakukohde hakukohde = sijoittelunTilaService.getHakukohde(hakuOid, hakukohdeOid);
             processVaihdaHakemuksienTilat(statuses,valintatulokset,hakuOid,hakukohdeOid,hakukohde,selite);
             Status s = statuses.isEmpty() ? Status.OK : Status.INTERNAL_SERVER_ERROR;
             return Response.status(s)
@@ -161,14 +186,14 @@ public class TilaResource {
                                                     @QueryParam("hyvaksytty") Boolean hyvaksytty) {
         try {
             List<ValintatulosUpdateStatus> statuses = new ArrayList<>();
-            Hakukohde hakukohde = sijoitteluBusinessService.getHakukohde(hakuOid, hakukohdeOid);
+            Hakukohde hakukohde = sijoittelunTilaService.getHakukohde(hakuOid, hakukohdeOid);
             processVaihdaHakemuksienTilat(statuses, valintatulokset, hakuOid, hakukohdeOid, hakukohde, selite);
             if (!statuses.isEmpty()) {
                 return Response.status(Status.INTERNAL_SERVER_ERROR)
                         .entity(new HakukohteenValintatulosUpdateStatuses(statuses))
                         .build();
             }
-            sijoitteluBusinessService.asetaJononValintaesitysHyvaksytyksi(hakukohde, valintatapajonoOid, hyvaksytty, hakuOid);
+            sijoittelunTilaService.asetaJononValintaesitysHyvaksytyksi(hakukohde, valintatapajonoOid, hyvaksytty, hakuOid);
             return Response.status(Response.Status.OK)
                     .entity(new HakukohteenValintatulosUpdateStatuses(statuses))
                     .build();
@@ -219,8 +244,8 @@ public class TilaResource {
     private void processVaihdaHakemuksienTilat(List<ValintatulosUpdateStatus> statuses, List<Valintatulos> valintatulokset, String hakuOid, String hakukohdeOid, Hakukohde hakukohde,  String selite) {
         for (Valintatulos v : valintatulokset) {
             try {
-                sijoitteluBusinessService.vaihdaHakemuksenTila(hakuOid, hakukohde, v, selite, username());
-           } catch (HakemustaEiLoytynytException e) {
+                sijoittelunTilaService.vaihdaHakemuksenTila(hakuOid, hakukohde, v, selite, username());
+            } catch (HakemustaEiLoytynytException e) {
                 LOGGER.info("haku: {}, hakukohde: {}", hakuOid, hakukohdeOid, e);
                 statuses.add(new ValintatulosUpdateStatus(Status.NOT_FOUND.getStatusCode(), e.getMessage(), v.getValintatapajonoOid(), v.getHakemusOid()));
            } catch (HyvaksymisenEhtoException e) {
@@ -294,7 +319,7 @@ public class TilaResource {
                     .stream()
                     .map(e -> e.asValintatulos())
                     .collect(Collectors.groupingBy(v -> v.getHakukohdeOid()))
-                    .forEach((k, v) -> processVaihdaHakemuksienTilat(statuses, v, hakuOid, k, sijoitteluBusinessService.getHakukohde(hakuOid, k), "Erillishauntuonti"));
+                    .forEach((k, v) -> processVaihdaHakemuksienTilat(statuses, v, hakuOid, k, sijoittelunTilaService.getHakukohde(hakuOid, k), "Erillishauntuonti"));
 
             LOGGER.info("Erillishaun tietojen tuonti onnistui jonolle {} haussa {} hakukohteelle {}. Erroreita: {}",
                     erillishaunHakijaDtos.iterator().next().valintatapajonoOid, hakuOid, hakukohdeOid, !statuses.isEmpty());
@@ -494,7 +519,7 @@ public class TilaResource {
     public List<String> siivoaVanhatSijoitteluajot(List<String> hakuOids,
                                                    @ApiParam(value = "Montako ajoa saastetaan") @QueryParam("saastettavienAjojenMaara") Integer saastettavienAjojenMaaraParam) {
         List<String> resultMessages = new ArrayList<>();
-        int ajojaSaastetaan = saastettavienAjojenMaaraParam == null ? sijoitteluBusinessService.getMaxAjoMaara() : saastettavienAjojenMaaraParam;
+        int ajojaSaastetaan = saastettavienAjojenMaaraParam == null ? sijoittelunTilaService.getMaxAjoMaara() : saastettavienAjojenMaaraParam;
         LOGGER.info(String.format("Käynnistetään %s annetun haun vanhojen sijoitteluajojen siivous. Säästetään korkeintaan %s ajoa.", hakuOids.size(), ajojaSaastetaan));
         LOGGER.info("Hakujen oidit: " + hakuOids);
         for (String hakuOid : hakuOids) {

@@ -11,11 +11,11 @@ import fi.vm.sade.sijoittelu.laskenta.external.resource.HakuV1Resource;
 import fi.vm.sade.sijoittelu.laskenta.external.resource.dto.HakuDTO;
 import fi.vm.sade.sijoittelu.laskenta.external.resource.dto.ResultHakuDTO;
 import fi.vm.sade.sijoittelu.laskenta.service.business.SijoitteluBusinessService;
+import fi.vm.sade.sijoittelu.laskenta.service.business.SijoittelunTilaService;
 import fi.vm.sade.sijoittelu.laskenta.service.business.StaleReadException;
 import fi.vm.sade.sijoittelu.laskenta.service.exception.HakemustaEiLoytynytException;
 import fi.vm.sade.sijoittelu.tulos.dto.HakukohdeDTO;
 import fi.vm.sade.valinta.http.HttpResourceBuilder;
-import fi.vm.sade.valinta.http.HttpResourceImpl;
 import org.junit.Assert;
 import org.apache.commons.io.IOUtils;
 import org.apache.cxf.jaxrs.client.WebClient;
@@ -62,7 +62,7 @@ public class TilaResourceTest {
     @Test
     public void onnistunutMuokkausPalauttaaOk() {
         TilaResource r = new TilaResource();
-        r.sijoitteluBusinessService = sijoitteluBusinessServiceMock(new Hakukohde());
+        r.sijoittelunTilaService = sijoittelunTilaServiceMock(new Hakukohde());
         List<Valintatulos> valintatulokset = new ArrayList<>();
         valintatulokset.add(new Valintatulos());
 
@@ -80,7 +80,7 @@ public class TilaResourceTest {
         jono.setOid(valintatapajonoOid);
         hakukohde.getValintatapajonot().add(jono);
         TilaResource r = new TilaResource();
-        r.sijoitteluBusinessService = sijoitteluBusinessServiceMock(hakukohde);
+        r.sijoittelunTilaService = sijoittelunTilaServiceMock(hakukohde);
 
         Response response = r.merkkaaJononValintaesitysHyvaksytyksi(hakuOid, hakukohdeOid, valintatapajonoOid, Collections.emptyList(), "Jonon hyväksyntä testistä", true);
         assertEquals(200, response.getStatus());
@@ -91,7 +91,7 @@ public class TilaResourceTest {
     @Test
     public void internalServerErrorJosHakukohdettaEiLoydy() {
         TilaResource r = new TilaResource();
-        r.sijoitteluBusinessService = sijoitteluBusinessServiceMock(new RuntimeException("Sijoittelua ei löytynyt haulle: " + hakuOid));
+        r.sijoittelunTilaService = sijoittelunTilaServiceMock(new RuntimeException("Sijoittelua ei löytynyt haulle: " + hakuOid));
         List<Valintatulos> valintatulokset = new ArrayList<>();
 
         Response response = r.muutaHakemustenTilaa(hakuOid, hakukohdeOid, valintatulokset, "selite");
@@ -104,7 +104,7 @@ public class TilaResourceTest {
     @Test
     public void epaonnistuneidenMuokkaustenVirheetKerataan() {
         TilaResource r = new TilaResource();
-        r.sijoitteluBusinessService = new SijoitteluBusinessService(0,0,null,null,null, null, null, null,null,null,null,null, null) {
+        r.sijoittelunTilaService = new SijoittelunTilaService(0,null, null,null,null,null) {
             @Override
             public Hakukohde getHakukohde(String hakuOid, String hakukohdeOid) {
                 return new Hakukohde();
@@ -289,8 +289,8 @@ public class TilaResourceTest {
                 .getWebClient();
     }
 
-    private static SijoitteluBusinessService sijoitteluBusinessServiceMock(RuntimeException e) {
-        return new SijoitteluBusinessService(0, 0, null,null,null, null, null, null,null,null,null,null, null) {
+    private static SijoittelunTilaService sijoittelunTilaServiceMock(RuntimeException e) {
+        return new SijoittelunTilaService(0, null, null,null,null,null) {
             @Override
             public Hakukohde getHakukohde(String hakuOid, String hakukohdeOid) {
                 throw e;
@@ -302,8 +302,8 @@ public class TilaResourceTest {
         };
     }
 
-    private static SijoitteluBusinessService sijoitteluBusinessServiceMock(Hakukohde hakukohde) {
-        return new SijoitteluBusinessService(0, 0, null, null, null, null, null, null, null, null, null, null, null) {
+    private static SijoittelunTilaService sijoittelunTilaServiceMock(Hakukohde hakukohde) {
+        return new SijoittelunTilaService(0, null, null, null, null, null) {
             @Override
             public Hakukohde getHakukohde(String hakuOid, String hakukohdeOid) {
                 return hakukohde;

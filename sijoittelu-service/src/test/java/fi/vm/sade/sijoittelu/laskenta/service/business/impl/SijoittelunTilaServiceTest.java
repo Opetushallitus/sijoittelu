@@ -7,6 +7,7 @@ import fi.vm.sade.sijoittelu.laskenta.external.resource.VirkailijaValintaTulosSe
 import fi.vm.sade.sijoittelu.laskenta.external.resource.dto.ParametriArvoDTO;
 import fi.vm.sade.sijoittelu.laskenta.external.resource.dto.ParametriDTO;
 import fi.vm.sade.sijoittelu.laskenta.service.business.SijoitteluBusinessService;
+import fi.vm.sade.sijoittelu.laskenta.service.business.SijoittelunTilaService;
 import fi.vm.sade.sijoittelu.laskenta.service.business.ValintarekisteriService;
 import fi.vm.sade.sijoittelu.laskenta.service.it.TarjontaIntegrationService;
 import fi.vm.sade.sijoittelu.tulos.dao.HakukohdeDao;
@@ -18,6 +19,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Matchers;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.util.Date;
 import java.util.Optional;
@@ -25,7 +27,7 @@ import java.util.Optional;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
-public class SijoitteluBusinessServiceTest {
+public class SijoittelunTilaServiceTest {
     final String HAKU_OID = TestDataGenerator.HAKU_OID;
     final String HAKUKOHDE_OID = TestDataGenerator.HAKUKOHDE_OID_1;
     final String VALINTATAPAJONO_OID = TestDataGenerator.VALINTATAPAJONO_OID_1;
@@ -34,7 +36,7 @@ public class SijoitteluBusinessServiceTest {
     final String SELITE = "selite";
     final String MUOKKAAJA = "muokkaaja";
 
-    private SijoitteluBusinessService sijoitteluBusinessService;
+    private SijoittelunTilaService sijoittelunTilaService;
     private ValintatulosDao valintatulosDaoMock;
     private HakukohdeDao hakukohdeDao;
     private SijoitteluDao sijoitteluDao;
@@ -55,9 +57,12 @@ public class SijoitteluBusinessServiceTest {
         raportointiService = mock(RaportointiService.class);
         valintarekisteriService = mock(ValintarekisteriService.class);
 
-        sijoitteluBusinessService = new SijoitteluBusinessService(1,1,valintatulosDaoMock,hakukohdeDao,sijoitteluDao,
-                raportointiService, null, authorizer,null,null,tarjontaIntegrationService,valintaTulosServiceResourceMock,
-                valintarekisteriService); 
+        sijoittelunTilaService = new SijoittelunTilaService( 1,
+                                                             raportointiService,
+                                                             authorizer,
+                                                             valintatulosDaoMock,
+                                                             hakukohdeDao,
+                                                             tarjontaIntegrationService);
         testDataGenerator = new TestDataGenerator();
 
     }
@@ -94,8 +99,8 @@ public class SijoitteluBusinessServiceTest {
                 "",
                 "",
                 "");
-        sijoitteluBusinessService.vaihdaHakemuksenTila(HAKU_OID,
-                sijoitteluBusinessService.getHakukohde(HAKU_OID, HAKUKOHDE_OID),
+        sijoittelunTilaService.vaihdaHakemuksenTila(HAKU_OID,
+                sijoittelunTilaService.getHakukohde(HAKU_OID, HAKUKOHDE_OID),
                 v, SELITE, "");
 
         ArgumentCaptor<Valintatulos> argument = ArgumentCaptor.forClass(Valintatulos.class);
@@ -135,8 +140,8 @@ public class SijoitteluBusinessServiceTest {
                 "",
                 "",
                 "");
-        sijoitteluBusinessService.vaihdaHakemuksenTila(HAKU_OID,
-                sijoitteluBusinessService.getHakukohde(HAKU_OID, HAKUKOHDE_OID),
+        sijoittelunTilaService.vaihdaHakemuksenTila(HAKU_OID,
+                sijoittelunTilaService.getHakukohde(HAKU_OID, HAKUKOHDE_OID),
                 v, SELITE, "");
 
         ArgumentCaptor<Valintatulos> argument = ArgumentCaptor.forClass(Valintatulos.class);
@@ -176,8 +181,8 @@ public class SijoitteluBusinessServiceTest {
                 "",
                 "",
                 "");
-        sijoitteluBusinessService.vaihdaHakemuksenTila(HAKU_OID,
-                sijoitteluBusinessService.getHakukohde(HAKU_OID, HAKUKOHDE_OID),
+        sijoittelunTilaService.vaihdaHakemuksenTila(HAKU_OID,
+                sijoittelunTilaService.getHakukohde(HAKU_OID, HAKUKOHDE_OID),
                 v, SELITE, "");
 
         ArgumentCaptor<Valintatulos> argument = ArgumentCaptor.forClass(Valintatulos.class);
@@ -230,8 +235,8 @@ public class SijoitteluBusinessServiceTest {
                 "",
                 "",
                 "");
-        sijoitteluBusinessService.vaihdaHakemuksenTila(HAKU_OID,
-                sijoitteluBusinessService.getHakukohde(HAKU_OID, HAKUKOHDE_OID),
+        sijoittelunTilaService.vaihdaHakemuksenTila(HAKU_OID,
+                sijoittelunTilaService.getHakukohde(HAKU_OID, HAKUKOHDE_OID),
                 v, SELITE, "");
 
         ArgumentCaptor<Valintatulos> argument = ArgumentCaptor.forClass(Valintatulos.class);
@@ -271,8 +276,8 @@ public class SijoitteluBusinessServiceTest {
                 "",
                 "",
                 "");
-        sijoitteluBusinessService.vaihdaHakemuksenTila(HAKU_OID,
-                sijoitteluBusinessService.getHakukohde(HAKU_OID, HAKUKOHDE_OID),
+        sijoittelunTilaService.vaihdaHakemuksenTila(HAKU_OID,
+                sijoittelunTilaService.getHakukohde(HAKU_OID, HAKUKOHDE_OID),
                 v, SELITE, "");
 
         ArgumentCaptor<Valintatulos> argument = ArgumentCaptor.forClass(Valintatulos.class);
@@ -290,12 +295,12 @@ public class SijoitteluBusinessServiceTest {
         when(hakukohdeDao.getHakukohdeForSijoitteluajo(TestDataGenerator.SIJOITTELU_AJO_ID_2, HAKUKOHDE_OID))
                 .thenReturn(testDataGenerator.createHakukohdes(1).get(0));
 
-        sijoitteluBusinessService.asetaJononValintaesitysHyvaksytyksi(sijoitteluBusinessService.getHakukohde(HAKU_OID, HAKUKOHDE_OID), VALINTATAPAJONO_OID, true, HAKU_OID);
+        sijoittelunTilaService.asetaJononValintaesitysHyvaksytyksi(sijoittelunTilaService.getHakukohde(HAKU_OID, HAKUKOHDE_OID), VALINTATAPAJONO_OID, true, HAKU_OID);
 
         ArgumentCaptor<Hakukohde> argument = ArgumentCaptor.forClass(Hakukohde.class);
         verify(hakukohdeDao).persistHakukohde(argument.capture(), Matchers.eq(HAKU_OID));
         Hakukohde hakukohde = argument.getValue();
-        assertEquals(true, sijoitteluBusinessService.getValintatapajono(VALINTATAPAJONO_OID, hakukohde).getValintaesitysHyvaksytty());
+        assertEquals(true, sijoittelunTilaService.getValintatapajono(VALINTATAPAJONO_OID, hakukohde).getValintaesitysHyvaksytty());
     }
 
     @Test
@@ -329,8 +334,8 @@ public class SijoitteluBusinessServiceTest {
                 "",
                 "",
                 "");
-        sijoitteluBusinessService.vaihdaHakemuksenTila(HAKU_OID,
-                sijoitteluBusinessService.getHakukohde(HAKU_OID, HAKUKOHDE_OID),
+        sijoittelunTilaService.vaihdaHakemuksenTila(HAKU_OID,
+                sijoittelunTilaService.getHakukohde(HAKU_OID, HAKUKOHDE_OID),
                 v, SELITE, "");
 
         ArgumentCaptor<Valintatulos> argument = ArgumentCaptor.forClass(Valintatulos.class);
@@ -371,8 +376,8 @@ public class SijoitteluBusinessServiceTest {
                 "",
                 "",
                 "");
-        sijoitteluBusinessService.vaihdaHakemuksenTila(HAKU_OID,
-                sijoitteluBusinessService.getHakukohde(HAKU_OID, HAKUKOHDE_OID),
+        sijoittelunTilaService.vaihdaHakemuksenTila(HAKU_OID,
+                sijoittelunTilaService.getHakukohde(HAKU_OID, HAKUKOHDE_OID),
                 v, SELITE, "");
 
         ArgumentCaptor<Valintatulos> argument = ArgumentCaptor.forClass(Valintatulos.class);
@@ -412,8 +417,8 @@ public class SijoitteluBusinessServiceTest {
                 "",
                 "",
                 "");
-        sijoitteluBusinessService.vaihdaHakemuksenTila(HAKU_OID,
-                sijoitteluBusinessService.getHakukohde(HAKU_OID, HAKUKOHDE_OID),
+        sijoittelunTilaService.vaihdaHakemuksenTila(HAKU_OID,
+                sijoittelunTilaService.getHakukohde(HAKU_OID, HAKUKOHDE_OID),
                 v, SELITE, "");
 
         ArgumentCaptor<Valintatulos> argument = ArgumentCaptor.forClass(Valintatulos.class);
@@ -454,8 +459,8 @@ public class SijoitteluBusinessServiceTest {
                 "",
                 "",
                 "");
-        sijoitteluBusinessService.vaihdaHakemuksenTila(HAKU_OID,
-                sijoitteluBusinessService.getHakukohde(HAKU_OID, HAKUKOHDE_OID),
+        sijoittelunTilaService.vaihdaHakemuksenTila(HAKU_OID,
+                sijoittelunTilaService.getHakukohde(HAKU_OID, HAKUKOHDE_OID),
                 v, SELITE, "");
 
         ArgumentCaptor<Valintatulos> argument = ArgumentCaptor.forClass(Valintatulos.class);
@@ -496,8 +501,8 @@ public class SijoitteluBusinessServiceTest {
                 "",
                 "",
                 "");
-        sijoitteluBusinessService.vaihdaHakemuksenTila(HAKU_OID,
-                sijoitteluBusinessService.getHakukohde(HAKU_OID, HAKUKOHDE_OID),
+        sijoittelunTilaService.vaihdaHakemuksenTila(HAKU_OID,
+                sijoittelunTilaService.getHakukohde(HAKU_OID, HAKUKOHDE_OID),
                 v, SELITE, "");
 
         ArgumentCaptor<Valintatulos> argument = ArgumentCaptor.forClass(Valintatulos.class);
@@ -522,7 +527,7 @@ public class SijoitteluBusinessServiceTest {
         params.setPH_VEH(new ParametriArvoDTO(new Date().getTime() + 10000));
         doThrow(new NotAuthorizedException())
                 .when(authorizer)
-                .checkOrganisationAccess(SijoitteluBusinessService.OPH_OID, SijoitteluRole.CRUD_ROLE);
+                .checkOrganisationAccess(SijoittelunTilaService.OPH_OID, SijoitteluRole.CRUD_ROLE);
         runValintaesitysJulkaistavissaTest(params);
     }
 
@@ -576,8 +581,8 @@ public class SijoitteluBusinessServiceTest {
                 "suomi",
                 "ruotsi",
                 "englanti");
-        sijoitteluBusinessService.vaihdaHakemuksenTila(HAKU_OID,
-                sijoitteluBusinessService.getHakukohde(HAKU_OID, HAKUKOHDE_OID),
+        sijoittelunTilaService.vaihdaHakemuksenTila(HAKU_OID,
+                sijoittelunTilaService.getHakukohde(HAKU_OID, HAKUKOHDE_OID),
                 v, SELITE, "");
 
         ArgumentCaptor<Valintatulos> argument = ArgumentCaptor.forClass(Valintatulos.class);
@@ -618,8 +623,8 @@ public class SijoitteluBusinessServiceTest {
                 "suomi",
                 "ruotsi",
                 "englanti");
-        sijoitteluBusinessService.vaihdaHakemuksenTila(HAKU_OID,
-                sijoitteluBusinessService.getHakukohde(HAKU_OID, HAKUKOHDE_OID),
+        sijoittelunTilaService.vaihdaHakemuksenTila(HAKU_OID,
+                sijoittelunTilaService.getHakukohde(HAKU_OID, HAKUKOHDE_OID),
                 v, SELITE, "");
 
     }
@@ -656,8 +661,8 @@ public class SijoitteluBusinessServiceTest {
                 null,
                 "ruotsi",
                 "englanti");
-        sijoitteluBusinessService.vaihdaHakemuksenTila(HAKU_OID,
-                sijoitteluBusinessService.getHakukohde(HAKU_OID, HAKUKOHDE_OID),
+        sijoittelunTilaService.vaihdaHakemuksenTila(HAKU_OID,
+                sijoittelunTilaService.getHakukohde(HAKU_OID, HAKUKOHDE_OID),
                 v, SELITE, "");
 
     }
@@ -686,7 +691,7 @@ public class SijoitteluBusinessServiceTest {
                 "",
                 "",
                 "");
-        sijoitteluBusinessService.vaihdaHakemuksenTila(HAKU_OID, testDataGenerator.createHakukohdes(1).get(0), v, SELITE, "");
+        sijoittelunTilaService.vaihdaHakemuksenTila(HAKU_OID, testDataGenerator.createHakukohdes(1).get(0), v, SELITE, "");
     }
 
     private Valintatulos vaihdaHakemuksenHyvaksyPeruuntunut(boolean hyvaksyPeruuntunut) {
@@ -712,7 +717,7 @@ public class SijoitteluBusinessServiceTest {
                 "",
                 "");
         v.setHyvaksyPeruuntunut(hyvaksyPeruuntunut, "");
-        sijoitteluBusinessService.vaihdaHakemuksenTila(HAKU_OID,
+        sijoittelunTilaService.vaihdaHakemuksenTila(HAKU_OID,
                 testDataGenerator.createHakukohdes(1).get(0),
                 v, SELITE, "");
         ArgumentCaptor<Valintatulos> argument = ArgumentCaptor.forClass(Valintatulos.class);
