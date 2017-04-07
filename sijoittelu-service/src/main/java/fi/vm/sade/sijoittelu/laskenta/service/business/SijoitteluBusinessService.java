@@ -128,7 +128,7 @@ public class SijoitteluBusinessService {
         this.valintarekisteriService = valintarekisteriService;
     }
 
-    private static Set<String> hakukohteidenJonoOidit(List<Hakukohde> hakukohteet) {
+    private Set<String> hakukohteidenJonoOidit(List<Hakukohde> hakukohteet) {
         return unmodifiableSet(hakukohteet.stream()
                 .flatMap(hakukohde -> hakukohde.getValintatapajonot().stream().map(Valintatapajono::getOid))
                 .collect(toSet()));
@@ -370,7 +370,7 @@ public class SijoitteluBusinessService {
         return result;
     }
 
-    private static class HakukohdeOidAndSijoitteluAjoId {
+    private class HakukohdeOidAndSijoitteluAjoId {
         private final String hakukohdeOid;
         private final Long sijoitteluAjoId;
         public HakukohdeOidAndSijoitteluAjoId(String hakukohdeOid, Long sijoitteluAjoId) {
@@ -753,7 +753,7 @@ public class SijoitteluBusinessService {
                 .orElseThrow(() -> new RuntimeException("Sijoittelua ei löytynyt haulle: " + hakuOid));
     }
 
-    public Map<String, VastaanottoDTO> aiemmanVastaanotonHakukohdePerHakija(String hakuOid) {
+    private Map<String, VastaanottoDTO> aiemmanVastaanotonHakukohdePerHakija(String hakuOid) {
         return valintaTulosServiceResource.haunKoulutuksenAlkamiskaudenVastaanototYhdenPaikanSaadoksenPiirissa(hakuOid)
                 .stream().collect(Collectors.toMap(VastaanottoDTO::getHenkiloOid, Function.identity()));
     }
@@ -884,7 +884,7 @@ public class SijoitteluBusinessService {
         return authentication == null ? "[No user defined in session]" : authentication.getName();
     }
 
-    private static String muutos(Valintatulos v, Valintatulos change) {
+    private String muutos(Valintatulos v, Valintatulos change) {
         IlmoittautumisTila ilmoittautumisTila = change.getIlmoittautumisTila();
         boolean julkaistavissa = change.getJulkaistavissa();
         boolean hyvaksyttyVarasijalta = change.getHyvaksyttyVarasijalta();
@@ -909,7 +909,7 @@ public class SijoitteluBusinessService {
         return muutos.stream().collect(Collectors.joining(", "));
     }
 
-    private static boolean notModifying(Valintatulos change, Valintatulos v) {
+    private boolean notModifying(Valintatulos change, Valintatulos v) {
         return v.getTila() == change.getTila() &&
                 v.getIlmoittautumisTila() == change.getIlmoittautumisTila() &&
                 v.getJulkaistavissa() == change.getJulkaistavissa() &&
@@ -924,14 +924,14 @@ public class SijoitteluBusinessService {
         hakukohdeDao.persistHakukohde(hakukohde, hakuOid);
     }
 
-    public static Valintatapajono getValintatapajono(String valintatapajonoOid, Hakukohde hakukohde) {
+    public Valintatapajono getValintatapajono(String valintatapajonoOid, Hakukohde hakukohde) {
         return hakukohde.getValintatapajonot().stream()
                 .filter(v -> valintatapajonoOid.equals(v.getOid()))
                 .findFirst()
                 .orElseThrow(() -> new ValintatapajonoaEiLoytynytException(String.format("Valintatapajonoa %sei löytynyt hakukohteelle %s", valintatapajonoOid, hakukohde.getOid())));
     }
 
-    private static Hakemus getHakemus(final String hakemusOid, final Valintatapajono valintatapajono) {
+    private Hakemus getHakemus(final String hakemusOid, final Valintatapajono valintatapajono) {
         return valintatapajono.getHakemukset().stream()
                 .filter(h -> hakemusOid.equals(h.getHakemusOid()))
                 .findFirst()

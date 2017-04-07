@@ -295,7 +295,7 @@ public class SijoitteluBusinessServiceTest {
         ArgumentCaptor<Hakukohde> argument = ArgumentCaptor.forClass(Hakukohde.class);
         verify(hakukohdeDao).persistHakukohde(argument.capture(), Matchers.eq(HAKU_OID));
         Hakukohde hakukohde = argument.getValue();
-        assertEquals(true, SijoitteluBusinessService.getValintatapajono(VALINTATAPAJONO_OID, hakukohde).getValintaesitysHyvaksytty());
+        assertEquals(true, sijoitteluBusinessService.getValintatapajono(VALINTATAPAJONO_OID, hakukohde).getValintaesitysHyvaksytty());
     }
 
     @Test
