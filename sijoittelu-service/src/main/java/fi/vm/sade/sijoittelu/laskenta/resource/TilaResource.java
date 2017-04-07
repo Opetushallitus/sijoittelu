@@ -464,45 +464,6 @@ public class TilaResource {
         return jono;
     }
 
-    @POST
-    @Produces(MediaType.APPLICATION_JSON)
-    @Path("/haku/{hakuOid}/hakukohde/{hakukohdeOid}/hakemus/{hakemusOid}")
-    @PreAuthorize(UPDATE_CRUD)
-    @ApiOperation(value = "Hakemuksen sijoittelun tilan muuttaminen")
-    public Response muutaSijoittelunTilaa(
-            @PathParam("hakuOid") String hakuOid,
-            @PathParam("hakukohdeOid") String hakukohdeOid,
-            @PathParam("hakemusOid") String hakemusOid,
-            Tila tilaObj,
-            @QueryParam("hakijaOid") String hakijaOid,
-            @QueryParam("tarjoajaOid") String tarjoajaOid) {
-
-        try {
-            HakemuksenTila tila;
-
-            if (StringUtils.isNotBlank(tilaObj.getTila())) {
-                tila = HakemuksenTila.valueOf(tilaObj.getTila());
-            } else {
-                if (tilaObj.isHyvaksy()) {
-                    tila = HakemuksenTila.HYVAKSYTTY;
-                } else {
-                    tila = HakemuksenTila.HYLATTY;
-                }
-            }
-            Optional<List<String>> kuvaukset = Optional.ofNullable(tilaObj.getTilanKuvaukset());
-            muutaTilaa(tarjoajaOid, hakuOid, hakukohdeOid, hakemusOid, hakijaOid, tila, kuvaukset,
-                    Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty());
-            return Response.status(Response.Status.OK).build();
-
-        } catch (Exception e) {
-            LOGGER.error("Hakemuksen tilan asetus epäonnistui haussa {} hakukohteelle {} ja hakemukselle {}", hakuOid, hakukohdeOid, hakemusOid, e);
-            Map error = new HashMap();
-            error.put("message", e.getMessage());
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity(error).build();
-        }
-    }
-
     @PreAuthorize(CRUD)
     @POST
     @Produces(MediaType.APPLICATION_JSON)
