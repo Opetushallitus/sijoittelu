@@ -280,8 +280,6 @@ public class TilaResource {
     @PreAuthorize(UPDATE_CRUD)
     @ApiOperation(value = "Erillishaun hakijoiden tuonti hakukohteelle")
     public Response tuoErillishaunHakijat(
-            @ApiParam("valintatapajononNimi")
-            @QueryParam("valintatapajononNimi") String valintatapajononNimi,
             @PathParam("hakuOid") String hakuOid,
             @PathParam("hakukohdeOid") String hakukohdeOid,
             List<ErillishaunHakijaDTO> erillishaunHakijaDtos) {
@@ -307,7 +305,6 @@ public class TilaResource {
 
             ryhmitelty.getOrDefault(false, new ArrayList<>()).stream().forEach(
                     e -> muutaTilaa(
-                            valintatapajononNimi,
                             e.tarjoajaOid, e.hakuOid,
                             e.hakukohdeOid, e.hakemusOid, e.hakijaOid,
                             e.hakemuksenTila, Optional.empty(), Optional.ofNullable(e.valintatapajonoOid),
@@ -372,8 +369,7 @@ public class TilaResource {
         }
     }
 
-    private void muutaTilaa(String valintatapajononNimi,
-                            String tarjoajaOid, String hakuOid, String hakukohdeOid, String hakemusOid, String hakijaOid,
+    private void muutaTilaa(String tarjoajaOid, String hakuOid, String hakukohdeOid, String hakemusOid, String hakijaOid,
                             HakemuksenTila tila, Optional<List<String>> tilanKuvaukset,
                             Optional<String> valintatapajonoOid,
                             Optional<String> etunimi, Optional<String> sukunimi,
@@ -400,16 +396,14 @@ public class TilaResource {
             h.setOid(hakukohdeOid);
             h.setSijoitteluajoId(ajo.getSijoitteluajoId());
             h.setTarjoajaOid(tarjoajaOid);
-            h.getValintatapajonot().add(createValintatapaJono(
-                    valintatapajononNimi,
-                    valintatapajonoOid.orElse(UUID.randomUUID().toString())));
+            h.getValintatapajonot().add(createValintatapaJono(valintatapajonoOid.orElse(UUID.randomUUID().toString())));
             return h;
         });
         Valintatapajono jono = valintatapajonoOid.map(oid -> hakukohde.getValintatapajonot().stream()
                 .filter(j -> oid.equals(j.getOid()))
                 .findFirst()
                 .orElseGet(() -> {
-                    Valintatapajono j = createValintatapaJono(valintatapajononNimi, oid);
+                    Valintatapajono j = createValintatapaJono(oid);
                     hakukohde.getValintatapajonot().add(j);
                     return j;
                 }))
@@ -459,14 +453,13 @@ public class TilaResource {
         sijoitteluDao.persistSijoittelu(sijoittelu);
     }
 
-    private Valintatapajono createValintatapaJono(String valintatapajononNimi, String valintatapajonoOid) {
+    private Valintatapajono createValintatapaJono(String valintatapajonoOid) {
         Valintatapajono jono = new Valintatapajono();
         jono.setHyvaksytty(0);
         jono.setVaralla(0);
         jono.setOid(valintatapajonoOid);
         jono.setAloituspaikat(0);
         jono.setPrioriteetti(0);
-        jono.setNimi(valintatapajononNimi);
 
         return jono;
     }
@@ -477,7 +470,6 @@ public class TilaResource {
     @PreAuthorize(UPDATE_CRUD)
     @ApiOperation(value = "Hakemuksen sijoittelun tilan muuttaminen")
     public Response muutaSijoittelunTilaa(
-            @QueryParam("valintatapajononNimi") String valintatapajononNimi,
             @PathParam("hakuOid") String hakuOid,
             @PathParam("hakukohdeOid") String hakukohdeOid,
             @PathParam("hakemusOid") String hakemusOid,
@@ -498,7 +490,7 @@ public class TilaResource {
                 }
             }
             Optional<List<String>> kuvaukset = Optional.ofNullable(tilaObj.getTilanKuvaukset());
-            muutaTilaa(valintatapajononNimi, tarjoajaOid, hakuOid, hakukohdeOid, hakemusOid, hakijaOid, tila, kuvaukset,
+            muutaTilaa(tarjoajaOid, hakuOid, hakukohdeOid, hakemusOid, hakijaOid, tila, kuvaukset,
                     Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty());
             return Response.status(Response.Status.OK).build();
 
