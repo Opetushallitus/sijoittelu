@@ -8,6 +8,7 @@ import fi.vm.sade.sijoittelu.domain.Valintatulos;
 import java.util.List;
 import java.util.Optional;
 
+@Deprecated
 public interface CachingRaportointiDao {
     Optional<List<Hakukohde>> getCachedHakukohdesForSijoitteluajo(Long sijoitteluAjoId);
     Optional<List<Valintatulos>> getCachedValintatulokset(String hakuOid);

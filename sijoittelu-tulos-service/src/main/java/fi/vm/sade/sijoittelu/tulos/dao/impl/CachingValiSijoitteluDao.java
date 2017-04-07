@@ -15,6 +15,7 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
+@Deprecated
 @Repository
 public class CachingValiSijoitteluDao implements ValiSijoitteluDao {
     private final Logger LOG = LoggerFactory.getLogger(CachingValiSijoitteluDao.class);

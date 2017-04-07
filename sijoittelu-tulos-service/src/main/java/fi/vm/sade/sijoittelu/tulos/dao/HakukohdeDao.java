@@ -6,6 +6,7 @@ import java.util.List;
 import fi.vm.sade.sijoittelu.domain.Hakukohde;
 import fi.vm.sade.sijoittelu.tulos.dto.KevytHakukohdeDTO;
 
+@Deprecated
 public interface HakukohdeDao {
     List<Hakukohde> getHakukohdeForSijoitteluajo(Long sijoitteluajoId);
 

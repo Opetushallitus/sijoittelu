@@ -27,6 +27,7 @@ import org.springframework.stereotype.Repository;
 import fi.vm.sade.sijoittelu.tulos.dao.HakukohdeDao;
 import fi.vm.sade.sijoittelu.tulos.dao.util.MongoMapReduceUtil;
 
+@Deprecated
 @Repository
 public class HakukohdeDaoImpl implements HakukohdeDao {
     @Qualifier("datastore")

@@ -34,6 +34,7 @@ import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
+@Deprecated
 @Component
 public class CachingRaportointiDaoImpl implements CachingRaportointiDao {
     private static final Logger LOG = LoggerFactory.getLogger(CachingRaportointiDaoImpl.class);

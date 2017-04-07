@@ -8,6 +8,7 @@ import fi.vm.sade.sijoittelu.domain.Hakukohde;
 import fi.vm.sade.sijoittelu.domain.Valintatulos;
 import fi.vm.sade.sijoittelu.tulos.dto.raportointi.RaportointiValintatulos;
 
+@Deprecated
 public interface ValintatulosDao {
     Valintatulos loadValintatulos(String hakukohdeOid, String valintatapajonoOid, String hakemusOid);
 

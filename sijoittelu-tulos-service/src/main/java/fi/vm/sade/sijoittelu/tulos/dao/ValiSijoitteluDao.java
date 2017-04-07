@@ -6,6 +6,7 @@ import fi.vm.sade.sijoittelu.domain.ValiSijoittelu;
 
 import java.util.Optional;
 
+@Deprecated
 public interface ValiSijoitteluDao {
     void persistSijoittelu(ValiSijoittelu sijoittelu);
 

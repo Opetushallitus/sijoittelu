@@ -34,6 +34,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+@Deprecated
 @Repository
 public class ValintatulosDaoImpl implements ValintatulosDao {
     private static final Logger LOG = LoggerFactory.getLogger(ValintatulosDaoImpl.class);
