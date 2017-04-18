@@ -565,6 +565,7 @@ public class SijoitteluBusinessService {
             kaikkiHakukohteet.put(hakukohde.getOid(), hakukohde);
         });
         talletaTasasijajonosijatJaEdellisenSijoittelunTilat(uudetHakukohteet, kaikkiHakukohteet);
+        siirraSivssnov(olemassaolevatHakukohteet, kaikkiHakukohteet);
         kopioiHakemuksenTietoja(olemassaolevatHakukohteet, kaikkiHakukohteet);
         kaikkiHakukohteet.values().forEach(hakukohde -> {
                     HakukohdeItem hki = new HakukohdeItem();
@@ -574,6 +575,16 @@ public class SijoitteluBusinessService {
                 }
         );
         return new ArrayList<>(kaikkiHakukohteet.values());
+    }
+
+    private void siirraSivssnov(List<Hakukohde> olemassaolevatHakukohteet, Map<String, Hakukohde> kaikkiHakukohteet) {
+        olemassaolevatHakukohteet.forEach(h -> {
+            h.getValintatapajonot().forEach(olemassaolevaValintatapajono -> {
+                kaikkiHakukohteet.get(h.getOid()).getValintatapajonot().forEach(v -> {
+                    v.setSijoiteltuIlmanVarasijasaantojaNiidenOllessaVoimassa(olemassaolevaValintatapajono.getSijoiteltuIlmanVarasijasaantojaNiidenOllessaVoimassa());
+                });
+            });
+        });
     }
 
     private void kopioiHakemuksenTietoja(List<Hakukohde> olemassaolevatHakukohteet, Map<String, Hakukohde> kaikkiHakukohteet) {
