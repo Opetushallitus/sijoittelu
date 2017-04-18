@@ -38,16 +38,13 @@ public class PrePostSijoitteluProcessorPeruunnaYlemmatHakutoiveet implements Pre
 
             if (vtjs.stream().allMatch(v -> v.getValintatapajono().getSijoiteltuIlmanVarasijasaantojaNiidenOllessaVoimassa())) {
                 List<HakemusWrapper> peruunnutettavatHakemukset = vtjs.stream()
-                    .flatMap(vtj -> vtj.getHakemukset().stream())
-                    .collect(Collectors.groupingBy(h -> h.getHakemus().getHakemusOid(), Collectors.mapping(Function.identity(), Collectors.toList())))
-                    .entrySet().parallelStream().flatMap(es -> {
-                        List<HakemusWrapper> hakemusValintatapajonoissa = es.getValue();
-                        return hakemusValintatapajonoissa.stream()
-                            .filter(h -> TilaTaulukot.kuuluuPeruunnutettaviinTiloihin(h.getHakemus().getTila()))
-                            .flatMap(hyvaksyttyHakemus -> hakemusValintatapajonoissa.stream()
-                                .filter(h -> h.getHakemus().getPrioriteetti() < hyvaksyttyHakemus.getHakemus().getPrioriteetti())
-                                .filter(ylemmanPrioriteetinHakemus -> ylemmanPrioriteetinHakemus.getHakemus().getTila() == HakemuksenTila.VARALLA));
-                    }).collect(Collectors.toList());
+                        .flatMap(vtj -> vtj.getHakemukset().stream())
+                        .collect(Collectors.groupingBy(h -> h.getHakemus().getHakemusOid()))
+                        .values().parallelStream().flatMap(hakemusValintatapajonoissa -> hakemusValintatapajonoissa.stream()
+                                .filter(h -> TilaTaulukot.kuuluuPeruunnutettaviinTiloihin(h.getHakemus().getTila()))
+                                .flatMap(hyvaksyttyHakemus -> hakemusValintatapajonoissa.stream()
+                                        .filter(h -> h.getHakemus().getPrioriteetti() < hyvaksyttyHakemus.getHakemus().getPrioriteetti())
+                                        .filter(ylemmanPrioriteetinHakemus -> ylemmanPrioriteetinHakemus.getHakemus().getTila() == HakemuksenTila.VARALLA))).collect(Collectors.toList());
 
                 peruunnutettavatHakemukset.forEach(h -> {
                     h.getHakemus().setTilanKuvaukset(TilanKuvaukset.peruuntunutHyvaksyttyAlemmallaHakutoiveella());
