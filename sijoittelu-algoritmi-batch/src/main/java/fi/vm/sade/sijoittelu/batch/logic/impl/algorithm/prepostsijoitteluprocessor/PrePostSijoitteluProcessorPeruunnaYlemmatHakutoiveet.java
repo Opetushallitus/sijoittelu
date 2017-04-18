@@ -33,12 +33,11 @@ public class PrePostSijoitteluProcessorPeruunnaYlemmatHakutoiveet implements Pre
 
             final Timer timer = Timer.start("Pre/Post-processor peruunna ylemmät hakutoiveet", "AMKOPE-haulle " + hakuOid, PrePostSijoitteluProcessorPeruunnaYlemmatHakutoiveet.class);
 
-            List<ValintatapajonoWrapper> vtjs = sijoitteluajoWrapper.getHakukohteet().stream()
-                .flatMap(hkv -> hkv.getValintatapajonot().stream())
-                .collect(Collectors.toList());
-
-            if (vtjs.stream().allMatch(v -> v.getValintatapajono().getSijoiteltuIlmanVarasijasaantojaNiidenOllessaVoimassa())) {
-                List<HakemusWrapper> peruunnutettavatHakemukset = vtjs.stream()
+            if (sijoitteluajoWrapper.getHakukohteet().stream()
+                    .flatMap(hkv -> hkv.getValintatapajonot().stream())
+                    .allMatch(v -> v.getValintatapajono().getSijoiteltuIlmanVarasijasaantojaNiidenOllessaVoimassa())) {
+                List<HakemusWrapper> peruunnutettavatHakemukset = sijoitteluajoWrapper.getHakukohteet().stream()
+                        .flatMap(hk -> hk.getValintatapajonot().stream())
                         .flatMap(vtj -> vtj.getHakemukset().stream())
                         .collect(Collectors.groupingBy(h -> h.getHakemus().getHakemusOid()))
                         .values().parallelStream()
