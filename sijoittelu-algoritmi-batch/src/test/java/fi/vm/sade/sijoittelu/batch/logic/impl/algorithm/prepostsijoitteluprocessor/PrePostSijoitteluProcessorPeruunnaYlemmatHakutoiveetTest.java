@@ -39,7 +39,7 @@ public class PrePostSijoitteluProcessorPeruunnaYlemmatHakutoiveetTest {
                     .withSivssnov(true)
                     .withHakemus(new HakuBuilder.HakemusBuilder()
                         .withHakijaOid("hakija1")
-                        .withOid("hakija1_h1")
+                        .withOid("hakija1")
                         .withTila(HakemuksenTila.VARALLA)
                         .withPrioriteetti(1)
                         .build())
@@ -50,7 +50,7 @@ public class PrePostSijoitteluProcessorPeruunnaYlemmatHakutoiveetTest {
                     .withSivssnov(true)
                     .withHakemus(new HakuBuilder.HakemusBuilder()
                         .withHakijaOid("hakija1")
-                        .withOid("hakija1_h1")
+                        .withOid("hakija1")
                         .withTila(HakemuksenTila.HYLATTY)
                         .withPrioriteetti(1)
                         .build())
@@ -63,13 +63,13 @@ public class PrePostSijoitteluProcessorPeruunnaYlemmatHakutoiveetTest {
                     .withSivssnov(true)
                     .withHakemus(new HakuBuilder.HakemusBuilder()
                         .withHakijaOid("hakija1")
-                        .withOid("hakija1_h2")
+                        .withOid("hakija1")
                         .withTila(HakemuksenTila.HYVAKSYTTY)
                         .withPrioriteetti(3)
                         .build())
                     .withHakemus(new HakuBuilder.HakemusBuilder()
                         .withHakijaOid("hakija2")
-                        .withOid("hakija2_h2")
+                        .withOid("hakija2")
                         .withTila(HakemuksenTila.VARALLA)
                         .withPrioriteetti(2)
                         .build())
@@ -82,7 +82,7 @@ public class PrePostSijoitteluProcessorPeruunnaYlemmatHakutoiveetTest {
                     .withSivssnov(true)
                     .withHakemus(new HakuBuilder.HakemusBuilder()
                         .withHakijaOid("hakija2")
-                        .withOid("hakija2_h1")
+                        .withOid("hakija2")
                         .withTila(HakemuksenTila.HYLATTY)
                         .withPrioriteetti(1)
                         .build())
@@ -93,7 +93,7 @@ public class PrePostSijoitteluProcessorPeruunnaYlemmatHakutoiveetTest {
                     .withSivssnov(true)
                     .withHakemus(new HakuBuilder.HakemusBuilder()
                         .withHakijaOid("hakija2")
-                        .withOid("hakija2_h1")
+                        .withOid("hakija2")
                         .withTila(HakemuksenTila.VARALLA)
                         .withPrioriteetti(1)
                         .build())
@@ -116,9 +116,9 @@ public class PrePostSijoitteluProcessorPeruunnaYlemmatHakutoiveetTest {
         final SijoitteluajoWrapper sw = buildSijoitteluAjoWrapper(buildHakukohteet());
         p.process(sw);
 
-        assertHakemuksenTila("hakija1_h1", "hk1_vtj1", HakemuksenTila.PERUUNTUNUT, sw);
-        assertHakemuksenTila("hakija1_h1", "hk1_vtj2", HakemuksenTila.HYLATTY, sw);
-        assertHakemuksenTila("hakija1_h2", "hk2_vtj1", HakemuksenTila.HYVAKSYTTY, sw);
+        assertHakemuksenTila("hakija1", "hk1_vtj1", HakemuksenTila.PERUUNTUNUT, sw);
+        assertHakemuksenTila("hakija1", "hk1_vtj2", HakemuksenTila.HYLATTY, sw);
+        assertHakemuksenTila("hakija1", "hk2_vtj1", HakemuksenTila.HYVAKSYTTY, sw);
     }
 
     @Test
@@ -126,9 +126,9 @@ public class PrePostSijoitteluProcessorPeruunnaYlemmatHakutoiveetTest {
         final SijoitteluajoWrapper sw = buildSijoitteluAjoWrapper(buildHakukohteet());
         p.process(sw);
 
-        assertHakemuksenTila("hakija2_h1", "hk3_vtj1", HakemuksenTila.HYLATTY, sw);
-        assertHakemuksenTila("hakija2_h1", "hk3_vtj2", HakemuksenTila.VARALLA, sw);
-        assertHakemuksenTila("hakija2_h2", "hk2_vtj1", HakemuksenTila.VARALLA, sw);
+        assertHakemuksenTila("hakija2", "hk3_vtj1", HakemuksenTila.HYLATTY, sw);
+        assertHakemuksenTila("hakija2", "hk3_vtj2", HakemuksenTila.VARALLA, sw);
+        assertHakemuksenTila("hakija2", "hk2_vtj1", HakemuksenTila.VARALLA, sw);
     }
 
 }

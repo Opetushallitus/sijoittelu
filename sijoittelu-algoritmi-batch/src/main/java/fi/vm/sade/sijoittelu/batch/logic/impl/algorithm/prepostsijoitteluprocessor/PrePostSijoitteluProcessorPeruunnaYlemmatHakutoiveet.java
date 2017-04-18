@@ -38,13 +38,13 @@ public class PrePostSijoitteluProcessorPeruunnaYlemmatHakutoiveet implements Pre
             if (vtjs.stream().allMatch(Valintatapajono::getSijoiteltuIlmanVarasijasaantojaNiidenOllessaVoimassa)) {
                 List<Hakemus> peruunnutettavatHakemukset = vtjs.stream()
                     .flatMap(vtj -> vtj.getHakemukset().stream())
-                    .collect(Collectors.groupingBy(Hakemus::getHakijaOid, Collectors.mapping(Function.identity(), Collectors.toList())))
+                    .collect(Collectors.groupingBy(Hakemus::getHakemusOid, Collectors.mapping(Function.identity(), Collectors.toList())))
                     .entrySet().parallelStream().flatMap(es -> {
-                        List<Hakemus> hakijanHakemukset = es.getValue();
-                        return hakijanHakemukset.stream()
+                        List<Hakemus> hakemusValintatapajonoissa = es.getValue();
+                        return hakemusValintatapajonoissa.stream()
                             .filter(h -> TilaTaulukot.kuuluuPeruunnutettaviinTiloihin(h.getTila()))
-                            .flatMap(hyvaksyttyHakemus -> hakijanHakemukset.stream()
-                                .filter(hakijanHakemus -> hakijanHakemus.getPrioriteetti() < hyvaksyttyHakemus.getPrioriteetti())
+                            .flatMap(hyvaksyttyHakemus -> hakemusValintatapajonoissa.stream()
+                                .filter(h -> h.getPrioriteetti() < hyvaksyttyHakemus.getPrioriteetti())
                                 .filter(ylemmanPrioriteetinHakemus -> ylemmanPrioriteetinHakemus.getTila() == HakemuksenTila.VARALLA));
                     }).collect(Collectors.toList());
 
