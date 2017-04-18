@@ -6,6 +6,7 @@ import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.presijoitteluprocessor.P
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.util.TilaTaulukot;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.util.TilanKuvaukset;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.util.Timer;
+import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.HakemusWrapper;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.SijoitteluajoWrapper;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.ValintatapajonoWrapper;
 import fi.vm.sade.sijoittelu.domain.HakemuksenTila;
@@ -31,29 +32,30 @@ public class PrePostSijoitteluProcessorPeruunnaYlemmatHakutoiveet implements Pre
 
             final Timer timer = Timer.start("Pre/Post-processor peruunna ylemmät hakutoiveet", "AMKOPE-haulle " + hakuOid, PrePostSijoitteluProcessorPeruunnaYlemmatHakutoiveet.class);
 
-            List<Valintatapajono> vtjs = sijoitteluajoWrapper.getHakukohteet().stream()
+            List<ValintatapajonoWrapper> vtjs = sijoitteluajoWrapper.getHakukohteet().stream()
                 .flatMap(hkv -> hkv.getValintatapajonot().stream())
-                .map(ValintatapajonoWrapper::getValintatapajono).collect(Collectors.toList());
+                .collect(Collectors.toList());
 
-            if (vtjs.stream().allMatch(Valintatapajono::getSijoiteltuIlmanVarasijasaantojaNiidenOllessaVoimassa)) {
-                List<Hakemus> peruunnutettavatHakemukset = vtjs.stream()
+            if (vtjs.stream().allMatch(v -> v.getValintatapajono().getSijoiteltuIlmanVarasijasaantojaNiidenOllessaVoimassa())) {
+                List<HakemusWrapper> peruunnutettavatHakemukset = vtjs.stream()
                     .flatMap(vtj -> vtj.getHakemukset().stream())
-                    .collect(Collectors.groupingBy(Hakemus::getHakemusOid, Collectors.mapping(Function.identity(), Collectors.toList())))
+                    .collect(Collectors.groupingBy(h -> h.getHakemus().getHakemusOid(), Collectors.mapping(Function.identity(), Collectors.toList())))
                     .entrySet().parallelStream().flatMap(es -> {
-                        List<Hakemus> hakemusValintatapajonoissa = es.getValue();
+                        List<HakemusWrapper> hakemusValintatapajonoissa = es.getValue();
                         return hakemusValintatapajonoissa.stream()
-                            .filter(h -> TilaTaulukot.kuuluuPeruunnutettaviinTiloihin(h.getTila()))
+                            .filter(h -> TilaTaulukot.kuuluuPeruunnutettaviinTiloihin(h.getHakemus().getTila()))
                             .flatMap(hyvaksyttyHakemus -> hakemusValintatapajonoissa.stream()
-                                .filter(h -> h.getPrioriteetti() < hyvaksyttyHakemus.getPrioriteetti())
-                                .filter(ylemmanPrioriteetinHakemus -> ylemmanPrioriteetinHakemus.getTila() == HakemuksenTila.VARALLA));
+                                .filter(h -> h.getHakemus().getPrioriteetti() < hyvaksyttyHakemus.getHakemus().getPrioriteetti())
+                                .filter(ylemmanPrioriteetinHakemus -> ylemmanPrioriteetinHakemus.getHakemus().getTila() == HakemuksenTila.VARALLA));
                     }).collect(Collectors.toList());
 
                 peruunnutettavatHakemukset.forEach(h -> {
-                    h.setTilanKuvaukset(TilanKuvaukset.peruuntunutHyvaksyttyAlemmallaHakutoiveella());
-                    h.setTila(HakemuksenTila.PERUUNTUNUT);
+                    h.getHakemus().setTilanKuvaukset(TilanKuvaukset.peruuntunutHyvaksyttyAlemmallaHakutoiveella());
+                    h.getHakemus().setTila(HakemuksenTila.PERUUNTUNUT);
+                    h.setTilaVoidaanVaihtaa(false);
                     peruunnutetutHakemukset.incrementAndGet();
                 });
-                LOG.info("Peruunnutettu hakemukset: {}", peruunnutettavatHakemukset.stream().map(Hakemus::getHakemusOid).collect(Collectors.joining(", ")));
+                LOG.info("Peruunnutettu hakemukset: {}", peruunnutettavatHakemukset.stream().map(h -> h.getHakemus().getHakemusOid()).collect(Collectors.joining(", ")));
             }
             timer.stop("AMKOPE-haulle " + hakuOid + ", peruunnutettu " + peruunnutetutHakemukset + " kpl");
         }
