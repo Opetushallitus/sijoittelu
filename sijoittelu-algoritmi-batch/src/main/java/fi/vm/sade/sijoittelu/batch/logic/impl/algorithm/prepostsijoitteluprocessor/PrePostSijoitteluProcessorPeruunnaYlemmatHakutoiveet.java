@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class PrePostSijoitteluProcessorPeruunnaYlemmatHakutoiveet implements PreSijoitteluProcessor, PostSijoitteluProcessor {
 
@@ -40,11 +41,9 @@ public class PrePostSijoitteluProcessorPeruunnaYlemmatHakutoiveet implements Pre
                 List<HakemusWrapper> peruunnutettavatHakemukset = vtjs.stream()
                         .flatMap(vtj -> vtj.getHakemukset().stream())
                         .collect(Collectors.groupingBy(h -> h.getHakemus().getHakemusOid()))
-                        .values().parallelStream().flatMap(hakemusValintatapajonoissa -> hakemusValintatapajonoissa.stream()
-                                .filter(h -> TilaTaulukot.kuuluuPeruunnutettaviinTiloihin(h.getHakemus().getTila()))
-                                .flatMap(hyvaksyttyHakemus -> hakemusValintatapajonoissa.stream()
-                                        .filter(h -> h.getHakemus().getPrioriteetti() < hyvaksyttyHakemus.getHakemus().getPrioriteetti())
-                                        .filter(ylemmanPrioriteetinHakemus -> ylemmanPrioriteetinHakemus.getHakemus().getTila() == HakemuksenTila.VARALLA))).collect(Collectors.toList());
+                        .values().parallelStream()
+                        .flatMap(this::hyvaksyttyaYlemmatVarallaOlevat)
+                        .collect(Collectors.toList());
 
                 peruunnutettavatHakemukset.forEach(h -> {
                     h.getHakemus().setTilanKuvaukset(TilanKuvaukset.peruuntunutHyvaksyttyAlemmallaHakutoiveella());
@@ -56,5 +55,13 @@ public class PrePostSijoitteluProcessorPeruunnaYlemmatHakutoiveet implements Pre
             }
             timer.stop("AMKOPE-haulle " + hakuOid + ", peruunnutettu " + peruunnutetutHakemukset + " kpl");
         }
+    }
+
+    private Stream<HakemusWrapper> hyvaksyttyaYlemmatVarallaOlevat(List<HakemusWrapper> hakemusValintatapajonoissa) {
+        return hakemusValintatapajonoissa.stream()
+                .filter(h -> TilaTaulukot.kuuluuPeruunnutettaviinTiloihin(h.getHakemus().getTila()))
+                .flatMap(hyvaksyttyHakemus -> hakemusValintatapajonoissa.stream()
+                        .filter(h -> h.getHakemus().getPrioriteetti() < hyvaksyttyHakemus.getHakemus().getPrioriteetti())
+                        .filter(ylemmanPrioriteetinHakemus -> ylemmanPrioriteetinHakemus.getHakemus().getTila() == HakemuksenTila.VARALLA));
     }
 }
