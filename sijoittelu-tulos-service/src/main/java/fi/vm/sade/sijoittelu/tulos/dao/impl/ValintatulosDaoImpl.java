@@ -116,6 +116,10 @@ public class ValintatulosDaoImpl implements ValintatulosDao {
                         .add("valintatapajonoOid", "$valintatapajonoOid")
                         .add("julkaistavissa", "$julkaistavissa")
                         .add("ehdollisestiHyvaksyttavissa", "$ehdollisestiHyvaksyttavissa")
+                        .add("ehdollisenHyvaksymisenEhtoKoodi", "$ehdollisenHyvaksymisenEhtoKoodi")
+                        .add("ehdollisenHyvaksymisenEhtoFI", "$ehdollisenHyvaksymisenEhtoFI")
+                        .add("ehdollisenHyvaksymisenEhtoSV", "$ehdollisenHyvaksymisenEhtoSV")
+                        .add("ehdollisenHyvaksymisenEhtoEN", "$ehdollisenHyvaksymisenEhtoEN")
                         .add("hyvaksyttyVarasijalta", "$hyvaksyttyVarasijalta")
                         .add("ilmoittautumisTila", "$ilmoittautumisTila")
                         .pop()
@@ -140,7 +144,11 @@ public class ValintatulosDaoImpl implements ValintatulosDao {
                     (ehdollisestiHyvaksyttavissa != null && ((boolean) ehdollisestiHyvaksyttavissa)),
                     (hyvaksyttyVarasijalta != null && ((boolean) hyvaksyttyVarasijalta)),
                     (Date) o.get("viimeisinValintatuloksenMuutos"),
-                    ilmoittautumisTila != null ? fi.vm.sade.sijoittelu.tulos.dto.IlmoittautumisTila.valueOf((String) ilmoittautumisTila) : null
+                    ilmoittautumisTila != null ? fi.vm.sade.sijoittelu.tulos.dto.IlmoittautumisTila.valueOf((String) ilmoittautumisTila) : null,
+                    (String) id.get("ehdollisenHyvaksymisenEhtoKoodi"),
+                    (String) id.get("ehdollisenHyvaksymisenEhtoFI"),
+                    (String) id.get("ehdollisenHyvaksymisenEhtoSV"),
+                    (String) id.get("ehdollisenHyvaksymisenEhtoEN")
             ));
         }
         return r;
@@ -236,6 +244,13 @@ public class ValintatulosDaoImpl implements ValintatulosDao {
             }
             else {
                 update.unset("hyvaksymiskirjeLahetetty");
+            }
+
+            if(tulos.getEhdollisenHyvaksymisenEhtoKoodi() != null){
+                update.set("ehdollisenHyvaksymisenEhtoKoodi", tulos.getEhdollisenHyvaksymisenEhtoKoodi())
+                    .set("ehdollisenHyvaksymisenEhtoFI", tulos.getEhdollisenHyvaksymisenEhtoFI())
+                    .set("ehdollisenHyvaksymisenEhtoSV", tulos.getEhdollisenHyvaksymisenEhtoSV())
+                    .set("ehdollisenHyvaksymisenEhtoEN", tulos.getEhdollisenHyvaksymisenEhtoEN());
             }
 
             List<LogEntry> diff = new ArrayList<>(tulos.getLogEntries());

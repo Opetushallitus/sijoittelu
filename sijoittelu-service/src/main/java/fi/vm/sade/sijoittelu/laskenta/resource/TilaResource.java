@@ -4,6 +4,7 @@ import static fi.vm.sade.sijoittelu.laskenta.roles.SijoitteluRole.READ_UPDATE_CR
 import static fi.vm.sade.sijoittelu.laskenta.roles.SijoitteluRole.UPDATE_CRUD;
 import static fi.vm.sade.sijoittelu.laskenta.util.SijoitteluAudit.username;
 import static fi.vm.sade.sijoittelu.tulos.roles.SijoitteluRole.CRUD;
+
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -12,6 +13,7 @@ import fi.vm.sade.generic.service.exception.NotAuthorizedException;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.util.TilanKuvaukset;
 import fi.vm.sade.sijoittelu.domain.*;
 import fi.vm.sade.sijoittelu.domain.dto.ErillishaunHakijaDTO;
+import fi.vm.sade.sijoittelu.laskenta.service.business.HyvaksymisenEhtoException;
 import fi.vm.sade.sijoittelu.laskenta.service.business.IllegalVTSRequestException;
 import fi.vm.sade.sijoittelu.laskenta.service.business.PriorAcceptanceException;
 import fi.vm.sade.sijoittelu.laskenta.service.business.SijoitteluBusinessService;
@@ -218,9 +220,12 @@ public class TilaResource {
         for (Valintatulos v : valintatulokset) {
             try {
                 sijoitteluBusinessService.vaihdaHakemuksenTila(hakuOid, hakukohde, v, selite, username());
-            } catch (HakemustaEiLoytynytException e) {
+           } catch (HakemustaEiLoytynytException e) {
                 LOGGER.info("haku: {}, hakukohde: {}", hakuOid, hakukohdeOid, e);
                 statuses.add(new ValintatulosUpdateStatus(Status.NOT_FOUND.getStatusCode(), e.getMessage(), v.getValintatapajonoOid(), v.getHakemusOid()));
+           } catch (HyvaksymisenEhtoException e) {
+                LOGGER.info("haku: {}, hakukohde: {}", hakuOid, hakukohdeOid, e);
+                statuses.add(new ValintatulosUpdateStatus(Status.CONFLICT.getStatusCode(), e.getMessage(), v.getValintatapajonoOid(), v.getHakemusOid()));
             } catch (NotAuthorizedException e) {
                 LOGGER.info("haku: {}, hakukohde: {}, valintatapajono: {}, hakemus: {}",
                         hakuOid, hakukohdeOid, v.getValintatapajonoOid(), v.getHakemusOid(), e);

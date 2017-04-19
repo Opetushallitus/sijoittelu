@@ -32,6 +32,7 @@ import fi.vm.sade.sijoittelu.tulos.roles.SijoitteluRole;
 import fi.vm.sade.sijoittelu.tulos.service.RaportointiService;
 import fi.vm.sade.sijoittelu.tulos.service.impl.converters.SijoitteluTulosConverter;
 import fi.vm.sade.valintalaskenta.domain.dto.valintatieto.HakuDTO;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.tuple.Triple;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -795,7 +796,7 @@ public class SijoitteluBusinessService {
         if (v.getViimeinenMuutos() != null && v.getViimeinenMuutos().after(change.getRead())) {
             throw new StaleReadException(hakuoid, hakukohdeOid, valintatapajonoOid, hakemusOid, v.getViimeinenMuutos(), change.getRead());
         }
-
+        
         authorizeJulkaistavissa(hakuoid, v.getJulkaistavissa(), change.getJulkaistavissa());
         authorizeHyvaksyPeruuntunutModification(tarjoajaOid, change.getHyvaksyPeruuntunut(), v);
 
@@ -806,6 +807,17 @@ public class SijoitteluBusinessService {
         }
         v.setJulkaistavissa(change.getJulkaistavissa(), selite, muokkaaja);
         v.setEhdollisestiHyvaksyttavissa(change.getEhdollisestiHyvaksyttavissa(), selite, muokkaaja);
+        if (change.getEhdollisestiHyvaksyttavissa() && change.getEhdollisenHyvaksymisenEhtoKoodi() == null){
+            throw new IllegalArgumentException("Ehdollisenehdollisen hyvaksymisen syyn koodi puuttuu. " + String.format("hakuoid: %s, valintatapajonoOid: %s, hakemusOid: %s", hakuoid, valintatapajonoOid, hakemusOid));
+        }
+        if (isEhdollisestihyvaksyttavissaMuuWithoutReasons(change)) {
+            throw new IllegalArgumentException("Ehdollisen hyväksymisen koodi on 'muu', mutta syytä ei oltu määritelty kaikilla kielillä. " +
+                    String.format("hakuoid: %s, valintatapajonoOid: %s, hakemusOid: %s", hakuoid, valintatapajonoOid, hakemusOid));
+        }
+        v.setEhdollisenHyvaksymisenEhtoKoodi(change.getEhdollisenHyvaksymisenEhtoKoodi(), selite, muokkaaja);
+        v.setEhdollisenHyvaksymisenEhtoFI(change.getEhdollisenHyvaksymisenEhtoFI(), selite, muokkaaja);
+        v.setEhdollisenHyvaksymisenEhtoSV(change.getEhdollisenHyvaksymisenEhtoSV(), selite, muokkaaja);
+        v.setEhdollisenHyvaksymisenEhtoEN(change.getEhdollisenHyvaksymisenEhtoEN(), selite, muokkaaja);
         v.setHyvaksyttyVarasijalta(change.getHyvaksyttyVarasijalta(), selite, muokkaaja);
         v.setHyvaksyPeruuntunut(change.getHyvaksyPeruuntunut(), selite, muokkaaja);
         v.setHyvaksymiskirjeLahetetty(change.getHyvaksymiskirjeLahetetty(), selite, muokkaaja);
@@ -823,9 +835,22 @@ public class SijoitteluBusinessService {
                 .add("hyvaksyttyvarasijalta", v.getHyvaksyttyVarasijalta())
                 .add("hyvaksyperuuntunut", v.getHyvaksyPeruuntunut())
                 .add("ehdollisestihyvaksyttavissa", v.getEhdollisestiHyvaksyttavissa())
+                .add("ehdollisenHyvaksymisenEhtoKoodi", v.getEhdollisenHyvaksymisenEhtoKoodi())
+                .add("ehdollisenHyvaksymisenEhtoFI", v.getEhdollisenHyvaksymisenEhtoFI())
+                .add("ehdollisenHyvaksymisenEhtoSV", v.getEhdollisenHyvaksymisenEhtoSV())
+                .add("ehdollisenHyvaksymisenEhtoEN", v.getEhdollisenHyvaksymisenEhtoEN())
                 .add("selite", selite)
                 .setOperaatio(ValintaperusteetOperation.HAKEMUS_TILAMUUTOS)
                 .build());
+    }
+
+    private boolean isEhdollisestihyvaksyttavissaMuuWithoutReasons(Valintatulos change) {
+        return change.getEhdollisestiHyvaksyttavissa() &&
+                change.getEhdollisenHyvaksymisenEhtoKoodi() != null &&
+                change.getEhdollisenHyvaksymisenEhtoKoodi().equals(EhdollisenHyvaksymisenEhtoKoodi.EHTO_MUU) &&
+                (StringUtils.isEmpty(change.getEhdollisenHyvaksymisenEhtoFI()) ||
+                        StringUtils.isEmpty(change.getEhdollisenHyvaksymisenEhtoSV()) ||
+                        StringUtils.isEmpty(change.getEhdollisenHyvaksymisenEhtoEN()));
     }
 
     public void siivoaVanhatAjotSijoittelulta(String hakuOid, Sijoittelu sijoittelu, int ajojaSaastetaan) {

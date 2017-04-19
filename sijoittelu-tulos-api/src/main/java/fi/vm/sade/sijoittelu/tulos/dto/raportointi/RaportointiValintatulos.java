@@ -12,6 +12,10 @@ public class RaportointiValintatulos {
     public final boolean hyvaksyttyVarasijalta;
     public final Date viimeisinValintatuloksenMuutos;
     public final IlmoittautumisTila ilmoittautumisTila;
+    public final String ehdollisenHyvaksymisenEhtoKoodi;
+    public final String ehdollisenHyvaksymisenEhtoFI;
+    public final String ehdollisenHyvaksymisenEhtoSV;
+    public final String ehdollisenHyvaksymisenEhtoEN;
 
     public RaportointiValintatulos(String hakemusOid,
                                    String valintatapajonoOid,
@@ -19,7 +23,11 @@ public class RaportointiValintatulos {
                                    boolean ehdollisestiHyvaksyttavissa,
                                    boolean hyvaksyttyVarasijalta,
                                    Date viimeisinValintatuloksenMuutos,
-                                   IlmoittautumisTila ilmoittautumisTila) {
+                                   IlmoittautumisTila ilmoittautumisTila,
+                                   String ehdollisenHyvaksymisenEhtoKoodi,
+                                   String ehdollisenHyvaksymisenEhtoFI,
+                                   String ehdollisenHyvaksymisenEhtoSV,
+                                   String ehdollisenHyvaksymisenEhtoEN) {
         this.hakemusOid = hakemusOid;
         this.valintatapajonoOid = valintatapajonoOid;
         this.julkaistavissa = julkaistavissa;
@@ -27,5 +35,9 @@ public class RaportointiValintatulos {
         this.hyvaksyttyVarasijalta = hyvaksyttyVarasijalta;
         this.viimeisinValintatuloksenMuutos = viimeisinValintatuloksenMuutos;
         this.ilmoittautumisTila = ilmoittautumisTila;
+        this.ehdollisenHyvaksymisenEhtoKoodi = ehdollisenHyvaksymisenEhtoKoodi;
+        this.ehdollisenHyvaksymisenEhtoFI = ehdollisenHyvaksymisenEhtoFI;
+        this.ehdollisenHyvaksymisenEhtoSV = ehdollisenHyvaksymisenEhtoSV;
+        this.ehdollisenHyvaksymisenEhtoEN = ehdollisenHyvaksymisenEhtoEN;
     }
 }
