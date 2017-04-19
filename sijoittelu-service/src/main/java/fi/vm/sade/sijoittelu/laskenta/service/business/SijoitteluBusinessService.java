@@ -32,6 +32,7 @@ import fi.vm.sade.sijoittelu.tulos.roles.SijoitteluRole;
 import fi.vm.sade.sijoittelu.tulos.service.RaportointiService;
 import fi.vm.sade.sijoittelu.tulos.service.impl.converters.SijoitteluTulosConverter;
 import fi.vm.sade.valintalaskenta.domain.dto.valintatieto.HakuDTO;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.tuple.Triple;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -798,6 +799,10 @@ public class SijoitteluBusinessService {
         if (change.getEhdollisestiHyvaksyttavissa() && change.getEhdollisenHyvaksymisenEhtoKoodi() == null){
             throw new IllegalArgumentException("Ehdollisenehdollisen hyvaksymisen syyn koodi puuttuu. " + String.format("hakuoid: %s, valintatapajonoOid: %s, hakemusOid: %s", hakuoid, valintatapajonoOid, hakemusOid));
         }
+        if (isEhdollisestihyvaksyttavissaMuuWithoutReasons(change)) {
+            throw new IllegalArgumentException("Ehdollisen hyväksymisen koodi on 'muu', mutta syytä ei oltu määritelty kaikilla kielillä. " +
+                    String.format("hakuoid: %s, valintatapajonoOid: %s, hakemusOid: %s", hakuoid, valintatapajonoOid, hakemusOid));
+        }
         v.setEhdollisenHyvaksymisenEhtoKoodi(change.getEhdollisenHyvaksymisenEhtoKoodi(), selite, muokkaaja);
         v.setEhdollisenHyvaksymisenEhtoFI(change.getEhdollisenHyvaksymisenEhtoFI(), selite, muokkaaja);
         v.setEhdollisenHyvaksymisenEhtoSV(change.getEhdollisenHyvaksymisenEhtoSV(), selite, muokkaaja);
@@ -826,6 +831,15 @@ public class SijoitteluBusinessService {
                 .add("selite", selite)
                 .setOperaatio(ValintaperusteetOperation.HAKEMUS_TILAMUUTOS)
                 .build());
+    }
+
+    private boolean isEhdollisestihyvaksyttavissaMuuWithoutReasons(Valintatulos change) {
+        return change.getEhdollisestiHyvaksyttavissa() &&
+                change.getEhdollisenHyvaksymisenEhtoKoodi() != null &&
+                change.getEhdollisenHyvaksymisenEhtoKoodi().equals(EhdollisenHyvaksymisenEhtoKoodi.EHTO_MUU) &&
+                (StringUtils.isEmpty(change.getEhdollisenHyvaksymisenEhtoFI()) ||
+                        StringUtils.isEmpty(change.getEhdollisenHyvaksymisenEhtoSV()) ||
+                        StringUtils.isEmpty(change.getEhdollisenHyvaksymisenEhtoEN()));
     }
 
     public void siivoaVanhatAjotSijoittelulta(String hakuOid, Sijoittelu sijoittelu, int ajojaSaastetaan) {

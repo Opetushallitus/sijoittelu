@@ -624,6 +624,44 @@ public class SijoitteluBusinessServiceTest {
 
     }
 
+    @Test(expected=IllegalArgumentException.class)
+    public void testVaihdaEhdollisestiHyvaksyttavaksiIlmanSelitteitä() throws Exception {
+        Sijoittelu sijoittelu = testDataGenerator.generateTestData();
+
+        when(raportointiService.cachedLatestSijoitteluAjoForHakukohde(HAKU_OID, HAKUKOHDE_OID))
+                .thenReturn(Optional.of(sijoittelu.getLatestSijoitteluajo()));
+
+        when(hakukohdeDao.getHakukohdeForSijoitteluajo(TestDataGenerator.SIJOITTELU_AJO_ID_2, HAKUKOHDE_OID))
+                .thenReturn(testDataGenerator.createHakukohdes(1).get(0));
+
+        when(valintatulosDaoMock.loadValintatulos(HAKUKOHDE_OID, VALINTATAPAJONO_OID, HAKEMUS_OID))
+                .thenReturn(getValintatulos(ValintatuloksenTila.KESKEN));
+
+        boolean hyvaksyttyVarasijalta = false;
+        boolean julkaistavissa = false;
+        Valintatulos v = new Valintatulos(
+                HAKEMUS_OID,
+                HAKEMUS_OID,
+                HAKUKOHDE_OID,
+                HAKU_OID,
+                1,
+                hyvaksyttyVarasijalta,
+                IlmoittautumisTila.EI_TEHTY,
+                julkaistavissa,
+                ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI,
+                true,
+                VALINTATAPAJONO_OID,
+                new Date(),
+                EhdollisenHyvaksymisenEhtoKoodi.EHTO_MUU,
+                null,
+                "ruotsi",
+                "englanti");
+        sijoitteluBusinessService.vaihdaHakemuksenTila(HAKU_OID,
+                sijoitteluBusinessService.getHakukohde(HAKU_OID, HAKUKOHDE_OID),
+                v, SELITE, "");
+
+    }
+
     private void runValintaesitysJulkaistavissaTest(ParametriDTO params) {
         when(valintatulosDaoMock.loadValintatulos(HAKUKOHDE_OID, VALINTATAPAJONO_OID, HAKEMUS_OID))
                 .thenReturn(getValintatulos(ValintatuloksenTila.KESKEN));
