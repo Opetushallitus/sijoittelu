@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+@Deprecated
 @Entity("Sijoittelu")
 public class Sijoittelu implements Serializable {
 

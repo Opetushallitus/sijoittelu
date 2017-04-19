@@ -10,6 +10,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -27,6 +28,7 @@ public class ValintatulosWithVastaanotto {
         this.valintaTulosServiceResource = valintaTulosServiceResource;
     }
 
+    @Deprecated
     public List<Valintatulos> forHaku(String hakuOid) {
         LOG.info("Haetaan valintatulokset haulle {}", hakuOid);
         List<Valintatulos> fromDb = valintatulosDao.loadValintatulokset(hakuOid);
@@ -55,8 +57,7 @@ public class ValintatulosWithVastaanotto {
         return fromDb;
     }
 
-    public void persistValintatulokset(List<Valintatulos> valintatulokset) {
-
+    public void persistVastaanotot(List<Valintatulos> valintatulokset) {
         valintatulokset.forEach(vt -> {
             LOG.info("Valintatulos - Hakukohde: {}, valintatapajono: {}, hakija: {}, hakemus: {}, vastaanoton tila: {}",
                     vt.getHakukohdeOid(),
@@ -101,6 +102,11 @@ public class ValintatulosWithVastaanotto {
         });
 
         valintaTulosServiceResource.valintatuloksetValinnantilalla(vs);
+    }
+
+    @Deprecated
+    public void persistValintatulokset(List<Valintatulos> valintatulokset) {
+        persistVastaanotot(valintatulokset);
         valintatulokset.forEach(valintatulosDao::createOrUpdateValintatulos);
     }
 
