@@ -4,7 +4,7 @@
     <parent>
         <artifactId>sijoittelu</artifactId>
         <groupId>fi.vm.sade.sijoittelu</groupId>
-        <version>5.2-SNAPSHOT</version>
+        <version>5.3_OK-119-SNAPSHOT</version>
         <relativePath>..</relativePath>
     </parent>
 
