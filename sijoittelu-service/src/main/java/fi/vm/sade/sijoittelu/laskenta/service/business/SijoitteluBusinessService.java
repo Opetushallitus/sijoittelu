@@ -81,6 +81,14 @@ public class SijoitteluBusinessService {
     @Value(value = "${valintalaskenta-ui.read-from-valintarekisteri}")
     private boolean readSijoitteluFromValintarekisteri;
 
+    public void setSaveSijoitteluToValintarekisteri(boolean saveSijoitteluToValintarekisteri) {
+        this.saveSijoitteluToValintarekisteri = saveSijoitteluToValintarekisteri;
+    }
+
+    public void setReadSijoitteluFromValintarekisteri(boolean readSijoitteluFromValintarekisteri) {
+        this.readSijoitteluFromValintarekisteri = readSijoitteluFromValintarekisteri;
+    }
+
     @Autowired
     public SijoitteluBusinessService(@Value("${sijoittelu.maxAjojenMaara:20}") int maxAjoMaara,
                                      @Value("${sijoittelu.maxErillisAjojenMaara:300}") int maxErillisAjoMaara,
@@ -151,7 +159,9 @@ public class SijoitteluBusinessService {
         sijoitteluajoWrapper.setEdellisenSijoittelunHakukohteet(olemassaolevatHakukohteet);
         stopWatch.stop();
         suoritaSijoittelu(startTime, stopWatch, hakuOid, uusiSijoitteluajo, sijoitteluajoWrapper);
-        processOldApplications(stopWatch, olemassaolevatHakukohteet, kaikkiHakukohteet, hakuOid);
+        stopWatch.start("Kopioidaan edellisen sijoitteluajon tietoja");
+        kopioiHakukohteenTiedotVanhaltaSijoitteluajolta(olemassaolevatHakukohteet, kaikkiHakukohteet);
+        stopWatch.stop();
 
         LOG.info("Muuttuneita valintatuloksia: " + sijoitteluajoWrapper.getMuuttuneetValintatulokset().size());
         LOG.info("Muuttuneet valintatulokset: " + sijoitteluajoWrapper.getMuuttuneetValintatulokset());
@@ -237,6 +247,18 @@ public class SijoitteluBusinessService {
             return viimeisinSijoitteluajo;
         } catch (IllegalArgumentException iae) {
             LOG.info("Viimeisintä sijoitteluajoa haulle {} ei löydy valintarekisteristä.", hakuOid);
+            LOG.error(iae.getMessage());
+            return null;
+        }
+    }
+
+    private Hakukohde readHakukohdeFromValintarekisteri(Long sijoitteluajoId, String hakukohdeOid) {
+        try {
+            LOG.info("Luetaan hakukohde {} valintarekisteristä", hakukohdeOid);
+            Hakukohde hakukohde = valintarekisteriService.getHakukohdeForSijoitteluajo(sijoitteluajoId, hakukohdeOid);
+            return hakukohde;
+        } catch (IllegalArgumentException iae) {
+            LOG.info("Sijoitteluajolle {} ei löydy valintarekisteristä hakukohdetta {}.", sijoitteluajoId, hakukohdeOid);
             LOG.error(iae.getMessage());
             return null;
         }
@@ -472,6 +494,7 @@ public class SijoitteluBusinessService {
         }
     }
 
+    @Deprecated
     private Map<String,Long> hakukohdeToLastSijoitteluAjoId(final Sijoittelu sijoittelu) {
         return sijoittelu.getSijoitteluajot().stream()
                 .flatMap(s -> s.getHakukohteet().stream().map(h -> new HakukohdeOidAndSijoitteluAjoId(h.getOid(),s.getSijoitteluajoId())))
@@ -482,7 +505,90 @@ public class SijoitteluBusinessService {
                 ));
     }
 
-    public long erillissijoittele(HakuDTO sijoitteluTyyppi) {
+    public long erillissijoittele(HakuDTO hakuDTO) {
+        if(readSijoitteluFromValintarekisteri) {
+            return valintarekisteriErillissijoittelu(hakuDTO);
+        } else {
+            return mongoErillissijoittelu(hakuDTO);
+        }
+    }
+
+    private Hakukohde getErillissijoittelunHakukohde(HakuDTO haku) {
+        if( 1 == haku.getHakukohteet().size() ) {
+            return DomainConverter.convertToHakukohde(haku.getHakukohteet().get(0));
+        }
+        LOG.error("Haun {} erillissijoitteluun saatiin {} kpl hakukohteita. Voi olla vain yksi!", haku.getHakuOid(), haku.getHakukohteet().size());
+        throw new IllegalStateException("Haun " + haku.getHakuOid() + " erillissijoitteluun saatiin " + haku.getHakukohteet().size() + " kpl hakukohteita. Voi olla vain yksi!");
+    }
+
+    private long valintarekisteriErillissijoittelu(HakuDTO haku) {
+        long startTime = System.currentTimeMillis();
+        String hakuOid = haku.getHakuOid();
+
+        StopWatch stopWatch = new StopWatch("Haun " + hakuOid + " erillissijoittelu");
+        LOG.info("Erillissijoittelu haulle {} alkaa. Luetaan sijoittelu valintarekisteristä!", hakuOid);
+
+        stopWatch.start("Luetaan viimeisin erillissijoitteluajo valintarekisteristä");
+        SijoitteluAjo viimeisinSijoitteluajo = readSijoitteluajoFromValintarekisteri(haku.getHakuOid());
+        stopWatch.stop();
+
+        stopWatch.start("Haetaan erillissijoittelun hakukohde");
+        Hakukohde hakukohdeValintalaskennassa = getErillissijoittelunHakukohde(haku);
+        String sijoiteltavanHakukohteenOid = hakukohdeValintalaskennassa.getOid();
+
+        List<Hakukohde> viimeisimmanSijoitteluajonHakukohteet = Collections.emptyList();
+        List<Hakukohde> hakukohdeViimeisimmassaSijoitteluajossa = Collections.emptyList();
+
+        if( null != viimeisinSijoitteluajo ) {
+            viimeisimmanSijoitteluajonHakukohteet = valintarekisteriService.getSijoitteluajonHakukohteet(viimeisinSijoitteluajo.getSijoitteluajoId());
+            hakukohdeViimeisimmassaSijoitteluajossa = viimeisimmanSijoitteluajonHakukohteet.stream().filter(hk -> hk.getOid().equals(sijoiteltavanHakukohteenOid)).findFirst().map(hk -> Arrays.asList(hk)).orElse(Collections.emptyList());
+        }
+
+        SijoitteluAjo uusiSijoitteluajo = createSijoitteluAjo(hakuOid);
+        List<Hakukohde> hakukohdeTassaSijoittelussa = merge(uusiSijoitteluajo, hakukohdeViimeisimmassaSijoitteluajossa, Arrays.asList(hakukohdeValintalaskennassa));
+        stopWatch.stop();
+
+        stopWatch.start("Haetaan valintatulokset vastaanottoineen");
+        List<Valintatulos> valintatulokset = valintarekisteriService.getValintatulokset(hakuOid);
+        stopWatch.stop();
+        stopWatch.start("Haetaan kauden aiemmat vastaanotot");
+        Map<String, VastaanottoDTO> kaudenAiemmatVastaanotot = aiemmanVastaanotonHakukohdePerHakija(hakuOid);
+        stopWatch.stop();
+
+        stopWatch.start("Luodaan sijoitteluajoWrapper");
+        final SijoitteluajoWrapper sijoitteluajoWrapper = SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(uusiSijoitteluajo, hakukohdeTassaSijoittelussa, valintatulokset, kaudenAiemmatVastaanotot);
+        asetaSijoittelunParametrit(hakuOid, sijoitteluajoWrapper);
+        stopWatch.stop();
+
+        suoritaSijoittelu(startTime, stopWatch, hakuOid, uusiSijoitteluajo, sijoitteluajoWrapper);
+
+        stopWatch.start("Kopioidaan edellisen sijoitteluajon tietoja");
+        kopioiHakukohteenTiedotVanhaltaSijoitteluajolta(hakukohdeViimeisimmassaSijoitteluajossa, hakukohdeTassaSijoittelussa);
+        List<Hakukohde> kaikkiTallennettavatHakukohteet = new ArrayList<>();
+        kaikkiTallennettavatHakukohteet.addAll(hakukohdeTassaSijoittelussa);
+        kaikkiTallennettavatHakukohteet.addAll(viimeisimmanSijoitteluajonHakukohteet.stream().filter(hk -> !hk.getOid().equals(sijoiteltavanHakukohteenOid)).map(hakukohde -> {
+            hakukohde.setId(null);
+            hakukohde.setSijoitteluajoId(uusiSijoitteluajo.getSijoitteluajoId());
+            HakukohdeItem item = new HakukohdeItem();
+            item.setOid(hakukohde.getOid());
+            uusiSijoitteluajo.getHakukohteet().add(item);
+            return hakukohde;
+        }).collect(Collectors.toList()));
+        stopWatch.stop();
+
+        LOG.warn("Tallennetaan sijoitteluajo ainoastaan Valintarekisteriin!");
+        stopWatch.start("Tallennetaan sijoitteluajo, hakukohteet ja valintatulokset Valintarekisteriin");
+        tallennaSijoitteluToValintarekisteri(hakuOid, uusiSijoitteluajo, kaikkiTallennettavatHakukohteet, sijoitteluajoWrapper.getMuuttuneetValintatulokset(), stopWatch);
+        stopWatch.stop();
+        LOG.info(stopWatch.prettyPrint());
+
+        return uusiSijoitteluajo.getSijoitteluajoId();
+    }
+
+
+
+    @Deprecated
+    private long mongoErillissijoittelu(HakuDTO sijoitteluTyyppi) {
         long startTime = System.currentTimeMillis();
         StopWatch stopWatch = new StopWatch("Haun " + sijoitteluTyyppi.getHakuOid() + " erillissijoittelu");
         String hakuOid = sijoitteluTyyppi.getHakuOid();
@@ -501,7 +607,7 @@ public class SijoitteluBusinessService {
                 }
             }
         }
-        SijoitteluAjo uusiSijoitteluajo = createErillisSijoitteluAjo(sijoittelu);
+        SijoitteluAjo uusiSijoitteluajo = createSijoitteluAjo(sijoittelu);
         List<Hakukohde> tamanSijoittelunHakukohteet = merge(uusiSijoitteluajo, olemassaolevatHakukohteet, uudetHakukohteet);
         stopWatch.stop();
 
@@ -550,6 +656,50 @@ public class SijoitteluBusinessService {
         return uusiSijoitteluajo.getSijoitteluajoId();
     }
 
+
+    private void kopioiHakukohteenTiedotVanhaltaSijoitteluajolta(final List<Hakukohde> edellisenSijoitteluajonHakukohteet, final List<Hakukohde> tamanSijoitteluajonHakukohteet) {
+        Map<String, Hakemus> hakemukset = getStringHakemusMap(edellisenSijoitteluajonHakukohteet);
+        Map<String, Valintatapajono> valintatapajonot = getStringValintatapajonoMap(edellisenSijoitteluajonHakukohteet);
+        tamanSijoitteluajonHakukohteet.parallelStream().forEach(hakukohde ->
+            hakukohde.getValintatapajonot().forEach(valintatapajono -> {
+                kopioiValintatapajononTiedotVanhaltaSijoitteluajolta(valintatapajono, valintatapajonot.get(valintatapajono.getOid()));
+                kopioiHakemustenTiedotVanhaltaSijoitteluajolta(hakukohde.getOid(), valintatapajono, hakemukset);
+            })
+        );
+    }
+
+    private void kopioiValintatapajononTiedotVanhaltaSijoitteluajolta(Valintatapajono valintatapajono, Valintatapajono edellisenSijoitteluajonValintatapajono) {
+        valintatapajono.setAlinHyvaksyttyPistemaara(alinHyvaksyttyPistemaara(valintatapajono.getHakemukset()).orElse(null));
+        valintatapajono.setHyvaksytty(getMaara(valintatapajono.getHakemukset(), asList(HakemuksenTila.HYVAKSYTTY, HakemuksenTila.VARASIJALTA_HYVAKSYTTY)));
+        valintatapajono.setVaralla(getMaara(valintatapajono.getHakemukset(), asList(HakemuksenTila.VARALLA)));
+
+        if(null != edellisenSijoitteluajonValintatapajono) {
+            valintatapajono.setValintaesitysHyvaksytty(edellisenSijoitteluajonValintatapajono.getValintaesitysHyvaksytty());
+        }
+    }
+
+    private void kopioiHakemustenTiedotVanhaltaSijoitteluajolta(String hakukohdeOid, Valintatapajono valintatapajono, Map<String, Hakemus> edellisenSijoitteluajonHakemukset) {
+        Collections.sort(valintatapajono.getHakemukset(), hakemusComparator);
+        int varasija = 0;
+        for (Hakemus hakemus : valintatapajono.getHakemukset()) {
+            Hakemus edellinen = edellisenSijoitteluajonHakemukset.get(hakukohdeOid + valintatapajono.getOid() + hakemus.getHakemusOid());
+            if (hakemus.getTila() == HakemuksenTila.VARALLA) {
+                varasija++;
+                hakemus.setVarasijanNumero(varasija);
+            } else {
+                hakemus.setVarasijanNumero(null);
+            }
+            if(edellinen != null && TilaTaulukot.kuuluuHyvaksyttyihinTiloihin(hakemus.getTila())) {
+                if(hakemus.getSiirtynytToisestaValintatapajonosta() == false) {
+                    hakemus.setSiirtynytToisestaValintatapajonosta(edellinen.getSiirtynytToisestaValintatapajonosta());
+                }
+            }
+        }
+    }
+
+
+
+    @Deprecated
     private void processOldApplications(StopWatch stopWatch, final List<Hakukohde> olemassaolevatHakukohteet, final List<Hakukohde> kaikkiHakukohteet, String hakuOid) {
         stopWatch.start("processOldApplications");
         Map<String, Hakemus> hakemusHashMap = getStringHakemusMap(olemassaolevatHakukohteet);
@@ -562,6 +712,7 @@ public class SijoitteluBusinessService {
         stopWatch.stop();
     }
 
+    @Deprecated
     private Consumer<Valintatapajono> processValintatapaJono(Map<String, Valintatapajono> valintatapajonoHashMap, Map<String, Hakemus> hakemusHashMap, Hakukohde hakukohde) {
         return valintatapajono -> {
                     valintatapajono.setAlinHyvaksyttyPistemaara(alinHyvaksyttyPistemaara(valintatapajono.getHakemukset()).orElse(null));
@@ -739,10 +890,7 @@ public class SijoitteluBusinessService {
 
     @Deprecated
     private SijoitteluAjo createSijoitteluAjo(Sijoittelu sijoittelu) {
-        SijoitteluAjo sijoitteluAjo = new SijoitteluAjo();
-        Long now = System.currentTimeMillis();
-        sijoitteluAjo.setSijoitteluajoId(now);
-        sijoitteluAjo.setHakuOid(sijoittelu.getHakuOid());
+        SijoitteluAjo sijoitteluAjo = createSijoitteluAjo(sijoittelu.getHakuOid());
         sijoittelu.getSijoitteluajot().add(sijoitteluAjo);
         return sijoitteluAjo;
     }
@@ -756,19 +904,7 @@ public class SijoitteluBusinessService {
     }
 
     private SijoitteluAjo createValiSijoitteluAjo(ValiSijoittelu sijoittelu) {
-        SijoitteluAjo sijoitteluAjo = new SijoitteluAjo();
-        Long now = System.currentTimeMillis();
-        sijoitteluAjo.setSijoitteluajoId(now);
-        sijoitteluAjo.setHakuOid(sijoittelu.getHakuOid());
-        sijoittelu.getSijoitteluajot().add(sijoitteluAjo);
-        return sijoitteluAjo;
-    }
-
-    private SijoitteluAjo createErillisSijoitteluAjo(Sijoittelu sijoittelu) {
-        SijoitteluAjo sijoitteluAjo = new SijoitteluAjo();
-        Long now = System.currentTimeMillis();
-        sijoitteluAjo.setSijoitteluajoId(now);
-        sijoitteluAjo.setHakuOid(sijoittelu.getHakuOid());
+        SijoitteluAjo sijoitteluAjo = createSijoitteluAjo(sijoittelu.getHakuOid());
         sijoittelu.getSijoitteluajot().add(sijoitteluAjo);
         return sijoitteluAjo;
     }
@@ -795,6 +931,7 @@ public class SijoitteluBusinessService {
         return sijoittelu;
     }
 
+    @Deprecated
     private Sijoittelu getOrCreateErillisSijoittelu(String hakuoid) {
         Optional<Sijoittelu> sijoitteluOpt = sijoitteluDao.getSijoitteluByHakuOid(hakuoid);
         if (sijoitteluOpt.isPresent()) {

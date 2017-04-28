@@ -62,7 +62,7 @@ public class SijoitteluServiceJetty {
         System.setProperty("sijoittelu-service.mongodb.uri", System.getProperty("sijoitteluMongoUri"));
         System.setProperty("sijoittelu-service.hakukohdeDao.batchSize", "300");
         System.setProperty("sijoittelu-service.saveSijoitteluToValintarekisteri", "true");
-        System.setProperty("valintalaskenta-ui.read-from-valintarekisteri", "true");
+        System.setProperty("valintalaskenta-ui.read-from-valintarekisteri", "false");
         System.setProperty("omatsivut.email.application.modify.link.en", "https://en.test.domain/token/");
         System.setProperty("omatsivut.email.application.modify.link.fi", "https://fi.test.domain/token/");
         System.setProperty("omatsivut.email.application.modify.link.sv", "https://sv.test.domain/token/");
@@ -97,7 +97,7 @@ public class SijoitteluServiceJetty {
 
         System.setProperty("valintarekisteri.db.user", "oph");
         System.setProperty("valintarekisteri.db.password", "oph");
-        System.setProperty("valintarekisteri.db.url", "jdbc:postgresql://localhost:54541/valintarekisteri");
+        System.setProperty("valintarekisteri.db.url", "jdbc:postgresql://localhost:37242/valintarekisteri");
         System.setProperty("valintarekisteri.tarjonta-service.url", "https://itest-virkailija.oph.ware.fi/tarjonta-service");
         System.setProperty("valintarekisteri.parseleniently.tarjonta", "true");
         System.setProperty("valintarekisteri.koodisto-service.url", "https://itest-virkailija.oph.ware.fi/koodisto-service/");
