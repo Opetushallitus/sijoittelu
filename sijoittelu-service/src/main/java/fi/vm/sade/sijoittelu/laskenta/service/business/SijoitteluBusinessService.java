@@ -2,8 +2,7 @@ package fi.vm.sade.sijoittelu.laskenta.service.business;
 
 import akka.actor.ActorRef;
 import com.google.common.collect.Sets.SetView;
-import fi.vm.sade.auditlog.valintaperusteet.ValintaperusteetOperation;
-import fi.vm.sade.authentication.business.service.Authorizer;
+
 import fi.vm.sade.sijoittelu.batch.logic.impl.DomainConverter;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoitteluAlgorithm;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoitteluajoWrapperFactory;
@@ -17,28 +16,20 @@ import fi.vm.sade.sijoittelu.domain.dto.VastaanottoDTO;
 import fi.vm.sade.sijoittelu.laskenta.actors.messages.PoistaHakukohteet;
 import fi.vm.sade.sijoittelu.laskenta.actors.messages.PoistaVanhatAjotSijoittelulta;
 import fi.vm.sade.sijoittelu.laskenta.external.resource.VirkailijaValintaTulosServiceResource;
-import fi.vm.sade.sijoittelu.laskenta.external.resource.dto.ParametriArvoDTO;
 import fi.vm.sade.sijoittelu.laskenta.external.resource.dto.ParametriDTO;
-import fi.vm.sade.sijoittelu.laskenta.service.exception.HakemustaEiLoytynytException;
-import fi.vm.sade.sijoittelu.laskenta.service.exception.ValintatapajonoaEiLoytynytException;
 import fi.vm.sade.sijoittelu.laskenta.service.it.TarjontaIntegrationService;
 import fi.vm.sade.sijoittelu.laskenta.util.HakuUtil;
 import fi.vm.sade.sijoittelu.tulos.dao.HakukohdeDao;
 import fi.vm.sade.sijoittelu.tulos.dao.SijoitteluDao;
-import fi.vm.sade.sijoittelu.tulos.dao.ValiSijoitteluDao;
 import fi.vm.sade.sijoittelu.tulos.dao.ValintatulosDao;
 import fi.vm.sade.sijoittelu.tulos.dto.HakukohdeDTO;
-import fi.vm.sade.sijoittelu.tulos.roles.SijoitteluRole;
-import fi.vm.sade.sijoittelu.tulos.service.RaportointiService;
 import fi.vm.sade.sijoittelu.tulos.service.impl.converters.SijoitteluTulosConverter;
 import fi.vm.sade.valintalaskenta.domain.dto.valintatieto.HakuDTO;
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.tuple.Triple;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StopWatch;
 
@@ -53,14 +44,10 @@ import java.util.stream.Collectors;
 
 import static com.google.common.collect.Sets.difference;
 import static com.google.common.collect.Sets.intersection;
-import static fi.vm.sade.auditlog.valintaperusteet.LogMessage.builder;
-import static fi.vm.sade.sijoittelu.laskenta.util.SijoitteluAudit.AUDIT;
 import static java.util.Arrays.*;
 import static java.util.Collections.unmodifiableSet;
 import static java.util.stream.Collectors.toSet;
-import static org.apache.commons.lang.StringUtils.isBlank;
 import static org.apache.commons.lang.StringUtils.join;
-import static org.springframework.security.core.context.SecurityContextHolder.getContext;
 
 @Service
 public class SijoitteluBusinessService {
@@ -79,7 +66,6 @@ public class SijoitteluBusinessService {
     private final ValintatulosDao valintatulosDao;
     private final HakukohdeDao hakukohdeDao;
     private final SijoitteluDao sijoitteluDao;
-    private final ValiSijoitteluDao valisijoitteluDao;
     private final SijoitteluTulosConverter sijoitteluTulosConverter;
     private final ActorService actorService;
     private final TarjontaIntegrationService tarjontaIntegrationService;
@@ -101,7 +87,6 @@ public class SijoitteluBusinessService {
                                      ValintatulosDao valintatulosDao,
                                      HakukohdeDao hakukohdeDao,
                                      SijoitteluDao sijoitteluDao,
-                                     ValiSijoitteluDao valisijoitteluDao,
                                      SijoitteluTulosConverter sijoitteluTulosConverter,
                                      ActorService actorService,
                                      TarjontaIntegrationService tarjontaIntegrationService,
@@ -112,7 +97,6 @@ public class SijoitteluBusinessService {
         this.valintatulosDao = valintatulosDao;
         this.hakukohdeDao = hakukohdeDao;
         this.sijoitteluDao = sijoitteluDao;
-        this.valisijoitteluDao = valisijoitteluDao;
         this.sijoitteluTulosConverter = sijoitteluTulosConverter;
         this.actorService = actorService;
         this.tarjontaIntegrationService = tarjontaIntegrationService;
@@ -454,7 +438,7 @@ public class SijoitteluBusinessService {
         StopWatch stopWatch = new StopWatch("Haun " + hakuOid + " välisijoittelu");
 
         stopWatch.start("Alustetaan uusi välisijoittelu ja haetaan hakukohteet");
-        ValiSijoittelu sijoittelu = getOrCreateValiSijoittelu(hakuOid);
+        ValiSijoittelu sijoittelu = createValiSijoittelu(hakuOid);
         List<Hakukohde> uudetHakukohteet = sijoitteluTyyppi.getHakukohteet().parallelStream().map(DomainConverter::convertToHakukohde).collect(Collectors.toList());
         List<Hakukohde> olemassaolevatHakukohteet = Collections.<Hakukohde>emptyList();
         SijoitteluAjo uusiSijoitteluajo = createValiSijoitteluAjo(sijoittelu);
@@ -464,9 +448,6 @@ public class SijoitteluBusinessService {
 
         suoritaSijoittelu(startTime, stopWatch, hakuOid, uusiSijoitteluajo, sijoitteluajoWrapper);
         processOldApplications(stopWatch, olemassaolevatHakukohteet, kaikkiHakukohteet, hakuOid);
-
-        stopWatch.start("Persistoidaan välisijoittelu");
-        valisijoitteluDao.persistSijoittelu(sijoittelu);
         stopWatch.stop();
 
         List<HakukohdeDTO> result = kaikkiHakukohteet.parallelStream().map(h -> sijoitteluTulosConverter.convert(h)).collect(Collectors.toList());
@@ -806,17 +787,12 @@ public class SijoitteluBusinessService {
         }
     }
 
-    private ValiSijoittelu getOrCreateValiSijoittelu(String hakuoid) {
-        Optional<ValiSijoittelu> sijoitteluOpt = valisijoitteluDao.getSijoitteluByHakuOid(hakuoid);
-        if (sijoitteluOpt.isPresent()) {
-            return sijoitteluOpt.get();
-        } else {
-            ValiSijoittelu sijoittelu = new ValiSijoittelu();
-            sijoittelu.setCreated(new Date());
-            sijoittelu.setSijoitteluId(System.currentTimeMillis());
-            sijoittelu.setHakuOid(hakuoid);
-            return sijoittelu;
-        }
+    private ValiSijoittelu createValiSijoittelu(String hakuoid) {
+        ValiSijoittelu sijoittelu = new ValiSijoittelu();
+        sijoittelu.setCreated(new Date());
+        sijoittelu.setSijoitteluId(System.currentTimeMillis());
+        sijoittelu.setHakuOid(hakuoid);
+        return sijoittelu;
     }
 
     private Sijoittelu getOrCreateErillisSijoittelu(String hakuoid) {

@@ -18,7 +18,6 @@ import fi.vm.sade.sijoittelu.laskenta.service.business.SijoitteluBusinessService
 import fi.vm.sade.sijoittelu.laskenta.service.it.TarjontaIntegrationService;
 import fi.vm.sade.sijoittelu.tulos.dao.HakukohdeDao;
 import fi.vm.sade.sijoittelu.tulos.dao.SijoitteluDao;
-import fi.vm.sade.sijoittelu.tulos.dao.ValiSijoitteluDao;
 import fi.vm.sade.sijoittelu.tulos.dao.ValintatulosDao;
 import fi.vm.sade.tarjonta.service.resources.v1.dto.HakuV1RDTO;
 import fi.vm.sade.tarjonta.service.resources.v1.dto.ResultV1RDTO;
@@ -43,7 +42,6 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.Date;
 import java.util.HashSet;
-import java.util.Optional;
 
 /**
  * @author Kari Kammonen
@@ -62,12 +60,8 @@ public class MorphiaIntegrationTest {
     @Autowired
     private HakukohdeDao hakukohdeDao;
 
-    @Autowired
-    private ValiSijoitteluDao valisijoitteluDao;
-
 	@Autowired
 	private SijoitteluBusinessService sijoitteluService;
-
 
     @Autowired
     private TarjontaIntegrationService tarjontaIntegrationService;

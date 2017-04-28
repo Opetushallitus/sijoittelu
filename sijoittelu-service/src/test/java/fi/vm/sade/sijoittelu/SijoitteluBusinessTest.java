@@ -13,7 +13,6 @@ import fi.vm.sade.sijoittelu.laskenta.service.business.ValintatulosWithVastaanot
 import fi.vm.sade.sijoittelu.laskenta.service.it.TarjontaIntegrationService;
 import fi.vm.sade.sijoittelu.tulos.dao.HakukohdeDao;
 import fi.vm.sade.sijoittelu.tulos.dao.SijoitteluDao;
-import fi.vm.sade.sijoittelu.tulos.dao.ValiSijoitteluDao;
 import fi.vm.sade.sijoittelu.tulos.dao.ValintatulosDao;
 
 import fi.vm.sade.valintalaskenta.domain.dto.ValintatapajonoDTO;
@@ -64,9 +63,6 @@ public class SijoitteluBusinessTest {
 
     @Autowired
     private HakukohdeDao hakukohdeDao;
-
-    @Autowired
-    private ValiSijoitteluDao valisijoitteluDao;
 
     @Autowired
     private SijoitteluBusinessService sijoitteluService;
