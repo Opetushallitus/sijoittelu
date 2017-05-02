@@ -53,8 +53,8 @@ public class SijoitteluBusinessServiceValintarekisteriTest {
         valintaTulosServiceResource = mock(VirkailijaValintaTulosServiceResource.class);
         valintarekisteriService = mock(ValintarekisteriService.class);
 
-        service = new SijoitteluBusinessService(1, 1, null, null, null, null,
-          sijoitteluTulosConverter, actorService, tarjontaIntegrationService, valintaTulosServiceResource, valintarekisteriService);
+        service = new SijoitteluBusinessService(1, 1, null, null, null,
+                sijoitteluTulosConverter, actorService, tarjontaIntegrationService, valintaTulosServiceResource, valintarekisteriService);
 
         ReflectionTestUtils.setField(service,"readSijoitteluFromValintarekisteri",true);
 

@@ -81,14 +81,6 @@ public class SijoitteluBusinessService {
     @Value(value = "${valintalaskenta-ui.read-from-valintarekisteri}")
     private boolean readSijoitteluFromValintarekisteri;
 
-    public void setSaveSijoitteluToValintarekisteri(boolean saveSijoitteluToValintarekisteri) {
-        this.saveSijoitteluToValintarekisteri = saveSijoitteluToValintarekisteri;
-    }
-
-    public void setReadSijoitteluFromValintarekisteri(boolean readSijoitteluFromValintarekisteri) {
-        this.readSijoitteluFromValintarekisteri = readSijoitteluFromValintarekisteri;
-    }
-
     @Autowired
     public SijoitteluBusinessService(@Value("${sijoittelu.maxAjojenMaara:20}") int maxAjoMaara,
                                      @Value("${sijoittelu.maxErillisAjojenMaara:300}") int maxErillisAjoMaara,
