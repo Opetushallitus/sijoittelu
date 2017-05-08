@@ -9,7 +9,7 @@
 	<parent>
 		<groupId>fi.vm.sade.sijoittelu</groupId>
 		<artifactId>sijoittelu</artifactId>
-		<version>5.3_OK-119-SNAPSHOT</version>
+		<version>5.4-SNAPSHOT</version>
 	</parent>
 
 
