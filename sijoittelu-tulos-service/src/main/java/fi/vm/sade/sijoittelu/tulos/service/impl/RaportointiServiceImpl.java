@@ -105,6 +105,8 @@ public class RaportointiServiceImpl implements RaportointiService {
         return konvertoiHakijat(hyvaksytyt, ilmanHyvaksyntaa, vastaanottaneet, hakukohdeOids, count, index, valintatulokset, hakukohteet);
     }
 
+    //Ei toimi, pitää korjata ja testata, jos tarvitaan hyväksymiskirjeitä varten; kts. myös valintarekisteriRaportointiServiceImpl vts:n puolella!!!
+    @Deprecated
     private void laskeAlinHyvaksyttyPisteetEnsimmaiselleHakijaryhmalle(List<Hakukohde> hakukohteet) {
         Predicate<Hakemus> isHyvaksytty = hakemus -> HakemuksenTila.HYVAKSYTTY.equals(hakemus.getTila()) || HakemuksenTila.VARASIJALTA_HYVAKSYTTY.equals(hakemus.getTila());
         hakukohteet.stream().forEach(
@@ -121,7 +123,7 @@ public class RaportointiServiceImpl implements RaportointiService {
                                         // hakijalla pisteita
                                                 filter(hakemus -> hakemus.getPisteet() != null)
                                         // hakija hyvaksytty
-                                        .filter(isHyvaksytty).filter(hyvaksytyt::contains)
+                                        .filter(isHyvaksytty).filter(hyvaksytyt::contains) //Ei toimi, koska filteröidään hakemus-streamia string-setillä!!!
                                         // reduce to pienimmat pisteet
                                         .map(Hakemus::getPisteet).reduce((a, b) -> a.compareTo(b) < 0 ? a : b);
 
