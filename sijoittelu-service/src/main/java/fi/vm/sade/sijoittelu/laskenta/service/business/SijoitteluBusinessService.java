@@ -50,6 +50,8 @@ import static java.util.Collections.unmodifiableSet;
 import static java.util.stream.Collectors.toSet;
 import static org.apache.commons.lang.StringUtils.join;
 
+import javax.ws.rs.WebApplicationException;
+
 @Service
 public class SijoitteluBusinessService {
     private static final Logger LOG = LoggerFactory.getLogger(SijoitteluBusinessService.class);
@@ -927,8 +929,15 @@ public class SijoitteluBusinessService {
     }
 
     private Map<String, VastaanottoDTO> aiemmanVastaanotonHakukohdePerHakija(String hakuOid) {
-        return valintaTulosServiceResource.haunKoulutuksenAlkamiskaudenVastaanototYhdenPaikanSaadoksenPiirissa(hakuOid)
-                .stream().collect(Collectors.toMap(VastaanottoDTO::getHenkiloOid, Function.identity()));
+        try {
+            return valintaTulosServiceResource.haunKoulutuksenAlkamiskaudenVastaanototYhdenPaikanSaadoksenPiirissa(hakuOid)
+                    .stream().collect(Collectors.toMap(VastaanottoDTO::getHenkiloOid, Function.identity()));
+        } catch (WebApplicationException e) {
+            String responseContent = e.getResponse().readEntity(String.class);
+            LOG.error("Virhe haettassa haunKoulutuksenAlkamiskaudenVastaanototYhdenPaikanSaadoksenPiirissa(" +
+                hakuOid + ") ; response: " + responseContent, e);
+            throw e;
+        }
     }
 
     public void siivoaVanhatAjotSijoittelulta(String hakuOid, Sijoittelu sijoittelu, int ajojaSaastetaan) {

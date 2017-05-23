@@ -10,9 +10,12 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 
-import java.util.*;
+import javax.ws.rs.WebApplicationException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class ValintatulosWithVastaanotto {
@@ -35,7 +38,7 @@ public class ValintatulosWithVastaanotto {
         LOG.info("Valintatulokset haettu haulle {}", hakuOid);
         LOG.info("Haetaan haetaan vastaanottotiedot haulle {}", hakuOid);
         Map<Triple<String, String, String>, Valintatulos> vastaanottotiedot =
-                indexValintatulokset(valintaTulosServiceResource.valintatuloksetValinnantilalla(hakuOid));
+                indexValintatulokset(fetchValintatuloksetValinnantilalla(hakuOid));
         LOG.info("Vastaanottotiedot haettu haulle {}", hakuOid);
         fromDb.forEach(v -> {
             ValintatuloksenTila tila = ValintatuloksenTila.KESKEN;
@@ -55,6 +58,16 @@ public class ValintatulosWithVastaanotto {
         });
         LOG.info("Valintatuloksia haettu {} kpl haulle {}", fromDb.size(), hakuOid);
         return fromDb;
+    }
+
+    private List<Valintatulos> fetchValintatuloksetValinnantilalla(String hakuOid) {
+        try {
+            return valintaTulosServiceResource.valintatuloksetValinnantilalla(hakuOid);
+        } catch (WebApplicationException e) {
+            LOG.error("Virhe haettaessa valintaTulosServiceResource.valintatuloksetValinnantilalla(" + hakuOid +
+                "); response: " + e.getResponse().readEntity(String.class), e);
+            throw e;
+        }
     }
 
     public void persistVastaanotot(List<Valintatulos> valintatulokset) {
@@ -101,7 +114,13 @@ public class ValintatulosWithVastaanotto {
                     dto.getTila());
         });
 
-        valintaTulosServiceResource.valintatuloksetValinnantilalla(vs);
+        try {
+            valintaTulosServiceResource.valintatuloksetValinnantilalla(vs);
+        } catch (WebApplicationException e) {
+            LOG.error("Virhe lähetettäessä valintaTulosServiceResource.valintatuloksetValinnantilalla() -kutsulle " +
+                vs.size() + " tulosta ; response: " + e.getResponse().readEntity(String.class), e);
+            throw e;
+        }
     }
 
     @Deprecated
