@@ -8,6 +8,7 @@ import fi.vm.sade.sijoittelu.tulos.dto.raportointi.KevytHakijaDTO;
 import java.util.List;
 import java.util.Optional;
 
+@Deprecated
 public interface RaportointiService {
     Optional<SijoitteluAjo> getSijoitteluAjo(Long SijoitteluajoId);
 

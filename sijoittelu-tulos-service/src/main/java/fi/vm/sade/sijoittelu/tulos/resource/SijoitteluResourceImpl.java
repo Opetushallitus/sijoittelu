@@ -50,6 +50,7 @@ import fi.vm.sade.sijoittelu.domain.Sijoittelu;
 @Controller
 @PreAuthorize("isAuthenticated()")
 @Api(value = "sijoittelu", description = "Resurssi sijoittelun tuloksien hakemiseen")
+@Deprecated
 public class SijoitteluResourceImpl implements SijoitteluResource {
     private final static Logger LOGGER = LoggerFactory.getLogger(SijoitteluResourceImpl.class);
 
@@ -190,6 +191,7 @@ public class SijoitteluResourceImpl implements SijoitteluResource {
     @Path("/{hakuOid}/sijoitteluajo/{sijoitteluajoId}/hakemukset")
     @Produces(APPLICATION_JSON)
     @ApiOperation(position = 4, value = "Sivutettu listaus hakemuksien/hakijoiden listaukseen. Yksityiskohtainen listaus kaikista hakutoiveista ja niiden valintatapajonoista", response = HakijaPaginationObject.class)
+    @Deprecated //Sivutusta ei ilmeisesti käytetä missään enää. Hyväksymis/jälkiohjauskirjeet käyttävät APIa, mutta niiden pitäisi siirtyä käyttämään vts:ää
     public HakijaPaginationObject hakemukset(
             @ApiParam(value = "Haun tunniste", required = true) @PathParam("hakuOid") String hakuOid,
             @ApiParam(value = "Sijoitteluajon tunniste tai 'latest' avainsana", required = true) @PathParam("sijoitteluajoId") String sijoitteluajoId,

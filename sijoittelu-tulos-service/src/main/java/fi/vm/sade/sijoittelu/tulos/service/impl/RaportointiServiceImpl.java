@@ -31,6 +31,7 @@ import static java.util.Collections.*;
  * tulosservicesta
  */
 @Service
+@Deprecated
 public class RaportointiServiceImpl implements RaportointiService {
     @Autowired
     private ValintatulosDao valintatulosDao;
@@ -226,6 +227,7 @@ public class RaportointiServiceImpl implements RaportointiService {
         return null;
     }
 
+    @Deprecated //ei käytössä, voi poistaa?
     private List<HakijaDTO> applyPagination(List<HakijaDTO> result,
                                             Integer count, Integer index) {
         if (index != null && count != null) {

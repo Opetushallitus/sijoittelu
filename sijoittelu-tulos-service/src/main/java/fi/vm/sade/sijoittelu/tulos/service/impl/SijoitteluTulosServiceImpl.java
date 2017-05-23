@@ -19,6 +19,7 @@ import java.util.Optional;
 import java.util.function.Function;
 
 @Service
+@Deprecated
 public class SijoitteluTulosServiceImpl implements SijoitteluTulosService {
     @Autowired
     private HakukohdeDao hakukohdeDao;
