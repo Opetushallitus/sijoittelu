@@ -229,11 +229,11 @@ public class RaportointiServiceImpl implements RaportointiService {
     private List<HakijaDTO> applyPagination(List<HakijaDTO> result,
                                             Integer count, Integer index) {
         if (index != null && count != null) {
-            return result.subList(index, Math.min(index + count, result.size() - 1));
+            return result.subList(index, Math.min(index + count, result.size()));
         } else if (index != null) {
-            return result.subList(index, result.size() - 1);
+            return result.subList(index, result.size());
         } else if (count != null) {
-            return result.subList(0, Math.min(count, result.size() - 1));
+            return result.subList(0, Math.min(count, result.size()));
         }
         return result;
     }
