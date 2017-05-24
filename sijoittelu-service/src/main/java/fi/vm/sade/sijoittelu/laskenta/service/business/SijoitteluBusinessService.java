@@ -25,6 +25,7 @@ import fi.vm.sade.sijoittelu.tulos.dao.ValintatulosDao;
 import fi.vm.sade.sijoittelu.tulos.dto.HakukohdeDTO;
 import fi.vm.sade.sijoittelu.tulos.service.impl.converters.SijoitteluTulosConverter;
 import fi.vm.sade.valintalaskenta.domain.dto.valintatieto.HakuDTO;
+import fi.vm.sade.valintatulosservice.valintarekisteri.domain.NotFoundException;
 import org.apache.commons.lang3.tuple.Triple;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -237,9 +238,9 @@ public class SijoitteluBusinessService {
             LOG.info("Luetaan sijoittelu valintarekisteristä");
             SijoitteluAjo viimeisinSijoitteluajo = valintarekisteriService.getLatestSijoitteluajo(hakuOid);
             return viimeisinSijoitteluajo;
-        } catch (IllegalArgumentException iae) {
+        } catch (NotFoundException iae) {
             LOG.info("Viimeisintä sijoitteluajoa haulle {} ei löydy valintarekisteristä.", hakuOid);
-            LOG.error(iae.getMessage());
+            LOG.warn(iae.getMessage());
             return null;
         }
     }
