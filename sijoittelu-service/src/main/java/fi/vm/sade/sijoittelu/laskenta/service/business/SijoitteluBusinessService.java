@@ -245,18 +245,6 @@ public class SijoitteluBusinessService {
         }
     }
 
-    private Hakukohde readHakukohdeFromValintarekisteri(Long sijoitteluajoId, String hakukohdeOid) {
-        try {
-            LOG.info("Luetaan hakukohde {} valintarekisteristä", hakukohdeOid);
-            Hakukohde hakukohde = valintarekisteriService.getHakukohdeForSijoitteluajo(sijoitteluajoId, hakukohdeOid);
-            return hakukohde;
-        } catch (IllegalArgumentException iae) {
-            LOG.info("Sijoitteluajolle {} ei löydy valintarekisteristä hakukohdetta {}.", sijoitteluajoId, hakukohdeOid);
-            LOG.error(iae.getMessage());
-            return null;
-        }
-    }
-
     private void validateSijoittelunJonot(List<Hakukohde> uudetHakukohteet,
                                           List<Hakukohde> olemassaolevatHakukohteet,
                                           Set<String> eiSijoitteluunMenevatJonot,
