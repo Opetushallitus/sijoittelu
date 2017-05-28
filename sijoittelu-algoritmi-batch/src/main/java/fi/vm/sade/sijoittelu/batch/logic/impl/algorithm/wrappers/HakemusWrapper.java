@@ -149,7 +149,7 @@ public class HakemusWrapper {
                 };
             };
             delimeter.apply(VALUE_DELIMETER_HAKEMUS).get(); // Uuden hakemuksen alkuun delimeter
-            ifPresentOrIfNotPresent(hakemus.getEdellinenTila(), t -> hf.putInt(t.ordinal()), undefined, delimeter.apply(VALUE_DELIMETER_EDELLINEN_TILA));
+            //ifPresentOrIfNotPresent(hakemus.getEdellinenTila(), t -> hf.putInt(t.ordinal()), undefined, delimeter.apply(VALUE_DELIMETER_EDELLINEN_TILA));
             ifPresentOrIfNotPresent(hakemus.getHakemusOid(), t -> hf.putUnencodedChars(t), undefined, delimeter.apply(VALUE_DELIMETER_HAKEMUSOID));
             ifPresentOrIfNotPresent(hakemus.getIlmoittautumisTila(), t -> hf.putInt(t.ordinal()), undefined, delimeter.apply(VALUE_DELIMETER_ILMOITTAUTUMISTILA));
             ifPresentOrIfNotPresent(hakemus.getJonosija(), t -> hf.putInt(t), undefined, delimeter.apply(VALUE_DELIMETER_JONOSIJA));

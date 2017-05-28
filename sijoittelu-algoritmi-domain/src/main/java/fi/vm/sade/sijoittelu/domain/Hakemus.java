@@ -145,8 +145,30 @@ public class Hakemus implements Serializable {
 
     @Override
     public String toString() {
-        return "Hakemus{" + "hakemusOid='" + hakemusOid + '\'' + ", prioriteetti=" + prioriteetti + ", jonosija="
-                + jonosija + ", tasasijaJonosija=" + tasasijaJonosija + ", tila=" + tila + ", edellinenTila=" + edellinenTila + '}';
+        return "Hakemus{" +
+                "hakijaOid='" + hakijaOid + '\'' +
+                ", hakemusOid='" + hakemusOid + '\'' +
+                ", etunimi='" + etunimi + '\'' +
+                ", sukunimi='" + sukunimi + '\'' +
+                ", prioriteetti=" + prioriteetti +
+                ", jonosija=" + jonosija +
+                ", onkoMuuttunutViimeSijoittelussa=" + onkoMuuttunutViimeSijoittelussa +
+                ", pisteet=" + pisteet +
+                ", tasasijaJonosija=" + tasasijaJonosija +
+                ", tila=" + tila +
+                ", edellinenTila=" + edellinenTila +
+                ", ilmoittautumisTila=" + ilmoittautumisTila +
+                ", tilaHistoria=" + tilaHistoria +
+                ", hyvaksyttyHarkinnanvaraisesti=" + hyvaksyttyHarkinnanvaraisesti +
+                ", pistetiedot=" + pistetiedot +
+                ", tilanKuvaukset=" + tilanKuvaukset +
+                ", tilankuvauksenTarkenne=" + tilankuvauksenTarkenne +
+                ", tarkenteenLisatieto='" + tarkenteenLisatieto + '\'' +
+                ", varasijanNumero=" + varasijanNumero +
+                ", hakijaryhmaOid='" + hakijaryhmaOid + '\'' +
+                ", hyvaksyttyHakijaryhmista=" + hyvaksyttyHakijaryhmista +
+                ", siirtynytToisestaValintatapajonosta=" + siirtynytToisestaValintatapajonosta +
+                '}';
     }
 
     public String getSukunimi() {
@@ -301,4 +323,6 @@ public class Hakemus implements Serializable {
         }
         return TilankuvauksenTarkenne.EI_TILANKUVAUKSEN_TARKENNETTA;
     }
+
+
 }
