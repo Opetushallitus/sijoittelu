@@ -51,13 +51,7 @@ public class CachingRaportointiDaoImpl implements CachingRaportointiDao {
     @Value(value = "${sijoittelu-service.hakukohdeCache.populate:true}")
     private boolean populateHakukohdeCache;
 
-    private final List<String> hakukohdeCachettavienHakujenOidit = ImmutableList.of(
-        "1.2.246.562.29.75203638285", // Korkeakoulujen yhteishaku kevät 2016
-        "1.2.246.562.29.14662042044", // Yhteishaku ammatilliseen ja lukioon, kevät 2016
-        "1.2.246.562.29.94318919571", // Perusopetuksen jälkeisen valmistavan koulutuksen kevään 2016 haku
-        "1.2.246.562.29.669559278110", // Haku erityisopetuksena järjestettävään ammatilliseen koulutukseen, kevät 2016
-        "1.2.246.562.29.87593180141" // Korkeakoulujen yhteishaku syksy 2016
-    );
+    private final List<String> hakukohdeCachettavienHakujenOidit = ImmutableList.of();
 
     private final HakukohdeCache hakukohdeCache = new HakukohdeCache();
 
