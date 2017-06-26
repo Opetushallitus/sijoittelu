@@ -34,7 +34,7 @@ public class TilanKuvaukset {
         return new HashMap<String, String>() {{
             put("FI", "Varasijalta hyväksytty");
             put("SV", "Godkänd från reservplats");
-            put("EN", "Accepted from a reserve place");
+            put("EN", "Accepted from a waiting list");
         }};
     }
 
@@ -56,9 +56,9 @@ public class TilanKuvaukset {
 
     public static Map<String, String> peruuntunutEiMahduKasiteltavienVarasijojenMaaraan() {
         return new HashMap<String, String>() {{
-            put("FI", "Peruuntunut, varasija ei mahdu käsiteltävien varasijojen määrään");
-            put("SV", "Annullerad, reservplatsen ryms inte med i antalet reservplatser");
-            put("EN", "Cancelled, the reserve place does not fit into the amount of processed reserve places");
+            put("FI", "Peruuntunut, pisteesi eivät riittäneet varasijaan");
+            put("SV", "Annullerad, dina poäng räckte inte till reservplats");
+            put("EN", "Cancelled, you did not get enough points for a place on the waiting list");
         }};
     }
 
@@ -66,7 +66,7 @@ public class TilanKuvaukset {
         return new HashMap<String, String>() {{
             put("FI", "Peruuntunut, varasijatäyttö päättynyt");
             put("SV", "Annullerad, besättning av reservplatser har upphört");
-            put("EN", "Cancelled, reserve place selection has ended");
+            put("EN", "Cancelled, waiting list selection has ended");
         }};
     }
 
@@ -74,7 +74,7 @@ public class TilanKuvaukset {
         return new HashMap<String, String>() {{
             put("FI", "Peruuntunut, ei varasijatäyttöä");
             put("SV", "Annullerad, ingen antagning från reservplats");
-            put("EN", "Cancelled, no reserve place practice");
+            put("EN", "Cancelled, no waiting list practice");
         }};
     }
 
