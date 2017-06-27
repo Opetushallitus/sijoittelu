@@ -87,7 +87,14 @@ public class Hakijaryhma implements Serializable {
                 ", paikat=" + paikat +
                 ", oid='" + oid + '\'' +
                 ", nimi='" + nimi + '\'' +
-                ", hakemusOid=" + hakemusOid +
+                ", hakukohdeOid='" + hakukohdeOid + '\'' +
+                ", kiintio=" + kiintio +
+                ", kaytaKaikki=" + kaytaKaikki +
+                ", tarkkaKiintio=" + tarkkaKiintio +
+                ", kaytetaanRyhmaanKuuluvia=" + kaytetaanRyhmaanKuuluvia +
+                ", hakijaryhmatyyppikoodiUri='" + hakijaryhmatyyppikoodiUri + '\'' +
+                ", valintatapajonoOid='" + valintatapajonoOid + '\'' +
+                ", alinHyvaksyttyPistemaara=" + alinHyvaksyttyPistemaara +
                 '}';
     }
 
