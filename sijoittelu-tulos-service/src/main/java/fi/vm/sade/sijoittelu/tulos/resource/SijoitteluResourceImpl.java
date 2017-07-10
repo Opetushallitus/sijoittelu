@@ -248,12 +248,16 @@ public class SijoitteluResourceImpl implements SijoitteluResource {
         }
     }
 
+    /**
+     * @Deprecated tieto haetaan nyt valintarekisteristä
+     */
     @Override
     @PreAuthorize(READ_UPDATE_CRUD)
     @GET
     @Produces(APPLICATION_JSON)
     @ApiOperation("Kertoo jos valintatapajono on sijoittelun käytössä")
     @Path("/{hakuOid}/valintatapajono-in-use/{valintatapajonoOid}")
+    @Deprecated
     public boolean isValintapajonoInUse(
             @ApiParam(value = "Haun tunniste", required = true) @PathParam("hakuOid") String hakuOid,
             @ApiParam(value = "Valintatapajonon tunniste", required = true) @PathParam("valintatapajonoOid") String valintatapajonoOid
