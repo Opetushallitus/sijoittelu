@@ -10,6 +10,7 @@ import fi.vm.sade.sijoittelu.domain.Valintatulos;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Comparator;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -158,6 +159,7 @@ public class HakemusWrapper {
             if (pistetietoList.isEmpty()) {
                 undefined.get();
             } else {
+                pistetietoList.sort(Comparator.comparing(Pistetieto::getTunniste));
                 pistetietoList.forEach(p -> {
                     ifPresentOrIfNotPresent(p.getArvo(), a -> hf.putUnencodedChars(a), undefined, delimeter.apply(VALUE_DELIMETER_PISTETIETO_ARVO));
                     ifPresentOrIfNotPresent(p.getLaskennallinenArvo(), a -> hf.putUnencodedChars(a), undefined, delimeter.apply(VALUE_DELIMETER_PISTETIETO_LASKENNANLLINEN_ARVO));
