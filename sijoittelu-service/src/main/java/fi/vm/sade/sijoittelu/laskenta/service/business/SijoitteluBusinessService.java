@@ -474,7 +474,7 @@ public class SijoitteluBusinessService {
             hakukohde.setId(null);
             kaikkiHakukohteet.put(hakukohde.getOid(), hakukohde);
         });
-        talletaTasasijajonosijatJaEdellisenSijoittelunTilat(uudetHakukohteet, kaikkiHakukohteet);
+        talletaTasasijaJonosijatJaEdellisetTilatJaTilanKuvaukset(uudetHakukohteet, kaikkiHakukohteet);
         siirraSivssnov(olemassaolevatHakukohteet, kaikkiHakukohteet);
         kopioiHakemuksenTietoja(olemassaolevatHakukohteet, kaikkiHakukohteet);
         kaikkiHakukohteet.values().forEach(hakukohde -> {
@@ -531,10 +531,11 @@ public class SijoitteluBusinessService {
         });
     }
 
-    private void talletaTasasijajonosijatJaEdellisenSijoittelunTilat(List<Hakukohde> uudetHakukohteet, Map<String, Hakukohde> kaikkiHakukohteet) {
+    private void talletaTasasijaJonosijatJaEdellisetTilatJaTilanKuvaukset(List<Hakukohde> uudetHakukohteet, Map<String, Hakukohde> kaikkiHakukohteet) {
         uudetHakukohteet.parallelStream().forEach(hakukohde -> {
             Map<String, Integer> tasasijaHashMap = new ConcurrentHashMap<>();
             Map<String, HakemuksenTila> tilaHashMap = new ConcurrentHashMap<>();
+            Map<String, Map<String, String>> tilankuvauksetHashMap = new ConcurrentHashMap<>();
             if (kaikkiHakukohteet.containsKey(hakukohde.getOid())) {
                 kaikkiHakukohteet.get(hakukohde.getOid()).getValintatapajonot().parallelStream().forEach(valintatapajono ->
                                 valintatapajono.getHakemukset().parallelStream().forEach(h -> {
@@ -543,6 +544,9 @@ public class SijoitteluBusinessService {
                                     }
                                     if (h.getTila() != null) {
                                         tilaHashMap.put(valintatapajono.getOid() + h.getHakemusOid(), h.getTila());
+                                    }
+                                    if (h.getTilanKuvaukset() != null && !h.getTilanKuvaukset().isEmpty()) {
+                                        tilankuvauksetHashMap.put(valintatapajono.getOid() + h.getHakemusOid(), h.getTilanKuvaukset());
                                     }
                                 })
                 );
@@ -553,6 +557,9 @@ public class SijoitteluBusinessService {
                                     }
                                     if (tilaHashMap.get(valintatapajono.getOid() + hakemus.getHakemusOid()) != null) {
                                         hakemus.setEdellinenTila(tilaHashMap.get(valintatapajono.getOid() + hakemus.getHakemusOid()));
+                                    }
+                                    if (tilankuvauksetHashMap.get(valintatapajono.getOid() + hakemus.getHakemusOid()) != null) {
+                                        hakemus.setTilanKuvaukset(tilankuvauksetHashMap.get(valintatapajono.getOid() + hakemus.getHakemusOid()));
                                     }
                                 })
                 );
