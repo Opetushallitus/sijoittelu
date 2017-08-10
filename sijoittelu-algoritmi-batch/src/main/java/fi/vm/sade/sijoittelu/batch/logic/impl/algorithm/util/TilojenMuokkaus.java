@@ -13,12 +13,12 @@ public class TilojenMuokkaus {
 
     public static void asetaTilaksiVaralla(HakemusWrapper hakemusWrapper) {
         hakemusWrapper.getHakemus().setTila(HakemuksenTila.VARALLA);
-        hakemusWrapper.getHakemus().getTilanKuvaukset().clear();
+        hakemusWrapper.getHakemus().clearTilanKuvaukset();
     }
 
     public static void asetaTilaksiHyvaksytty(HakemusWrapper hakemus) {
         hakemus.getHakemus().setTila(HakemuksenTila.HYVAKSYTTY);
-        hakemus.getHakemus().getTilanKuvaukset().clear();
+        hakemus.getHakemus().clearTilanKuvaukset();
     }
 
     public static void asetaTilaksiPeruuntunutToinenJono(HakemusWrapper h) {

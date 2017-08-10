@@ -205,6 +205,10 @@ public class Hakemus implements Serializable {
         this.tilanKuvaukset = tilanKuvaukset;
     }
 
+    public void clearTilanKuvaukset() {
+        this.tilanKuvaukset = Collections.emptyMap();
+    }
+
     public IlmoittautumisTila getIlmoittautumisTila() {
         return ilmoittautumisTila;
     }
