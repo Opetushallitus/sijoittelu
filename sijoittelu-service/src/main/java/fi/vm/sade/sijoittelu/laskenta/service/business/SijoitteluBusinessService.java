@@ -78,12 +78,6 @@ public class SijoitteluBusinessService {
     private final Collection<PreSijoitteluProcessor> preSijoitteluProcessors;
     private final ValintarekisteriService valintarekisteriService;
 
-    @Value(value = "${sijoittelu-service.saveSijoitteluToValintarekisteri}")
-    private boolean saveSijoitteluToValintarekisteri;
-
-    @Value(value = "${valintalaskenta-ui.read-from-valintarekisteri}")
-    private boolean readSijoitteluFromValintarekisteri;
-
     @Autowired
     public SijoitteluBusinessService(@Value("${sijoittelu.maxAjojenMaara:20}") int maxAjoMaara,
                                      @Value("${sijoittelu.maxErillisAjojenMaara:300}") int maxErillisAjoMaara,
@@ -111,11 +105,7 @@ public class SijoitteluBusinessService {
     }
 
     public void sijoittele(HakuDTO haku, Set<String> eiSijoitteluunMenevatJonot, Set<String> valintaperusteidenValintatapajonot) {
-        if( readSijoitteluFromValintarekisteri ) {
-            valintarekisteriSijoittelu(haku, eiSijoitteluunMenevatJonot, valintaperusteidenValintatapajonot);
-        } else {
-            mongoSijoittelu(haku, eiSijoitteluunMenevatJonot, valintaperusteidenValintatapajonot);
-        }
+        valintarekisteriSijoittelu(haku, eiSijoitteluunMenevatJonot, valintaperusteidenValintatapajonot);
     }
 
     private void valintarekisteriSijoittelu(HakuDTO haku, Set<String> eiSijoitteluunMenevatJonot, Set<String> valintaperusteidenValintatapajonot) {
@@ -305,21 +295,17 @@ public class SijoitteluBusinessService {
             stopWatch.start("Käynnistetään vanhojen sijoitteluajojen siivouksen taustaprosessi");
             siivoaVanhatAjotSijoittelulta(hakuOid, sijoittelu, sailytettavaAjoMaara);
             stopWatch.stop();
-            if (saveSijoitteluToValintarekisteri) {
-                LOG.info("Tallennetaan haun {} sijoittelu valintarekisteriin", hakuOid);
-                stopWatch.start("Tallennetaan sijoitteluajo, hakukohteet ja valintatulokset Valintarekisteriin");
-                try {
-                    valintarekisteriService.tallennaSijoittelu(uusiSijoitteluajo, hakukohteet, valintatulokset);
-                } catch (Exception e) {
-                    LOG.warn(String.format(
-                            "Sijoittelujon %s tallennus valintarekisteriin epäonnistui haulle %s.",
-                            uusiSijoitteluajo.getSijoitteluajoId(), hakuOid
-                    ), e);
-                }
-                stopWatch.stop();
-            } else {
-                LOG.info("Ohitetaan haun {} sijoittelun tallennus valintarekisteriin", hakuOid);
+            LOG.info("Tallennetaan haun {} sijoittelu valintarekisteriin", hakuOid);
+            stopWatch.start("Tallennetaan sijoitteluajo, hakukohteet ja valintatulokset Valintarekisteriin");
+            try {
+                valintarekisteriService.tallennaSijoittelu(uusiSijoitteluajo, hakukohteet, valintatulokset);
+            } catch (Exception e) {
+                LOG.warn(String.format(
+                        "Sijoittelujon %s tallennus valintarekisteriin epäonnistui haulle %s.",
+                        uusiSijoitteluajo.getSijoitteluajoId(), hakuOid
+                ), e);
             }
+            stopWatch.stop();
         } catch (Exception e) {
             LOG.error("Sijoittelun persistointi haulle {} epäonnistui. Rollback hakukohteet", sijoittelu.getHakuOid());
             actorService.getSiivousActor().tell(new PoistaHakukohteet(sijoittelu, uusiSijoitteluajo.getSijoitteluajoId()), ActorRef.noSender());
@@ -488,11 +474,7 @@ public class SijoitteluBusinessService {
     }
 
     public long erillissijoittele(HakuDTO hakuDTO) {
-        if(readSijoitteluFromValintarekisteri) {
-            return valintarekisteriErillissijoittelu(hakuDTO);
-        } else {
-            return mongoErillissijoittelu(hakuDTO);
-        }
+        return valintarekisteriErillissijoittelu(hakuDTO);
     }
 
     private Hakukohde getErillissijoittelunHakukohde(HakuDTO haku) {

@@ -56,8 +56,6 @@ public class SijoitteluBusinessServiceValintarekisteriTest {
         service = new SijoitteluBusinessService(1, 1, null, null, null,
                 sijoitteluTulosConverter, actorService, tarjontaIntegrationService, valintaTulosServiceResource, valintarekisteriService);
 
-        ReflectionTestUtils.setField(service,"readSijoitteluFromValintarekisteri",true);
-
         when(tarjontaIntegrationService.getHaunParametrit(hakuOid)).thenReturn(haunParametrit());
         when(tarjontaIntegrationService.getHakuByHakuOid(hakuOid)).thenReturn(tarjontaHaku());
     }
