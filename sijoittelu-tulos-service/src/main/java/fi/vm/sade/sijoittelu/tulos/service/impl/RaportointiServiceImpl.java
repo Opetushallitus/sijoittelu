@@ -57,25 +57,6 @@ public class RaportointiServiceImpl implements RaportointiService {
     }
 
     @Override
-    public Optional<SijoitteluAjo> latestSijoitteluAjoForHaku(String hakuOid) {
-        return sijoitteluDao.getLatestSijoitteluajo(hakuOid);
-    }
-
-    @Override
-    public Optional<SijoitteluAjo> latestSijoitteluAjoForHakukohde(String hakuOid, String hakukohdeOid) {
-        return sijoitteluDao.getLatestSijoitteluajo(hakuOid, hakukohdeOid);
-    }
-
-    @Override
-    public HakijaDTO hakemus(SijoitteluAjo sijoitteluAjo, String hakemusOid) {
-        List<Hakukohde> hakukohteetJoihinHakemusOsallistuu = hakukohdeDao.haeHakukohteetJoihinHakemusOsallistuu(sijoitteluAjo.getSijoitteluajoId(), hakemusOid);
-        List<Valintatulos> valintatulokset = valintatulosDao.loadValintatuloksetForHakemus(hakemusOid);
-        List<HakukohdeDTO> hakukohdeDTOs = sijoitteluTulosConverter.convert(hakukohteetJoihinHakemusOsallistuu);
-        List<HakijaDTO> hakijat = raportointiConverter.convert(hakukohdeDTOs, valintatulokset);
-        return filterHakemus(hakijat, hakemusOid);
-    }
-
-    @Override
     public HakijaDTO hakemus(String hakuOid, String sijoitteluajoId, String hakemusOid) {
         Long realSijoitteluAjoId;
         if (SijoitteluResource.LATEST.equals(sijoitteluajoId)) {
@@ -92,18 +73,6 @@ public class RaportointiServiceImpl implements RaportointiService {
         List<HakukohdeDTO> hakukohdeDTOs = sijoitteluTulosConverter.convert(hakukohteetJoihinHakemusOsallistuu);
         List<HakijaDTO> hakijat = raportointiConverter.convert(hakukohdeDTOs, valintatulokset);
         return filterHakemus(hakijat, hakemusOid);
-    }
-
-    /**
-     * Unfortunately this has to be done like this, on the positive side, these
-     * results can be cached, only valintatulokset needs to be refreshed, EVER!
-     */
-    @Override
-    public HakijaPaginationObject hakemukset(SijoitteluAjo ajo, Boolean hyvaksytyt, Boolean ilmanHyvaksyntaa, Boolean vastaanottaneet, List<String> hakukohdeOids, Integer count, Integer index) {
-        List<Valintatulos> valintatulokset = valintatulosDao.loadValintatulokset(ajo.getHakuOid());
-        List<Hakukohde> hakukohteet = hakukohdeDao.getHakukohdeForSijoitteluajo(ajo.getSijoitteluajoId());
-        laskeAlinHyvaksyttyPisteetEnsimmaiselleHakijaryhmalle(hakukohteet);
-        return konvertoiHakijat(hyvaksytyt, ilmanHyvaksyntaa, vastaanottaneet, hakukohdeOids, count, index, valintatulokset, hakukohteet);
     }
 
     //Ei toimi, pitää korjata ja testata, jos tarvitaan hyväksymiskirjeitä varten; kts. myös valintarekisteriRaportointiServiceImpl vts:n puolella!!!
@@ -132,26 +101,6 @@ public class RaportointiServiceImpl implements RaportointiService {
                             });
                 }
         );
-    }
-
-    @Override
-    public List<KevytHakijaDTO> hakemukset(SijoitteluAjo ajo, String hakukohdeOid) {
-        Map<String, List<RaportointiValintatulos>> hakukohteenValintatulokset = valintatulosDao.loadValintatuloksetForHakukohteenHakijat(hakukohdeOid);
-        Iterator<KevytHakukohdeDTO> hakukohteet = hakukohdeDao.getHakukohdeForSijoitteluajoIterator(ajo.getSijoitteluajoId(), hakukohdeOid);
-        Hakukohde hakukohde = hakukohdeDao.getHakukohdeForSijoitteluajo(ajo.getSijoitteluajoId(), hakukohdeOid);
-        if (hakukohde == null) {
-            return emptyList();
-        }
-        return konvertoiHakijat(hakukohde, hakukohteenValintatulokset, hakukohteet);
-    }
-
-    @Override
-    public List<KevytHakijaDTO> hakemuksetVainHakukohteenTietojenKanssa(SijoitteluAjo ajo, String hakukohdeOid) {
-        Hakukohde hakukohde = hakukohdeDao.getHakukohdeForSijoitteluajo(ajo.getSijoitteluajoId(), hakukohdeOid);
-        if (hakukohde == null) {
-            return emptyList();
-        }
-        return konvertoiHakijat(hakukohde, emptyMap(), emptyIterator());
     }
 
     @Override
@@ -186,12 +135,6 @@ public class RaportointiServiceImpl implements RaportointiService {
         paginationObject.setTotalCount(result.size());
         paginationObject.setResults(applyPagination(result, count, index));
         return paginationObject;
-    }
-
-    private List<KevytHakijaDTO> konvertoiHakijat(Hakukohde hakukohde, Map<String, List<RaportointiValintatulos>> valintatulokset, Iterator<KevytHakukohdeDTO> hakukohteet) {
-        List<KevytHakijaDTO> hakijat = raportointiConverter.convertHakukohde(sijoitteluTulosConverter.convert(hakukohde), hakukohteet, valintatulokset);
-        sort(hakijat, new KevytHakijaDTOComparator());
-        return hakijat;
     }
 
     private boolean filter(HakijaDTO hakija, Boolean hyvaksytyt, Boolean ilmanHyvaksyntaa, Boolean vastaanottaneet, List<String> hakukohdeOids) {

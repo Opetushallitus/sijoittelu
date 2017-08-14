@@ -122,24 +122,6 @@ public class SijoitteluResourceImpl implements SijoitteluResource {
             return new HakijaPaginationObject();
         }
     }
-    @Override
-    @PreAuthorize(READ_UPDATE_CRUD)
-    @GET
-    @Path("/{hakuOid}/hyvaksytyt/")
-    @Produces(APPLICATION_JSON)
-    @ApiOperation(position = 4, value = "Sivutettu listaus hakemuksien/hakijoiden listaukseen. Yksityiskohtainen listaus kaikista hakutoiveista ja niiden valintatapajonoista", response = HakijaPaginationObject.class)
-    public HakijaPaginationObject hyvaksytytHakuun(
-            @ApiParam(value = "Haun tunniste", required = true) @PathParam("hakuOid") String hakuOid) {
-        try {
-            tarkistaPaakayttajaoikeudet();
-            Optional<SijoitteluAjo> sijoitteluAjo = raportointiService.cachedLatestSijoitteluAjoForHaku(hakuOid);
-
-            return sijoitteluAjo.map(ajo -> raportointiService.cachedHakemukset(ajo, true, null, null, null, null, null)).orElseGet(HakijaPaginationObject::new);
-        } catch (Exception e) {
-            LOGGER.error("Sijoittelun hakemuksia ei saatu haulle {}!", hakuOid, e);
-            return new HakijaPaginationObject();
-        }
-    }
 
     @PreAuthorize(READ_UPDATE_CRUD)
     @GET

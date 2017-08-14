@@ -38,11 +38,6 @@ public interface SijoitteluResource {
             @ApiParam(value = "Haun tunniste", required = true)
             @PathParam("hakuOid") String hakuOid,
             @PathParam("hakukohdeOid") String hakukohdeOid);
-    @GET
-    @Path("/{hakuOid}/hyvaksytyt/")
-    @Produces(APPLICATION_JSON)
-    HakijaPaginationObject hyvaksytytHakuun(
-            @ApiParam(value = "Haun tunniste", required = true) @PathParam("hakuOid") String hakuOid);
 
     @GET
     @Produces(APPLICATION_JSON)
