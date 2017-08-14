@@ -8,8 +8,4 @@ import fi.vm.sade.sijoittelu.tulos.dto.SijoitteluajoDTO;
 @Deprecated
 public interface SijoitteluTulosService {
     HakukohdeDTO getHakukohdeBySijoitteluajo(SijoitteluAjo sijoitteluAjo, String hakukohdeOid);
-
-    SijoitteluajoDTO getSijoitteluajo(SijoitteluAjo sijoitteluAjo);
-
-    SijoitteluDTO getSijoitteluByHakuOid(String hakuOid);
 }

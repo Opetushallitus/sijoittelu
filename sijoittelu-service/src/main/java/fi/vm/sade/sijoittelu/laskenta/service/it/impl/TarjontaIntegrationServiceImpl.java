@@ -28,29 +28,6 @@ public class TarjontaIntegrationServiceImpl implements TarjontaIntegrationServic
     OhjausparametriResource ohjausparametriResource;
 
     @Override
-    public Optional<String> getTarjoajaOid(String hakukohdeOid) {
-        try {
-            ResultHakukohdeDTO tarjonnanHakukohde = hakukohdeV1Resource.findByOid(hakukohdeOid);
-            return tarjonnanHakukohde.getResult().getTarjoajaOids().stream().findFirst();
-        } catch(Exception e) {
-            return Optional.empty();
-        }
-    }
-
-    @Deprecated
-    @Override
-    public Optional<String> getHaunKohdejoukko(String hakuOid) {
-        try {
-            ResultHakuDTO tarjonnanHaku = hakuV1Resource.findByOid(hakuOid);
-            return HakuUtil.getHaunKohdejoukko(tarjonnanHaku.getResult());
-        } catch (Exception e) {
-            final String message = "Haulle " + hakuOid + " ei saatu kohdejoukkoa";
-            LOG.error(message, e);
-            throw new RuntimeException(message);
-        }
-    }
-
-    @Override
     public HakuDTO getHakuByHakuOid(String hakuOid) {
         try {
             return hakuV1Resource.findByOid(hakuOid).getResult();

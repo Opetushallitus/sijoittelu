@@ -31,45 +31,6 @@ public class ValintatulosWithVastaanotto {
         this.valintaTulosServiceResource = valintaTulosServiceResource;
     }
 
-//    @Deprecated
-//    public List<Valintatulos> forHaku(String hakuOid) {
-//        LOG.info("Haetaan valintatulokset haulle {}", hakuOid);
-//        //List<Valintatulos> fromDb = valintatulosDao.loadValintatulokset(hakuOid);
-//        LOG.info("Valintatulokset haettu haulle {}", hakuOid);
-//        LOG.info("Haetaan haetaan vastaanottotiedot haulle {}", hakuOid);
-//        Map<Triple<String, String, String>, Valintatulos> vastaanottotiedot =
-//                indexValintatulokset(fetchValintatuloksetValinnantilalla(hakuOid));
-//        LOG.info("Vastaanottotiedot haettu haulle {}", hakuOid);
-//        fromDb.forEach(v -> {
-//            ValintatuloksenTila tila = ValintatuloksenTila.KESKEN;
-//            Triple<String, String, String> key = Triple.of(
-//                    v.getHakukohdeOid(),
-//                    v.getValintatapajonoOid(),
-//                    v.getHakemusOid());
-//            if (vastaanottotiedot.containsKey(key)) {
-//                tila = vastaanottotiedot.get(key).getTila();
-//                if (null == tila) {
-//                    throw new IllegalStateException(String.format("Hakukohde: %s, jono: %s, hakemus: %s vastaanottotieto valinta-tulos-servicestä on null",
-//                            key.getLeft(), key.getMiddle(), key.getRight()));
-//                }
-//            }
-//            // Don't write a log entry
-//            v.setTila(tila, tila, "", "");
-//        });
-//        LOG.info("Valintatuloksia haettu {} kpl haulle {}", fromDb.size(), hakuOid);
-//        return fromDb;
-//    }
-
-    private List<Valintatulos> fetchValintatuloksetValinnantilalla(String hakuOid) {
-        try {
-            return valintaTulosServiceResource.valintatuloksetValinnantilalla(hakuOid);
-        } catch (WebApplicationException e) {
-            LOG.error("Virhe haettaessa valintaTulosServiceResource.valintatuloksetValinnantilalla(" + hakuOid +
-                "); response: " + e.getResponse().readEntity(String.class), e);
-            throw e;
-        }
-    }
-
     public void persistVastaanotot(List<Valintatulos> valintatulokset) {
         valintatulokset.forEach(vt -> {
             LOG.info("Valintatulos - Hakukohde: {}, valintatapajono: {}, hakija: {}, hakemus: {}, vastaanoton tila: {}",
@@ -123,12 +84,6 @@ public class ValintatulosWithVastaanotto {
         }
     }
 
-//    @Deprecated
-//    public void persistValintatulokset(List<Valintatulos> valintatulokset) {
-//        persistVastaanotot(valintatulokset);
-//        valintatulokset.forEach(valintatulosDao::createOrUpdateValintatulos);
-//    }
-
     private static String extractSeliteFromValintatulos(Valintatulos valintatulos) {
         return valintatulos.getLogEntries().stream()
                 .sorted((a,b) -> b.getLuotu().compareTo(a.getLuotu()))
@@ -137,19 +92,4 @@ public class ValintatulosWithVastaanotto {
                 .orElse("");
     }
 
-    private static Map<Triple<String, String, String>, Valintatulos> indexValintatulokset(List<Valintatulos> valintatulokset) {
-        Map<Triple<String, String, String>, Valintatulos> vs = new HashMap<>();
-        valintatulokset.stream().forEach(v -> {
-            Triple<String, String, String> key = Triple.of(
-                    v.getHakukohdeOid(),
-                    v.getValintatapajonoOid(),
-                    v.getHakemusOid());
-            if (vs.containsKey(key)) {
-                throw new IllegalStateException(String.format("Hakukohde: %s, jono: %s, hakemus: %s useita valintatuloksia",
-                        key.getLeft(), key.getMiddle(), key.getRight()));
-            }
-            vs.put(key, v);
-        });
-        return vs;
-    }
 }

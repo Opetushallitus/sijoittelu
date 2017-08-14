@@ -21,14 +21,9 @@ import java.util.function.Function;
 @Service
 @Deprecated
 public class SijoitteluTulosServiceImpl implements SijoitteluTulosService {
-    @Autowired
-    private HakukohdeDao hakukohdeDao;
 
     @Autowired
     private CachingRaportointiDao cachingRaportointiDao;
-
-    @Autowired
-    private SijoitteluDao sijoitteluDao;
 
     @Autowired
     private SijoitteluTulosConverter sijoitteluTulosConverter;
@@ -40,21 +35,5 @@ public class SijoitteluTulosServiceImpl implements SijoitteluTulosService {
             return null;
         }
         return sijoitteluTulosConverter.convert(a);
-    }
-
-    @Override
-    public SijoitteluajoDTO getSijoitteluajo(SijoitteluAjo sijoitteluAjo) {
-        if (sijoitteluAjo == null) {
-            return null;
-        }
-        return sijoitteluTulosConverter.convert(sijoitteluAjo);
-    }
-
-    @Override
-    public SijoitteluDTO getSijoitteluByHakuOid(String hakuOid) {
-        Optional<Sijoittelu> s = sijoitteluDao.getSijoitteluByHakuOid(hakuOid);
-
-        return s.map(sijoitteluTulosConverter::convert).orElse(new SijoitteluDTO());
-
     }
 }
