@@ -286,7 +286,7 @@ public class SijoitteluBusinessTest {
         julkaiseHakijan3AlempiToive.setJulkaistavissa(true, "");
         julkaiseHakijan3AlempiToive.setTila(ValintatuloksenTila.KESKEN, "");
 
-        when(valintatulosWithVastaanotto.forHaku("haku1")).thenReturn(Arrays.asList(peruYlempiHakija, julkaiseHakijan3AlempiToive));
+        //when(valintatulosWithVastaanotto.forHaku("haku1")).thenReturn(Arrays.asList(peruYlempiHakija, julkaiseHakijan3AlempiToive));
         sijoitteluService.sijoittele(haku, newHashSet("jono1", "jono2", "jono3"), newHashSet("jono1", "jono2", "jono3"));
 
         hakukohteet = hakukohdeDao.getHakukohdeForSijoitteluajo(sijoitteluDao.getLatestSijoitteluajo("haku1").get().getSijoitteluajoId());

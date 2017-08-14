@@ -53,30 +53,9 @@ public class Hakemus implements Serializable {
 
     private Integer varasijanNumero;
 
-    @Deprecated
-    private String hakijaryhmaOid;
-
     private Set<String> hyvaksyttyHakijaryhmista = new HashSet<>();
 
     private boolean siirtynytToisestaValintatapajonosta = false;
-
-    @PostLoad
-    public void migrateHyvaksyttyHakijaryhmista() {
-        if (hakijaryhmaOid != null && hyvaksyttyHakijaryhmista.isEmpty()) {
-            hyvaksyttyHakijaryhmista.add(hakijaryhmaOid);
-            hakijaryhmaOid = null;
-        }
-    }
-
-    @Deprecated
-    public String getHakijaryhmaOid() {
-        throw new RuntimeException("Deprecated");
-    }
-
-    @Deprecated
-    public void setHakijaryhmaOid(String hakijaryhmaOid) {
-        throw new RuntimeException("Deprecated");
-    }
 
     public Set<String> getHyvaksyttyHakijaryhmista() {
         return this.hyvaksyttyHakijaryhmista;
@@ -165,7 +144,6 @@ public class Hakemus implements Serializable {
                 ", tilankuvauksenTarkenne=" + tilankuvauksenTarkenne +
                 ", tarkenteenLisatieto='" + tarkenteenLisatieto + '\'' +
                 ", varasijanNumero=" + varasijanNumero +
-                ", hakijaryhmaOid='" + hakijaryhmaOid + '\'' +
                 ", hyvaksyttyHakijaryhmista=" + hyvaksyttyHakijaryhmista +
                 ", siirtynytToisestaValintatapajonosta=" + siirtynytToisestaValintatapajonosta +
                 '}';

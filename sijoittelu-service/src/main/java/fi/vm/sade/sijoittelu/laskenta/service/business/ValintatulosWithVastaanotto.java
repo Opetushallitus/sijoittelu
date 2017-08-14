@@ -5,7 +5,7 @@ import fi.vm.sade.sijoittelu.domain.ValintatuloksenTila;
 import fi.vm.sade.sijoittelu.domain.Valintatulos;
 import fi.vm.sade.sijoittelu.laskenta.external.resource.VirkailijaValintaTulosServiceResource;
 import fi.vm.sade.sijoittelu.laskenta.external.resource.dto.VastaanottoEventDto;
-import fi.vm.sade.sijoittelu.tulos.dao.ValintatulosDao;
+//import fi.vm.sade.sijoittelu.tulos.dao.ValintatulosDao;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
 import org.slf4j.Logger;
@@ -22,43 +22,43 @@ public class ValintatulosWithVastaanotto {
 
     private static final Logger LOG = LoggerFactory.getLogger(ValintatulosWithVastaanotto.class);
 
-    final private ValintatulosDao valintatulosDao;
+    //final private ValintatulosDao valintatulosDao;
     final private VirkailijaValintaTulosServiceResource valintaTulosServiceResource;
 
-    public ValintatulosWithVastaanotto(ValintatulosDao valintatulosDao,
+    public ValintatulosWithVastaanotto(//ValintatulosDao valintatulosDao,
                                        VirkailijaValintaTulosServiceResource valintaTulosServiceResource) {
-        this.valintatulosDao = valintatulosDao;
+        //this.valintatulosDao = valintatulosDao;
         this.valintaTulosServiceResource = valintaTulosServiceResource;
     }
 
-    @Deprecated
-    public List<Valintatulos> forHaku(String hakuOid) {
-        LOG.info("Haetaan valintatulokset haulle {}", hakuOid);
-        List<Valintatulos> fromDb = valintatulosDao.loadValintatulokset(hakuOid);
-        LOG.info("Valintatulokset haettu haulle {}", hakuOid);
-        LOG.info("Haetaan haetaan vastaanottotiedot haulle {}", hakuOid);
-        Map<Triple<String, String, String>, Valintatulos> vastaanottotiedot =
-                indexValintatulokset(fetchValintatuloksetValinnantilalla(hakuOid));
-        LOG.info("Vastaanottotiedot haettu haulle {}", hakuOid);
-        fromDb.forEach(v -> {
-            ValintatuloksenTila tila = ValintatuloksenTila.KESKEN;
-            Triple<String, String, String> key = Triple.of(
-                    v.getHakukohdeOid(),
-                    v.getValintatapajonoOid(),
-                    v.getHakemusOid());
-            if (vastaanottotiedot.containsKey(key)) {
-                tila = vastaanottotiedot.get(key).getTila();
-                if (null == tila) {
-                    throw new IllegalStateException(String.format("Hakukohde: %s, jono: %s, hakemus: %s vastaanottotieto valinta-tulos-servicestä on null",
-                            key.getLeft(), key.getMiddle(), key.getRight()));
-                }
-            }
-            // Don't write a log entry
-            v.setTila(tila, tila, "", "");
-        });
-        LOG.info("Valintatuloksia haettu {} kpl haulle {}", fromDb.size(), hakuOid);
-        return fromDb;
-    }
+//    @Deprecated
+//    public List<Valintatulos> forHaku(String hakuOid) {
+//        LOG.info("Haetaan valintatulokset haulle {}", hakuOid);
+//        //List<Valintatulos> fromDb = valintatulosDao.loadValintatulokset(hakuOid);
+//        LOG.info("Valintatulokset haettu haulle {}", hakuOid);
+//        LOG.info("Haetaan haetaan vastaanottotiedot haulle {}", hakuOid);
+//        Map<Triple<String, String, String>, Valintatulos> vastaanottotiedot =
+//                indexValintatulokset(fetchValintatuloksetValinnantilalla(hakuOid));
+//        LOG.info("Vastaanottotiedot haettu haulle {}", hakuOid);
+//        fromDb.forEach(v -> {
+//            ValintatuloksenTila tila = ValintatuloksenTila.KESKEN;
+//            Triple<String, String, String> key = Triple.of(
+//                    v.getHakukohdeOid(),
+//                    v.getValintatapajonoOid(),
+//                    v.getHakemusOid());
+//            if (vastaanottotiedot.containsKey(key)) {
+//                tila = vastaanottotiedot.get(key).getTila();
+//                if (null == tila) {
+//                    throw new IllegalStateException(String.format("Hakukohde: %s, jono: %s, hakemus: %s vastaanottotieto valinta-tulos-servicestä on null",
+//                            key.getLeft(), key.getMiddle(), key.getRight()));
+//                }
+//            }
+//            // Don't write a log entry
+//            v.setTila(tila, tila, "", "");
+//        });
+//        LOG.info("Valintatuloksia haettu {} kpl haulle {}", fromDb.size(), hakuOid);
+//        return fromDb;
+//    }
 
     private List<Valintatulos> fetchValintatuloksetValinnantilalla(String hakuOid) {
         try {
@@ -123,11 +123,11 @@ public class ValintatulosWithVastaanotto {
         }
     }
 
-    @Deprecated
-    public void persistValintatulokset(List<Valintatulos> valintatulokset) {
-        persistVastaanotot(valintatulokset);
-        valintatulokset.forEach(valintatulosDao::createOrUpdateValintatulos);
-    }
+//    @Deprecated
+//    public void persistValintatulokset(List<Valintatulos> valintatulokset) {
+//        persistVastaanotot(valintatulokset);
+//        valintatulokset.forEach(valintatulosDao::createOrUpdateValintatulos);
+//    }
 
     private static String extractSeliteFromValintatulos(Valintatulos valintatulos) {
         return valintatulos.getLogEntries().stream()

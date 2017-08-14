@@ -157,7 +157,6 @@
         <jaxrs:server id="sijoittelunResurssit">
             <jaxrs:serviceBeans>
                 <ref bean="sijoitteluResource"/>
-                <ref bean="tilaResource"/>
                 <ref bean="erillisSijoitteluResource"/>
                 <ref bean="valiSijoitteluResource"/>
                 <ref bean="sijoitteluResourceImpl"/>

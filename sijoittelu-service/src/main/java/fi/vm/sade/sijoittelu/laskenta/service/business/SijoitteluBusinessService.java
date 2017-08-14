@@ -19,9 +19,9 @@ import fi.vm.sade.sijoittelu.laskenta.external.resource.VirkailijaValintaTulosSe
 import fi.vm.sade.sijoittelu.laskenta.external.resource.dto.ParametriDTO;
 import fi.vm.sade.sijoittelu.laskenta.service.it.TarjontaIntegrationService;
 import fi.vm.sade.sijoittelu.laskenta.util.HakuUtil;
-import fi.vm.sade.sijoittelu.tulos.dao.HakukohdeDao;
-import fi.vm.sade.sijoittelu.tulos.dao.SijoitteluDao;
-import fi.vm.sade.sijoittelu.tulos.dao.ValintatulosDao;
+//import fi.vm.sade.sijoittelu.tulos.dao.HakukohdeDao;
+//import fi.vm.sade.sijoittelu.tulos.dao.SijoitteluDao;
+//import fi.vm.sade.sijoittelu.tulos.dao.ValintatulosDao;
 import fi.vm.sade.sijoittelu.tulos.dto.HakukohdeDTO;
 import fi.vm.sade.sijoittelu.tulos.service.impl.converters.SijoitteluTulosConverter;
 import fi.vm.sade.valintalaskenta.domain.dto.valintatieto.HakuDTO;
@@ -66,9 +66,9 @@ public class SijoitteluBusinessService {
 
     private final int maxAjoMaara;
     private final int maxErillisAjoMaara;
-    private final ValintatulosDao valintatulosDao;
-    private final HakukohdeDao hakukohdeDao;
-    private final SijoitteluDao sijoitteluDao;
+//    private final ValintatulosDao valintatulosDao;
+//    private final HakukohdeDao hakukohdeDao;
+//    private final SijoitteluDao sijoitteluDao;
     private final SijoitteluTulosConverter sijoitteluTulosConverter;
     private final ActorService actorService;
     private final TarjontaIntegrationService tarjontaIntegrationService;
@@ -81,9 +81,9 @@ public class SijoitteluBusinessService {
     @Autowired
     public SijoitteluBusinessService(@Value("${sijoittelu.maxAjojenMaara:20}") int maxAjoMaara,
                                      @Value("${sijoittelu.maxErillisAjojenMaara:300}") int maxErillisAjoMaara,
-                                     ValintatulosDao valintatulosDao,
-                                     HakukohdeDao hakukohdeDao,
-                                     SijoitteluDao sijoitteluDao,
+//                                     ValintatulosDao valintatulosDao,
+//                                     HakukohdeDao hakukohdeDao,
+//                                     SijoitteluDao sijoitteluDao,
                                      SijoitteluTulosConverter sijoitteluTulosConverter,
                                      ActorService actorService,
                                      TarjontaIntegrationService tarjontaIntegrationService,
@@ -91,14 +91,14 @@ public class SijoitteluBusinessService {
                                      ValintarekisteriService valintarekisteriService) {
         this.maxAjoMaara = maxAjoMaara;
         this.maxErillisAjoMaara = maxErillisAjoMaara;
-        this.valintatulosDao = valintatulosDao;
-        this.hakukohdeDao = hakukohdeDao;
-        this.sijoitteluDao = sijoitteluDao;
+//        this.valintatulosDao = valintatulosDao;
+//        this.hakukohdeDao = hakukohdeDao;
+//        this.sijoitteluDao = sijoitteluDao;
         this.sijoitteluTulosConverter = sijoitteluTulosConverter;
         this.actorService = actorService;
         this.tarjontaIntegrationService = tarjontaIntegrationService;
         this.valintaTulosServiceResource = valintaTulosServiceResource;
-        this.valintatulosWithVastaanotto = new ValintatulosWithVastaanotto(valintatulosDao, valintaTulosServiceResource);
+        this.valintatulosWithVastaanotto = new ValintatulosWithVastaanotto(/*valintatulosDao, */valintaTulosServiceResource);
         this.preSijoitteluProcessors = PreSijoitteluProcessor.defaultPreProcessors();
         this.postSijoitteluProcessors = PostSijoitteluProcessor.defaultPostProcessors();
         this.valintarekisteriService = valintarekisteriService;
@@ -166,6 +166,7 @@ public class SijoitteluBusinessService {
         LOG.info(stopWatch.prettyPrint());
     }
 
+/*
     @Deprecated
     private void mongoSijoittelu(HakuDTO haku, Set<String> eiSijoitteluunMenevatJonot, Set<String> valintaperusteidenValintatapajonot) {
         long startTime = System.currentTimeMillis();
@@ -224,6 +225,7 @@ public class SijoitteluBusinessService {
         persistSijoitteluAndSiivoaVanhatAjot(stopWatch, hakuOid, sijoitteluForMongo, uusiSijoitteluajo, kaikkiHakukohteet, sijoitteluajoWrapper.getMuuttuneetValintatulokset(), maxAjoMaara);
         LOG.info(stopWatch.prettyPrint());
     }
+*/
 
     private SijoitteluAjo readSijoitteluajoFromValintarekisteri(String hakuOid) {
         try {
@@ -279,7 +281,7 @@ public class SijoitteluBusinessService {
         stopWatch.stop();
     }
 
-    @Deprecated
+/*    @Deprecated
     private void persistSijoitteluAndSiivoaVanhatAjot(StopWatch stopWatch,
                                                       String hakuOid,
                                                       Sijoittelu sijoittelu,
@@ -313,7 +315,7 @@ public class SijoitteluBusinessService {
             LOG.info(stopWatch.prettyPrint());
             throw e;
         }
-    }
+    }*/
 
     private void tallennaSijoitteluToValintarekisteri(String hakuOid,
                                                       SijoitteluAjo uusiSijoitteluajo,
@@ -438,7 +440,7 @@ public class SijoitteluBusinessService {
         stopWatch.stop();
 
         suoritaSijoittelu(startTime, stopWatch, hakuOid, uusiSijoitteluajo, sijoitteluajoWrapper);
-        processOldApplications(stopWatch, olemassaolevatHakukohteet, kaikkiHakukohteet, hakuOid);
+//        processOldApplications(stopWatch, olemassaolevatHakukohteet, kaikkiHakukohteet, hakuOid);
 
         List<HakukohdeDTO> result = kaikkiHakukohteet.parallelStream().map(h -> sijoitteluTulosConverter.convert(h)).collect(Collectors.toList());
         LOG.info(stopWatch.prettyPrint());
@@ -462,16 +464,16 @@ public class SijoitteluBusinessService {
         }
     }
 
-    @Deprecated
-    private Map<String,Long> hakukohdeToLastSijoitteluAjoId(final Sijoittelu sijoittelu) {
-        return sijoittelu.getSijoitteluajot().stream()
-                .flatMap(s -> s.getHakukohteet().stream().map(h -> new HakukohdeOidAndSijoitteluAjoId(h.getOid(),s.getSijoitteluajoId())))
-                .collect(Collectors.toMap(
-                        HakukohdeOidAndSijoitteluAjoId::getHakukohdeOid,
-                        s -> s.getSijoitteluAjoId(),
-                        (sijoitteluAjoId1, sijoitteluAjoId2) -> Math.max(sijoitteluAjoId1, sijoitteluAjoId2)
-                ));
-    }
+//    @Deprecated
+//    private Map<String,Long> hakukohdeToLastSijoitteluAjoId(final Sijoittelu sijoittelu) {
+//        return sijoittelu.getSijoitteluajot().stream()
+//                .flatMap(s -> s.getHakukohteet().stream().map(h -> new HakukohdeOidAndSijoitteluAjoId(h.getOid(),s.getSijoitteluajoId())))
+//                .collect(Collectors.toMap(
+//                        HakukohdeOidAndSijoitteluAjoId::getHakukohdeOid,
+//                        s -> s.getSijoitteluAjoId(),
+//                        (sijoitteluAjoId1, sijoitteluAjoId2) -> Math.max(sijoitteluAjoId1, sijoitteluAjoId2)
+//                ));
+//    }
 
     public long erillissijoittele(HakuDTO hakuDTO) {
         return valintarekisteriErillissijoittelu(hakuDTO);
@@ -551,74 +553,74 @@ public class SijoitteluBusinessService {
 
 
 
-    @Deprecated
-    private long mongoErillissijoittelu(HakuDTO sijoitteluTyyppi) {
-        long startTime = System.currentTimeMillis();
-        StopWatch stopWatch = new StopWatch("Haun " + sijoitteluTyyppi.getHakuOid() + " erillissijoittelu");
-        String hakuOid = sijoitteluTyyppi.getHakuOid();
-        LOG.info("Sijoittelu haulle {} alkaa.", hakuOid);
-
-        stopWatch.start("Alustetaan uusi erillissijoitteluajo ja haetaan sen hakukohteet");
-        final Sijoittelu sijoittelu = getOrCreateErillisSijoittelu(hakuOid);
-        List<Hakukohde> uudetHakukohteet = sijoitteluTyyppi.getHakukohteet().parallelStream().map(DomainConverter::convertToHakukohde).collect(Collectors.toList());
-        List<Hakukohde> olemassaolevatHakukohteet = new ArrayList<>();
-        SijoitteluAjo viimeisinSijoitteluajo = sijoittelu.getLatestSijoitteluajo();
-        if (viimeisinSijoitteluajo != null) {
-            for (Hakukohde hakukohde: uudetHakukohteet) {
-                Hakukohde vanhaTulos = hakukohdeDao.getHakukohdeForSijoitteluajo(viimeisinSijoitteluajo.getSijoitteluajoId(), hakukohde.getOid());
-                if(vanhaTulos != null) {
-                    olemassaolevatHakukohteet.add(vanhaTulos);
-                }
-            }
-        }
-        SijoitteluAjo uusiSijoitteluajo = createSijoitteluAjo(sijoittelu);
-        List<Hakukohde> tamanSijoittelunHakukohteet = merge(uusiSijoitteluajo, olemassaolevatHakukohteet, uudetHakukohteet);
-        stopWatch.stop();
-
-        stopWatch.start("Haetaan valintatulokset vastaanottoineen");
-        List<Valintatulos> valintatulokset = valintatulosWithVastaanotto.forHaku(hakuOid);
-        stopWatch.stop();
-        stopWatch.start("Haetaan kauden aiemmat vastaanotot");
-        Map<String, VastaanottoDTO> kaudenAiemmatVastaanotot = aiemmanVastaanotonHakukohdePerHakija(hakuOid);
-        stopWatch.stop();
-
-        stopWatch.start("Luodaan sijoitteluajoWrapper");
-        final SijoitteluajoWrapper sijoitteluajoWrapper = SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(uusiSijoitteluajo, tamanSijoittelunHakukohteet, valintatulokset, kaudenAiemmatVastaanotot);
-        asetaSijoittelunParametrit(hakuOid, sijoitteluajoWrapper);
-        stopWatch.stop();
-
-        suoritaSijoittelu(startTime, stopWatch, hakuOid, uusiSijoitteluajo, sijoitteluajoWrapper);
-        processOldApplications(stopWatch, olemassaolevatHakukohteet, tamanSijoittelunHakukohteet, hakuOid);
-
-        stopWatch.start("Lisätään muut kuin tässä sijoittelussa mukana olleet hakukohteet");
-        Map<String, Long> kaikkiHakukohteetJotkaOnJoskusSijoiteltuToLastSijoitteluAjoId = hakukohdeToLastSijoitteluAjoId(sijoittelu);
-        final Set<String> tamanSijoittelunHakukohdeOids = tamanSijoittelunHakukohteet.stream().map(Hakukohde::getOid).collect(Collectors.toSet());
-        List<Hakukohde> kaikkiHakukohteet = new LinkedList<>(tamanSijoittelunHakukohteet);
-        // Clone previous hakukohdes
-        kaikkiHakukohteetJotkaOnJoskusSijoiteltuToLastSijoitteluAjoId.forEach(
-                (hakukohdeOid, latestSijoitteluForHakukohde) -> {
-                    if(!tamanSijoittelunHakukohdeOids.contains(hakukohdeOid)) {
-                        Hakukohde h = hakukohdeDao.getHakukohdeForSijoitteluajo(latestSijoitteluForHakukohde, hakukohdeOid);
-                        if(h == null) {
-                            // hakukohde has been removed
-                        } else {
-                            h.setId(null);
-                            h.setSijoitteluajoId(uusiSijoitteluajo.getSijoitteluajoId());
-                            hakukohdeDao.persistHakukohde(h, hakuOid);
-                            HakukohdeItem item = new HakukohdeItem();
-                            item.setOid(hakukohdeOid);
-                            sijoittelu.getLatestSijoitteluajo().getHakukohteet().add(item);
-                            kaikkiHakukohteet.add(h);
-                        }
-                    }
-                }
-        );
-        stopWatch.stop();
-
-        persistSijoitteluAndSiivoaVanhatAjot(stopWatch, hakuOid, sijoittelu, uusiSijoitteluajo, kaikkiHakukohteet, valintatulokset, maxErillisAjoMaara);
-        LOG.info(stopWatch.prettyPrint());
-        return uusiSijoitteluajo.getSijoitteluajoId();
-    }
+//    @Deprecated
+//    private long mongoErillissijoittelu(HakuDTO sijoitteluTyyppi) {
+//        long startTime = System.currentTimeMillis();
+//        StopWatch stopWatch = new StopWatch("Haun " + sijoitteluTyyppi.getHakuOid() + " erillissijoittelu");
+//        String hakuOid = sijoitteluTyyppi.getHakuOid();
+//        LOG.info("Sijoittelu haulle {} alkaa.", hakuOid);
+//
+//        stopWatch.start("Alustetaan uusi erillissijoitteluajo ja haetaan sen hakukohteet");
+//        final Sijoittelu sijoittelu = getOrCreateErillisSijoittelu(hakuOid);
+//        List<Hakukohde> uudetHakukohteet = sijoitteluTyyppi.getHakukohteet().parallelStream().map(DomainConverter::convertToHakukohde).collect(Collectors.toList());
+//        List<Hakukohde> olemassaolevatHakukohteet = new ArrayList<>();
+//        SijoitteluAjo viimeisinSijoitteluajo = sijoittelu.getLatestSijoitteluajo();
+//        if (viimeisinSijoitteluajo != null) {
+//            for (Hakukohde hakukohde: uudetHakukohteet) {
+//                Hakukohde vanhaTulos = hakukohdeDao.getHakukohdeForSijoitteluajo(viimeisinSijoitteluajo.getSijoitteluajoId(), hakukohde.getOid());
+//                if(vanhaTulos != null) {
+//                    olemassaolevatHakukohteet.add(vanhaTulos);
+//                }
+//            }
+//        }
+//        SijoitteluAjo uusiSijoitteluajo = createSijoitteluAjo(sijoittelu);
+//        List<Hakukohde> tamanSijoittelunHakukohteet = merge(uusiSijoitteluajo, olemassaolevatHakukohteet, uudetHakukohteet);
+//        stopWatch.stop();
+//
+//        stopWatch.start("Haetaan valintatulokset vastaanottoineen");
+//        List<Valintatulos> valintatulokset = valintatulosWithVastaanotto.forHaku(hakuOid);
+//        stopWatch.stop();
+//        stopWatch.start("Haetaan kauden aiemmat vastaanotot");
+//        Map<String, VastaanottoDTO> kaudenAiemmatVastaanotot = aiemmanVastaanotonHakukohdePerHakija(hakuOid);
+//        stopWatch.stop();
+//
+//        stopWatch.start("Luodaan sijoitteluajoWrapper");
+//        final SijoitteluajoWrapper sijoitteluajoWrapper = SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(uusiSijoitteluajo, tamanSijoittelunHakukohteet, valintatulokset, kaudenAiemmatVastaanotot);
+//        asetaSijoittelunParametrit(hakuOid, sijoitteluajoWrapper);
+//        stopWatch.stop();
+//
+//        suoritaSijoittelu(startTime, stopWatch, hakuOid, uusiSijoitteluajo, sijoitteluajoWrapper);
+//        processOldApplications(stopWatch, olemassaolevatHakukohteet, tamanSijoittelunHakukohteet, hakuOid);
+//
+//        stopWatch.start("Lisätään muut kuin tässä sijoittelussa mukana olleet hakukohteet");
+//        Map<String, Long> kaikkiHakukohteetJotkaOnJoskusSijoiteltuToLastSijoitteluAjoId = hakukohdeToLastSijoitteluAjoId(sijoittelu);
+//        final Set<String> tamanSijoittelunHakukohdeOids = tamanSijoittelunHakukohteet.stream().map(Hakukohde::getOid).collect(Collectors.toSet());
+//        List<Hakukohde> kaikkiHakukohteet = new LinkedList<>(tamanSijoittelunHakukohteet);
+//        // Clone previous hakukohdes
+//        kaikkiHakukohteetJotkaOnJoskusSijoiteltuToLastSijoitteluAjoId.forEach(
+//                (hakukohdeOid, latestSijoitteluForHakukohde) -> {
+//                    if(!tamanSijoittelunHakukohdeOids.contains(hakukohdeOid)) {
+//                        Hakukohde h = hakukohdeDao.getHakukohdeForSijoitteluajo(latestSijoitteluForHakukohde, hakukohdeOid);
+//                        if(h == null) {
+//                            // hakukohde has been removed
+//                        } else {
+//                            h.setId(null);
+//                            h.setSijoitteluajoId(uusiSijoitteluajo.getSijoitteluajoId());
+//                            hakukohdeDao.persistHakukohde(h, hakuOid);
+//                            HakukohdeItem item = new HakukohdeItem();
+//                            item.setOid(hakukohdeOid);
+//                            sijoittelu.getLatestSijoitteluajo().getHakukohteet().add(item);
+//                            kaikkiHakukohteet.add(h);
+//                        }
+//                    }
+//                }
+//        );
+//        stopWatch.stop();
+//
+//        persistSijoitteluAndSiivoaVanhatAjot(stopWatch, hakuOid, sijoittelu, uusiSijoitteluajo, kaikkiHakukohteet, valintatulokset, maxErillisAjoMaara);
+//        LOG.info(stopWatch.prettyPrint());
+//        return uusiSijoitteluajo.getSijoitteluajoId();
+//    }
 
 
     private void kopioiHakukohteenTiedotVanhaltaSijoitteluajolta(final List<Hakukohde> edellisenSijoitteluajonHakukohteet, final List<Hakukohde> tamanSijoitteluajonHakukohteet) {
@@ -663,18 +665,18 @@ public class SijoitteluBusinessService {
 
 
 
-    @Deprecated
-    private void processOldApplications(StopWatch stopWatch, final List<Hakukohde> olemassaolevatHakukohteet, final List<Hakukohde> kaikkiHakukohteet, String hakuOid) {
-        stopWatch.start("processOldApplications");
-        Map<String, Hakemus> hakemusHashMap = getStringHakemusMap(olemassaolevatHakukohteet);
-        Map<String, Valintatapajono> valintatapajonoHashMap = getStringValintatapajonoMap(olemassaolevatHakukohteet);
-        kaikkiHakukohteet.parallelStream().forEach(hakukohde -> {
-                    hakukohde.getValintatapajonot().forEach(processValintatapaJono(valintatapajonoHashMap, hakemusHashMap, hakukohde));
-                    hakukohdeDao.persistHakukohde(hakukohde, hakuOid);
-                }
-        );
-        stopWatch.stop();
-    }
+//    @Deprecated
+//    private void processOldApplications(StopWatch stopWatch, final List<Hakukohde> olemassaolevatHakukohteet, final List<Hakukohde> kaikkiHakukohteet, String hakuOid) {
+//        stopWatch.start("processOldApplications");
+//        Map<String, Hakemus> hakemusHashMap = getStringHakemusMap(olemassaolevatHakukohteet);
+//        Map<String, Valintatapajono> valintatapajonoHashMap = getStringValintatapajonoMap(olemassaolevatHakukohteet);
+//        kaikkiHakukohteet.parallelStream().forEach(hakukohde -> {
+//                    hakukohde.getValintatapajonot().forEach(processValintatapaJono(valintatapajonoHashMap, hakemusHashMap, hakukohde));
+//                    hakukohdeDao.persistHakukohde(hakukohde, hakuOid);
+//                }
+//        );
+//        stopWatch.stop();
+//    }
 
     @Deprecated
     private Consumer<Valintatapajono> processValintatapaJono(Map<String, Valintatapajono> valintatapajonoHashMap, Map<String, Hakemus> hakemusHashMap, Hakukohde hakukohde) {
@@ -873,19 +875,19 @@ public class SijoitteluBusinessService {
         return sijoitteluAjo;
     }
 
-    @Deprecated
-    private Sijoittelu getOrCreateSijoittelu(String hakuoid) {
-        Optional<Sijoittelu> sijoitteluOpt = sijoitteluDao.getSijoitteluByHakuOid(hakuoid);
-        if (sijoitteluOpt.isPresent()) {
-            return sijoitteluOpt.get();
-        } else {
-            Sijoittelu sijoittelu = new Sijoittelu();
-            sijoittelu.setCreated(new Date());
-            sijoittelu.setSijoitteluId(System.currentTimeMillis());
-            sijoittelu.setHakuOid(hakuoid);
-            return sijoittelu;
-        }
-    }
+//    @Deprecated
+//    private Sijoittelu getOrCreateSijoittelu(String hakuoid) {
+//        Optional<Sijoittelu> sijoitteluOpt = sijoitteluDao.getSijoitteluByHakuOid(hakuoid);
+//        if (sijoitteluOpt.isPresent()) {
+//            return sijoitteluOpt.get();
+//        } else {
+//            Sijoittelu sijoittelu = new Sijoittelu();
+//            sijoittelu.setCreated(new Date());
+//            sijoittelu.setSijoitteluId(System.currentTimeMillis());
+//            sijoittelu.setHakuOid(hakuoid);
+//            return sijoittelu;
+//        }
+//    }
 
     private ValiSijoittelu createValiSijoittelu(String hakuoid) {
         ValiSijoittelu sijoittelu = new ValiSijoittelu();
@@ -895,20 +897,20 @@ public class SijoitteluBusinessService {
         return sijoittelu;
     }
 
-    @Deprecated
-    private Sijoittelu getOrCreateErillisSijoittelu(String hakuoid) {
-        Optional<Sijoittelu> sijoitteluOpt = sijoitteluDao.getSijoitteluByHakuOid(hakuoid);
-        if (sijoitteluOpt.isPresent()) {
-            return sijoitteluOpt.get();
-        } else {
-            Sijoittelu sijoittelu = new Sijoittelu();
-            sijoittelu.setSijoitteluType(Sijoittelu.SijoitteluType.ERILLISSIJOITTELU_TYPE);
-            sijoittelu.setCreated(new Date());
-            sijoittelu.setSijoitteluId(System.currentTimeMillis());
-            sijoittelu.setHakuOid(hakuoid);
-            return sijoittelu;
-        }
-    }
+//    @Deprecated
+//    private Sijoittelu getOrCreateErillisSijoittelu(String hakuoid) {
+//        Optional<Sijoittelu> sijoitteluOpt = sijoitteluDao.getSijoitteluByHakuOid(hakuoid);
+//        if (sijoitteluOpt.isPresent()) {
+//            return sijoitteluOpt.get();
+//        } else {
+//            Sijoittelu sijoittelu = new Sijoittelu();
+//            sijoittelu.setSijoitteluType(Sijoittelu.SijoitteluType.ERILLISSIJOITTELU_TYPE);
+//            sijoittelu.setCreated(new Date());
+//            sijoittelu.setSijoitteluId(System.currentTimeMillis());
+//            sijoittelu.setHakuOid(hakuoid);
+//            return sijoittelu;
+//        }
+//    }
 
     private Map<String, VastaanottoDTO> aiemmanVastaanotonHakukohdePerHakija(String hakuOid) {
         try {
@@ -922,8 +924,8 @@ public class SijoitteluBusinessService {
         }
     }
 
-    public void siivoaVanhatAjotSijoittelulta(String hakuOid, Sijoittelu sijoittelu, int ajojaSaastetaan) {
-        ActorRef siivoaja = actorService.getSiivousActor();
-        siivoaja.tell(new PoistaVanhatAjotSijoittelulta(sijoittelu.getSijoitteluId(), ajojaSaastetaan, hakuOid), ActorRef.noSender());
-    }
+//    public void siivoaVanhatAjotSijoittelulta(String hakuOid, Sijoittelu sijoittelu, int ajojaSaastetaan) {
+//        ActorRef siivoaja = actorService.getSiivousActor();
+//        siivoaja.tell(new PoistaVanhatAjotSijoittelulta(sijoittelu.getSijoitteluId(), ajojaSaastetaan, hakuOid), ActorRef.noSender());
+//    }
 }

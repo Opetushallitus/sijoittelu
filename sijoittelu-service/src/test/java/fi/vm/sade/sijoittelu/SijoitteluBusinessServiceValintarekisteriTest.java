@@ -53,7 +53,7 @@ public class SijoitteluBusinessServiceValintarekisteriTest {
         valintaTulosServiceResource = mock(VirkailijaValintaTulosServiceResource.class);
         valintarekisteriService = mock(ValintarekisteriService.class);
 
-        service = new SijoitteluBusinessService(1, 1, null, null, null,
+        service = new SijoitteluBusinessService(1, 1,
                 sijoitteluTulosConverter, actorService, tarjontaIntegrationService, valintaTulosServiceResource, valintarekisteriService);
 
         when(tarjontaIntegrationService.getHaunParametrit(hakuOid)).thenReturn(haunParametrit());
