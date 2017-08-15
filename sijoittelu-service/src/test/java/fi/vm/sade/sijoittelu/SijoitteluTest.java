@@ -1,18 +1,13 @@
 package fi.vm.sade.sijoittelu;
 
 import com.google.common.collect.ImmutableList;
-import com.lordofthejars.nosqlunit.annotation.UsingDataSet;
-import com.lordofthejars.nosqlunit.core.LoadStrategyEnum;
 import com.lordofthejars.nosqlunit.mongodb.MongoDbRule;
-import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoitteluAlgorithm;
+import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.TestHelper;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.util.SijoitteluAlgorithmUtil;
 import fi.vm.sade.sijoittelu.domain.HakemuksenTila;
 import fi.vm.sade.sijoittelu.domain.Hakemus;
 import fi.vm.sade.sijoittelu.domain.Hakukohde;
-import fi.vm.sade.sijoittelu.domain.SijoitteluAjo;
 import fi.vm.sade.sijoittelu.domain.Valintatapajono;
-import fi.vm.sade.sijoittelu.tulos.dao.HakukohdeDao;
-import fi.vm.sade.sijoittelu.tulos.dao.ValintatulosDao;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
@@ -28,31 +23,15 @@ import java.util.*;
 
 import static com.lordofthejars.nosqlunit.mongodb.MongoDbRule.MongoDbRuleBuilder.newMongoDbRule;
 
-/**
- * User: wuoti Date: 11.11.2013 Time: 15.13
- */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = { "classpath:test-sijoittelu-batch-mongo.xml" })
 public class SijoitteluTest {
 
     private static final Logger LOG = LoggerFactory.getLogger(SijoitteluTest.class);
 
-    @Autowired
-    private ValintatulosDao valintatulosDao;
-
-    @Autowired
-    private HakukohdeDao hakukohdeDao;
-
-    @Autowired
-    private ApplicationContext applicationContext;
-
-    @Rule
-    public MongoDbRule mongoDbRule = newMongoDbRule().defaultSpringMongoDb("sijoittelu");
-
     @Test
-    @UsingDataSet(locations = "sijoittelutestidata.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
     public void syksy2013Test() {
-        List<Hakukohde> hakukohteet = hakukohdeDao.getHakukohdeForSijoitteluajo(1383916417363L);
+        List<Hakukohde> hakukohteet = TestHelper.readHakukohteetListFromJson("sijoittelutestdata/sijoittelutestidata.json");
         Map<String, List<Hakemus>> hakemusMapByHakemusOid = new HashMap<String, List<Hakemus>>();
 
         for (Hakukohde hk : hakukohteet) {
@@ -82,9 +61,8 @@ public class SijoitteluTest {
     }
 
     @Test
-    @UsingDataSet(locations = "sijoittelutestidata.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
     public void syksy2013HarkinnanvaraisestiHyvaksytytTest() {
-        List<Hakukohde> hakukohteet = hakukohdeDao.getHakukohdeForSijoitteluajo(1383916417363L);
+        List<Hakukohde> hakukohteet = TestHelper.readHakukohteetListFromJson("sijoittelutestdata/sijoittelutestidata.json");
         Map<String, List<Hakemus>> hakemusMapByHakemusOid = new HashMap<String, List<Hakemus>>();
 
         for (Hakukohde hk : hakukohteet) {
