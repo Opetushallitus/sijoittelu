@@ -45,10 +45,6 @@ public class ActorService {
         return actorSystem;
     }
 
-    public ActorRef getSiivousActor() {
-        return actorSystem.actorOf(SpringExtProvider.get(actorSystem).props("SijoitteluSiivousActor"), UUID.randomUUID().toString());
-    }
-
     public ActorRef getSijoitteluActor() {
         return router;
     }

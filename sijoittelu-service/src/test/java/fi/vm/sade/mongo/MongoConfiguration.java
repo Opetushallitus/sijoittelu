@@ -30,13 +30,9 @@ import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
 
-/**
- * @author Jussi Jartamo
- */
 public class MongoConfiguration {
     private static final Logger LOG = LoggerFactory
             .getLogger(MongoConfiguration.class);
-    public static final String DATABASE_NAME = "sijoittelu";
     public static final String DATABASE_TEST_NAME = "test";
 
     private static int freePort() {
@@ -96,20 +92,11 @@ public class MongoConfiguration {
         return new MongoClient(new ServerAddress(Network.getLocalHost(), process.getConfig().net().getPort()));
     }
 
-    @Bean(name="morphia")
-    public Morphia getMorphia() {
-        return new Morphia();
-    }
-
     @Bean(name="morphia2")
     public Morphia getMorphia2() {
         return new Morphia();
     }
 
-    @Bean(name="datastore")
-    public Datastore getDatastore(@Qualifier("morphia") Morphia morphia, MongoClient mongo) {
-        return morphia.createDatastore(mongo, DATABASE_NAME);
-    }
     @Bean(name="datastore2")
     public Datastore getDatastore2(@Qualifier("morphia2") Morphia morphia, MongoClient mongo) {
         return morphia.createDatastore(mongo, DATABASE_TEST_NAME);
