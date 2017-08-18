@@ -13,15 +13,10 @@ import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.SijoitteluajoWr
 import fi.vm.sade.sijoittelu.domain.*;
 import fi.vm.sade.sijoittelu.domain.comparator.HakemusComparator;
 import fi.vm.sade.sijoittelu.domain.dto.VastaanottoDTO;
-import fi.vm.sade.sijoittelu.laskenta.actors.messages.PoistaHakukohteet;
-import fi.vm.sade.sijoittelu.laskenta.actors.messages.PoistaVanhatAjotSijoittelulta;
 import fi.vm.sade.sijoittelu.laskenta.external.resource.VirkailijaValintaTulosServiceResource;
 import fi.vm.sade.sijoittelu.laskenta.external.resource.dto.ParametriDTO;
 import fi.vm.sade.sijoittelu.laskenta.service.it.TarjontaIntegrationService;
 import fi.vm.sade.sijoittelu.laskenta.util.HakuUtil;
-//import fi.vm.sade.sijoittelu.tulos.dao.HakukohdeDao;
-//import fi.vm.sade.sijoittelu.tulos.dao.SijoitteluDao;
-//import fi.vm.sade.sijoittelu.tulos.dao.ValintatulosDao;
 import fi.vm.sade.sijoittelu.tulos.dto.HakukohdeDTO;
 import fi.vm.sade.sijoittelu.tulos.service.impl.converters.SijoitteluTulosConverter;
 import fi.vm.sade.valintalaskenta.domain.dto.valintatieto.HakuDTO;
@@ -64,11 +59,6 @@ public class SijoitteluBusinessService {
         add("haunkohdejoukontarkenne_5");
     }};
 
-    private final int maxAjoMaara;
-    private final int maxErillisAjoMaara;
-//    private final ValintatulosDao valintatulosDao;
-//    private final HakukohdeDao hakukohdeDao;
-//    private final SijoitteluDao sijoitteluDao;
     private final SijoitteluTulosConverter sijoitteluTulosConverter;
     private final ActorService actorService;
     private final TarjontaIntegrationService tarjontaIntegrationService;
@@ -79,36 +69,22 @@ public class SijoitteluBusinessService {
     private final ValintarekisteriService valintarekisteriService;
 
     @Autowired
-    public SijoitteluBusinessService(@Value("${sijoittelu.maxAjojenMaara:20}") int maxAjoMaara,
-                                     @Value("${sijoittelu.maxErillisAjojenMaara:300}") int maxErillisAjoMaara,
-//                                     ValintatulosDao valintatulosDao,
-//                                     HakukohdeDao hakukohdeDao,
-//                                     SijoitteluDao sijoitteluDao,
-                                     SijoitteluTulosConverter sijoitteluTulosConverter,
+    public SijoitteluBusinessService(SijoitteluTulosConverter sijoitteluTulosConverter,
                                      ActorService actorService,
                                      TarjontaIntegrationService tarjontaIntegrationService,
                                      VirkailijaValintaTulosServiceResource valintaTulosServiceResource,
                                      ValintarekisteriService valintarekisteriService) {
-        this.maxAjoMaara = maxAjoMaara;
-        this.maxErillisAjoMaara = maxErillisAjoMaara;
-//        this.valintatulosDao = valintatulosDao;
-//        this.hakukohdeDao = hakukohdeDao;
-//        this.sijoitteluDao = sijoitteluDao;
         this.sijoitteluTulosConverter = sijoitteluTulosConverter;
         this.actorService = actorService;
         this.tarjontaIntegrationService = tarjontaIntegrationService;
         this.valintaTulosServiceResource = valintaTulosServiceResource;
-        this.valintatulosWithVastaanotto = new ValintatulosWithVastaanotto(/*valintatulosDao, */valintaTulosServiceResource);
+        this.valintatulosWithVastaanotto = new ValintatulosWithVastaanotto(valintaTulosServiceResource);
         this.preSijoitteluProcessors = PreSijoitteluProcessor.defaultPreProcessors();
         this.postSijoitteluProcessors = PostSijoitteluProcessor.defaultPostProcessors();
         this.valintarekisteriService = valintarekisteriService;
     }
 
     public void sijoittele(HakuDTO haku, Set<String> eiSijoitteluunMenevatJonot, Set<String> valintaperusteidenValintatapajonot) {
-        valintarekisteriSijoittelu(haku, eiSijoitteluunMenevatJonot, valintaperusteidenValintatapajonot);
-    }
-
-    private void valintarekisteriSijoittelu(HakuDTO haku, Set<String> eiSijoitteluunMenevatJonot, Set<String> valintaperusteidenValintatapajonot) {
         long startTime = System.currentTimeMillis();
         String hakuOid = haku.getHakuOid();
         StopWatch stopWatch = new StopWatch("Haun " + hakuOid + " sijoittelu");
@@ -343,32 +319,10 @@ public class SijoitteluBusinessService {
         stopWatch.stop();
 
         suoritaSijoittelu(startTime, stopWatch, hakuOid, uusiSijoitteluajo, sijoitteluajoWrapper);
-//        processOldApplications(stopWatch, olemassaolevatHakukohteet, kaikkiHakukohteet, hakuOid);
 
         List<HakukohdeDTO> result = kaikkiHakukohteet.parallelStream().map(h -> sijoitteluTulosConverter.convert(h)).collect(Collectors.toList());
         LOG.info(stopWatch.prettyPrint());
         return result;
-    }
-
-    private class HakukohdeOidAndSijoitteluAjoId {
-        private final String hakukohdeOid;
-        private final Long sijoitteluAjoId;
-        public HakukohdeOidAndSijoitteluAjoId(String hakukohdeOid, Long sijoitteluAjoId) {
-            this.hakukohdeOid = hakukohdeOid;
-            this.sijoitteluAjoId = sijoitteluAjoId;
-        }
-
-        public Long getSijoitteluAjoId() {
-            return sijoitteluAjoId;
-        }
-
-        public String getHakukohdeOid() {
-            return hakukohdeOid;
-        }
-    }
-
-    public long erillissijoittele(HakuDTO hakuDTO) {
-        return valintarekisteriErillissijoittelu(hakuDTO);
     }
 
     private Hakukohde getErillissijoittelunHakukohde(HakuDTO haku) {
@@ -379,7 +333,7 @@ public class SijoitteluBusinessService {
         throw new IllegalStateException("Haun " + haku.getHakuOid() + " erillissijoitteluun saatiin " + haku.getHakukohteet().size() + " kpl hakukohteita. Voi olla vain yksi!");
     }
 
-    private long valintarekisteriErillissijoittelu(HakuDTO haku) {
+    public long erillissijoittele(HakuDTO haku) {
         long startTime = System.currentTimeMillis();
         String hakuOid = haku.getHakuOid();
 
@@ -646,9 +600,4 @@ public class SijoitteluBusinessService {
             throw e;
         }
     }
-
-//    public void siivoaVanhatAjotSijoittelulta(String hakuOid, Sijoittelu sijoittelu, int ajojaSaastetaan) {
-//        ActorRef siivoaja = actorService.getSiivousActor();
-//        siivoaja.tell(new PoistaVanhatAjotSijoittelulta(sijoittelu.getSijoitteluId(), ajojaSaastetaan, hakuOid), ActorRef.noSender());
-//    }
 }

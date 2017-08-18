@@ -5,29 +5,21 @@ import fi.vm.sade.sijoittelu.domain.ValintatuloksenTila;
 import fi.vm.sade.sijoittelu.domain.Valintatulos;
 import fi.vm.sade.sijoittelu.laskenta.external.resource.VirkailijaValintaTulosServiceResource;
 import fi.vm.sade.sijoittelu.laskenta.external.resource.dto.VastaanottoEventDto;
-//import fi.vm.sade.sijoittelu.tulos.dao.ValintatulosDao;
 import org.apache.commons.lang3.tuple.Pair;
-import org.apache.commons.lang3.tuple.Triple;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.WebApplicationException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class ValintatulosWithVastaanotto {
 
     private static final Logger LOG = LoggerFactory.getLogger(ValintatulosWithVastaanotto.class);
 
-    //final private ValintatulosDao valintatulosDao;
     final private VirkailijaValintaTulosServiceResource valintaTulosServiceResource;
 
-    public ValintatulosWithVastaanotto(//ValintatulosDao valintatulosDao,
-                                       VirkailijaValintaTulosServiceResource valintaTulosServiceResource) {
-        //this.valintatulosDao = valintatulosDao;
+    public ValintatulosWithVastaanotto(VirkailijaValintaTulosServiceResource valintaTulosServiceResource) {
         this.valintaTulosServiceResource = valintaTulosServiceResource;
     }
 
