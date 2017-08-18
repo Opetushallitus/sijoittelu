@@ -29,6 +29,5 @@
         </property>
     </bean>
 
-    <import resource="application-context-tulos-mongo.xml" />
     <import resource="application-context-tulos-swagger.xml" />
 </beans>

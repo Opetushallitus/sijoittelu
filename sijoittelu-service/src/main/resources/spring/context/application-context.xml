@@ -130,21 +130,7 @@
 
         <import resource="application-context-db.xml" />
         <import resource="application-context-service.xml" />
-        <import resource="application-context-mongo.xml" />
         <import resource="application-context-tulos.xml" /> <!-- tulee tulos projektilta jarrissa -->
-
-        <bean id="mongoUri2" class="com.mongodb.MongoClientURI">
-        <constructor-arg type="java.lang.String" value="${valintalaskenta-laskenta-service.mongodb.uri}" />
-        </bean>
-
-        <bean id="mongo2" class="com.mongodb.MongoClient" scope="singleton">
-        <constructor-arg type="com.mongodb.MongoClientURI" ref="mongoUri2"/>
-        </bean>
-        <bean id="morphia2" class="org.mongodb.morphia.Morphia" />
-        <bean id="datastore2" factory-bean="morphia2" factory-method="createDatastore">
-        <constructor-arg type="com.mongodb.MongoClient" ref="mongo2" />
-        <constructor-arg type="java.lang.String" value="${valintalaskenta-laskenta-service.mongodb.dbname}" />
-        </bean>
 
         <bean id="modelMapper" class="fi.vm.sade.valintalaskenta.tulos.mapping.ValintalaskentaModelMapper"/>
 

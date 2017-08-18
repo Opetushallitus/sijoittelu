@@ -75,73 +75,10 @@ public class RaportointiConverterImpl implements RaportointiConverter {
         hakutoiveenValintatapajonoDTO.setHakemuksenTilanViimeisinMuutos(hakemusDTO.getViimeisenHakemuksenTilanMuutos());
     }
 
-    private List<KevytHakijaDTO> convertHakukohteenHakijat(HakukohdeDTO hakukohde, Iterator<KevytHakukohdeDTO> hakukohteet) {
-        HashMap<String, KevytHakijaDTO> hakijat = new HashMap<>();
-        for (ValintatapajonoDTO valintatapajono : hakukohde.getValintatapajonot()) {
-            for (HakemusDTO hakemusDTO : valintatapajono.getHakemukset()) {
-                if (!hakijat.containsKey(hakemusDTO.getHakemusOid())) {
-                    KevytHakijaDTO h = new KevytHakijaDTO();
-                    h.setHakijaOid(hakemusDTO.getHakijaOid());
-                    h.setHakemusOid(hakemusDTO.getHakemusOid());
-                    hakijat.put(hakemusDTO.getHakemusOid(), h);
-                }
-                KevytHakijaDTO hakijaRaportointiDTO = hakijat.get(hakemusDTO.getHakemusOid());
-                KevytHakutoiveDTO raportointiHakutoiveDTO = null;
-                for (KevytHakutoiveDTO hd : hakijaRaportointiDTO.getHakutoiveet()) {
-                    if (hd.getHakukohdeOid().equals(hakemusDTO.getHakukohdeOid())) {
-                        raportointiHakutoiveDTO = hd;
-                    }
-                }
-                if (raportointiHakutoiveDTO == null) {
-                    raportointiHakutoiveDTO = new KevytHakutoiveDTO();
-                    raportointiHakutoiveDTO.setTarjoajaOid(hakemusDTO.getTarjoajaOid());
-                    raportointiHakutoiveDTO.setHakukohdeOid(hakemusDTO.getHakukohdeOid());
-                    raportointiHakutoiveDTO.setKaikkiJonotSijoiteltu(hakukohde.isKaikkiJonotSijoiteltu());
-                    raportointiHakutoiveDTO.setHakutoive(hakemusDTO.getPrioriteetti());
-                    hakijaRaportointiDTO.getHakutoiveet().add(raportointiHakutoiveDTO);
-                }
-
-                KevytHakutoiveenValintatapajonoDTO hakutoiveenValintatapajonoDTO = new KevytHakutoiveenValintatapajonoDTO();
-                raportointiHakutoiveDTO.getHakutoiveenValintatapajonot().add(hakutoiveenValintatapajonoDTO);
-                hakutoiveenValintatapajonoDTO.setValintatapajonoOid(valintatapajono.getOid());
-                hakutoiveenValintatapajonoDTO.setEiVarasijatayttoa(Optional.ofNullable(valintatapajono.getEiVarasijatayttoa()).orElse(false));
-                hakutoiveenValintatapajonoDTO.setVarasijojaKaytetaanAlkaen(valintatapajono.getVarasijojaKaytetaanAlkaen());
-                hakutoiveenValintatapajonoDTO.setVarasijojaTaytetaanAsti(valintatapajono.getVarasijojaTaytetaanAsti());
-                hakutoiveenValintatapajonoDTO.setVarasijanNumero(hakemusDTO.getVarasijanNumero());
-                hakutoiveenValintatapajonoDTO.setPisteet(hakemusDTO.getPisteet());
-                hakutoiveenValintatapajonoDTO.setJonosija(hakemusDTO.getJonosija());
-                hakutoiveenValintatapajonoDTO.setTila(hakemusDTO.getTila());
-                hakutoiveenValintatapajonoDTO.setTilanKuvaukset(hakemusDTO.getTilanKuvaukset());
-                hakutoiveenValintatapajonoDTO.setHyvaksyttyHarkinnanvaraisesti(hakemusDTO.isHyvaksyttyHarkinnanvaraisesti());
-                hakutoiveenValintatapajonoDTO.setValintatapajonoOid(valintatapajono.getOid());
-                hakutoiveenValintatapajonoDTO.setHakemuksenTilanViimeisinMuutos(viimeisinHakemuksenTilanMuutos(hakemusDTO));
-            }
-        }
-        while (hakukohteet.hasNext()) {
-            KevytHakukohdeDTO hk = hakukohteet.next();
-            if (!Objects.equals(hk.getOid(), hakukohde.getOid())) {
-                for (KevytValintatapajonoDTO valintatapajono : hk.getValintatapajonot()) {
-                    for (KevytHakemusDTO hakemusDTO : valintatapajono.getHakemukset()) {
-                        if (hakijat.containsKey(hakemusDTO.getHakemusOid())) {
-                            kevytPopulateHakija(hk, valintatapajono, hakemusDTO, hakijat.get(hakemusDTO.getHakemusOid()));
-                        }
-                    }
-                }
-            }
-        }
-        return new ArrayList<>(hakijat.values());
-    }
-
     @Override
     public List<HakijaDTO> convert(List<HakukohdeDTO> hakukohteet, List<Valintatulos> kaikkienValintatulokset) {
         List<HakijaDTO> hakijat = convert(hakukohteet);
         return applyValintatuloksenTiedot(kaikkienValintatulokset, hakijat);
-    }
-
-    @Override
-    public List<KevytHakijaDTO> convertHakukohde(HakukohdeDTO hakukohde, Iterator<KevytHakukohdeDTO> hakukohteet, Map<String, List<RaportointiValintatulos>> valintatulokset) {
-        List<KevytHakijaDTO> hakijat = convertHakukohteenHakijat(hakukohde, hakukohteet);
-        return kevytApplyValintatuloksenTiedot(valintatulokset, hakijat);
     }
 
     private List<HakijaDTO> applyValintatuloksenTiedot(List<Valintatulos> kaikkienValintatulokset, List<HakijaDTO> hakijat) {
@@ -170,35 +107,6 @@ public class RaportointiConverterImpl implements RaportointiConverter {
                                 valintatapajonoDTO.setHyvaksyttyVarasijalta(valintatulos.getHyvaksyttyVarasijalta());
                                 valintatapajonoDTO.setValintatuloksenViimeisinMuutos(viimeisinValintatuloksenMuutos(valintatulos));
                                 valintatapajonoDTO.setIlmoittautumisTila(EnumConverter.convert(IlmoittautumisTila.class, valintatulos.getIlmoittautumisTila()));
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        return hakijat;
-    }
-
-    private List<KevytHakijaDTO> kevytApplyValintatuloksenTiedot(Map<String, List<RaportointiValintatulos>> hakijoidenValintatulokset, List<KevytHakijaDTO> hakijat) {
-        for (KevytHakijaDTO hakija : hakijat) {
-            List<RaportointiValintatulos> valintatulokset = hakijoidenValintatulokset.get(hakija.getHakemusOid());
-            if (valintatulokset != null && !valintatulokset.isEmpty()) {
-                for (KevytHakutoiveDTO hakutoiveDTO : hakija.getHakutoiveet()) {
-                    for (KevytHakutoiveenValintatapajonoDTO valintatapajonoDTO : hakutoiveDTO.getHakutoiveenValintatapajonot()) {
-                        if (valintatapajonoDTO == null) {
-                            continue;
-                        }
-                        for (RaportointiValintatulos valintatulos : valintatulokset) {
-                            if (valintatulos != null && valintatulos.valintatapajonoOid.equals(valintatapajonoDTO.getValintatapajonoOid())) {
-                                valintatapajonoDTO.setJulkaistavissa(valintatulos.julkaistavissa);
-                                valintatapajonoDTO.setEhdollisestiHyvaksyttavissa(valintatulos.ehdollisestiHyvaksyttavissa);
-                                valintatapajonoDTO.setEhdollisenHyvaksymisenEhtoKoodi(valintatulos.ehdollisenHyvaksymisenEhtoKoodi);
-                                valintatapajonoDTO.setEhdollisenHyvaksymisenEhtoFI(valintatulos.ehdollisenHyvaksymisenEhtoFI);
-                                valintatapajonoDTO.setEhdollisenHyvaksymisenEhtoSV(valintatulos.ehdollisenHyvaksymisenEhtoSV);
-                                valintatapajonoDTO.setEhdollisenHyvaksymisenEhtoEN(valintatulos.ehdollisenHyvaksymisenEhtoEN);
-                                valintatapajonoDTO.setHyvaksyttyVarasijalta(valintatulos.hyvaksyttyVarasijalta);
-                                valintatapajonoDTO.setValintatuloksenViimeisinMuutos(valintatulos.viimeisinValintatuloksenMuutos);
-                                valintatapajonoDTO.setIlmoittautumisTila(valintatulos.ilmoittautumisTila);
                             }
                         }
                     }
