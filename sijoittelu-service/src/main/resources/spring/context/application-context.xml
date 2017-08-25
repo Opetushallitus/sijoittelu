@@ -158,7 +158,6 @@
                 <ref bean="sijoitteluResource"/>
                 <ref bean="erillisSijoitteluResource"/>
                 <ref bean="valiSijoitteluResource"/>
-                <ref bean="sijoitteluResourceImpl"/>
                 <ref bean="erillisSijoitteluResourceImpl"/>
                 <ref bean="sessionResource"/>
             </jaxrs:serviceBeans>
