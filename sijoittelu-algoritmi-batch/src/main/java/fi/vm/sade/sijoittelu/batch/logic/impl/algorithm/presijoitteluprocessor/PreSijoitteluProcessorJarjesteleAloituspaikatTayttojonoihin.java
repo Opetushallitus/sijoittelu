@@ -42,7 +42,7 @@ class PreSijoitteluProcessorJarjesteleAloituspaikatTayttojonoihin implements Pre
 
             setAlkuperaisetAloituspaikat(hakukohde);
 
-            if(sijoitteluajoWrapper.isKKHaku() && sijoitteluajoWrapper.varasijaSaannotVoimassa()) {
+            if(sijoitteluajoWrapper.isKKHaku()) {
                 populateOid2Valintatapajono(hakukohde);
 
                 toBeProcessed = Queues.newConcurrentLinkedQueue(hakukohde.getValintatapajonot());
