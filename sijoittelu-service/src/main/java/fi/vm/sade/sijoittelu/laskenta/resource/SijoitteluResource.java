@@ -96,7 +96,7 @@ public class SijoitteluResource {
             return "true";
         } catch (Exception e) {
             LOGGER.error("Sijoittelu epäonnistui haulle " + hakuOid + " : " + e.getMessage(), e);
-            return "false";
+            throw new RuntimeException(e);
         }
     }
 
