@@ -349,6 +349,9 @@ public class SijoitteleHakijaryhma {
                 muuttuneetHakemukset.addAll(sijoitteleHakijaryhmaRecur(sijoitteluAjo, hakijaryhmaWrapper));
             }
         }
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("SijoitteleHakijaryhma.kasitteleValituksiHaluavat: muuttuneetHakemukset.size() == " + muuttuneetHakemukset.size());
+        }
         return muuttuneetHakemukset;
     }
 

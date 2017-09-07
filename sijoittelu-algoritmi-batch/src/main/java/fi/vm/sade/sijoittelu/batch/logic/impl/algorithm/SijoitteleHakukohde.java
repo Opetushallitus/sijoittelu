@@ -1,6 +1,8 @@
 package fi.vm.sade.sijoittelu.batch.logic.impl.algorithm;
 
 import com.google.common.collect.Sets;
+
+import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.comparator.HakemusWrapperComparator;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.*;
 import fi.vm.sade.sijoittelu.domain.*;
 import org.slf4j.Logger;
@@ -24,6 +26,18 @@ public class SijoitteleHakukohde {
         for (HakijaryhmaWrapper hakijaryhmaWrapper : hakukohde.getHakijaryhmaWrappers()) {
             muuttuneetHakukohteet.addAll(SijoitteleHakijaryhma.sijoitteleHakijaryhma(sijoitteluAjo, hakijaryhmaWrapper));
         }
+
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Hakemusten tilat hakijaryhmäsijoittelun jälkeen:");
+            hakukohde.getValintatapajonot().forEach(jono -> {
+                LOG.debug("        jono " + jono.getValintatapajono().getOid() + " :");
+                List<HakemusWrapper> jononHakemukset = jono.getHakemukset().stream().
+                    sorted(new HakemusWrapperComparator()).collect(Collectors.toList());
+                jononHakemukset.forEach(h -> LOG.debug("                " +
+                    h.getHakemus().getHakemusOid() + " / " + h.getHakemus().getTila()));
+            });
+        }
+
         for (ValintatapajonoWrapper valintatapajono : hakukohde.getValintatapajonot()) {
             muuttuneetHakukohteet.addAll(sijoitteleValintatapajono(sijoitteluAjo, valintatapajono));
         }

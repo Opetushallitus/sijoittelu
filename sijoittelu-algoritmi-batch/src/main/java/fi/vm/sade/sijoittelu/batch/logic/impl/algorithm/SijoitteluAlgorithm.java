@@ -94,6 +94,9 @@ public abstract class SijoitteluAlgorithm {
             do {
                 SortedSet<HakukohdeWrapper> muuttuneetHakukohteet = new TreeSet<>(new HakukohdeWrapperComparator());
                 for (HakukohdeWrapper hakukohde : iteraationHakukohteet) {
+                    if (LOG.isDebugEnabled()) {
+                        LOG.debug("Sijoitellaan hakukohde " + hakukohde.getHakukohde().getOid());
+                    }
                     muuttuneetHakukohteet.addAll(SijoitteleHakukohde.sijoitteleHakukohde(sijoitteluAjo, hakukohde));
                 }
                 HashCode iteraationHash = sijoitteluAjo.asHash();
