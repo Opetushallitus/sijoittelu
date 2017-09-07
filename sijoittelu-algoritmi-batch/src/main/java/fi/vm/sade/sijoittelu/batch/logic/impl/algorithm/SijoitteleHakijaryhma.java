@@ -80,7 +80,7 @@ public class SijoitteleHakijaryhma {
             LinkedList<Hakemus> tasasijalla = new LinkedList<>();
             do { tasasijalla.addLast(hakijaryhmastaHyvaksyttavissa.removeFirst()); }
             while (!hakijaryhmastaHyvaksyttavissa.isEmpty() &&
-                    tasasijalla.getLast().getJonosija() == hakijaryhmastaHyvaksyttavissa.getFirst().getJonosija());
+                Objects.equals(tasasijalla.getLast().getJonosija(), hakijaryhmastaHyvaksyttavissa.getFirst().getJonosija()));
             LinkedList<Hakemus> hyvaksytyt = new LinkedList<>();
             LinkedList<Hakemus> eiHyvaksytyt = new LinkedList<>();
             switch (tasasijasaanto) {
