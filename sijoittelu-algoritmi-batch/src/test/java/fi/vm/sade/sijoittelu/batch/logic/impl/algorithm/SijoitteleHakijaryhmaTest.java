@@ -1,5 +1,8 @@
 package fi.vm.sade.sijoittelu.batch.logic.impl.algorithm;
 
+import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.comparator.HakemusWrapperComparator;
+import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.comparator.HakijaryhmaWrapperComparator;
+import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.presijoitteluprocessor.PreSijoitteluProcessorSort;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.HakemusWrapper;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.HakijaryhmaWrapper;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.HakukohdeWrapper;
@@ -13,6 +16,7 @@ import org.junit.Test;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -663,5 +667,91 @@ public class SijoitteleHakijaryhmaTest {
         Assert.assertEquals(HakemuksenTila.HYVAKSYTTY, hakukohdeWrapper.getValintatapajonot().get(2).getHakemukset().get(1).getHakemus().getTila());
         Assert.assertThat(hakukohdeWrapper.getValintatapajonot().get(2).getHakemukset().get(0).getHakemus().getHyvaksyttyHakijaryhmista(), Matchers.empty());
         Assert.assertThat(hakukohdeWrapper.getValintatapajonot().get(2).getHakemukset().get(1).getHakemus().getHyvaksyttyHakijaryhmista(), Matchers.contains("hakijaryhmaOid"));
+    }
+
+    @Test
+    public void bug1468() {
+        hakijaryhma.setOid("1.1.1.1");
+        hakijaryhma.setPrioriteetti(1);
+        hakijaryhma.setValintatapajonoOid(valintatapajono.getOid());
+        Hakijaryhma toinenHakijaryhma = new Hakijaryhma();
+        toinenHakijaryhma.setOid("2.2.2.2");
+        toinenHakijaryhma.setPrioriteetti(2);
+        toinenHakijaryhma.setValintatapajonoOid(valintatapajono.getOid());
+        hakukohde.setHakijaryhmat(Arrays.asList(hakijaryhma, toinenHakijaryhma));
+
+        valintatapajono.setOid("koejono-oid");
+        valintatapajono.setAloituspaikat(5);
+        hakijaryhma.setKiintio(3);
+        toinenHakijaryhma.setKiintio(3);
+        valintatapajono.setTasasijasaanto(Tasasijasaanto.YLITAYTTO);
+        valintatapajono.getHakemukset().clear();
+
+        for (int i = 0; i < 10; i++) {
+            valintatapajono.getHakemukset().add(generateHakemus(i, i, hakijaryhma));
+            valintatapajono.getHakemukset().add(generateHakemus(100 + i, 100 + i, toinenHakijaryhma));
+        }
+
+        Hakukohde toinenHakukohdeMuuttumisenTriggeroimiseksi = new Hakukohde();
+        hakukohde.setOid("1hakukohdeOid");
+        toinenHakukohdeMuuttumisenTriggeroimiseksi.setOid("2hakukohdeOid"); // this needs to be processed second to trigger the bug
+        Valintatapajono toisenKohteenJono = new Valintatapajono();
+        toisenKohteenJono.setOid("toisenKohteenJonoOid");
+        toisenKohteenJono.setAloituspaikat(1);
+        toisenKohteenJono.setPrioriteetti(1);
+        toisenKohteenJono.setTasasijasaanto(Tasasijasaanto.YLITAYTTO);
+        toisenKohteenJono.getHakemukset().add(generateHakemus(0, 1, null));
+        toinenHakukohdeMuuttumisenTriggeroimiseksi.setValintatapajonot(Collections.singletonList(toisenKohteenJono));
+
+        Hakemus hakemusWithTwoHakutoives = valintatapajono.getHakemukset().get(0);
+        toisenKohteenJono.getHakemukset().get(0).setHakemusOid(hakemusWithTwoHakutoives.getHakemusOid());
+        toisenKohteenJono.getHakemukset().get(0).setPrioriteetti(1);
+        hakemusWithTwoHakutoives.setPrioriteetti(2);
+
+        ajoWrapper = SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(ajo,
+            Arrays.asList(hakukohde, toinenHakukohdeMuuttumisenTriggeroimiseksi), Collections.emptyList(), Collections.emptyMap());
+        hakukohdeWrapper = ajoWrapper.getHakukohteet().get(0);
+
+        SijoitteluAlgorithm.sijoittele(Collections.singletonList(new PreSijoitteluProcessorSort()), Collections.emptyList(), ajoWrapper);
+
+        List<HakemusWrapper> jononHakemukset = hakukohdeWrapper.getValintatapajonot().get(0).getHakemukset().stream().sorted(new HakemusWrapperComparator()).collect(Collectors.toList());
+
+        Assert.assertThat(jononHakemukset.get(0).getHakemus().getHyvaksyttyHakijaryhmista(), Matchers.empty());
+        Assert.assertThat(jononHakemukset.get(0).getHakemus().getTila(), Matchers.equalTo(HakemuksenTila.PERUUNTUNUT));
+        Assert.assertThat(jononHakemukset.get(1).getHakemus().getHyvaksyttyHakijaryhmista(), Matchers.contains("1.1.1.1"));
+        Assert.assertThat(jononHakemukset.get(2).getHakemus().getHyvaksyttyHakijaryhmista(), Matchers.contains("1.1.1.1"));
+        Assert.assertThat(jononHakemukset.get(3).getHakemus().getHyvaksyttyHakijaryhmista(), Matchers.contains("1.1.1.1"));
+
+        Assert.assertThat(jononHakemukset.get(10).getHakemus().getHyvaksyttyHakijaryhmista(), Matchers.contains("2.2.2.2"));
+        Assert.assertThat(jononHakemukset.get(10).getHakemus().getTila(), Matchers.equalTo(HakemuksenTila.HYVAKSYTTY));
+        Assert.assertThat(jononHakemukset.get(11).getHakemus().getHyvaksyttyHakijaryhmista(), Matchers.contains("2.2.2.2"));
+        Assert.assertThat(jononHakemukset.get(11).getHakemus().getTila(), Matchers.equalTo(HakemuksenTila.HYVAKSYTTY));
+
+        final boolean bugiKorjattu = false;
+        if (bugiKorjattu) {
+            Assert.assertThat(jononHakemukset.get(12).getHakemus().getTila(), Matchers.equalTo(HakemuksenTila.VARALLA));
+            Assert.assertThat(jononHakemukset.get(12).getHakemus().getHyvaksyttyHakijaryhmista(), Matchers.empty());
+            Assert.assertThat(jononHakemukset.get(12).getHakemus().getHakemusOid(), Matchers.equalTo("hakemus102"));
+        } else {
+            Assert.assertThat(jononHakemukset.get(12).getHakemus().getTila(), Matchers.equalTo(HakemuksenTila.HYVAKSYTTY));
+            Assert.assertThat(jononHakemukset.get(12).getHakemus().getHyvaksyttyHakijaryhmista(), Matchers.contains("2.2.2.2"));
+            Assert.assertThat(jononHakemukset.get(12).getHakemus().getHakemusOid(), Matchers.equalTo("hakemus102"));
+        }
+
+        for (int i = 4; i < 10; i++) {
+            Assert.assertEquals("Hakemuksen " + i + " tila", HakemuksenTila.VARALLA, jononHakemukset.get(i).getHakemus().getTila());
+            Assert.assertThat(jononHakemukset.get(i).getHakemus().getHyvaksyttyHakijaryhmista(), Matchers.empty());
+        }
+        if (bugiKorjattu) {
+            for (int i = 12; i < 20; i++) {
+                Assert.assertEquals("Hakemuksen " + i + " tila", HakemuksenTila.VARALLA, jononHakemukset.get(i).getHakemus().getTila());
+                Assert.assertThat(jononHakemukset.get(i).getHakemus().getHyvaksyttyHakijaryhmista(), Matchers.empty());
+            }
+        } else {
+            for (int i = 13; i < 20; i++) {
+                Assert.assertEquals("Hakemuksen " + i + " tila", HakemuksenTila.VARALLA, jononHakemukset.get(i).getHakemus().getTila());
+                Assert.assertThat(jononHakemukset.get(i).getHakemus().getHyvaksyttyHakijaryhmista(), Matchers.empty());
+            }
+        }
     }
 }
