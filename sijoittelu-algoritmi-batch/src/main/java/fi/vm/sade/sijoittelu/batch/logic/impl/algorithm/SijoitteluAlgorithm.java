@@ -2,6 +2,7 @@ package fi.vm.sade.sijoittelu.batch.logic.impl.algorithm;
 
 import com.google.common.collect.Sets;
 import com.google.common.hash.HashCode;
+
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.comparator.HakukohdeWrapperComparator;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.postsijoitteluprocessor.PostSijoitteluProcessor;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.presijoitteluprocessor.*;
