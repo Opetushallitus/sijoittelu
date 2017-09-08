@@ -659,10 +659,12 @@ public class SijoitteleHakijaryhmaTest {
         Assert.assertEquals(HakemuksenTila.VARALLA, hakukohdeWrapper.getValintatapajonot().get(0).getHakemukset().get(1).getHakemus().getTila());
         Assert.assertThat(hakukohdeWrapper.getValintatapajonot().get(0).getHakemukset().get(0).getHakemus().getHyvaksyttyHakijaryhmista(), Matchers.empty());
         Assert.assertThat(hakukohdeWrapper.getValintatapajonot().get(0).getHakemukset().get(1).getHakemus().getHyvaksyttyHakijaryhmista(), Matchers.empty());
+
         Assert.assertEquals(HakemuksenTila.HYVAKSYTTY, hakukohdeWrapper.getValintatapajonot().get(1).getHakemukset().get(0).getHakemus().getTila());
         Assert.assertEquals(HakemuksenTila.VARALLA, hakukohdeWrapper.getValintatapajonot().get(1).getHakemukset().get(1).getHakemus().getTila());
         Assert.assertThat(hakukohdeWrapper.getValintatapajonot().get(1).getHakemukset().get(0).getHakemus().getHyvaksyttyHakijaryhmista(), Matchers.empty());
         Assert.assertThat(hakukohdeWrapper.getValintatapajonot().get(1).getHakemukset().get(1).getHakemus().getHyvaksyttyHakijaryhmista(), Matchers.empty());
+
         Assert.assertEquals(HakemuksenTila.VARALLA, hakukohdeWrapper.getValintatapajonot().get(2).getHakemukset().get(0).getHakemus().getTila());
         Assert.assertEquals(HakemuksenTila.HYVAKSYTTY, hakukohdeWrapper.getValintatapajonot().get(2).getHakemukset().get(1).getHakemus().getTila());
         Assert.assertThat(hakukohdeWrapper.getValintatapajonot().get(2).getHakemukset().get(0).getHakemus().getHyvaksyttyHakijaryhmista(), Matchers.empty());
@@ -716,12 +718,15 @@ public class SijoitteleHakijaryhmaTest {
 
         List<HakemusWrapper> jononHakemukset = hakukohdeWrapper.getValintatapajonot().get(0).getHakemukset().stream().sorted(new HakemusWrapperComparator()).collect(Collectors.toList());
 
+        // ryhmästä 1.1.1.1 tulee tulla hyväksytyiksi kolme hakemusta, jotka ovat jonosijajärjestyksessä ensimmäisen, peruuntuneen jälkeen
         Assert.assertThat(jononHakemukset.get(0).getHakemus().getHyvaksyttyHakijaryhmista(), Matchers.empty());
         Assert.assertThat(jononHakemukset.get(0).getHakemus().getTila(), Matchers.equalTo(HakemuksenTila.PERUUNTUNUT));
         Assert.assertThat(jononHakemukset.get(1).getHakemus().getHyvaksyttyHakijaryhmista(), Matchers.contains("1.1.1.1"));
         Assert.assertThat(jononHakemukset.get(2).getHakemus().getHyvaksyttyHakijaryhmista(), Matchers.contains("1.1.1.1"));
+        Assert.assertThat(jononHakemukset.get(3).getHakemus().getTila(), Matchers.equalTo(HakemuksenTila.HYVAKSYTTY));
         Assert.assertThat(jononHakemukset.get(3).getHakemus().getHyvaksyttyHakijaryhmista(), Matchers.contains("1.1.1.1"));
 
+        // ryhmästä 2.2.2.2 tulee tulla hyväksytyiksi kaksi hakemusta, joilla on ryhmän 2.2.2.2 parhaat jonosijat
         Assert.assertThat(jononHakemukset.get(10).getHakemus().getHyvaksyttyHakijaryhmista(), Matchers.contains("2.2.2.2"));
         Assert.assertThat(jononHakemukset.get(10).getHakemus().getTila(), Matchers.equalTo(HakemuksenTila.HYVAKSYTTY));
         Assert.assertThat(jononHakemukset.get(11).getHakemus().getHyvaksyttyHakijaryhmista(), Matchers.contains("2.2.2.2"));
