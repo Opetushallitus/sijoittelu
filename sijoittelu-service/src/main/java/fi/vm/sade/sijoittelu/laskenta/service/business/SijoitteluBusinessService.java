@@ -334,11 +334,12 @@ public class SijoitteluBusinessService {
     }
 
     public long erillissijoittele(HakuDTO haku) {
-        long startTime = System.currentTimeMillis();
         String hakuOid = haku.getHakuOid();
+        String hakukohdeOid = haku.getHakukohteet().size() > 0 ? haku.getHakukohteet().get(0).getOid() : "";
+        long startTime = System.currentTimeMillis();
 
-        StopWatch stopWatch = new StopWatch("Haun " + hakuOid + " erillissijoittelu");
-        LOG.info("Erillissijoittelu haulle {} alkaa. Luetaan sijoittelu valintarekisteristä!", hakuOid);
+        StopWatch stopWatch = new StopWatch("Haun " + hakuOid + " hakukohteen " + hakukohdeOid + " erillissijoittelu");
+        LOG.info("Erillissijoittelu haun {} hakukohteelle {} alkaa. Luetaan sijoittelu valintarekisteristä!", hakuOid, hakukohdeOid);
 
         stopWatch.start("Luetaan viimeisin erillissijoitteluajo valintarekisteristä");
         SijoitteluAjo viimeisinSijoitteluajo = readSijoitteluajoFromValintarekisteri(haku.getHakuOid());
@@ -351,7 +352,7 @@ public class SijoitteluBusinessService {
         List<Hakukohde> viimeisimmanSijoitteluajonHakukohteet = Collections.emptyList();
         List<Hakukohde> hakukohdeViimeisimmassaSijoitteluajossa = Collections.emptyList();
 
-        if( null != viimeisinSijoitteluajo ) {
+        if (null != viimeisinSijoitteluajo) {
             viimeisimmanSijoitteluajonHakukohteet = valintarekisteriService.getSijoitteluajonHakukohteet(viimeisinSijoitteluajo.getSijoitteluajoId());
             hakukohdeViimeisimmassaSijoitteluajossa = viimeisimmanSijoitteluajonHakukohteet.stream().filter(hk -> hk.getOid().equals(sijoiteltavanHakukohteenOid)).findFirst().map(hk -> Arrays.asList(hk)).orElse(Collections.emptyList());
         }
@@ -388,12 +389,10 @@ public class SijoitteluBusinessService {
         }).collect(Collectors.toList()));
         stopWatch.stop();
 
-        LOG.warn("Tallennetaan sijoitteluajo ainoastaan Valintarekisteriin!");
         stopWatch.start("Tallennetaan sijoitteluajo, hakukohteet ja valintatulokset Valintarekisteriin");
         tallennaSijoitteluToValintarekisteri(hakuOid, uusiSijoitteluajo, kaikkiTallennettavatHakukohteet, sijoitteluajoWrapper.getMuuttuneetValintatulokset(), stopWatch);
         stopWatch.stop();
         LOG.info(stopWatch.prettyPrint());
-
         return uusiSijoitteluajo.getSijoitteluajoId();
     }
 

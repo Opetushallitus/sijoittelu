@@ -24,10 +24,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 import static fi.vm.sade.valintalaskenta.tulos.roles.ValintojenToteuttaminenRole.CRUD;
 
@@ -54,6 +51,23 @@ public class ErillisSijoitteluResource {
     @PreAuthorize(CRUD)
     @ApiOperation(consumes = "application/json", value = "Suorita erillissijoittelu", response = Long.class)
     public Long sijoittele(@PathParam("hakuOid") String hakuOid, ValisijoitteluDTO hakukohteet) {
+        long id = ErillisSijoitteluQueue.getInstance().queueNewErillissijoittelu(hakuOid);
+
+        try {
+            while (!ErillisSijoitteluQueue.getInstance().isOkToStartErillissijoittelu(hakuOid, id)) {
+                LOGGER.warn("Edellinen erillissijoittelu haulle {} on vielä käynnissä. Yritetään minuutin päästä uudelleen...");
+                Thread.sleep(1000 * 60);
+            }
+            return erillissijoittele(hakuOid, hakukohteet);
+        } catch (InterruptedException ie) {
+            LOGGER.error("Erillissijoittelun vuoron odottaminen keskeytyi haulle {}", hakuOid, ie);
+        } finally {
+            ErillisSijoitteluQueue.getInstance().erillissijoitteluDone(hakuOid, id);
+        }
+        return null;
+    }
+
+    private Long erillissijoittele(String hakuOid, ValisijoitteluDTO hakukohteet) {
         LOGGER.info("Valintatietoja valmistetaan erillissijoittelulle haussa {}", hakuOid);
         Map<String, List<ValintatapajonoDTO>> valintaperusteet =
                 valintalaskentakoostepalveluResource.haeValintatapajonotSijoittelulle(new ArrayList<>(hakukohteet.getHakukohteet().keySet()));
