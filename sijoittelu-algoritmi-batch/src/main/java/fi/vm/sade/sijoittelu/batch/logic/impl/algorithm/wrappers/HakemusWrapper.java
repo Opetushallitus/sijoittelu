@@ -194,6 +194,20 @@ public class HakemusWrapper {
         this.hyvaksyPeruuntunut = true;
     }
 
+    public boolean merkittyAiemminHyvaksytyksiKorkeammanPrioriteetinRyhmastaKuin(HakijaryhmaWrapper ryhmaWrapper) {
+        if (hakemus.getHyvaksyttyHakijaryhmista().isEmpty()) {
+            return false;
+        }
+        for (HakijaryhmaWrapper anyRyhmaWrapper : getValintatapajono().getHakukohdeWrapper().getHakijaryhmaWrappers()) {
+            if (hakemus.getHyvaksyttyHakijaryhmista().contains(anyRyhmaWrapper.getHakijaryhma().getOid())) {
+                if (anyRyhmaWrapper.getHakijaryhma().getPrioriteetti() < ryhmaWrapper.getHakijaryhma().getPrioriteetti()) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     @Override
     public String toString() {
         return getClass().getSimpleName() + " of " + (hakemus == null ? "NULL" : hakemus.getHakemusOid() + " / " + hakemus.getTila() +
