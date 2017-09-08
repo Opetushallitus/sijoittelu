@@ -2,6 +2,7 @@ package fi.vm.sade.sijoittelu.batch.logic.impl.algorithm;
 
 import static fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.util.TilaTaulukot.kuuluuHylattyihinTiloihin;
 import static fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.util.TilaTaulukot.kuuluuHyvaksyttyihinTiloihin;
+import static fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.util.TilaTaulukot.kuuluuVaraTiloihin;
 import static fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.util.TilojenMuokkaus.asetaTilaksiVaralla;
 import static fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.WrapperHelperMethods.hakemuksenHakemusOid;
 import static fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.WrapperHelperMethods.hakemuksenTila;
@@ -9,65 +10,50 @@ import static fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.WrapperH
 import static fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.WrapperHelperMethods.jononPrioriteetti;
 import static fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.WrapperHelperMethods.jononTasasijasaanto;
 import com.google.common.collect.Lists;
+
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.comparator.HakemusWrapperComparator;
-import fi.vm.sade.sijoittelu.domain.HakemuksenTila;
-import fi.vm.sade.sijoittelu.domain.Hakemus;
-import fi.vm.sade.sijoittelu.domain.Tasasijasaanto;
-import fi.vm.sade.sijoittelu.domain.Valintatapajono;
-import fi.vm.sade.sijoittelu.domain.comparator.HakemusComparator;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.HakemusWrapper;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.HakijaryhmaWrapper;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.HakukohdeWrapper;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.SijoitteluajoWrapper;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.ValintatapajonoWrapper;
-import fi.vm.sade.sijoittelu.domain.*;
+import fi.vm.sade.sijoittelu.domain.HakemuksenTila;
+import fi.vm.sade.sijoittelu.domain.Hakemus;
+import fi.vm.sade.sijoittelu.domain.Tasasijasaanto;
+import fi.vm.sade.sijoittelu.domain.Valintatapajono;
+import fi.vm.sade.sijoittelu.domain.ValintatuloksenTila;
+import fi.vm.sade.sijoittelu.domain.comparator.HakemusComparator;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
-import static fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.util.TilaTaulukot.*;
 import static fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoitteleHakukohde.*;
 
 public class SijoitteleHakijaryhma {
     private static final Logger LOG = LoggerFactory.getLogger(SijoitteleHakijaryhma.class);
 
     private static class HakijaryhmanValintatapajono {
-        public final LinkedList<Hakemus> hakijaryhmastaHyvaksytyt;
-        public final LinkedList<Hakemus> hakijaryhmanUlkopuoleltaHyvaksytyt;
-        public final LinkedList<Hakemus> hakijaryhmanUlkopuoleltaHyvaksytytJoitaVoidaanSiirtaaVaralle;
-        public final LinkedList<Hakemus> hakijaryhmastaHyvaksyttavissa;
+        public final HyvaksyttyjenKirjanpito kirjanpito;
         public final Tasasijasaanto tasasijasaanto;
         public final int aloituspaikkoja;
         public final int prioriteetti;
 
         public HakijaryhmanValintatapajono(SijoitteluajoWrapper sijoitteluajo, Set<String> hakijaryhmaanKuuluvat, ValintatapajonoWrapper jono, HakijaryhmaWrapper hakijaryhmaWrapper) {
-            this.hakijaryhmastaHyvaksytyt = new LinkedList<>();
-            List<HakemusWrapper> hakijaryhmanUlkopuoleltaHyvaksytytWrappers = jono.getHakemukset().stream()
-                    .filter(h -> !hakijaryhmaanKuuluvat.contains(h.getHakemus().getHakemusOid()))
-                    .filter(h -> kuuluuHyvaksyttyihinTiloihin(h.getHakemus().getTila()))
-                    .sorted(new HakemusWrapperComparator())
-                    .collect(Collectors.toList());
-            this.hakijaryhmanUlkopuoleltaHyvaksytyt = hakijaryhmanUlkopuoleltaHyvaksytytWrappers.stream()
-                    .map(HakemusWrapper::getHakemus)
-                    .collect(Collectors.toCollection(LinkedList::new));
-            this.hakijaryhmanUlkopuoleltaHyvaksytytJoitaVoidaanSiirtaaVaralle = hakijaryhmanUlkopuoleltaHyvaksytytWrappers
-                    .stream().filter(hakemusWrapper -> voidaanKorvata(hakemusWrapper, hakijaryhmaWrapper))
-                    .map(HakemusWrapper::getHakemus)
-                    .collect(Collectors.toCollection(LinkedList::new));
-            this.hakijaryhmastaHyvaksyttavissa = jono.getHakemukset().stream()
-                    .filter(h -> hakijaryhmaanKuuluvat.contains(h.getHakemus().getHakemusOid()))
-                    .filter(h -> kuuluuHyvaksyttyihinTiloihin(h.getHakemus().getTila()) ||
-                            (kuuluuVaraTiloihin(h.getHakemus().getTila()) &&
-                                    !sijoitteluajo.onkoVarasijaSaannotVoimassaJaVarasijaTayttoPaattynyt(jono) &&
-                                    hakijaHaluaa(h) &&
-                                    saannotSallii(h, sijoitteluajo)))
-                    .map(h -> h.getHakemus())
-                    .sorted(new HyvaksytytEnsinHakemusComparator())
-                    .collect(Collectors.toCollection(LinkedList::new));
+            kirjanpito = new HyvaksyttyjenKirjanpito(sijoitteluajo, hakijaryhmaanKuuluvat, jono, hakijaryhmaWrapper);
             this.tasasijasaanto = jono.getValintatapajono().getTasasijasaanto();
             if (jono.getValintatapajono().getKaikkiEhdonTayttavatHyvaksytaan() != null &&
                     jono.getValintatapajono().getKaikkiEhdonTayttavatHyvaksytaan()) {
@@ -79,14 +65,14 @@ public class SijoitteleHakijaryhma {
         }
 
         public List<Hakemus> hyvaksyAloituspaikkoihinMahtuvatParhaallaJonosijallaOlevat() {
-            int paikkoja = aloituspaikkoja - hakijaryhmastaHyvaksytyt.size() - hakijaryhmanUlkopuoleltaHyvaksytyt.size();
-            if (hakijaryhmastaHyvaksyttavissa.isEmpty() || paikkoja <= 0) {
+            int paikkoja = aloituspaikkoja - kirjanpito.hyvaksyttyjenKokonaismaara();
+            if (kirjanpito.hakijaryhmastaHyvaksyttavissa.isEmpty() || paikkoja <= 0) {
                 return Collections.emptyList();
             }
             LinkedList<Hakemus> tasasijalla = new LinkedList<>();
-            do { tasasijalla.addLast(hakijaryhmastaHyvaksyttavissa.removeFirst()); }
-            while (!hakijaryhmastaHyvaksyttavissa.isEmpty() &&
-                Objects.equals(tasasijalla.getLast().getJonosija(), hakijaryhmastaHyvaksyttavissa.getFirst().getJonosija()));
+            do { tasasijalla.addLast(kirjanpito.removeFirstHakijaryhmastaHyvaksyttavissa()); }
+            while (!kirjanpito.hakijaryhmastaHyvaksyttavissa.isEmpty() &&
+                Objects.equals(tasasijalla.getLast().getJonosija(), kirjanpito.hakijaryhmastaHyvaksyttavissa.getFirst().getJonosija()));
             LinkedList<Hakemus> hyvaksytyt = new LinkedList<>();
             LinkedList<Hakemus> eiHyvaksytyt = new LinkedList<>();
             switch (tasasijasaanto) {
@@ -105,50 +91,101 @@ public class SijoitteleHakijaryhma {
                     hyvaksytyt.addAll(tasasijalla);
                     break;
             }
-            hakijaryhmastaHyvaksytyt.addAll(hyvaksytyt);
-            eiHyvaksytyt.descendingIterator().forEachRemaining(h -> {
-                hakijaryhmastaHyvaksyttavissa.addFirst(h);
-            });
+            kirjanpito.addHakijaryhmastaHyvaksytyt(hyvaksytyt);
+            eiHyvaksytyt.descendingIterator().forEachRemaining(kirjanpito::addHakijaryhmastaHyvaksyttavissa);
             return hyvaksytyt;
         }
 
         public boolean siirraVaralleAlimmallaJonosijallaOlevatHakijaryhmanUlkopuolisetHyvaksytyt() {
-            if (hakijaryhmanUlkopuoleltaHyvaksytytJoitaVoidaanSiirtaaVaralle.isEmpty()) {
+            if (kirjanpito.hakijaryhmanUlkopuoleltaHyvaksytytJoitaVoidaanSiirtaaVaralle.isEmpty()) {
                 return false;
             }
-            int jonosija = hakijaryhmanUlkopuoleltaHyvaksytytJoitaVoidaanSiirtaaVaralle.getLast().getJonosija();
+            int jonosija = kirjanpito.hakijaryhmanUlkopuoleltaHyvaksytytJoitaVoidaanSiirtaaVaralle.getLast().getJonosija();
             do {
-                hakijaryhmanUlkopuoleltaHyvaksytytJoitaVoidaanSiirtaaVaralle.removeLast();
-                hakijaryhmanUlkopuoleltaHyvaksytyt.removeLast();
-            } while (!hakijaryhmanUlkopuoleltaHyvaksytytJoitaVoidaanSiirtaaVaralle.isEmpty() &&
-                    hakijaryhmanUlkopuoleltaHyvaksytytJoitaVoidaanSiirtaaVaralle.getLast().getJonosija() == jonosija);
+                kirjanpito.removeLastHyvaksytyt();
+            } while (!kirjanpito.hakijaryhmanUlkopuoleltaHyvaksytytJoitaVoidaanSiirtaaVaralle.isEmpty() &&
+                    kirjanpito.hakijaryhmanUlkopuoleltaHyvaksytytJoitaVoidaanSiirtaaVaralle.getLast().getJonosija() == jonosija);
             return true;
-        }
-
-        public void poistaHyvaksyttavista(Set<String> poistettavat) {
-            hakijaryhmastaHyvaksyttavissa.removeIf(h -> poistettavat.contains(h.getHakemusOid()));
-        }
-
-        public void poistaHyvaksytyista(Set<String> poistettavat) {
-            hakijaryhmastaHyvaksytyt.removeIf(h -> poistettavat.contains(h.getHakemusOid()));
         }
     }
 
-    private static class HyvaksyComparator implements Comparator<HakijaryhmanValintatapajono> {
+    private static class HyvaksyttyjenKirjanpito {
+        public final LinkedList<Hakemus> hakijaryhmastaHyvaksytyt;
+        public final LinkedList<Hakemus> hakijaryhmanUlkopuoleltaHyvaksytyt;
+        public final LinkedList<Hakemus> hakijaryhmanUlkopuoleltaHyvaksytytJoitaVoidaanSiirtaaVaralle;
+        public final LinkedList<Hakemus> hakijaryhmastaHyvaksyttavissa;
+
+        public HyvaksyttyjenKirjanpito(SijoitteluajoWrapper sijoitteluajo, Set<String> hakijaryhmaanKuuluvat, ValintatapajonoWrapper jono, HakijaryhmaWrapper hakijaryhmaWrapper) {
+            this.hakijaryhmastaHyvaksytyt = new LinkedList<>();
+            List<HakemusWrapper> hakijaryhmanUlkopuoleltaHyvaksytytWrappers = jono.getHakemukset().stream()
+                .filter(h -> !hakijaryhmaanKuuluvat.contains(h.getHakemus().getHakemusOid()))
+                .filter(h -> kuuluuHyvaksyttyihinTiloihin(h.getHakemus().getTila()))
+                .sorted(new HakemusWrapperComparator())
+                .collect(Collectors.toList());
+            this.hakijaryhmanUlkopuoleltaHyvaksytyt = hakijaryhmanUlkopuoleltaHyvaksytytWrappers.stream()
+                .map(HakemusWrapper::getHakemus)
+                .collect(Collectors.toCollection(LinkedList::new));
+            this.hakijaryhmanUlkopuoleltaHyvaksytytJoitaVoidaanSiirtaaVaralle = hakijaryhmanUlkopuoleltaHyvaksytytWrappers
+                .stream().filter(hakemusWrapper -> voidaanKorvata(hakemusWrapper, hakijaryhmaWrapper))
+                .map(HakemusWrapper::getHakemus)
+                .collect(Collectors.toCollection(LinkedList::new));
+            this.hakijaryhmastaHyvaksyttavissa = jono.getHakemukset().stream()
+                .filter(h -> hakijaryhmaanKuuluvat.contains(h.getHakemus().getHakemusOid()))
+                .filter(h -> kuuluuHyvaksyttyihinTiloihin(h.getHakemus().getTila()) ||
+                    (kuuluuVaraTiloihin(h.getHakemus().getTila()) &&
+                        !sijoitteluajo.onkoVarasijaSaannotVoimassaJaVarasijaTayttoPaattynyt(jono) &&
+                        hakijaHaluaa(h) &&
+                        saannotSallii(h, sijoitteluajo)))
+                .map(h -> h.getHakemus())
+                .sorted(new HyvaksytytEnsinHakemusComparator())
+                .collect(Collectors.toCollection(LinkedList::new));
+        }
+
+        public int hyvaksyttyjenKokonaismaara() {
+            return hakijaryhmastaHyvaksytyt.size() + hakijaryhmanUlkopuoleltaHyvaksytyt.size();
+        }
+
+        public Hakemus removeFirstHakijaryhmastaHyvaksyttavissa() {
+            return hakijaryhmastaHyvaksyttavissa.removeFirst();
+        }
+
+        public void addHakijaryhmastaHyvaksytyt(LinkedList<Hakemus> hyvaksytyt) {
+            hakijaryhmastaHyvaksytyt.addAll(hyvaksytyt);
+        }
+
+        public void addHakijaryhmastaHyvaksyttavissa(Hakemus h) {
+            hakijaryhmastaHyvaksyttavissa.addFirst(h);
+        }
+
+        public void removeLastHyvaksytyt() {
+            hakijaryhmanUlkopuoleltaHyvaksytytJoitaVoidaanSiirtaaVaralle.removeLast();
+            hakijaryhmanUlkopuoleltaHyvaksytyt.removeLast();
+        }
+
+        public void poistaHyvaksytyistaJaHyvaksyttavista(Set<String> oidit) {
+            hakijaryhmastaHyvaksyttavissa.removeIf(h -> oidit.contains(h.getHakemusOid()));
+            hakijaryhmastaHyvaksytyt.removeIf(h -> oidit.contains(h.getHakemusOid()));
+        }
+
+        public void merkitseHyvaksytyksiHakijaryhmasta(String hakijaryhmaOid) {
+            hakijaryhmastaHyvaksytyt.forEach(h -> h.getHyvaksyttyHakijaryhmista().add(hakijaryhmaOid));
+        }
+    }
+        private static class HyvaksyComparator implements Comparator<HakijaryhmanValintatapajono> {
         @Override
         public int compare(HakijaryhmanValintatapajono j, HakijaryhmanValintatapajono jj) {
-            if (j.hakijaryhmastaHyvaksyttavissa.isEmpty() && jj.hakijaryhmastaHyvaksyttavissa.isEmpty()) {
+            if (j.kirjanpito.hakijaryhmastaHyvaksyttavissa.isEmpty() && jj.kirjanpito.hakijaryhmastaHyvaksyttavissa.isEmpty()) {
                 return 0;
             }
-            if (j.hakijaryhmastaHyvaksyttavissa.isEmpty()) {
+            if (j.kirjanpito.hakijaryhmastaHyvaksyttavissa.isEmpty()) {
                 return 1;
             }
-            if (jj.hakijaryhmastaHyvaksyttavissa.isEmpty()) {
+            if (jj.kirjanpito.hakijaryhmastaHyvaksyttavissa.isEmpty()) {
                 return -1;
             }
             int c = Integer.compare(
-                    j.hakijaryhmastaHyvaksyttavissa.getFirst().getJonosija(),
-                    jj.hakijaryhmastaHyvaksyttavissa.getFirst().getJonosija()
+                    j.kirjanpito.hakijaryhmastaHyvaksyttavissa.getFirst().getJonosija(),
+                    jj.kirjanpito.hakijaryhmastaHyvaksyttavissa.getFirst().getJonosija()
             );
             return c == 0 ? Integer.compare(j.prioriteetti, jj.prioriteetti) : c;
         }
@@ -157,18 +194,19 @@ public class SijoitteleHakijaryhma {
     private static class VaralleComparator implements Comparator<HakijaryhmanValintatapajono> {
         @Override
         public int compare(HakijaryhmanValintatapajono j, HakijaryhmanValintatapajono jj) {
-            if (j.hakijaryhmanUlkopuoleltaHyvaksytytJoitaVoidaanSiirtaaVaralle.isEmpty() && jj.hakijaryhmanUlkopuoleltaHyvaksytytJoitaVoidaanSiirtaaVaralle.isEmpty()) {
+            if (j.kirjanpito.hakijaryhmanUlkopuoleltaHyvaksytytJoitaVoidaanSiirtaaVaralle.isEmpty() &&
+                jj.kirjanpito.hakijaryhmanUlkopuoleltaHyvaksytytJoitaVoidaanSiirtaaVaralle.isEmpty()) {
                 return 0;
             }
-            if (j.hakijaryhmanUlkopuoleltaHyvaksytytJoitaVoidaanSiirtaaVaralle.isEmpty()) {
+            if (j.kirjanpito.hakijaryhmanUlkopuoleltaHyvaksytytJoitaVoidaanSiirtaaVaralle.isEmpty()) {
                 return 1;
             }
-            if (jj.hakijaryhmanUlkopuoleltaHyvaksytytJoitaVoidaanSiirtaaVaralle.isEmpty()) {
+            if (jj.kirjanpito.hakijaryhmanUlkopuoleltaHyvaksytytJoitaVoidaanSiirtaaVaralle.isEmpty()) {
                 return -1;
             }
             int c = Integer.compare(
-                    jj.hakijaryhmanUlkopuoleltaHyvaksytytJoitaVoidaanSiirtaaVaralle.getLast().getJonosija(),
-                    j.hakijaryhmanUlkopuoleltaHyvaksytytJoitaVoidaanSiirtaaVaralle.getLast().getJonosija()
+                    jj.kirjanpito.hakijaryhmanUlkopuoleltaHyvaksytytJoitaVoidaanSiirtaaVaralle.getLast().getJonosija(),
+                    j.kirjanpito.hakijaryhmanUlkopuoleltaHyvaksytytJoitaVoidaanSiirtaaVaralle.getLast().getJonosija()
             );
             return c == 0 ? Integer.compare(jj.prioriteetti, j.prioriteetti) : c;
         }
@@ -199,7 +237,7 @@ public class SijoitteleHakijaryhma {
         String hakijaryhmaOid = hakijaryhmaWrapper.getHakijaryhma().getOid();
         int kiintio = hakijaryhmaWrapper.getHakijaryhma().getKiintio();
         boolean aloituspaikkojaVielaJaljella = true;
-        while (valintatapajonot.stream().mapToInt(v -> v.hakijaryhmastaHyvaksytyt.size()).sum() < kiintio && aloituspaikkojaVielaJaljella) {
+        while (valintatapajonot.stream().mapToInt(v -> v.kirjanpito.hakijaryhmastaHyvaksytyt.size()).sum() < kiintio && aloituspaikkojaVielaJaljella) {
             boolean hyvaksyttiin = false;
             valintatapajonot.sort(ylimmanPrioriteetinJonoJossaYlimmallaJonosijallaOlevaHakijaEnsin);
             for (HakijaryhmanValintatapajono jono : valintatapajonot) {
@@ -208,8 +246,7 @@ public class SijoitteleHakijaryhma {
                     if (!hyvaksytyt.isEmpty()) {
                         Set<String> oidit = hyvaksytyt.stream().map(h -> h.getHakemusOid()).collect(Collectors.toSet());
                         valintatapajonot.stream().filter(j -> j.prioriteetti > jono.prioriteetti).forEach(j -> {
-                            j.poistaHyvaksyttavista(oidit);
-                            j.poistaHyvaksytyista(oidit);
+                            j.kirjanpito.poistaHyvaksytyistaJaHyvaksyttavista(oidit);
                         });
                         hyvaksyttiin = true;
                     }
@@ -227,9 +264,7 @@ public class SijoitteleHakijaryhma {
                         .orElse(false);
             }
         }
-        valintatapajonot.stream().flatMap(jono -> jono.hakijaryhmastaHyvaksytyt.stream()).forEach(h -> {
-            h.getHyvaksyttyHakijaryhmista().add(hakijaryhmaOid);
-        });
+        valintatapajonot.forEach(jono -> jono.kirjanpito.merkitseHyvaksytyksiHakijaryhmasta(hakijaryhmaOid));
     }
 
     public static Set<HakukohdeWrapper> sijoitteleHakijaryhma(SijoitteluajoWrapper sijoitteluAjo, HakijaryhmaWrapper hakijaryhmaWrapper) {
