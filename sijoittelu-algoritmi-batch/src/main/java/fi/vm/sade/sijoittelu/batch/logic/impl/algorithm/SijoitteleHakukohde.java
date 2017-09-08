@@ -29,20 +29,31 @@ public class SijoitteleHakukohde {
 
         if (LOG.isDebugEnabled()) {
             LOG.debug("Hakemusten tilat hakijaryhmäsijoittelun jälkeen:");
-            hakukohde.getValintatapajonot().forEach(jono -> {
-                LOG.debug("        jono " + jono.getValintatapajono().getOid() + " :");
-                List<HakemusWrapper> jononHakemukset = jono.getHakemukset().stream().
-                    sorted(new HakemusWrapperComparator()).collect(Collectors.toList());
-                jononHakemukset.forEach(h -> LOG.debug("                " +
-                    h.getHakemus().getHakemusOid() + " / " + h.getHakemus().getTila()));
-            });
+            debugLogHakemusStates(hakukohde);
         }
 
         for (ValintatapajonoWrapper valintatapajono : hakukohde.getValintatapajonot()) {
             muuttuneetHakukohteet.addAll(sijoitteleValintatapajono(sijoitteluAjo, valintatapajono));
         }
+
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Hakemusten tilat valintatapajonosijoittelun jälkeen:");
+            debugLogHakemusStates(hakukohde);
+        }
+
         poistaAjokierroksenLukot(hakukohde);
         return muuttuneetHakukohteet;
+    }
+
+    private static void debugLogHakemusStates(HakukohdeWrapper hakukohde) {
+        hakukohde.getValintatapajonot().forEach(jono -> {
+            LOG.debug("        jono " + jono.getValintatapajono().getOid() + " :");
+            List<HakemusWrapper> jononHakemukset = jono.getHakemukset().stream().
+                sorted(new HakemusWrapperComparator()).collect(Collectors.toList());
+            jononHakemukset.forEach(h -> LOG.debug("                " +
+                h.getHakemus().getHakemusOid() + " / " + h.getHakemus().getTila() + " / hyväksytty hakijaryhmistä " +
+                h.getHakemus().getHyvaksyttyHakijaryhmista()));
+        });
     }
 
     private static Set<HakukohdeWrapper> sijoitteleValintatapajono(SijoitteluajoWrapper sijoitteluAjo, ValintatapajonoWrapper valintatapajono) {
