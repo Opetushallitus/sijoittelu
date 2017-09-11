@@ -104,7 +104,7 @@ public class PreSijoitteluProcessorAsetaSivssnovTest extends SijoitteluTestSpec 
     }
 
     @Test
-    public void testShouldProcessOnlyAmkopeHakus()  {
+    public void testShouldProcessAlsoNonAmkopeHakus()  {
         List<Hakukohde> hakukohteet = Lists.newArrayList();
         hakukohteet.add(new HakukohdeBuilder("hk1")
                 .withValintatapajono(
@@ -122,7 +122,13 @@ public class PreSijoitteluProcessorAsetaSivssnovTest extends SijoitteluTestSpec 
 
         p.process(sijoitteluAjo);
 
-        assertJonoSivssnov("jono1", true, sijoitteluAjo);
+        assertJonoSivssnov("jono1", false, sijoitteluAjo);
         assertJonoSivssnov("jono2", false, sijoitteluAjo);
+
+        hakukohteet.get(0).getValintatapajonot().forEach(j -> j.setSijoiteltuIlmanVarasijasaantojaNiidenOllessaVoimassa(true));
+        p.process(sijoitteluAjo);
+
+        assertJonoSivssnov("jono1", true, sijoitteluAjo);
+        assertJonoSivssnov("jono2", true, sijoitteluAjo);
     }
 }

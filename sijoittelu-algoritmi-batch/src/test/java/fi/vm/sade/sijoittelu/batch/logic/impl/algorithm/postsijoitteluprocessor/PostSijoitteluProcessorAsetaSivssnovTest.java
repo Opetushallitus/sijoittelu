@@ -65,7 +65,7 @@ public class PostSijoitteluProcessorAsetaSivssnovTest {
     }
 
     @Test
-    public void testShouldOnlyProcessAmkopeHakus()  {
+    public void testShouldAlsoProcessNonAmkHakus()  {
         List<Hakukohde> hakukohteet = Lists.newArrayList();
         hakukohteet.add(new HakuBuilder.HakukohdeBuilder("hk1")
             .withValintatapajono(
@@ -96,8 +96,8 @@ public class PostSijoitteluProcessorAsetaSivssnovTest {
         p.process(sijoitteluAjo);
 
         assertJonoSivssnov("hk1_jono1", true, sijoitteluAjo);
-        assertJonoSivssnov("hk1_jono2", false, sijoitteluAjo);
-        assertJonoSivssnov("hk1_jono3", false, sijoitteluAjo);
-        assertJonoSivssnov("hk2_jono1", false, sijoitteluAjo);
+        assertJonoSivssnov("hk1_jono2", true, sijoitteluAjo);
+        assertJonoSivssnov("hk1_jono3", true, sijoitteluAjo);
+        assertJonoSivssnov("hk2_jono1", true, sijoitteluAjo);
     }
 }

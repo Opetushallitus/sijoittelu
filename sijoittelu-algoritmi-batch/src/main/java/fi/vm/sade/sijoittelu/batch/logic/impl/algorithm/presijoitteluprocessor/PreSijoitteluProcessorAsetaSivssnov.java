@@ -13,10 +13,10 @@ public class PreSijoitteluProcessorAsetaSivssnov implements PreSijoitteluProcess
 
     @Override
     public void process(SijoitteluajoWrapper sijoitteluajoWrapper) {
-        if (sijoitteluajoWrapper.isAmkopeHaku() && sijoitteluajoWrapper.varasijaSaannotVoimassa()) {
+        if (sijoitteluajoWrapper.varasijaSaannotVoimassa()) {
             String hakuOid = sijoitteluajoWrapper.getSijoitteluajo().getHakuOid();
 
-            Timer timer = Timer.start("Pre-processor Aseta Sivssnov", "AMKOPE haulle " + hakuOid, PreSijoitteluProcessorAsetaSivssnov.class);
+            Timer timer = Timer.start("Pre-processor Aseta Sivssnov", "haulle " + hakuOid, PreSijoitteluProcessorAsetaSivssnov.class);
 
             List<Valintatapajono> vtjs = sijoitteluajoWrapper.getHakukohteet().stream()
                     .flatMap(hkv -> hkv.getValintatapajonot().stream())
@@ -30,7 +30,7 @@ public class PreSijoitteluProcessorAsetaSivssnov implements PreSijoitteluProcess
                 vtjs.forEach(vtj -> vtj.setSijoiteltuIlmanVarasijasaantojaNiidenOllessaVoimassa(false));
             }
 
-            timer.stop("AMKOPE haulle " + hakuOid);
+            timer.stop("haulle " + hakuOid);
         }
     }
 }
