@@ -1,13 +1,20 @@
 package fi.vm.sade.sijoittelu.batch.logic.impl.algorithm;
 
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.comparator.HakemusWrapperComparator;
-import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.comparator.HakijaryhmaWrapperComparator;
-import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.presijoitteluprocessor.PreSijoitteluProcessorSort;
+import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.util.SijoitteluAlgorithmUtil;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.HakemusWrapper;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.HakijaryhmaWrapper;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.HakukohdeWrapper;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.SijoitteluajoWrapper;
-import fi.vm.sade.sijoittelu.domain.*;
+import fi.vm.sade.sijoittelu.domain.HakemuksenTila;
+import fi.vm.sade.sijoittelu.domain.Hakemus;
+import fi.vm.sade.sijoittelu.domain.Hakijaryhma;
+import fi.vm.sade.sijoittelu.domain.Hakukohde;
+import fi.vm.sade.sijoittelu.domain.SijoitteluAjo;
+import fi.vm.sade.sijoittelu.domain.Tasasijasaanto;
+import fi.vm.sade.sijoittelu.domain.Valintatapajono;
+import fi.vm.sade.sijoittelu.domain.ValintatuloksenTila;
+import fi.vm.sade.sijoittelu.domain.Valintatulos;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Before;
@@ -710,12 +717,11 @@ public class SijoitteleHakijaryhmaTest {
         toisenKohteenJono.getHakemukset().get(0).setPrioriteetti(1);
         hakemusWithTwoHakutoives.setPrioriteetti(2);
 
-        ajoWrapper = SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(ajo,
+        SijoittelunTila sijoittelunTila = SijoitteluAlgorithmUtil.sijoittele(
             Arrays.asList(hakukohde, toinenHakukohdeMuuttumisenTriggeroimiseksi), Collections.emptyList(), Collections.emptyMap());
+
+        ajoWrapper = sijoittelunTila.sijoitteluAjo;
         hakukohdeWrapper = ajoWrapper.getHakukohteet().get(0);
-
-        SijoitteluAlgorithm.sijoittele(Collections.singletonList(new PreSijoitteluProcessorSort()), Collections.emptyList(), ajoWrapper);
-
         List<HakemusWrapper> jononHakemukset = hakukohdeWrapper.getValintatapajonot().get(0).getHakemukset().stream().sorted(new HakemusWrapperComparator()).collect(Collectors.toList());
 
         // ryhmästä 1.1.1.1 tulee tulla hyväksytyiksi kolme hakemusta, jotka ovat jonosijajärjestyksessä ensimmäisen, peruuntuneen jälkeen
