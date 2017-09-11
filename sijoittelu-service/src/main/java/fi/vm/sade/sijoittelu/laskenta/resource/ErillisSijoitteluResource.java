@@ -62,7 +62,9 @@ public class ErillisSijoitteluResource {
         } catch (InterruptedException ie) {
             LOGGER.error("Erillissijoittelun vuoron odottaminen keskeytyi haulle {}", hakuOid, ie);
         } finally {
-            ErillisSijoitteluQueue.getInstance().erillissijoitteluDone(hakuOid, id);
+            if(!ErillisSijoitteluQueue.getInstance().erillissijoitteluDone(hakuOid, id)) {
+                LOGGER.error("Tapahtui jotain outoa! Yritettiin lopettaa haulle {} erillissijoitteluajoa, jota ei ollut olemassa!", hakuOid);
+            }
         }
         return null;
     }

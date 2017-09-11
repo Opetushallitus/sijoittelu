@@ -3,6 +3,7 @@ package fi.vm.sade.sijoittelu.laskenta.resource;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -37,10 +38,12 @@ public class ErillisSijoitteluQueue {
         return queue.getOrDefault(hakuOid, new ArrayList<>()).indexOf(id) == 0;
     }
 
-    public void erillissijoitteluDone(String hakuOid, Long id) {
+    public boolean erillissijoitteluDone(String hakuOid, Long id) {
+        AtomicBoolean removed = new AtomicBoolean(false);
         queue.computeIfPresent(hakuOid, (key, list) -> {
-            list.remove(id);
+            removed.set(list.remove(id));
             return list;
         });
+        return removed.get();
     }
 }

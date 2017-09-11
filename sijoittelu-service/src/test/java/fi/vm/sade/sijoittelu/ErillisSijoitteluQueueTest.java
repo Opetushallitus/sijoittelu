@@ -29,7 +29,7 @@ public class ErillisSijoitteluQueueTest {
 
         assertTrue(queue.isOkToStartErillissijoittelu(haku2, id4));
 
-        queue.erillissijoitteluDone(haku1, id1);
+        assertTrue(queue.erillissijoitteluDone(haku1, id1));
 
         assertFalse(queue.isOkToStartErillissijoittelu(haku1, id3));
         assertTrue(queue.isOkToStartErillissijoittelu(haku1, id2));
@@ -37,11 +37,12 @@ public class ErillisSijoitteluQueueTest {
         long id5 = queue.queueNewErillissijoittelu(haku2);
         assertFalse(queue.isOkToStartErillissijoittelu(haku2, id5));
 
-        queue.erillissijoitteluDone(haku1, id2);
+        assertTrue(queue.erillissijoitteluDone(haku1, id2));
+        assertFalse(queue.erillissijoitteluDone(haku1, id2));
 
         assertTrue(queue.isOkToStartErillissijoittelu(haku1, id3));
         assertFalse(queue.isOkToStartErillissijoittelu(haku2, id5));
-        queue.erillissijoitteluDone(haku1, id3);
+        assertTrue(queue.erillissijoitteluDone(haku1, id3));
 
         long id6 = queue.queueNewErillissijoittelu(haku1);
         assertTrue(queue.isOkToStartErillissijoittelu(haku1, id6));
