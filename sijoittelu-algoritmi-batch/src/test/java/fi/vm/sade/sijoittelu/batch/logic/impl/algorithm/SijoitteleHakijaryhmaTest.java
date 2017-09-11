@@ -721,12 +721,20 @@ public class SijoitteleHakijaryhmaTest {
             Arrays.asList(hakukohde, toinenHakukohdeMuuttumisenTriggeroimiseksi), Collections.emptyList(), Collections.emptyMap());
 
         ajoWrapper = sijoittelunTila.sijoitteluAjo;
+
+        List<HakemusWrapper> toisenHakukohteenHakemukset = ajoWrapper.getHakukohteet().get(1).getValintatapajonot()
+            .get(0).getHakemukset().stream().sorted(new HakemusWrapperComparator()).collect(Collectors.toList());
+        Assert.assertThat(toisenHakukohteenHakemukset, Matchers.hasSize(1));
+        Assert.assertThat(toisenHakukohteenHakemukset.get(0).getHakemus().getTila(), Matchers.equalTo(HakemuksenTila.HYVAKSYTTY));
+        Assert.assertThat(toisenHakukohteenHakemukset.get(0).getHakemus().getHakemusOid(), Matchers.equalTo(hakemusWithTwoHakutoives.getHakemusOid()));
+
         hakukohdeWrapper = ajoWrapper.getHakukohteet().get(0);
         List<HakemusWrapper> jononHakemukset = hakukohdeWrapper.getValintatapajonot().get(0).getHakemukset().stream().sorted(new HakemusWrapperComparator()).collect(Collectors.toList());
 
         // ryhmästä 1.1.1.1 tulee tulla hyväksytyiksi kolme hakemusta, jotka ovat jonosijajärjestyksessä ensimmäisen, peruuntuneen jälkeen
         Assert.assertThat(jononHakemukset.get(0).getHakemus().getHyvaksyttyHakijaryhmista(), Matchers.empty());
         Assert.assertThat(jononHakemukset.get(0).getHakemus().getTila(), Matchers.equalTo(HakemuksenTila.PERUUNTUNUT));
+        Assert.assertThat(jononHakemukset.get(0).getHakemus().getHakemusOid(), Matchers.equalTo(hakemusWithTwoHakutoives.getHakemusOid()));
         Assert.assertThat(jononHakemukset.get(1).getHakemus().getHyvaksyttyHakijaryhmista(), Matchers.contains("1.1.1.1"));
         Assert.assertThat(jononHakemukset.get(2).getHakemus().getHyvaksyttyHakijaryhmista(), Matchers.contains("1.1.1.1"));
         Assert.assertThat(jononHakemukset.get(3).getHakemus().getTila(), Matchers.equalTo(HakemuksenTila.HYVAKSYTTY));
