@@ -193,4 +193,8 @@ public class HakemusWrapper {
     public void hyvaksyPeruuntunut() {
         this.hyvaksyPeruuntunut = true;
     }
+
+    public boolean jonollaOnRajoitettuVarasijaTaytto() {
+        return valintatapajono.getValintatapajono().rajoitettuVarasijaTaytto();
+    }
 }

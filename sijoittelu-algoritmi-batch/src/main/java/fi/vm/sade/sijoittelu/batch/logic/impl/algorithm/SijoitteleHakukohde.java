@@ -175,7 +175,7 @@ public class SijoitteleHakukohde {
         }
         Integer varasijat = jononVarasijat(hakemusWrapper);
         boolean huomioitavienVarasijojenSisalla = true;
-        if (sijoitteluAjo.varasijaSaannotVoimassa() && varasijat != null && varasijat > 0) {
+        if (sijoitteluAjo.varasijaSaannotVoimassa() && hakemusWrapper.jonollaOnRajoitettuVarasijaTaytto()) {
             huomioitavienVarasijojenSisalla = hakijaKasiteltavienVarasijojenSisalla(hakemusWrapper, varasijat);
             if (!huomioitavienVarasijojenSisalla && hakemusWrapper.isTilaVoidaanVaihtaa()) {
                 asetaTilaksiPeruuntunutEiMahduKasiteltaviinSijoihin(hakemusWrapper);

@@ -173,6 +173,10 @@ public class Valintatapajono implements Serializable {
         this.varasijat = varasijat;
     }
 
+    public boolean rajoitettuVarasijaTaytto() {
+        return varasijat != null && varasijat > 0;
+    }
+
     public Integer getVarasijaTayttoPaivat() {
         return varasijaTayttoPaivat;
     }
