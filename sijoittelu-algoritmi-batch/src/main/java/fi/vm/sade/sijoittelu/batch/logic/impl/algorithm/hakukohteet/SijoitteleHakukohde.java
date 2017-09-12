@@ -1,4 +1,4 @@
-package fi.vm.sade.sijoittelu.batch.logic.impl.algorithm;
+package fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.hakukohteet;
 
 import com.google.common.collect.Sets;
 

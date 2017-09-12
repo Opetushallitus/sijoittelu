@@ -1,4 +1,4 @@
-package fi.vm.sade.sijoittelu.batch.logic.impl.algorithm;
+package fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.hakukohteet;
 
 import static fi.vm.sade.sijoittelu.SijoitteluMatchers.hasTila;
 import static fi.vm.sade.sijoittelu.domain.HakemuksenTila.HYVAKSYTTY;

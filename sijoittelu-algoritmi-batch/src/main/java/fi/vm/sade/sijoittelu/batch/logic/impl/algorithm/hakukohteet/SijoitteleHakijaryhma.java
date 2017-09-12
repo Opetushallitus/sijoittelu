@@ -1,8 +1,7 @@
-package fi.vm.sade.sijoittelu.batch.logic.impl.algorithm;
+package fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.hakukohteet;
 
 import static fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.util.TilaTaulukot.kuuluuHylattyihinTiloihin;
 import static fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.util.TilaTaulukot.kuuluuHyvaksyttyihinTiloihin;
-import static fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.util.TilaTaulukot.kuuluuVaraTiloihin;
 import static fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.util.TilojenMuokkaus.asetaTilaksiVaralla;
 import static fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.WrapperHelperMethods.hakemuksenHakemusOid;
 import static fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.WrapperHelperMethods.hakemuksenTila;
@@ -23,209 +22,78 @@ import fi.vm.sade.sijoittelu.domain.Hakemus;
 import fi.vm.sade.sijoittelu.domain.Tasasijasaanto;
 import fi.vm.sade.sijoittelu.domain.Valintatapajono;
 import fi.vm.sade.sijoittelu.domain.ValintatuloksenTila;
-import fi.vm.sade.sijoittelu.domain.comparator.HakemusComparator;
-import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoitteleHakukohde.*;
+import static fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.hakukohteet.SijoitteleHakukohde.*;
 
-public class SijoitteleHakijaryhma {
+class SijoitteleHakijaryhma {
     private static final Logger LOG = LoggerFactory.getLogger(SijoitteleHakijaryhma.class);
 
-    private static class HakijaryhmanValintatapajono {
-        public final HyvaksyttyjenKirjanpito kirjanpito;
-        public final Tasasijasaanto tasasijasaanto;
-        public final int aloituspaikkoja;
-        public final int prioriteetti;
-
-        public HakijaryhmanValintatapajono(SijoitteluajoWrapper sijoitteluajo, Set<String> hakijaryhmaanKuuluvat, ValintatapajonoWrapper jono, HakijaryhmaWrapper hakijaryhmaWrapper) {
-            kirjanpito = new HyvaksyttyjenKirjanpito(sijoitteluajo, hakijaryhmaanKuuluvat, jono, hakijaryhmaWrapper);
-            this.tasasijasaanto = jono.getValintatapajono().getTasasijasaanto();
-            if (jono.getValintatapajono().getKaikkiEhdonTayttavatHyvaksytaan() != null &&
-                    jono.getValintatapajono().getKaikkiEhdonTayttavatHyvaksytaan()) {
-                this.aloituspaikkoja = Integer.MAX_VALUE;
-            } else {
-                this.aloituspaikkoja = jono.getValintatapajono().getAloituspaikat();
+    static Set<HakukohdeWrapper> sijoitteleHakijaryhma(SijoitteluajoWrapper sijoitteluAjo, HakijaryhmaWrapper hakijaryhmaWrapper) {
+        // Hakijaryhmäsijoittelu ei uudelleenkäsittele jo hyväksyttyjä hakijoita, jolloin
+        // hyväksytty hakijaryhmästä -merkintä jää asettamatta. Poistetaan mahdollisesti vanhentuneet merkinnät,
+        // ja merkitään hakijaryhmästä hyväksytyt erillisellä algoritmilla.
+        String hakijaryhmaOid = hakijaryhmaWrapper.getHakijaryhma().getOid();
+        hakijaryhmaWrapper.getHakukohdeWrapper().hakukohteenHakemukset().map(h -> h.getHakemus()).forEach(h -> {
+            h.getHyvaksyttyHakijaryhmista().remove(hakijaryhmaOid);
+        });
+        merkitseHakijaryhmastaHyvaksytyt(sijoitteluAjo, hakijaryhmaWrapper);
+        List<HakemusWrapper> muuttuneet = sijoitteleHakijaryhmaRecur(sijoitteluAjo, hakijaryhmaWrapper);
+        for (HakemusWrapper h : muuttuneet) {
+            if (kuuluuHyvaksyttyihinTiloihin(h.getHakemus().getTila()) && !h.getHakemus().getHyvaksyttyHakijaryhmista().contains(hakijaryhmaOid)) {
+                LOG.error(String.format(
+                    "Hakukohteen %s hakijaryhmän %s sijoittelussa jonosta %s hyväksytty hakemus %s ei ole merkitty hakijaryhmästä hyväksytyksi",
+                    hakijaryhmaWrapper.getHakukohdeWrapper().getHakukohde().getOid(),
+                    hakijaryhmaOid,
+                    h.getValintatapajono().getValintatapajono().getOid(),
+                    h.getHakemus().getHakemusOid()
+                ));
             }
-            this.prioriteetti = jono.getValintatapajono().getPrioriteetti();
         }
-
-        public List<Hakemus> hyvaksyAloituspaikkoihinMahtuvatParhaallaJonosijallaOlevat() {
-            int paikkoja = aloituspaikkoja - kirjanpito.hyvaksyttyjenKokonaismaara();
-            if (kirjanpito.hakijaryhmastaHyvaksyttavissa.isEmpty() || paikkoja <= 0) {
-                return Collections.emptyList();
+        hakijaryhmaWrapper.getHakukohdeWrapper().hakukohteenHakemukset().forEach(h -> {
+            if (h.getHakemus().getHyvaksyttyHakijaryhmista().contains(hakijaryhmaOid) &&
+                !kuuluuHyvaksyttyihinTiloihin(h.getHakemus().getTila())) {
+                // Hakijaryhmäsijoittelu on laskenut jonosijoittelussa hyväksyttyjä hakemuksia hakijaryhmäkiintiöön.
+                // Tästä (tai jostain tunnistamattomasta syystä) johtuen hakemus h on merkattu hakijaryhmästä
+                // hyväksytyksi, mutta hakijaryhmäsijoittelu ei ole hyväksynyt sitä, koska hakijaryhmäkiintiön on
+                // katsottu olevan täynnä. Logitetaan virhe ja poistetaan merkintä jotta vain hyväksytyt ovat merkkity.
+                LOG.error(String.format(
+                    "Hakukohteen %s hakijaryhmästä %s jonossa %s hyväksytyksi merkitty hakemus %s on tilassa %s",
+                    hakijaryhmaWrapper.getHakukohdeWrapper().getHakukohde().getOid(),
+                    hakijaryhmaOid,
+                    h.getValintatapajono().getValintatapajono().getOid(),
+                    h.getHakemus().getHakemusOid(),
+                    h.getHakemus().getTila()
+                ));
+                h.getHakemus().getHyvaksyttyHakijaryhmista().remove(hakijaryhmaOid);
             }
-            LinkedList<Hakemus> tasasijalla = new LinkedList<>();
-            do { tasasijalla.addLast(kirjanpito.removeFirstHakijaryhmastaHyvaksyttavissa()); }
-            while (!kirjanpito.hakijaryhmastaHyvaksyttavissa.isEmpty() &&
-                Objects.equals(tasasijalla.getLast().getJonosija(), kirjanpito.hakijaryhmastaHyvaksyttavissa.getFirst().getJonosija()));
-            LinkedList<Hakemus> hyvaksytyt = new LinkedList<>();
-            LinkedList<Hakemus> eiHyvaksytyt = new LinkedList<>();
-            switch (tasasijasaanto) {
-                case ARVONTA:
-                    hyvaksytyt.addAll(tasasijalla.subList(0, Math.min(paikkoja, tasasijalla.size())));
-                    eiHyvaksytyt.addAll(tasasijalla.subList(Math.min(paikkoja, tasasijalla.size()), tasasijalla.size()));
-                    break;
-                case ALITAYTTO:
-                    if (tasasijalla.size() <= paikkoja) {
-                        hyvaksytyt.addAll(tasasijalla);
-                    } else {
-                        eiHyvaksytyt.addAll(tasasijalla);
-                    }
-                    break;
-                case YLITAYTTO:
-                    hyvaksytyt.addAll(tasasijalla);
-                    break;
-            }
-            kirjanpito.addHakijaryhmastaHyvaksytyt(hyvaksytyt);
-            eiHyvaksytyt.descendingIterator().forEachRemaining(kirjanpito::addHakijaryhmastaHyvaksyttavissa);
-            return hyvaksytyt;
-        }
-
-        public boolean siirraVaralleAlimmallaJonosijallaOlevatHakijaryhmanUlkopuolisetHyvaksytyt() {
-            if (kirjanpito.hakijaryhmanUlkopuoleltaHyvaksytytJoitaVoidaanSiirtaaVaralle.isEmpty()) {
-                return false;
-            }
-            int jonosija = kirjanpito.hakijaryhmanUlkopuoleltaHyvaksytytJoitaVoidaanSiirtaaVaralle.getLast().getJonosija();
-            do {
-                kirjanpito.removeLastHyvaksytyt();
-            } while (!kirjanpito.hakijaryhmanUlkopuoleltaHyvaksytytJoitaVoidaanSiirtaaVaralle.isEmpty() &&
-                    kirjanpito.hakijaryhmanUlkopuoleltaHyvaksytytJoitaVoidaanSiirtaaVaralle.getLast().getJonosija() == jonosija);
-            return true;
-        }
+        });
+        return uudelleenSijoiteltavatHakukohteet(muuttuneet);
     }
 
-    private static class HyvaksyttyjenKirjanpito {
-        public final LinkedList<Hakemus> hakijaryhmastaHyvaksytyt;
-        public final LinkedList<Hakemus> hakijaryhmanUlkopuoleltaHyvaksytyt;
-        public final LinkedList<Hakemus> hakijaryhmanUlkopuoleltaHyvaksytytJoitaVoidaanSiirtaaVaralle;
-        public final LinkedList<Hakemus> hakijaryhmastaHyvaksyttavissa;
-
-        public HyvaksyttyjenKirjanpito(SijoitteluajoWrapper sijoitteluajo, Set<String> hakijaryhmaanKuuluvat, ValintatapajonoWrapper jono, HakijaryhmaWrapper hakijaryhmaWrapper) {
-            this.hakijaryhmastaHyvaksytyt = new LinkedList<>();
-            List<HakemusWrapper> hakijaryhmanUlkopuoleltaHyvaksytytWrappers = jono.getHakemukset().stream()
-                .filter(h -> !hakijaryhmaanKuuluvat.contains(h.getHakemus().getHakemusOid()))
-                .filter(h -> kuuluuHyvaksyttyihinTiloihin(h.getHakemus().getTila()))
-                .sorted(new HakemusWrapperComparator())
-                .collect(Collectors.toList());
-            this.hakijaryhmanUlkopuoleltaHyvaksytyt = hakijaryhmanUlkopuoleltaHyvaksytytWrappers.stream()
-                .map(HakemusWrapper::getHakemus)
-                .collect(Collectors.toCollection(LinkedList::new));
-            this.hakijaryhmanUlkopuoleltaHyvaksytytJoitaVoidaanSiirtaaVaralle = hakijaryhmanUlkopuoleltaHyvaksytytWrappers
-                .stream().filter(hakemusWrapper -> voidaanKorvata(hakemusWrapper, hakijaryhmaWrapper))
-                .map(HakemusWrapper::getHakemus)
-                .collect(Collectors.toCollection(LinkedList::new));
-            this.hakijaryhmastaHyvaksyttavissa = jono.getHakemukset().stream()
-                .filter(h -> hakijaryhmaanKuuluvat.contains(h.getHakemus().getHakemusOid()))
-                .filter(h -> kuuluuHyvaksyttyihinTiloihin(h.getHakemus().getTila()) ||
-                    (kuuluuVaraTiloihin(h.getHakemus().getTila()) &&
-                        !sijoitteluajo.onkoVarasijaSaannotVoimassaJaVarasijaTayttoPaattynyt(jono) &&
-                        hakijaHaluaa(h) &&
-                        saannotSallii(h, sijoitteluajo)))
-                .map(h -> h.getHakemus())
-                .sorted(new HyvaksytytEnsinHakemusComparator())
-                .collect(Collectors.toCollection(LinkedList::new));
+    static boolean voidaanKorvata(HakemusWrapper hakemusWrapper, HakijaryhmaWrapper korvaavaRyhma) {
+        boolean voidaanKorvata = true;
+        // Tilaa ei voi vaihtaa, ei voida enää korvata käynnissä olevan sijoitteluajon aikana
+        if (!hakemusWrapper.isTilaVoidaanVaihtaa()) {
+            voidaanKorvata = false;
         }
-
-        public int hyvaksyttyjenKokonaismaara() {
-            return hakijaryhmastaHyvaksytyt.size() + hakijaryhmanUlkopuoleltaHyvaksytyt.size();
+        // Hyväksytty ylemmän prioriteetin hakijaryhmästä, ei voida enää korvata käynnissä olevan ajokierroksen aikana
+        if (hakemusWrapper.isHyvaksyttyHakijaryhmastaTallaKierroksella() || hakemusWrapper.merkittyAiemminHyvaksytyksiKorkeammanPrioriteetinRyhmastaKuin(korvaavaRyhma)) {
+            voidaanKorvata = false;
         }
-
-        public Hakemus removeFirstHakijaryhmastaHyvaksyttavissa() {
-            return hakijaryhmastaHyvaksyttavissa.removeFirst();
-        }
-
-        public void addHakijaryhmastaHyvaksytyt(LinkedList<Hakemus> hyvaksytyt) {
-            hakijaryhmastaHyvaksytyt.addAll(hyvaksytyt);
-        }
-
-        public void addHakijaryhmastaHyvaksyttavissa(Hakemus h) {
-            hakijaryhmastaHyvaksyttavissa.addFirst(h);
-        }
-
-        public void removeLastHyvaksytyt() {
-            hakijaryhmanUlkopuoleltaHyvaksytytJoitaVoidaanSiirtaaVaralle.removeLast();
-            hakijaryhmanUlkopuoleltaHyvaksytyt.removeLast();
-        }
-
-        public void poistaHyvaksytyistaJaHyvaksyttavista(Set<String> oidit) {
-            hakijaryhmastaHyvaksyttavissa.removeIf(h -> oidit.contains(h.getHakemusOid()));
-            hakijaryhmastaHyvaksytyt.removeIf(h -> oidit.contains(h.getHakemusOid()));
-        }
-
-        public void merkitseHyvaksytyksiHakijaryhmasta(String hakijaryhmaOid) {
-            hakijaryhmastaHyvaksytyt.forEach(h -> h.getHyvaksyttyHakijaryhmista().add(hakijaryhmaOid));
-        }
-    }
-        private static class HyvaksyComparator implements Comparator<HakijaryhmanValintatapajono> {
-        @Override
-        public int compare(HakijaryhmanValintatapajono j, HakijaryhmanValintatapajono jj) {
-            if (j.kirjanpito.hakijaryhmastaHyvaksyttavissa.isEmpty() && jj.kirjanpito.hakijaryhmastaHyvaksyttavissa.isEmpty()) {
-                return 0;
-            }
-            if (j.kirjanpito.hakijaryhmastaHyvaksyttavissa.isEmpty()) {
-                return 1;
-            }
-            if (jj.kirjanpito.hakijaryhmastaHyvaksyttavissa.isEmpty()) {
-                return -1;
-            }
-            int c = Integer.compare(
-                    j.kirjanpito.hakijaryhmastaHyvaksyttavissa.getFirst().getJonosija(),
-                    jj.kirjanpito.hakijaryhmastaHyvaksyttavissa.getFirst().getJonosija()
-            );
-            return c == 0 ? Integer.compare(j.prioriteetti, jj.prioriteetti) : c;
-        }
-    }
-
-    private static class VaralleComparator implements Comparator<HakijaryhmanValintatapajono> {
-        @Override
-        public int compare(HakijaryhmanValintatapajono j, HakijaryhmanValintatapajono jj) {
-            if (j.kirjanpito.hakijaryhmanUlkopuoleltaHyvaksytytJoitaVoidaanSiirtaaVaralle.isEmpty() &&
-                jj.kirjanpito.hakijaryhmanUlkopuoleltaHyvaksytytJoitaVoidaanSiirtaaVaralle.isEmpty()) {
-                return 0;
-            }
-            if (j.kirjanpito.hakijaryhmanUlkopuoleltaHyvaksytytJoitaVoidaanSiirtaaVaralle.isEmpty()) {
-                return 1;
-            }
-            if (jj.kirjanpito.hakijaryhmanUlkopuoleltaHyvaksytytJoitaVoidaanSiirtaaVaralle.isEmpty()) {
-                return -1;
-            }
-            int c = Integer.compare(
-                    jj.kirjanpito.hakijaryhmanUlkopuoleltaHyvaksytytJoitaVoidaanSiirtaaVaralle.getLast().getJonosija(),
-                    j.kirjanpito.hakijaryhmanUlkopuoleltaHyvaksytytJoitaVoidaanSiirtaaVaralle.getLast().getJonosija()
-            );
-            return c == 0 ? Integer.compare(jj.prioriteetti, j.prioriteetti) : c;
-        }
-    }
-
-    private static class HyvaksytytEnsinHakemusComparator implements Comparator<Hakemus> {
-        HakemusComparator comparator = new HakemusComparator();
-
-        @Override
-        public int compare(Hakemus h, Hakemus hh) {
-            if (kuuluuHyvaksyttyihinTiloihin(h.getTila()) && !kuuluuHyvaksyttyihinTiloihin(hh.getTila())) {
-                return -1;
-            }
-            if (!kuuluuHyvaksyttyihinTiloihin(h.getTila()) && kuuluuHyvaksyttyihinTiloihin(hh.getTila())) {
-                return 1;
-            }
-            return comparator.compare(h, hh);
-        }
+        return voidaanKorvata;
     }
 
     private static void merkitseHakijaryhmastaHyvaksytyt(SijoitteluajoWrapper sijoitteluajo, HakijaryhmaWrapper hakijaryhmaWrapper) {
@@ -238,7 +106,7 @@ public class SijoitteleHakijaryhma {
         String hakijaryhmaOid = hakijaryhmaWrapper.getHakijaryhma().getOid();
         int kiintio = hakijaryhmaWrapper.getHakijaryhma().getKiintio();
         boolean aloituspaikkojaVielaJaljella = true;
-        while (valintatapajonot.stream().mapToInt(v -> v.kirjanpito.hakijaryhmastaHyvaksytyt.size()).sum() < kiintio && aloituspaikkojaVielaJaljella) {
+        while (valintatapajonot.stream().mapToInt(v -> v.kirjanpito.countHakijaryhmastaHyvaksytyt()).sum() < kiintio && aloituspaikkojaVielaJaljella) {
             boolean hyvaksyttiin = false;
             valintatapajonot.sort(ylimmanPrioriteetinJonoJossaYlimmallaJonosijallaOlevaHakijaEnsin);
             for (HakijaryhmanValintatapajono jono : valintatapajonot) {
@@ -268,49 +136,7 @@ public class SijoitteleHakijaryhma {
         valintatapajonot.forEach(jono -> jono.kirjanpito.merkitseHyvaksytyksiHakijaryhmasta(hakijaryhmaOid));
     }
 
-    public static Set<HakukohdeWrapper> sijoitteleHakijaryhma(SijoitteluajoWrapper sijoitteluAjo, HakijaryhmaWrapper hakijaryhmaWrapper) {
-        // Hakijaryhmäsijoittelu ei uudelleenkäsittele jo hyväksyttyjä hakijoita, jolloin
-        // hyväksytty hakijaryhmästä -merkintä jää asettamatta. Poistetaan mahdollisesti vanhentuneet merkinnät,
-        // ja merkitään hakijaryhmästä hyväksytyt erillisellä algoritmilla.
-        String hakijaryhmaOid = hakijaryhmaWrapper.getHakijaryhma().getOid();
-        hakijaryhmaWrapper.getHakukohdeWrapper().hakukohteenHakemukset().map(h -> h.getHakemus()).forEach(h -> {
-            h.getHyvaksyttyHakijaryhmista().remove(hakijaryhmaOid);
-        });
-        merkitseHakijaryhmastaHyvaksytyt(sijoitteluAjo, hakijaryhmaWrapper);
-        List<HakemusWrapper> muuttuneet = sijoitteleHakijaryhmaRecur(sijoitteluAjo, hakijaryhmaWrapper);
-        for (HakemusWrapper h : muuttuneet) {
-            if (kuuluuHyvaksyttyihinTiloihin(h.getHakemus().getTila()) && !h.getHakemus().getHyvaksyttyHakijaryhmista().contains(hakijaryhmaOid)) {
-                LOG.error(String.format(
-                        "Hakukohteen %s hakijaryhmän %s sijoittelussa jonosta %s hyväksytty hakemus %s ei ole merkitty hakijaryhmästä hyväksytyksi",
-                        hakijaryhmaWrapper.getHakukohdeWrapper().getHakukohde().getOid(),
-                        hakijaryhmaOid,
-                        h.getValintatapajono().getValintatapajono().getOid(),
-                        h.getHakemus().getHakemusOid()
-                ));
-            }
-        }
-        hakijaryhmaWrapper.getHakukohdeWrapper().hakukohteenHakemukset().forEach(h -> {
-            if (h.getHakemus().getHyvaksyttyHakijaryhmista().contains(hakijaryhmaOid) &&
-                    !kuuluuHyvaksyttyihinTiloihin(h.getHakemus().getTila())) {
-                // Hakijaryhmäsijoittelu on laskenut jonosijoittelussa hyväksyttyjä hakemuksia hakijaryhmäkiintiöön.
-                // Tästä (tai jostain tunnistamattomasta syystä) johtuen hakemus h on merkattu hakijaryhmästä
-                // hyväksytyksi, mutta hakijaryhmäsijoittelu ei ole hyväksynyt sitä, koska hakijaryhmäkiintiön on
-                // katsottu olevan täynnä. Logitetaan virhe ja poistetaan merkintä jotta vain hyväksytyt ovat merkkity.
-                LOG.error(String.format(
-                        "Hakukohteen %s hakijaryhmästä %s jonossa %s hyväksytyksi merkitty hakemus %s on tilassa %s",
-                        hakijaryhmaWrapper.getHakukohdeWrapper().getHakukohde().getOid(),
-                        hakijaryhmaOid,
-                        h.getValintatapajono().getValintatapajono().getOid(),
-                        h.getHakemus().getHakemusOid(),
-                        h.getHakemus().getTila()
-                ));
-                h.getHakemus().getHyvaksyttyHakijaryhmista().remove(hakijaryhmaOid);
-            }
-        });
-        return uudelleenSijoiteltavatHakukohteet(muuttuneet);
-    }
-
-    public static List<HakemusWrapper> sijoitteleHakijaryhmaRecur(SijoitteluajoWrapper sijoitteluAjo, HakijaryhmaWrapper hakijaryhmaWrapper) {
+    private static List<HakemusWrapper> sijoitteleHakijaryhmaRecur(SijoitteluajoWrapper sijoitteluAjo, HakijaryhmaWrapper hakijaryhmaWrapper) {
         final List<ValintatapajonoWrapper> liittyvatJonot = hakijaryhmaanLiittyvatJonot(hakijaryhmaWrapper);
         final List<HakemusWrapper> hakemusWrappers = liittyvatJonot.stream().flatMap(j -> j.getHakemukset().stream()).collect(Collectors.toList());
         final List<HakemusWrapper> ryhmaanKuuluvat = hakijaRyhmaanKuuluvat(hakemusWrappers, hakijaryhmaWrapper);
@@ -576,16 +402,44 @@ public class SijoitteleHakijaryhma {
                 .collect(Collectors.toList());
     }
 
-    private static boolean voidaanKorvata(HakemusWrapper hakemusWrapper, HakijaryhmaWrapper korvaavaRyhma) {
-        boolean voidaanKorvata = true;
-        // Tilaa ei voi vaihtaa, ei voida enää korvata käynnissä olevan sijoitteluajon aikana
-        if (!hakemusWrapper.isTilaVoidaanVaihtaa()) {
-            voidaanKorvata = false;
+    private static class HyvaksyComparator implements Comparator<HakijaryhmanValintatapajono> {
+        @Override
+        public int compare(HakijaryhmanValintatapajono j, HakijaryhmanValintatapajono jj) {
+            if (j.kirjanpito.eiKetaanHyvaksyttavissaHakijaryhmasta() && jj.kirjanpito.eiKetaanHyvaksyttavissaHakijaryhmasta()) {
+                return 0;
+            }
+            if (j.kirjanpito.eiKetaanHyvaksyttavissaHakijaryhmasta()) {
+                return 1;
+            }
+            if (jj.kirjanpito.eiKetaanHyvaksyttavissaHakijaryhmasta()) {
+                return -1;
+            }
+            int c = Integer.compare(
+                    j.kirjanpito.ensimmainenHakijaryhmastaHyvaksyttavissaOleva().getJonosija(),
+                    jj.kirjanpito.ensimmainenHakijaryhmastaHyvaksyttavissaOleva().getJonosija()
+            );
+            return c == 0 ? Integer.compare(j.prioriteetti, jj.prioriteetti) : c;
         }
-        // Hyväksytty ylemmän prioriteetin hakijaryhmästä, ei voida enää korvata käynnissä olevan ajokierroksen aikana
-        if (hakemusWrapper.isHyvaksyttyHakijaryhmastaTallaKierroksella() || hakemusWrapper.merkittyAiemminHyvaksytyksiKorkeammanPrioriteetinRyhmastaKuin(korvaavaRyhma)) {
-            voidaanKorvata = false;
+    }
+
+    private static class VaralleComparator implements Comparator<HakijaryhmanValintatapajono> {
+        @Override
+        public int compare(HakijaryhmanValintatapajono j, HakijaryhmanValintatapajono jj) {
+            if (j.kirjanpito.eiOleHakijaryhmanUlkopuoleltaHyvaksyttyjaJoitaVoidaanSiirtaaVaralle() &&
+                jj.kirjanpito.eiOleHakijaryhmanUlkopuoleltaHyvaksyttyjaJoitaVoidaanSiirtaaVaralle()) {
+                return 0;
+            }
+            if (j.kirjanpito.eiOleHakijaryhmanUlkopuoleltaHyvaksyttyjaJoitaVoidaanSiirtaaVaralle()) {
+                return 1;
+            }
+            if (jj.kirjanpito.eiOleHakijaryhmanUlkopuoleltaHyvaksyttyjaJoitaVoidaanSiirtaaVaralle()) {
+                return -1;
+            }
+            int c = Integer.compare(
+                    jj.kirjanpito.viimeinenHakijaryhmanUlkopuoleltaHyvaksyttyJokaVoidaanSiirtaaVaralle().getJonosija(),
+                    j.kirjanpito.viimeinenHakijaryhmanUlkopuoleltaHyvaksyttyJokaVoidaanSiirtaaVaralle().getJonosija()
+            );
+            return c == 0 ? Integer.compare(jj.prioriteetti, j.prioriteetti) : c;
         }
-        return voidaanKorvata;
     }
 }
