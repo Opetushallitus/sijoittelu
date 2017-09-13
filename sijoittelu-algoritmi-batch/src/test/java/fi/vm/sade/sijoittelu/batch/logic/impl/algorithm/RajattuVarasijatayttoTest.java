@@ -62,13 +62,13 @@ public class RajattuVarasijatayttoTest {
         jono.setEiVarasijatayttoa(false);
         jono.setVarasijat(1);
 
-        sijoittele(hakukohdeJossaVarasijojaRajoitetaan);
+        sijoittele(sijoitteluajoWrapper -> sijoitteluajoWrapper.setKKHaku(true), hakukohdeJossaVarasijojaRajoitetaan);
         assertEquals(HYVAKSYTTY, hakemus1.getTila());
         assertEquals(VARALLA, hakemus2.getTila());
         assertEquals(PERUUNTUNUT, hakemus3.getTila());
         assertEquals(PERUUNTUNUT, hakemus4.getTila());
 
-        sijoittele(hakukohdeJossaVarasijojaRajoitetaan, toinenHakukohdeJohonHakemus1Hyvaksytaan);
+        sijoittele(sijoitteluajoWrapper -> sijoitteluajoWrapper.setKKHaku(true), hakukohdeJossaVarasijojaRajoitetaan, toinenHakukohdeJohonHakemus1Hyvaksytaan);
 
         assertEquals(hakemus1.getHakemusOid(), toinenHakukohdeJohonHakemus1Hyvaksytaan.getValintatapajonot().get(0).getHakemukset().get(0).getHakemusOid());
         assertEquals(HYVAKSYTTY, toinenHakukohdeJohonHakemus1Hyvaksytaan.getValintatapajonot().get(0).getHakemukset().get(0).getTila());
