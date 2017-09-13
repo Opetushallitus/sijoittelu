@@ -5,6 +5,7 @@ import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.helper.HakuBuilder;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.helper.HakuBuilder.HakukohdeBuilder;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.helper.HakuBuilder.SijoitteluajoWrapperBuilder;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.helper.HakuBuilder.ValintatapajonoBuilder;
+import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.HakemusWrapper;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.SijoitteluajoWrapper;
 import fi.vm.sade.sijoittelu.domain.HakemuksenTila;
 import fi.vm.sade.sijoittelu.domain.Hakemus;
@@ -72,6 +73,11 @@ public class PreSijoitteluProcessorPidaPeruuntuneinaSivssnovHakemuksetRajatunVar
         p.process(sijoitteluajoWrapper);
         Assert.assertEquals(HakemuksenTila.VARALLA, hakemusVaralla.getTila());
         Assert.assertEquals(HakemuksenTila.PERUUNTUNUT, peruuntunutHakemus.getTila());
+
+        HakemusWrapper peruuntuneenHakemuksenWrapper = sijoitteluajoWrapper.getHakukohteet().get(0)
+            .getValintatapajonot().get(0).getHakemukset().stream().filter(h ->
+                h.getHakemus().getHakemusOid().equals(peruuntunutHakemus.getHakemusOid())).findFirst().get();
+        Assert.assertFalse(peruuntuneenHakemuksenWrapper.isTilaVoidaanVaihtaa());
     }
 
     @Test
@@ -84,5 +90,10 @@ public class PreSijoitteluProcessorPidaPeruuntuneinaSivssnovHakemuksetRajatunVar
         p.process(sijoitteluajoWrapper);
         Assert.assertEquals(HakemuksenTila.VARALLA, hakemusVaralla.getTila());
         Assert.assertEquals(HakemuksenTila.PERUUNTUNUT, peruuntunutHakemus.getTila());
+
+        HakemusWrapper peruuntuneenHakemuksenWrapper = sijoitteluajoWrapper.getHakukohteet().get(0)
+            .getValintatapajonot().get(0).getHakemukset().stream().filter(h ->
+                h.getHakemus().getHakemusOid().equals(peruuntunutHakemus.getHakemusOid())).findFirst().get();
+        Assert.assertFalse(peruuntuneenHakemuksenWrapper.isTilaVoidaanVaihtaa());
     }
 }
