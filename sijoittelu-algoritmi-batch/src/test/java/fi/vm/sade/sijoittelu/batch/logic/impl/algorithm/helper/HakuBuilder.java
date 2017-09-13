@@ -90,6 +90,14 @@ public class HakuBuilder {
             return this;
         }
 
+        public ValintatapajonoBuilder withHakemukset(Hakemus... hakemukset) {
+            ValintatapajonoBuilder returnValue = this;
+            for (Hakemus hakemus : hakemukset) {
+                returnValue = withHakemus(hakemus);
+            }
+            return returnValue;
+        }
+
         public ValintatapajonoBuilder withHakemus(HakemuksenTila a) {
             Hakemus h = new Hakemus();
             h.setHakemusOid("oid");
@@ -114,8 +122,20 @@ public class HakuBuilder {
             return this;
         }
 
+        public ValintatapajonoBuilder withTasasijasaanto(Tasasijasaanto tasasijasaanto) {
+            vtj.setTasasijasaanto(tasasijasaanto);
+            return this;
+        }
+
         public Valintatapajono build() {
+            setSafeDefaultsForMissingValues();
             return vtj;
+        }
+
+        void setSafeDefaultsForMissingValues() {
+            if (vtj.getKaikkiEhdonTayttavatHyvaksytaan() == null) {
+                vtj.setKaikkiEhdonTayttavatHyvaksytaan(false);
+            }
         }
     }
 
@@ -148,6 +168,11 @@ public class HakuBuilder {
 
         public HakemusBuilder withPrioriteetti(int val) {
             this.h.setPrioriteetti(val);
+            return this;
+        }
+
+        public HakemusBuilder withJonosija(int jonosija) {
+            this.h.setJonosija(jonosija);
             return this;
         }
 
