@@ -1,6 +1,7 @@
 package fi.vm.sade.sijoittelu.domain;
 
 import fi.vm.sade.sijoittelu.domain.converter.BigDecimalConverter;
+import org.apache.commons.lang3.BooleanUtils;
 import org.mongodb.morphia.annotations.*;
 
 import java.io.Serializable;
@@ -255,5 +256,9 @@ public class Valintatapajono implements Serializable {
 
     public void setSijoiteltuIlmanVarasijasaantojaNiidenOllessaVoimassa(boolean sijoiteltuIlmanVarasijasaantojaNiidenOllessaVoimassa) {
         this.sijoiteltuIlmanVarasijasaantojaNiidenOllessaVoimassa = sijoiteltuIlmanVarasijasaantojaNiidenOllessaVoimassa;
+    }
+
+    public boolean vapaaVarasijataytto() {
+        return !BooleanUtils.isTrue(eiVarasijatayttoa) && !rajoitettuVarasijaTaytto();
     }
 }
