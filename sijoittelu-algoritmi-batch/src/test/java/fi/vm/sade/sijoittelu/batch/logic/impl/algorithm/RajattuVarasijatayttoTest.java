@@ -1,5 +1,6 @@
 package fi.vm.sade.sijoittelu.batch.logic.impl.algorithm;
 
+import static fi.vm.sade.sijoittelu.domain.HakemuksenTila.HYLATTY;
 import static fi.vm.sade.sijoittelu.domain.HakemuksenTila.HYVAKSYTTY;
 import static fi.vm.sade.sijoittelu.domain.HakemuksenTila.PERUUNTUNUT;
 import static fi.vm.sade.sijoittelu.domain.HakemuksenTila.VARALLA;
@@ -15,6 +16,7 @@ import fi.vm.sade.sijoittelu.domain.Hakemus;
 import fi.vm.sade.sijoittelu.domain.Hakukohde;
 import fi.vm.sade.sijoittelu.domain.SijoitteluAjo;
 import fi.vm.sade.sijoittelu.domain.Valintatapajono;
+import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -135,6 +137,43 @@ public class RajattuVarasijatayttoTest {
         }
         assertEquals(VARALLA, hakemus3.getTila());
         assertEquals(VARALLA, hakemus4.getTila());
+    }
+
+    @Test
+    public void hylatystaVaralleNousevatHakemuksetPaasevatVaralleMyosRajatussaVarasijataytossaJosNeTulevatRiittavanKorkealleJonosijalle() {
+        jono.setAloituspaikat(1);
+        jono.setEiVarasijatayttoa(false);
+        jono.setVarasijat(1);
+
+        sijoittele(sijoitteluajoWrapper -> sijoitteluajoWrapper.setKKHaku(true), hakukohdeJossaVarasijojaRajoitetaan);
+        assertEquals(HYVAKSYTTY, hakemus1.getTila());
+        assertEquals(VARALLA, hakemus2.getTila());
+        assertEquals(PERUUNTUNUT, hakemus3.getTila());
+        assertEquals(PERUUNTUNUT, hakemus4.getTila());
+
+        final Hakemus kiilaavaHakemus = new HakemusBuilder().withOid("kiilaavaHakemus")
+            .withEdellinenTila(HYLATTY).withTila(VARALLA).build();
+        jono.getHakemukset().add(kiilaavaHakemus);
+        hakemus1.setJonosija(0);
+        kiilaavaHakemus.setJonosija(1);
+        hakemus2.setJonosija(2);
+        hakemus3.setJonosija(4);
+        hakemus4.setJonosija(5);
+        jono.setSijoiteltuIlmanVarasijasaantojaNiidenOllessaVoimassa(true);
+
+        sijoittele(sijoitteluajoWrapper -> sijoitteluajoWrapper.setKKHaku(true), hakukohdeJossaVarasijojaRajoitetaan);
+
+        final boolean bugiKorjattu = false;
+
+        assertEquals(HYVAKSYTTY, hakemus1.getTila());
+        assertEquals(VARALLA, kiilaavaHakemus.getTila());
+        if (bugiKorjattu) {
+            assertEquals(VARALLA, hakemus2.getTila());
+        } else {
+            assertEquals(PERUUNTUNUT, hakemus2.getTila());
+        }
+        assertEquals(PERUUNTUNUT, hakemus3.getTila());
+        assertEquals(PERUUNTUNUT, hakemus4.getTila());
     }
 
     private void sijoittele(Consumer<SijoitteluajoWrapper> prepareAjoWrapper, Hakukohde... hakukohteet) {
