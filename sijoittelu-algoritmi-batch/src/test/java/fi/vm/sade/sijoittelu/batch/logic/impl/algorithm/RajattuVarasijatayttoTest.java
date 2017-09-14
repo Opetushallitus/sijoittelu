@@ -15,14 +15,10 @@ import fi.vm.sade.sijoittelu.domain.Hakemus;
 import fi.vm.sade.sijoittelu.domain.Hakukohde;
 import fi.vm.sade.sijoittelu.domain.SijoitteluAjo;
 import fi.vm.sade.sijoittelu.domain.Valintatapajono;
-import org.junit.Before;
 import org.junit.Test;
 
-import java.time.LocalDate;
-import java.time.ZoneId;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Date;
 import java.util.function.Consumer;
 
 public class RajattuVarasijatayttoTest {
@@ -139,10 +135,6 @@ public class RajattuVarasijatayttoTest {
         }
         assertEquals(VARALLA, hakemus3.getTila());
         assertEquals(VARALLA, hakemus4.getTila());
-    }
-
-    private void sijoittele(Hakukohde... hakukohteet) {
-        sijoittele(sijoitteluajoWrapper -> {}, hakukohteet);
     }
 
     private void sijoittele(Consumer<SijoitteluajoWrapper> prepareAjoWrapper, Hakukohde... hakukohteet) {
