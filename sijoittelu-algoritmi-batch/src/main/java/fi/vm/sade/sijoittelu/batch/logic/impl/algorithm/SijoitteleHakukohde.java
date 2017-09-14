@@ -169,6 +169,7 @@ public class SijoitteleHakukohde {
         }
         if (eiVarasijaTayttoa && !jononKaikkiEhdonTayttavatHyvaksytaan(hakemusWrapper)) {
             hakijaAloistuspaikkojenSisallaTaiVarasijataytto = hakijaAloistuspaikkojenSisalla(hakemusWrapper);
+            // TODO Remove this
             if (!hakijaAloistuspaikkojenSisallaTaiVarasijataytto && sijoitteluAjo.isKKHaku() && hakemusWrapper.isTilaVoidaanVaihtaa()) {
                 asetaTilaksiPeruuntunutAloituspaikatTaynna(hakemusWrapper);
             }
@@ -177,6 +178,7 @@ public class SijoitteleHakukohde {
         boolean huomioitavienVarasijojenSisalla = true;
         if (sijoitteluAjo.varasijaSaannotVoimassa() && hakemusWrapper.jonollaOnRajoitettuVarasijaTaytto()) {
             huomioitavienVarasijojenSisalla = hakijaKasiteltavienVarasijojenSisalla(hakemusWrapper, varasijat);
+            // TODO Remove this
             if (!huomioitavienVarasijojenSisalla && hakemusWrapper.isTilaVoidaanVaihtaa()) {
                 asetaTilaksiPeruuntunutEiMahduKasiteltaviinSijoihin(hakemusWrapper);
             }
@@ -335,10 +337,10 @@ public class SijoitteleHakukohde {
         aloituspaikkojaVievat.addAll(hakijaryhmastaHyvaksytyt);
 
         return aloituspaikat - aloituspaikkojaVievat.size() > 0;
-        
+
     }
 
-    private static boolean hakijaKasiteltavienVarasijojenSisalla(HakemusWrapper hakemusWrapper, Integer varasijat) {
+    public static boolean hakijaKasiteltavienVarasijojenSisalla(HakemusWrapper hakemusWrapper, Integer varasijat) {
         ValintatapajonoWrapper valintatapajono = hakemusWrapper.getValintatapajono();
         int aloituspaikat = jononAloituspaikat(valintatapajono) + varasijat;
         return onkoPaikkojenSisalla(hakemusWrapper, aloituspaikat, valintatapajono.getHakemukset());
