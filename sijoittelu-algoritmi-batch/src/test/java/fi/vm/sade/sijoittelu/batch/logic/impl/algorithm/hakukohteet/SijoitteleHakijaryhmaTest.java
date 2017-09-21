@@ -840,4 +840,22 @@ public class SijoitteleHakijaryhmaTest {
         Assert.assertEquals(HakemuksenTila.HYVAKSYTTY, hakemus7jono2.getTila());
         Assert.assertEquals(HakemuksenTila.VARALLA, hakemus8jono2.getTila());
     }
+
+    @Test
+    public void hakijaryhmasijoitteluHyvaksyyKaikkiSuoravalintajonosta() {
+        Hakemus hakemus0jono1 = valintatapajono.getHakemukset().get(0);
+        Hakemus hakemus1jono1 = valintatapajono.getHakemukset().get(1);
+        Hakemus hakemus2jono1 = valintatapajono.getHakemukset().get(2);
+
+        valintatapajono.setKaikkiEhdonTayttavatHyvaksytaan(true);
+        valintatapajono.setAloituspaikat(0);  // suoravalintajonoilla on 0 aloituspaikkaa valintaperusteissa
+
+        HakukohdeWrapper hakukohdeWrapper = ajoWrapper.getHakukohteet().get(0);
+        hakijaryhmaWrapper.setHakukohdeWrapper(hakukohdeWrapper);
+        SijoitteleHakijaryhma.sijoitteleHakijaryhma(ajoWrapper, hakijaryhmaWrapper);
+
+        Assert.assertEquals(HakemuksenTila.HYVAKSYTTY, hakemus0jono1.getTila());
+        Assert.assertEquals(HakemuksenTila.HYVAKSYTTY, hakemus1jono1.getTila());
+        Assert.assertEquals(HakemuksenTila.HYVAKSYTTY, hakemus2jono1.getTila());
+    }
 }
