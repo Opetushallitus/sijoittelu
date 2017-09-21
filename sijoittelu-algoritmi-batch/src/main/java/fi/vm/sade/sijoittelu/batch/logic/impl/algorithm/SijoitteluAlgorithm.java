@@ -2,6 +2,7 @@ package fi.vm.sade.sijoittelu.batch.logic.impl.algorithm;
 
 import com.google.common.collect.Sets;
 import com.google.common.hash.HashCode;
+import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.comparator.HakukohdeWrapperComparator;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.postsijoitteluprocessor.PostSijoitteluProcessor;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.presijoitteluprocessor.*;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.*;
@@ -83,13 +84,14 @@ public abstract class SijoitteluAlgorithm {
 
     private static class SijoitteleKunnesValmisTaiSilmukkaHavaittu {
         private Optional<HashCode> edellinenHash = Optional.empty();
-        private Set<HakukohdeWrapper> iteraationHakukohteet;
+        private SortedSet<HakukohdeWrapper> iteraationHakukohteet;
         public SijoittelunTila sijoittele(SijoitteluajoWrapper sijoitteluAjo, SijoittelunTila tila) {
             final Set<HashCode> hashset = Sets.newHashSet();
-            iteraationHakukohteet = Sets.newHashSet(sijoitteluAjo.getHakukohteet());
+            iteraationHakukohteet = new TreeSet<>(new HakukohdeWrapperComparator());
+            iteraationHakukohteet.addAll(sijoitteluAjo.getHakukohteet());
             boolean jatkuukoSijoittelu;
             do {
-                Set<HakukohdeWrapper> muuttuneetHakukohteet = Sets.newHashSet();
+                SortedSet<HakukohdeWrapper> muuttuneetHakukohteet = new TreeSet<>(new HakukohdeWrapperComparator());
                 for (HakukohdeWrapper hakukohde : iteraationHakukohteet) {
                     muuttuneetHakukohteet.addAll(SijoitteleHakukohde.sijoitteleHakukohde(sijoitteluAjo, hakukohde));
                 }
