@@ -12,9 +12,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
 
-import static fi.vm.sade.sijoittelu.domain.HakemuksenTila.HYVAKSYTTY;
-import static fi.vm.sade.sijoittelu.domain.HakemuksenTila.PERUUNTUNUT;
-import static fi.vm.sade.sijoittelu.domain.HakemuksenTila.VARALLA;
+import static fi.vm.sade.sijoittelu.domain.HakemuksenTila.*;
 import static fi.vm.sade.sijoittelu.domain.Tasasijasaanto.YLITAYTTO;
 import static org.junit.Assert.assertEquals;
 
@@ -75,8 +73,10 @@ public class EhdollinenVastaanottoSitovaksiTest {
         assertEquals(HYVAKSYTTY, vastaanottoHakemus3.getTila());
         assertEquals(ValintatuloksenTila.EHDOLLISESTI_VASTAANOTTANUT, vastaanotto.getTila());
 
+        korjaaTilaJaEdellinenTilaSijoittelunJalkeen();
+
         sijoittele(kkHakuVarasijatayttoPaattynyt, Arrays.asList(vastaanotto), ylempiHakukohdeJossaEnsinVaralla, alempiHakukohdeJohonVastaanottoKohdistuu);
-        assertHakemustenTilat(HYVAKSYTTY, PERUUNTUNUT, PERUUNTUNUT, PERUUNTUNUT);
+        assertHakemustenTilat(PERUUNTUNUT, PERUUNTUNUT, PERUUNTUNUT, PERUUNTUNUT);
         assertEquals(HYVAKSYTTY, vastaanottoHakemus3.getTila());
         assertEquals(ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI, vastaanotto.getTila());
     }
@@ -90,6 +90,8 @@ public class EhdollinenVastaanottoSitovaksiTest {
         assertHakemustenTilat(HYVAKSYTTY, VARALLA, VARALLA, VARALLA);
         assertEquals(HYVAKSYTTY, vastaanottoHakemus3.getTila());
         assertEquals(ValintatuloksenTila.EHDOLLISESTI_VASTAANOTTANUT, vastaanotto.getTila());
+
+        korjaaTilaJaEdellinenTilaSijoittelunJalkeen();
 
         sijoittele(kkHakuVarasijasaannotVoimassa, Arrays.asList(vastaanotto), ylempiHakukohdeJossaEnsinVaralla, alempiHakukohdeJohonVastaanottoKohdistuu);
         assertHakemustenTilat(HYVAKSYTTY, VARALLA, PERUUNTUNUT, PERUUNTUNUT);
@@ -109,6 +111,8 @@ public class EhdollinenVastaanottoSitovaksiTest {
         assertHakemustenTilat(HYVAKSYTTY, HYVAKSYTTY, VARALLA, VARALLA);
         assertEquals(HYVAKSYTTY, vastaanottoHakemus3.getTila());
         assertEquals(ValintatuloksenTila.EHDOLLISESTI_VASTAANOTTANUT, vastaanotto.getTila());
+
+        korjaaTilaJaEdellinenTilaSijoittelunJalkeen();
 
         sijoittele(kkHakuVarasijasaannotVoimassa, Arrays.asList(vastaanotto), ylempiHakukohdeJossaEnsinVaralla, alempiHakukohdeJohonVastaanottoKohdistuu);
         assertHakemustenTilat(HYVAKSYTTY, HYVAKSYTTY, PERUUNTUNUT, PERUUNTUNUT);
@@ -143,5 +147,16 @@ public class EhdollinenVastaanottoSitovaksiTest {
                 SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(new SijoitteluAjo(), Arrays.asList(hakukohteet), valintatulokset, Collections.emptyMap());
         prepareAjoWrapper.accept(sijoitteluAjoWrapper);
         SijoitteluAlgorithmUtil.sijoittele(sijoitteluAjoWrapper);
+    }
+
+    private void korjaaTilaJaEdellinenTilaSijoittelunJalkeen() {
+        Arrays.asList(hakemus1, hakemus2, hakemus3, hakemus4).forEach(h -> {
+            HakemuksenTila tila = h.getTila();
+            h.setEdellinenTila(tila);
+            if(!HYLATTY.equals(tila)) {
+                h.setTila(VARALLA);
+            }
+            h.setTilanKuvaukset(Collections.EMPTY_MAP);
+        });
     }
 }
