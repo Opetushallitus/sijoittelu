@@ -6,6 +6,7 @@ import com.google.common.hash.Hasher;
 import com.google.common.hash.Hashing;
 import fi.vm.sade.sijoittelu.domain.Hakukohde;
 import fi.vm.sade.sijoittelu.domain.SijoitteluAjo;
+import fi.vm.sade.sijoittelu.domain.Valintatapajono;
 import fi.vm.sade.sijoittelu.domain.Valintatulos;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,6 +16,7 @@ import java.time.ZoneId;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.util.Optional.ofNullable;
@@ -199,12 +201,26 @@ public class SijoitteluajoWrapper {
         }
     }
 
-    public boolean onkoVarasijaSaannotVoimassaJaVarasijaTayttoPaattynyt(ValintatapajonoWrapper valintatapajono) {
-        return onkoVarasijaSaannotVoimassa() && onkoVarasijaTayttoPaattynyt(valintatapajono);
+    public Stream<Valintatapajono> valintatapajonotStream() {
+        return this.getHakukohteet().stream()
+                .flatMap(hkv -> hkv.getValintatapajonot().stream())
+                .map(ValintatapajonoWrapper::getValintatapajono);
     }
 
-    private boolean onkoVarasijaSaannotVoimassa() {
-        return getToday().isAfter(varasijaSaannotAstuvatVoimaan);
+    public List<Valintatapajono> valintatapajonot() {
+        return valintatapajonotStream().collect(Collectors.toList());
+    }
+
+    public boolean onkoKaikkiJonotSijoiteltuIlmanVarasijasaantojaNiidenOllessaVoimassa() {
+        return valintatapajonotStream().allMatch(Valintatapajono::getSijoiteltuIlmanVarasijasaantojaNiidenOllessaVoimassa);
+    }
+
+    public boolean onkoVarasijasaannotVoimassaJaSijoiteltuKerranIlmanNiita() {
+        return varasijaSaannotVoimassa() && onkoKaikkiJonotSijoiteltuIlmanVarasijasaantojaNiidenOllessaVoimassa();
+    }
+
+    public boolean onkoVarasijaSaannotVoimassaJaVarasijaTayttoPaattynyt(ValintatapajonoWrapper valintatapajono) {
+        return varasijaSaannotVoimassa() && onkoVarasijaTayttoPaattynyt(valintatapajono);
     }
 
     private boolean onkoVarasijaTayttoPaattynyt(ValintatapajonoWrapper valintatapajono) {

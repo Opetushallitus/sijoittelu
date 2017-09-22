@@ -30,6 +30,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.util.TilaTaulukot.*;
+import static fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoitteleHakukohde.*;
 
 public class SijoitteleHakijaryhma {
     private static final Logger LOG = LoggerFactory.getLogger(SijoitteleHakijaryhma.class);
@@ -56,8 +57,8 @@ public class SijoitteleHakijaryhma {
                     .filter(h -> kuuluuHyvaksyttyihinTiloihin(h.getHakemus().getTila()) ||
                             (kuuluuVaraTiloihin(h.getHakemus().getTila()) &&
                                     !sijoitteluajo.onkoVarasijaSaannotVoimassaJaVarasijaTayttoPaattynyt(jono) &&
-                                    SijoitteleHakukohde.hakijaHaluaa(h) &&
-                                    SijoitteleHakukohde.saannotSallii(sijoitteluajo, h)))
+                                    hakijaHaluaa(h) &&
+                                    saannotSallii(h)))
                     .map(h -> h.getHakemus())
                     .sorted(new HyvaksytytEnsinHakemusComparator())
                     .collect(Collectors.toCollection(LinkedList::new));
@@ -262,7 +263,7 @@ public class SijoitteleHakijaryhma {
                 h.getHakemus().getHyvaksyttyHakijaryhmista().remove(hakijaryhmaOid);
             }
         });
-        return SijoitteleHakukohde.uudelleenSijoiteltavatHakukohteet(muuttuneet);
+        return uudelleenSijoiteltavatHakukohteet(muuttuneet);
     }
 
     public static List<HakemusWrapper> sijoitteleHakijaryhmaRecur(SijoitteluajoWrapper sijoitteluAjo, HakijaryhmaWrapper hakijaryhmaWrapper) {
@@ -313,7 +314,7 @@ public class SijoitteleHakijaryhma {
         ryhmaanKuuluvat
                 .stream()
                 .filter(h -> hakemuksenTila(h).equals(HakemuksenTila.VARALLA))
-                .filter(h -> SijoitteleHakukohde.hakijaHaluaa(h) && SijoitteleHakukohde.saannotSallii(sijoitteluAjo, h))
+                .filter(h -> hakijaHaluaa(h) && saannotSallii(h))
                 .forEach(h -> h.setHyvaksyttavissaHakijaryhmanJalkeen(false));
     }
 
@@ -327,7 +328,7 @@ public class SijoitteleHakijaryhma {
                 .stream()
                 .filter(h -> valintatapajonot.contains(h.getValintatapajono().getValintatapajono())) // Varmistetaan, että hakemuksen valintatapajonon varasijasäännöt täyttyvät
                 .filter(h -> hakemuksenTila(h).equals(HakemuksenTila.VARALLA))
-                .filter(h -> SijoitteleHakukohde.hakijaHaluaa(h) && SijoitteleHakukohde.saannotSallii(sijoitteluAjo, h))
+                .filter(h -> hakijaHaluaa(h) && saannotSallii(h))
                 .collect(Collectors.toList());
         if (!valituksiHaluavat.isEmpty()) {
             tarkistaEttaKaikkienTilaaVoidaanVaihtaa(valituksiHaluavat);
@@ -340,7 +341,7 @@ public class SijoitteleHakijaryhma {
             // Hyväksytään valittavat
             valittavatJaVarasijat.getLeft().forEach(h -> {
                 h.setHyvaksyttyHakijaryhmastaTallaKierroksella(true);
-                muuttuneetHakemukset.addAll(SijoitteleHakukohde.hyvaksyHakemus(sijoitteluAjo, h));
+                muuttuneetHakemukset.addAll(hyvaksyHakemus(sijoitteluAjo, h));
             });
             boolean lukko = liittyvatJonot.stream().anyMatch(ValintatapajonoWrapper::isAlitayttoLukko);
             // Kiintiö ei täyty, koska alitäyttö

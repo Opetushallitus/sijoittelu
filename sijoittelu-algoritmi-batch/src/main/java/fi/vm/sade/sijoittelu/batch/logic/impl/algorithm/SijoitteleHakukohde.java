@@ -3,6 +3,8 @@ package fi.vm.sade.sijoittelu.batch.logic.impl.algorithm;
 import com.google.common.collect.Sets;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.*;
 import fi.vm.sade.sijoittelu.domain.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.*;
 import java.util.function.Predicate;
@@ -13,6 +15,8 @@ import static fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.util.TilojenMuokk
 import static fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.WrapperHelperMethods.*;
 
 public class SijoitteleHakukohde {
+    private static final Logger LOG = LoggerFactory.getLogger(SijoitteleHakukohde.class);
+
     public static Set<HakukohdeWrapper> sijoitteleHakukohde(SijoitteluajoWrapper sijoitteluAjo, HakukohdeWrapper hakukohde) {
         Set<HakukohdeWrapper> muuttuneetHakukohteet = Sets.newHashSet();
         for (HakijaryhmaWrapper hakijaryhmaWrapper : hakukohde.getHakijaryhmaWrappers()) {
@@ -41,7 +45,7 @@ public class SijoitteleHakukohde {
             valintatapajono.getHakemukset().stream()
                 .filter(h -> !eiKorvattavissaOlevatHyvaksytytHakemukset.contains(h))
                 .filter(h -> !kuuluuHyvaksyttyihinTiloihin(hakemuksenTila(h)))
-                .filter(h -> hakijaHaluaa(h) && saannotSallii(sijoitteluAjo, h))
+                .filter(h -> hakijaHaluaa(h) && saannotSallii(h))
                 .collect(Collectors.toList());
         // Ei ketään valituksi haluavaa
         if (valituksiHaluavatHakemukset.isEmpty()) {
@@ -157,38 +161,10 @@ public class SijoitteleHakukohde {
         return true;
     }
 
-    static boolean saannotSallii(SijoitteluajoWrapper sijoitteluAjo, HakemusWrapper hakemusWrapper) {
-        boolean hakemuksenTila = !kuuluuHylattyihinTiloihin(hakemuksenTila(hakemusWrapper));
-        boolean hakijaAloistuspaikkojenSisallaTaiVarasijataytto = true;
-        boolean eiVarasijaTayttoa = false;
-        // Jos varasijasäännöt ovat astuneet voimaan niin katsotaan saako varasijoilta täyttää
-        if (sijoitteluAjo.varasijaSaannotVoimassa()) {
-            if (jononEiVarasijatayttoa(hakemusWrapper) != null) {
-                eiVarasijaTayttoa = jononEiVarasijatayttoa(hakemusWrapper);
-            }
-        }
-        if (eiVarasijaTayttoa && !jononKaikkiEhdonTayttavatHyvaksytaan(hakemusWrapper)) {
-            hakijaAloistuspaikkojenSisallaTaiVarasijataytto = hakijaAloistuspaikkojenSisalla(hakemusWrapper);
-            // TODO Remove this
-            if (!hakijaAloistuspaikkojenSisallaTaiVarasijataytto && sijoitteluAjo.isKKHaku() && hakemusWrapper.isTilaVoidaanVaihtaa()) {
-                asetaTilaksiPeruuntunutAloituspaikatTaynna(hakemusWrapper);
-            }
-        }
-        Integer varasijat = jononVarasijat(hakemusWrapper);
-        boolean huomioitavienVarasijojenSisalla = true;
-        if (sijoitteluAjo.varasijaSaannotVoimassa() && hakemusWrapper.jonollaOnRajoitettuVarasijaTaytto()) {
-            huomioitavienVarasijojenSisalla = hakijaKasiteltavienVarasijojenSisalla(hakemusWrapper, varasijat);
-            // TODO Remove this
-            if (!huomioitavienVarasijojenSisalla && hakemusWrapper.isTilaVoidaanVaihtaa()) {
-                asetaTilaksiPeruuntunutEiMahduKasiteltaviinSijoihin(hakemusWrapper);
-            }
-        }
-        boolean eiPeruttuaKorkeampaaTaiSamaaHakutoivetta = eiPeruttuaKorkeampaaTaiSamaaHakutoivetta(hakemusWrapper);
-        return hakemuksenTila
-            && hakijaAloistuspaikkojenSisallaTaiVarasijataytto
-            && eiPeruttuaKorkeampaaTaiSamaaHakutoivetta
-            && huomioitavienVarasijojenSisalla
-            && hakemusWrapper.isHyvaksyttavissaHakijaryhmanJalkeen();
+    static boolean saannotSallii(HakemusWrapper hakemusWrapper) {
+        return !kuuluuHylattyihinTiloihin(hakemuksenTila(hakemusWrapper)) &&
+                eiPeruttuaKorkeampaaTaiSamaaHakutoivetta(hakemusWrapper) &&
+                hakemusWrapper.isHyvaksyttavissaHakijaryhmanJalkeen();
     }
 
     private static void hakukierrosPaattynyt(List<HakemusWrapper> hakemukset) {

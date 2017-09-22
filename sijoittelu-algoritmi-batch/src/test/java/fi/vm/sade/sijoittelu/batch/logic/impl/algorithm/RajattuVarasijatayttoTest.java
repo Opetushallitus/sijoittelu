@@ -61,7 +61,7 @@ public class RajattuVarasijatayttoTest {
                             .withTila(VARALLA).build())
                     .build()).build();
 
-    final boolean bugiKorjattu = false;
+    final boolean bugiKorjattu = true;
 
     @Test
     public void peruuntuvaHakijaHyvaksytaanEnsimmaisessaSijoittelussaVarasijojenAstuttuaVoimaanJosAloituspaikoilleTuleeTilaaKunEiVarasijatayttoa() {
