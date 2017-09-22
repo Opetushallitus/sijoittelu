@@ -142,7 +142,7 @@ class SijoitteleHakijaryhma {
         final List<HakemusWrapper> ryhmaanKuuluvat = hakijaRyhmaanKuuluvat(hakemusWrappers, hakijaryhmaWrapper);
         final int hyvaksyttyjenMaara = ryhmaanKuuluvat.stream().filter(h -> kuuluuHyvaksyttyihinTiloihin(hakemuksenTila(h))).collect(Collectors.toList()).size();
         final boolean tarkkaKiintio = hakijaryhmaWrapper.getHakijaryhma().isTarkkaKiintio();
-        final int aloituspaikat = liittyvatJonot.stream().mapToInt(SijoitteleHakijaryhma::jononAloituspaikatSuoravalintajonoHuomioiden).sum();
+        final int aloituspaikat = sisaltaaSuoravalintajonon(liittyvatJonot) ? Integer.MAX_VALUE : liittyvatJonot.stream().mapToInt(WrapperHelperMethods::jononAloituspaikat).sum();
 
         int kiintio = hakijaryhmaWrapper.getHakijaryhma().getKiintio();
         if (kiintio > aloituspaikat) {
@@ -160,6 +160,10 @@ class SijoitteleHakijaryhma {
             return kasitteleValituksiHaluavat(sijoitteluAjo, hakijaryhmaWrapper, liittyvatJonotVarasijatayttoVoimassa, ryhmaanKuuluvat);
         }
         return new ArrayList<>();
+    }
+
+    private static boolean sisaltaaSuoravalintajonon(List<ValintatapajonoWrapper> liittyvatJonot) {
+        return liittyvatJonot.stream().anyMatch(j -> BooleanUtils.isTrue(j.getValintatapajono().getKaikkiEhdonTayttavatHyvaksytaan()));
     }
 
     private static int jononAloituspaikatSuoravalintajonoHuomioiden(ValintatapajonoWrapper jono) {

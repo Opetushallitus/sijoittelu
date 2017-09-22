@@ -9,6 +9,7 @@ import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.HakemusWrapper;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.HakijaryhmaWrapper;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.HakukohdeWrapper;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.SijoitteluajoWrapper;
+import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.ValintatapajonoWrapper;
 import fi.vm.sade.sijoittelu.domain.HakemuksenTila;
 import fi.vm.sade.sijoittelu.domain.Hakemus;
 import fi.vm.sade.sijoittelu.domain.Hakijaryhma;
@@ -850,7 +851,17 @@ public class SijoitteleHakijaryhmaTest {
         valintatapajono.setKaikkiEhdonTayttavatHyvaksytaan(true);
         valintatapajono.setAloituspaikat(0);  // suoravalintajonoilla on 0 aloituspaikkaa valintaperusteissa
 
+        Valintatapajono valintatapajono2 = new HakuBuilder.ValintatapajonoBuilder().
+            withAloituspaikat(2).
+            withPrioriteetti(1).
+            withOid("valintatapajono2").
+            withTasasijasaanto(Tasasijasaanto.YLITAYTTO).build();
+        ValintatapajonoWrapper valintatapajono2Wrapper = new ValintatapajonoWrapper();
+        valintatapajono2Wrapper.setValintatapajono(valintatapajono2);
+
         HakukohdeWrapper hakukohdeWrapper = ajoWrapper.getHakukohteet().get(0);
+        hakukohdeWrapper.getValintatapajonot().add(valintatapajono2Wrapper);
+
         hakijaryhmaWrapper.setHakukohdeWrapper(hakukohdeWrapper);
         SijoitteleHakijaryhma.sijoitteleHakijaryhma(ajoWrapper, hakijaryhmaWrapper);
 
