@@ -15,10 +15,6 @@
   <import resource="classpath:META-INF/cxf/cxf.xml" />
   <import resource="classpath:META-INF/cxf/cxf-servlet.xml" />
 
-  <mockito:mock id="hakuV1Resource" class="fi.vm.sade.sijoittelu.laskenta.external.resource.HakuV1Resource"/>
-  <mockito:mock id="hakukohdeV1Resource" class="fi.vm.sade.sijoittelu.laskenta.external.resource.HakukohdeV1Resource"/>
-  <mockito:mock id="ohjausparametriResource"
-                class="fi.vm.sade.sijoittelu.laskenta.external.resource.OhjausparametriResource"/>
   <mockito:mock id="virkailijaValintaTulosServiceResource"
                 class="fi.vm.sade.sijoittelu.laskenta.external.resource.VirkailijaValintaTulosServiceResource"/>
   <mockito:mock id="valintarekisteriService"
@@ -34,6 +30,34 @@
   <jaxrs-client:client id="ValintaperusteetKoostepalveluRestClient"
                        address="https://testi.virkailija.opintopolku.fi:1234/valintaperusteet-service/resources"
                        serviceClass="fi.vm.sade.service.valintaperusteet.resource.ValintalaskentakoostepalveluResource"
+                       inheritHeaders="true">
+    <jaxrs-client:providers>
+      <bean class="com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider"/>
+      <bean class="fi.vm.sade.sijoittelu.tulos.resource.ObjectMapperProvider"/>
+    </jaxrs-client:providers>
+  </jaxrs-client:client>
+
+  <jaxrs-client:client id="ParametriServiceRestClient"
+                       address="https://testi.virkailija.opintopolku.fi:1234/ohjausparametrit-service/api"
+                       serviceClass="fi.vm.sade.sijoittelu.laskenta.external.resource.OhjausparametriResource"
+                       inheritHeaders="true">
+    <jaxrs-client:providers>
+      <bean class="com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider"/>
+      <bean class="fi.vm.sade.sijoittelu.tulos.resource.ObjectMapperProvider"/>
+    </jaxrs-client:providers>
+  </jaxrs-client:client>
+  <jaxrs-client:client id="TarjontaHakuResourceRestClient"
+                       address="https://testi.virkailija.opintopolku.fi:1234/tarjonta-service/rest"
+                       serviceClass="fi.vm.sade.sijoittelu.laskenta.external.resource.HakuV1Resource"
+                       inheritHeaders="true">
+    <jaxrs-client:providers>
+      <bean class="com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider"/>
+      <bean class="fi.vm.sade.sijoittelu.tulos.resource.ObjectMapperProvider"/>
+    </jaxrs-client:providers>
+  </jaxrs-client:client>
+  <jaxrs-client:client id="TarjontaHakukohdeResourceRestClient"
+                       address="https://testi.virkailija.opintopolku.fi:1234/tarjonta-service/rest"
+                       serviceClass="fi.vm.sade.sijoittelu.laskenta.external.resource.HakukohdeV1Resource"
                        inheritHeaders="true">
     <jaxrs-client:providers>
       <bean class="com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider"/>

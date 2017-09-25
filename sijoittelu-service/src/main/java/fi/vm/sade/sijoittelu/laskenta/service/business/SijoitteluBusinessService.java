@@ -216,7 +216,7 @@ public class SijoitteluBusinessService {
         //TODO: vanhojen sijoitteluajojen siivous
     }
 
-    private void asetaSijoittelunParametrit(String hakuOid, SijoitteluajoWrapper sijoitteluAjo) {
+    protected void asetaSijoittelunParametrit(String hakuOid, SijoitteluajoWrapper sijoitteluAjo) {
         try {
             setOptionalHakuAttributes(hakuOid, sijoitteluAjo);
             setParametersFromTarjonta(hakuOid, sijoitteluAjo);
