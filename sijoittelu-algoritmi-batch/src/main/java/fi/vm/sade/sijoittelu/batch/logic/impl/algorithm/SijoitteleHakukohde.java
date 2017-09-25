@@ -30,10 +30,6 @@ public class SijoitteleHakukohde {
     }
 
     private static Set<HakukohdeWrapper> sijoitteleValintatapajono(SijoitteluajoWrapper sijoitteluAjo, ValintatapajonoWrapper valintatapajono) {
-        // Muutetaan ehdolliset vastaanotot sitoviksi
-        if (sijoitteluAjo.isKKHaku()) {
-            muutaEhdollisetVastaanototSitoviksi(sijoitteluAjo, valintatapajono);
-        }
         Set<HakukohdeWrapper> muuttuneetHakukohteet = new HashSet<>();
         if (valintatapajono.isAlitayttoLukko()) {
             // Hakijaryhmäkäsittelyssä alitäyttösääntö käytetty
@@ -100,24 +96,6 @@ public class SijoitteleHakukohde {
         return muuttuneetHakemukset.stream()
             .map(h -> h.getValintatapajono().getHakukohdeWrapper())
             .collect(Collectors.toSet());
-    }
-
-    private static void muutaEhdollisetVastaanototSitoviksi(SijoitteluajoWrapper sijoitteluAjo, ValintatapajonoWrapper valintatapajono) {
-        valintatapajono.ehdollisestiVastaanottaneetJonossa()
-                .forEach(h -> {
-                    if(!h.getYlemmatTaiSamanarvoisetMuttaKorkeammallaJonoPrioriteetillaOlevatHakutoiveet()
-                            // On varalla olevia ylempiarvoisia hakutoiveita
-                            .filter(HakemusWrapper::isVaralla)
-                            // eika varasijataytto ole viela paattynyt niissa
-                            .filter(h0 -> !sijoitteluAjo.onkoVarasijaSaannotVoimassaJaVarasijaTayttoPaattynyt(h0.getValintatapajono()))
-                            .findAny().isPresent()) {
-                        h.getValintatulos().ifPresent(v -> {
-                            v.setTila(ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI,
-                                    "Ehdollinen vastaanotto ylimmässä mahdollisessa hakutoiveessa sitovaksi");
-                            sijoitteluAjo.addMuuttuneetValintatulokset(v);
-                        });
-                    }
-                });
     }
 
     private static List<HakemusWrapper> valintatapajononHyvaksytytHakemuksetJoitaEiVoiKorvata(

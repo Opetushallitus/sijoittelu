@@ -17,6 +17,7 @@ public interface PostSijoitteluProcessor extends Processor {
                 new PostSijoitteluProcessorAsetaSivssnov(),
                 new PostSijoitteluProcessorPeruuntuneetHakemuksenVastaanotonMuokkaus(),
                 new PrePostSijoitteluProcessorPeruunnaYlemmatHakutoiveet(),
+                new PostSijoitteluProcessorEhdollisetVastaanototSitoviksi(),
                 new PostSijoitteluProcessorMuutostiedonAsetus()
         );
     }

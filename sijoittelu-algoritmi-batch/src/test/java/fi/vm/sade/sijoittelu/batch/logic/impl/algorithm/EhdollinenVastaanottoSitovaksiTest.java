@@ -17,7 +17,7 @@ import static fi.vm.sade.sijoittelu.domain.Tasasijasaanto.YLITAYTTO;
 import static org.junit.Assert.assertEquals;
 
 public class EhdollinenVastaanottoSitovaksiTest {
-    private final boolean BUG_FIXED = false;
+    private final boolean BUG_FIXED = true;
 
     private final Hakemus hakemus1 = new HakuBuilder.HakemusBuilder().withOid("hakemus1")
             .withJonosija(1).withTila(VARALLA).withPrioriteetti(0).build();
