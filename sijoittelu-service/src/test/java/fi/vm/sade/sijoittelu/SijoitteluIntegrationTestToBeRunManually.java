@@ -84,7 +84,7 @@ public class SijoitteluIntegrationTestToBeRunManually {
 
 	@Test
 	public void testSijoittelu() throws IOException {
-        sijoitteluResource.sijoittele("1.2.246.562.29.849282912310");
+        sijoitteluResource.sijoittele("1.2.246.562.29.87593180141");
         SijoitteluajoWrapper sijoitteluajoWrapper = lightWeightSijoitteluBusinessServiceForTesting.ajettuSijoittelu;
         assertThat(sijoitteluajoWrapper.getHakukohteet(), not(hasSize(0)));
         assertThat(sijoitteluajoWrapper.getHakukohteet().get(0).getValintatapajonot(), not(hasSize(0)));
