@@ -195,28 +195,20 @@ public class RajattuVarasijatayttoTest {
     }
 
     @Test
-    public void hylatystaVaralleNousevatHakemuksetPaasevatVaralleMyosRajatussaVarasijataytossaJosNeTulevatRiittavanKorkealleJonosijalle() {
+    public void peruuntuneestaVaralleNousevatHakemuksetPaasevatVaralleMyosRajatussaVarasijataytossaJosNeTulevatRiittavanKorkealleJonosijalle() {
         jono.setAloituspaikat(1);
         jono.setEiVarasijatayttoa(false);
         jono.setVarasijat(1);
-        jono.setSijoiteltuIlmanVarasijasaantojaNiidenOllessaVoimassa(false);
 
-        sijoittele(sijoitteluajoWrapper -> sijoitteluajoWrapper.setKKHaku(true), hakukohdeJossaVarasijojaRajoitetaan);
+        sijoittele(kkHakuVarasijasaannotVoimassa, hakukohdeJossaVarasijojaRajoitetaan);
         assertHakemustenTilat(HYVAKSYTTY, VARALLA, PERUUNTUNUT, PERUUNTUNUT);
 
         korjaaTilaJaEdellinenTilaSijoittelunJalkeen();
 
-        final Hakemus kiilaavaHakemus = new HakemusBuilder().withOid("kiilaavaHakemus")
-            .withEdellinenTila(HYLATTY).withTila(VARALLA).build();
-        jono.getHakemukset().add(kiilaavaHakemus);
-        hakemus1.setJonosija(0);
-        kiilaavaHakemus.setJonosija(1);
-        hakemus2.setJonosija(2);
-        hakemus3.setJonosija(4);
-        hakemus4.setJonosija(5);
-        jono.setSijoiteltuIlmanVarasijasaantojaNiidenOllessaVoimassa(true);
+        final Hakemus kiilaavaHakemus = new HakemusBuilder().withOid("kiilaavaHakemus").withEdellinenTila(PERUUNTUNUT).withTila(VARALLA).build();
+        hakemusKiilaa(kiilaavaHakemus);
 
-        sijoittele(sijoitteluajoWrapper -> sijoitteluajoWrapper.setKKHaku(true), hakukohdeJossaVarasijojaRajoitetaan);
+        sijoittele(kkHakuVarasijasaannotVoimassa, hakukohdeJossaVarasijojaRajoitetaan);
 
         if (bugiKorjattu) {
             assertHakemustenTilat(HYVAKSYTTY, VARALLA, PERUUNTUNUT, PERUUNTUNUT);
@@ -225,6 +217,37 @@ public class RajattuVarasijatayttoTest {
             assertHakemustenTilat(HYVAKSYTTY, PERUUNTUNUT, PERUUNTUNUT, PERUUNTUNUT);
             assertEquals(VARALLA, kiilaavaHakemus.getTila());
         }
+    }
+
+    @Test
+    public void hylatystaVaralleNousevatHakemuksetPaasevatVaralleMyosRajatussaVarasijataytossaJosNeTulevatRiittavanKorkealleJonosijalle() {
+        jono.setAloituspaikat(1);
+        jono.setEiVarasijatayttoa(false);
+        jono.setVarasijat(1);
+
+        sijoittele(kkHakuVarasijasaannotEiVoimassa, hakukohdeJossaVarasijojaRajoitetaan);
+        assertHakemustenTilat(HYVAKSYTTY, VARALLA, VARALLA, VARALLA);
+
+        korjaaTilaJaEdellinenTilaSijoittelunJalkeen();
+
+        sijoittele(kkHakuVarasijasaannotVoimassa, hakukohdeJossaVarasijojaRajoitetaan);
+        assertHakemustenTilat(HYVAKSYTTY, VARALLA, PERUUNTUNUT, PERUUNTUNUT);
+
+        final Hakemus kiilaavaHakemus = new HakemusBuilder().withOid("kiilaavaHakemus").withEdellinenTila(HYLATTY).withTila(HYLATTY).build();
+        hakemusKiilaa(kiilaavaHakemus);
+
+        sijoittele(kkHakuVarasijasaannotVoimassa, hakukohdeJossaVarasijojaRajoitetaan);
+        assertHakemustenTilat(HYVAKSYTTY, VARALLA, PERUUNTUNUT, PERUUNTUNUT);
+        assertEquals(VARALLA, kiilaavaHakemus.getTila());
+    }
+
+    private void hakemusKiilaa(Hakemus kiilaavaHakemus) {
+        jono.getHakemukset().add(kiilaavaHakemus);
+        hakemus1.setJonosija(0);
+        kiilaavaHakemus.setJonosija(1);
+        hakemus2.setJonosija(2);
+        hakemus3.setJonosija(4);
+        hakemus4.setJonosija(5);
     }
 
     private void korjaaTilaJaEdellinenTilaSijoittelunJalkeen() {
