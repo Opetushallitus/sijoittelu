@@ -101,7 +101,7 @@ public class SijoitteluIntegrationTestToBeRunManually {
 
         /**
          * This is a very lightweight version of sijoittelu, without using any previous results, without storing
-         * results, without reading correct parameters etc.
+         * results etc.
          * The results might or might not make sense depending on your use case.
          */
         @Override
