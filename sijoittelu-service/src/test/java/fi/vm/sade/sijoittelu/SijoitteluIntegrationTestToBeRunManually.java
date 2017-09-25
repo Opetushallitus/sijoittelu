@@ -46,7 +46,7 @@ import java.util.stream.Collectors;
  * test data, this class might help.
  *
  * You can compare the overriden fake implementation to <code>SijoitteluBusinessService</code> to see the
- * difference. Note that also ohjausparametrit and some other deps are mocked in the Spring configuration
+ * difference. Note that also some deps are mocked in the Spring configuration
  * file used here.
  *
  * Note: You need to
