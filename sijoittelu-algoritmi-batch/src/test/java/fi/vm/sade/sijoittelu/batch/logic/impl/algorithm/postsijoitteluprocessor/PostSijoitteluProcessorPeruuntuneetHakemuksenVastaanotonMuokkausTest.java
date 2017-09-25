@@ -45,11 +45,11 @@ public class PostSijoitteluProcessorPeruuntuneetHakemuksenVastaanotonMuokkausTes
         // ylempi jono on nyt hyvaksytty
         assertEquals(HakemuksenTila.HYVAKSYTTY, haeJononTilaHakemukselle("1.2.246.562.11.00003933242", "14345398388996844110591962067735", sijoitteluAjo).getHakemus().getTila());
         // vastaanottotieto näkyy ylemmälle
-        assertEquals(ValintatuloksenTila.EHDOLLISESTI_VASTAANOTTANUT, haeValintatulosHakemukselle("1.2.246.562.11.00003933242", "14345398388996844110591962067735", sijoitteluAjo).getTila());
+        assertEquals(ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI, haeValintatulosHakemukselle("1.2.246.562.11.00003933242", "14345398388996844110591962067735", sijoitteluAjo).getTila());
         // alempi jono nyt peruuntunut
         assertEquals(HakemuksenTila.PERUUNTUNUT, haeJononTilaHakemukselle("1.2.246.562.11.00003933242", "14345398388996844110591962067736", sijoitteluAjo).getHakemus().getTila());
         // vastaanottotieto ei häviä
-        assertEquals(ValintatuloksenTila.EHDOLLISESTI_VASTAANOTTANUT, haeValintatulosHakemukselle("1.2.246.562.11.00003933242", "14345398388996844110591962067736", sijoitteluAjo).getTila());
+        assertEquals(ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI, haeValintatulosHakemukselle("1.2.246.562.11.00003933242", "14345398388996844110591962067736", sijoitteluAjo).getTila());
     }
 
     private HakemusWrapper haeJononTilaHakemukselle(String hakemusOid, String valintatapajonoOid, SijoitteluajoWrapper sijoitteluAjo) {
