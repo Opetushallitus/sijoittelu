@@ -261,7 +261,7 @@ class SijoitteleHakijaryhma {
         // Valituksihaluavat jonoittain
         Map<ValintatapajonoWrapper, List<HakemusWrapper>> jonoittain = valituksiHaluavat
                 .stream()
-                .sorted(comparator::compare)
+                .sorted(comparator)
                 .collect(Collectors.groupingBy(HakemusWrapper::getValintatapajono));
         // Jonojen parhaat jonosijoittain
         Map<Integer, List<HakemusWrapper>> jonojenParhaat = jonoittain.values()
