@@ -70,7 +70,7 @@ public class RajattuVarasijatayttoTest {
 
         sijoittele(kkHakuVarasijasaannotVoimassa, hakukohdeJossaVarasijojaRajoitetaan, toinenHakukohdeJohonHakemus1Hyvaksytaan);
 
-        if(bugiKorjattu) {
+        if (bugiKorjattu) {
             assertHakemustenTilat(PERUUNTUNUT, HYVAKSYTTY, HYVAKSYTTY, PERUUNTUNUT);
         } else {
             assertHakemustenTilat(PERUUNTUNUT, HYVAKSYTTY, PERUUNTUNUT, PERUUNTUNUT);
@@ -80,7 +80,7 @@ public class RajattuVarasijatayttoTest {
 
         sijoittele(kkHakuVarasijasaannotVoimassa, hakukohdeJossaVarasijojaRajoitetaan, toinenHakukohdeJohonHakemus1Hyvaksytaan, toinenHakukohdeJohonHakemus2Hyvaksytaan);
 
-        if(bugiKorjattu) {
+        if (bugiKorjattu) {
             assertHakemustenTilat(PERUUNTUNUT, PERUUNTUNUT, HYVAKSYTTY, PERUUNTUNUT);
         } else {
             assertHakemustenTilat(PERUUNTUNUT, PERUUNTUNUT, PERUUNTUNUT, PERUUNTUNUT);
@@ -101,7 +101,7 @@ public class RajattuVarasijatayttoTest {
 
         sijoittele(kkHakuVarasijasaannotVoimassa, hakukohdeJossaVarasijojaRajoitetaan, toinenHakukohdeJohonHakemus1Hyvaksytaan);
 
-        if(bugiKorjattu) {
+        if (bugiKorjattu) {
             assertHakemustenTilat(PERUUNTUNUT, HYVAKSYTTY, VARALLA, PERUUNTUNUT);
         } else {
             assertHakemustenTilat(PERUUNTUNUT, HYVAKSYTTY, PERUUNTUNUT, PERUUNTUNUT);
@@ -111,7 +111,7 @@ public class RajattuVarasijatayttoTest {
 
         sijoittele(kkHakuVarasijasaannotVoimassa, hakukohdeJossaVarasijojaRajoitetaan, toinenHakukohdeJohonHakemus1Hyvaksytaan, toinenHakukohdeJohonHakemus2Hyvaksytaan);
 
-        if(bugiKorjattu) {
+        if (bugiKorjattu) {
             assertHakemustenTilat(PERUUNTUNUT, PERUUNTUNUT, VARASIJALTA_HYVAKSYTTY, PERUUNTUNUT);
         } else {
             assertHakemustenTilat(PERUUNTUNUT, PERUUNTUNUT, PERUUNTUNUT, PERUUNTUNUT);
@@ -132,7 +132,7 @@ public class RajattuVarasijatayttoTest {
 
         sijoittele(kkHakuVarasijasaannotVoimassa, hakukohdeJossaVarasijojaRajoitetaan, toinenHakukohdeJohonHakemus1Hyvaksytaan);
 
-        if(bugiKorjattu) {
+        if (bugiKorjattu) {
             assertHakemustenTilat(PERUUNTUNUT, VARASIJALTA_HYVAKSYTTY, VARALLA, PERUUNTUNUT);
         } else {
             assertHakemustenTilat(PERUUNTUNUT, VARASIJALTA_HYVAKSYTTY, PERUUNTUNUT, PERUUNTUNUT);
@@ -142,7 +142,7 @@ public class RajattuVarasijatayttoTest {
 
         sijoittele(kkHakuVarasijasaannotVoimassa, hakukohdeJossaVarasijojaRajoitetaan, toinenHakukohdeJohonHakemus1Hyvaksytaan, toinenHakukohdeJohonHakemus2Hyvaksytaan);
 
-        if(bugiKorjattu) {
+        if (bugiKorjattu) {
             assertHakemustenTilat(PERUUNTUNUT, PERUUNTUNUT, VARASIJALTA_HYVAKSYTTY, PERUUNTUNUT);
         } else {
             assertHakemustenTilat(PERUUNTUNUT, PERUUNTUNUT, PERUUNTUNUT, PERUUNTUNUT);
