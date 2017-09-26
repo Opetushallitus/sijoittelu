@@ -257,7 +257,7 @@ public class RajattuVarasijatayttoTest {
             if(!HYLATTY.equals(tila)) {
                 h.setTila(VARALLA);
             }
-            h.setTilanKuvaukset(Collections.EMPTY_MAP);
+            h.setTilanKuvaukset(Collections.emptyMap());
         });
     }
 
