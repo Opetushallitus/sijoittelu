@@ -34,6 +34,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 import static fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.hakukohteet.SijoitteleHakukohde.*;
@@ -295,7 +296,7 @@ class SijoitteleHakijaryhma {
     }
 
     private static List<HakemusWrapper> etsiValittavat(Map<ValintatapajonoWrapper, List<HakemusWrapper>> jonoittain, Map<Integer, List<HakemusWrapper>> jonojenParhaat) {
-        for (Integer i : jonojenParhaat.keySet()) {
+        for (Integer i : new TreeSet<>(jonojenParhaat.keySet())) {
             List<HakemusWrapper> parhaat = jonojenParhaat.get(i);
             if (parhaat.size() == 1) {
                 // Vain yhdestä jonosta löytyi hakemus tältä sijalta

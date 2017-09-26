@@ -29,6 +29,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -868,5 +869,43 @@ public class SijoitteleHakijaryhmaTest {
         Assert.assertEquals(HakemuksenTila.HYVAKSYTTY, hakemus0jono1.getTila());
         Assert.assertEquals(HakemuksenTila.HYVAKSYTTY, hakemus1jono1.getTila());
         Assert.assertEquals(HakemuksenTila.HYVAKSYTTY, hakemus2jono1.getTila());
+    }
+
+    /**
+     * The buggy code relied on the iteration order of Map<Integer, List<HakemusWrapper>> keys, so it is not
+     * easy to reproduce the bug in a foolproof way.
+     */
+    @Test
+    public void hakijaryhmasijoitteluHyvaksyyEnsisijaisestiParhaallaJonosijallaOlevanHakemuksenJononPrioriteetistaRiippumatta() {
+        hakijaryhma.setKiintio(1);
+        valintatapajono.setPrioriteetti(500);
+        hakukohde.setValintatapajonot(new ArrayList<>());
+        List<Hakemus> hyvinMatalallaJonoissaOleviaHakemuksia = new LinkedList<>();
+        for (int i = 0; i < 10; i++) {
+            Valintatapajono jono = new HakuBuilder.ValintatapajonoBuilder().
+                withAloituspaikat(2).
+                withPrioriteetti(1 + i).
+                withOid("valintatapajono" + i).
+                withTasasijasaanto(Tasasijasaanto.YLITAYTTO).build();
+
+            for (int h = 0; h  < 10; h++) {
+                Hakemus hakemus = generateHakemus(999 + i + h, 100 + i + jono.hashCode(), hakijaryhma); // produce varying high jonosijas
+                hyvinMatalallaJonoissaOleviaHakemuksia.add(hakemus);
+                jono.getHakemukset().add(hakemus);
+            }
+            hakukohde.getValintatapajonot().add(jono);
+        }
+        hakukohde.getValintatapajonot().add(valintatapajono);
+
+        ajoWrapper = SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(ajo, Collections.singletonList(hakukohde), Collections.emptyList(), Collections.emptyMap());
+        hakukohdeWrapper = ajoWrapper.getHakukohteet().get(0);
+        hakijaryhmaWrapper = hakukohdeWrapper.getHakijaryhmaWrappers().get(0);
+
+        valintatapajono.getHakemukset().forEach(h -> h.setJonosija(1 + h.getJonosija()));
+        SijoitteleHakijaryhma.sijoitteleHakijaryhma(ajoWrapper, hakijaryhmaWrapper);
+
+        hyvinMatalallaJonoissaOleviaHakemuksia.forEach(h -> Assert.assertEquals(HakemuksenTila.VARALLA, h.getTila()));
+        Assert.assertEquals(HakemuksenTila.HYVAKSYTTY, valintatapajono.getHakemukset().get(0).getTila());
+        Assert.assertEquals(HakemuksenTila.VARALLA, valintatapajono.getHakemukset().get(1).getTila());
     }
 }
