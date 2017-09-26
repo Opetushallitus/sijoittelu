@@ -347,7 +347,7 @@ class SijoitteleHakijaryhma {
 
     private static boolean mahtuukoJonoon(List<HakemusWrapper> hakemukset, ValintatapajonoWrapper valintatapajonoWrapper) {
         int aloituspaikat = jononAloituspaikatSuoravalintajonoHuomioiden(valintatapajonoWrapper);
-        int hyvaksytyt = valintatapajonoWrapper.getHakemukset().stream().filter(h -> kuuluuHyvaksyttyihinTiloihin(hakemuksenTila(h))).collect(Collectors.toList()).size();
+        long hyvaksytyt = valintatapajonoWrapper.getHakemukset().stream().filter(h -> kuuluuHyvaksyttyihinTiloihin(hakemuksenTila(h))).count();
         if (aloituspaikat - hyvaksytyt <= 0) {
             return false;
         } else {
