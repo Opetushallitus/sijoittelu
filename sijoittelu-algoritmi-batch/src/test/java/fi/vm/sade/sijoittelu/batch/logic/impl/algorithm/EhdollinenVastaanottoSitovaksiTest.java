@@ -96,7 +96,7 @@ public class EhdollinenVastaanottoSitovaksiTest {
         sijoittele(kkHakuVarasijasaannotVoimassa, Arrays.asList(vastaanotto), ylempiHakukohdeJossaEnsinVaralla, alempiHakukohdeJohonVastaanottoKohdistuu);
         assertHakemustenTilat(HYVAKSYTTY, VARALLA, PERUUNTUNUT, PERUUNTUNUT);
         assertEquals(HYVAKSYTTY, vastaanottoHakemus3.getTila());
-        if(BUG_FIXED) {
+        if (BUG_FIXED) {
             assertEquals(ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI, vastaanotto.getTila());
         } else {
             assertEquals(ValintatuloksenTila.EHDOLLISESTI_VASTAANOTTANUT, vastaanotto.getTila());
@@ -117,7 +117,7 @@ public class EhdollinenVastaanottoSitovaksiTest {
         sijoittele(kkHakuVarasijasaannotVoimassa, Arrays.asList(vastaanotto), ylempiHakukohdeJossaEnsinVaralla, alempiHakukohdeJohonVastaanottoKohdistuu);
         assertHakemustenTilat(HYVAKSYTTY, HYVAKSYTTY, PERUUNTUNUT, PERUUNTUNUT);
         assertEquals(HYVAKSYTTY, vastaanottoHakemus3.getTila());
-        if(BUG_FIXED) {
+        if (BUG_FIXED) {
             assertEquals(ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI, vastaanotto.getTila());
         } else {
             assertEquals(ValintatuloksenTila.EHDOLLISESTI_VASTAANOTTANUT, vastaanotto.getTila());
@@ -153,7 +153,7 @@ public class EhdollinenVastaanottoSitovaksiTest {
         Arrays.asList(hakemus1, hakemus2, hakemus3, hakemus4).forEach(h -> {
             HakemuksenTila tila = h.getTila();
             h.setEdellinenTila(tila);
-            if(!HYLATTY.equals(tila)) {
+            if (!HYLATTY.equals(tila)) {
                 h.setTila(VARALLA);
             }
             h.setTilanKuvaukset(Collections.emptyMap());
