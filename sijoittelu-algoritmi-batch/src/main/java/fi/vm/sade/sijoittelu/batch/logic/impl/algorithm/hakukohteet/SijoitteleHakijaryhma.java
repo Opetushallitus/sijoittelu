@@ -69,13 +69,19 @@ class SijoitteleHakijaryhma {
                 // Tästä (tai jostain tunnistamattomasta syystä) johtuen hakemus h on merkattu hakijaryhmästä
                 // hyväksytyksi, mutta hakijaryhmäsijoittelu ei ole hyväksynyt sitä, koska hakijaryhmäkiintiön on
                 // katsottu olevan täynnä. Logitetaan virhe ja poistetaan merkintä jotta vain hyväksytyt ovat merkkity.
+                Valintatapajono valintatapajono = h.getValintatapajono().getValintatapajono();
                 LOG.error(String.format(
-                    "Hakukohteen %s hakijaryhmästä %s jonossa %s hyväksytyksi merkitty hakemus %s on tilassa %s",
+                    "Hakukohteen %s hakijaryhmästä %s jonossa %s hyväksytyksi merkitty hakemus %s on tilassa %s . " +
+                    "Jonolla kaikkiEhdonTayttavatHyvaksytaan=%s, eiVarasijatayttoa=%s, varasijat=%s, tasasijasääntö=%s",
                     hakijaryhmaWrapper.getHakukohdeWrapper().getHakukohde().getOid(),
                     hakijaryhmaOid,
-                    h.getValintatapajono().getValintatapajono().getOid(),
+                    valintatapajono.getOid(),
                     h.getHakemus().getHakemusOid(),
-                    h.getHakemus().getTila()
+                    h.getHakemus().getTila(),
+                    valintatapajono.getKaikkiEhdonTayttavatHyvaksytaan(),
+                    valintatapajono.getEiVarasijatayttoa(),
+                    valintatapajono.getVarasijat(),
+                    valintatapajono.getTasasijasaanto()
                 ));
                 h.getHakemus().getHyvaksyttyHakijaryhmista().remove(hakijaryhmaOid);
             }
