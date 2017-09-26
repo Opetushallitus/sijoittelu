@@ -1,11 +1,7 @@
 package fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers;
 
-import com.google.common.collect.Sets;
-import com.google.common.hash.Funnels;
-import com.google.common.hash.HashCode;
-import com.google.common.hash.HashFunction;
-import com.google.common.hash.Hasher;
-import fi.vm.sade.sijoittelu.domain.Hakemus;
+import static java.util.stream.Stream.concat;
+
 import fi.vm.sade.sijoittelu.domain.Hakukohde;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,13 +9,8 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
-import java.util.function.BiConsumer;
-import java.util.function.BiFunction;
-import java.util.function.Function;
+import java.util.Optional;
 import java.util.stream.Stream;
-
-import static java.util.stream.Stream.concat;
 
 public class HakukohdeWrapper implements Comparable<HakukohdeWrapper> {
     private static final Logger LOG = LoggerFactory.getLogger(HakukohdeWrapper.class);
@@ -91,5 +82,9 @@ public class HakukohdeWrapper implements Comparable<HakukohdeWrapper> {
                 valintatapajonot.stream().flatMap(v -> v.getHakemukset().stream()).map(h -> h.getHenkilo()),
                 hakijaryhmaWrappers.stream().flatMap(h -> h.getHenkiloWrappers().stream())
         ).filter(Objects::nonNull).distinct();
+    }
+
+    public Optional<ValintatapajonoWrapper> findValintatapajonoWrapper(String jonoOid) {
+        return valintatapajonot.stream().filter(j -> jonoOid.equals(j.getValintatapajono().getOid())).findFirst();
     }
 }

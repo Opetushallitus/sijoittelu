@@ -9,7 +9,10 @@ import fi.vm.sade.service.valintaperusteet.resource.Valintalaskentakoostepalvelu
 import fi.vm.sade.sijoittelu.batch.logic.impl.DomainConverter;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoitteluajoWrapperFactory;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.util.SijoitteluAlgorithmUtil;
+import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.HakemusWrapper;
+import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.HakukohdeWrapper;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.SijoitteluajoWrapper;
+import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.ValintatapajonoWrapper;
 import fi.vm.sade.sijoittelu.domain.Hakukohde;
 import fi.vm.sade.sijoittelu.domain.SijoitteluAjo;
 import fi.vm.sade.sijoittelu.laskenta.external.resource.VirkailijaValintaTulosServiceResource;
@@ -36,6 +39,7 @@ import org.springframework.util.StopWatch;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -89,9 +93,30 @@ public class SijoitteluIntegrationTestToBeRunManually {
         assertThat(sijoitteluajoWrapper.getHakukohteet(), not(hasSize(0)));
         assertThat(sijoitteluajoWrapper.getHakukohteet().get(0).getValintatapajonot(), not(hasSize(0)));
         assertThat(sijoitteluajoWrapper.getHakukohteet().get(0).getValintatapajonot().get(0).getHakemukset(), not(hasSize(0)));
+
+        HakemusWrapper hakemusWrapper = findHakemusWrapper("1.2.246.562.20.12440626997", "14751510516182446649292011171466", "1.2.246.562.11.00007467028");
+        System.out.println("hakemusWrapper = " + hakemusWrapper);
 	}
 
-	public static class LightWeightSijoitteluBusinessServiceForTesting extends SijoitteluBusinessService {
+    private HakemusWrapper findHakemusWrapper(String hakukohdeOid, String jonoOid, String hakemusOid) {
+        HakukohdeWrapper hakukohdeWrapper = findHakukohdeWrapper(hakukohdeOid).orElseGet(() -> {
+            throw new IllegalStateException("Could not find hakukohde " + hakukohdeOid);
+        });
+        ValintatapajonoWrapper jonoWrapper = hakukohdeWrapper.findValintatapajonoWrapper(jonoOid).orElseGet(() -> {
+            throw new IllegalStateException("Could not find valintatapajono " + jonoOid + " of hakukohde " + hakukohdeWrapper.getHakukohde().getOid());
+        });
+        return jonoWrapper.findHakemus(hakemusOid).orElseGet(() -> {
+            throw new IllegalStateException("Could not find hakemus " + hakemusOid +
+                " of jono " + jonoWrapper.getValintatapajono().getOid() +
+                " of hakukohde " + jonoWrapper.getHakukohdeWrapper().getHakukohde().getOid());
+        });
+    }
+
+    private Optional<HakukohdeWrapper> findHakukohdeWrapper(String hakukohdeOid) {
+        return lightWeightSijoitteluBusinessServiceForTesting.ajettuSijoittelu.getHakukohteet().stream().filter(hk -> hakukohdeOid.equals(hk.getHakukohde().getOid())).findFirst();
+    }
+
+    public static class LightWeightSijoitteluBusinessServiceForTesting extends SijoitteluBusinessService {
         public SijoitteluajoWrapper ajettuSijoittelu;
 
         @Autowired
