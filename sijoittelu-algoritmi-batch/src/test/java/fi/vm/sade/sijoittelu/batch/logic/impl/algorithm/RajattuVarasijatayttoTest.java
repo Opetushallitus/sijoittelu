@@ -4,6 +4,7 @@ import static fi.vm.sade.sijoittelu.domain.HakemuksenTila.*;
 import static fi.vm.sade.sijoittelu.domain.Tasasijasaanto.YLITAYTTO;
 import static org.junit.Assert.assertEquals;
 
+import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.helper.HakuBuilder;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.helper.HakuBuilder.HakemusBuilder;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.helper.HakuBuilder.HakukohdeBuilder;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.helper.HakuBuilder.ValintatapajonoBuilder;
@@ -16,6 +17,7 @@ import org.junit.Test;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import java.util.function.Consumer;
 
 public class RajattuVarasijatayttoTest {
@@ -241,6 +243,51 @@ public class RajattuVarasijatayttoTest {
         assertEquals(VARALLA, kiilaavaHakemus.getTila());
     }
 
+    @Test
+    public void kiilaavaHakemusEiNouseVaralleRajatussaVarasijataytossaJosSitovaVastaanottoAlemmassaHakutoiveessa() {
+        jono.setAloituspaikat(1);
+        jono.setEiVarasijatayttoa(false);
+        jono.setVarasijat(1);
+
+        final Hakemus kiilaavaHakemusAlemmassaHakutoiveessa = new HakemusBuilder().withOid("kiilaavaHakemus").withHakijaOid("kiilaavaHakija")
+                .withEdellinenTila(HYVAKSYTTY).withTila(HYVAKSYTTY).withPrioriteetti(0).withJonosija(0).build();
+        final Hakukohde alempiHakukohdeJohonVastaanottoKohdistuu = new HakuBuilder.HakukohdeBuilder("alempiHakukohdeOid")
+                .withValintatapajono(new HakuBuilder.ValintatapajonoBuilder()
+                        .withOid("alempiOid")
+                        .withAloituspaikat(1)
+                        .withTasasijasaanto(YLITAYTTO)
+                        .withPrioriteetti(0)
+                        .withHakemus(kiilaavaHakemusAlemmassaHakutoiveessa)
+                        .build()).build();
+        final Valintatulos vastaanotto = new Valintatulos(kiilaavaHakemusAlemmassaHakutoiveessa.getHakemusOid(),
+                "kiilaavaHakija", alempiHakukohdeJohonVastaanottoKohdistuu.getOid(), false,
+                IlmoittautumisTila.EI_TEHTY, true, ValintatuloksenTila.EHDOLLISESTI_VASTAANOTTANUT, false,
+                alempiHakukohdeJohonVastaanottoKohdistuu.getValintatapajonot().get(0).getOid());
+
+        sijoittele(kkHakuVarasijasaannotEiVoimassa, Arrays.asList(vastaanotto), hakukohdeJossaVarasijojaRajoitetaan, alempiHakukohdeJohonVastaanottoKohdistuu);
+        assertHakemustenTilat(HYVAKSYTTY, VARALLA, VARALLA, VARALLA);
+        assertEquals(HYVAKSYTTY, kiilaavaHakemusAlemmassaHakutoiveessa.getTila());
+
+        korjaaTilaJaEdellinenTilaSijoittelunJalkeen();
+        korjaaTilaJaEdellinenTilaSijoittelunJalkeen(kiilaavaHakemusAlemmassaHakutoiveessa);
+
+        sijoittele(kkHakuVarasijasaannotVoimassa, Arrays.asList(vastaanotto), hakukohdeJossaVarasijojaRajoitetaan, alempiHakukohdeJohonVastaanottoKohdistuu);
+        assertHakemustenTilat(HYVAKSYTTY, VARALLA, PERUUNTUNUT, PERUUNTUNUT);
+        assertEquals(HYVAKSYTTY, kiilaavaHakemusAlemmassaHakutoiveessa.getTila());
+
+        korjaaTilaJaEdellinenTilaSijoittelunJalkeen();
+        korjaaTilaJaEdellinenTilaSijoittelunJalkeen(kiilaavaHakemusAlemmassaHakutoiveessa);
+
+        final Hakemus kiilaavaHakemus = new HakemusBuilder().withOid("kiilaavaHakemus").withHakijaOid("kiilaavaHakija").withEdellinenTila(HYLATTY).withTila(HYLATTY).withPrioriteetti(1).build();
+        hakemusKiilaa(kiilaavaHakemus);
+
+        sijoittele(kkHakuVarasijasaannotVoimassa, Arrays.asList(vastaanotto), hakukohdeJossaVarasijojaRajoitetaan, alempiHakukohdeJohonVastaanottoKohdistuu);
+        assertHakemustenTilat(HYVAKSYTTY, VARALLA, PERUUNTUNUT, PERUUNTUNUT);
+        assertEquals(HYVAKSYTTY, kiilaavaHakemusAlemmassaHakutoiveessa.getTila());
+        assertEquals(PERUUNTUNUT, kiilaavaHakemus.getTila());
+        assertEquals("Peruuntunut, ottanut vastaan toisen opiskelupaikan", kiilaavaHakemus.getTilanKuvaukset().get("FI"));
+    }
+
     private void hakemusKiilaa(Hakemus kiilaavaHakemus) {
         jono.getHakemukset().add(kiilaavaHakemus);
         hakemus1.setJonosija(0);
@@ -251,14 +298,16 @@ public class RajattuVarasijatayttoTest {
     }
 
     private void korjaaTilaJaEdellinenTilaSijoittelunJalkeen() {
-        Arrays.asList(hakemus1, hakemus2, hakemus3, hakemus4).forEach(h -> {
-            HakemuksenTila tila = h.getTila();
-            h.setEdellinenTila(tila);
-            if(!HYLATTY.equals(tila)) {
-                h.setTila(VARALLA);
-            }
-            h.setTilanKuvaukset(Collections.emptyMap());
-        });
+        Arrays.asList(hakemus1, hakemus2, hakemus3, hakemus4).forEach(h -> korjaaTilaJaEdellinenTilaSijoittelunJalkeen(h));
+    }
+
+    private void korjaaTilaJaEdellinenTilaSijoittelunJalkeen(Hakemus hakemus) {
+        HakemuksenTila tila = hakemus.getTila();
+        hakemus.setEdellinenTila(tila);
+        if(!HYLATTY.equals(tila)) {
+            hakemus.setTila(VARALLA);
+        }
+        hakemus.setTilanKuvaukset(Collections.emptyMap());
     }
 
     Consumer<SijoitteluajoWrapper> toinenAsteVarasijasaannotVoimassa = sijoitteluajoWrapper -> sijoitteluajoWrapper.setKKHaku(false);
@@ -276,10 +325,12 @@ public class RajattuVarasijatayttoTest {
     }
 
     private void sijoittele(Consumer<SijoitteluajoWrapper> prepareAjoWrapper, Hakukohde... hakukohteet) {
+        sijoittele(prepareAjoWrapper, Collections.emptyList(), hakukohteet);
+    }
+
+    private void sijoittele(Consumer<SijoitteluajoWrapper> prepareAjoWrapper, List<Valintatulos> valintatulokset, Hakukohde... hakukohteet) {
         SijoitteluajoWrapper sijoitteluAjoWrapper =
-            SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(new SijoitteluAjo(), Arrays.asList(hakukohteet), Collections.emptyList(), Collections.emptyMap());
-        System.out.println(sijoitteluAjoWrapper.varasijaSaannotVoimassa());
-        System.out.println(sijoitteluAjoWrapper.getVarasijaSaannotAstuvatVoimaan().toString());
+            SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(new SijoitteluAjo(), Arrays.asList(hakukohteet), valintatulokset, Collections.emptyMap());
         prepareAjoWrapper.accept(sijoitteluAjoWrapper);
         SijoitteluAlgorithmUtil.sijoittele(sijoitteluAjoWrapper);
     }

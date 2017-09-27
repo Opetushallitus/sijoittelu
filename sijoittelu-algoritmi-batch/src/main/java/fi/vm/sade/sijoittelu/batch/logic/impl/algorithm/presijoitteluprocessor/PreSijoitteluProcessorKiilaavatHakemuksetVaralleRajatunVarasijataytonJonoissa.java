@@ -10,12 +10,13 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-public class PreSijoitteluProcessorKiilaavatHakemuksenVaralleRajatunVarasijataytonJonoissa implements PreSijoitteluProcessor {
+public class PreSijoitteluProcessorKiilaavatHakemuksetVaralleRajatunVarasijataytonJonoissa implements PreSijoitteluProcessor {
 
     private final Collection<HakemuksenTila> HYLATTY_TAI_PERUUNTUNUT = Arrays.asList(HakemuksenTila.HYLATTY, HakemuksenTila.PERUUNTUNUT);
 
     private Function<ValintatapajonoWrapper, Optional<Integer>> viimeisenVarallaolijanJonosija = (valintatapajono) ->
-            valintatapajono.getHakemukset().stream().map(HakemusWrapper::getHakemus).filter(h -> HakemuksenTila.VARALLA.equals(h.getEdellinenTila())).map(h -> h.getJonosija()).max(Comparator.naturalOrder());
+            valintatapajono.getHakemukset().stream().map(HakemusWrapper::getHakemus)
+              .filter(h -> HakemuksenTila.VARALLA.equals(h.getEdellinenTila())).map(h -> h.getJonosija()).max(Comparator.naturalOrder());
 
     @Override
     public void process(SijoitteluajoWrapper sijoitteluajoWrapper) {
@@ -24,16 +25,14 @@ public class PreSijoitteluProcessorKiilaavatHakemuksenVaralleRajatunVarasijatayt
 
                 int viimeisimmanVarallaolijanJonosija = viimeisenVarallaolijanJonosija.apply(valintatapajono).orElse(Integer.MAX_VALUE);
 
-                Predicate<HakemusWrapper> kiilaavaJonosija = (h) -> h.getHakemus().getJonosija() <= viimeisimmanVarallaolijanJonosija;
-                Predicate<HakemusWrapper> hylattyTaiPeruuntunutEdellinenTila = (h) -> HYLATTY_TAI_PERUUNTUNUT.contains(h.getHakemus().getEdellinenTila());
-                Predicate<HakemusWrapper> eiSitovaaVastaanottoa = (h) -> !h.getHenkilo().getValintatulos().stream().map(Valintatulos::getTila).anyMatch(t -> ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI.equals(t));
+                Predicate<Hakemus> kiilaavaJonosija = (h) -> h.getJonosija() <= viimeisimmanVarallaolijanJonosija;
+                Predicate<Hakemus> hylattyTaiPeruuntunutEdellinenTila = (h) -> HYLATTY_TAI_PERUUNTUNUT.contains(h.getEdellinenTila());
 
-                valintatapajono.getHakemukset().stream()
+                valintatapajono.getHakemukset().stream().map(HakemusWrapper::getHakemus)
                   .filter(kiilaavaJonosija)
-                  .filter(hylattyTaiPeruuntunutEdellinenTila)
-                  .filter(eiSitovaaVastaanottoa).forEach((h) -> {
-                    h.getHakemus().setEdellinenTila(HakemuksenTila.VARALLA);
-                    h.getHakemus().setTila(HakemuksenTila.VARALLA);
+                  .filter(hylattyTaiPeruuntunutEdellinenTila).forEach((h) -> {
+                    h.setEdellinenTila(HakemuksenTila.VARALLA);
+                    h.setTila(HakemuksenTila.VARALLA);
                 });
             });
         });
