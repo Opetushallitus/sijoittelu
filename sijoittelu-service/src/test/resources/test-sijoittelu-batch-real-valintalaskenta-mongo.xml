@@ -27,8 +27,13 @@
     <http:client ReceiveTimeout="3000000"/>
   </http:conduit>
 
+  <bean id="pipedHostVirkailija" class="java.lang.String">
+    <constructor-arg type="java.lang.String"
+                     value="#{systemProperties['PIPED_HOST_VIRKAILIJA'] ?: 'Please set PIPED_HOST_VIRKAILIJA system property!' }"/>
+  </bean>
+
   <jaxrs-client:client id="ValintaperusteetKoostepalveluRestClient"
-                       address="https://testi.virkailija.opintopolku.fi:1234/valintaperusteet-service/resources"
+                       address="#{'https://' + pipedHostVirkailija + '/valintaperusteet-service/resources'}"
                        serviceClass="fi.vm.sade.service.valintaperusteet.resource.ValintalaskentakoostepalveluResource"
                        inheritHeaders="true">
     <jaxrs-client:providers>
@@ -38,7 +43,7 @@
   </jaxrs-client:client>
 
   <jaxrs-client:client id="ParametriServiceRestClient"
-                       address="https://testi.virkailija.opintopolku.fi:1234/ohjausparametrit-service/api"
+                       address="#{'https://' + pipedHostVirkailija + '/ohjausparametrit-service/api'}"
                        serviceClass="fi.vm.sade.sijoittelu.laskenta.external.resource.OhjausparametriResource"
                        inheritHeaders="true">
     <jaxrs-client:providers>
@@ -47,7 +52,7 @@
     </jaxrs-client:providers>
   </jaxrs-client:client>
   <jaxrs-client:client id="TarjontaHakuResourceRestClient"
-                       address="https://testi.virkailija.opintopolku.fi:1234/tarjonta-service/rest"
+                       address="#{'https://' + pipedHostVirkailija + '/tarjonta-service/rest'}"
                        serviceClass="fi.vm.sade.sijoittelu.laskenta.external.resource.HakuV1Resource"
                        inheritHeaders="true">
     <jaxrs-client:providers>
@@ -56,7 +61,7 @@
     </jaxrs-client:providers>
   </jaxrs-client:client>
   <jaxrs-client:client id="TarjontaHakukohdeResourceRestClient"
-                       address="https://testi.virkailija.opintopolku.fi:1234/tarjonta-service/rest"
+                       address="#{'https://' + pipedHostVirkailija + '/tarjonta-service/rest'}"
                        serviceClass="fi.vm.sade.sijoittelu.laskenta.external.resource.HakukohdeV1Resource"
                        inheritHeaders="true">
     <jaxrs-client:providers>

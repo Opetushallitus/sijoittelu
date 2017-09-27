@@ -25,18 +25,31 @@ import fi.vm.sade.sijoittelu.tulos.dto.HakukohdeDTO;
 import fi.vm.sade.sijoittelu.tulos.service.impl.converters.SijoitteluTulosConverter;
 import fi.vm.sade.valintalaskenta.domain.dto.valintatieto.HakuDTO;
 import fi.vm.sade.valintalaskenta.tulos.service.impl.ValintatietoService;
+import org.apache.commons.io.IOUtils;
+import org.apache.http.HttpConnection;
+import org.apache.http.HttpStatus;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.config.RequestConfig;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.util.StopWatch;
 
+import javax.inject.Named;
+import javax.inject.Qualifier;
 import java.io.IOException;
+import java.net.URI;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -70,6 +83,13 @@ import java.util.stream.Collectors;
 @UsingDataSet
 @Ignore
 public class SijoitteluIntegrationTestToBeRunManually {
+    static {
+        if (System.getProperty("PIPED_HOST_VIRKAILIJA") == null) {
+            String defaultValue = "testi.virkailija.opintopolku.fi:1234";
+            System.out.println("No PIPED_HOST_VIRKAILIJA system property set, defaulting to " + defaultValue);
+            System.setProperty("PIPED_HOST_VIRKAILIJA", defaultValue);
+        }
+    }
     private static final Logger LOG = LoggerFactory.getLogger(SijoitteluIntegrationTestToBeRunManually.class);
     @Autowired
     private ValintatietoService valintatietoService;
@@ -86,8 +106,12 @@ public class SijoitteluIntegrationTestToBeRunManually {
     @Autowired
     private LightWeightSijoitteluBusinessServiceForTesting lightWeightSijoitteluBusinessServiceForTesting;
 
+    @Autowired @Named("pipedHostVirkailija")
+    private String pipedHostVirkailija;
+
 	@Test
 	public void testSijoittelu() throws IOException {
+        ensureVirkailijaHostCanBeReached();
         sijoitteluResource.sijoittele("1.2.246.562.29.87593180141");
         SijoitteluajoWrapper sijoitteluajoWrapper = lightWeightSijoitteluBusinessServiceForTesting.ajettuSijoittelu;
         assertThat(sijoitteluajoWrapper.getHakukohteet(), not(hasSize(0)));
@@ -114,6 +138,15 @@ public class SijoitteluIntegrationTestToBeRunManually {
 
     private Optional<HakukohdeWrapper> findHakukohdeWrapper(String hakukohdeOid) {
         return lightWeightSijoitteluBusinessServiceForTesting.ajettuSijoittelu.getHakukohteet().stream().filter(hk -> hakukohdeOid.equals(hk.getHakukohde().getOid())).findFirst();
+    }
+
+    private void ensureVirkailijaHostCanBeReached() throws IOException {
+        HttpGet request = new HttpGet(URI.create("https://" + pipedHostVirkailija));
+        LOG.info("Checking that " + request.getURI() + " can be reached, for accessing e.g. valintaperusteet");
+        int timeoutMillis = 1500;
+        CloseableHttpResponse response = HttpClientBuilder.create().setDefaultRequestConfig(
+            RequestConfig.custom().setRedirectsEnabled(false).setConnectionRequestTimeout(timeoutMillis).setConnectTimeout(timeoutMillis).build()).build().execute(request);
+        Assert.assertEquals(IOUtils.toString(response.getEntity().getContent(), "UTF-8"), HttpStatus.SC_MOVED_TEMPORARILY, response.getStatusLine().getStatusCode());
     }
 
     public static class LightWeightSijoitteluBusinessServiceForTesting extends SijoitteluBusinessService {
