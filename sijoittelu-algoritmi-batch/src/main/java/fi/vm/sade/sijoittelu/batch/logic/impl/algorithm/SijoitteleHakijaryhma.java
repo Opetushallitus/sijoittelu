@@ -58,7 +58,7 @@ public class SijoitteleHakijaryhma {
                             (kuuluuVaraTiloihin(h.getHakemus().getTila()) &&
                                     !sijoitteluajo.onkoVarasijaSaannotVoimassaJaVarasijaTayttoPaattynyt(jono) &&
                                     hakijaHaluaa(h) &&
-                                    saannotSallii(h)))
+                                    saannotSallii(h, sijoitteluajo)))
                     .map(h -> h.getHakemus())
                     .sorted(new HyvaksytytEnsinHakemusComparator())
                     .collect(Collectors.toCollection(LinkedList::new));
@@ -314,7 +314,7 @@ public class SijoitteleHakijaryhma {
         ryhmaanKuuluvat
                 .stream()
                 .filter(h -> hakemuksenTila(h).equals(HakemuksenTila.VARALLA))
-                .filter(h -> hakijaHaluaa(h) && saannotSallii(h))
+                .filter(h -> hakijaHaluaa(h) && saannotSallii(h, sijoitteluAjo))
                 .forEach(h -> h.setHyvaksyttavissaHakijaryhmanJalkeen(false));
     }
 
@@ -328,7 +328,7 @@ public class SijoitteleHakijaryhma {
                 .stream()
                 .filter(h -> valintatapajonot.contains(h.getValintatapajono().getValintatapajono())) // Varmistetaan, että hakemuksen valintatapajonon varasijasäännöt täyttyvät
                 .filter(h -> hakemuksenTila(h).equals(HakemuksenTila.VARALLA))
-                .filter(h -> hakijaHaluaa(h) && saannotSallii(h))
+                .filter(h -> hakijaHaluaa(h) && saannotSallii(h, sijoitteluAjo))
                 .collect(Collectors.toList());
         if (!valituksiHaluavat.isEmpty()) {
             tarkistaEttaKaikkienTilaaVoidaanVaihtaa(valituksiHaluavat);

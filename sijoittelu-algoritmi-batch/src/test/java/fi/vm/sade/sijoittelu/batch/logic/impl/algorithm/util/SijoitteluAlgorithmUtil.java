@@ -28,14 +28,15 @@ public class SijoitteluAlgorithmUtil {
     }
 
     public static SijoittelunTila sijoittele(Collection<PreSijoitteluProcessor> preProcessors,
-                                             Collection<PostSijoitteluProcessor> postProcessors,
-                                             SijoitteluAjo sijoitteluAjo,
-                                             List<Hakukohde> hakukohteet,
-                                             List<Valintatulos> valintatulokset,
-                                             Map<String, VastaanottoDTO> aiemmanVastaanotonHakukohdePerHakija) {
-        return SijoitteluAlgorithm.sijoittele(preProcessors,
-            postProcessors,
-            SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(sijoitteluAjo, hakukohteet, valintatulokset, aiemmanVastaanotonHakukohdePerHakija));
+                                              Collection<PostSijoitteluProcessor> postProcessors,
+                                              SijoitteluAjo sijoitteluAjo,
+                                              List<Hakukohde> hakukohteet,
+                                              List<Valintatulos> valintatulokset,
+                                              Map<String, VastaanottoDTO> aiemmanVastaanotonHakukohdePerHakija) {
+        SijoitteluajoWrapper wrapper = SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(sijoitteluAjo, hakukohteet,
+                valintatulokset, aiemmanVastaanotonHakukohdePerHakija);
+        wrapper.setKKHaku(true);
+        return SijoitteluAlgorithm.sijoittele(preProcessors, postProcessors, wrapper);
     }
 
     public static SijoittelunTila sijoittele(SijoitteluajoWrapper ajo) {

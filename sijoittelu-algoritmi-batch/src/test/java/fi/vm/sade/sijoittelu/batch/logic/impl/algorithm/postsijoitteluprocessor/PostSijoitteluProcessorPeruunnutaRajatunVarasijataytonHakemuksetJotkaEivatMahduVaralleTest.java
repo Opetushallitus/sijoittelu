@@ -54,6 +54,7 @@ public class PostSijoitteluProcessorPeruunnutaRajatunVarasijataytonHakemuksetJot
     @Test
     public void peruunnutetaanKaikkiVarallaolijatJonostaJossaEiOleVarasijatayttoa() {
         jono.setEiVarasijatayttoa(true);
+        sijoitteluajoWrapper.setKKHaku(true);
 
         p.process(sijoitteluajoWrapper);
 
@@ -61,6 +62,19 @@ public class PostSijoitteluProcessorPeruunnutaRajatunVarasijataytonHakemuksetJot
         assertEquals(PERUUNTUNUT, hakemus2.getTila());
         assertEquals(PERUUNTUNUT, hakemus3.getTila());
         assertEquals(PERUUNTUNUT, hakemus4.getTila());
+    }
+
+    @Test
+    public void jatetaanToisellaAsteellaVaralleKaikkiVarallaolijatJonostaJossaEiOleVarasijatayttoa() {
+        jono.setEiVarasijatayttoa(true);
+        sijoitteluajoWrapper.setKKHaku(false);
+
+        p.process(sijoitteluajoWrapper);
+
+        assertEquals(HYVAKSYTTY, hakemus1.getTila());
+        assertEquals(VARALLA, hakemus2.getTila());
+        assertEquals(VARALLA, hakemus3.getTila());
+        assertEquals(VARALLA, hakemus4.getTila());
     }
 
     @Test

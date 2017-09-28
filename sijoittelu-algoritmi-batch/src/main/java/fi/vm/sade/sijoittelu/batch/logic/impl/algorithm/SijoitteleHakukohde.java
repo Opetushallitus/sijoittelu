@@ -7,7 +7,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.*;
+import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import static fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.util.TilaTaulukot.*;
@@ -41,7 +43,7 @@ public class SijoitteleHakukohde {
             valintatapajono.getHakemukset().stream()
                 .filter(h -> !eiKorvattavissaOlevatHyvaksytytHakemukset.contains(h))
                 .filter(h -> !kuuluuHyvaksyttyihinTiloihin(hakemuksenTila(h)))
-                .filter(h -> hakijaHaluaa(h) && saannotSallii(h))
+                .filter(h -> hakijaHaluaa(h) && saannotSallii(h, sijoitteluAjo))
                 .collect(Collectors.toList());
         // Ei ketään valituksi haluavaa
         if (valituksiHaluavatHakemukset.isEmpty()) {
@@ -139,7 +141,14 @@ public class SijoitteleHakukohde {
         return true;
     }
 
-    static boolean saannotSallii(HakemusWrapper hakemusWrapper) {
+    static boolean saannotSallii(HakemusWrapper hakemusWrapper, SijoitteluajoWrapper sijoittaluajo) {
+        Supplier<Boolean> eiVarasijatayttoa = () -> sijoittaluajo.varasijaSaannotVoimassa() &&
+                Boolean.TRUE.equals(jononEiVarasijatayttoa(hakemusWrapper)) &&
+                !jononKaikkiEhdonTayttavatHyvaksytaan(hakemusWrapper);
+
+        if(!sijoittaluajo.isKKHaku() && eiVarasijatayttoa.get() && !hakijaAloistuspaikkojenSisalla(hakemusWrapper)) {
+            return false;
+        }
         return !kuuluuHylattyihinTiloihin(hakemuksenTila(hakemusWrapper)) &&
                 eiPeruttuaKorkeampaaTaiSamaaHakutoivetta(hakemusWrapper) &&
                 hakemusWrapper.isHyvaksyttavissaHakijaryhmanJalkeen();
@@ -156,7 +165,7 @@ public class SijoitteleHakukohde {
 
     static Set<HakemusWrapper> hyvaksyHakemus(SijoitteluajoWrapper sijoitteluAjo, HakemusWrapper hakemus) {
         Set<HakemusWrapper> uudelleenSijoiteltavatHakukohteet = new HashSet<HakemusWrapper>();
-        if (hakemus.isTilaVoidaanVaihtaa()) {
+        if(hakemus.isTilaVoidaanVaihtaa()) {
             if (kuuluuVaraTiloihin(hakemus.getHakemus().getEdellinenTila()) && sijoitteluAjo.varasijaSaannotVoimassa()) {
                 asetaTilaksiVarasijaltaHyvaksytty(hakemus);
             } else {

@@ -90,6 +90,26 @@ public class RajattuVarasijatayttoTest {
     }
 
     @Test
+    public void toisellaAsteellaEiPeruunnutetaEikaHyvaksytaVarasijoilleJaaneitaHakijoitaKunEiVarasijatayttoa() {
+        jono.setAloituspaikat(2);
+        jono.setEiVarasijatayttoa(true);
+
+        sijoittele(toinenAsteVarasijasaannotVoimassa, hakukohdeJossaVarasijojaRajoitetaan);
+        assertHakemustenTilat(HYVAKSYTTY, HYVAKSYTTY, VARALLA, VARALLA);
+
+        korjaaTilaJaEdellinenTilaSijoittelunJalkeen();
+
+        sijoittele(toinenAsteVarasijasaannotVoimassa, hakukohdeJossaVarasijojaRajoitetaan, toinenHakukohdeJohonHakemus1Hyvaksytaan);
+        assertHakemustenTilat(PERUUNTUNUT, HYVAKSYTTY, VARALLA, VARALLA);
+
+        korjaaTilaJaEdellinenTilaSijoittelunJalkeen();
+
+        sijoittele(toinenAsteVarasijasaannotVoimassa, hakukohdeJossaVarasijojaRajoitetaan, toinenHakukohdeJohonHakemus1Hyvaksytaan, toinenHakukohdeJohonHakemus2Hyvaksytaan);
+
+        assertHakemustenTilat(PERUUNTUNUT, PERUUNTUNUT, VARALLA, VARALLA);
+    }
+
+    @Test
     public void peruuntuvaHakijaNostetaanVarasijalleJaVarallaOlevaHyvaksytyksiEnsimmaisessaSijoittelussaVarasijojenAstuttuaVoimaanJosTuleeTilaaKunVarasijojaOnRajoitettu_v1() {
         jono.setAloituspaikat(1);
         jono.setEiVarasijatayttoa(false);

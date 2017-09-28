@@ -257,6 +257,7 @@ public class SijoitteluMontaJonoaTest {
 
         List<Hakukohde> hakukohteet = haku.getHakukohteet().parallelStream().map(DomainConverter::convertToHakukohde).collect(Collectors.toList());
         final SijoitteluajoWrapper sijoitteluAjo = SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(new SijoitteluAjo(), tallennaEdellisetTilat(hakukohteet), Collections.newArrayList(), java.util.Collections.emptyMap());
+        sijoitteluAjo.setKKHaku(true);
         sijoitteluAjo.setVarasijaSaannotAstuvatVoimaan(LocalDateTime.now().plusDays(1));
         SijoittelunTila s = SijoitteluAlgorithmUtil.sijoittele(sijoitteluAjo);
 
@@ -307,6 +308,7 @@ public class SijoitteluMontaJonoaTest {
         tulos2.setValintatapajonoOid("oid1", "");
         SijoitteluajoWrapper sijoitteluajoWrapper = SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(new SijoitteluAjo(), tallennaEdellisetTilat(hakukohteet), Arrays.asList(tulos), java.util.Collections.emptyMap());
         sijoitteluajoWrapper.setVarasijaSaannotAstuvatVoimaan(LocalDateTime.now().plusDays(1));
+        sijoitteluajoWrapper.setKKHaku(true);
         s = SijoitteluAlgorithmUtil.sijoittele(sijoitteluajoWrapper);
 
         System.out.println(PrintHelper.tulostaSijoittelu(s));
@@ -352,7 +354,7 @@ public class SijoitteluMontaJonoaTest {
 
         hakukohteet.get(0).getValintatapajonot().get(0).getHakemukset().forEach(hak -> {
             if(hak.getHakemusOid().equals("1.2.246.562.11.00001067411")) {
-                Assert.assertTrue(hak.getTila().equals(HakemuksenTila.PERUUNTUNUT));
+                Assert.assertEquals(hak.getTila(), HakemuksenTila.PERUUNTUNUT);
             }
         });
 

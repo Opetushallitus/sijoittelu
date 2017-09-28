@@ -46,7 +46,7 @@ public class PostSijoitteluProcessorPeruunnutaRajatunVarasijataytonHakemuksetJot
         
         if (Boolean.TRUE.equals(jono.getEiVarasijatayttoa())) {
             jonoWrapper.getHakemukset().forEach(h -> {
-                if (h.isVaralla() /* && sijoitteluajoWrapper.isKKHaku() // TODO tarvitaanko? */ && h.isTilaVoidaanVaihtaa()) {
+                if (h.isVaralla() && sijoitteluajoWrapper.isKKHaku() && h.isTilaVoidaanVaihtaa()) {
                     asetaTilaksiPeruuntunutAloituspaikatTaynna(h);
                 }
             });
@@ -59,7 +59,6 @@ public class PostSijoitteluProcessorPeruunnutaRajatunVarasijataytonHakemuksetJot
                     .sorted(Comparator.comparing(h -> h.getHakemus().getJonosija()))
                     .skip(varasijat)
                     .forEach(h ->
-                        //TODO Tarkista h.isTilaVoidaanVaihtaa()??
                         asetaTilaksiPeruuntunutEiMahduKasiteltaviinSijoihin(h));
             return;
         }
