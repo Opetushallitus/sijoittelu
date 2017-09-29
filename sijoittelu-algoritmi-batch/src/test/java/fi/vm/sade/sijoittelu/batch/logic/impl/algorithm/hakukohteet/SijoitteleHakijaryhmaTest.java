@@ -927,7 +927,12 @@ public class SijoitteleHakijaryhmaTest {
         SijoitteleHakijaryhma.sijoitteleHakijaryhma(ajoWrapper, hakijaryhmaWrapper);
 
         Assert.assertEquals(HakemuksenTila.HYVAKSYTTY, valintatapajono.getHakemukset().get(0).getTila());
+        Assert.assertThat(valintatapajono.getHakemukset().get(0).getHyvaksyttyHakijaryhmista(), Matchers.contains("hakijaryhmaOid"));
+
         Assert.assertEquals(HakemuksenTila.HYVAKSYTTY, valintatapajono.getHakemukset().get(1).getTila());
+        Assert.assertThat(valintatapajono.getHakemukset().get(1).getHyvaksyttyHakijaryhmista(), Matchers.contains("hakijaryhmaOid"));
+
         Assert.assertEquals(HakemuksenTila.VARALLA, valintatapajono.getHakemukset().get(2).getTila());
+        Assert.assertThat(valintatapajono.getHakemukset().get(2).getHyvaksyttyHakijaryhmista(), Matchers.empty());
     }
 }
