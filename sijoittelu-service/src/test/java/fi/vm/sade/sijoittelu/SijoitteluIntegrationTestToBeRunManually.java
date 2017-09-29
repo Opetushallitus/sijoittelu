@@ -4,6 +4,7 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertThat;
 import com.lordofthejars.nosqlunit.annotation.UsingDataSet;
+import com.mongodb.MongoClientURI;
 
 import fi.vm.sade.service.valintaperusteet.resource.ValintalaskentakoostepalveluResource;
 import fi.vm.sade.sijoittelu.batch.logic.impl.DomainConverter;
@@ -26,9 +27,7 @@ import fi.vm.sade.sijoittelu.tulos.service.impl.converters.SijoitteluTulosConver
 import fi.vm.sade.valintalaskenta.domain.dto.valintatieto.HakuDTO;
 import fi.vm.sade.valintalaskenta.tulos.service.impl.ValintatietoService;
 import org.apache.commons.io.IOUtils;
-import org.apache.http.HttpConnection;
 import org.apache.http.HttpStatus;
-import org.apache.http.client.HttpClient;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -40,16 +39,15 @@ import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.util.StopWatch;
 
 import javax.inject.Named;
-import javax.inject.Qualifier;
 import java.io.IOException;
 import java.net.URI;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -109,9 +107,13 @@ public class SijoitteluIntegrationTestToBeRunManually {
     @Autowired @Named("pipedHostVirkailija")
     private String pipedHostVirkailija;
 
+    @Autowired @Named("mongoUri2")
+    private MongoClientURI mongoClientURI;
+
 	@Test
 	public void testSijoittelu() throws IOException {
         ensureVirkailijaHostCanBeReached();
+        LOG.info("Käytetään valintalaskentadb:tä klusterista " + mongoClientURI.getHosts());
         sijoitteluResource.sijoittele("1.2.246.562.29.87593180141");
         SijoitteluajoWrapper sijoitteluajoWrapper = lightWeightSijoitteluBusinessServiceForTesting.ajettuSijoittelu;
         assertThat(sijoitteluajoWrapper.getHakukohteet(), not(hasSize(0)));
