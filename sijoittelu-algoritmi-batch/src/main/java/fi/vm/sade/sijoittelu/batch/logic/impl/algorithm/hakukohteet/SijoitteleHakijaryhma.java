@@ -113,12 +113,13 @@ class SijoitteleHakijaryhma {
         String hakijaryhmaOid = hakijaryhmaWrapper.getHakijaryhma().getOid();
         int kiintio = hakijaryhmaWrapper.getHakijaryhma().getKiintio();
         boolean aloituspaikkojaVielaJaljella = true;
-        while (valintatapajonot.stream().mapToInt(v -> v.kirjanpito.countHakijaryhmastaHyvaksytyt()).sum() < kiintio && aloituspaikkojaVielaJaljella) {
+        while (laskeHakijaryhmastaHyvaksytyt(valintatapajonot) < kiintio && aloituspaikkojaVielaJaljella) {
             boolean hyvaksyttiin = false;
             valintatapajonot.sort(ylimmanPrioriteetinJonoJossaYlimmallaJonosijallaOlevaHakijaEnsin);
             for (HakijaryhmanValintatapajono jono : valintatapajonot) {
                 if (!hyvaksyttiin) {
-                    List<Hakemus> hyvaksytyt = jono.hyvaksyAloituspaikkoihinMahtuvatParhaallaJonosijallaOlevat();
+                    int kiintiotaJaljella = kiintio - laskeHakijaryhmastaHyvaksytyt(valintatapajonot);
+                    List<Hakemus> hyvaksytyt = jono.hyvaksyAloituspaikkoihinJaKiintioonMahtuvatParhaallaJonosijallaOlevat(kiintiotaJaljella);
                     if (!hyvaksytyt.isEmpty()) {
                         Set<String> oidit = hyvaksytyt.stream().map(h -> h.getHakemusOid()).collect(Collectors.toSet());
                         valintatapajonot.stream().filter(j -> j.prioriteetti > jono.prioriteetti).forEach(j -> {
@@ -141,6 +142,10 @@ class SijoitteleHakijaryhma {
             }
         }
         valintatapajonot.forEach(jono -> jono.kirjanpito.merkitseHyvaksytyksiHakijaryhmasta(hakijaryhmaOid));
+    }
+
+    private static int laskeHakijaryhmastaHyvaksytyt(List<HakijaryhmanValintatapajono> valintatapajonot) {
+        return valintatapajonot.stream().mapToInt(v -> v.kirjanpito.countHakijaryhmastaHyvaksytyt()).sum();
     }
 
     private static List<HakemusWrapper> sijoitteleHakijaryhmaRecur(SijoitteluajoWrapper sijoitteluAjo, HakijaryhmaWrapper hakijaryhmaWrapper) {

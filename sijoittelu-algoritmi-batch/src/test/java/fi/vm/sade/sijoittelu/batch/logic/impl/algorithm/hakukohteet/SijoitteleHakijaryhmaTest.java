@@ -908,4 +908,26 @@ public class SijoitteleHakijaryhmaTest {
         Assert.assertEquals(HakemuksenTila.HYVAKSYTTY, valintatapajono.getHakemukset().get(0).getTila());
         Assert.assertEquals(HakemuksenTila.VARALLA, valintatapajono.getHakemukset().get(1).getTila());
     }
+
+    /**
+     * This test does not really fail because of the bug, just produces ERROR output...
+     */
+    @Test
+    public void hakijaryhmasijoitteluEiYlitaytaKiintiotaArvontajonossaVaikkaViimeinenHyvaksyttyOlisiTasasijalla() {
+        for (int i = 0; i < 5; i++) {
+            valintatapajono.getHakemukset().get(i).setJonosija(0);
+            valintatapajono.getHakemukset().get(i).setTasasijaJonosija(i);
+        }
+
+        valintatapajono.setTasasijasaanto(Tasasijasaanto.ARVONTA);
+        valintatapajono.setAloituspaikat(4);
+        hakijaryhma.setKiintio(2);
+
+        hakijaryhmaWrapper.setHakukohdeWrapper(hakukohdeWrapper);
+        SijoitteleHakijaryhma.sijoitteleHakijaryhma(ajoWrapper, hakijaryhmaWrapper);
+
+        Assert.assertEquals(HakemuksenTila.HYVAKSYTTY, valintatapajono.getHakemukset().get(0).getTila());
+        Assert.assertEquals(HakemuksenTila.HYVAKSYTTY, valintatapajono.getHakemukset().get(1).getTila());
+        Assert.assertEquals(HakemuksenTila.VARALLA, valintatapajono.getHakemukset().get(2).getTila());
+    }
 }

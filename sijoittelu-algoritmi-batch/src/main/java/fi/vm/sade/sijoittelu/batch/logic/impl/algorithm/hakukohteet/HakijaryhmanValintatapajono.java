@@ -30,8 +30,9 @@ class HakijaryhmanValintatapajono {
         this.prioriteetti = jono.getValintatapajono().getPrioriteetti();
     }
 
-    List<Hakemus> hyvaksyAloituspaikkoihinMahtuvatParhaallaJonosijallaOlevat() {
-        int paikkoja = aloituspaikkoja - kirjanpito.hyvaksyttyjenKokonaismaara();
+    List<Hakemus> hyvaksyAloituspaikkoihinJaKiintioonMahtuvatParhaallaJonosijallaOlevat(int kiintiotaJaljella) {
+        int aloituspaikkoihinMahtuu = aloituspaikkoja - kirjanpito.hyvaksyttyjenKokonaismaara();
+        int paikkoja = tasasijasaanto == Tasasijasaanto.ALITAYTTO ? aloituspaikkoihinMahtuu : Math.min(aloituspaikkoihinMahtuu, kiintiotaJaljella);
         if (kirjanpito.eiKetaanHyvaksyttavissaHakijaryhmasta() || paikkoja <= 0) {
             return Collections.emptyList();
         }
