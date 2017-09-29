@@ -83,7 +83,7 @@ import java.util.stream.Collectors;
 public class SijoitteluIntegrationTestToBeRunManually {
     static {
         if (System.getProperty("PIPED_HOST_VIRKAILIJA") == null) {
-            String defaultValue = "testi.virkailija.opintopolku.fi:1234";
+            String defaultValue = "virkailija.untuva.aws.opintopolku.fi:2345";
             System.out.println("No PIPED_HOST_VIRKAILIJA system property set, defaulting to " + defaultValue);
             System.setProperty("PIPED_HOST_VIRKAILIJA", defaultValue);
         }
