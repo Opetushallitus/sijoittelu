@@ -10,7 +10,10 @@ import fi.vm.sade.sijoittelu.domain.*;
 import fi.vm.sade.valintalaskenta.domain.dto.valintatieto.HakuDTO;
 import org.junit.Assert;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -67,21 +70,33 @@ public final class TestHelper {
     }
 
     public static Function<Valintatapajono, Void> hyvaksyttyjaHakemuksiaAinoastaan(String... endsWith) {
+        return tilaisiaHakemuksiaAinoastaan(HakemuksenTila.HYVAKSYTTY, endsWith);
+    }
+
+    public static Function<Valintatapajono, Void> varallaAinoastaan(String... endsWith) {
+        return tilaisiaHakemuksiaAinoastaan(HakemuksenTila.VARALLA, endsWith);
+    }
+
+    public static Function<Valintatapajono, Void> peruuntuneitaHakemuksiaAinoastaan(String... endsWith) {
+        return tilaisiaHakemuksiaAinoastaan(HakemuksenTila.PERUUNTUNUT, endsWith);
+    }
+
+    private static Function<Valintatapajono, Void> tilaisiaHakemuksiaAinoastaan(HakemuksenTila hakemuksenTila, String... endsWith) {
         final Set<String> endings = Sets.newHashSet(endsWith);
         return (valintatapajono) -> {
             List<Hakemus> ylimaaraisetHyvaksytytHakemukset = valintatapajono.getHakemukset().stream()
-                    .filter(h -> HakemuksenTila.HYVAKSYTTY.equals(h.getTila()) && !endings.stream().anyMatch(e -> h.getHakemusOid().endsWith(e)))
+                    .filter(h -> hakemuksenTila.equals(h.getTila()) && !endings.stream().anyMatch(e -> h.getHakemusOid().endsWith(e)))
                     .collect(Collectors.toList());
             List<Hakemus> puuttuneetHakemukset = valintatapajono.getHakemukset().stream()
-                    .filter(h -> endings.stream().anyMatch(e -> h.getHakemusOid().endsWith(e) && !HakemuksenTila.HYVAKSYTTY.equals(h.getTila())))
+                    .filter(h -> endings.stream().anyMatch(e -> h.getHakemusOid().endsWith(e) && !hakemuksenTila.equals(h.getTila())))
                     .collect(Collectors.toList());
             if (!ylimaaraisetHyvaksytytHakemukset.isEmpty() && !puuttuneetHakemukset.isEmpty()) {
-                Assert.fail("Valintatapajonossa oli ylimääräisiä hyväksyttyjä hakemuksia " + toString(ylimaaraisetHyvaksytytHakemukset) + " ja puuttuvia hyväksytyksi odotettuja hakemuksia " + toString(puuttuneetHakemukset));
+                Assert.fail("Valintatapajonossa oli ylimääräisiä " + hakemuksenTila + " hakemuksia " + toString(ylimaaraisetHyvaksytytHakemukset) + " ja puuttuvia " + hakemuksenTila + " odotettuja hakemuksia " + toString(puuttuneetHakemukset));
             } else {
                 if (!ylimaaraisetHyvaksytytHakemukset.isEmpty()) {
-                    Assert.fail("Valintatapajonossa oli ylimääräisiä hyväksyttyjä hakemuksia " + toString(ylimaaraisetHyvaksytytHakemukset));
+                    Assert.fail("Valintatapajonossa oli ylimääräisiä " + hakemuksenTila + " hakemuksia " + toString(ylimaaraisetHyvaksytytHakemukset));
                 } else if (!puuttuneetHakemukset.isEmpty()) {
-                    Assert.fail("Valintatapajonossa oli puuttuvia hyväksytyksi odotettuja hakemuksia " + toString(puuttuneetHakemukset));
+                    Assert.fail("Valintatapajonossa oli puuttuvia " + hakemuksenTila + " odotettuja hakemuksia " + toString(puuttuneetHakemukset));
                 }
             }
             return null;

@@ -1,25 +1,34 @@
 package fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.spec;
 
-import com.google.common.collect.Lists;
+import static fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.TestHelper.assertoi;
+import static fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.TestHelper.hakukohde;
+import static fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.TestHelper.hyvaksyttyjaHakemuksiaAinoastaan;
+import static fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.TestHelper.peruuntuneitaHakemuksiaAinoastaan;
+import static fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.TestHelper.valintatapajono;
+import static fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.TestHelper.varallaAinoastaan;
+
 import fi.vm.sade.sijoittelu.batch.logic.impl.DomainConverter;
-import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.*;
+import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoitteluTestSpec;
+import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoitteluajoWrapperFactory;
+import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoittelunTila;
+import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.TestHelper;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.util.SijoitteluAlgorithmUtil;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.HakemusWrapper;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.HakukohdeWrapper;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.SijoitteluajoWrapper;
-import fi.vm.sade.sijoittelu.domain.*;
-import fi.vm.sade.valintalaskenta.domain.dto.HakukohdeDTO;
+import fi.vm.sade.sijoittelu.domain.HakemuksenTila;
+import fi.vm.sade.sijoittelu.domain.Hakukohde;
+import fi.vm.sade.sijoittelu.domain.SijoitteluAjo;
+import fi.vm.sade.sijoittelu.domain.ValintatuloksenTila;
+import fi.vm.sade.sijoittelu.domain.Valintatulos;
 import fi.vm.sade.valintalaskenta.domain.dto.valintatieto.HakuDTO;
 import org.junit.Assert;
 import org.junit.Test;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
-
-import static fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.TestHelper.*;
 
 /**
  * @author Jussi Jartamo
@@ -124,6 +133,27 @@ public class HakijaryhmaSpecTest extends SijoitteluTestSpec {
     public void tarkkaKiintioYlittyy() {
         SijoitteluajoWrapper ajo = ajaSijoittelu("testdata_erikoistapaukset/sijoittelu_tarkka_kiintio_2_hakijaryhmaa_kiintio_ylittyy.json");
         assertoi(ajo, hakukohde("1"), valintatapajono("1"), hyvaksyttyjaHakemuksiaAinoastaan("1", "2", "3"));
+    }
+
+   /**
+    * BUG-1496
+    * Vaikka jonolla ei ole varasijatäyttöä, niin jos tasasijasääntö on arvonta, sijoittelu asettaa arvonnan hävinneen
+    * hakijan varasijalle. Hakija pitäisi peruunnuttaa.
+    */
+    @Test
+    public void arvontaEiJataKorkeakouluhaulleHakijaaViimeisenHyvaksytynTasasijaltaVarasijalleJosEiOleVarasijatayttoa() {
+        SijoitteluajoWrapper ajo = ajaSijoittelu("testdata_erikoistapaukset/sijoittelu_tarkka_kiintio_2_hakijaryhmaa_kiintio_ylittyy_tasapisteilla.json",
+            sijoitteluajoWrapper -> sijoitteluajoWrapper.setKKHaku(true));
+        assertoi(ajo, hakukohde("1"), valintatapajono("1"), hyvaksyttyjaHakemuksiaAinoastaan("1", "2", "3"));
+        assertoi(ajo, hakukohde("1"), valintatapajono("1"), peruuntuneitaHakemuksiaAinoastaan("4"));
+    }
+
+    @Test
+    public void arvontaJattaaToisenAsteenHaulleViimeisenHyvaksytynTasasijaltaHakijanVarasijalleVaikkaEiOleVarasijatayttoa() {
+        SijoitteluajoWrapper ajo = ajaSijoittelu("testdata_erikoistapaukset/sijoittelu_tarkka_kiintio_2_hakijaryhmaa_kiintio_ylittyy_tasapisteilla.json",
+            sijoitteluajoWrapper -> sijoitteluajoWrapper.setKKHaku(false));
+        assertoi(ajo, hakukohde("1"), valintatapajono("1"), hyvaksyttyjaHakemuksiaAinoastaan("1", "2", "3"));
+        assertoi(ajo, hakukohde("1"), valintatapajono("1"), varallaAinoastaan("4"));
     }
 }
 
