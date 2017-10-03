@@ -69,4 +69,29 @@ public class SijoitteleHakukohdeTest {
         Assert.assertFalse(SijoitteleHakukohde.eiPeruttuaKorkeampaaTaiSamaaHakutoivetta(hakemusWrapper3));
         Assert.assertFalse(SijoitteleHakukohde.eiPeruttuaKorkeampaaTaiSamaaHakutoivetta(hakemusWrapper4));
     }
+
+    @Test
+    public void arvontaEiJataTasapisteisiaVarasijoilleJosVarasijatayttoEiOleKaytossa() {
+        Valintatapajono jono = new ValintatapajonoBuilder().withOid("jono").withTasasijasaanto(ARVONTA).
+            withAloituspaikat(1).withPrioriteetti(1).build();
+        Hakukohde hakukohde = new HakukohdeBuilder("hakukohde").withValintatapajono(jono).build();
+
+        Hakemus hyvaksyttavaHakemus = new HakemusBuilder().withOid("hyvaksyttavaOid").withTila(VARALLA).withPrioriteetti(1).withJonosija(1).build();
+        Hakemus hakemusJokaEiMahdu = new HakemusBuilder().withOid("hakemusJokaEiMahduOid").withTila(VARALLA).withPrioriteetti(1).withJonosija(1).build();
+        hyvaksyttavaHakemus.setTasasijaJonosija(1);
+        hakemusJokaEiMahdu.setTasasijaJonosija(2);
+        jono.getHakemukset().addAll(Arrays.asList(hyvaksyttavaHakemus, hakemusJokaEiMahdu));
+
+        jono.setSijoiteltuIlmanVarasijasaantojaNiidenOllessaVoimassa(false);
+        jono.setEiVarasijatayttoa(false);
+        SijoitteluAlgorithmUtil.sijoittele(Collections.singletonList(hakukohde), Collections.emptyList(), Collections.emptyMap());
+        assertThat(hyvaksyttavaHakemus, hasTila(HYVAKSYTTY));
+        assertThat(hakemusJokaEiMahdu, hasTila(VARALLA));
+
+        jono.setSijoiteltuIlmanVarasijasaantojaNiidenOllessaVoimassa(false);
+        jono.setEiVarasijatayttoa(true);
+        SijoitteluAlgorithmUtil.sijoittele(Collections.singletonList(hakukohde), Collections.emptyList(), Collections.emptyMap());
+        assertThat(hyvaksyttavaHakemus, hasTila(HYVAKSYTTY));
+        assertThat(hakemusJokaEiMahdu, hasTila(PERUUNTUNUT));
+    }
 }
