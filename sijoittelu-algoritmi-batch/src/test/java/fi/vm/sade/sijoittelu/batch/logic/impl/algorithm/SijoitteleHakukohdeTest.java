@@ -1,16 +1,27 @@
 package fi.vm.sade.sijoittelu.batch.logic.impl.algorithm;
 
+import static fi.vm.sade.sijoittelu.SijoitteluMatchers.hasTila;
+import static fi.vm.sade.sijoittelu.domain.HakemuksenTila.HYVAKSYTTY;
+import static fi.vm.sade.sijoittelu.domain.HakemuksenTila.PERUNUT;
+import static fi.vm.sade.sijoittelu.domain.HakemuksenTila.PERUUNTUNUT;
+import static fi.vm.sade.sijoittelu.domain.HakemuksenTila.VARALLA;
+import static fi.vm.sade.sijoittelu.domain.Tasasijasaanto.ARVONTA;
+import static org.junit.Assert.assertThat;
+
+import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.helper.HakuBuilder.HakemusBuilder;
+import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.helper.HakuBuilder.HakukohdeBuilder;
+import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.helper.HakuBuilder.ValintatapajonoBuilder;
+import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.util.SijoitteluAlgorithmUtil;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.HakemusWrapper;
-import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.HakukohdeWrapper;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.HenkiloWrapper;
-import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.SijoitteluajoWrapper;
-import fi.vm.sade.sijoittelu.domain.HakemuksenTila;
 import fi.vm.sade.sijoittelu.domain.Hakemus;
-import fi.vm.sade.sijoittelu.domain.Tasasijasaanto;
+import fi.vm.sade.sijoittelu.domain.Hakukohde;
+import fi.vm.sade.sijoittelu.domain.Valintatapajono;
 import org.junit.Assert;
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
+import java.util.Arrays;
+import java.util.Collections;
 
 public class SijoitteleHakukohdeTest {
 
@@ -43,13 +54,13 @@ public class SijoitteleHakukohdeTest {
 
 
         hakemus1.setPrioriteetti(1);
-        hakemus1.setTila(HakemuksenTila.VARALLA);
+        hakemus1.setTila(VARALLA);
         hakemus2.setPrioriteetti(2);
-        hakemus2.setTila(HakemuksenTila.PERUNUT);
+        hakemus2.setTila(PERUNUT);
         hakemus3.setPrioriteetti(3);
-        hakemus3.setTila(HakemuksenTila.VARALLA);
+        hakemus3.setTila(VARALLA);
         hakemus4.setPrioriteetti(4);
-        hakemus4.setTila(HakemuksenTila.VARALLA);
+        hakemus4.setTila(VARALLA);
 
 
         Assert.assertTrue(SijoitteleHakukohde.eiPeruttuaKorkeampaaTaiSamaaHakutoivetta(hakemusWrapper1));
