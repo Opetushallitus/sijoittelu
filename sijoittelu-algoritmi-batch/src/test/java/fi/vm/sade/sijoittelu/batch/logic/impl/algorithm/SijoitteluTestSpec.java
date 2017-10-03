@@ -21,7 +21,7 @@ public abstract class SijoitteluTestSpec {
     public Function<HakuDTO,SijoitteluajoWrapper> algoritmi() {
         return (haku) -> {
             List<Hakukohde> hakukohteet = haku.getHakukohteet().parallelStream().map(DomainConverter::convertToHakukohde).collect(Collectors.toList());
-            final SijoitteluajoWrapper sijoitteluAjo = SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(new SijoitteluAjo(), hakukohteet, new ArrayList(), Collections.emptyMap());
+            final SijoitteluajoWrapper sijoitteluAjo = SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(new SijoitteluAjo(), hakukohteet, Collections.emptyList(), Collections.emptyMap());
             SijoittelunTila s = SijoitteluAlgorithmUtil.sijoittele(sijoitteluAjo);
             LOG.debug("\r\n{}", PrintHelper.tulostaSijoittelu(s));
             return sijoitteluAjo;
