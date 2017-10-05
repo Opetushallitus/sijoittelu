@@ -79,8 +79,9 @@ public class SijoitteluBusinessService {
         this.valintarekisteriService = valintarekisteriService;
     }
 
-    public void sijoittele(HakuDTO haku, Set<String> eiSijoitteluunMenevatJonot, Set<String> valintaperusteidenValintatapajonot) {
-        long startTime = System.currentTimeMillis();
+    public void sijoittele(HakuDTO haku, Set<String> eiSijoitteluunMenevatJonot, Set<String> valintaperusteidenValintatapajonot, Long sijoittelunTunniste) {
+        //long startTime = System.currentTimeMillis();
+        long startTime = sijoittelunTunniste;
         String hakuOid = haku.getHakuOid();
         StopWatch stopWatch = new StopWatch("Haun " + hakuOid + " sijoittelu");
 
@@ -99,6 +100,7 @@ public class SijoitteluBusinessService {
         stopWatch.stop();
 
         SijoitteluAjo uusiSijoitteluajo = createSijoitteluAjo(hakuOid);
+        uusiSijoitteluajo.setSijoitteluajoId(sijoittelunTunniste); //Korvataan sijoitteluajon tunniste (=luontiaika) parametrina saadulla tunnisteella
         stopWatch.start("Mergataan hakukohteet");
         List<Hakukohde> kaikkiHakukohteet = merge(uusiSijoitteluajo, olemassaolevatHakukohteet, uudetHakukohteet);
         stopWatch.stop();

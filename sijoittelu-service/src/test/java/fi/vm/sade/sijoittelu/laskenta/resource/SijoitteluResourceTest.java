@@ -46,6 +46,28 @@ public class SijoitteluResourceTest {
     }
 
     @Test
+    public void testaaSijoittelunLuonti() {
+        String haku1 = "1.2.3.4444";
+        String haku2 = "1.2.3.555";
+
+        Long id = sijoitteluResource.sijoittele(haku1);
+        Long id2 = sijoitteluResource.sijoittele(haku1);
+
+        String tila = sijoitteluResource.sijoittelunTila(haku1);
+        String tila2 = sijoitteluResource.sijoittelunTila(id);
+
+        assertTrue(-1L == id2);
+        assertTrue(id > 0);
+        assertTrue(HaunSijoittelunTila.KESKEN.equals(tila));
+        assertEquals(tila, tila2);
+
+        SijoitteluBookkeeper.getInstance().merkitseSijoitteluAjonTila(haku1, id, HaunSijoittelunTila.VALMIS);
+        Long id3 = sijoitteluResource.sijoittele(haku1);
+        assertTrue(id3 > 0);
+
+    }
+
+    @Test
     public void testaaSijoitteluReitti() {
         final String hakukohdeOid = UUID.randomUUID().toString();
         final String hakijaryhmaOid = UUID.randomUUID().toString();
@@ -65,12 +87,12 @@ public class SijoitteluResourceTest {
                 final HashMap<String, List<ValintatapajonoDTO>> vpMap = new HashMap<>();
                 vpMap.put(hakukohdeOid, Arrays.asList(valintaperusteista));
                 when(valintalaskentakoostepalveluResource.haeValintatapajonotSijoittelulle(anyList())).thenReturn(vpMap);
-                sijoitteluResource.sijoittele(EMPTY);
+                sijoitteluResource.toteutaSijoittelu(EMPTY, 12345L);
             }
             verify(valintalaskentakoostepalveluResource, times(1)).readByHakukohdeOids(asList(hakukohdeOid));
             verify(valintalaskentakoostepalveluResource, times(1)).readByValintatapajonoOids(asList(valintatapajonoOid));
             verify(valintalaskentakoostepalveluResource, times(1)).haeValintatapajonotSijoittelulle(asList(hakukohdeOid));
-            verify(sijoitteluBusinessService, times(1)).sijoittele(haku, new HashSet<>(), Sets.newHashSet(valintatapajonoOid));
+            verify(sijoitteluBusinessService, times(1)).sijoittele(haku, new HashSet<>(), Sets.newHashSet(valintatapajonoOid), 12345L);
 
             HakukohdeDTO hakukohde = haku.getHakukohteet().iterator().next();
             /// ASSERTOIDAAN ETTA JONON TIEDOT PAIVITTYY

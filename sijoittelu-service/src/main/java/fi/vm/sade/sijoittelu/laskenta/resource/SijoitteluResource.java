@@ -21,9 +21,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
+import javax.ws.rs.*;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -60,43 +58,48 @@ public class SijoitteluResource {
     }
 
     @GET
+    @Path("/ajontila/{sijoitteluId}")
+    @ApiOperation(value = "Sijoitteluajon tila", response = String.class)
+    public String sijoittelunTila(@PathParam("sijoitteluId") Long id) {
+        String tila = SijoitteluBookkeeper.getInstance().getSijoitteluAjonTila(id);
+        LOGGER.info("/ajontila/sijoitteluId: Palautetaan sijoitteluajolle {} tila {}", id, tila);
+        return tila;
+    }
+
+    @GET
+    @Path("/hauntila/{hakuOid}")
+    @ApiOperation(value = "Haun sijoittelun tila", response = String.class)
+    public String sijoittelunTila(@PathParam("hakuOid") String hakuOid) {
+        String tila = SijoitteluBookkeeper.getInstance().getHaunSijoitteluajonTila(hakuOid);
+        LOGGER.info("/hauntila/hakuOid: Palautetaan haulle {} tila {}", hakuOid, tila);
+        return tila;
+    }
+
+
+    //@POST
+    @GET
     @Path("/{hakuOid}")
+    //@Consumes("application/json")
+    //@Produces("text/plain")
     // @PreAuthorize(CRUD)
-    @ApiOperation(value = "Hakemuksen valintatulosten haku", response = String.class)
-    public String sijoittele(@PathParam("hakuOid") String hakuOid) {
-        LOGGER.info("Valintatietoja valmistetaan haulle {}!", hakuOid);
-        HakuDTO haku = valintatietoService.haeValintatiedot(hakuOid);
-        LOGGER.info("Valintatiedot haettu serviceltä {}!", hakuOid);
-        LOGGER.info("Asetetaan valintaperusteet {}!", hakuOid);
+    @ApiOperation(value = "Käynnistä uusi sijoittelu haulle", response = Long.class)
+    public Long sijoittele(@PathParam("hakuOid") String hakuOid) {
 
-        final Map<String, HakijaryhmaValintatapajonoDTO> hakijaryhmaByOid = haeMahdollisestiMuuttuneetHakijaryhmat(haku);
-        final Map<String, List<ValintatapajonoDTO>> valintatapajonotSijoittelulle = haeValintatapajonotSijoittelulle(haku);
-        final Map<String, Map<String, ValintatapajonoDTO>> hakukohdeMapToValintatapajonoByOid = Maps.newHashMap(haeMahdollisestiMuuttuneetValintatapajonot(valintatapajonotSijoittelulle));
-        final Set<String> valintaperusteidenValintatapajonot = valintatapajonotSijoittelulle.values().stream()
-                .flatMap(Collection::stream)
-                .map(ValintatapajonoDTO::getOid)
-                .collect(Collectors.toSet());
-
-        haku.getHakukohteet().forEach(hakukohde -> {
-            updateHakijaRyhmat(hakijaryhmaByOid, hakukohde);
-            Map<String, ValintatapajonoDTO> valintatapajonoByOid = hakukohdeMapToValintatapajonoByOid.getOrDefault(hakukohde.getOid(), new HashMap<>());
-            hakukohde.getValinnanvaihe().forEach(vaihe -> {
-                updateValintatapajonotAndRemoveUsed(valintatapajonoByOid, vaihe);
-            });
-            if (!valintatapajonoByOid.isEmpty()) {
-                LOGGER.warn("Kaikkia jonoja ei ole sijoiteltu {} hakukohteessa {}: {}", hakuOid, hakukohde.getOid(), valintatapajonoByOid.keySet());
-                hakukohde.setKaikkiJonotSijoiteltu(false);
+        Long sijoittelunTunniste = System.currentTimeMillis();
+        if(!SijoitteluBookkeeper.getInstance().luoUusiSijoitteluAjo(hakuOid, sijoittelunTunniste)) {
+            LOGGER.warn("Uuden sijoittelun luominen haulle {} ei onnistunut, luultavasti siksi että edellinen oli vielä KESKEN", hakuOid);
+            return -1L;
+        } else {
+            LOGGER.info("Luodaan ja käynnistetään uusi sijoittelu haulle {}", hakuOid);
+            try {
+                Runnable kaynnistaSijoittelu = () -> toteutaSijoittelu(hakuOid, sijoittelunTunniste);
+                Thread sijoittelu = new Thread(kaynnistaSijoittelu);
+                sijoittelu.start();
+                return sijoittelunTunniste;
+            } catch (Exception e) {
+                LOGGER.error("Virhe sijoittelun suorituksessa, ", e);
+                throw e;
             }
-        });
-        LOGGER.info("Valintaperusteet asetettu {}!", hakuOid);
-
-        try {
-            sijoitteluBusinessService.sijoittele(haku, flatMapJonoOids(hakukohdeMapToValintatapajonoByOid), valintaperusteidenValintatapajonot);
-            LOGGER.info("Sijoittelu suoritettu onnistuneesti haulle {}", hakuOid);
-            return "true";
-        } catch (Exception e) {
-            LOGGER.error("Sijoittelu epäonnistui haulle " + hakuOid + " : " + e.getMessage(), e);
-            throw new RuntimeException(e);
         }
     }
 
@@ -230,6 +233,44 @@ public class SijoitteluResource {
                                 .collect(Collectors.toMap(ValintatapajonoDTO::getOid, v0 -> v0));
                 return jonot;
             }));
+    }
+
+    public void toteutaSijoittelu(String hakuOid, Long sijoittelunTunniste) {
+        LOGGER.info("Valintatietoja valmistetaan haulle {}!", hakuOid);
+        HakuDTO haku = valintatietoService.haeValintatiedot(hakuOid);
+        LOGGER.info("Valintatiedot haettu serviceltä {}!", hakuOid);
+        LOGGER.info("Asetetaan valintaperusteet {}!", hakuOid);
+
+        final Map<String, HakijaryhmaValintatapajonoDTO> hakijaryhmaByOid = haeMahdollisestiMuuttuneetHakijaryhmat(haku);
+        final Map<String, List<ValintatapajonoDTO>> valintatapajonotSijoittelulle = haeValintatapajonotSijoittelulle(haku);
+        final Map<String, Map<String, ValintatapajonoDTO>> hakukohdeMapToValintatapajonoByOid = Maps.newHashMap(haeMahdollisestiMuuttuneetValintatapajonot(valintatapajonotSijoittelulle));
+        final Set<String> valintaperusteidenValintatapajonot = valintatapajonotSijoittelulle.values().stream()
+                .flatMap(Collection::stream)
+                .map(ValintatapajonoDTO::getOid)
+                .collect(Collectors.toSet());
+
+        haku.getHakukohteet().forEach(hakukohde -> {
+            updateHakijaRyhmat(hakijaryhmaByOid, hakukohde);
+            Map<String, ValintatapajonoDTO> valintatapajonoByOid = hakukohdeMapToValintatapajonoByOid.getOrDefault(hakukohde.getOid(), new HashMap<>());
+            hakukohde.getValinnanvaihe().forEach(vaihe -> {
+                updateValintatapajonotAndRemoveUsed(valintatapajonoByOid, vaihe);
+            });
+            if (!valintatapajonoByOid.isEmpty()) {
+                LOGGER.warn("Kaikkia jonoja ei ole sijoiteltu {} hakukohteessa {}: {}", hakuOid, hakukohde.getOid(), valintatapajonoByOid.keySet());
+                hakukohde.setKaikkiJonotSijoiteltu(false);
+            }
+        });
+        LOGGER.info("Valintaperusteet asetettu {}!", hakuOid);
+
+        try {
+            sijoitteluBusinessService.sijoittele(haku, flatMapJonoOids(hakukohdeMapToValintatapajonoByOid), valintaperusteidenValintatapajonot, sijoittelunTunniste);
+            LOGGER.info("Sijoittelu suoritettu onnistuneesti haulle {}", hakuOid);
+            SijoitteluBookkeeper.getInstance().merkitseSijoitteluAjonTila(hakuOid, sijoittelunTunniste, HaunSijoittelunTila.VALMIS);
+        } catch (Exception e) {
+            LOGGER.error("Sijoittelu epäonnistui haulle " + hakuOid + " : " + e.getMessage(), e);
+            SijoitteluBookkeeper.getInstance().merkitseSijoitteluAjonTila(hakuOid, sijoittelunTunniste, HaunSijoittelunTila.VIRHE);
+            throw new RuntimeException(e);
+        }
     }
 
 }

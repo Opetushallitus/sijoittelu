@@ -143,7 +143,7 @@ public class SijoitteluBusinessServiceValintarekisteriTest {
     public void testSijoitteleEiMuuttuneitaValinnantuloksia() {
         setUpMocks1();
 
-        service.sijoittele(hakuDTO1(), Collections.emptySet(), Sets.newHashSet("112233.111111", "112244.111111", "112255.111111"));
+        service.sijoittele(hakuDTO1(), Collections.emptySet(), Sets.newHashSet("112233.111111", "112244.111111", "112255.111111"), System.currentTimeMillis());
 
         Func3<SijoitteluAjo, List<Hakukohde>, List<Valintatulos>, Boolean> assertFunction = (sijoitteluajo, hakukohteet, valintatulokset) -> {
             assertSijoitteluajo(sijoitteluajo);
@@ -183,7 +183,7 @@ public class SijoitteluBusinessServiceValintarekisteriTest {
     public void testSijoitteleKaksiJonoaHyvaksyVarallaJaPeruAlempi() {
         setUpMocks2();
 
-        service.sijoittele(hakuDTO2(), Collections.emptySet(), Sets.newHashSet("112233.111111", "112244.111111", "112255.111111", "112233.222222", "112244.222222", "112255.222222"));
+        service.sijoittele(hakuDTO2(), Collections.emptySet(), Sets.newHashSet("112233.111111", "112244.111111", "112255.111111", "112233.222222", "112244.222222", "112255.222222"), (long)123456789);
 
         Func3<SijoitteluAjo, List<Hakukohde>, List<Valintatulos>, Boolean> assertFunction = (sijoitteluajo, hakukohteet, valintatulokset) -> {
             assertSijoitteluajo(sijoitteluajo);
