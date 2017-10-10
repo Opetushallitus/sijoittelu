@@ -23,23 +23,43 @@ public class PreSijoitteluProcessorKiilaavatHakemuksetVaralleRajatunVarasijatayt
 
     @Override
     public void process(SijoitteluajoWrapper sijoitteluajoWrapper) {
+        if(!sijoitteluajoWrapper.varasijaSaannotVoimassa()) {
+            return;
+        }
         sijoitteluajoWrapper.getHakukohteet().forEach(hakukohdeWrapper -> {
             hakukohdeWrapper.getValintatapajonot().stream().filter(v -> v.getValintatapajono().rajoitettuVarasijaTaytto()).forEach(valintatapajono -> {
-
-                int viimeisimmanVarallaolijanJonosija = viimeisenVarallaolijanJonosija.apply(valintatapajono).orElse(Integer.MAX_VALUE);
-
-                Predicate<HakemusWrapper> kiilaavaJonosija = (h) -> h.getHakemus().getJonosija() <= viimeisimmanVarallaolijanJonosija;
-                Predicate<HakemusWrapper> hylattyTaiPeruuntunutEdellinenTila = (h) -> HYLATTY_TAI_PERUUNTUNUT.contains(h.getHakemus().getEdellinenTila());
-
-                valintatapajono.getHakemukset().stream()//.map(HakemusWrapper::getHakemus)
-                  .filter(kiilaavaJonosija)
-                  .filter(hylattyTaiPeruuntunutEdellinenTila).forEach((h) -> {
-                    LOG.info("Hakemus {} kiilaa jonossa {} varalle. (TilaVoidaanVaihtaa={})", h.getHakemus().getHakemusOid(),
-                            valintatapajono.getValintatapajono().getOid(), h.isTilaVoidaanVaihtaa());
-                    h.getHakemus().setEdellinenTila(HakemuksenTila.VARALLA);
-                    h.getHakemus().setTila(HakemuksenTila.VARALLA);
-                });
+                processValintatapajononKiilaavatHakemukset(valintatapajono);
             });
         });
+    }
+
+    private void processValintatapajononKiilaavatHakemukset(ValintatapajonoWrapper valintatapajono) {
+        String valintatapajonoOid = valintatapajono.getValintatapajono().getOid();
+
+        if(!valintatapajono.getValintatapajono().getSijoiteltuIlmanVarasijasaantojaNiidenOllessaVoimassa()) {
+            LOG.debug("Valintatapajonoa {} ei ole sijoiteltu ilman varasijasääntöjä niiden ollessa voimassa. " +
+                    "Ei käsitellä kiilaavia hakemuksia...", valintatapajonoOid);
+            return;
+        }
+
+        List<String> kiilaavatHakemukset = new ArrayList<>();
+
+        int viimeisimmanVarallaolijanJonosija = viimeisenVarallaolijanJonosija.apply(valintatapajono).orElse(Integer.MAX_VALUE);
+
+        Predicate<Hakemus> kiilaavaJonosija = (h) -> h.getJonosija() <= viimeisimmanVarallaolijanJonosija;
+        Predicate<Hakemus> hylattyTaiPeruuntunutEdellinenTila = (h) -> HYLATTY_TAI_PERUUNTUNUT.contains(h.getEdellinenTila());
+
+        valintatapajono.getHakemukset().stream().map(HakemusWrapper::getHakemus)
+                .filter(kiilaavaJonosija)
+                .filter(hylattyTaiPeruuntunutEdellinenTila).forEach((h) -> {
+            h.setEdellinenTila(HakemuksenTila.VARALLA);
+            h.setTila(HakemuksenTila.VARALLA);
+            kiilaavatHakemukset.add(h.getHakemusOid());
+        });
+
+        if(!kiilaavatHakemukset.isEmpty()) {
+            LOG.info("Valintatapajonossa {} on {} kpl kiilaavia hakemuksia: {}",
+                    valintatapajonoOid, kiilaavatHakemukset.size(), String.join(",", kiilaavatHakemukset));
+        }
     }
 }
