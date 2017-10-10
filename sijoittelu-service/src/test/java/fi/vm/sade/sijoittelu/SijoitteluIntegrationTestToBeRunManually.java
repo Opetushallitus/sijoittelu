@@ -67,6 +67,8 @@ import java.util.stream.Collectors;
  * Note: You need to
  *   ** add valintalaskentadb URL to run configuration VM parameters, e.g.
  *      <code>-ea -Xmx7G -DQA_VIRKAILIJAMONGO_URL=mongodb://oph:PASSWORD@qa-mongodb1.oph.ware.fi,qa-mongodb2.oph.ware.fi,qa-mongodb3.oph.ware.fi:27017</code>
+ *      NB: be sure to tick off using <code>argLine</code> from Maven test runner IDEA settings, otherwise -Xmx512m will come
+ *      to the command line from build-parent project that is the parent of valintaperusteet Maven project.
  *   ** add an ssh pipe to QA (or other similar environment) to access the /valintalaskentakoostepalvelu
  *      endpoint of valintaperusteet, e.g. <code>ssh -L 1234:testi.virkailija.opintopolku.fi:443 ruokala</code>
  *   ** change the local loopback IP address to point to the server you want to access, e.g. add this to
