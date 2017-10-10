@@ -149,47 +149,9 @@ public class SijoitteleHakukohde {
         if(!sijoittaluajo.isKKHaku() && eiVarasijatayttoa.get() && !hakijaAloistuspaikkojenSisalla(hakemusWrapper)) {
             return false;
         }
-        boolean saannotSallii = !kuuluuHylattyihinTiloihin(hakemuksenTila(hakemusWrapper)) &&
+        return !kuuluuHylattyihinTiloihin(hakemuksenTila(hakemusWrapper)) &&
                 eiPeruttuaKorkeampaaTaiSamaaHakutoivetta(hakemusWrapper) &&
                 hakemusWrapper.isHyvaksyttavissaHakijaryhmanJalkeen();
-        if(saannotSallii != vanhaSaannotSallii(sijoittaluajo, hakemusWrapper)) {
-            LOG.warn("Hakemukselle {} jonossa {} vanha saannot sallii palauttaa eri arvon kuin uusi {}",
-                    hakemusWrapper.getHakemus().getHakemusOid(),
-                    hakemusWrapper.getValintatapajono().getValintatapajono().getOid(), saannotSallii);
-        }
-        return saannotSallii;
-    }
-
-    private static boolean vanhaSaannotSallii(SijoitteluajoWrapper sijoitteluAjo, HakemusWrapper hakemusWrapper) {
-        boolean hakemuksenTila = !kuuluuHylattyihinTiloihin(hakemuksenTila(hakemusWrapper));
-        boolean hakijaAloistuspaikkojenSisallaTaiVarasijataytto = true;
-        boolean eiVarasijaTayttoa = false;
-        // Jos varasijasäännöt ovat astuneet voimaan niin katsotaan saako varasijoilta täyttää
-        if (sijoitteluAjo.varasijaSaannotVoimassa()) {
-            if (jononEiVarasijatayttoa(hakemusWrapper) != null) {
-                eiVarasijaTayttoa = jononEiVarasijatayttoa(hakemusWrapper);
-            }
-        }
-        if (eiVarasijaTayttoa && !jononKaikkiEhdonTayttavatHyvaksytaan(hakemusWrapper)) {
-            hakijaAloistuspaikkojenSisallaTaiVarasijataytto = hakijaAloistuspaikkojenSisalla(hakemusWrapper);
-            if (!hakijaAloistuspaikkojenSisallaTaiVarasijataytto && sijoitteluAjo.isKKHaku() && hakemusWrapper.isTilaVoidaanVaihtaa()) {
-                //asetaTilaksiPeruuntunutAloituspaikatTaynna(hakemusWrapper);
-            }
-        }
-        Integer varasijat = jononVarasijat(hakemusWrapper);
-        boolean huomioitavienVarasijojenSisalla = true;
-        if (sijoitteluAjo.varasijaSaannotVoimassa() && varasijat != null && varasijat > 0) {
-            huomioitavienVarasijojenSisalla = hakijaKasiteltavienVarasijojenSisalla(hakemusWrapper, varasijat);
-            if (!huomioitavienVarasijojenSisalla && hakemusWrapper.isTilaVoidaanVaihtaa()) {
-                //asetaTilaksiPeruuntunutEiMahduKasiteltaviinSijoihin(hakemusWrapper);
-            }
-        }
-        boolean eiPeruttuaKorkeampaaTaiSamaaHakutoivetta = eiPeruttuaKorkeampaaTaiSamaaHakutoivetta(hakemusWrapper);
-        return hakemuksenTila
-                && hakijaAloistuspaikkojenSisallaTaiVarasijataytto
-                && eiPeruttuaKorkeampaaTaiSamaaHakutoivetta
-                && huomioitavienVarasijojenSisalla
-                && hakemusWrapper.isHyvaksyttavissaHakijaryhmanJalkeen();
     }
 
     private static void hakukierrosPaattynyt(List<HakemusWrapper> hakemukset) {
