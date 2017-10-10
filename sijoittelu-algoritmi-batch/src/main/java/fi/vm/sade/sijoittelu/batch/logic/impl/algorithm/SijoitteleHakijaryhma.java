@@ -357,7 +357,13 @@ public class SijoitteleHakijaryhma {
         if (!valituiksiHaluavatJoidenTilaaEiVoiVaihtaa.isEmpty()) {
             StringBuilder errorMessage =  new StringBuilder(String.format("Löytyy %d hakemusta, joiden tilaa ei voi vaihtaa:", valituiksiHaluavatJoidenTilaaEiVoiVaihtaa.size()));
             for (HakemusWrapper hakemusWrapper : valituiksiHaluavatJoidenTilaaEiVoiVaihtaa) {
-                errorMessage.append(ToStringBuilder.reflectionToString(hakemusWrapper)).append(", ");
+                String message = "[Hakemus: " + hakemusWrapper.getHakemus().getHakemusOid() +
+                        ", hakija: " + hakemusWrapper.getHakemus().getHakijaOid() +
+                        ", tila: " + hakemusWrapper.getHakemus().getTila() +
+                        ", edellinen tila: " + hakemusWrapper.getHakemus().getEdellinenTila() +
+                        ", hakukohde: " + hakemusWrapper.getHakukohdeOid() +
+                        ", valintatapajono: " + hakemusWrapper.getValintatapajono().getValintatapajono().getOid() + "]";
+                errorMessage.append(message).append(", ");
             }
             throw new IllegalStateException(errorMessage.toString());
         }
