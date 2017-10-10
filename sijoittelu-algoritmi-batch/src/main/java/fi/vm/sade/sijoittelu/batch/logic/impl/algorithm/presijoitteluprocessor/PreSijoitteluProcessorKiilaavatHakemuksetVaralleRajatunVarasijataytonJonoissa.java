@@ -5,12 +5,15 @@ import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.HakukohdeWrappe
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.SijoitteluajoWrapper;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.ValintatapajonoWrapper;
 import fi.vm.sade.sijoittelu.domain.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.*;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
 public class PreSijoitteluProcessorKiilaavatHakemuksetVaralleRajatunVarasijataytonJonoissa implements PreSijoitteluProcessor {
+    private static final Logger LOG = LoggerFactory.getLogger(PreSijoitteluProcessorKiilaavatHakemuksetVaralleRajatunVarasijataytonJonoissa.class);
 
     private final Collection<HakemuksenTila> HYLATTY_TAI_PERUUNTUNUT = Arrays.asList(HakemuksenTila.HYLATTY, HakemuksenTila.PERUUNTUNUT);
 
@@ -25,14 +28,16 @@ public class PreSijoitteluProcessorKiilaavatHakemuksetVaralleRajatunVarasijatayt
 
                 int viimeisimmanVarallaolijanJonosija = viimeisenVarallaolijanJonosija.apply(valintatapajono).orElse(Integer.MAX_VALUE);
 
-                Predicate<Hakemus> kiilaavaJonosija = (h) -> h.getJonosija() <= viimeisimmanVarallaolijanJonosija;
-                Predicate<Hakemus> hylattyTaiPeruuntunutEdellinenTila = (h) -> HYLATTY_TAI_PERUUNTUNUT.contains(h.getEdellinenTila());
+                Predicate<HakemusWrapper> kiilaavaJonosija = (h) -> h.getHakemus().getJonosija() <= viimeisimmanVarallaolijanJonosija;
+                Predicate<HakemusWrapper> hylattyTaiPeruuntunutEdellinenTila = (h) -> HYLATTY_TAI_PERUUNTUNUT.contains(h.getHakemus().getEdellinenTila());
 
-                valintatapajono.getHakemukset().stream().map(HakemusWrapper::getHakemus)
+                valintatapajono.getHakemukset().stream()//.map(HakemusWrapper::getHakemus)
                   .filter(kiilaavaJonosija)
                   .filter(hylattyTaiPeruuntunutEdellinenTila).forEach((h) -> {
-                    h.setEdellinenTila(HakemuksenTila.VARALLA);
-                    h.setTila(HakemuksenTila.VARALLA);
+                    LOG.info("Hakemus {} kiilaa jonossa {} varalle. (TilaVoidaanVaihtaa={})", h.getHakemus().getHakemusOid(),
+                            valintatapajono.getValintatapajono().getOid(), h.isTilaVoidaanVaihtaa());
+                    h.getHakemus().setEdellinenTila(HakemuksenTila.VARALLA);
+                    h.getHakemus().setTila(HakemuksenTila.VARALLA);
                 });
             });
         });
