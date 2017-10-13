@@ -49,7 +49,9 @@ public class PreSijoitteluProcessorKiilaavatHakemuksetVaralleRajatunVarasijatayt
         Predicate<Hakemus> kiilaavaJonosija = (h) -> h.getJonosija() <= viimeisimmanVarallaolijanJonosija;
         Predicate<Hakemus> hylattyTaiPeruuntunutEdellinenTila = (h) -> HYLATTY_TAI_PERUUNTUNUT.contains(h.getEdellinenTila());
 
-        valintatapajono.getHakemukset().stream().map(HakemusWrapper::getHakemus)
+        valintatapajono.getHakemukset().stream()
+                .filter(HakemusWrapper::isTilaVoidaanVaihtaa)
+                .map(HakemusWrapper::getHakemus)
                 .filter(kiilaavaJonosija)
                 .filter(hylattyTaiPeruuntunutEdellinenTila).forEach((h) -> {
             h.setEdellinenTila(HakemuksenTila.VARALLA);
