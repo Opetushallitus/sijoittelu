@@ -194,6 +194,12 @@ public class HakemusWrapper {
         this.hyvaksyPeruuntunut = true;
     }
 
+    @Override
+    public String toString() {
+        return getClass().getSimpleName() + " of " + (hakemus == null ? "NULL" : hakemus.getHakemusOid() + " / " + hakemus.getTila() +
+            " , tilaVoidaanVaihtaa==" + tilaVoidaanVaihtaa);
+    }
+
     public boolean jonollaOnRajoitettuVarasijaTaytto() {
         return valintatapajono.getValintatapajono().rajoitettuVarasijaTaytto();
     }

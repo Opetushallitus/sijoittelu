@@ -73,7 +73,17 @@ public class SijoitteleHakukohde {
         if (tilaa - kaikkiTasasijaHakemukset.size() >= 0) {
             hyvaksyKaikkiTasasijaHakemukset(sijoitteluAjo, kaikkiTasasijaHakemukset, muuttuneet);
             muuttuneetHakukohteet.addAll(uudelleenSijoiteltavatHakukohteet(muuttuneet));
-            muuttuneetHakukohteet.addAll(sijoitteleValintatapajono(sijoitteluAjo, valintatapajono));
+            try {
+                muuttuneetHakukohteet.addAll(sijoitteleValintatapajono(sijoitteluAjo, valintatapajono));
+            } catch (Throwable t) {
+                String msg = "Sijoitteluajon " + sijoitteluAjo.getSijoitteluAjoId() +
+                    " muuttuneetHakukohteet.addAll(sijoitteleValintatapajono(sijoitteluAjo, valintatapajono)) kaatui." +
+                    " Hakukohde : " + valintatapajono.getHakukohdeWrapper().getHakukohde().getOid() + " , " +
+                    "valintatapajono: " + valintatapajono.getValintatapajono().getOid() + " valituksi haluavat: " +
+                    valituksiHaluavatHakemukset;
+                LOG.error(msg, t);
+                throw new RuntimeException(t);
+            }
         } else {
             // Tasasijavertailu
             if (saanto.equals(Tasasijasaanto.YLITAYTTO)) {
