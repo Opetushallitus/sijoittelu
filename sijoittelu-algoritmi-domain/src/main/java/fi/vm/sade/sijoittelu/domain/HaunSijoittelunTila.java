@@ -1,4 +1,4 @@
-package fi.vm.sade.sijoittelu.laskenta.resource;
+package fi.vm.sade.sijoittelu.domain;
 
 public class HaunSijoittelunTila {
     public static final String VALMIS = "VALMIS";

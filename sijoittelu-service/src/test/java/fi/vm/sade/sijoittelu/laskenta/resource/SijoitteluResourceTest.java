@@ -6,6 +6,7 @@ import fi.vm.sade.service.valintaperusteet.dto.KoodiDTO;
 import fi.vm.sade.service.valintaperusteet.dto.ValintatapajonoDTO;
 import fi.vm.sade.service.valintaperusteet.dto.model.Tasapistesaanto;
 import fi.vm.sade.service.valintaperusteet.resource.ValintalaskentakoostepalveluResource;
+import fi.vm.sade.sijoittelu.domain.HaunSijoittelunTila;
 import fi.vm.sade.sijoittelu.laskenta.service.business.SijoitteluBusinessService;
 import fi.vm.sade.sijoittelu.laskenta.util.EnumConverter;
 import fi.vm.sade.valintalaskenta.domain.dto.HakijaryhmaDTO;
@@ -36,35 +37,14 @@ public class SijoitteluResourceTest {
     private final SijoitteluBusinessService sijoitteluBusinessService;
     private final ValintatietoService valintatietoService;
     private final ValintalaskentakoostepalveluResource valintalaskentakoostepalveluResource;
+    //private final SijoitteluBookkeeperService sijoitteluBookkeeperService;
 
 
     public SijoitteluResourceTest() {
         sijoitteluBusinessService = mock(SijoitteluBusinessService.class);
         valintatietoService = mock(ValintatietoService.class);
         valintalaskentakoostepalveluResource = mock(ValintalaskentakoostepalveluResource.class);
-        sijoitteluResource = new SijoitteluResource(sijoitteluBusinessService,valintatietoService,valintalaskentakoostepalveluResource);
-    }
-
-    @Test
-    public void testaaSijoittelunLuonti() {
-        String haku1 = "1.2.3.4444";
-        String haku2 = "1.2.3.555";
-
-        Long id = sijoitteluResource.sijoittele(haku1);
-        Long id2 = sijoitteluResource.sijoittele(haku1);
-
-        String tila = sijoitteluResource.sijoittelunTila(haku1);
-        String tila2 = sijoitteluResource.sijoittelunTila(id);
-
-        assertTrue(-1L == id2);
-        assertTrue(id > 0);
-        assertTrue(HaunSijoittelunTila.KESKEN.equals(tila));
-        assertEquals(tila, tila2);
-
-        SijoitteluBookkeeper.getInstance().merkitseSijoitteluAjonTila(haku1, id, HaunSijoittelunTila.VALMIS);
-        Long id3 = sijoitteluResource.sijoittele(haku1);
-        assertTrue(id3 > 0);
-
+        sijoitteluResource = new SijoitteluResource(sijoitteluBusinessService,valintatietoService,valintalaskentakoostepalveluResource, SijoitteluBookkeeperService.getInstance());
     }
 
     @Test

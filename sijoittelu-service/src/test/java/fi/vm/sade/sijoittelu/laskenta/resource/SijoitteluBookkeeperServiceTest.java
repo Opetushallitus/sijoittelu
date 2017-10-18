@@ -1,13 +1,17 @@
 package fi.vm.sade.sijoittelu.laskenta.resource;
 
+import fi.vm.sade.sijoittelu.domain.HaunSijoittelunTila;
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import static org.junit.Assert.*;
 
-public class SijoitteluBookkeeperTest {
+public class SijoitteluBookkeeperServiceTest {
+
     @Test
-    public void testSijoitteluBookkeeper() throws Exception {
-        SijoitteluBookkeeper keeper = SijoitteluBookkeeper.getInstance();
+    public void testSijoitteluBookkeeperService() throws Exception {
+
+        SijoitteluBookkeeperService keeper = SijoitteluBookkeeperService.getInstance();
 
         String haku1 = "1.2.345.7";
         String haku2 = "1.2.345.888";
@@ -20,7 +24,7 @@ public class SijoitteluBookkeeperTest {
         keeper.luoUusiSijoitteluAjo(haku1, sijoitteluId1);
         keeper.luoUusiSijoitteluAjo(haku2, sijoitteluId3);
         keeper.luoUusiSijoitteluAjo(haku1, sijoitteluId2);
-        assertTrue(keeper.getHaunSijoitteluAjo(haku1).getSijoitteluId().equals(sijoitteluId1));
+        assertTrue(keeper.getHaunSijoitteluAjo(haku1).getSijoitteluAjoId().equals(sijoitteluId1));
         assertTrue(keeper.getHaunSijoitteluAjo(haku2).getTila().equals(HaunSijoittelunTila.KESKEN));
 
         keeper.merkitseSijoitteluAjonTila(haku1, sijoitteluId1, HaunSijoittelunTila.VALMIS);
@@ -29,7 +33,7 @@ public class SijoitteluBookkeeperTest {
 
         //Nyt pitäisi onnistua, koska edellinen sijoitteluajo on valmis
         keeper.luoUusiSijoitteluAjo(haku1, sijoitteluId2);
-        assertTrue(keeper.getHaunSijoitteluAjo(haku1).getSijoitteluId().equals(sijoitteluId2));
+        assertTrue(keeper.getHaunSijoitteluAjo(haku1).getSijoitteluAjoId().equals(sijoitteluId2));
 
         /*
         keeper.merkitseSijoitteluAjonTila(sijoitteluId1, HaunSijoittelunTila.VALMIS);

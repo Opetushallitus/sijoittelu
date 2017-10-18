@@ -6,6 +6,7 @@ import fi.vm.sade.service.valintaperusteet.dto.HakijaryhmaValintatapajonoDTO;
 import fi.vm.sade.service.valintaperusteet.dto.ValintatapajonoCreateDTO;
 import fi.vm.sade.service.valintaperusteet.dto.ValintatapajonoDTO;
 import fi.vm.sade.service.valintaperusteet.resource.ValintalaskentakoostepalveluResource;
+import fi.vm.sade.sijoittelu.domain.HaunSijoittelunTila;
 import fi.vm.sade.sijoittelu.laskenta.service.business.SijoitteluBusinessService;
 import fi.vm.sade.sijoittelu.laskenta.util.EnumConverter;
 import fi.vm.sade.valintalaskenta.domain.dto.HakukohdeDTO;
@@ -47,21 +48,24 @@ public class SijoitteluResource {
     private final SijoitteluBusinessService sijoitteluBusinessService;
     private final ValintatietoService valintatietoService;
     private final ValintalaskentakoostepalveluResource valintalaskentakoostepalveluResource;
+    private final SijoitteluBookkeeperService sijoitteluBookkeeperService;
 
     @Autowired
     public SijoitteluResource(SijoitteluBusinessService sijoitteluBusinessService,
                               ValintatietoService valintatietoService,
-                              ValintalaskentakoostepalveluResource valintalaskentakoostepalveluResource) {
+                              ValintalaskentakoostepalveluResource valintalaskentakoostepalveluResource,
+                              SijoitteluBookkeeperService sijoitteluBookkeeperService) {
         this.sijoitteluBusinessService = sijoitteluBusinessService;
         this.valintatietoService = valintatietoService;
         this.valintalaskentakoostepalveluResource = valintalaskentakoostepalveluResource;
+        this.sijoitteluBookkeeperService = sijoitteluBookkeeperService;
     }
 
     @GET
     @Path("/ajontila/{sijoitteluId}")
     @ApiOperation(value = "Sijoitteluajon tila", response = String.class)
     public String sijoittelunTila(@PathParam("sijoitteluId") Long id) {
-        String tila = SijoitteluBookkeeper.getInstance().getSijoitteluAjonTila(id);
+        String tila = sijoitteluBookkeeperService.getSijoitteluAjonTila(id);
         LOGGER.info("/ajontila/sijoitteluId: Palautetaan sijoitteluajolle {} tila {}", id, tila);
         return tila;
     }
@@ -70,7 +74,7 @@ public class SijoitteluResource {
     @Path("/hauntila/{hakuOid}")
     @ApiOperation(value = "Haun sijoittelun tila", response = String.class)
     public String sijoittelunTila(@PathParam("hakuOid") String hakuOid) {
-        String tila = SijoitteluBookkeeper.getInstance().getHaunSijoitteluajonTila(hakuOid);
+        String tila = sijoitteluBookkeeperService.getHaunSijoitteluajonTila(hakuOid);
         LOGGER.info("/hauntila/hakuOid: Palautetaan haulle {} tila {}", hakuOid, tila);
         return tila;
     }
@@ -86,7 +90,7 @@ public class SijoitteluResource {
     public Long sijoittele(@PathParam("hakuOid") String hakuOid) {
 
         Long sijoittelunTunniste = System.currentTimeMillis();
-        if(!SijoitteluBookkeeper.getInstance().luoUusiSijoitteluAjo(hakuOid, sijoittelunTunniste)) {
+        if(!sijoitteluBookkeeperService.luoUusiSijoitteluAjo(hakuOid, sijoittelunTunniste)) {
             LOGGER.warn("Uuden sijoittelun luominen haulle {} ei onnistunut, luultavasti siksi että edellinen oli vielä KESKEN", hakuOid);
             return -1L;
         } else {
@@ -265,10 +269,10 @@ public class SijoitteluResource {
         try {
             sijoitteluBusinessService.sijoittele(haku, flatMapJonoOids(hakukohdeMapToValintatapajonoByOid), valintaperusteidenValintatapajonot, sijoittelunTunniste);
             LOGGER.info("Sijoittelu suoritettu onnistuneesti haulle {}", hakuOid);
-            SijoitteluBookkeeper.getInstance().merkitseSijoitteluAjonTila(hakuOid, sijoittelunTunniste, HaunSijoittelunTila.VALMIS);
+            SijoitteluBookkeeperService.getInstance().merkitseSijoitteluAjonTila(hakuOid, sijoittelunTunniste, HaunSijoittelunTila.VALMIS);
         } catch (Exception e) {
             LOGGER.error("Sijoittelu epäonnistui haulle " + hakuOid + " : " + e.getMessage(), e);
-            SijoitteluBookkeeper.getInstance().merkitseSijoitteluAjonTila(hakuOid, sijoittelunTunniste, HaunSijoittelunTila.VIRHE);
+            SijoitteluBookkeeperService.getInstance().merkitseSijoitteluAjonTila(hakuOid, sijoittelunTunniste, HaunSijoittelunTila.VIRHE);
             throw new RuntimeException(e);
         }
     }

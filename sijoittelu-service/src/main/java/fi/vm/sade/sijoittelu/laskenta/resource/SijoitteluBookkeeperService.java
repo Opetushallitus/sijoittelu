@@ -1,24 +1,27 @@
 package fi.vm.sade.sijoittelu.laskenta.resource;
 
+import fi.vm.sade.sijoittelu.domain.HaunSijoittelunTila;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
 
 import java.util.concurrent.ConcurrentHashMap;
 
-public class SijoitteluBookkeeper {
+@Service
+public class SijoitteluBookkeeperService {
 
-    //Key: hakuOid, value: (sijoitteluId, kyseisen sijoittelun tila)
+    //Key: hakuOid, value: (sijoitteluAjoId, kyseisen sijoittelun tila)
     private static volatile ConcurrentHashMap<String, SijoittelunIdJaTilaYhdiste> hakujenAjot = new ConcurrentHashMap<>();
     //Osin kaksinkertainen kirjanpito siksi, että voidaan helposti pollata käyttäen sijoitteluid:tä indeksinä.
     private static volatile ConcurrentHashMap<Long, String> kaikkiSijoitteluAjot = new ConcurrentHashMap<>();
 
-    private final static Logger LOGGER = LoggerFactory.getLogger(SijoitteluBookkeeper.class);
+    private final static Logger LOGGER = LoggerFactory.getLogger(SijoitteluBookkeeperService.class);
 
-    private static SijoitteluBookkeeper instance = new SijoitteluBookkeeper();
+    private static SijoitteluBookkeeperService instance = new SijoitteluBookkeeperService();
 
-    private SijoitteluBookkeeper() {}
+    private SijoitteluBookkeeperService() {}
 
-    public static SijoitteluBookkeeper getInstance() {
+    public static SijoitteluBookkeeperService getInstance() {
         return instance;
     }
 
@@ -26,7 +29,7 @@ public class SijoitteluBookkeeper {
         //Uuden sijoitteluajon voi luoda haulle, jos edellinen on päättynyt (VALMIS, VIRHE) tai sitä ei ole olemassa
         if(hakujenAjot.containsKey(hakuOid)) {
             if(!hakujenAjot.get(hakuOid).valmisTaiVirhe()) {
-                LOGGER.warn("Yritettiin luoda haulle {} uusi sijoitteluajo id:llä {}, mutta edellinen ei ole vielä päättynyt (id {}, tila {}). Ei luotu uutta.", hakuOid, sijoitteluId, hakujenAjot.get(hakuOid).getSijoitteluId(), hakujenAjot.get(hakuOid).getTila() );
+                LOGGER.warn("Yritettiin luoda haulle {} uusi sijoitteluajo id:llä {}, mutta edellinen ei ole vielä päättynyt (id {}, tila {}). Ei luotu uutta.", hakuOid, sijoitteluId, hakujenAjot.get(hakuOid).getSijoitteluAjoId(), hakujenAjot.get(hakuOid).getTila() );
                 return false;
             }
         }
@@ -62,7 +65,7 @@ public class SijoitteluBookkeeper {
         if(hakujenAjot.containsKey(hakuOid)) {
             return hakujenAjot.get(hakuOid);
         } else {
-            LOGGER.warn("Haulle {) ei löytynyt sijoitteluajoa", hakuOid);
+            LOGGER.warn("Haulle {} ei löytynyt sijoitteluajoa", hakuOid);
             return null;
         }
     }
@@ -71,7 +74,7 @@ public class SijoitteluBookkeeper {
         if(hakujenAjot.containsKey(hakuOid)) {
             return hakujenAjot.get(hakuOid).getTila();
         } else {
-            LOGGER.warn("Haulle {) ei löytynyt sijoitteluajoa", hakuOid);
+            LOGGER.warn("Haulle {} ei löytynyt sijoitteluajoa", hakuOid);
             return HaunSijoittelunTila.EI_LOYTYNYT;
         }
     }
@@ -87,23 +90,23 @@ public class SijoitteluBookkeeper {
     public class SijoittelunIdJaTilaYhdiste {
 
         private String hakuOid;
-        private Long sijoitteluId;
+        private Long sijoitteluAjoId;
         private String tila;
         private boolean valmisTaiVirhe;
 
-        public SijoittelunIdJaTilaYhdiste(String hakuOid, Long sijoitteluId) {
+        public SijoittelunIdJaTilaYhdiste(String hakuOid, Long sijoitteluAjoId) {
             this.hakuOid = hakuOid;
-            this.sijoitteluId = sijoitteluId;
+            this.sijoitteluAjoId = sijoitteluAjoId;
             this.tila = HaunSijoittelunTila.KESKEN;
             valmisTaiVirhe = false;
         }
         //Jos tila on ennestään VALMIS tai VIRHE, sijoitteluajo on päättynyt eikä tilaa voida enää jälkeenpäin muuttaa.
         public boolean setTila(String tila) {
             if(this.valmisTaiVirhe) {
-                LOGGER.warn("Haun {} sijoittelun {} tilaa ei voi enää muuttaa, koska se on tilassa {}", this.hakuOid, this.sijoitteluId, this.tila);
+                LOGGER.warn("Haun {} sijoittelun {} tilaa ei voi enää muuttaa, koska se on tilassa {}", this.hakuOid, this.sijoitteluAjoId, this.tila);
                 return false;
             } else {
-                LOGGER.info("Muutetaan haun {} sijoittelun {} tilaa. Vanha: {}, Uusi: {}", hakuOid, sijoitteluId, this.tila, tila);
+                LOGGER.info("Muutetaan haun {} sijoittelun {} tilaa. Vanha: {}, Uusi: {}", hakuOid, sijoitteluAjoId, this.tila, tila);
                 this.tila = tila;
                 if(HaunSijoittelunTila.VALMIS.equals(tila) || HaunSijoittelunTila.VIRHE.equals(tila)) {
                     valmisTaiVirhe = true;
@@ -114,8 +117,8 @@ public class SijoitteluBookkeeper {
         public String getTila() {
             return tila;
         }
-        public Long getSijoitteluId() {
-            return sijoitteluId;
+        public Long getSijoitteluAjoId() {
+            return sijoitteluAjoId;
         }
 
         public boolean valmisTaiVirhe() {
