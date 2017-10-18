@@ -155,9 +155,9 @@ public class RajattuVarasijatayttoTest {
         sijoittele(kkHakuVarasijasaannotVoimassa, hakukohdeJossaVarasijojaRajoitetaan, toinenHakukohdeJohonHakemus1Hyvaksytaan);
 
         if (bugiKorjattu) {
-            assertHakemustenTilat(PERUUNTUNUT, VARASIJALTA_HYVAKSYTTY, VARALLA, PERUUNTUNUT);
+            assertHakemustenTilat(PERUUNTUNUT, HYVAKSYTTY, VARALLA, PERUUNTUNUT);
         } else {
-            assertHakemustenTilat(PERUUNTUNUT, VARASIJALTA_HYVAKSYTTY, PERUUNTUNUT, PERUUNTUNUT);
+            assertHakemustenTilat(PERUUNTUNUT, HYVAKSYTTY, PERUUNTUNUT, PERUUNTUNUT);
         }
 
         korjaaTilaJaEdellinenTilaSijoittelunJalkeen();

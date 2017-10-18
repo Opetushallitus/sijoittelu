@@ -215,7 +215,7 @@ public class SijoitteluajoWrapper {
         return valintatapajonotStream().allMatch(Valintatapajono::getSijoiteltuIlmanVarasijasaantojaNiidenOllessaVoimassa);
     }
 
-    public boolean onkoVarasijasaannotVoimassaJaSijoiteltuKerranIlmanNiita() {
+    public boolean onkoVarasijasaannotVoimassaJaKaikkiJonotSijoiteltuIlmanVarasijasaantojaNiidenOllessaVoimassa() {
         return varasijaSaannotVoimassa() && onkoKaikkiJonotSijoiteltuIlmanVarasijasaantojaNiidenOllessaVoimassa();
     }
 

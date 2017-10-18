@@ -176,7 +176,7 @@ public class SijoitteleHakukohde {
     static Set<HakemusWrapper> hyvaksyHakemus(SijoitteluajoWrapper sijoitteluAjo, HakemusWrapper hakemus) {
         Set<HakemusWrapper> uudelleenSijoiteltavatHakukohteet = new HashSet<HakemusWrapper>();
         if(hakemus.isTilaVoidaanVaihtaa()) {
-            if (kuuluuVaraTiloihin(hakemus.getHakemus().getEdellinenTila()) && sijoitteluAjo.varasijaSaannotVoimassa()) {
+            if (kuuluuVaraTiloihin(hakemus.getHakemus().getEdellinenTila()) && sijoitteluAjo.onkoVarasijasaannotVoimassaJaKaikkiJonotSijoiteltuIlmanVarasijasaantojaNiidenOllessaVoimassa()) {
                 asetaTilaksiVarasijaltaHyvaksytty(hakemus);
             } else {
                 asetaTilaksiHyvaksytty(hakemus);

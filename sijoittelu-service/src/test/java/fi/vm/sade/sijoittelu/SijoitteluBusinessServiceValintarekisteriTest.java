@@ -369,6 +369,7 @@ public class SijoitteluBusinessServiceValintarekisteriTest {
         jono.setVarasijojaTaytetaanAsti(new java.util.Date(System.currentTimeMillis() + 1000));
         jono.setPoissaOlevaTaytto(true);
         jono.setPrioriteetti(1);
+        jono.setSijoiteltuIlmanVarasijasaantojaNiidenOllessaVoimassa(true);
         jono.setTasasijasaanto(Tasasijasaanto.ARVONTA);
         jono.setHakemukset(
                 Arrays.asList(oid + ".111111.11", oid + ".111111.22").stream().map(hakemusOid -> {
@@ -394,6 +395,7 @@ public class SijoitteluBusinessServiceValintarekisteriTest {
         jono.setVarasijojaKaytetaanAlkaen(new java.util.Date(System.currentTimeMillis() - 1000));
         jono.setVarasijojaTaytetaanAsti(new java.util.Date(System.currentTimeMillis() + 1000));
         jono.setPoissaOlevaTaytto(true);
+        jono.setSijoiteltuIlmanVarasijasaantojaNiidenOllessaVoimassa(true);
         jono.setTasasijasaanto(Tasasijasaanto.ARVONTA);
         jono.setPrioriteetti(2);
         jono.setHakemukset(

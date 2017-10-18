@@ -352,13 +352,10 @@ public class VastaanottotietoTest {
     }
 
     private List<Hakukohde> tallennaEdellisetTilat(List<Hakukohde> hakukohteet) {
-        hakukohteet.stream().forEach(hk -> {
-            hk.getValintatapajonot().stream().forEach(jono -> {
-                jono.getHakemukset().stream().forEach(h -> {
-                    h.setEdellinenTila(h.getTila());
-                });
-            });
-        });
+        hakukohteet.forEach(hk -> hk.getValintatapajonot().forEach(jono -> {
+                jono.setSijoiteltuIlmanVarasijasaantojaNiidenOllessaVoimassa(true);
+                jono.getHakemukset().stream().forEach(h -> h.setEdellinenTila(h.getTila()));
+        }));
         return hakukohteet;
     }
 }

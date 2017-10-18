@@ -42,6 +42,7 @@ public class SijoitteluAlgorithmEhdollisenVastaanotonSiirtyminenYlemmalleHakutoi
     }
 
     private SijoitteluajoWrapper luoSijoitteluAjonTulokset() {
+        hakukohdeList.forEach(h -> h.getValintatapajonot().forEach(v -> v.setSijoiteltuIlmanVarasijasaantojaNiidenOllessaVoimassa(true)));
         final SijoitteluajoWrapper sijoitteluajoWrapper = SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(new SijoitteluAjo(), hakukohdeList, valintatulosList, Collections.emptyMap());
         SijoittelunTila algorithm = SijoitteluAlgorithmUtil.sijoittele(sijoitteluajoWrapper);
         final SijoitteluajoWrapper sijoitteluAjo = sijoitteluajoWrapper;
