@@ -255,7 +255,7 @@ public class RajattuVarasijatayttoTest {
         sijoittele(kkHakuVarasijasaannotVoimassa, hakukohdeJossaVarasijojaRajoitetaan);
         assertHakemustenTilat(HYVAKSYTTY, VARALLA, PERUUNTUNUT, PERUUNTUNUT);
 
-        final Hakemus kiilaavaHakemus = new HakemusBuilder().withOid("kiilaavaHakemus").withEdellinenTila(HYLATTY).withTila(HYLATTY).build();
+        final Hakemus kiilaavaHakemus = new HakemusBuilder().withOid("kiilaavaHakemus").withEdellinenTila(PERUUNTUNUT).withTila(PERUUNTUNUT).build();
         hakemusKiilaa(kiilaavaHakemus);
 
         sijoittele(kkHakuVarasijasaannotVoimassa, hakukohdeJossaVarasijojaRajoitetaan);
@@ -298,7 +298,7 @@ public class RajattuVarasijatayttoTest {
         korjaaTilaJaEdellinenTilaSijoittelunJalkeen();
         korjaaTilaJaEdellinenTilaSijoittelunJalkeen(kiilaavaHakemusAlemmassaHakutoiveessa);
 
-        final Hakemus kiilaavaHakemus = new HakemusBuilder().withOid("kiilaavaHakemus").withHakijaOid("kiilaavaHakija").withEdellinenTila(HYLATTY).withTila(HYLATTY).withPrioriteetti(1).build();
+        final Hakemus kiilaavaHakemus = new HakemusBuilder().withOid("kiilaavaHakemus").withHakijaOid("kiilaavaHakija").withEdellinenTila(HYLATTY).withTila(VARALLA).withPrioriteetti(1).build();
         hakemusKiilaa(kiilaavaHakemus);
 
         sijoittele(kkHakuVarasijasaannotVoimassa, Arrays.asList(vastaanotto), hakukohdeJossaVarasijojaRajoitetaan, alempiHakukohdeJohonVastaanottoKohdistuu);
