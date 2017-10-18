@@ -27,21 +27,18 @@ public class SijoitteluBookkeeperServiceTest {
         assertTrue(keeper.getHaunSijoitteluAjo(haku1).getSijoitteluAjoId().equals(sijoitteluId1));
         assertTrue(keeper.getHaunSijoitteluAjo(haku2).getTila().equals(HaunSijoittelunTila.KESKEN));
 
+        //Jos tila on VALMIS tai VIRHE, sitä ei voi enää muokata
         keeper.merkitseSijoitteluAjonTila(haku1, sijoitteluId1, HaunSijoittelunTila.VALMIS);
-        keeper.merkitseSijoitteluAjonTila(haku1, sijoitteluId1, HaunSijoittelunTila.EI_LOYTYNYT);
+        keeper.merkitseSijoitteluAjonTila(haku1, sijoitteluId1, HaunSijoittelunTila.KESKEN);
         assertTrue(keeper.getHaunSijoitteluAjo(haku1).getTila().equals(HaunSijoittelunTila.VALMIS));
+        keeper.merkitseSijoitteluAjonTila(haku2, sijoitteluId3, HaunSijoittelunTila.VIRHE);
+        keeper.merkitseSijoitteluAjonTila(haku2, sijoitteluId3, HaunSijoittelunTila.VALMIS);
+        assertTrue(keeper.getHaunSijoitteluAjo(haku2).getTila().equals(HaunSijoittelunTila.VIRHE));
 
         //Nyt pitäisi onnistua, koska edellinen sijoitteluajo on valmis
         keeper.luoUusiSijoitteluAjo(haku1, sijoitteluId2);
         assertTrue(keeper.getHaunSijoitteluAjo(haku1).getSijoitteluAjoId().equals(sijoitteluId2));
 
-        /*
-        keeper.merkitseSijoitteluAjonTila(sijoitteluId1, HaunSijoittelunTila.VALMIS);
-        keeper.merkitseHaunSijoitteluajoViite(haku1, sijoitteluId2);
-
-        assertTrue(keeper.getHaunSijoitteluAjo(haku1).equals(sijoitteluId2));
-        assertTrue(keeper.haunSijoitteluAjonTila(haku1).equals(HaunSijoittelunTila.KESKEN));
-        */
     }
 
 

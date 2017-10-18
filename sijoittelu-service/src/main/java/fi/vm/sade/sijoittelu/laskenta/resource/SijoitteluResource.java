@@ -89,17 +89,17 @@ public class SijoitteluResource {
     @ApiOperation(value = "Käynnistä uusi sijoittelu haulle", response = Long.class)
     public Long sijoittele(@PathParam("hakuOid") String hakuOid) {
 
-        Long sijoittelunTunniste = System.currentTimeMillis();
-        if(!sijoitteluBookkeeperService.luoUusiSijoitteluAjo(hakuOid, sijoittelunTunniste)) {
+        Long sijoitteluAjonTunniste = System.currentTimeMillis();
+        if(!sijoitteluBookkeeperService.luoUusiSijoitteluAjo(hakuOid, sijoitteluAjonTunniste)) {
             LOGGER.warn("Uuden sijoittelun luominen haulle {} ei onnistunut, luultavasti siksi että edellinen oli vielä KESKEN", hakuOid);
             return -1L;
         } else {
             LOGGER.info("Luodaan ja käynnistetään uusi sijoittelu haulle {}", hakuOid);
             try {
-                Runnable kaynnistaSijoittelu = () -> toteutaSijoittelu(hakuOid, sijoittelunTunniste);
+                Runnable kaynnistaSijoittelu = () -> toteutaSijoittelu(hakuOid, sijoitteluAjonTunniste);
                 Thread sijoittelu = new Thread(kaynnistaSijoittelu);
                 sijoittelu.start();
-                return sijoittelunTunniste;
+                return sijoitteluAjonTunniste;
             } catch (Exception e) {
                 LOGGER.error("Virhe sijoittelun suorituksessa, ", e);
                 throw e;
@@ -239,7 +239,7 @@ public class SijoitteluResource {
             }));
     }
 
-    public void toteutaSijoittelu(String hakuOid, Long sijoittelunTunniste) {
+    public void toteutaSijoittelu(String hakuOid, Long sijoitteluAjonTunniste) {
         LOGGER.info("Valintatietoja valmistetaan haulle {}!", hakuOid);
         HakuDTO haku = valintatietoService.haeValintatiedot(hakuOid);
         LOGGER.info("Valintatiedot haettu serviceltä {}!", hakuOid);
@@ -267,12 +267,12 @@ public class SijoitteluResource {
         LOGGER.info("Valintaperusteet asetettu {}!", hakuOid);
 
         try {
-            sijoitteluBusinessService.sijoittele(haku, flatMapJonoOids(hakukohdeMapToValintatapajonoByOid), valintaperusteidenValintatapajonot, sijoittelunTunniste);
+            sijoitteluBusinessService.sijoittele(haku, flatMapJonoOids(hakukohdeMapToValintatapajonoByOid), valintaperusteidenValintatapajonot, sijoitteluAjonTunniste);
             LOGGER.info("Sijoittelu suoritettu onnistuneesti haulle {}", hakuOid);
-            SijoitteluBookkeeperService.getInstance().merkitseSijoitteluAjonTila(hakuOid, sijoittelunTunniste, HaunSijoittelunTila.VALMIS);
+            SijoitteluBookkeeperService.getInstance().merkitseSijoitteluAjonTila(hakuOid, sijoitteluAjonTunniste, HaunSijoittelunTila.VALMIS);
         } catch (Exception e) {
             LOGGER.error("Sijoittelu epäonnistui haulle " + hakuOid + " : " + e.getMessage(), e);
-            SijoitteluBookkeeperService.getInstance().merkitseSijoitteluAjonTila(hakuOid, sijoittelunTunniste, HaunSijoittelunTila.VIRHE);
+            SijoitteluBookkeeperService.getInstance().merkitseSijoitteluAjonTila(hakuOid, sijoitteluAjonTunniste, HaunSijoittelunTila.VIRHE);
             throw new RuntimeException(e);
         }
     }
