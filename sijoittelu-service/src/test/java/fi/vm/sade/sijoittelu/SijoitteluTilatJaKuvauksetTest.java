@@ -195,7 +195,11 @@ public class SijoitteluTilatJaKuvauksetTest {
         hakemus.setHakijaOid(hakijaOid);
         hakemus.setHakemusOid(hakijaOid);
         hakemus.setTila(hakemuksenTila);
-        hakemus.setTilanKuvaukset(TilanKuvaukset.peruuntunutEiMahduKasiteltavienVarasijojenMaaraan());
+
+        if (hakemuksenTila == HakemuksenTila.PERUUNTUNUT) {
+            hakemus.setTilanKuvaukset(TilanKuvaukset.peruuntunutEiMahduKasiteltavienVarasijojenMaaraan());
+        }
+
         hakemus.setJonosija(0);
         hakemus.setPrioriteetti(2);
         jono.setHakemukset(Arrays.asList(hakemus));
