@@ -90,15 +90,6 @@ public class SijoitteluIntegrationTestToBeRunManually {
     }
     private static final Logger LOG = LoggerFactory.getLogger(SijoitteluIntegrationTestToBeRunManually.class);
     @Autowired
-    private ValintatietoService valintatietoService;
-
-    @Autowired
-    private ApplicationContext applicationContext;
-
-    @Autowired
-    private ValintalaskentakoostepalveluResource valintalaskentakoostepalveluResource;
-
-    @Autowired
     private SijoitteluResource sijoitteluResource;
 
     @Autowired
