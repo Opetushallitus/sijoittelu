@@ -337,12 +337,6 @@ public class SijoitteleHakukohde {
 
     }
 
-    public static boolean hakijaKasiteltavienVarasijojenSisalla(HakemusWrapper hakemusWrapper, Integer varasijat) {
-        ValintatapajonoWrapper valintatapajono = hakemusWrapper.getValintatapajono();
-        int aloituspaikat = jononAloituspaikat(valintatapajono) + varasijat;
-        return onkoPaikkojenSisalla(hakemusWrapper, aloituspaikat, valintatapajono.getHakemukset());
-    }
-
     static boolean eiPeruttuaKorkeampaaTaiSamaaHakutoivetta(HakemusWrapper hakemusWrapper) {
         List<HakemuksenTila> perututHakemuksenTilat = Arrays.asList(HakemuksenTila.PERUNUT, HakemuksenTila.PERUUTETTU);
         return hakemusWrapper.getHenkilo().getHakemukset()
