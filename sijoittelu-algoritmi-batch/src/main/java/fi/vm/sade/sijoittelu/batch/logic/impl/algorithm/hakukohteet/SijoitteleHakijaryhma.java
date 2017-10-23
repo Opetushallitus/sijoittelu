@@ -47,9 +47,8 @@ class SijoitteleHakijaryhma {
         // hyväksytty hakijaryhmästä -merkintä jää asettamatta. Poistetaan mahdollisesti vanhentuneet merkinnät,
         // ja merkitään hakijaryhmästä hyväksytyt erillisellä algoritmilla.
         String hakijaryhmaOid = hakijaryhmaWrapper.getHakijaryhma().getOid();
-        hakijaryhmaWrapper.getHakukohdeWrapper().hakukohteenHakemukset().map(h -> h.getHakemus()).forEach(h -> {
-            h.getHyvaksyttyHakijaryhmista().remove(hakijaryhmaOid);
-        });
+        hakijaryhmaWrapper.getHakukohdeWrapper().hakukohteenHakemukset().map(HakemusWrapper::getHakemus).forEach(h ->
+            h.getHyvaksyttyHakijaryhmista().remove(hakijaryhmaOid));
         merkitseHakijaryhmastaHyvaksytyt(sijoitteluAjo, hakijaryhmaWrapper);
         List<HakemusWrapper> muuttuneet = sijoitteleHakijaryhmaRecur(sijoitteluAjo, hakijaryhmaWrapper);
         for (HakemusWrapper h : muuttuneet) {
@@ -121,7 +120,7 @@ class SijoitteleHakijaryhma {
                     int kiintiotaJaljella = kiintio - laskeHakijaryhmastaHyvaksytyt(valintatapajonot);
                     List<Hakemus> hyvaksytyt = jono.hyvaksyAloituspaikkoihinJaKiintioonMahtuvatParhaallaJonosijallaOlevat(kiintiotaJaljella);
                     if (!hyvaksytyt.isEmpty()) {
-                        Set<String> oidit = hyvaksytyt.stream().map(h -> h.getHakemusOid()).collect(Collectors.toSet());
+                        Set<String> oidit = hyvaksytyt.stream().map(Hakemus::getHakemusOid).collect(Collectors.toSet());
                         valintatapajonot.stream().filter(j -> j.prioriteetti > jono.prioriteetti).forEach(j -> {
                             j.kirjanpito.poistaHyvaksytyistaJaHyvaksyttavista(oidit);
                         });
@@ -137,7 +136,7 @@ class SijoitteleHakijaryhma {
                         .filter(j -> j.tasasijasaanto == Tasasijasaanto.YLITAYTTO)
                         .sorted(alimmanPrioriteetinJonoJossaAlimmallaJonosijallaOlevaHakijaEnsin)
                         .findFirst()
-                        .map(j -> j.siirraVaralleAlimmallaJonosijallaOlevatHakijaryhmanUlkopuolisetHyvaksytyt())
+                        .map(HakijaryhmanValintatapajono::siirraVaralleAlimmallaJonosijallaOlevatHakijaryhmanUlkopuolisetHyvaksytyt)
                         .orElse(false);
             }
         }
@@ -225,9 +224,7 @@ class SijoitteleHakijaryhma {
 
             Pair<List<HakemusWrapper>, List<HakemusWrapper>> valittavatJaVarasijat = seuraavaksiParhaatHakijaryhmasta(valituksiHaluavat, hakijaryhmaWrapper);
             // Aloituspaikat täynnä ylitäytöllä, joten tiputetaan varalle
-            valittavatJaVarasijat.getRight().forEach(v -> {
-                muuttuneetHakemukset.addAll(asetaVaralleHakemus(v));
-            });
+            valittavatJaVarasijat.getRight().forEach(v -> muuttuneetHakemukset.addAll(asetaVaralleHakemus(v)));
             // Hyväksytään valittavat
             valittavatJaVarasijat.getLeft().forEach(h -> {
                 h.setHyvaksyttyHakijaryhmastaTallaKierroksella(true);
@@ -313,9 +310,7 @@ class SijoitteleHakijaryhma {
             } else {
                 List<HakemusWrapper> jononMukaanSortattu = parhaat
                         .stream()
-                        .sorted((h1, h2) ->
-                                Integer.compare(jononPrioriteetti(h1),
-                                        jononPrioriteetti(h2)))
+                        .sorted(Comparator.comparingInt(WrapperHelperMethods::jononPrioriteetti))
                         .collect(Collectors.toList());
                 for (HakemusWrapper paras : jononMukaanSortattu) {
                     List<HakemusWrapper> parhaatJonoonMahtuvat = haeParhaatJonoonMahtuvat(jonoittain, paras);
