@@ -46,7 +46,7 @@ class HyvaksyttyjenKirjanpito {
                     !sijoitteluajo.onkoVarasijaSaannotVoimassaJaVarasijaTayttoPaattynyt(jono) &&
                     hakijaHaluaa(h) &&
                     saannotSallii(h, sijoitteluajo)))
-            .map(h -> h.getHakemus())
+            .map(HakemusWrapper::getHakemus)
             .sorted(new HyvaksytytEnsinHakemusComparator())
             .collect(Collectors.toCollection(LinkedList::new));
     }
