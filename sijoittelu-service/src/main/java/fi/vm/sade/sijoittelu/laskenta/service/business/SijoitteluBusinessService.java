@@ -223,7 +223,7 @@ public class SijoitteluBusinessService {
     }
 
     private void setParametersFromTarjonta(String hakuOid, SijoitteluajoWrapper sijoitteluAjo) {
-        ParametriDTO parametri = null;
+        ParametriDTO parametri;
         try {
             parametri = tarjontaIntegrationService.getHaunParametrit(hakuOid);
         } catch (Exception e) {
