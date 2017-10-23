@@ -211,8 +211,4 @@ public class HakemusWrapper {
         return getClass().getSimpleName() + " of " + (hakemus == null ? "NULL" : hakemus.getHakemusOid() + " / " + hakemus.getTila() +
             " , tilaVoidaanVaihtaa==" + tilaVoidaanVaihtaa);
     }
-
-    public boolean jonollaOnRajoitettuVarasijaTaytto() {
-        return valintatapajono.getValintatapajono().rajoitettuVarasijaTaytto();
-    }
 }
