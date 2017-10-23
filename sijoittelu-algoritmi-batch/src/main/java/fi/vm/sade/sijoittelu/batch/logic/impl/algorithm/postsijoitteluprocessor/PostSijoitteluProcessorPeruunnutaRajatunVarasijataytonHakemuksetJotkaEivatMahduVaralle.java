@@ -1,6 +1,5 @@
 package fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.postsijoitteluprocessor;
 
-import static fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoitteleHakukohde.hakijaKasiteltavienVarasijojenSisalla;
 import static fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.util.TilojenMuokkaus.asetaTilaksiPeruuntunutAloituspaikatTaynna;
 import static fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.util.TilojenMuokkaus.asetaTilaksiPeruuntunutEiMahduKasiteltaviinSijoihin;
 
@@ -10,7 +9,6 @@ import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.Valintatapajono
 import fi.vm.sade.sijoittelu.domain.Valintatapajono;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.util.Assert;
 
 import java.util.Comparator;
 
