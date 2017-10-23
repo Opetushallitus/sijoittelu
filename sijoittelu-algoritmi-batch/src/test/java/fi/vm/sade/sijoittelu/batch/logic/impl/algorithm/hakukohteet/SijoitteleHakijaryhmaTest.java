@@ -147,7 +147,7 @@ public class SijoitteleHakijaryhmaTest {
     @Test
     public void hakijaryhmaSijoitteluHyvaksyyVainKiintioonMahtuvatAlitayttojonosta() {
         Hakijaryhma hakijaryhma = new Hakijaryhma();
-        hakijaryhma.setOid("hakijaryhmaOid");
+        hakijaryhma.setOid(hakijaryhmaOid);
         hakijaryhma.setHakukohdeOid("hakukohdeOid");
         hakijaryhma.setKiintio(3);
 
@@ -181,16 +181,16 @@ public class SijoitteleHakijaryhmaTest {
         Assert.assertEquals(HakemuksenTila.HYVAKSYTTY, hakukohdeWrapper.getValintatapajonot().get(0).getHakemukset().get(1).getHakemus().getTila());
         Assert.assertEquals(HakemuksenTila.HYVAKSYTTY, hakukohdeWrapper.getValintatapajonot().get(0).getHakemukset().get(2).getHakemus().getTila());
         Assert.assertEquals(HakemuksenTila.VARALLA, hakukohdeWrapper.getValintatapajonot().get(0).getHakemukset().get(3).getHakemus().getTila());
-        Assert.assertThat(hakukohdeWrapper.getValintatapajonot().get(0).getHakemukset().get(0).getHakemus().getHyvaksyttyHakijaryhmista(), Matchers.contains("hakijaryhmaOid"));
-        Assert.assertThat(hakukohdeWrapper.getValintatapajonot().get(0).getHakemukset().get(1).getHakemus().getHyvaksyttyHakijaryhmista(), Matchers.contains("hakijaryhmaOid"));
-        Assert.assertThat(hakukohdeWrapper.getValintatapajonot().get(0).getHakemukset().get(2).getHakemus().getHyvaksyttyHakijaryhmista(), Matchers.contains("hakijaryhmaOid"));
+        Assert.assertThat(hakukohdeWrapper.getValintatapajonot().get(0).getHakemukset().get(0).getHakemus().getHyvaksyttyHakijaryhmista(), Matchers.contains(hakijaryhmaOid));
+        Assert.assertThat(hakukohdeWrapper.getValintatapajonot().get(0).getHakemukset().get(1).getHakemus().getHyvaksyttyHakijaryhmista(), Matchers.contains(hakijaryhmaOid));
+        Assert.assertThat(hakukohdeWrapper.getValintatapajonot().get(0).getHakemukset().get(2).getHakemus().getHyvaksyttyHakijaryhmista(), Matchers.contains(hakijaryhmaOid));
         Assert.assertThat(hakukohdeWrapper.getValintatapajonot().get(0).getHakemukset().get(3).getHakemus().getHyvaksyttyHakijaryhmista(), Matchers.empty());
     }
 
     @Test
     public void hakijaryhmaSijoitteluEiMerkitseHakijaryhmastaHyvaksytyiksiJononKauttaHyvaksyttyja() {
         Hakijaryhma hakijaryhma = new Hakijaryhma();
-        hakijaryhma.setOid("hakijaryhmaOid");
+        hakijaryhma.setOid(hakijaryhmaOid);
         hakijaryhma.setHakukohdeOid("hakukohdeOid");
         hakijaryhma.setKiintio(1);
 
@@ -219,7 +219,7 @@ public class SijoitteleHakijaryhmaTest {
         Assert.assertEquals(HakemuksenTila.HYVAKSYTTY, hakukohdeWrapper.getValintatapajonot().get(0).getHakemukset().get(0).getHakemus().getTila());
         Assert.assertEquals(HakemuksenTila.HYVAKSYTTY, hakukohdeWrapper.getValintatapajonot().get(0).getHakemukset().get(1).getHakemus().getTila());
         Assert.assertEquals(HakemuksenTila.HYVAKSYTTY, hakukohdeWrapper.getValintatapajonot().get(0).getHakemukset().get(2).getHakemus().getTila());
-        Assert.assertThat(hakukohdeWrapper.getValintatapajonot().get(0).getHakemukset().get(0).getHakemus().getHyvaksyttyHakijaryhmista(), Matchers.contains("hakijaryhmaOid"));
+        Assert.assertThat(hakukohdeWrapper.getValintatapajonot().get(0).getHakemukset().get(0).getHakemus().getHyvaksyttyHakijaryhmista(), Matchers.contains(hakijaryhmaOid));
         Assert.assertThat(hakukohdeWrapper.getValintatapajonot().get(0).getHakemukset().get(1).getHakemus().getHyvaksyttyHakijaryhmista(), Matchers.empty());
         Assert.assertThat(hakukohdeWrapper.getValintatapajonot().get(0).getHakemukset().get(2).getHakemus().getHyvaksyttyHakijaryhmista(), Matchers.empty());
     }
@@ -227,7 +227,7 @@ public class SijoitteleHakijaryhmaTest {
     @Test
     public void hakijaryhmaSijoitteluNoudattaaJononAlitayttoaJosKaikkiKuuluvatHakijaryhmaan() {
         Hakijaryhma hakijaryhma = new Hakijaryhma();
-        hakijaryhma.setOid("hakijaryhmaOid");
+        hakijaryhma.setOid(hakijaryhmaOid);
         hakijaryhma.setHakukohdeOid("hakukohdeOid");
         hakijaryhma.setKiintio(4);
 
@@ -260,7 +260,7 @@ public class SijoitteleHakijaryhmaTest {
         Assert.assertEquals(HakemuksenTila.VARALLA, hakukohdeWrapper.getValintatapajonot().get(0).getHakemukset().get(1).getHakemus().getTila());
         Assert.assertEquals(HakemuksenTila.VARALLA, hakukohdeWrapper.getValintatapajonot().get(0).getHakemukset().get(2).getHakemus().getTila());
         Assert.assertEquals(HakemuksenTila.VARALLA, hakukohdeWrapper.getValintatapajonot().get(0).getHakemukset().get(3).getHakemus().getTila());
-        Assert.assertThat(hakukohdeWrapper.getValintatapajonot().get(0).getHakemukset().get(0).getHakemus().getHyvaksyttyHakijaryhmista(), Matchers.contains("hakijaryhmaOid"));
+        Assert.assertThat(hakukohdeWrapper.getValintatapajonot().get(0).getHakemukset().get(0).getHakemus().getHyvaksyttyHakijaryhmista(), Matchers.contains(hakijaryhmaOid));
         Assert.assertThat(hakukohdeWrapper.getValintatapajonot().get(0).getHakemukset().get(1).getHakemus().getHyvaksyttyHakijaryhmista(), Matchers.empty());
         Assert.assertThat(hakukohdeWrapper.getValintatapajonot().get(0).getHakemukset().get(2).getHakemus().getHyvaksyttyHakijaryhmista(), Matchers.empty());
         Assert.assertThat(hakukohdeWrapper.getValintatapajonot().get(0).getHakemukset().get(3).getHakemus().getHyvaksyttyHakijaryhmista(), Matchers.empty());
@@ -269,7 +269,7 @@ public class SijoitteleHakijaryhmaTest {
     @Test
     public void hakijaryhmaSijoitteluYlitayttaaJononJaKiintionJosYlitaytto() {
         Hakijaryhma hakijaryhma = new Hakijaryhma();
-        hakijaryhma.setOid("hakijaryhmaOid");
+        hakijaryhma.setOid(hakijaryhmaOid);
         hakijaryhma.setHakukohdeOid("hakukohdeOid");
         hakijaryhma.setKiintio(3);
 
@@ -302,16 +302,16 @@ public class SijoitteleHakijaryhmaTest {
         Assert.assertEquals(HakemuksenTila.HYVAKSYTTY, hakukohdeWrapper.getValintatapajonot().get(0).getHakemukset().get(1).getHakemus().getTila());
         Assert.assertEquals(HakemuksenTila.HYVAKSYTTY, hakukohdeWrapper.getValintatapajonot().get(0).getHakemukset().get(2).getHakemus().getTila());
         Assert.assertEquals(HakemuksenTila.HYVAKSYTTY, hakukohdeWrapper.getValintatapajonot().get(0).getHakemukset().get(3).getHakemus().getTila());
-        Assert.assertThat(hakukohdeWrapper.getValintatapajonot().get(0).getHakemukset().get(0).getHakemus().getHyvaksyttyHakijaryhmista(), Matchers.contains("hakijaryhmaOid"));
-        Assert.assertThat(hakukohdeWrapper.getValintatapajonot().get(0).getHakemukset().get(1).getHakemus().getHyvaksyttyHakijaryhmista(), Matchers.contains("hakijaryhmaOid"));
-        Assert.assertThat(hakukohdeWrapper.getValintatapajonot().get(0).getHakemukset().get(2).getHakemus().getHyvaksyttyHakijaryhmista(), Matchers.contains("hakijaryhmaOid"));
-        Assert.assertThat(hakukohdeWrapper.getValintatapajonot().get(0).getHakemukset().get(3).getHakemus().getHyvaksyttyHakijaryhmista(), Matchers.contains("hakijaryhmaOid"));
+        Assert.assertThat(hakukohdeWrapper.getValintatapajonot().get(0).getHakemukset().get(0).getHakemus().getHyvaksyttyHakijaryhmista(), Matchers.contains(hakijaryhmaOid));
+        Assert.assertThat(hakukohdeWrapper.getValintatapajonot().get(0).getHakemukset().get(1).getHakemus().getHyvaksyttyHakijaryhmista(), Matchers.contains(hakijaryhmaOid));
+        Assert.assertThat(hakukohdeWrapper.getValintatapajonot().get(0).getHakemukset().get(2).getHakemus().getHyvaksyttyHakijaryhmista(), Matchers.contains(hakijaryhmaOid));
+        Assert.assertThat(hakukohdeWrapper.getValintatapajonot().get(0).getHakemukset().get(3).getHakemus().getHyvaksyttyHakijaryhmista(), Matchers.contains(hakijaryhmaOid));
     }
 
     @Test
     public void hakijaryhmaSijoitteluTayttaaTasanJosArvonta() {
         Hakijaryhma hakijaryhma = new Hakijaryhma();
-        hakijaryhma.setOid("hakijaryhmaOid");
+        hakijaryhma.setOid(hakijaryhmaOid);
         hakijaryhma.setHakukohdeOid("hakukohdeOid");
         hakijaryhma.setKiintio(3);
 
@@ -344,16 +344,16 @@ public class SijoitteleHakijaryhmaTest {
         Assert.assertEquals(HakemuksenTila.HYVAKSYTTY, hakukohdeWrapper.getValintatapajonot().get(0).getHakemukset().get(1).getHakemus().getTila());
         Assert.assertEquals(HakemuksenTila.HYVAKSYTTY, hakukohdeWrapper.getValintatapajonot().get(0).getHakemukset().get(2).getHakemus().getTila());
         Assert.assertEquals(HakemuksenTila.VARALLA, hakukohdeWrapper.getValintatapajonot().get(0).getHakemukset().get(3).getHakemus().getTila());
-        Assert.assertThat(hakukohdeWrapper.getValintatapajonot().get(0).getHakemukset().get(0).getHakemus().getHyvaksyttyHakijaryhmista(), Matchers.contains("hakijaryhmaOid"));
-        Assert.assertThat(hakukohdeWrapper.getValintatapajonot().get(0).getHakemukset().get(1).getHakemus().getHyvaksyttyHakijaryhmista(), Matchers.contains("hakijaryhmaOid"));
-        Assert.assertThat(hakukohdeWrapper.getValintatapajonot().get(0).getHakemukset().get(2).getHakemus().getHyvaksyttyHakijaryhmista(), Matchers.contains("hakijaryhmaOid"));
+        Assert.assertThat(hakukohdeWrapper.getValintatapajonot().get(0).getHakemukset().get(0).getHakemus().getHyvaksyttyHakijaryhmista(), Matchers.contains(hakijaryhmaOid));
+        Assert.assertThat(hakukohdeWrapper.getValintatapajonot().get(0).getHakemukset().get(1).getHakemus().getHyvaksyttyHakijaryhmista(), Matchers.contains(hakijaryhmaOid));
+        Assert.assertThat(hakukohdeWrapper.getValintatapajonot().get(0).getHakemukset().get(2).getHakemus().getHyvaksyttyHakijaryhmista(), Matchers.contains(hakijaryhmaOid));
         Assert.assertThat(hakukohdeWrapper.getValintatapajonot().get(0).getHakemukset().get(3).getHakemus().getHyvaksyttyHakijaryhmista(), Matchers.empty());
     }
 
     @Test
     public void hakijaryhmaSijoitteluHyvaksyyEnsinJonosijaSittenJonoprioriteettijarjestyksessa() {
         Hakijaryhma hakijaryhma = new Hakijaryhma();
-        hakijaryhma.setOid("hakijaryhmaOid");
+        hakijaryhma.setOid(hakijaryhmaOid);
         hakijaryhma.setHakukohdeOid("hakukohdeOid");
         hakijaryhma.setKiintio(3);
 
@@ -407,15 +407,15 @@ public class SijoitteleHakijaryhmaTest {
         Assert.assertEquals(HakemuksenTila.HYVAKSYTTY, hakukohdeWrapper.getValintatapajonot().get(1).getHakemukset().get(0).getHakemus().getTila());
         Assert.assertEquals(HakemuksenTila.HYVAKSYTTY, hakukohdeWrapper.getValintatapajonot().get(1).getHakemukset().get(1).getHakemus().getTila());
         Assert.assertEquals(HakemuksenTila.HYVAKSYTTY, hakukohdeWrapper.getValintatapajonot().get(1).getHakemukset().get(2).getHakemus().getTila());
-        Assert.assertThat(hakukohdeWrapper.getValintatapajonot().get(1).getHakemukset().get(0).getHakemus().getHyvaksyttyHakijaryhmista(), Matchers.contains("hakijaryhmaOid"));
-        Assert.assertThat(hakukohdeWrapper.getValintatapajonot().get(1).getHakemukset().get(1).getHakemus().getHyvaksyttyHakijaryhmista(), Matchers.contains("hakijaryhmaOid"));
-        Assert.assertThat(hakukohdeWrapper.getValintatapajonot().get(1).getHakemukset().get(2).getHakemus().getHyvaksyttyHakijaryhmista(), Matchers.contains("hakijaryhmaOid"));
+        Assert.assertThat(hakukohdeWrapper.getValintatapajonot().get(1).getHakemukset().get(0).getHakemus().getHyvaksyttyHakijaryhmista(), Matchers.contains(hakijaryhmaOid));
+        Assert.assertThat(hakukohdeWrapper.getValintatapajonot().get(1).getHakemukset().get(1).getHakemus().getHyvaksyttyHakijaryhmista(), Matchers.contains(hakijaryhmaOid));
+        Assert.assertThat(hakukohdeWrapper.getValintatapajonot().get(1).getHakemukset().get(2).getHakemus().getHyvaksyttyHakijaryhmista(), Matchers.contains(hakijaryhmaOid));
     }
 
     @Test
     public void sijoitteleHakijaryhmaTayttaaKiintiotaKaikistaJonoista() {
         Hakijaryhma hakijaryhma = new Hakijaryhma();
-        hakijaryhma.setOid("hakijaryhmaOid");
+        hakijaryhma.setOid(hakijaryhmaOid);
         hakijaryhma.setHakukohdeOid("hakukohdeOid");
         hakijaryhma.setKiintio(3);
 
@@ -460,7 +460,7 @@ public class SijoitteleHakijaryhmaTest {
         Assert.assertEquals(HakemuksenTila.VARALLA, hakukohdeWrapper.getValintatapajonot().get(0).getHakemukset().get(1).getHakemus().getTila());
         Assert.assertEquals(HakemuksenTila.VARALLA, hakukohdeWrapper.getValintatapajonot().get(0).getHakemukset().get(2).getHakemus().getTila());
         Assert.assertEquals(HakemuksenTila.VARALLA, hakukohdeWrapper.getValintatapajonot().get(0).getHakemukset().get(3).getHakemus().getTila());
-        Assert.assertThat(hakukohdeWrapper.getValintatapajonot().get(0).getHakemukset().get(0).getHakemus().getHyvaksyttyHakijaryhmista(), Matchers.contains("hakijaryhmaOid"));
+        Assert.assertThat(hakukohdeWrapper.getValintatapajonot().get(0).getHakemukset().get(0).getHakemus().getHyvaksyttyHakijaryhmista(), Matchers.contains(hakijaryhmaOid));
         Assert.assertThat(hakukohdeWrapper.getValintatapajonot().get(0).getHakemukset().get(1).getHakemus().getHyvaksyttyHakijaryhmista(), Matchers.empty());
         Assert.assertThat(hakukohdeWrapper.getValintatapajonot().get(0).getHakemukset().get(2).getHakemus().getHyvaksyttyHakijaryhmista(), Matchers.empty());
         Assert.assertThat(hakukohdeWrapper.getValintatapajonot().get(0).getHakemukset().get(3).getHakemus().getHyvaksyttyHakijaryhmista(), Matchers.empty());
@@ -468,16 +468,16 @@ public class SijoitteleHakijaryhmaTest {
         Assert.assertEquals(HakemuksenTila.HYVAKSYTTY, hakukohdeWrapper.getValintatapajonot().get(1).getHakemukset().get(1).getHakemus().getTila());
         Assert.assertEquals(HakemuksenTila.HYVAKSYTTY, hakukohdeWrapper.getValintatapajonot().get(1).getHakemukset().get(2).getHakemus().getTila());
         Assert.assertEquals(HakemuksenTila.VARALLA, hakukohdeWrapper.getValintatapajonot().get(1).getHakemukset().get(3).getHakemus().getTila());
-        Assert.assertThat(hakukohdeWrapper.getValintatapajonot().get(1).getHakemukset().get(0).getHakemus().getHyvaksyttyHakijaryhmista(), Matchers.contains("hakijaryhmaOid"));
-        Assert.assertThat(hakukohdeWrapper.getValintatapajonot().get(1).getHakemukset().get(1).getHakemus().getHyvaksyttyHakijaryhmista(), Matchers.contains("hakijaryhmaOid"));
-        Assert.assertThat(hakukohdeWrapper.getValintatapajonot().get(1).getHakemukset().get(2).getHakemus().getHyvaksyttyHakijaryhmista(), Matchers.contains("hakijaryhmaOid"));
+        Assert.assertThat(hakukohdeWrapper.getValintatapajonot().get(1).getHakemukset().get(0).getHakemus().getHyvaksyttyHakijaryhmista(), Matchers.contains(hakijaryhmaOid));
+        Assert.assertThat(hakukohdeWrapper.getValintatapajonot().get(1).getHakemukset().get(1).getHakemus().getHyvaksyttyHakijaryhmista(), Matchers.contains(hakijaryhmaOid));
+        Assert.assertThat(hakukohdeWrapper.getValintatapajonot().get(1).getHakemukset().get(2).getHakemus().getHyvaksyttyHakijaryhmista(), Matchers.contains(hakijaryhmaOid));
         Assert.assertThat(hakukohdeWrapper.getValintatapajonot().get(1).getHakemukset().get(3).getHakemus().getHyvaksyttyHakijaryhmista(), Matchers.empty());
     }
 
     @Test
     public void sijoitteleHakijarymaHyvaksyyHakijanVainYhdestaJonosta() {
         Hakijaryhma hakijaryhma = new Hakijaryhma();
-        hakijaryhma.setOid("hakijaryhmaOid");
+        hakijaryhma.setOid(hakijaryhmaOid);
         hakijaryhma.setHakukohdeOid("hakukohdeOid");
         hakijaryhma.setKiintio(2);
 
@@ -522,8 +522,8 @@ public class SijoitteleHakijaryhmaTest {
         Assert.assertEquals(HakemuksenTila.HYVAKSYTTY, hakukohdeWrapper.getValintatapajonot().get(0).getHakemukset().get(1).getHakemus().getTila());
         Assert.assertEquals(HakemuksenTila.VARALLA, hakukohdeWrapper.getValintatapajonot().get(0).getHakemukset().get(2).getHakemus().getTila());
         Assert.assertEquals(HakemuksenTila.VARALLA, hakukohdeWrapper.getValintatapajonot().get(0).getHakemukset().get(3).getHakemus().getTila());
-        Assert.assertThat(hakukohdeWrapper.getValintatapajonot().get(0).getHakemukset().get(0).getHakemus().getHyvaksyttyHakijaryhmista(), Matchers.contains("hakijaryhmaOid"));
-        Assert.assertThat(hakukohdeWrapper.getValintatapajonot().get(0).getHakemukset().get(1).getHakemus().getHyvaksyttyHakijaryhmista(), Matchers.contains("hakijaryhmaOid"));
+        Assert.assertThat(hakukohdeWrapper.getValintatapajonot().get(0).getHakemukset().get(0).getHakemus().getHyvaksyttyHakijaryhmista(), Matchers.contains(hakijaryhmaOid));
+        Assert.assertThat(hakukohdeWrapper.getValintatapajonot().get(0).getHakemukset().get(1).getHakemus().getHyvaksyttyHakijaryhmista(), Matchers.contains(hakijaryhmaOid));
         Assert.assertThat(hakukohdeWrapper.getValintatapajonot().get(0).getHakemukset().get(2).getHakemus().getHyvaksyttyHakijaryhmista(), Matchers.empty());
         Assert.assertThat(hakukohdeWrapper.getValintatapajonot().get(0).getHakemukset().get(3).getHakemus().getHyvaksyttyHakijaryhmista(), Matchers.empty());
         Assert.assertEquals(HakemuksenTila.PERUUNTUNUT, hakukohdeWrapper.getValintatapajonot().get(1).getHakemukset().get(0).getHakemus().getTila());
@@ -539,7 +539,7 @@ public class SijoitteleHakijaryhmaTest {
     @Test
     public void sijoitteleHakijaryhmaHyvaksyyHyvaksytynPeruuntuneenEnnenMuita() {
         Hakijaryhma hakijaryhma = new Hakijaryhma();
-        hakijaryhma.setOid("hakijaryhmaOid");
+        hakijaryhma.setOid(hakijaryhmaOid);
         hakijaryhma.setHakukohdeOid("hakukohdeOid");
         hakijaryhma.setKiintio(3);
 
@@ -593,20 +593,20 @@ public class SijoitteleHakijaryhmaTest {
         Assert.assertTrue(hakukohdeWrapper.getValintatapajonot().get(1).getHakemukset().get(2).getHyvaksyPeruuntunut());
         Assert.assertEquals(HakemuksenTila.HYVAKSYTTY, hakukohdeWrapper.getValintatapajonot().get(0).getHakemukset().get(0).getHakemus().getTila());
         Assert.assertEquals(HakemuksenTila.HYVAKSYTTY, hakukohdeWrapper.getValintatapajonot().get(0).getHakemukset().get(1).getHakemus().getTila());
-        Assert.assertThat(hakukohdeWrapper.getValintatapajonot().get(0).getHakemukset().get(0).getHakemus().getHyvaksyttyHakijaryhmista(), Matchers.contains("hakijaryhmaOid"));
-        Assert.assertThat(hakukohdeWrapper.getValintatapajonot().get(0).getHakemukset().get(1).getHakemus().getHyvaksyttyHakijaryhmista(), Matchers.contains("hakijaryhmaOid"));
+        Assert.assertThat(hakukohdeWrapper.getValintatapajonot().get(0).getHakemukset().get(0).getHakemus().getHyvaksyttyHakijaryhmista(), Matchers.contains(hakijaryhmaOid));
+        Assert.assertThat(hakukohdeWrapper.getValintatapajonot().get(0).getHakemukset().get(1).getHakemus().getHyvaksyttyHakijaryhmista(), Matchers.contains(hakijaryhmaOid));
         Assert.assertEquals(HakemuksenTila.VARALLA, hakukohdeWrapper.getValintatapajonot().get(1).getHakemukset().get(0).getHakemus().getTila());
         Assert.assertEquals(HakemuksenTila.VARALLA, hakukohdeWrapper.getValintatapajonot().get(1).getHakemukset().get(1).getHakemus().getTila());
         Assert.assertEquals(HakemuksenTila.HYVAKSYTTY, hakukohdeWrapper.getValintatapajonot().get(1).getHakemukset().get(2).getHakemus().getTila());
         Assert.assertThat(hakukohdeWrapper.getValintatapajonot().get(1).getHakemukset().get(0).getHakemus().getHyvaksyttyHakijaryhmista(), Matchers.empty());
         Assert.assertThat(hakukohdeWrapper.getValintatapajonot().get(1).getHakemukset().get(1).getHakemus().getHyvaksyttyHakijaryhmista(), Matchers.empty());
-        Assert.assertThat(hakukohdeWrapper.getValintatapajonot().get(1).getHakemukset().get(2).getHakemus().getHyvaksyttyHakijaryhmista(), Matchers.contains("hakijaryhmaOid"));
+        Assert.assertThat(hakukohdeWrapper.getValintatapajonot().get(1).getHakemukset().get(2).getHakemus().getHyvaksyttyHakijaryhmista(), Matchers.contains(hakijaryhmaOid));
     }
 
     @Test
     public void sijoitteleHakijaryhmaSiirtaaVaralleHakijaryhmaanKuulumattomiaKiintionTayttamiseksiYlitayttojonossa() {
         Hakijaryhma hakijaryhma = new Hakijaryhma();
-        hakijaryhma.setOid("hakijaryhmaOid");
+        hakijaryhma.setOid(hakijaryhmaOid);
         hakijaryhma.setHakukohdeOid("hakukohdeOid");
         hakijaryhma.setKiintio(3);
 
@@ -671,7 +671,7 @@ public class SijoitteleHakijaryhmaTest {
         Assert.assertEquals(HakemuksenTila.VARALLA, hakukohdeWrapper.getValintatapajonot().get(2).getHakemukset().get(0).getHakemus().getTila());
         Assert.assertEquals(HakemuksenTila.HYVAKSYTTY, hakukohdeWrapper.getValintatapajonot().get(2).getHakemukset().get(1).getHakemus().getTila());
         Assert.assertThat(hakukohdeWrapper.getValintatapajonot().get(2).getHakemukset().get(0).getHakemus().getHyvaksyttyHakijaryhmista(), Matchers.empty());
-        Assert.assertThat(hakukohdeWrapper.getValintatapajonot().get(2).getHakemukset().get(1).getHakemus().getHyvaksyttyHakijaryhmista(), Matchers.contains("hakijaryhmaOid"));
+        Assert.assertThat(hakukohdeWrapper.getValintatapajonot().get(2).getHakemukset().get(1).getHakemus().getHyvaksyttyHakijaryhmista(), Matchers.contains(hakijaryhmaOid));
     }
 
     @Test
@@ -759,7 +759,7 @@ public class SijoitteleHakijaryhmaTest {
     @Test
     public void josHakijaryhmanKiintioOnJonojenAloituspaikkojenSummaaSuurempiJonotTayttyvatRyhmaanKuuluvista() {
         Hakijaryhma hakijaryhma = new Hakijaryhma();
-        hakijaryhma.setOid("hakijaryhmaOid");
+        hakijaryhma.setOid(hakijaryhmaOid);
         hakijaryhma.setHakukohdeOid("hakukohdeOid");
         hakijaryhma.setKiintio(6);
 
@@ -918,10 +918,10 @@ public class SijoitteleHakijaryhmaTest {
         SijoitteleHakijaryhma.sijoitteleHakijaryhma(ajoWrapper, hakijaryhmaWrapper);
 
         Assert.assertEquals(HakemuksenTila.HYVAKSYTTY, valintatapajono.getHakemukset().get(0).getTila());
-        Assert.assertThat(valintatapajono.getHakemukset().get(0).getHyvaksyttyHakijaryhmista(), Matchers.contains("hakijaryhmaOid"));
+        Assert.assertThat(valintatapajono.getHakemukset().get(0).getHyvaksyttyHakijaryhmista(), Matchers.contains(hakijaryhmaOid));
 
         Assert.assertEquals(HakemuksenTila.HYVAKSYTTY, valintatapajono.getHakemukset().get(1).getTila());
-        Assert.assertThat(valintatapajono.getHakemukset().get(1).getHyvaksyttyHakijaryhmista(), Matchers.contains("hakijaryhmaOid"));
+        Assert.assertThat(valintatapajono.getHakemukset().get(1).getHyvaksyttyHakijaryhmista(), Matchers.contains(hakijaryhmaOid));
 
         Assert.assertEquals(HakemuksenTila.VARALLA, valintatapajono.getHakemukset().get(2).getTila());
         Assert.assertThat(valintatapajono.getHakemukset().get(2).getHyvaksyttyHakijaryhmista(), Matchers.empty());
