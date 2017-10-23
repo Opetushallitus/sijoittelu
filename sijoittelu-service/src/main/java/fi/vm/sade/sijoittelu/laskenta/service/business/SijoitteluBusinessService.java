@@ -506,7 +506,7 @@ public class SijoitteluBusinessService {
                 String valintatapajonoOid = j.getOid();
                 j.getHakemukset().forEach(h -> {
                     String hakemusOid = h.getHakemusOid();
-                    Triple id = Triple.of(hakukohdeOid, valintatapajonoOid, hakemusOid);
+                    Triple<String, String, String> id = Triple.of(hakukohdeOid, valintatapajonoOid, hakemusOid);
                     hakemusIndex.put(id, h);
                 });
             });
