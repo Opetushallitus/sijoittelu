@@ -274,7 +274,7 @@ public class SijoitteluBusinessService {
     }
 
     private void setOptionalHakuAttributes(String hakuOid, SijoitteluajoWrapper sijoitteluAjo) {
-        fi.vm.sade.sijoittelu.laskenta.external.resource.dto.HakuDTO hakuDto = null;
+        fi.vm.sade.sijoittelu.laskenta.external.resource.dto.HakuDTO hakuDto;
         try {
             hakuDto = tarjontaIntegrationService.getHakuByHakuOid(hakuOid);
         } catch (Exception e) {
