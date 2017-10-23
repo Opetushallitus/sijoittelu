@@ -171,7 +171,6 @@ public class SijoitteleHakijaryhmaTest {
                         Collections.emptyMap()
                 );
         HakukohdeWrapper hakukohdeWrapper = ajoWrapper.getHakukohteet().get(0);
-        HakijaryhmaWrapper hakijaryhmaWrapper = hakukohdeWrapper.getHakijaryhmaWrappers().get(0);
 
         hakukohdeWrapper.getValintatapajonot().get(0).getHakemukset().get(1).getHakemus().setJonosija(1);
         hakukohdeWrapper.getValintatapajonot().get(0).getHakemukset().get(2).getHakemus().setJonosija(1);
@@ -251,7 +250,6 @@ public class SijoitteleHakijaryhmaTest {
                         Collections.emptyMap()
                 );
         HakukohdeWrapper hakukohdeWrapper = ajoWrapper.getHakukohteet().get(0);
-        HakijaryhmaWrapper hakijaryhmaWrapper = hakukohdeWrapper.getHakijaryhmaWrappers().get(0);
 
         hakukohdeWrapper.getValintatapajonot().get(0).getHakemukset().get(1).getHakemus().setJonosija(1);
         hakukohdeWrapper.getValintatapajonot().get(0).getHakemukset().get(2).getHakemus().setJonosija(1);
@@ -294,7 +292,6 @@ public class SijoitteleHakijaryhmaTest {
                         Collections.emptyMap()
                 );
         HakukohdeWrapper hakukohdeWrapper = ajoWrapper.getHakukohteet().get(0);
-        HakijaryhmaWrapper hakijaryhmaWrapper = hakukohdeWrapper.getHakijaryhmaWrappers().get(0);
 
         hakukohdeWrapper.getValintatapajonot().get(0).getHakemukset().get(1).getHakemus().setJonosija(1);
         hakukohdeWrapper.getValintatapajonot().get(0).getHakemukset().get(2).getHakemus().setJonosija(1);
@@ -337,7 +334,6 @@ public class SijoitteleHakijaryhmaTest {
                         Collections.emptyMap()
                 );
         HakukohdeWrapper hakukohdeWrapper = ajoWrapper.getHakukohteet().get(0);
-        HakijaryhmaWrapper hakijaryhmaWrapper = hakukohdeWrapper.getHakijaryhmaWrappers().get(0);
 
         hakukohdeWrapper.getValintatapajonot().get(0).getHakemukset().get(1).getHakemus().setJonosija(1);
         hakukohdeWrapper.getValintatapajonot().get(0).getHakemukset().get(2).getHakemus().setJonosija(1);
@@ -397,7 +393,6 @@ public class SijoitteleHakijaryhmaTest {
                         Collections.emptyMap()
                 );
         HakukohdeWrapper hakukohdeWrapper = ajoWrapper.getHakukohteet().get(0);
-        HakijaryhmaWrapper hakijaryhmaWrapper = hakukohdeWrapper.getHakijaryhmaWrappers().get(0);
 
         SijoitteleHakukohde.sijoitteleHakukohde(ajoWrapper, hakukohdeWrapper);
         Assert.assertEquals(HakemuksenTila.HYVAKSYTTY, hakukohdeWrapper.getValintatapajonot().get(0).getHakemukset().get(0).getHakemus().getTila());
@@ -459,7 +454,6 @@ public class SijoitteleHakijaryhmaTest {
                         Collections.emptyMap()
                 );
         HakukohdeWrapper hakukohdeWrapper = ajoWrapper.getHakukohteet().get(0);
-        HakijaryhmaWrapper hakijaryhmaWrapper = hakukohdeWrapper.getHakijaryhmaWrappers().get(0);
 
         SijoitteleHakukohde.sijoitteleHakukohde(ajoWrapper, hakukohdeWrapper);
         Assert.assertEquals(HakemuksenTila.HYVAKSYTTY, hakukohdeWrapper.getValintatapajonot().get(0).getHakemukset().get(0).getHakemus().getTila());
@@ -522,7 +516,6 @@ public class SijoitteleHakijaryhmaTest {
                         Collections.emptyMap()
                 );
         HakukohdeWrapper hakukohdeWrapper = ajoWrapper.getHakukohteet().get(0);
-        HakijaryhmaWrapper hakijaryhmaWrapper = hakukohdeWrapper.getHakijaryhmaWrappers().get(0);
 
         SijoitteleHakukohde.sijoitteleHakukohde(ajoWrapper, hakukohdeWrapper);
         Assert.assertEquals(HakemuksenTila.HYVAKSYTTY, hakukohdeWrapper.getValintatapajonot().get(0).getHakemukset().get(0).getHakemus().getTila());
@@ -595,7 +588,6 @@ public class SijoitteleHakijaryhmaTest {
                         Collections.emptyMap()
                 );
         HakukohdeWrapper hakukohdeWrapper = ajoWrapper.getHakukohteet().get(0);
-        HakijaryhmaWrapper hakijaryhmaWrapper = hakukohdeWrapper.getHakijaryhmaWrappers().get(0);
 
         SijoitteleHakukohde.sijoitteleHakukohde(ajoWrapper, hakukohdeWrapper);
         Assert.assertTrue(hakukohdeWrapper.getValintatapajonot().get(1).getHakemukset().get(2).getHyvaksyPeruuntunut());
@@ -664,7 +656,6 @@ public class SijoitteleHakijaryhmaTest {
                         Collections.emptyMap()
                 );
         HakukohdeWrapper hakukohdeWrapper = ajoWrapper.getHakukohteet().get(0);
-        HakijaryhmaWrapper hakijaryhmaWrapper = hakukohdeWrapper.getHakijaryhmaWrappers().get(0);
 
         SijoitteleHakukohde.sijoitteleHakukohde(ajoWrapper, hakukohdeWrapper);
         Assert.assertEquals(HakemuksenTila.HYVAKSYTTY, hakukohdeWrapper.getValintatapajonot().get(0).getHakemukset().get(0).getHakemus().getTila());
