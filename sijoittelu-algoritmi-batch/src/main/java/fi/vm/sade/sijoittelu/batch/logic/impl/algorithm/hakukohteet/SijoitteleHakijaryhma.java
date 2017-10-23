@@ -28,6 +28,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
@@ -121,9 +122,8 @@ class SijoitteleHakijaryhma {
                     List<Hakemus> hyvaksytyt = jono.hyvaksyAloituspaikkoihinJaKiintioonMahtuvatParhaallaJonosijallaOlevat(kiintiotaJaljella);
                     if (!hyvaksytyt.isEmpty()) {
                         Set<String> oidit = hyvaksytyt.stream().map(Hakemus::getHakemusOid).collect(Collectors.toSet());
-                        valintatapajonot.stream().filter(j -> j.prioriteetti > jono.prioriteetti).forEach(j -> {
-                            j.kirjanpito.poistaHyvaksytyistaJaHyvaksyttavista(oidit);
-                        });
+                        valintatapajonot.stream().filter(j -> j.prioriteetti > jono.prioriteetti).forEach(j ->
+                            j.kirjanpito.poistaHyvaksytyistaJaHyvaksyttavista(oidit));
                         hyvaksyttiin = true;
                     }
                 }
@@ -335,7 +335,7 @@ class SijoitteleHakijaryhma {
 
     private static List<HakemusWrapper> samallaSijalla(HakemusWrapper hakemus, List<HakemusWrapper> hakemukset, Tasasijasaanto saanto) {
         if (saanto.equals(Tasasijasaanto.ARVONTA)) {
-            return Arrays.asList(hakemus);
+            return Collections.singletonList(hakemus);
         } else {
             return hakemukset
                     .stream()

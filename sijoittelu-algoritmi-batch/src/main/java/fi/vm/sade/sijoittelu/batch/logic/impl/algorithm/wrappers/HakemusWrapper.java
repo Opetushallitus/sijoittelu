@@ -143,11 +143,9 @@ public class HakemusWrapper {
                 hf.putUnencodedChars(SijoitteluajoWrapper.VALUE_FOR_HASH_FUNCTION_WHEN_UNDEFINED);
                 return null;
             };
-            Function<String, Supplier<Void>> delimeter = dm -> {
-                return () -> {
-                    hf.putUnencodedChars(dm);
-                    return null;
-                };
+            Function<String, Supplier<Void>> delimeter = dm -> () -> {
+                hf.putUnencodedChars(dm);
+                return null;
             };
             delimeter.apply(VALUE_DELIMETER_HAKEMUS).get(); // Uuden hakemuksen alkuun delimeter
             //ifPresentOrIfNotPresent(hakemus.getEdellinenTila(), t -> hf.putInt(t.ordinal()), undefined, delimeter.apply(VALUE_DELIMETER_EDELLINEN_TILA));
