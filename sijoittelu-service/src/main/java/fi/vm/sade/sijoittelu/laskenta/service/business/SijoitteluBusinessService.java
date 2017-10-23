@@ -307,7 +307,7 @@ public class SijoitteluBusinessService {
         stopWatch.start("Alustetaan uusi välisijoittelu ja haetaan hakukohteet");
         ValiSijoittelu sijoittelu = createValiSijoittelu(hakuOid);
         List<Hakukohde> uudetHakukohteet = sijoitteluTyyppi.getHakukohteet().parallelStream().map(DomainConverter::convertToHakukohde).collect(Collectors.toList());
-        List<Hakukohde> olemassaolevatHakukohteet = Collections.<Hakukohde>emptyList();
+        List<Hakukohde> olemassaolevatHakukohteet = Collections.emptyList();
         SijoitteluAjo uusiSijoitteluajo = createValiSijoitteluAjo(sijoittelu);
         List<Hakukohde> kaikkiHakukohteet = merge(uusiSijoitteluajo, olemassaolevatHakukohteet, uudetHakukohteet);
         SijoitteluajoWrapper sijoitteluajoWrapper = SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(uusiSijoitteluajo, kaikkiHakukohteet, Collections.emptyList(), Collections.emptyMap());
@@ -454,7 +454,7 @@ public class SijoitteluBusinessService {
     }
 
     private int getMaara(List<Hakemus> hakemukset, List<HakemuksenTila> tilat) {
-        return (int) hakemukset.parallelStream().filter(h -> tilat.indexOf(h.getTila()) != -1)
+        return hakemukset.parallelStream().filter(h -> tilat.indexOf(h.getTila()) != -1)
                 .reduce(0, (sum, b) -> sum + 1, Integer::sum);
     }
 
