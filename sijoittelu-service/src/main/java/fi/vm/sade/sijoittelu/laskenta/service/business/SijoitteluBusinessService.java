@@ -1,6 +1,5 @@
 package fi.vm.sade.sijoittelu.laskenta.service.business;
 
-import akka.actor.ActorRef;
 import com.google.common.collect.Sets.SetView;
 
 import fi.vm.sade.sijoittelu.batch.logic.impl.DomainConverter;
@@ -25,7 +24,6 @@ import org.apache.commons.lang3.tuple.Triple;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StopWatch;
 
@@ -60,7 +58,6 @@ public class SijoitteluBusinessService {
     }};
 
     private final SijoitteluTulosConverter sijoitteluTulosConverter;
-    private final ActorService actorService;
     private final TarjontaIntegrationService tarjontaIntegrationService;
     private final VirkailijaValintaTulosServiceResource valintaTulosServiceResource;
     private final ValintatulosWithVastaanotto valintatulosWithVastaanotto;
@@ -70,12 +67,10 @@ public class SijoitteluBusinessService {
 
     @Autowired
     public SijoitteluBusinessService(SijoitteluTulosConverter sijoitteluTulosConverter,
-                                     ActorService actorService,
                                      TarjontaIntegrationService tarjontaIntegrationService,
                                      VirkailijaValintaTulosServiceResource valintaTulosServiceResource,
                                      ValintarekisteriService valintarekisteriService) {
         this.sijoitteluTulosConverter = sijoitteluTulosConverter;
-        this.actorService = actorService;
         this.tarjontaIntegrationService = tarjontaIntegrationService;
         this.valintaTulosServiceResource = valintaTulosServiceResource;
         this.valintatulosWithVastaanotto = new ValintatulosWithVastaanotto(valintaTulosServiceResource);

@@ -18,7 +18,6 @@ import org.junit.Test;
 import fi.vm.sade.valintalaskenta.domain.dto.valintatieto.HakuDTO;
 import fi.vm.sade.valintalaskenta.domain.dto.HakukohdeDTO;
 import org.mockito.ArgumentCaptor;
-import org.springframework.test.util.ReflectionTestUtils;
 import rx.functions.Func3;
 
 import java.util.*;
@@ -39,7 +38,6 @@ public class SijoitteluBusinessServiceValintarekisteriTest {
 
     private SijoitteluBusinessService service;
     private SijoitteluTulosConverter sijoitteluTulosConverter;
-    private ActorService actorService;
     private TarjontaIntegrationService tarjontaIntegrationService;
     private VirkailijaValintaTulosServiceResource valintaTulosServiceResource;
     private ValintarekisteriService valintarekisteriService;
@@ -47,12 +45,11 @@ public class SijoitteluBusinessServiceValintarekisteriTest {
     @Before
     public void setUp() throws Exception {
         sijoitteluTulosConverter = new SijoitteluTulosConverterImpl();
-        actorService = mock(ActorService.class);
         tarjontaIntegrationService = mock(TarjontaIntegrationService.class);
         valintaTulosServiceResource = mock(VirkailijaValintaTulosServiceResource.class);
         valintarekisteriService = mock(ValintarekisteriService.class);
 
-        service = new SijoitteluBusinessService(sijoitteluTulosConverter, actorService, tarjontaIntegrationService, valintaTulosServiceResource, valintarekisteriService);
+        service = new SijoitteluBusinessService(sijoitteluTulosConverter, tarjontaIntegrationService, valintaTulosServiceResource, valintarekisteriService);
 
         when(tarjontaIntegrationService.getHaunParametrit(hakuOid)).thenReturn(haunParametrit());
         when(tarjontaIntegrationService.getHakuByHakuOid(hakuOid)).thenReturn(tarjontaHaku());
