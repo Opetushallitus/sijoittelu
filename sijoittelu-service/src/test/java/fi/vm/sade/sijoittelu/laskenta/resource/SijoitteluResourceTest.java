@@ -6,7 +6,6 @@ import fi.vm.sade.service.valintaperusteet.dto.KoodiDTO;
 import fi.vm.sade.service.valintaperusteet.dto.ValintatapajonoDTO;
 import fi.vm.sade.service.valintaperusteet.dto.model.Tasapistesaanto;
 import fi.vm.sade.service.valintaperusteet.resource.ValintalaskentakoostepalveluResource;
-import fi.vm.sade.sijoittelu.domain.HaunSijoittelunTila;
 import fi.vm.sade.sijoittelu.laskenta.service.business.SijoitteluBusinessService;
 import fi.vm.sade.sijoittelu.laskenta.util.EnumConverter;
 import fi.vm.sade.valintalaskenta.domain.dto.HakijaryhmaDTO;
@@ -20,13 +19,12 @@ import org.junit.Test;
 
 import java.util.*;
 
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.*;
-import static java.util.Arrays.*;
-import static org.junit.Assert.assertNotSame;
-import static org.mockito.Mockito.*;
+import static java.util.Arrays.asList;
 import static org.apache.commons.lang.StringUtils.EMPTY;
-import static org.mockito.Mockito.verify;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.*;
 
 /**
  * @author Jussi Jartamo
@@ -37,14 +35,15 @@ public class SijoitteluResourceTest {
     private final SijoitteluBusinessService sijoitteluBusinessService;
     private final ValintatietoService valintatietoService;
     private final ValintalaskentakoostepalveluResource valintalaskentakoostepalveluResource;
-    //private final SijoitteluBookkeeperService sijoitteluBookkeeperService;
+    private final SijoitteluBookkeeperService sijoitteluBookkeeperService;
 
 
     public SijoitteluResourceTest() {
         sijoitteluBusinessService = mock(SijoitteluBusinessService.class);
         valintatietoService = mock(ValintatietoService.class);
         valintalaskentakoostepalveluResource = mock(ValintalaskentakoostepalveluResource.class);
-        sijoitteluResource = new SijoitteluResource(sijoitteluBusinessService,valintatietoService,valintalaskentakoostepalveluResource, SijoitteluBookkeeperService.getInstance());
+        sijoitteluBookkeeperService = mock(SijoitteluBookkeeperService.class);
+        sijoitteluResource = new SijoitteluResource(sijoitteluBusinessService,valintatietoService,valintalaskentakoostepalveluResource, sijoitteluBookkeeperService);
     }
 
     @Test

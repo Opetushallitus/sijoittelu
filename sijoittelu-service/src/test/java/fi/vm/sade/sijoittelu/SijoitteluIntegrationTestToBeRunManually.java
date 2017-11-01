@@ -1,12 +1,7 @@
 package fi.vm.sade.sijoittelu;
 
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.not;
-import static org.junit.Assert.assertThat;
 import com.lordofthejars.nosqlunit.annotation.UsingDataSet;
 import com.mongodb.MongoClientURI;
-
-import fi.vm.sade.service.valintaperusteet.resource.ValintalaskentakoostepalveluResource;
 import fi.vm.sade.sijoittelu.batch.logic.impl.DomainConverter;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoitteluajoWrapperFactory;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.util.SijoitteluAlgorithmUtil;
@@ -24,7 +19,6 @@ import fi.vm.sade.sijoittelu.laskenta.service.it.TarjontaIntegrationService;
 import fi.vm.sade.sijoittelu.tulos.dto.HakukohdeDTO;
 import fi.vm.sade.sijoittelu.tulos.service.impl.converters.SijoitteluTulosConverter;
 import fi.vm.sade.valintalaskenta.domain.dto.valintatieto.HakuDTO;
-import fi.vm.sade.valintalaskenta.tulos.service.impl.ValintatietoService;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.config.RequestConfig;
@@ -38,7 +32,6 @@ import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.util.StopWatch;
@@ -51,6 +44,10 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.not;
+import static org.junit.Assert.assertThat;
 
 /**
  * This test class can be used to run sijoittelu with a data read from a server.
@@ -72,7 +69,7 @@ import java.util.stream.Collectors;
  *   ** change the local loopback IP address to point to the server you want to access, e.g. add this to
  *      <code>/etc/hosts</code> : <code>127.0.0.1       testi.virkailija.opintopolku.fi</code>
  *
- * @see SijoitteluBusinessService#sijoittele(HakuDTO, Set, Set)
+ * @see SijoitteluBusinessService#sijoittele(HakuDTO, Set, Set, Long)
  * @see HakijaryhmaTest
  * @see fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.hakukohteet.SijoitteleHakijaryhmaTest
  */
@@ -156,7 +153,7 @@ public class SijoitteluIntegrationTestToBeRunManually {
          * The results might or might not make sense depending on your use case.
          */
         @Override
-        public void sijoittele(HakuDTO haku, Set<String> eiSijoitteluunMenevatJonot, Set<String> valintaperusteidenValintatapajonot) {
+        public void sijoittele(HakuDTO haku, Set<String> eiSijoitteluunMenevatJonot, Set<String> valintaperusteidenValintatapajonot, Long sijoittelunTunniste) {
             String hakuOid = haku.getHakuOid();
             String nameOfThisFakeSijoitteluRun = "Haun " + hakuOid + " " + LightWeightSijoitteluBusinessServiceForTesting.class.getSimpleName() + " -sijoittelu";
             StopWatch stopWatch = new StopWatch(nameOfThisFakeSijoitteluRun);

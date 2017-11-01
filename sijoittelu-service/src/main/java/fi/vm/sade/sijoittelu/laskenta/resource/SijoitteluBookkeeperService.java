@@ -1,67 +1,52 @@
 package fi.vm.sade.sijoittelu.laskenta.resource;
 
-import fi.vm.sade.sijoittelu.domain.HaunSijoittelunTila;
+import fi.vm.sade.sijoittelu.domain.SijoitteluajonTila;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import javax.inject.Singleton;
 import java.util.concurrent.ConcurrentHashMap;
 
+@Singleton
 @Service
 public class SijoitteluBookkeeperService {
 
     //Key: hakuOid, value: (sijoitteluAjoId, kyseisen sijoittelun tila)
-    private static volatile ConcurrentHashMap<String, SijoittelunIdJaTilaYhdiste> hakujenAjot = new ConcurrentHashMap<>();
-    //Osin kaksinkertainen kirjanpito siksi, että voidaan helposti pollata käyttäen sijoitteluid:tä indeksinä.
-    private static volatile ConcurrentHashMap<Long, String> kaikkiSijoitteluAjot = new ConcurrentHashMap<>();
+    private static volatile ConcurrentHashMap<String, SijoitteluAjoIdJaTilaYhdiste> hakujenAjot = new ConcurrentHashMap<>();
+    //Osin kaksinkertainen kirjanpito siksi, että voidaan helposti pollata käyttäen sijoitteluajoid:tä indeksinä.
+    private static volatile ConcurrentHashMap<Long, SijoitteluajonTila> kaikkiSijoitteluAjot = new ConcurrentHashMap<>();
 
     private final static Logger LOGGER = LoggerFactory.getLogger(SijoitteluBookkeeperService.class);
 
-    private static SijoitteluBookkeeperService instance = new SijoitteluBookkeeperService();
-
-    private SijoitteluBookkeeperService() {}
-
-    public static SijoitteluBookkeeperService getInstance() {
-        return instance;
-    }
-
-    public boolean luoUusiSijoitteluAjo(String hakuOid, Long sijoitteluId) {
+    public boolean luoUusiSijoitteluAjo(String hakuOid, Long sijoitteluajoId) {
         //Uuden sijoitteluajon voi luoda haulle vain, jos edellinen on päättynyt (tilassa VALMIS tai VIRHE), tai sitä ei ole olemassa
-        if(hakujenAjot.containsKey(hakuOid)) {
-            if(!hakujenAjot.get(hakuOid).valmisTaiVirhe()) {
-                LOGGER.warn("Yritettiin luoda haulle {} uusi sijoitteluajo id:llä {}, mutta edellinen ei ole vielä päättynyt (id {}, tila {}). Ei luotu uutta.", hakuOid, sijoitteluId, hakujenAjot.get(hakuOid).getSijoitteluAjoId(), hakujenAjot.get(hakuOid).getTila() );
+        if (hakujenAjot.containsKey(hakuOid)) {
+            if (!hakujenAjot.get(hakuOid).tilaValmisTaiVirhe()) {
+                LOGGER.error("Yritettiin luoda haulle {} uusi sijoitteluajo id:llä {}, mutta edellinen ei ole vielä päättynyt (id {}, tila {}). Ei luotu uutta.", hakuOid, sijoitteluajoId, hakujenAjot.get(hakuOid).getSijoitteluAjoId(), hakujenAjot.get(hakuOid).getTila() );
                 return false;
             }
         }
-        LOGGER.info("Luodaan haulle {} uusi sijoitteluajo id:llä {}.", hakuOid, sijoitteluId);
-        hakujenAjot.put(hakuOid, new SijoittelunIdJaTilaYhdiste(hakuOid, sijoitteluId));
-        kaikkiSijoitteluAjot.put(sijoitteluId, HaunSijoittelunTila.KESKEN);
+        LOGGER.info("Luodaan haulle {} uusi sijoitteluajo id:llä {}.", hakuOid, sijoitteluajoId);
+        hakujenAjot.put(hakuOid, new SijoitteluAjoIdJaTilaYhdiste(hakuOid, sijoitteluajoId));
+        kaikkiSijoitteluAjot.put(sijoitteluajoId, SijoitteluajonTila.KESKEN);
         return true;
     }
 
-    public boolean haunSijoitteluValmisTaiVirhe(String hakuOid) {
-        if(hakujenAjot.containsKey(hakuOid)) {
-            return hakujenAjot.get(hakuOid).valmisTaiVirhe();
-        } else {
-            LOGGER.warn("Kysyttiin, onko olematon sijoittelu jo päättynyt. Tämä saattaa indikoida ongelmaa.");
-            return false;
-        }
-    }
-
-    public void merkitseSijoitteluAjonTila(String hakuOid, Long sijoitteluId, String tila) {
-        if(hakujenAjot.containsKey(hakuOid)) {
-            if(hakujenAjot.get(hakuOid).setTila(tila)) {
-                kaikkiSijoitteluAjot.put(sijoitteluId, tila);
+    public void merkitseSijoitteluAjonTila(String hakuOid, Long sijoitteluajoId, SijoitteluajonTila tila) {
+        if (hakujenAjot.containsKey(hakuOid)) {
+            if (hakujenAjot.get(hakuOid).setTila(tila)) {
+                kaikkiSijoitteluAjot.put(sijoitteluajoId, tila);
             } else {
-                LOGGER.warn("Sijoitteluajon {} tilan {} asettaminen haulle {} ei onnistunut jostain syystä", sijoitteluId, tila, hakuOid);
+                LOGGER.warn("Sijoitteluajon {} tilan {} asettaminen haulle {} ei onnistunut jostain syystä", sijoitteluajoId, tila, hakuOid);
             }
         } else {
             LOGGER.warn("Yritettiin muuttaa olemattoman sijoittelun tilaa haulle {}. Tämä saattaa indikoida ongelmaa. ", hakuOid);
         }
     }
 
-    public SijoittelunIdJaTilaYhdiste getHaunSijoitteluAjo(String hakuOid) {
-        if(hakujenAjot.containsKey(hakuOid)) {
+    public SijoitteluAjoIdJaTilaYhdiste getHaunSijoitteluAjo(String hakuOid) {
+        if (hakujenAjot.containsKey(hakuOid)) {
             return hakujenAjot.get(hakuOid);
         } else {
             LOGGER.warn("Haulle {} ei löytynyt sijoitteluajoa", hakuOid);
@@ -70,57 +55,57 @@ public class SijoitteluBookkeeperService {
     }
 
     public String getHaunSijoitteluajonTila(String hakuOid) {
-        if(hakujenAjot.containsKey(hakuOid)) {
-            return hakujenAjot.get(hakuOid).getTila();
+        if (hakujenAjot.containsKey(hakuOid)) {
+            return hakujenAjot.get(hakuOid).getTila().toString();
         } else {
             LOGGER.warn("Haulle {} ei löytynyt sijoitteluajoa", hakuOid);
-            return HaunSijoittelunTila.EI_LOYTYNYT;
+            return SijoitteluajonTila.EI_LOYTYNYT.toString();
         }
     }
 
-    public String getSijoitteluAjonTila(Long sijoitteluId) {
-        if(kaikkiSijoitteluAjot.containsKey(sijoitteluId)) {
-            return kaikkiSijoitteluAjot.get(sijoitteluId);
+    public String getSijoitteluAjonTila(Long sijoitteluajoId) {
+        if (kaikkiSijoitteluAjot.containsKey(sijoitteluajoId)) {
+            return kaikkiSijoitteluAjot.get(sijoitteluajoId).toString();
         } else {
-            return HaunSijoittelunTila.EI_LOYTYNYT;
+            return SijoitteluajonTila.EI_LOYTYNYT.toString();
         }
     }
 
-    public class SijoittelunIdJaTilaYhdiste {
-
+    public class SijoitteluAjoIdJaTilaYhdiste {
         private String hakuOid;
         private Long sijoitteluAjoId;
-        private String tila;
-        private boolean valmisTaiVirhe;
+        private SijoitteluajonTila tila;
 
-        public SijoittelunIdJaTilaYhdiste(String hakuOid, Long sijoitteluAjoId) {
+        public SijoitteluAjoIdJaTilaYhdiste(String hakuOid, Long sijoitteluAjoId) {
             this.hakuOid = hakuOid;
             this.sijoitteluAjoId = sijoitteluAjoId;
-            this.tila = HaunSijoittelunTila.KESKEN;
-            valmisTaiVirhe = false;
+            this.tila = SijoitteluajonTila.KESKEN;
         }
         //Jos tila on ennestään VALMIS tai VIRHE, sijoitteluajo on päättynyt eikä tilaa voida enää jälkeenpäin muuttaa.
-        public boolean setTila(String tila) {
-            if (this.valmisTaiVirhe) {
+        public boolean setTila(SijoitteluajonTila tila) {
+            if (tilaValmisTaiVirhe()) {
                 LOGGER.warn("Haun {} sijoittelun {} tilaa ei voi enää muuttaa, koska se on tilassa {}", this.hakuOid, this.sijoitteluAjoId, this.tila);
                 return false;
             } else {
                 LOGGER.info("Muutetaan haun {} sijoittelun {} tilaa. Vanha: {}, Uusi: {}", hakuOid, sijoitteluAjoId, this.tila, tila);
                 this.tila = tila;
-                if (HaunSijoittelunTila.VALMIS.equals(tila) || HaunSijoittelunTila.VIRHE.equals(tila)) {
-                    valmisTaiVirhe = true;
-                }
                 return true;
             }
         }
-        public String getTila() {
-            return tila;
+
+        public SijoitteluajonTila getTila() {
+            return this.tila;
         }
+
         public Long getSijoitteluAjoId() {
             return sijoitteluAjoId;
         }
-        public boolean valmisTaiVirhe() {
-            return this.valmisTaiVirhe;
+
+        public boolean tilaValmisTaiVirhe() {
+            if (this.tila == SijoitteluajonTila.VALMIS || this.tila == SijoitteluajonTila.VIRHE) {
+                return true;
+            }
+            return false;
         }
     }
 }
