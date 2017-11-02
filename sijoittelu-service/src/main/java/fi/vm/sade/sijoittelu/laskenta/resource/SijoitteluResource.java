@@ -255,10 +255,10 @@ public class SijoitteluResource {
             LOGGER.info("Valintaperusteet asetettu {}!", hakuOid);
 
             sijoitteluBusinessService.sijoittele(haku, flatMapJonoOids(hakukohdeMapToValintatapajonoByOid), valintaperusteidenValintatapajonot, sijoitteluAjonTunniste);
-            LOGGER.info("Sijoittelu suoritettu onnistuneesti haulle {}", hakuOid);
+            LOGGER.info("Sijoitteluajo {} suoritettu onnistuneesti haulle {}", sijoitteluAjonTunniste, hakuOid);
             sijoitteluBookkeeperService.merkitseSijoitteluAjonTila(hakuOid, sijoitteluAjonTunniste, SijoitteluajonTila.VALMIS);
         } catch (Throwable t) {
-            LOGGER.error("Sijoittelu epäonnistui haulle " + hakuOid + " : " + t.getMessage(), t);
+            LOGGER.error("Sijoitteluajo (tunniste " + sijoitteluAjonTunniste +") epäonnistui haulle " + hakuOid + " : " + t.getMessage(), t);
             sijoitteluBookkeeperService.merkitseSijoitteluAjonTila(hakuOid, sijoitteluAjonTunniste, SijoitteluajonTila.VIRHE);
             throw t;
         }
