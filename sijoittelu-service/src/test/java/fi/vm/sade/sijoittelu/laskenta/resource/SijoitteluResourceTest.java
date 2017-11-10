@@ -6,6 +6,7 @@ import fi.vm.sade.service.valintaperusteet.dto.KoodiDTO;
 import fi.vm.sade.service.valintaperusteet.dto.ValintatapajonoDTO;
 import fi.vm.sade.service.valintaperusteet.dto.model.Tasapistesaanto;
 import fi.vm.sade.service.valintaperusteet.resource.ValintalaskentakoostepalveluResource;
+import fi.vm.sade.sijoittelu.domain.SijoitteluajonTila;
 import fi.vm.sade.sijoittelu.laskenta.service.business.SijoitteluBusinessService;
 import fi.vm.sade.sijoittelu.laskenta.util.EnumConverter;
 import fi.vm.sade.valintalaskenta.domain.dto.HakijaryhmaDTO;
@@ -22,8 +23,7 @@ import java.util.*;
 import static java.util.Arrays.asList;
 import static org.apache.commons.lang.StringUtils.EMPTY;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 /**
@@ -35,15 +35,31 @@ public class SijoitteluResourceTest {
     private final SijoitteluBusinessService sijoitteluBusinessService;
     private final ValintatietoService valintatietoService;
     private final ValintalaskentakoostepalveluResource valintalaskentakoostepalveluResource;
-    private final SijoitteluBookkeeperService sijoitteluBookkeeperService;
+    private final SijoitteluBookkeeperService sijoitteluBookkeeperService = new SijoitteluBookkeeperService();
 
 
     public SijoitteluResourceTest() {
         sijoitteluBusinessService = mock(SijoitteluBusinessService.class);
         valintatietoService = mock(ValintatietoService.class);
         valintalaskentakoostepalveluResource = mock(ValintalaskentakoostepalveluResource.class);
-        sijoitteluBookkeeperService = mock(SijoitteluBookkeeperService.class);
         sijoitteluResource = new SijoitteluResource(sijoitteluBusinessService,valintatietoService,valintalaskentakoostepalveluResource, sijoitteluBookkeeperService);
+    }
+
+    @Test
+    public void testaaSijoittelunLuonti() {
+        String haku1 = "1.2.3.4444";
+        String haku2 = "1.2.3.555";
+
+        Long id = sijoitteluResource.sijoittele(haku1);
+        Long id2 = sijoitteluResource.sijoittele(haku1);
+
+        String tila = sijoitteluResource.sijoittelunTila(id);
+        String tila2 = sijoitteluResource.sijoittelunTila(id2);
+
+        assertTrue(-1L == id2);
+        assertTrue(id > 0);
+        assertTrue(SijoitteluajonTila.KESKEN.toString().equals(tila));
+        assertTrue(SijoitteluajonTila.EI_LOYTYNYT.toString().equals(tila2));
     }
 
     @Test
