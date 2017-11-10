@@ -32,7 +32,6 @@ import static org.mockito.Mockito.*;
 public class SijoitteluTilatJaKuvauksetTest {
     private String hakuOid = "12345";
     private long sijoitteluajoId = 12345l;
-    private String uusiHakukohdeOid = "112233";
     private String hakukohdeOid = "112233";
     private String jonoOid = "112233.000000";
     private String hakijaOid = "peruuntunuthakija";
@@ -74,8 +73,8 @@ public class SijoitteluTilatJaKuvauksetTest {
     }
 
     @Test
-    public void testSijoittelePeruuntunut() {
-        setupMocksPeruuntunut();
+    public void testSijoitteleHakemuksenTilallaPeruuntunut() {
+        setupMocksHakemuksenTilaPeruuntunut();
 
         service.sijoittele(hakuDTO(), Collections.emptySet(), Sets.newHashSet("112233.000000"));
 
@@ -91,8 +90,8 @@ public class SijoitteluTilatJaKuvauksetTest {
     }
 
     @Test
-    public void testSijoittelePerunut() {
-        setupMocksPerunut();
+    public void testSijoitteleValintatuloksenTilallaPerunut() {
+        setupMocksValintatuloksenTilaPerunut();
 
         service.sijoittele(hakuDTO(), Collections.emptySet(), Sets.newHashSet("112233.000000"));
 
@@ -107,16 +106,21 @@ public class SijoitteluTilatJaKuvauksetTest {
         verifyAndCaptureAndAssert(assertFunction);
     }
 
-    private void setupMocksPeruuntunut() {
+    private void setupMocksHakemuksenTilaPeruuntunut() {
         when(valintarekisteriService.getLatestSijoitteluajo(hakuOid)).thenReturn(valintarekisteriSijoitteluajo());
         when(valintarekisteriService.getSijoitteluajonHakukohteet(sijoitteluajoId)).thenReturn(valintarekisteriHakukohteetHakemuksenTilalla(HakemuksenTila.PERUUNTUNUT));
         when(valintaTulosServiceResource.haunKoulutuksenAlkamiskaudenVastaanototYhdenPaikanSaadoksenPiirissa(hakuOid)).thenReturn(vastaanototToisessaHakukohteessa());
     }
 
-    private void setupMocksPerunut() {
+    private void setupMocksValintatuloksenTilaPerunut() {
         when(valintarekisteriService.getLatestSijoitteluajo(hakuOid)).thenReturn(valintarekisteriSijoitteluajo());
-        when(valintarekisteriService.getSijoitteluajonHakukohteet(sijoitteluajoId)).thenReturn(valintarekisteriHakukohteetHakemuksenTilalla(HakemuksenTila.PERUNUT));
+        when(valintarekisteriService.getSijoitteluajonHakukohteet(sijoitteluajoId)).thenReturn(valintarekisteriHakukohteetHakemuksenTilalla(HakemuksenTila.HYVAKSYTTY));
         when(valintaTulosServiceResource.haunKoulutuksenAlkamiskaudenVastaanototYhdenPaikanSaadoksenPiirissa(hakuOid)).thenReturn(vastaanototToisessaHakukohteessa());
+
+        Valintatulos valintatulos = new Valintatulos(jonoOid, hakijaOid, hakukohdeOid, hakijaOid, hakuOid, 0);
+        valintatulos.setTila(ValintatuloksenTila.PERUNUT, "selite", "muokkaaja");
+        List<Valintatulos> mockValintatulokset = Arrays.asList(valintatulos);
+        when(valintarekisteriService.getValintatulokset(hakuOid)).thenReturn(mockValintatulokset);
     }
 
     private SijoitteluAjo valintarekisteriSijoitteluajo() {
@@ -138,7 +142,7 @@ public class SijoitteluTilatJaKuvauksetTest {
         haku.setHakuOid(hakuOid);
 
         HakukohdeDTO hakukohde = new HakukohdeDTO();
-        hakukohde.setOid(uusiHakukohdeOid);
+        hakukohde.setOid(hakukohdeOid);
         ValintatietoValinnanvaiheDTO vaihe = new ValintatietoValinnanvaiheDTO(1, "1", hakuOid, "vaihe1", new java.util.Date(), jonot, Collections.emptyList());
         hakukohde.setValinnanvaihe(Arrays.asList(vaihe));
         haku.setHakukohteet(Arrays.asList(hakukohde));
