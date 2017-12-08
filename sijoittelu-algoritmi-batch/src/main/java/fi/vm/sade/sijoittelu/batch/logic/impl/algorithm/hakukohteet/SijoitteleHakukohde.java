@@ -107,7 +107,7 @@ public class SijoitteleHakukohde {
             return muuttuneetHakukohteet;
         }
         // Hakukierros on päättynyt tai käsiteltävän jonon varasijasäännöt eivät ole enää voimassa.
-        // Asetetaan kaikki hakemukset joiden tila voidaan vaihtaa tilaan peruuntunut
+        // Asetetaan kaikki hakemukset joiden tila voidaan vaihtaa tilaan peruuntunut, paitsi jos ne on hyväksytty tai varasijalta hyväksytty edellisessä sijoitteluajossa.
         if (sijoitteluAjo.hakukierrosOnPaattynyt() || sijoitteluAjo.onkoVarasijaSaannotVoimassaJaVarasijaTayttoPaattynyt(valintatapajono)) {
             hakukierrosPaattynyt(valituksiHaluavatHakemukset);
             return muuttuneetHakukohteet;
@@ -222,10 +222,24 @@ public class SijoitteleHakukohde {
     }
 
     private static void hakukierrosPaattynyt(List<HakemusWrapper> hakemukset) {
-        hakemukset.forEach(hk -> {
-            if (hk.isTilaVoidaanVaihtaa()) {
-                asetaTilaksiPeruuntunutHakukierrosPaattynyt(hk);
-                hk.setTilaVoidaanVaihtaa(false);
+        hakemukset.forEach(hakemusWrapper -> {
+            if (hakemusWrapper.isTilaVoidaanVaihtaa()) {
+                HakemuksenTila edellinenTila = hakemusWrapper.getHakemus().getEdellinenTila();
+                if (kuuluuHyvaksyttyihinTiloihin(edellinenTila)) {
+                    LOG.info("Ei merkitä hakemuksen {} tilaa peruuntuneeksi, koska se on hyväksytty edellisessä sijoitteluajossa. Pidetään voimassa hakemuksen aiempi tila ({})",
+                            hakemusWrapper.getHakemus().getHakemusOid(),
+                            edellinenTila);
+                    if (HakemuksenTila.HYVAKSYTTY.equals(edellinenTila)) {
+                        asetaTilaksiHyvaksytty(hakemusWrapper);
+                        hakemusWrapper.setTilaVoidaanVaihtaa(false);
+                    } else {
+                        asetaTilaksiVarasijaltaHyvaksytty(hakemusWrapper);
+                        hakemusWrapper.setTilaVoidaanVaihtaa(false);
+                    }
+                } else {
+                    asetaTilaksiPeruuntunutHakukierrosPaattynyt(hakemusWrapper);
+                    hakemusWrapper.setTilaVoidaanVaihtaa(false);
+                }
             }
         });
     }
