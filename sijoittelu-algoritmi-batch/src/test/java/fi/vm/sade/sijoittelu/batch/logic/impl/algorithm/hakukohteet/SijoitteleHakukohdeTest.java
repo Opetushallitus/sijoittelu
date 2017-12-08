@@ -1,29 +1,100 @@
 package fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.hakukohteet;
 
 import static fi.vm.sade.sijoittelu.SijoitteluMatchers.hasTila;
-import static fi.vm.sade.sijoittelu.domain.HakemuksenTila.HYVAKSYTTY;
-import static fi.vm.sade.sijoittelu.domain.HakemuksenTila.PERUNUT;
-import static fi.vm.sade.sijoittelu.domain.HakemuksenTila.PERUUNTUNUT;
-import static fi.vm.sade.sijoittelu.domain.HakemuksenTila.VARALLA;
+import static fi.vm.sade.sijoittelu.domain.HakemuksenTila.*;
 import static fi.vm.sade.sijoittelu.domain.Tasasijasaanto.ARVONTA;
+import static fi.vm.sade.sijoittelu.domain.Tasasijasaanto.YLITAYTTO;
+import static junit.framework.TestCase.assertTrue;
 import static org.junit.Assert.assertThat;
 
+import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.helper.HakuBuilder;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.helper.HakuBuilder.HakemusBuilder;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.helper.HakuBuilder.HakukohdeBuilder;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.helper.HakuBuilder.ValintatapajonoBuilder;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.util.SijoitteluAlgorithmUtil;
-import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.HakemusWrapper;
-import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.HenkiloWrapper;
+import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.*;
+import fi.vm.sade.sijoittelu.domain.HakemuksenTila;
 import fi.vm.sade.sijoittelu.domain.Hakemus;
 import fi.vm.sade.sijoittelu.domain.Hakukohde;
 import fi.vm.sade.sijoittelu.domain.Valintatapajono;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 
 public class SijoitteleHakukohdeTest {
+
+    private final Hakemus hakemus1 = new HakuBuilder.HakemusBuilder().withOid("hakemus1")
+            .withJonosija(1).withTila(HYVAKSYTTY).withEdellinenTila(HYVAKSYTTY).withPrioriteetti(1).build();
+    private final Hakemus hakemus2 = new HakuBuilder.HakemusBuilder().withOid("hakemus2")
+            .withJonosija(2).withTila(VARALLA).withEdellinenTila(HYVAKSYTTY).withPrioriteetti(3).build();
+    private final Hakemus hakemus3 = new HakuBuilder.HakemusBuilder().withOid("hakemus3")
+            .withJonosija(3).withTila(VARALLA).withEdellinenTila(VARASIJALTA_HYVAKSYTTY).withPrioriteetti(2).build();
+    private final Hakemus hakemus4 = new HakuBuilder.HakemusBuilder().withOid("hakemus4")
+            .withJonosija(4).withTila(VARALLA).withEdellinenTila(HYLATTY).withPrioriteetti(1).build();
+
+    private Valintatapajono jono = new HakuBuilder.ValintatapajonoBuilder().withOid("jono1")
+            .withTasasijasaanto(YLITAYTTO)
+            .withAloituspaikat(2)
+            .withPrioriteetti(0)
+            .withHakemukset(hakemus1, hakemus2, hakemus3, hakemus4)
+            .withSivssnov(true)
+            .build();
+
+    private SijoitteluajoWrapper sijoitteluajoWrapper;
+    private HakukohdeWrapper hakukohdeWrapper;
+    private ValintatapajonoWrapper valintatapajonoWrapper;
+
+    @Before
+    public void valmisteleSijoitteluajoWrapper() {
+        jono.setEiVarasijatayttoa(false);
+        Hakukohde hakukohde = new HakuBuilder.HakukohdeBuilder("Testihakukohde_1").withValintatapajono(jono).build();
+        sijoitteluajoWrapper = new HakuBuilder.SijoitteluajoWrapperBuilder(Collections.singletonList(hakukohde)).build();
+        sijoitteluajoWrapper.setVarasijaSaannotAstuvatVoimaan(LocalDateTime.now().minusDays(2));
+        sijoitteluajoWrapper.setVarasijaTayttoPaattyy(LocalDateTime.now().minusDays(1));
+        assertTrue(sijoitteluajoWrapper.varasijaSaannotVoimassa());
+        List<HakemusWrapper> hwlist = new ArrayList<>();
+        HakemusWrapper hw1 = new HakemusWrapper();
+        hw1.setHakemus(hakemus1);
+        hw1.setHenkilo(new HenkiloWrapper());
+        HakemusWrapper hw2 = new HakemusWrapper();
+        hw2.setHakemus(hakemus2);
+        hw2.setHenkilo(new HenkiloWrapper());
+        HakemusWrapper hw3 = new HakemusWrapper();
+        hw3.setHakemus(hakemus3);
+        hw3.setHenkilo(new HenkiloWrapper());
+        HakemusWrapper hw4 = new HakemusWrapper();
+        hw4.setHakemus(hakemus4);
+        hw4.setHenkilo(new HenkiloWrapper());
+        hwlist.add(hw1);
+        hwlist.add(hw2);
+        hwlist.add(hw3);
+        hwlist.add(hw4);
+
+        valintatapajonoWrapper = new ValintatapajonoWrapper();
+        valintatapajonoWrapper.setValintatapajono(jono);
+        valintatapajonoWrapper.setHakemukset(hwlist);
+        valintatapajonoWrapper.getHakemukset().forEach(hw -> {
+            hw.setValintatapajono(valintatapajonoWrapper);
+        });
+        hakukohdeWrapper = new HakukohdeWrapper();
+        hakukohdeWrapper.setHakukohde(hakukohde);
+        hakukohdeWrapper.setValintatapajonot(Collections.singletonList(valintatapajonoWrapper));
+        }
+
+    @Test
+    public void testValintatapajononSijoitteluEiPeruunnutaEdellisenSijoitteluajonHyvaksymiaHakijoitaJosVarasijatayttoOnPaattynyt() {
+        SijoitteleHakukohde.sijoitteleHakukohde(sijoitteluajoWrapper, hakukohdeWrapper);
+        assertTrue(HakemuksenTila.HYVAKSYTTY.equals(hakemus1.getTila()));
+        assertTrue(HakemuksenTila.HYVAKSYTTY.equals(hakemus2.getTila()));
+        assertTrue(HakemuksenTila.VARASIJALTA_HYVAKSYTTY.equals(hakemus3.getTila()));
+        assertTrue(HakemuksenTila.PERUUNTUNUT.equals(hakemus4.getTila()));
+    }
 
     @Test
     public void eiPeruttuaKorkeampaaTaiSamaaHakutoivettaTest() {
