@@ -221,12 +221,13 @@ public class SijoitteleHakukohde {
                 hakemusWrapper.isHyvaksyttavissaHakijaryhmanJalkeen();
     }
 
+    //Asetetaan kaikki syötteenä saadut hakemukset tilaan PERUUNTUNUT, paitsi jos hakemus oli edellisessä sijoitteluajossa HYVAKSYTTY tai VARASIJALTA_HYVAKSYTTY
     private static void hakukierrosPaattynyt(List<HakemusWrapper> hakemukset) {
         hakemukset.forEach(hakemusWrapper -> {
             if (hakemusWrapper.isTilaVoidaanVaihtaa()) {
                 HakemuksenTila edellinenTila = hakemusWrapper.getHakemus().getEdellinenTila();
                 if (kuuluuHyvaksyttyihinTiloihin(edellinenTila)) {
-                    LOG.info("Ei merkitä hakemuksen {} tilaa peruuntuneeksi, koska se on hyväksytty edellisessä sijoitteluajossa. Pidetään voimassa hakemuksen aiempi tila ({})",
+                    LOG.info("Ei merkitä hakemuksen {} tilaa peruuntuneeksi varasijatäytön päätyttyä, koska se on hyväksytty edellisessä sijoitteluajossa. Pidetään voimassa hakemuksen aiempi tila ({})",
                             hakemusWrapper.getHakemus().getHakemusOid(),
                             edellinenTila);
                     if (HakemuksenTila.HYVAKSYTTY.equals(edellinenTila)) {
