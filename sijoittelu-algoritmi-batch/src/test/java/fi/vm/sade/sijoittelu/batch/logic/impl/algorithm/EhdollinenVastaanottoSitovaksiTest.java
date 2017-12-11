@@ -76,7 +76,7 @@ public class EhdollinenVastaanottoSitovaksiTest {
         korjaaTilaJaEdellinenTilaSijoittelunJalkeen();
 
         sijoittele(kkHakuVarasijatayttoPaattynyt, Arrays.asList(vastaanotto), ylempiHakukohdeJossaEnsinVaralla, alempiHakukohdeJohonVastaanottoKohdistuu);
-        assertHakemustenTilat(PERUUNTUNUT, PERUUNTUNUT, PERUUNTUNUT, PERUUNTUNUT);
+        assertHakemustenTilat(HYVAKSYTTY, PERUUNTUNUT, PERUUNTUNUT, PERUUNTUNUT);
         assertEquals(HYVAKSYTTY, vastaanottoHakemus3.getTila());
         assertEquals(ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI, vastaanotto.getTila());
     }
