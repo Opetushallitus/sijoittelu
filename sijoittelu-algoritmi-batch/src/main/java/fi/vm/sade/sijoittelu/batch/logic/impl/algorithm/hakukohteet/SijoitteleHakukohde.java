@@ -233,9 +233,14 @@ public class SijoitteleHakukohde {
                     if (HakemuksenTila.HYVAKSYTTY.equals(edellinenTila)) {
                         asetaTilaksiHyvaksytty(hakemusWrapper);
                         hakemusWrapper.setTilaVoidaanVaihtaa(false);
-                    } else {
+                    } else if (HakemuksenTila.VARASIJALTA_HYVAKSYTTY.equals(edellinenTila)) {
                         asetaTilaksiVarasijaltaHyvaksytty(hakemusWrapper);
                         hakemusWrapper.setTilaVoidaanVaihtaa(false);
+                    } else {
+                        throw new IllegalStateException("Hakemuksen " + hakemusWrapper.getHakemus().getHakemusOid() +
+                            " tila jonossa " + hakemusWrapper.getValintatapajono().getValintatapajono().getOid() +
+                            " on " + hakemusWrapper.getHakemus().getTila() + ". Kuuluuko se hyväksyttyihin tiloihin? " +
+                            "Vaikuttaa bugilta.");
                     }
                 } else {
                     asetaTilaksiPeruuntunutHakukierrosPaattynyt(hakemusWrapper);
