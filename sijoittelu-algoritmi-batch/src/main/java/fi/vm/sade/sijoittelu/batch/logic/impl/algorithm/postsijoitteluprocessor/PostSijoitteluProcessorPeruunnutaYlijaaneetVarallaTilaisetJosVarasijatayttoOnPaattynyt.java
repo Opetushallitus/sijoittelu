@@ -20,7 +20,8 @@ public class PostSijoitteluProcessorPeruunnutaYlijaaneetVarallaTilaisetJosVarasi
     public void process(SijoitteluajoWrapper sijoitteluajoWrapper) {
 
         if (sijoitteluajoWrapper.varasijaSaannotVoimassa()) {
-            LOG.info(String.format("Varasijasäännöt ovat voimassa, varmistetaan että %s-tilaiset muutetaan tilaan %s kaikille jonoille, joiden varasijatäyttö on päättynyt", VARALLA, PERUUNTUNUT));
+            LOG.info(String.format("Varasijasäännöt ovat voimassa, varmistetaan että %s-tilaiset muutetaan tilaan %s " +
+                "kaikille jonoille, joiden varasijatäyttö on päättynyt", VARALLA, PERUUNTUNUT));
             List<ValintatapajonoWrapper> kasiteltavatJonot = sijoitteluajoWrapper.getHakukohteet().stream()
                 .flatMap(hkv -> hkv.getValintatapajonot().stream())
                 .filter(sijoitteluajoWrapper::onkoVarasijaSaannotVoimassaJaVarasijaTayttoPaattynyt)
@@ -30,10 +31,13 @@ public class PostSijoitteluProcessorPeruunnutaYlijaaneetVarallaTilaisetJosVarasi
                 .filter(HakemusWrapper::isVaralla)
                 .forEach(hw -> {
                     if (hw.isTilaVoidaanVaihtaa()) {
-                        LOG.info(String.format("(AjoId: %s ) PostProcessor: Asetetaan %s oleva hakemus %s tilaan %s", sijoitteluajoWrapper.getSijoitteluAjoId(), VARALLA, hw.getHakemus().getHakemusOid(), PERUUNTUNUT));
+                        LOG.info(String.format("(AjoId: %s ) PostProcessor: Asetetaan %s oleva hakemus %s tilaan %s",
+                            sijoitteluajoWrapper.getSijoitteluAjoId(), VARALLA, hw.getHakemus().getHakemusOid(), PERUUNTUNUT));
                         TilojenMuokkaus.asetaTilaksiPeruuntunutHakukierrosPaattynyt(hw);
                     } else {
-                        LOG.info(String.format("(AjoId: %s ) PostProcessor: Oltaisiin haluttu asettaa %s oleva hakemus %s tilaan %s, mutta sen tila ei ole jostain syystä muokattavissa", sijoitteluajoWrapper.getSijoitteluAjoId(), VARALLA, hw.getHakemus().getHakemusOid(), PERUUNTUNUT));
+                        LOG.info(String.format("(AjoId: %s ) PostProcessor: Oltaisiin haluttu asettaa %s oleva hakemus %s tilaan %s, " +
+                            "mutta sen tila ei ole jostain syystä muokattavissa",
+                            sijoitteluajoWrapper.getSijoitteluAjoId(), VARALLA, hw.getHakemus().getHakemusOid(), PERUUNTUNUT));
                     }
                 });
         }
