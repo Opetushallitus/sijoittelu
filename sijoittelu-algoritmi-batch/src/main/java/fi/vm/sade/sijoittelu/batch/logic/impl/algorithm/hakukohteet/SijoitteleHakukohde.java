@@ -32,6 +32,7 @@ import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.HenkiloWrapper;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.SijoitteluajoWrapper;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.ValintatapajonoWrapper;
 import fi.vm.sade.sijoittelu.domain.HakemuksenTila;
+import fi.vm.sade.sijoittelu.domain.Hakemus;
 import fi.vm.sade.sijoittelu.domain.Tasasijasaanto;
 import fi.vm.sade.sijoittelu.domain.Valintatapajono;
 import fi.vm.sade.sijoittelu.domain.ValintatuloksenTila;
@@ -225,11 +226,13 @@ public class SijoitteleHakukohde {
     private static void hakukierrosPaattynyt(List<HakemusWrapper> hakemukset) {
         hakemukset.forEach(hakemusWrapper -> {
             if (hakemusWrapper.isTilaVoidaanVaihtaa()) {
-                HakemuksenTila edellinenTila = hakemusWrapper.getHakemus().getEdellinenTila();
+                Hakemus hakemus = hakemusWrapper.getHakemus();
+                HakemuksenTila edellinenTila = hakemus.getEdellinenTila();
                 if (kuuluuHyvaksyttyihinTiloihin(edellinenTila)) {
-                    LOG.info("Ei merkitä hakemuksen {} tilaa peruuntuneeksi varasijatäytön päätyttyä, koska se on hyväksytty edellisessä sijoitteluajossa. Pidetään voimassa hakemuksen aiempi tila ({})",
-                            hakemusWrapper.getHakemus().getHakemusOid(),
-                            edellinenTila);
+                    LOG.info(String.format("Ei merkitä hakemuksen %s tilaa peruuntuneeksi varasijatäytön päätyttyä, " +
+                        "koska se on hyväksytty edellisessä sijoitteluajossa. " +
+                        "Pidetään voimassa hakemuksen aiempi tila (%s )",
+                        hakemus.getHakemusOid(), edellinenTila));
                     if (HakemuksenTila.HYVAKSYTTY.equals(edellinenTila)) {
                         asetaTilaksiHyvaksytty(hakemusWrapper);
                         hakemusWrapper.setTilaVoidaanVaihtaa(false);
@@ -237,10 +240,9 @@ public class SijoitteleHakukohde {
                         asetaTilaksiVarasijaltaHyvaksytty(hakemusWrapper);
                         hakemusWrapper.setTilaVoidaanVaihtaa(false);
                     } else {
-                        throw new IllegalStateException("Hakemuksen " + hakemusWrapper.getHakemus().getHakemusOid() +
-                            " tila jonossa " + hakemusWrapper.getValintatapajono().getValintatapajono().getOid() +
-                            " on " + hakemusWrapper.getHakemus().getTila() + ". Kuuluuko se hyväksyttyihin tiloihin? " +
-                            "Vaikuttaa bugilta.");
+                        throw new IllegalStateException(String.format("Hakemuksen %s tila jonossa %s on %s. Kuuluuko se " +
+                            "hyväksyttyihin tiloihin? Vaikuttaa bugilta.",
+                            hakemus.getHakemusOid(), hakemusWrapper.getValintatapajono().getValintatapajono().getOid(), hakemus.getTila()));
                     }
                 } else {
                     asetaTilaksiPeruuntunutHakukierrosPaattynyt(hakemusWrapper);
