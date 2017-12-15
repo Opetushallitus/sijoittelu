@@ -85,7 +85,6 @@ public class PostSijoitteluProcessorPeruunnutaYlijaaneetVarallaTilaisetJosVarasi
 
         assertTrue(VARALLA.equals(hakemus13.getTila()));
         assertTrue(VARALLA.equals(hakemus14.getTila()));
-
     }
 
     @Test
