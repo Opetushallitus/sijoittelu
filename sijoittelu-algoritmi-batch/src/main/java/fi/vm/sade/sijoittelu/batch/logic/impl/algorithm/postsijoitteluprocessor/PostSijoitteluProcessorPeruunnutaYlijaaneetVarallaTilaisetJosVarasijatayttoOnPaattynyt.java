@@ -31,11 +31,11 @@ public class PostSijoitteluProcessorPeruunnutaYlijaaneetVarallaTilaisetJosVarasi
                 .forEach(hw -> {
                     if (hw.isTilaVoidaanVaihtaa()) {
                         LOG.info("(AjoId: {} ) PostProcessor: Asetetaan " + VARALLA + " oleva hakemus {} tilaan " + PERUUNTUNUT,
-                            sijoitteluajoWrapper.getSijoitteluajo().getSijoitteluajoId(), hw.getHakemus().getHakemusOid());
+                            sijoitteluajoWrapper.getSijoitteluAjoId(), hw.getHakemus().getHakemusOid());
                         TilojenMuokkaus.asetaTilaksiPeruuntunutHakukierrosPaattynyt(hw);
                     } else {
                         LOG.info("(AjoId: {} ) PostProcessor: Oltaisiin haluttu asettaa " + VARALLA + " oleva hakemus {} tilaan " + PERUUNTUNUT + ", mutta sen tila ei ole jostain syystä muokattavissa",
-                            sijoitteluajoWrapper.getSijoitteluajo().getSijoitteluajoId(), hw.getHakemus().getHakemusOid());
+                            sijoitteluajoWrapper.getSijoitteluAjoId(), hw.getHakemus().getHakemusOid());
                     }
                 });
         }
