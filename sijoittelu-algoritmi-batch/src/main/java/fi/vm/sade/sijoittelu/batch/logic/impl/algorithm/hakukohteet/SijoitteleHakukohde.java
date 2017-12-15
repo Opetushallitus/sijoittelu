@@ -229,10 +229,11 @@ public class SijoitteleHakukohde {
                 Hakemus hakemus = hakemusWrapper.getHakemus();
                 HakemuksenTila edellinenTila = hakemus.getEdellinenTila();
                 if (kuuluuHyvaksyttyihinTiloihin(edellinenTila)) {
-                    LOG.info(String.format("Ei merkitä hakemuksen %s tilaa peruuntuneeksi varasijatäytön päätyttyä, " +
-                        "koska se on hyväksytty edellisessä sijoitteluajossa. " +
-                        "Pidetään voimassa hakemuksen aiempi tila (%s )",
-                        hakemus.getHakemusOid(), edellinenTila));
+                    String hakemuksenTunniste = String.format("Hakemus %s jonossa %s kohteessa %s tilassa %s, edellinen tila %s: ",
+                        hakemus.getHakemusOid(), hakemusWrapper.getValintatapajono().getValintatapajono().getOid(), hakemusWrapper.getHakukohdeOid(), hakemus.getTila(), edellinenTila);
+                    LOG.info(hakemuksenTunniste + "Ei merkitä hakemuksen tilaa peruuntuneeksi varasijatäytön päätyttyä, " +
+                        "koska hakemus on hyväksytty edellisessä sijoitteluajossa. " +
+                        "Pidetään voimassa hakemuksen edellinen tila");
                     if (HakemuksenTila.HYVAKSYTTY.equals(edellinenTila)) {
                         asetaTilaksiHyvaksytty(hakemusWrapper);
                         hakemusWrapper.setTilaVoidaanVaihtaa(false);
@@ -240,9 +241,8 @@ public class SijoitteleHakukohde {
                         asetaTilaksiVarasijaltaHyvaksytty(hakemusWrapper);
                         hakemusWrapper.setTilaVoidaanVaihtaa(false);
                     } else {
-                        throw new IllegalStateException(String.format("Hakemuksen %s tila jonossa %s on %s. Kuuluuko se " +
-                            "hyväksyttyihin tiloihin? Vaikuttaa bugilta.",
-                            hakemus.getHakemusOid(), hakemusWrapper.getValintatapajono().getValintatapajono().getOid(), hakemus.getTila()));
+                        throw new IllegalStateException(String.format("%sKuuluuko %s hyväksyttyihin tiloihin? Vaikuttaa bugilta.",
+                            hakemuksenTunniste, edellinenTila));
                     }
                 } else {
                     asetaTilaksiPeruuntunutHakukierrosPaattynyt(hakemusWrapper);

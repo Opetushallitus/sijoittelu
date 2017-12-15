@@ -85,6 +85,7 @@ public class SijoitteleHakukohdeTest {
         hakukohdeWrapper = new HakukohdeWrapper();
         hakukohdeWrapper.setHakukohde(hakukohde);
         hakukohdeWrapper.setValintatapajonot(Collections.singletonList(valintatapajonoWrapper));
+        valintatapajonoWrapper.setHakukohdeWrapper(hakukohdeWrapper);
         }
 
     @Test
