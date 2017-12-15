@@ -18,7 +18,6 @@ public class PostSijoitteluProcessorPeruunnutaYlijaaneetVarallaTilaisetJosVarasi
 
     @Override
     public void process(SijoitteluajoWrapper sijoitteluajoWrapper) {
-
         if (sijoitteluajoWrapper.varasijaSaannotVoimassa()) {
             LOG.info(String.format("Varasijasäännöt ovat voimassa, varmistetaan että %s-tilaiset muutetaan tilaan %s " +
                 "kaikille jonoille, joiden varasijatäyttö on päättynyt", VARALLA, PERUUNTUNUT));
