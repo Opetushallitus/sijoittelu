@@ -10,31 +10,31 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class PostSijoitteluProcessorPeruunnutaYlijaaneetVarallaTilaisetJosVarasijatayttoOnPaattynyt implements  PostSijoitteluProcessor {
+public class PostSijoitteluProcessorPeruunnutaYlijaaneetVarallaTilaisetJosVarasijatayttoOnPaattynyt implements PostSijoitteluProcessor {
     Logger LOG = LoggerFactory.getLogger(PostSijoitteluProcessorPeruunnutaYlijaaneetVarallaTilaisetJosVarasijatayttoOnPaattynyt.class);
 
     @Override
     public void process(SijoitteluajoWrapper sijoitteluajoWrapper) {
 
-        if(sijoitteluajoWrapper.varasijaSaannotVoimassa()) {
+        if (sijoitteluajoWrapper.varasijaSaannotVoimassa()) {
             LOG.info("Varasijasäännöt ovat voimassa, varmistetaan että VARALLA-tilaiset muutetaan tilaan PERUUNTUNUT kaikille jonoille, joiden varasijatäyttö on päättynyt");
             List<ValintatapajonoWrapper> kasiteltavatJonot = sijoitteluajoWrapper.getHakukohteet().stream()
-                    .flatMap(hkv -> hkv.getValintatapajonot().stream())
-                    .filter(sijoitteluajoWrapper::onkoVarasijaSaannotVoimassaJaVarasijaTayttoPaattynyt)
-                    .collect(Collectors.toList());
+                .flatMap(hkv -> hkv.getValintatapajonot().stream())
+                .filter(sijoitteluajoWrapper::onkoVarasijaSaannotVoimassaJaVarasijaTayttoPaattynyt)
+                .collect(Collectors.toList());
 
             kasiteltavatJonot.stream().flatMap(jonoWrapper -> jonoWrapper.getHakemukset().stream())
-                    .filter(HakemusWrapper::isVaralla)
-                    .forEach(hw -> {
-                        if(hw.isTilaVoidaanVaihtaa()) {
-                            LOG.info("(AjoId: {} ) PostProcessor: Asetetaan VARALLA oleva hakemus {} tilaan PERUUNTUNUT",
-                                    sijoitteluajoWrapper.getSijoitteluajo().getSijoitteluajoId(), hw.getHakemus().getHakemusOid());
-                            TilojenMuokkaus.asetaTilaksiPeruuntunutHakukierrosPaattynyt(hw);
-                        } else {
-                            LOG.info("(AjoId: {} ) PostProcessor: Oltaisiin haluttu asettaa VARALLA oleva hakemus {} tilaan PERUUNTUNUT, mutta sen tila ei ole jostain syystä muokattavissa",
-                                    sijoitteluajoWrapper.getSijoitteluajo().getSijoitteluajoId(), hw.getHakemus().getHakemusOid());
-                        }
-                    });
+                .filter(HakemusWrapper::isVaralla)
+                .forEach(hw -> {
+                    if (hw.isTilaVoidaanVaihtaa()) {
+                        LOG.info("(AjoId: {} ) PostProcessor: Asetetaan VARALLA oleva hakemus {} tilaan PERUUNTUNUT",
+                            sijoitteluajoWrapper.getSijoitteluajo().getSijoitteluajoId(), hw.getHakemus().getHakemusOid());
+                        TilojenMuokkaus.asetaTilaksiPeruuntunutHakukierrosPaattynyt(hw);
+                    } else {
+                        LOG.info("(AjoId: {} ) PostProcessor: Oltaisiin haluttu asettaa VARALLA oleva hakemus {} tilaan PERUUNTUNUT, mutta sen tila ei ole jostain syystä muokattavissa",
+                            sijoitteluajoWrapper.getSijoitteluajo().getSijoitteluajoId(), hw.getHakemus().getHakemusOid());
+                    }
+                });
         }
     }
 }
