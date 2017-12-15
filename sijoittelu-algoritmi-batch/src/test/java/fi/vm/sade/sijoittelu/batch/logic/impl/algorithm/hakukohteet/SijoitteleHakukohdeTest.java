@@ -30,21 +30,21 @@ import java.util.List;
 public class SijoitteleHakukohdeTest {
 
     private final Hakemus hakemus1 = new HakuBuilder.HakemusBuilder().withOid("hakemus1")
-            .withJonosija(1).withTila(HYVAKSYTTY).withEdellinenTila(HYVAKSYTTY).withPrioriteetti(1).build();
+        .withJonosija(1).withTila(HYVAKSYTTY).withEdellinenTila(HYVAKSYTTY).withPrioriteetti(1).build();
     private final Hakemus hakemus2 = new HakuBuilder.HakemusBuilder().withOid("hakemus2")
-            .withJonosija(2).withTila(VARALLA).withEdellinenTila(HYVAKSYTTY).withPrioriteetti(3).build();
+        .withJonosija(2).withTila(VARALLA).withEdellinenTila(HYVAKSYTTY).withPrioriteetti(3).build();
     private final Hakemus hakemus3 = new HakuBuilder.HakemusBuilder().withOid("hakemus3")
-            .withJonosija(3).withTila(VARALLA).withEdellinenTila(VARASIJALTA_HYVAKSYTTY).withPrioriteetti(2).build();
+        .withJonosija(3).withTila(VARALLA).withEdellinenTila(VARASIJALTA_HYVAKSYTTY).withPrioriteetti(2).build();
     private final Hakemus hakemus4 = new HakuBuilder.HakemusBuilder().withOid("hakemus4")
-            .withJonosija(4).withTila(VARALLA).withEdellinenTila(HYLATTY).withPrioriteetti(1).build();
+        .withJonosija(4).withTila(VARALLA).withEdellinenTila(HYLATTY).withPrioriteetti(1).build();
 
     private Valintatapajono jono = new HakuBuilder.ValintatapajonoBuilder().withOid("jono1")
-            .withTasasijasaanto(YLITAYTTO)
-            .withAloituspaikat(2)
-            .withPrioriteetti(0)
-            .withHakemukset(hakemus1, hakemus2, hakemus3, hakemus4)
-            .withSivssnov(true)
-            .build();
+        .withTasasijasaanto(YLITAYTTO)
+        .withAloituspaikat(2)
+        .withPrioriteetti(0)
+        .withHakemukset(hakemus1, hakemus2, hakemus3, hakemus4)
+        .withSivssnov(true)
+        .build();
 
     private SijoitteluajoWrapper sijoitteluajoWrapper;
     private HakukohdeWrapper hakukohdeWrapper;
@@ -86,7 +86,7 @@ public class SijoitteleHakukohdeTest {
         hakukohdeWrapper.setHakukohde(hakukohde);
         hakukohdeWrapper.setValintatapajonot(Collections.singletonList(valintatapajonoWrapper));
         valintatapajonoWrapper.setHakukohdeWrapper(hakukohdeWrapper);
-        }
+    }
 
     @Test
     public void testValintatapajononSijoitteluEiPeruunnutaEdellisenSijoitteluajonHyvaksymiaHakijoitaJosVarasijatayttoOnPaattynyt() {
