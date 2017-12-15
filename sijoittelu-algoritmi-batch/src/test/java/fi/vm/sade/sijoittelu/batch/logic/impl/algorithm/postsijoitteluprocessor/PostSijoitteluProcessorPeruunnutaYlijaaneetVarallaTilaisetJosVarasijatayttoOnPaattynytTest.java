@@ -65,12 +65,13 @@ public class PostSijoitteluProcessorPeruunnutaYlijaaneetVarallaTilaisetJosVarasi
     public void valmisteleSijoitteluajoWrapper() {
         Hakukohde hakukohde = new HakuBuilder.HakukohdeBuilder("hk1").withValintatapajono(jono).withValintatapajono(jono2).build();
         sijoitteluajoWrapper = new HakuBuilder.SijoitteluajoWrapperBuilder(Collections.singletonList(hakukohde)).build();
+        sijoitteluajoWrapper.getSijoitteluajo().setSijoitteluajoId(1234567L);
         sijoitteluajoWrapper.setVarasijaSaannotAstuvatVoimaan(LocalDateTime.now().minusDays(2));
         assertTrue(sijoitteluajoWrapper.varasijaSaannotVoimassa());
     }
 
     @Test
-    public void testYlijaanytVarallaTilainenHakemusMuutetaanPeruuntuneeksiJosVarasijasaannotVoimassaJaVarasijatayttoPaattynyt() throws Exception {
+    public void testYlijaanytVarallaTilainenHakemusMuutetaanPeruuntuneeksiJosVarasijasaannotVoimassaJaVarasijatayttoPaattynyt() {
         jono.setSijoiteltuIlmanVarasijasaantojaNiidenOllessaVoimassa(true);
         jono2.setSijoiteltuIlmanVarasijasaantojaNiidenOllessaVoimassa(true);
 
@@ -88,7 +89,7 @@ public class PostSijoitteluProcessorPeruunnutaYlijaaneetVarallaTilaisetJosVarasi
     }
 
     @Test
-    public void testVarallaTilaisiaHakemuksiaEiPeruunnutetaJosJononVarasijatayttoEiOleVoimassa() throws Exception {
+    public void testVarallaTilaisiaHakemuksiaEiPeruunnutetaJosJononVarasijatayttoEiOleVoimassa() {
         sijoitteluajoWrapper.setVarasijaSaannotAstuvatVoimaan(LocalDateTime.now().plusHours(8));
         sijoitteluajoWrapper.setVarasijaTayttoPaattyy(LocalDateTime.now().plusDays(3));
 
