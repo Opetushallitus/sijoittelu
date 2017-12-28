@@ -186,25 +186,14 @@ public class HakijaryhmaTest {
 
     }
 
-    @Test
+    @Test(expected = IllegalStateException.class)
     @UsingDataSet(locations = "toisensa_pois_sulkevat_hakijaryhmat.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
     public void testSijoitteluToisensaPoisSulkevatRyhmat() throws IOException {
 
         HakuDTO haku = valintatietoService.haeValintatiedot("haku1");
 
         List<Hakukohde> hakukohteet = haku.getHakukohteet().parallelStream().map(DomainConverter::convertToHakukohde).collect(Collectors.toList());
-        SijoittelunTila s = SijoitteluAlgorithmUtil.sijoittele(hakukohteet, new ArrayList(), java.util.Collections.emptyMap());
-
-        System.out.println(tulostaSijoittelu(s));
-
-        List<Hakemus> hyvaksytyt = hakukohteet.get(0)
-                .getValintatapajonot()
-                .stream()
-                .flatMap(v -> v.getHakemukset().stream())
-                .filter(hakemus -> hakemus.getTila().equals(HakemuksenTila.HYVAKSYTTY)).collect(Collectors.toList());
-
-        Assert.assertEquals(0, hyvaksytyt.size());
-
+        SijoitteluAlgorithmUtil.sijoittele(hakukohteet, new ArrayList(), java.util.Collections.emptyMap());
 
     }
 
