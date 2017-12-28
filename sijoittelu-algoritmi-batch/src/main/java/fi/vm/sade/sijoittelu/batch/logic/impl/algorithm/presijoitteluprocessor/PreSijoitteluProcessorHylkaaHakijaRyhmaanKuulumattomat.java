@@ -18,19 +18,19 @@ public class PreSijoitteluProcessorHylkaaHakijaRyhmaanKuulumattomat implements P
 
     private void hylkaaHakijaryhmiinKuulumattomat(SijoitteluajoWrapper sijoitteluajoWrapper) {
         sijoitteluajoWrapper.getHakukohteet().forEach(hakukohde -> {
-            List<HakijaryhmaWrapper> ryhmatJoistaHyvaksytaanKaikki = hakukohde
+            List<HakijaryhmaWrapper> ryhmatJoistaVainKuuluvatHyvaksytaan = hakukohde
                 .getHakijaryhmaWrappers()
                 .stream()
                 .filter(h -> h.getHakijaryhma().isKaytaKaikki())
                 .collect(Collectors.toList());
-            if (ryhmatJoistaHyvaksytaanKaikki.size() > 1) {
-                throw new IllegalStateException(String.format("(Sijoitteluajo %s) Hakukohteelle %s on olemassa useampia kuin yksi hakijaryhmä, " +
-                    "josta kaikki ryhmään kuuluvat olisi tarkoitus hyväksyä. Sijoittelua ei voida suorittaa.",
+            if (ryhmatJoistaVainKuuluvatHyvaksytaan.size() > 1) {
+                throw new IllegalStateException(String.format("(Sijoitteluajo %s) Hakukohteelle %s on olemassa useampi kuin yksi hakijaryhmä, " +
+                    "josta vain ryhmään kuuluvat olisi tarkoitus hyväksyä. Sijoittelua ei voida suorittaa.",
                     sijoitteluajoWrapper.getSijoitteluAjoId(),
                     hakukohde.getHakukohde().getOid()));
             }
             // Hylätään hakijat, jotka eivät kuulu hakijaryhmään
-            ryhmatJoistaHyvaksytaanKaikki.forEach(ryhmaWrapper -> {
+            ryhmatJoistaVainKuuluvatHyvaksytaan.forEach(ryhmaWrapper -> {
                 String jonoOid = ryhmaWrapper.getHakijaryhma().getValintatapajonoOid();
                 if (jonoOid != null) {
                     hakukohde.getValintatapajonot()
