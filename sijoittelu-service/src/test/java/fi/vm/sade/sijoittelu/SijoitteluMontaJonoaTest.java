@@ -605,19 +605,19 @@ public class SijoitteluMontaJonoaTest {
     @Test
     @UsingDataSet(locations = "poissa_oleva_taytto.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
     public void testPoissaOloTaytto2() throws IOException {
-        testPoissaOloTaytto(Lists.newArrayList(IlmoittautumisTila.POISSA, IlmoittautumisTila.POISSA), false, 7);
+        testPoissaOloTaytto(Lists.newArrayList(IlmoittautumisTila.POISSA, IlmoittautumisTila.POISSA), false, 5);
     }
 
     @Test
     @UsingDataSet(locations = "poissa_oleva_taytto.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
     public void testPoissaOloKevat2AstePaikkaaEiTayteta() throws IOException {
-        testPoissaOloTaytto(Lists.newArrayList(IlmoittautumisTila.POISSA_SYKSY, IlmoittautumisTila.POISSA), false, 6);
+        testPoissaOloTaytto(Lists.newArrayList(IlmoittautumisTila.POISSA_SYKSY, IlmoittautumisTila.POISSA), false, 5);
     }
 
     @Test
     @UsingDataSet(locations = "poissa_oleva_taytto.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
     public void testPoissaOloKevatKorkeakouluPaikkaTaytetaan() throws IOException {
-        testPoissaOloTaytto(Lists.newArrayList(IlmoittautumisTila.POISSA_SYKSY, IlmoittautumisTila.POISSA), true, 7);
+        testPoissaOloTaytto(Lists.newArrayList(IlmoittautumisTila.POISSA_SYKSY, IlmoittautumisTila.POISSA), true, 5);
     }
 
     @Test
@@ -675,7 +675,7 @@ public class SijoitteluMontaJonoaTest {
                 .filter(hak->hak.getTila() == HakemuksenTila.HYVAKSYTTY || hak.getTila() == HakemuksenTila.VARASIJALTA_HYVAKSYTTY)
                 .collect(Collectors.toList()).size();
 
-        Assert.assertEquals(koko, 6);
+        Assert.assertEquals(4, koko);
 
 
     }
