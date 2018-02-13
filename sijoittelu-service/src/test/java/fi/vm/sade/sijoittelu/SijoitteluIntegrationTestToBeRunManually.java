@@ -80,7 +80,7 @@ import static org.junit.Assert.assertThat;
 public class SijoitteluIntegrationTestToBeRunManually {
     static {
         if (System.getProperty("PIPED_HOST_VIRKAILIJA") == null) {
-            String defaultValue = "virkailija.untuva.aws.opintopolku.fi:2345";
+            String defaultValue = "virkailija.untuvaopintopolku.fi:2345";
             System.out.println("No PIPED_HOST_VIRKAILIJA system property set, defaulting to " + defaultValue);
             System.setProperty("PIPED_HOST_VIRKAILIJA", defaultValue);
         }
