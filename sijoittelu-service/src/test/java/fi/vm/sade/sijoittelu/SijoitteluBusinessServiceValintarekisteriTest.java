@@ -3,16 +3,17 @@ package fi.vm.sade.sijoittelu;
 import com.google.common.collect.Sets;
 import fi.vm.sade.sijoittelu.domain.*;
 import fi.vm.sade.sijoittelu.laskenta.external.resource.VirkailijaValintaTulosServiceResource;
-import fi.vm.sade.sijoittelu.laskenta.service.business.ActorService;
 import fi.vm.sade.sijoittelu.laskenta.service.business.SijoitteluBusinessService;
 import fi.vm.sade.sijoittelu.laskenta.service.business.ValintarekisteriService;
 import fi.vm.sade.sijoittelu.laskenta.service.it.TarjontaIntegrationService;
 import fi.vm.sade.sijoittelu.tulos.service.impl.converters.SijoitteluTulosConverter;
 import fi.vm.sade.sijoittelu.tulos.service.impl.converters.SijoitteluTulosConverterImpl;
+import fi.vm.sade.valintalaskenta.domain.dto.HakijaDTO;
 import fi.vm.sade.valintalaskenta.domain.dto.JarjestyskriteerituloksenTilaDTO;
 import fi.vm.sade.valintalaskenta.domain.dto.valintatieto.ValintatietoValinnanvaiheDTO;
 import fi.vm.sade.valintalaskenta.domain.dto.valintatieto.ValintatietoValintatapajonoDTO;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import fi.vm.sade.valintalaskenta.domain.dto.valintatieto.HakuDTO;
@@ -23,6 +24,8 @@ import rx.functions.Func3;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static fi.vm.sade.valintalaskenta.domain.dto.valintakoe.Tasasijasaanto.YLITAYTTO;
+import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -43,7 +46,7 @@ public class SijoitteluBusinessServiceValintarekisteriTest {
     private ValintarekisteriService valintarekisteriService;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         sijoitteluTulosConverter = new SijoitteluTulosConverterImpl();
         tarjontaIntegrationService = mock(TarjontaIntegrationService.class);
         valintaTulosServiceResource = mock(VirkailijaValintaTulosServiceResource.class);
@@ -217,6 +220,72 @@ public class SijoitteluBusinessServiceValintarekisteriTest {
         };
 
         verifyAndCaptureAndAssert(assertFunction);
+    }
+
+    @Ignore // TODO FIXME
+    @Test
+    public void yliTayttoJonossaSamallaJonosijallaVarallaOlevatHakijatSaavatSamanVarasijanumeron() {
+        when(valintarekisteriService.getLatestSijoitteluajo(hakuOid)).thenReturn(null);
+        when(valintarekisteriService.getSijoitteluajonHakukohteet(sijoitteluajoId)).thenReturn(Collections.emptyList());
+        when(valintarekisteriService.getValintatulokset(hakuOid)).thenReturn(Collections.emptyList());
+
+        String jonoOid = uusiHakukohdeOid + ".111111";
+        ValintatietoValintatapajonoDTO jonoDto = jonoDTO(jonoOid);
+        jonoDto.setTasasijasaanto(YLITAYTTO);
+        jonoDto.setAloituspaikat(1);
+        assertThat(jonoDto.getHakija(), hasSize(2));
+        HakijaDTO ensimmainenSamallaSijallaVaralla = jonoDto.getHakija().get(jonoDto.getHakija().size() -1);
+        HakijaDTO toinenSamallaSijallaVaralla = new HakijaDTO();
+        toinenSamallaSijallaVaralla.setOid("9.8.7.6.5");
+        toinenSamallaSijallaVaralla.setHakemusOid("8.7.6.5.4.3");
+        toinenSamallaSijallaVaralla.setTila(JarjestyskriteerituloksenTilaDTO.HYVAKSYTTAVISSA);
+        toinenSamallaSijallaVaralla.setJonosija(ensimmainenSamallaSijallaVaralla.getJonosija());
+        List<HakijaDTO> kaikkiHakijat = new ArrayList<>(jonoDto.getHakija());
+        kaikkiHakijat.add(toinenSamallaSijallaVaralla);
+        jonoDto.setHakija(kaikkiHakijat);
+
+        service.sijoittele(hakuDTO(Collections.singletonList(jonoDto)),
+            Collections.emptySet(),
+            Sets.newHashSet(jonoOid),
+            -1L);
+
+        Func3<SijoitteluAjo, List<Hakukohde>, List<Valintatulos>, Boolean> assertFunction = (sijoitteluajo, hakukohteet, valintatulokset) -> {
+            assertNotEquals(sijoitteluajoId, (long) sijoitteluajo.getSijoitteluajoId());
+            assertEquals(1, sijoitteluajo.getHakukohteet().size());
+            List<String> onlyHakukohdeOid = Collections.singletonList(uusiHakukohdeOid);
+            assertTrue(onlyHakukohdeOid.containsAll(sijoitteluajo.getHakukohteet().stream().map(HakukohdeItem::getOid).collect(Collectors.toList())));
+            assertHyvaksyttyVaralla(hakukohteet, uusiHakukohdeOid, jonoOid, 1, 2);
+            List<Hakemus> hakemustenTulokset = hakukohteet.get(0).getValintatapajonot().get(0).getHakemukset();
+            Hakemus ensimmaisenVarallaolijanTulos = hakemustenTulokset.stream()
+                .filter(h -> h.getHakemusOid().equals(ensimmainenSamallaSijallaVaralla.getHakemusOid())).findFirst().get();
+            Hakemus toisenVarallaolijanTulos = hakemustenTulokset.stream()
+                .filter(h -> h.getHakemusOid().equals(toinenSamallaSijallaVaralla.getHakemusOid())).findFirst().get();
+            assertEquals(HakemuksenTila.VARALLA, ensimmaisenVarallaolijanTulos.getTila());
+            assertEquals(HakemuksenTila.VARALLA, toisenVarallaolijanTulos.getTila());
+            assertEquals(ensimmaisenVarallaolijanTulos.getJonosija(), toisenVarallaolijanTulos.getJonosija());
+            assertEquals(ensimmaisenVarallaolijanTulos.getVarasijanNumero(), toisenVarallaolijanTulos.getVarasijanNumero());
+            return true;
+        };
+
+        verify(valintarekisteriService).getLatestSijoitteluajo(hakuOid);
+
+        ArgumentCaptor<SijoitteluAjo> sijoitteluajoCaptor = ArgumentCaptor.forClass(SijoitteluAjo.class);
+        ArgumentCaptor<List<Hakukohde>> hakukohteetCaptor = ArgumentCaptor.forClass((Class)List.class);
+        ArgumentCaptor<List<Valintatulos>> valintatuloksetCaptor = ArgumentCaptor.forClass((Class)List.class);
+
+        verify(valintarekisteriService).tallennaSijoittelu(sijoitteluajoCaptor.capture(), hakukohteetCaptor.capture(), valintatuloksetCaptor.capture());
+
+        assertFunction.call(sijoitteluajoCaptor.getValue(), hakukohteetCaptor.getValue(), valintatuloksetCaptor.getValue());
+    }
+
+    @Test
+    public void aliTayttoJonossaSamallaJonosijallaVarallaOlevatHakijatSaavatSamanVarasijanumeron() {
+
+    }
+
+    @Test
+    public void arvontaJonossaSamallaJonosijallaVarallaOlevatHakijatSaavatEriVarasijanumerot() {
+
     }
 
     private SijoitteluAjo valintarekisteriSijoitteluajo1() {
