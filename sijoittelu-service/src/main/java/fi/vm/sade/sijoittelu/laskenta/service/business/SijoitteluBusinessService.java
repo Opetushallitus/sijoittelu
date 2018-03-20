@@ -437,8 +437,9 @@ public class SijoitteluBusinessService {
     }
 
     private void setVarasijaNumero(int seuraavaVarasijaNumero, Hakemus hakemus, Optional<Hakemus> jononEdellinenVarallaOlevaHakemus, Tasasijasaanto tasasijasaanto) {
-        boolean hakemusOnSamallaJonosijallaKuinJononEdellinenVarallaolija = jononEdellinenVarallaOlevaHakemus.isPresent()
-            && jononEdellinenVarallaOlevaHakemus.get().getJonosija().equals(hakemus.getJonosija());
+        boolean hakemusOnSamallaJonosijallaKuinJononEdellinenVarallaolija = jononEdellinenVarallaOlevaHakemus
+            .map(edellinen -> edellinen.getJonosija().equals(hakemus.getJonosija()))
+            .orElse(false);
         if (!tasasijasaanto.equals(ARVONTA) && hakemusOnSamallaJonosijallaKuinJononEdellinenVarallaolija) {
             hakemus.setVarasijanNumero(jononEdellinenVarallaOlevaHakemus.get().getVarasijanNumero());
         } else {
