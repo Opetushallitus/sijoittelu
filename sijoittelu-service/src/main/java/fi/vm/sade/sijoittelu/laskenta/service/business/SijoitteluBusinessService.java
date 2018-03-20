@@ -417,10 +417,12 @@ public class SijoitteluBusinessService {
     private void kopioiHakemustenTiedotVanhaltaSijoitteluajolta(String hakukohdeOid, Valintatapajono valintatapajono, Map<String, Hakemus> edellisenSijoitteluajonHakemukset) {
         Collections.sort(valintatapajono.getHakemukset(), hakemusComparator);
         int varasija = 0;
+        Optional<Hakemus> edellinenVarallaolevaHakemus = Optional.empty();
         for (Hakemus hakemus : valintatapajono.getHakemukset()) {
             if (hakemus.getTila() == HakemuksenTila.VARALLA) {
                 varasija++;
-                hakemus.setVarasijanNumero(varasija);
+                setVarasijaNumero(varasija, hakemus, edellinenVarallaolevaHakemus);
+                edellinenVarallaolevaHakemus = Optional.of(hakemus);
             } else {
                 hakemus.setVarasijanNumero(null);
             }
@@ -430,6 +432,14 @@ public class SijoitteluBusinessService {
                     hakemus.setSiirtynytToisestaValintatapajonosta(hakemuksenTilaEdellisestaAjosta.getSiirtynytToisestaValintatapajonosta());
                 }
             }
+        }
+    }
+
+    private void setVarasijaNumero(int seuraavaVarasijaNumero, Hakemus hakemus, Optional<Hakemus> jononEdellinenVarallaOlevaHakemus) {
+        if (jononEdellinenVarallaOlevaHakemus.isPresent() && jononEdellinenVarallaOlevaHakemus.get().getJonosija().equals(hakemus.getJonosija())) {
+            hakemus.setVarasijanNumero(jononEdellinenVarallaOlevaHakemus.get().getVarasijanNumero());
+        } else {
+            hakemus.setVarasijanNumero(seuraavaVarasijaNumero);
         }
     }
 

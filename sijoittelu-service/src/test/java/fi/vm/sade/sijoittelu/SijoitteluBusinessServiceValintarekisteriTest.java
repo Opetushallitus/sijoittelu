@@ -222,7 +222,6 @@ public class SijoitteluBusinessServiceValintarekisteriTest {
         verifyAndCaptureAndAssert(assertFunction);
     }
 
-    @Ignore // TODO FIXME
     @Test
     public void yliTayttoJonossaSamallaJonosijallaVarallaOlevatHakijatSaavatSamanVarasijanumeron() {
         when(valintarekisteriService.getLatestSijoitteluajo(hakuOid)).thenReturn(null);
