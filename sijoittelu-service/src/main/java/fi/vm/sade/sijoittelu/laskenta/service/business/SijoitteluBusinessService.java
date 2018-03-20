@@ -399,7 +399,7 @@ public class SijoitteluBusinessService {
         tamanSijoitteluajonHakukohteet.parallelStream().forEach(hakukohde ->
             hakukohde.getValintatapajonot().forEach(valintatapajono -> {
                 kopioiValintatapajononTiedotVanhaltaSijoitteluajolta(valintatapajono, valintatapajonot.get(valintatapajono.getOid()));
-                kopioiHakemustenTiedotVanhaltaSijoitteluajolta(hakukohde.getOid(), valintatapajono, hakemukset);
+                kopioiHakemustenTiedotVanhaltaSijoitteluajoltaJaAsetaVarasijaNumerot(hakukohde.getOid(), valintatapajono, hakemukset);
             })
         );
     }
@@ -414,7 +414,7 @@ public class SijoitteluBusinessService {
         }
     }
 
-    private void kopioiHakemustenTiedotVanhaltaSijoitteluajolta(String hakukohdeOid, Valintatapajono valintatapajono, Map<String, Hakemus> edellisenSijoitteluajonHakemukset) {
+    private void kopioiHakemustenTiedotVanhaltaSijoitteluajoltaJaAsetaVarasijaNumerot(String hakukohdeOid, Valintatapajono valintatapajono, Map<String, Hakemus> edellisenSijoitteluajonHakemukset) {
         Collections.sort(valintatapajono.getHakemukset(), hakemusComparator);
         int varasija = 0;
         Optional<Hakemus> edellinenVarallaolevaHakemus = Optional.empty();
