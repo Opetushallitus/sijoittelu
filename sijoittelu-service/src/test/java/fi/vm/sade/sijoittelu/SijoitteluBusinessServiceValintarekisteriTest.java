@@ -239,13 +239,52 @@ public class SijoitteluBusinessServiceValintarekisteriTest {
 
     @Test
     public void yliTayttoJonossaSamallaJonosijallaVarallaOlevatHakijatSaavatSamanVarasijanumeron() {
+        ValintatietoValintatapajonoDTO jonoDto = sijoitteleYhteenJonoonYksiHyvaksyttyKaksiVaralleSamalleJonosijalle(YLITAYTTO);
+
+        ArgumentCaptor<SijoitteluAjo> sijoitteluajoCaptor = ArgumentCaptor.forClass(SijoitteluAjo.class);
+        ArgumentCaptor<List<Hakukohde>> hakukohteetCaptor = ArgumentCaptor.forClass((Class)List.class);
+
+        verify(valintarekisteriService).tallennaSijoittelu(sijoitteluajoCaptor.capture(),
+            hakukohteetCaptor.capture(),
+            ((ArgumentCaptor<List<Valintatulos>>) ArgumentCaptor.forClass((Class) List.class)).capture());
+
+        SijoitteluAjo sijoitteluAjo = sijoitteluajoCaptor.getValue();
+        List<Hakukohde> hakukohteet = hakukohteetCaptor.getValue();
+
+        assertYksiHyvaksyttyKaksiVarallaYhdessaJonossa(sijoitteluAjo, hakukohteet);
+
+        HakijaDTO ensimmainenHakijaVaralla = jonoDto.getHakija().get(1);
+        HakijaDTO toinenHakijaVaralla = jonoDto.getHakija().get(2);
+
+        List<Hakemus> hakemustenTulokset = hakukohteet.get(0).getValintatapajonot().get(0).getHakemukset();
+        Hakemus ensimmaisenVarallaolijanTulos = hakemustenTulokset.stream()
+            .filter(h -> h.getHakemusOid().equals(ensimmainenHakijaVaralla.getHakemusOid())).findFirst().get();
+        Hakemus toisenVarallaolijanTulos = hakemustenTulokset.stream()
+            .filter(h -> h.getHakemusOid().equals(toinenHakijaVaralla.getHakemusOid())).findFirst().get();
+        assertEquals(HakemuksenTila.VARALLA, ensimmaisenVarallaolijanTulos.getTila());
+        assertEquals(HakemuksenTila.VARALLA, toisenVarallaolijanTulos.getTila());
+        assertEquals(ensimmaisenVarallaolijanTulos.getJonosija(), toisenVarallaolijanTulos.getJonosija());
+        assertEquals(ensimmaisenVarallaolijanTulos.getVarasijanNumero(), toisenVarallaolijanTulos.getVarasijanNumero());
+    }
+
+    @Test
+    public void aliTayttoJonossaSamallaJonosijallaVarallaOlevatHakijatSaavatSamanVarasijanumeron() {
+
+    }
+
+    @Test
+    public void arvontaJonossaSamallaJonosijallaVarallaOlevatHakijatSaavatEriVarasijanumerot() {
+
+    }
+
+    private ValintatietoValintatapajonoDTO sijoitteleYhteenJonoonYksiHyvaksyttyKaksiVaralleSamalleJonosijalle(fi.vm.sade.valintalaskenta.domain.dto.valintakoe.Tasasijasaanto tasasijasaanto) {
         when(valintarekisteriService.getLatestSijoitteluajo(hakuOid)).thenReturn(null);
         when(valintarekisteriService.getSijoitteluajonHakukohteet(sijoitteluajoId)).thenReturn(Collections.emptyList());
         when(valintarekisteriService.getValintatulokset(hakuOid)).thenReturn(Collections.emptyList());
 
         String jonoOid = uusiHakukohdeOid + ".111111";
         ValintatietoValintatapajonoDTO jonoDto = jonoDTO(jonoOid);
-        jonoDto.setTasasijasaanto(YLITAYTTO);
+        jonoDto.setTasasijasaanto(tasasijasaanto);
         jonoDto.setAloituspaikat(1);
         assertThat(jonoDto.getHakija(), hasSize(2));
         HakijaDTO ensimmainenSamallaSijallaVaralla = jonoDto.getHakija().get(jonoDto.getHakija().size() -1);
@@ -264,43 +303,19 @@ public class SijoitteluBusinessServiceValintarekisteriTest {
             -1L);
 
         verify(valintarekisteriService).getLatestSijoitteluajo(hakuOid);
+        return jonoDto;
+    }
 
-        ArgumentCaptor<SijoitteluAjo> sijoitteluajoCaptor = ArgumentCaptor.forClass(SijoitteluAjo.class);
-        ArgumentCaptor<List<Hakukohde>> hakukohteetCaptor = ArgumentCaptor.forClass((Class)List.class);
-
-        verify(valintarekisteriService).tallennaSijoittelu(sijoitteluajoCaptor.capture(),
-            hakukohteetCaptor.capture(),
-            ((ArgumentCaptor<List<Valintatulos>>) ArgumentCaptor.forClass((Class) List.class)).capture());
-
-        SijoitteluAjo sijoitteluAjo = sijoitteluajoCaptor.getValue();
-        List<Hakukohde> hakukohteet = hakukohteetCaptor.getValue();
-
+    private void assertYksiHyvaksyttyKaksiVarallaYhdessaJonossa(SijoitteluAjo sijoitteluAjo, List<Hakukohde> hakukohteet) {
         assertNotEquals(sijoitteluajoId, (long) sijoitteluAjo.getSijoitteluajoId());
         assertEquals(1, sijoitteluAjo.getHakukohteet().size());
 
         assertEquals(Collections.singletonList(uusiHakukohdeOid),
             sijoitteluAjo.getHakukohteet().stream().map(HakukohdeItem::getOid).collect(Collectors.toList()));
-        assertHyvaksyttyVaralla(hakukohteet, uusiHakukohdeOid, jonoOid, 1, 2);
-
-        List<Hakemus> hakemustenTulokset = hakukohteet.get(0).getValintatapajonot().get(0).getHakemukset();
-        Hakemus ensimmaisenVarallaolijanTulos = hakemustenTulokset.stream()
-            .filter(h -> h.getHakemusOid().equals(ensimmainenSamallaSijallaVaralla.getHakemusOid())).findFirst().get();
-        Hakemus toisenVarallaolijanTulos = hakemustenTulokset.stream()
-            .filter(h -> h.getHakemusOid().equals(toinenSamallaSijallaVaralla.getHakemusOid())).findFirst().get();
-        assertEquals(HakemuksenTila.VARALLA, ensimmaisenVarallaolijanTulos.getTila());
-        assertEquals(HakemuksenTila.VARALLA, toisenVarallaolijanTulos.getTila());
-        assertEquals(ensimmaisenVarallaolijanTulos.getJonosija(), toisenVarallaolijanTulos.getJonosija());
-        assertEquals(ensimmaisenVarallaolijanTulos.getVarasijanNumero(), toisenVarallaolijanTulos.getVarasijanNumero());
-    }
-
-    @Test
-    public void aliTayttoJonossaSamallaJonosijallaVarallaOlevatHakijatSaavatSamanVarasijanumeron() {
-
-    }
-
-    @Test
-    public void arvontaJonossaSamallaJonosijallaVarallaOlevatHakijatSaavatEriVarasijanumerot() {
-
+        assertThat(hakukohteet, hasSize(1));
+        assertThat(hakukohteet.get(0).getValintatapajonot(), hasSize(1));
+        String onlyJonoOid = hakukohteet.get(0).getValintatapajonot().get(0).getOid();
+        assertHyvaksyttyVaralla(hakukohteet, uusiHakukohdeOid, onlyJonoOid, 1, 2);
     }
 
     private SijoitteluAjo valintarekisteriSijoitteluajo1() {
