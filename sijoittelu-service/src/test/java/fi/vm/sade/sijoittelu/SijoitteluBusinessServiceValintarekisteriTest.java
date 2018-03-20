@@ -112,7 +112,7 @@ public class SijoitteluBusinessServiceValintarekisteriTest {
     }
 
     private void assertHakemuksetKaksiJonoHyvaksyVarallaJaPeruAlempi(List<Hakukohde> hakukohteet) {
-        List<Valintatapajono> valintatapajonot = hakukohteet.stream().filter(hk -> hk.getOid() == uusiHakukohdeOid).findAny().get().getValintatapajonot();
+        List<Valintatapajono> valintatapajonot = hakukohteet.stream().filter(hk -> hk.getOid().equals(uusiHakukohdeOid)).findAny().get().getValintatapajonot();
 
         List<Hakemus> hakemuksetJono1 = valintatapajonot.stream().filter(jono -> "112233.111111".equals(jono.getOid())).findAny().get().getHakemukset();
         List<Hakemus> hakemuksetJono2 = valintatapajonot.stream().filter(jono -> "112233.222222".equals(jono.getOid())).findAny().get().getHakemukset();
@@ -125,7 +125,7 @@ public class SijoitteluBusinessServiceValintarekisteriTest {
     }
 
     private void assertVastaanotetutValintatuloksetUudelleHakukohteelle(List<Valintatulos> valintatulokset) {
-        assertFalse(valintatulokset.stream().anyMatch(v -> v.getHakukohdeOid() != uusiHakukohdeOid));
+        assertFalse(valintatulokset.stream().anyMatch(v -> !v.getHakukohdeOid().equals(uusiHakukohdeOid)));
         assertFalse(valintatulokset.stream().anyMatch(v -> v.getTila() != ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI));
         assertEquals(4, valintatulokset.size());
     }
@@ -151,7 +151,7 @@ public class SijoitteluBusinessServiceValintarekisteriTest {
     }
 
     private void assertHyvaksyttyVaralla(List<Hakukohde> hakukohteet, String hakukohdeOid, String jonoOid, int hyvaksytty, int varalla) {
-        List<Valintatapajono> valintatapajonot = hakukohteet.stream().filter(hk -> hk.getOid() == hakukohdeOid).findAny().get().getValintatapajonot();
+        List<Valintatapajono> valintatapajonot = hakukohteet.stream().filter(hk -> hk.getOid().equals(hakukohdeOid)).findAny().get().getValintatapajonot();
 
         assertEquals(hyvaksytty, (int)valintatapajonot.stream().filter(jono -> jonoOid.equals(jono.getOid())).findAny().get().getHyvaksytty());
         assertEquals(varalla, (int)valintatapajonot.stream().filter(jono -> jonoOid.equals(jono.getOid())).findAny().get().getVaralla());
