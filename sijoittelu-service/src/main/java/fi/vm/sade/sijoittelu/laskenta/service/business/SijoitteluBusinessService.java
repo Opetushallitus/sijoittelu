@@ -38,6 +38,7 @@ import java.util.stream.Collectors;
 
 import static com.google.common.collect.Sets.difference;
 import static com.google.common.collect.Sets.intersection;
+import static fi.vm.sade.sijoittelu.domain.Tasasijasaanto.ARVONTA;
 import static java.util.Arrays.*;
 import static java.util.Collections.unmodifiableSet;
 import static java.util.stream.Collectors.toSet;
@@ -421,7 +422,7 @@ public class SijoitteluBusinessService {
         for (Hakemus hakemus : valintatapajono.getHakemukset()) {
             if (hakemus.getTila() == HakemuksenTila.VARALLA) {
                 varasija++;
-                setVarasijaNumero(varasija, hakemus, edellinenVarallaolevaHakemus);
+                setVarasijaNumero(varasija, hakemus, edellinenVarallaolevaHakemus, valintatapajono.getTasasijasaanto());
                 edellinenVarallaolevaHakemus = Optional.of(hakemus);
             } else {
                 hakemus.setVarasijanNumero(null);
@@ -435,8 +436,10 @@ public class SijoitteluBusinessService {
         }
     }
 
-    private void setVarasijaNumero(int seuraavaVarasijaNumero, Hakemus hakemus, Optional<Hakemus> jononEdellinenVarallaOlevaHakemus) {
-        if (jononEdellinenVarallaOlevaHakemus.isPresent() && jononEdellinenVarallaOlevaHakemus.get().getJonosija().equals(hakemus.getJonosija())) {
+    private void setVarasijaNumero(int seuraavaVarasijaNumero, Hakemus hakemus, Optional<Hakemus> jononEdellinenVarallaOlevaHakemus, Tasasijasaanto tasasijasaanto) {
+        boolean hakemusOnSamallaJonosijallaKuinJononEdellinenVarallaolija = jononEdellinenVarallaOlevaHakemus.isPresent()
+            && jononEdellinenVarallaOlevaHakemus.get().getJonosija().equals(hakemus.getJonosija());
+        if (!tasasijasaanto.equals(ARVONTA) && hakemusOnSamallaJonosijallaKuinJononEdellinenVarallaolija) {
             hakemus.setVarasijanNumero(jononEdellinenVarallaOlevaHakemus.get().getVarasijanNumero());
         } else {
             hakemus.setVarasijanNumero(seuraavaVarasijaNumero);
