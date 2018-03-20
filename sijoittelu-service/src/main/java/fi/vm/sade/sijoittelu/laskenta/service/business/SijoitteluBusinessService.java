@@ -418,16 +418,16 @@ public class SijoitteluBusinessService {
         Collections.sort(valintatapajono.getHakemukset(), hakemusComparator);
         int varasija = 0;
         for (Hakemus hakemus : valintatapajono.getHakemukset()) {
-            Hakemus edellinen = edellisenSijoitteluajonHakemukset.get(hakukohdeOid + valintatapajono.getOid() + hakemus.getHakemusOid());
             if (hakemus.getTila() == HakemuksenTila.VARALLA) {
                 varasija++;
                 hakemus.setVarasijanNumero(varasija);
             } else {
                 hakemus.setVarasijanNumero(null);
             }
-            if(edellinen != null && TilaTaulukot.kuuluuHyvaksyttyihinTiloihin(hakemus.getTila())) {
-                if(hakemus.getSiirtynytToisestaValintatapajonosta() == false) {
-                    hakemus.setSiirtynytToisestaValintatapajonosta(edellinen.getSiirtynytToisestaValintatapajonosta());
+            Hakemus hakemuksenTilaEdellisestaAjosta = edellisenSijoitteluajonHakemukset.get(hakukohdeOid + valintatapajono.getOid() + hakemus.getHakemusOid());
+            if (hakemuksenTilaEdellisestaAjosta != null && TilaTaulukot.kuuluuHyvaksyttyihinTiloihin(hakemus.getTila())) {
+                if (hakemus.getSiirtynytToisestaValintatapajonosta() == false) {
+                    hakemus.setSiirtynytToisestaValintatapajonosta(hakemuksenTilaEdellisestaAjosta.getSiirtynytToisestaValintatapajonosta());
                 }
             }
         }
