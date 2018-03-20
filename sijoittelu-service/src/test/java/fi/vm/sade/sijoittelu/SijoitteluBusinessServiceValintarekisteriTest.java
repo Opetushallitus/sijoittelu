@@ -249,33 +249,34 @@ public class SijoitteluBusinessServiceValintarekisteriTest {
             Sets.newHashSet(jonoOid),
             -1L);
 
-        Func3<SijoitteluAjo, List<Hakukohde>, List<Valintatulos>, Boolean> assertFunction = (sijoitteluajo, hakukohteet, valintatulokset) -> {
-            assertNotEquals(sijoitteluajoId, (long) sijoitteluajo.getSijoitteluajoId());
-            assertEquals(1, sijoitteluajo.getHakukohteet().size());
-            List<String> onlyHakukohdeOid = Collections.singletonList(uusiHakukohdeOid);
-            assertTrue(onlyHakukohdeOid.containsAll(sijoitteluajo.getHakukohteet().stream().map(HakukohdeItem::getOid).collect(Collectors.toList())));
-            assertHyvaksyttyVaralla(hakukohteet, uusiHakukohdeOid, jonoOid, 1, 2);
-            List<Hakemus> hakemustenTulokset = hakukohteet.get(0).getValintatapajonot().get(0).getHakemukset();
-            Hakemus ensimmaisenVarallaolijanTulos = hakemustenTulokset.stream()
-                .filter(h -> h.getHakemusOid().equals(ensimmainenSamallaSijallaVaralla.getHakemusOid())).findFirst().get();
-            Hakemus toisenVarallaolijanTulos = hakemustenTulokset.stream()
-                .filter(h -> h.getHakemusOid().equals(toinenSamallaSijallaVaralla.getHakemusOid())).findFirst().get();
-            assertEquals(HakemuksenTila.VARALLA, ensimmaisenVarallaolijanTulos.getTila());
-            assertEquals(HakemuksenTila.VARALLA, toisenVarallaolijanTulos.getTila());
-            assertEquals(ensimmaisenVarallaolijanTulos.getJonosija(), toisenVarallaolijanTulos.getJonosija());
-            assertEquals(ensimmaisenVarallaolijanTulos.getVarasijanNumero(), toisenVarallaolijanTulos.getVarasijanNumero());
-            return true;
-        };
-
         verify(valintarekisteriService).getLatestSijoitteluajo(hakuOid);
 
         ArgumentCaptor<SijoitteluAjo> sijoitteluajoCaptor = ArgumentCaptor.forClass(SijoitteluAjo.class);
         ArgumentCaptor<List<Hakukohde>> hakukohteetCaptor = ArgumentCaptor.forClass((Class)List.class);
-        ArgumentCaptor<List<Valintatulos>> valintatuloksetCaptor = ArgumentCaptor.forClass((Class)List.class);
 
-        verify(valintarekisteriService).tallennaSijoittelu(sijoitteluajoCaptor.capture(), hakukohteetCaptor.capture(), valintatuloksetCaptor.capture());
+        verify(valintarekisteriService).tallennaSijoittelu(sijoitteluajoCaptor.capture(),
+            hakukohteetCaptor.capture(),
+            ((ArgumentCaptor<List<Valintatulos>>) ArgumentCaptor.forClass((Class) List.class)).capture());
 
-        assertFunction.call(sijoitteluajoCaptor.getValue(), hakukohteetCaptor.getValue(), valintatuloksetCaptor.getValue());
+        SijoitteluAjo sijoitteluAjo = sijoitteluajoCaptor.getValue();
+        List<Hakukohde> hakukohteet = hakukohteetCaptor.getValue();
+
+        assertNotEquals(sijoitteluajoId, (long) sijoitteluAjo.getSijoitteluajoId());
+        assertEquals(1, sijoitteluAjo.getHakukohteet().size());
+
+        assertEquals(Collections.singletonList(uusiHakukohdeOid),
+            sijoitteluAjo.getHakukohteet().stream().map(HakukohdeItem::getOid).collect(Collectors.toList()));
+        assertHyvaksyttyVaralla(hakukohteet, uusiHakukohdeOid, jonoOid, 1, 2);
+
+        List<Hakemus> hakemustenTulokset = hakukohteet.get(0).getValintatapajonot().get(0).getHakemukset();
+        Hakemus ensimmaisenVarallaolijanTulos = hakemustenTulokset.stream()
+            .filter(h -> h.getHakemusOid().equals(ensimmainenSamallaSijallaVaralla.getHakemusOid())).findFirst().get();
+        Hakemus toisenVarallaolijanTulos = hakemustenTulokset.stream()
+            .filter(h -> h.getHakemusOid().equals(toinenSamallaSijallaVaralla.getHakemusOid())).findFirst().get();
+        assertEquals(HakemuksenTila.VARALLA, ensimmaisenVarallaolijanTulos.getTila());
+        assertEquals(HakemuksenTila.VARALLA, toisenVarallaolijanTulos.getTila());
+        assertEquals(ensimmaisenVarallaolijanTulos.getJonosija(), toisenVarallaolijanTulos.getJonosija());
+        assertEquals(ensimmaisenVarallaolijanTulos.getVarasijanNumero(), toisenVarallaolijanTulos.getVarasijanNumero());
     }
 
     @Test
