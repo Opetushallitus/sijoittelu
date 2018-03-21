@@ -213,7 +213,7 @@ public class SijoitteluResource {
         }
     }
 
-    private Map<String, Map<String, ValintatapajonoDTO>> haeMahdollisestiMuuttuneetValintatapajonot(Map<String, List<ValintatapajonoDTO>> valintatapajonotSijoittelulle) {
+    private Map<String, Map<String, ValintatapajonoDTO>> filtteroiAktiivisetJonotMappiinOideittain(Map<String, List<ValintatapajonoDTO>> valintatapajonotSijoittelulle) {
         return valintatapajonotSijoittelulle
             .entrySet()
             .stream()
@@ -235,9 +235,9 @@ public class SijoitteluResource {
             LOGGER.info("Asetetaan valintaperusteet {}!", hakuOid);
 
             final Map<String, HakijaryhmaValintatapajonoDTO> hakijaryhmaByOid = haeMahdollisestiMuuttuneetHakijaryhmat(haku);
-            final Map<String, List<ValintatapajonoDTO>> valintatapajonotSijoittelulle = haeValintatapajonotSijoittelulle(haku);
-            final Map<String, Map<String, ValintatapajonoDTO>> hakukohdeMapToValintatapajonoByOid = Maps.newHashMap(haeMahdollisestiMuuttuneetValintatapajonot(valintatapajonotSijoittelulle));
-            final Set<String> valintaperusteidenValintatapajonot = valintatapajonotSijoittelulle.values().stream()
+            final Map<String, List<ValintatapajonoDTO>> jonotSijoittelulleHakukohdeOideittain = haeValintatapajonotSijoittelulle(haku);
+            final Map<String, Map<String, ValintatapajonoDTO>> hakukohdeMapToValintatapajonoByOid = Maps.newHashMap(filtteroiAktiivisetJonotMappiinOideittain(jonotSijoittelulleHakukohdeOideittain));
+            final Set<String> valintaperusteidenValintatapajonot = jonotSijoittelulleHakukohdeOideittain.values().stream()
                     .flatMap(Collection::stream)
                     .map(ValintatapajonoDTO::getOid)
                     .collect(Collectors.toSet());
