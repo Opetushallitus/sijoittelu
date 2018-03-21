@@ -186,24 +186,23 @@ public class SijoitteluResource {
         return hakijaryhmaByOid;
     }
 
-    private Set<HakukohdeDTO> haeHakukohteetJoillaOnAktiivisiaJonoja(HakuDTO haku) {
+    private Set<String> filtteroiOiditHakukohteilleJoillaOnAktiivisiaJonoja(HakuDTO haku) {
         return haku.getHakukohteet().stream()
                 // Joku valinnanvaihe jossa aktiivinen jono
                 .filter(hakukohde ->
                         hakukohde.getValinnanvaihe().stream()
                                 .anyMatch(v -> v.getValintatapajonot().stream()
                                         .anyMatch(j -> TRUE.equals(j.getAktiivinen()))))
+                .map(HakukohdeDTO::getOid)
                 .collect(toSet());
     }
 
     private Map<String, List<ValintatapajonoDTO>> haeValintatapajonotSijoittelulle(HakuDTO haku) {
-        final Set<HakukohdeDTO> hakukohteetJoillaOnAktiivisiaJonoja = haeHakukohteetJoillaOnAktiivisiaJonoja(haku);
-        if (!hakukohteetJoillaOnAktiivisiaJonoja.isEmpty()) {
-            LOGGER.info("Haetaan valintatapajonoja sijoittelua varten haun {} {}:lle hakukohteelle", haku.getHakuOid(), hakukohteetJoillaOnAktiivisiaJonoja.size());
+        final Set<String> aktiivisiaJonojaSisaltavienKohteidenOidit = filtteroiOiditHakukohteilleJoillaOnAktiivisiaJonoja(haku);
+        if (!aktiivisiaJonojaSisaltavienKohteidenOidit.isEmpty()) {
+            LOGGER.info("Haetaan valintatapajonoja sijoittelua varten haun {} {}:lle hakukohteelle", haku.getHakuOid(), aktiivisiaJonojaSisaltavienKohteidenOidit.size());
             try {
-                List<String> aktiivisiaJonojaSisaltavienKohteidenOidit = hakukohteetJoillaOnAktiivisiaJonoja.stream()
-                    .map(HakukohdeDTO::getOid).collect(Collectors.toList());
-                return valintalaskentakoostepalveluResource.haeValintatapajonotSijoittelulle(aktiivisiaJonojaSisaltavienKohteidenOidit);
+                return valintalaskentakoostepalveluResource.haeValintatapajonotSijoittelulle(new ArrayList<>(aktiivisiaJonojaSisaltavienKohteidenOidit));
             } catch (Exception e) {
                 LOGGER.error("Valintatapajonojen hakeminen epäonnistui virheeseen!", e);
                 throw e;
