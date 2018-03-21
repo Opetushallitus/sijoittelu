@@ -186,23 +186,24 @@ public class SijoitteluResource {
         return hakijaryhmaByOid;
     }
 
-    private Set<String> haeHakukohdeOidsWithAktiivisetJonot(HakuDTO haku) {
-        Set<String> hakukohdeOidsWithAktiivisetJonot = haku.getHakukohteet().stream()
+    private Set<HakukohdeDTO> haeHakukohteetJoillaOnAktiivisiaJonoja(HakuDTO haku) {
+        return haku.getHakukohteet().stream()
                 // Joku valinnanvaihe jossa aktiivinen jono
                 .filter(hakukohde ->
                         hakukohde.getValinnanvaihe().stream()
                                 .anyMatch(v -> v.getValintatapajonot().stream()
                                         .anyMatch(j -> TRUE.equals(j.getAktiivinen()))))
-                .map(hakukohde -> hakukohde.getOid()).collect(toSet());
-        return hakukohdeOidsWithAktiivisetJonot;
+                .collect(toSet());
     }
 
     private Map<String, List<ValintatapajonoDTO>> haeValintatapajonotSijoittelulle(HakuDTO haku) {
-        final Set<String> hakukohdeOidsWithAktiivisetJonot = haeHakukohdeOidsWithAktiivisetJonot(haku);
-        if (!hakukohdeOidsWithAktiivisetJonot.isEmpty()) {
-            LOGGER.info("Haetaan valintatapajonoja sijoittelua varten haun {} {}:lle hakukohteelle", haku.getHakuOid(), hakukohdeOidsWithAktiivisetJonot.size());
+        final Set<HakukohdeDTO> hakukohteetJoillaOnAktiivisiaJonoja = haeHakukohteetJoillaOnAktiivisiaJonoja(haku);
+        if (!hakukohteetJoillaOnAktiivisiaJonoja.isEmpty()) {
+            LOGGER.info("Haetaan valintatapajonoja sijoittelua varten haun {} {}:lle hakukohteelle", haku.getHakuOid(), hakukohteetJoillaOnAktiivisiaJonoja.size());
             try {
-                return valintalaskentakoostepalveluResource.haeValintatapajonotSijoittelulle(Lists.newArrayList(hakukohdeOidsWithAktiivisetJonot));
+                List<String> aktiivisiaJonojaSisaltavienKohteidenOidit = hakukohteetJoillaOnAktiivisiaJonoja.stream()
+                    .map(HakukohdeDTO::getOid).collect(Collectors.toList());
+                return valintalaskentakoostepalveluResource.haeValintatapajonotSijoittelulle(aktiivisiaJonojaSisaltavienKohteidenOidit);
             } catch (Exception e) {
                 LOGGER.error("Valintatapajonojen hakeminen epäonnistui virheeseen!", e);
                 throw e;
