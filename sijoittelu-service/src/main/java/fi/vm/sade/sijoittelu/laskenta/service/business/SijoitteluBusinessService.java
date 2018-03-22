@@ -96,18 +96,18 @@ public class SijoitteluBusinessService {
         stopWatch.stop();
 
         stopWatch.start("Päätellään hakukohde- ja valintatapajonotiedot");
-        List<Hakukohde> uudetHakukohteet = haku.getHakukohteet().stream().map(DomainConverter::convertToHakukohde).collect(Collectors.toList());
-        List<Hakukohde> olemassaolevatHakukohteet = Collections.emptyList();
+        List<Hakukohde> uudenSijoitteluajonHakukohteet = haku.getHakukohteet().stream().map(DomainConverter::convertToHakukohde).collect(Collectors.toList());
+        List<Hakukohde> edellisenSijoitteluajonTulokset = Collections.emptyList();
         if (viimeisinSijoitteluajo != null) {
-            olemassaolevatHakukohteet = valintarekisteriService.getSijoitteluajonHakukohteet(viimeisinSijoitteluajo.getSijoitteluajoId());
-            validateSijoittelunJonot(uudetHakukohteet, olemassaolevatHakukohteet, eiSijoitteluunMenevatJonot, valintaperusteidenValintatapajonot, stopWatch);
+            edellisenSijoitteluajonTulokset = valintarekisteriService.getSijoitteluajonHakukohteet(viimeisinSijoitteluajo.getSijoitteluajoId());
+            validateSijoittelunJonot(uudenSijoitteluajonHakukohteet, edellisenSijoitteluajonTulokset, eiSijoitteluunMenevatJonot, valintaperusteidenValintatapajonot, stopWatch);
         }
         stopWatch.stop();
 
         SijoitteluAjo uusiSijoitteluajo = createSijoitteluAjo(hakuOid);
         uusiSijoitteluajo.setSijoitteluajoId(sijoittelunTunniste); //Korvataan sijoitteluajon tunniste (=luontiaika) parametrina saadulla tunnisteella
         stopWatch.start("Mergataan hakukohteet");
-        List<Hakukohde> kaikkiHakukohteet = merge(uusiSijoitteluajo, olemassaolevatHakukohteet, uudetHakukohteet);
+        List<Hakukohde> kaikkiHakukohteet = merge(uusiSijoitteluajo, edellisenSijoitteluajonTulokset, uudenSijoitteluajonHakukohteet);
         stopWatch.stop();
         stopWatch.start("Haetaan valintatulokset vastaanottoineen");
         List<Valintatulos> valintatulokset = valintarekisteriService.getValintatulokset(hakuOid);
@@ -115,15 +115,15 @@ public class SijoitteluBusinessService {
         stopWatch.start("Haetaan kauden aiemmat vastaanotot");
         Map<String, VastaanottoDTO> kaudenAiemmatVastaanotot = aiemmanVastaanotonHakukohdePerHakija(hakuOid);
         stopWatch.stop();
-        LOG.info("Haun {} sijoittelun koko: {} olemassaolevaa, {} uutta, {} valintatulosta", hakuOid, olemassaolevatHakukohteet.size(), uudetHakukohteet.size(), valintatulokset.size());
+        LOG.info("Haun {} sijoittelun koko: {} olemassaolevaa, {} uutta, {} valintatulosta", hakuOid, edellisenSijoitteluajonTulokset.size(), uudenSijoitteluajonHakukohteet.size(), valintatulokset.size());
         stopWatch.start("Luodaan sijoitteluajoWrapper ja asetetaan parametrit");
         final SijoitteluajoWrapper sijoitteluajoWrapper = SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(uusiSijoitteluajo, kaikkiHakukohteet, valintatulokset, kaudenAiemmatVastaanotot);
         asetaSijoittelunParametrit(hakuOid, sijoitteluajoWrapper, sijoittelunParametrit);
-        sijoitteluajoWrapper.setEdellisenSijoittelunHakukohteet(olemassaolevatHakukohteet);
+        sijoitteluajoWrapper.setEdellisenSijoittelunHakukohteet(edellisenSijoitteluajonTulokset);
         stopWatch.stop();
         suoritaSijoittelu(startTime, stopWatch, hakuOid, uusiSijoitteluajo, sijoitteluajoWrapper);
         stopWatch.start("Kopioidaan edellisen sijoitteluajon tietoja");
-        kopioiHakukohteenTiedotVanhaltaSijoitteluajolta(olemassaolevatHakukohteet, kaikkiHakukohteet);
+        kopioiHakukohteenTiedotVanhaltaSijoitteluajolta(edellisenSijoitteluajonTulokset, kaikkiHakukohteet);
         stopWatch.stop();
 
         LOG.info("Muuttuneita valintatuloksia: " + sijoitteluajoWrapper.getMuuttuneetValintatulokset().size());
@@ -156,8 +156,8 @@ public class SijoitteluBusinessService {
         }
     }
 
-    private void validateSijoittelunJonot(List<Hakukohde> uudetHakukohteet,
-                                          List<Hakukohde> olemassaolevatHakukohteet,
+    private void validateSijoittelunJonot(List<Hakukohde> uudenSijoitteluajonHakukohteet,
+                                          List<Hakukohde> edellisenSijoitteluajonTulokset,
                                           Set<String> eiSijoitteluunMenevatJonot,
                                           Set<String> valintaperusteidenValintatapajonot,
                                           StopWatch stopWatch) {
@@ -169,8 +169,8 @@ public class SijoitteluBusinessService {
             throw new RuntimeException(msg);
         };
 
-        Set<String> joSijoitellutJonot = hakukohteidenJonoOidit(olemassaolevatHakukohteet);
-        SetView<String> sijoittelustaPoistetutJonot = difference(joSijoitellutJonot, hakukohteidenJonoOidit(uudetHakukohteet));
+        Set<String> joSijoitellutJonot = hakukohteidenJonoOidit(edellisenSijoitteluajonTulokset);
+        SetView<String> sijoittelustaPoistetutJonot = difference(joSijoitellutJonot, hakukohteidenJonoOidit(uudenSijoitteluajonHakukohteet));
         SetView<String> aktiivisetSijoittelustaPoistetutJonot = intersection(eiSijoitteluunMenevatJonot, sijoittelustaPoistetutJonot);
         if (aktiivisetSijoittelustaPoistetutJonot.size() > 0) {
             handleError.accept("Edellisessä sijoittelussa olleet jonot [" + join(aktiivisetSijoittelustaPoistetutJonot, ", ") +
