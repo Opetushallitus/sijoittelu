@@ -21,9 +21,8 @@ public class DomainConverter {
     }
 
     private static void addValintatapaJonos(HakukohdeDTO hakukohdeTyyppi, Hakukohde hakukohde) {
-        hakukohdeTyyppi.getValinnanvaihe().stream().forEach(vaihe -> {
-            convertJono(sijoiteltavaksiValmiitAktiivisetValintatapaJonot(vaihe.getValintatapajonot()), hakukohde);
-        });
+        hakukohdeTyyppi.getValinnanvaihe().forEach(vaihe ->
+            convertJono(sijoiteltavaksiValmiitAktiivisetValintatapaJonot(vaihe.getValintatapajonot()), hakukohde));
     }
 
     private static List<ValintatietoValintatapajonoDTO> sijoiteltavaksiValmiitAktiivisetValintatapaJonot(List<ValintatietoValintatapajonoDTO> valintatapajonot) {
