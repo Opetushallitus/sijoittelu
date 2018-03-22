@@ -129,7 +129,7 @@ public class SijoitteluBusinessService {
         List<Hakukohde> edellisenSijoitteluajonTulokset = Collections.emptyList();
         if (viimeisinSijoitteluajo != null) {
             edellisenSijoitteluajonTulokset = valintarekisteriService.getSijoitteluajonHakukohteet(viimeisinSijoitteluajo.getSijoitteluajoId());
-            validateSijoittelunHakukohteetJaJonot(uudenSijoitteluajonHakukohteet, edellisenSijoitteluajonTulokset, eiSijoitteluunMenevatJonot, laskennanTuloksistaJaValintaperusteistaLoytyvatJonot, stopWatch);
+            validateSijoittelunJonot(uudenSijoitteluajonHakukohteet, edellisenSijoitteluajonTulokset, eiSijoitteluunMenevatJonot, laskennanTuloksistaJaValintaperusteistaLoytyvatJonot, stopWatch);
         }
         stopWatch.stop();
 
@@ -184,11 +184,11 @@ public class SijoitteluBusinessService {
         }
     }
 
-    private void validateSijoittelunHakukohteetJaJonot(List<Hakukohde> uudenSijoitteluajonHakukohteet,
-                                                       List<Hakukohde> edellisenSijoitteluajonTulokset,
-                                                       Set<String> eiSijoitteluunMenevatJonot,
-                                                       Set<String> laskennanTuloksistaJaValintaperusteistaLoytyvatJonot,
-                                                       StopWatch stopWatch) {
+    private void validateSijoittelunJonot(List<Hakukohde> uudenSijoitteluajonHakukohteet,
+                                          List<Hakukohde> edellisenSijoitteluajonTulokset,
+                                          Set<String> eiSijoitteluunMenevatJonot,
+                                          Set<String> laskennanTuloksistaJaValintaperusteistaLoytyvatJonot,
+                                          StopWatch stopWatch) {
 
         Consumer<String> handleError = (msg) -> {
             LOG.error(msg);
