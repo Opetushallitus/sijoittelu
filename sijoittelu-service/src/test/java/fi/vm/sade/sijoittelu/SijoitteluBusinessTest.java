@@ -259,7 +259,7 @@ public class SijoitteluBusinessTest {
 
     @Test
     @UsingDataSet(locations = "peruuta_alemmat.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
-    public void testPuuttuvaJonoKunPoistettuValintaperusteista() {
+    public void testPuuttuvaJonoKunKadonnutLaskennanTuloksista() {
         HakuDTO haku = valintatietoService.haeValintatiedot("haku1");
 
         sijoitteluService.sijoittele(haku, newHashSet("jono1", "jono2", "jono3"), newHashSet("jono1", "jono2", "jono3"), System.currentTimeMillis());
@@ -269,9 +269,26 @@ public class SijoitteluBusinessTest {
         removeJono(haku, "jono1");
 
         thrown.expect(RuntimeException.class);
+        thrown.expectMessage("Edellisessä sijoittelussa olleet jonot puuttuvat laskennan tuloksista: [Hakukohde hakukohde1 , jono \"Jono1\" (jono1 , prio 0)]");
+
+        sijoitteluService.sijoittele(haku, Collections.emptySet(), newHashSet("jono2", "jono3"), System.currentTimeMillis());
+
+        assertSijoitteluUsedSijoitteluajo(sijoitteluajoId);
+    }
+
+    @Test
+    @UsingDataSet(locations = "peruuta_alemmat.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
+    public void testPuuttuvaJonoKunKadonnutValintaperusteista() {
+        HakuDTO haku = valintatietoService.haeValintatiedot("haku1");
+
+        sijoitteluService.sijoittele(haku, newHashSet("jono1", "jono2", "jono3"), newHashSet("jono2", "jono3"), System.currentTimeMillis());
+
+        long sijoitteluajoId = captureSijoitteluajoForNextSijoittelu();
+
+        thrown.expect(RuntimeException.class);
         thrown.expectMessage("Edellisessä sijoittelussa olleet jonot [jono1] ovat kadonneet valintaperusteista");
 
-        sijoitteluService.sijoittele(haku, newHashSet("jono2", "jono3"), newHashSet("jono2", "jono3"), System.currentTimeMillis());
+        sijoitteluService.sijoittele(haku, Collections.emptySet(), newHashSet("jono2", "jono3"), System.currentTimeMillis());
 
         assertSijoitteluUsedSijoitteluajo(sijoitteluajoId);
     }

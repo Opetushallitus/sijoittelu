@@ -202,7 +202,8 @@ public class SijoitteluBusinessService {
             uudenSijoitteluajonHakukohteet.size(), edellisenSijoitteluajonTulokset.size()));
 
         Set<String> joSijoitellutJonot = hakukohteidenJonoOidit(edellisenSijoitteluajonTulokset);
-        SetView<String> sijoittelustaPoistetutJonot = difference(joSijoitellutJonot, hakukohteidenJonoOidit(uudenSijoitteluajonHakukohteet));
+        Set<String> uudenSijoitteluajonJonoOidit = hakukohteidenJonoOidit(uudenSijoitteluajonHakukohteet);
+        SetView<String> sijoittelustaPoistetutJonot = difference(joSijoitellutJonot, uudenSijoitteluajonJonoOidit);
         SetView<String> aktiivisetSijoittelustaPoistetutJonot = intersection(eiSijoitteluunMenevatJonot, sijoittelustaPoistetutJonot);
         if (aktiivisetSijoittelustaPoistetutJonot.size() > 0) {
             handleError.accept("Edellisessä sijoittelussa olleet jonot puuttuvat sijoittelusta, vaikka ne ovat " +
@@ -213,8 +214,15 @@ public class SijoitteluBusinessService {
         SetView<String> valintaperusteistaTaiLaskennanTuloksistaPuuttuvatJonot = difference(joSijoitellutJonot,
             laskennanTuloksistaJaValintaperusteistaLoytyvatJonot);
         if (valintaperusteistaTaiLaskennanTuloksistaPuuttuvatJonot.size() > 0) {
-            handleError.accept("Edellisessä sijoittelussa olleet jonot [" + join(valintaperusteistaTaiLaskennanTuloksistaPuuttuvatJonot, ", ") +
-                "] ovat kadonneet valintaperusteista");
+            SetView<String> sijoittelustaPoistuneidenJonojenOidit = difference(joSijoitellutJonot,
+                difference(uudenSijoitteluajonJonoOidit, eiSijoitteluunMenevatJonot));
+            if (!sijoittelustaPoistuneidenJonojenOidit.isEmpty()) {
+                handleError.accept("Edellisessä sijoittelussa olleet jonot puuttuvat laskennan tuloksista: " +
+                    listaaPoistuneidenJonojenTiedot(edellisenSijoitteluajonTulokset, sijoittelustaPoistuneidenJonojenOidit));
+            } else {
+                handleError.accept("Edellisessä sijoittelussa olleet jonot [" + join(valintaperusteistaTaiLaskennanTuloksistaPuuttuvatJonot, ", ") +
+                    "] ovat kadonneet valintaperusteista");
+            }
         }
     }
 
