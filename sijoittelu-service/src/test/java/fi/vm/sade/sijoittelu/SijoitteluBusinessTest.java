@@ -316,30 +316,6 @@ public class SijoitteluBusinessTest {
         assertSijoitteluUsedSijoitteluajo(sijoitteluajoId);
     }
 
-    @Test()
-    @UsingDataSet(locations = "peruuta_alemmat.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
-    public void testPuuttuvaHakukohde() {
-        HakuDTO haku = valintatietoService.haeValintatiedot("haku1");
-
-        assertEquals(getValintatapaJonoOids(haku), newHashSet("jono1", "jono2", "jono3"));
-
-        sijoitteluService.sijoittele(haku, newHashSet("jono1", "jono2", "jono3"), newHashSet("jono1", "jono2", "jono3"), System.currentTimeMillis() );
-
-        long sijoitteluajoId = captureSijoitteluajoForNextSijoittelu();
-
-        String removedHakukohdeOid = "hakukohde1";
-        haku.getHakukohteet().removeIf(hk -> hk.getOid().equals(removedHakukohdeOid));
-
-        assertEquals(getValintatapaJonoOids(haku), newHashSet("jono2", "jono3"));
-
-        thrown.expect(RuntimeException.class);
-        thrown.expectMessage("Edellisessä sijoittelussa olleet hakukohteet [" + removedHakukohdeOid + "] puuttuvat sijoittelusta");
-
-        sijoitteluService.sijoittele(haku, newHashSet("jono1", "jono2", "jono3"), newHashSet("jono1", "jono2", "jono3"), System.currentTimeMillis());
-
-        assertSijoitteluUsedSijoitteluajo(sijoitteluajoId);
-    }
-
     private Long captureSijoitteluajoForNextSijoittelu() {
         verify(valintarekisteriService, times(1)).tallennaSijoittelu(
                 sijoitteluAjoArgumentCaptor.capture(),

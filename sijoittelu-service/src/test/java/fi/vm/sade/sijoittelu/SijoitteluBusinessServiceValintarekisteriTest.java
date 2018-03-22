@@ -190,15 +190,6 @@ public class SijoitteluBusinessServiceValintarekisteriTest {
     }
 
     @Test
-    public void testSijoitteleNiinEttaEdellisistaTuloksistaLoytyvaHakukohdeOidPuuttuu() {
-        setUpMocks1();
-
-        expectedException.expect(RuntimeException.class);
-        expectedException.expectMessage("Edellisessä sijoittelussa olleet hakukohteet [112244, 112255] puuttuvat sijoittelusta");
-        service.sijoittele(hakuDTO1(false), Collections.emptySet(), Sets.newHashSet("112233.111111"), System.currentTimeMillis());
-    }
-
-    @Test
     public void testErillissijoitteleUusiHakukohde() {
         setUpMocks1();
 

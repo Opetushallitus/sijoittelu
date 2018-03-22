@@ -198,14 +198,6 @@ public class SijoitteluBusinessService {
                 "edellisestä sijoitteluajosta löytyy sijoittelun tuloksia %d hakukohteelle.",
             uudenSijoitteluajonHakukohteet.size(), edellisenSijoitteluajonTulokset.size()));
 
-        Set<String> joSijoitellutHakukohdeOidit = edellisenSijoitteluajonTulokset.stream().map(Hakukohde::getOid).collect(toSet());
-        Set<String> valintalaskennastaLoytyvatHakukohdeOidit = uudenSijoitteluajonHakukohteet.stream().map(Hakukohde::getOid).collect(toSet());
-        SetView<String> uudestaSijoittelustaPuuttuvatHakukohdeOidit = difference(joSijoitellutHakukohdeOidit, valintalaskennastaLoytyvatHakukohdeOidit);
-        if (!uudestaSijoittelustaPuuttuvatHakukohdeOidit.isEmpty()) {
-            handleError.accept(String.format("Edellisessä sijoittelussa olleet hakukohteet [%s] puuttuvat sijoittelusta",
-                join(uudestaSijoittelustaPuuttuvatHakukohdeOidit, ", ")));
-        }
-
         Set<String> joSijoitellutJonot = hakukohteidenJonoOidit(edellisenSijoitteluajonTulokset);
         SetView<String> sijoittelustaPoistetutJonot = difference(joSijoitellutJonot, hakukohteidenJonoOidit(uudenSijoitteluajonHakukohteet));
         SetView<String> aktiivisetSijoittelustaPoistetutJonot = intersection(eiSijoitteluunMenevatJonot, sijoittelustaPoistetutJonot);
