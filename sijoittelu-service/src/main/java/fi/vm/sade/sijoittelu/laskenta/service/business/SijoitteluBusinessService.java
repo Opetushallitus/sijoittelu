@@ -147,8 +147,7 @@ public class SijoitteluBusinessService {
     private SijoitteluAjo readSijoitteluajoFromValintarekisteri(String hakuOid) {
         try {
             LOG.info("Luetaan sijoittelu valintarekisteristä");
-            SijoitteluAjo viimeisinSijoitteluajo = valintarekisteriService.getLatestSijoitteluajo(hakuOid);
-            return viimeisinSijoitteluajo;
+            return valintarekisteriService.getLatestSijoitteluajo(hakuOid);
         } catch (NotFoundException iae) {
             LOG.info("Viimeisintä sijoitteluajoa haulle {} ei löydy valintarekisteristä.", hakuOid);
             LOG.warn(iae.getMessage());
