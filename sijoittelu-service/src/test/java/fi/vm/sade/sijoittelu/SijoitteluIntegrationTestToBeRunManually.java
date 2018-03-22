@@ -153,7 +153,7 @@ public class SijoitteluIntegrationTestToBeRunManually {
          * The results might or might not make sense depending on your use case.
          */
         @Override
-        public void sijoittele(HakuDTO haku, Set<String> eiSijoitteluunMenevatJonot, Set<String> valintaperusteidenValintatapajonot, Long sijoittelunTunniste) {
+        public void sijoittele(HakuDTO haku, Set<String> eiSijoitteluunMenevatJonot, Set<String> laskennanTuloksistaJaValintaperusteistaLoytyvatJonot, Long sijoittelunTunniste) {
             String hakuOid = haku.getHakuOid();
             String nameOfThisFakeSijoitteluRun = "Haun " + hakuOid + " " + LightWeightSijoitteluBusinessServiceForTesting.class.getSimpleName() + " -sijoittelu";
             StopWatch stopWatch = new StopWatch(nameOfThisFakeSijoitteluRun);

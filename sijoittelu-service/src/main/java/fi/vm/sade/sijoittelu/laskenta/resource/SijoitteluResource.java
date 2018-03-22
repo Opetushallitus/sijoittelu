@@ -227,7 +227,7 @@ public class SijoitteluResource {
             final Map<String, HakijaryhmaValintatapajonoDTO> hakijaryhmaByOid = haeMahdollisestiMuuttuneetHakijaryhmat(haku);
             final Map<String, List<ValintatapajonoDTO>> jonotSijoittelulleHakukohdeOideittain = haeValintatapajonotSijoittelulle(haku);
             final Map<String, Map<String, ValintatapajonoDTO>> hakukohdeMapToValintatapajonoByOid = Maps.newHashMap(filtteroiAktiivisetJonotMappiinOideittain(jonotSijoittelulleHakukohdeOideittain));
-            final Set<String> valintaperusteidenValintatapajonot = jonotSijoittelulleHakukohdeOideittain.values().stream()
+            final Set<String> laskennanTuloksistaJaValintaperusteistaLoytyvatJonot = jonotSijoittelulleHakukohdeOideittain.values().stream()
                     .flatMap(Collection::stream)
                     .map(ValintatapajonoDTO::getOid)
                     .collect(Collectors.toSet());
@@ -245,7 +245,10 @@ public class SijoitteluResource {
             });
             LOGGER.info("Valintaperusteet asetettu {}!", hakuOid);
 
-            sijoitteluBusinessService.sijoittele(haku, flatMapJonoOids(hakukohdeMapToValintatapajonoByOid), valintaperusteidenValintatapajonot, sijoitteluAjonTunniste);
+            sijoitteluBusinessService.sijoittele(haku,
+                flatMapJonoOids(hakukohdeMapToValintatapajonoByOid),
+                laskennanTuloksistaJaValintaperusteistaLoytyvatJonot,
+                sijoitteluAjonTunniste);
             LOGGER.info("Sijoitteluajo {} suoritettu onnistuneesti haulle {}", sijoitteluAjonTunniste, hakuOid);
             sijoitteluBookkeeperService.merkitseSijoitteluAjonTila(hakuOid, sijoitteluAjonTunniste, SijoitteluajonTila.VALMIS);
         } catch (Throwable t) {

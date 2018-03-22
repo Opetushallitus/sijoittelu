@@ -106,7 +106,10 @@ public class SijoitteluBusinessService {
         this.valintarekisteriService = valintarekisteriService;
     }
 
-    public void sijoittele(HakuDTO haku, Set<String> eiSijoitteluunMenevatJonot, Set<String> valintaperusteidenValintatapajonot, Long sijoittelunTunniste) {
+    public void sijoittele(HakuDTO haku,
+                           Set<String> eiSijoitteluunMenevatJonot,
+                           Set<String> laskennanTuloksistaJaValintaperusteistaLoytyvatJonot,
+                           Long sijoittelunTunniste) {
         //long startTime = System.currentTimeMillis();
         long startTime = sijoittelunTunniste;
         String hakuOid = haku.getHakuOid();
@@ -126,7 +129,7 @@ public class SijoitteluBusinessService {
         List<Hakukohde> edellisenSijoitteluajonTulokset = Collections.emptyList();
         if (viimeisinSijoitteluajo != null) {
             edellisenSijoitteluajonTulokset = valintarekisteriService.getSijoitteluajonHakukohteet(viimeisinSijoitteluajo.getSijoitteluajoId());
-            validateSijoittelunHakukohteetJaJonot(uudenSijoitteluajonHakukohteet, edellisenSijoitteluajonTulokset, eiSijoitteluunMenevatJonot, valintaperusteidenValintatapajonot, stopWatch);
+            validateSijoittelunHakukohteetJaJonot(uudenSijoitteluajonHakukohteet, edellisenSijoitteluajonTulokset, eiSijoitteluunMenevatJonot, laskennanTuloksistaJaValintaperusteistaLoytyvatJonot, stopWatch);
         }
         stopWatch.stop();
 
@@ -184,7 +187,7 @@ public class SijoitteluBusinessService {
     private void validateSijoittelunHakukohteetJaJonot(List<Hakukohde> uudenSijoitteluajonHakukohteet,
                                                        List<Hakukohde> edellisenSijoitteluajonTulokset,
                                                        Set<String> eiSijoitteluunMenevatJonot,
-                                                       Set<String> valintaperusteidenValintatapajonot,
+                                                       Set<String> laskennanTuloksistaJaValintaperusteistaLoytyvatJonot,
                                                        StopWatch stopWatch) {
 
         Consumer<String> handleError = (msg) -> {
@@ -206,9 +209,11 @@ public class SijoitteluBusinessService {
                 "valintaperusteissa yhä aktiivisina: " +
                 listaaPoistuneidenJonojenTiedot(edellisenSijoitteluajonTulokset, aktiivisetSijoittelustaPoistetutJonot));
         }
-        SetView<String> valintaperusteistaPuuttuvatSijoitellutJonot = difference(joSijoitellutJonot, valintaperusteidenValintatapajonot);
-        if (valintaperusteistaPuuttuvatSijoitellutJonot.size() > 0) {
-            handleError.accept("Edellisessä sijoittelussa olleet jonot [" + join(valintaperusteistaPuuttuvatSijoitellutJonot, ", ") +
+
+        SetView<String> valintaperusteistaTaiLaskennanTuloksistaPuuttuvatJonot = difference(joSijoitellutJonot,
+            laskennanTuloksistaJaValintaperusteistaLoytyvatJonot);
+        if (valintaperusteistaTaiLaskennanTuloksistaPuuttuvatJonot.size() > 0) {
+            handleError.accept("Edellisessä sijoittelussa olleet jonot [" + join(valintaperusteistaTaiLaskennanTuloksistaPuuttuvatJonot, ", ") +
                 "] ovat kadonneet valintaperusteista");
         }
     }
