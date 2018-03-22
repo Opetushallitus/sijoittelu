@@ -195,7 +195,7 @@ public class SijoitteluBusinessService {
         };
 
         LOG.info(String.format("Valintalaskennasta on löytynyt laskennan tuloksia %d hakukohteelle, " +
-            "edellisestä sijoitteluajosta löytyy sijoittelun tuloksia %d hakukohteelle.",
+                "edellisestä sijoitteluajosta löytyy sijoittelun tuloksia %d hakukohteelle.",
             uudenSijoitteluajonHakukohteet.size(), edellisenSijoitteluajonTulokset.size()));
 
         Set<String> joSijoitellutHakukohdeOidit = edellisenSijoitteluajonTulokset.stream().map(Hakukohde::getOid).collect(toSet());
@@ -215,9 +215,9 @@ public class SijoitteluBusinessService {
                 listaaPoistuneidenJonojenTiedot(edellisenSijoitteluajonTulokset, aktiivisetSijoittelustaPoistetutJonot));
         }
         SetView<String> valintaperusteistaPuuttuvatSijoitellutJonot = difference(joSijoitellutJonot, valintaperusteidenValintatapajonot);
-        if(valintaperusteistaPuuttuvatSijoitellutJonot.size() > 0) {
+        if (valintaperusteistaPuuttuvatSijoitellutJonot.size() > 0) {
             handleError.accept("Edellisessä sijoittelussa olleet jonot [" + join(valintaperusteistaPuuttuvatSijoitellutJonot, ", ") +
-                    "] ovat kadonneet valintaperusteista");
+                "] ovat kadonneet valintaperusteista");
         }
     }
 
