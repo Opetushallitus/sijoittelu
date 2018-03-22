@@ -220,8 +220,8 @@ public class SijoitteluBusinessService {
                 handleError.accept("Edellisessä sijoittelussa olleet jonot puuttuvat laskennan tuloksista: " +
                     listaaPoistuneidenJonojenTiedot(edellisenSijoitteluajonTulokset, sijoittelustaPoistuneidenJonojenOidit));
             } else {
-                handleError.accept("Edellisessä sijoittelussa olleet jonot [" + join(valintaperusteistaTaiLaskennanTuloksistaPuuttuvatJonot, ", ") +
-                    "] ovat kadonneet valintaperusteista");
+                handleError.accept("Edellisessä sijoittelussa olleet jonot ovat kadonneet valintaperusteista: " +
+                    listaaPoistuneidenJonojenTiedot(edellisenSijoitteluajonTulokset, valintaperusteistaTaiLaskennanTuloksistaPuuttuvatJonot));
             }
         }
     }

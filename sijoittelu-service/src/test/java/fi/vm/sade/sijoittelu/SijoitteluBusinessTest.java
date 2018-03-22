@@ -286,7 +286,7 @@ public class SijoitteluBusinessTest {
         long sijoitteluajoId = captureSijoitteluajoForNextSijoittelu();
 
         thrown.expect(RuntimeException.class);
-        thrown.expectMessage("Edellisessä sijoittelussa olleet jonot [jono1] ovat kadonneet valintaperusteista");
+        thrown.expectMessage("Edellisessä sijoittelussa olleet jonot ovat kadonneet valintaperusteista: [Hakukohde hakukohde1 , jono \"Jono1\" (jono1 , prio 0)]");
 
         sijoitteluService.sijoittele(haku, Collections.emptySet(), newHashSet("jono2", "jono3"), System.currentTimeMillis());
 
