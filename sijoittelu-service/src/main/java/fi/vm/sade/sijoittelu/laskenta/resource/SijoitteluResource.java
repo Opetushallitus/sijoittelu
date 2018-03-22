@@ -189,7 +189,9 @@ public class SijoitteluResource {
     private Map<String, List<ValintatapajonoDTO>> haeValintatapajonotSijoittelulle(HakuDTO haku) {
         final Set<String> aktiivisiaJonojaSisaltavienKohteidenOidit = haku.filtteroiOiditHakukohteilleJoillaOnAktiivisiaJonoja();
         if (!aktiivisiaJonojaSisaltavienKohteidenOidit.isEmpty()) {
-            LOGGER.info("Haetaan valintatapajonoja sijoittelua varten haun {} {}:lle hakukohteelle", haku.getHakuOid(), aktiivisiaJonojaSisaltavienKohteidenOidit.size());
+            LOGGER.info(String.format("Haetaan valintaperusteista valintatapajonoja sijoittelua varten haun " +
+                "%s %s:lle hakukohteelle, jotka löytyvät laskennan tuloksista",
+                haku.getHakuOid(), aktiivisiaJonojaSisaltavienKohteidenOidit.size()));
             try {
                 return valintalaskentakoostepalveluResource.haeValintatapajonotSijoittelulle(new ArrayList<>(aktiivisiaJonojaSisaltavienKohteidenOidit));
             } catch (Exception e) {
