@@ -1,7 +1,14 @@
 package fi.vm.sade.sijoittelu.laskenta.service.business;
 
+import static com.google.common.collect.Sets.difference;
+import static com.google.common.collect.Sets.intersection;
+import static java.util.Arrays.asList;
+import static java.util.Collections.unmodifiableSet;
+import static java.util.stream.Collectors.toSet;
+import static org.apache.commons.lang.StringUtils.join;
 import com.google.common.collect.Sets.SetView;
 
+import fi.vm.sade.sijoittelu.domain.*;
 import fi.vm.sade.sijoittelu.batch.logic.impl.DomainConverter;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoitteluAlgorithm;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoitteluajoWrapperFactory;
@@ -9,7 +16,14 @@ import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.postsijoitteluprocessor.
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.presijoitteluprocessor.PreSijoitteluProcessor;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.util.TilaTaulukot;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.SijoitteluajoWrapper;
-import fi.vm.sade.sijoittelu.domain.*;
+import fi.vm.sade.sijoittelu.domain.HakemuksenTila;
+import fi.vm.sade.sijoittelu.domain.Hakemus;
+import fi.vm.sade.sijoittelu.domain.Hakukohde;
+import fi.vm.sade.sijoittelu.domain.HakukohdeItem;
+import fi.vm.sade.sijoittelu.domain.SijoitteluAjo;
+import fi.vm.sade.sijoittelu.domain.ValiSijoittelu;
+import fi.vm.sade.sijoittelu.domain.Valintatapajono;
+import fi.vm.sade.sijoittelu.domain.Valintatulos;
 import fi.vm.sade.sijoittelu.domain.comparator.HakemusComparator;
 import fi.vm.sade.sijoittelu.domain.dto.VastaanottoDTO;
 import fi.vm.sade.sijoittelu.laskenta.external.resource.VirkailijaValintaTulosServiceResource;
@@ -27,13 +41,25 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StopWatch;
 
+import javax.ws.rs.WebApplicationException;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import static com.google.common.collect.Sets.difference;
@@ -184,14 +210,26 @@ public class SijoitteluBusinessService {
         SetView<String> sijoittelustaPoistetutJonot = difference(joSijoitellutJonot, hakukohteidenJonoOidit(uudenSijoitteluajonHakukohteet));
         SetView<String> aktiivisetSijoittelustaPoistetutJonot = intersection(eiSijoitteluunMenevatJonot, sijoittelustaPoistetutJonot);
         if (aktiivisetSijoittelustaPoistetutJonot.size() > 0) {
-            handleError.accept("Edellisessä sijoittelussa olleet jonot [" + join(aktiivisetSijoittelustaPoistetutJonot, ", ") +
-                    "] puuttuvat sijoittelusta, vaikka ne ovat valintaperusteissa yhä aktiivisina");
+            handleError.accept("Edellisessä sijoittelussa olleet jonot puuttuvat sijoittelusta, vaikka ne ovat " +
+                "valintaperusteissa yhä aktiivisina: " +
+                listaaPoistuneidenJonojenTiedot(edellisenSijoitteluajonTulokset, aktiivisetSijoittelustaPoistetutJonot));
         }
         SetView<String> valintaperusteistaPuuttuvatSijoitellutJonot = difference(joSijoitellutJonot, valintaperusteidenValintatapajonot);
         if(valintaperusteistaPuuttuvatSijoitellutJonot.size() > 0) {
             handleError.accept("Edellisessä sijoittelussa olleet jonot [" + join(valintaperusteistaPuuttuvatSijoitellutJonot, ", ") +
                     "] ovat kadonneet valintaperusteista");
         }
+    }
+
+    private List<String> listaaPoistuneidenJonojenTiedot(List<Hakukohde> edellisenSijoitteluajonTulokset, Collection<String> poistuneidenJonojenOidit) {
+        return poistuneidenJonojenOidit.stream().map(jonoOid -> {
+            Predicate<Valintatapajono> withJonoOid = j -> j.getOid().equals(jonoOid);
+            Hakukohde poistuneenJononHakukohde = edellisenSijoitteluajonTulokset.stream()
+                .filter(h -> h.getValintatapajonot().stream().anyMatch(withJonoOid)).findFirst().get();
+            Valintatapajono poistunutJono = poistuneenJononHakukohde.getValintatapajonot().stream().filter(withJonoOid).findFirst().get();
+            return String.format("Hakukohde %s , jono \"%s\" (%s , prio %d)", poistuneenJononHakukohde.getOid(),
+                poistunutJono.getNimi(), poistunutJono.getOid(), poistunutJono.getPrioriteetti());
+        }).collect(Collectors.toList());
     }
 
     private Set<String> hakukohteidenJonoOidit(List<Hakukohde> hakukohteet) {
