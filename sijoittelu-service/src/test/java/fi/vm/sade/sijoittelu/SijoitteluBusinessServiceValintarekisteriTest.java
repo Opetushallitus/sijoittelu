@@ -37,7 +37,12 @@ import fi.vm.sade.valintalaskenta.domain.dto.valintatieto.HakuDTO;
 import fi.vm.sade.valintalaskenta.domain.dto.valintatieto.ValintatietoValinnanvaiheDTO;
 import fi.vm.sade.valintalaskenta.domain.dto.valintatieto.ValintatietoValintatapajonoDTO;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+
+import fi.vm.sade.valintalaskenta.domain.dto.valintatieto.HakuDTO;
+import fi.vm.sade.valintalaskenta.domain.dto.HakukohdeDTO;
+import org.junit.rules.ExpectedException;
 import org.mockito.ArgumentCaptor;
 import rx.functions.Func3;
 
@@ -61,6 +66,9 @@ public class SijoitteluBusinessServiceValintarekisteriTest {
     private TarjontaIntegrationService tarjontaIntegrationService;
     private VirkailijaValintaTulosServiceResource valintaTulosServiceResource;
     private ValintarekisteriService valintarekisteriService;
+
+    @Rule
+    public ExpectedException expectedException = ExpectedException.none();
 
     @Before
     public void setUp() {
@@ -132,7 +140,10 @@ public class SijoitteluBusinessServiceValintarekisteriTest {
         assertEquals(4, valintatulokset.size());
     }
 
-    private void assertHakemukset(List<Hakukohde> hakukohteet, HakemuksenTila uusiHakukohdeTila, HakemuksenTila muutHakukohteetTila) {
+    private void assertHakemukset(List<Hakukohde> hakukohteet,
+                                  HakemuksenTila uusiHakukohdeTila,
+                                  HakemuksenTila muutHakukohteetTila,
+                                  int expectedMuidenHakukohteidenHakemuksetCount) {
         List<Hakemus> uudenHakukohteenHakemukset = new ArrayList<>();
         List<Hakemus> muidenHakukohteidenHakemukset = new ArrayList<>();
 
@@ -149,7 +160,7 @@ public class SijoitteluBusinessServiceValintarekisteriTest {
         assertFalse(muidenHakukohteidenHakemukset.stream().anyMatch(t -> t.getTila() != muutHakukohteetTila));
 
         assertEquals(2, uudenHakukohteenHakemukset.size());
-        assertEquals(4, muidenHakukohteidenHakemukset.size());
+        assertEquals(expectedMuidenHakukohteidenHakemuksetCount, muidenHakukohteidenHakemukset.size());
     }
 
     private void assertHyvaksyttyVaralla(List<Hakukohde> hakukohteet, String hakukohdeOid, String jonoOid, int hyvaksytty, int varalla) {
@@ -163,14 +174,13 @@ public class SijoitteluBusinessServiceValintarekisteriTest {
     public void testSijoitteleEiMuuttuneitaValinnantuloksia() {
         setUpMocks1();
 
-        service.sijoittele(hakuDTO1(), Collections.emptySet(), Sets.newHashSet("112233.111111", "112244.111111", "112255.111111"), System.currentTimeMillis());
+        service.sijoittele(hakuDTO1(true), Collections.emptySet(), Sets.newHashSet("112233.111111", "112244.111111", "112255.111111"), System.currentTimeMillis());
 
         Func3<SijoitteluAjo, List<Hakukohde>, List<Valintatulos>, Boolean> assertFunction = (sijoitteluajo, hakukohteet, valintatulokset) -> {
             assertSijoitteluajo(sijoitteluajo);
             assertHakukohteet(sijoitteluajo.getSijoitteluajoId(), hakukohteet);
-            assertHakemukset(hakukohteet, HakemuksenTila.HYVAKSYTTY, HakemuksenTila.VARASIJALTA_HYVAKSYTTY);
+            assertHakemukset(hakukohteet, HakemuksenTila.HYVAKSYTTY, HakemuksenTila.VARASIJALTA_HYVAKSYTTY, 0);
             assertHyvaksyttyVaralla(hakukohteet, uusiHakukohdeOid, "112233.111111", 2, 0);
-            assertHyvaksyttyVaralla(hakukohteet, "112244", "112244.111111", 2, 0);
 
             assertEquals(0, valintatulokset.size());
             return true;
@@ -180,15 +190,24 @@ public class SijoitteluBusinessServiceValintarekisteriTest {
     }
 
     @Test
+    public void testSijoitteleNiinEttaEdellisistaTuloksistaLoytyvaHakukohdeOidPuuttuu() {
+        setUpMocks1();
+
+        expectedException.expect(RuntimeException.class);
+        expectedException.expectMessage("Edellisessä sijoittelussa olleet hakukohteet [112244, 112255] puuttuvat sijoittelusta");
+        service.sijoittele(hakuDTO1(false), Collections.emptySet(), Sets.newHashSet("112233.111111"), System.currentTimeMillis());
+    }
+
+    @Test
     public void testErillissijoitteleUusiHakukohde() {
         setUpMocks1();
 
-        service.erillissijoittele(hakuDTO1());
+        service.erillissijoittele(hakuDTO1(false));
 
         Func3<SijoitteluAjo, List<Hakukohde>, List<Valintatulos>, Boolean> assertFunction = (sijoitteluajo, hakukohteet, valintatulokset) -> {
             assertSijoitteluajo(sijoitteluajo);
             assertHakukohteet(sijoitteluajo.getSijoitteluajoId(), hakukohteet);
-            assertHakemukset(hakukohteet, HakemuksenTila.HYVAKSYTTY, HakemuksenTila.VARALLA);
+            assertHakemukset(hakukohteet, HakemuksenTila.HYVAKSYTTY, HakemuksenTila.VARALLA, 4);
             assertHyvaksyttyVaralla(hakukohteet, uusiHakukohdeOid, "112233.111111", 2, 0);
             //assertHyvaksyttyVaralla(hakukohteet, "112244", "112244.111111", 0, 2);
 
@@ -203,7 +222,7 @@ public class SijoitteluBusinessServiceValintarekisteriTest {
     public void testSijoitteleKaksiJonoaHyvaksyVarallaJaPeruAlempi() {
         setUpMocks2();
 
-        service.sijoittele(hakuDTO2(), Collections.emptySet(), Sets.newHashSet("112233.111111", "112244.111111", "112255.111111", "112233.222222", "112244.222222", "112255.222222"), (long)123456789);
+        service.sijoittele(hakuDTO2(true), Collections.emptySet(), Sets.newHashSet("112233.111111", "112244.111111", "112255.111111", "112233.222222", "112244.222222", "112255.222222"), (long)123456789);
 
         Func3<SijoitteluAjo, List<Hakukohde>, List<Valintatulos>, Boolean> assertFunction = (sijoitteluajo, hakukohteet, valintatulokset) -> {
             assertSijoitteluajo(sijoitteluajo);
@@ -223,7 +242,7 @@ public class SijoitteluBusinessServiceValintarekisteriTest {
     public void testErillissijoitteleKaksiJonoHyvaksyVarallaJaPeruAlempi() {
         setUpMocks2();
 
-        service.erillissijoittele(hakuDTO2());
+        service.erillissijoittele(hakuDTO2(false));
 
         Func3<SijoitteluAjo, List<Hakukohde>, List<Valintatulos>, Boolean> assertFunction = (sijoitteluajo, hakukohteet, valintatulokset) -> {
             assertSijoitteluajo(sijoitteluajo);
@@ -302,7 +321,7 @@ public class SijoitteluBusinessServiceValintarekisteriTest {
         kaikkiHakijat.add(toinenSamallaSijallaVaralla);
         jonoDto.setHakija(kaikkiHakijat);
 
-        service.sijoittele(hakuDTO(Collections.singletonList(jonoDto)),
+        service.sijoittele(hakuDTO(Collections.singletonList(jonoDto), false),
             Collections.emptySet(),
             Sets.newHashSet(jonoOid),
             -1L);
@@ -388,15 +407,15 @@ public class SijoitteluBusinessServiceValintarekisteriTest {
         return parametrit;
     }
 
-    private HakuDTO hakuDTO1() {
-        return hakuDTO(Collections.singletonList(jonoDTO(uusiHakukohdeOid + ".111111")));
+    private HakuDTO hakuDTO1(boolean lisaaValintarekisterinHakukohteet) {
+        return hakuDTO(Arrays.asList(jonoDTO(uusiHakukohdeOid + ".111111")), lisaaValintarekisterinHakukohteet);
     }
 
-    private HakuDTO hakuDTO2() {
-        return hakuDTO(Arrays.asList(jonoDTO(uusiHakukohdeOid + ".111111"), jonoDTO(uusiHakukohdeOid + ".222222")));
+    private HakuDTO hakuDTO2(boolean lisaaValintarekisterinHakukohteet) {
+        return hakuDTO(Arrays.asList(jonoDTO(uusiHakukohdeOid + ".111111"), jonoDTO(uusiHakukohdeOid + ".222222")), lisaaValintarekisterinHakukohteet);
     }
 
-    private HakuDTO hakuDTO(List<ValintatietoValintatapajonoDTO> jonot) {
+    private HakuDTO hakuDTO(List<ValintatietoValintatapajonoDTO> jonot, boolean lisaaValintarekisterinHakukohteet) {
         HakuDTO haku = new HakuDTO();
         haku.setHakuOid(hakuOid);
 
@@ -404,7 +423,16 @@ public class SijoitteluBusinessServiceValintarekisteriTest {
         hakukohde.setOid(uusiHakukohdeOid);
         ValintatietoValinnanvaiheDTO vaihe = new ValintatietoValinnanvaiheDTO(1, "1", hakuOid, "vaihe1", new java.util.Date(), jonot, Collections.emptyList());
         hakukohde.setValinnanvaihe(Collections.singletonList(vaihe));
-        haku.setHakukohteet(Collections.singletonList(hakukohde));
+        List<HakukohdeDTO> hakukohdeDtos = new ArrayList<>();
+        if (lisaaValintarekisterinHakukohteet) {
+            hakukohdeDtos.addAll(valintarekisteriHakukohdeOidit.stream().map(oid -> {
+                HakukohdeDTO hakukohdeDto = new HakukohdeDTO();
+                hakukohdeDto.setOid(oid);
+                return hakukohdeDto;
+            }).collect(Collectors.toList()));
+        }
+        hakukohdeDtos.add(hakukohde);
+        haku.setHakukohteet(hakukohdeDtos);
         return haku;
     }
 

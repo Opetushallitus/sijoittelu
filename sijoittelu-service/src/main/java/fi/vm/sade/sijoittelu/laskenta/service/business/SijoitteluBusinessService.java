@@ -100,7 +100,7 @@ public class SijoitteluBusinessService {
         List<Hakukohde> edellisenSijoitteluajonTulokset = Collections.emptyList();
         if (viimeisinSijoitteluajo != null) {
             edellisenSijoitteluajonTulokset = valintarekisteriService.getSijoitteluajonHakukohteet(viimeisinSijoitteluajo.getSijoitteluajoId());
-            validateSijoittelunJonot(uudenSijoitteluajonHakukohteet, edellisenSijoitteluajonTulokset, eiSijoitteluunMenevatJonot, valintaperusteidenValintatapajonot, stopWatch);
+            validateSijoittelunHakukohteetJaJonot(uudenSijoitteluajonHakukohteet, edellisenSijoitteluajonTulokset, eiSijoitteluunMenevatJonot, valintaperusteidenValintatapajonot, stopWatch);
         }
         stopWatch.stop();
 
@@ -155,11 +155,11 @@ public class SijoitteluBusinessService {
         }
     }
 
-    private void validateSijoittelunJonot(List<Hakukohde> uudenSijoitteluajonHakukohteet,
-                                          List<Hakukohde> edellisenSijoitteluajonTulokset,
-                                          Set<String> eiSijoitteluunMenevatJonot,
-                                          Set<String> valintaperusteidenValintatapajonot,
-                                          StopWatch stopWatch) {
+    private void validateSijoittelunHakukohteetJaJonot(List<Hakukohde> uudenSijoitteluajonHakukohteet,
+                                                       List<Hakukohde> edellisenSijoitteluajonTulokset,
+                                                       Set<String> eiSijoitteluunMenevatJonot,
+                                                       Set<String> valintaperusteidenValintatapajonot,
+                                                       StopWatch stopWatch) {
 
         Consumer<String> handleError = (msg) -> {
             LOG.error(msg);
@@ -167,6 +167,18 @@ public class SijoitteluBusinessService {
             LOG.info(stopWatch.prettyPrint());
             throw new RuntimeException(msg);
         };
+
+        LOG.info(String.format("Valintalaskennasta on löytynyt laskennan tuloksia %d hakukohteelle, " +
+            "edellisestä sijoitteluajosta löytyy sijoittelun tuloksia %d hakukohteelle.",
+            uudenSijoitteluajonHakukohteet.size(), edellisenSijoitteluajonTulokset.size()));
+
+        Set<String> joSijoitellutHakukohdeOidit = edellisenSijoitteluajonTulokset.stream().map(Hakukohde::getOid).collect(toSet());
+        Set<String> valintalaskennastaLoytyvatHakukohdeOidit = uudenSijoitteluajonHakukohteet.stream().map(Hakukohde::getOid).collect(toSet());
+        SetView<String> uudestaSijoittelustaPuuttuvatHakukohdeOidit = difference(joSijoitellutHakukohdeOidit, valintalaskennastaLoytyvatHakukohdeOidit);
+        if (!uudestaSijoittelustaPuuttuvatHakukohdeOidit.isEmpty()) {
+            handleError.accept(String.format("Edellisessä sijoittelussa olleet hakukohteet [%s] puuttuvat sijoittelusta",
+                join(uudestaSijoittelustaPuuttuvatHakukohdeOidit, ", ")));
+        }
 
         Set<String> joSijoitellutJonot = hakukohteidenJonoOidit(edellisenSijoitteluajonTulokset);
         SetView<String> sijoittelustaPoistetutJonot = difference(joSijoitellutJonot, hakukohteidenJonoOidit(uudenSijoitteluajonHakukohteet));

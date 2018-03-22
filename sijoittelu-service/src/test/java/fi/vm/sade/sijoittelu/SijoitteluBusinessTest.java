@@ -113,7 +113,7 @@ public class SijoitteluBusinessTest {
 
     @Test
     @UsingDataSet(locations = "peruuta_alemmat.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
-    public void testPeruutaAlemmat() throws IOException {
+    public void testPeruutaAlemmat() {
         HakuDTO haku = valintatietoService.haeValintatiedot("haku1");
 
         sijoitteluService.sijoittele(haku, newHashSet("jono1", "jono2", "jono3"), newHashSet("jono1", "jono2", "jono3"), System.currentTimeMillis());
@@ -141,7 +141,7 @@ public class SijoitteluBusinessTest {
         when(valintarekisteriService.getLatestSijoitteluajo("haku1")).thenReturn(sijoitteluAjo1);
         when(valintarekisteriService.getSijoitteluajonHakukohteet(anyLong())).thenReturn(hakukohteet1);
 
-        haku.getHakukohteet().remove(0);
+        removeJono(haku, "jono1");
 
         sijoitteluService.sijoittele(haku, newHashSet("jono2", "jono3"), newHashSet("jono1", "jono2", "jono3"), System.currentTimeMillis());
         verify(valintarekisteriService, times(2)).tallennaSijoittelu(
@@ -154,7 +154,7 @@ public class SijoitteluBusinessTest {
 
         List<Hakukohde> hakukohteet2 = hakukohdeArgumentCaptor.<List<Hakukohde>>getAllValues().get(2);
         assertEquals(3, hakukohteet2.size());
-        assertTrue(Arrays.asList("jono1", "jono2", "jono3").equals(
+        assertTrue(Arrays.asList("jono2", "jono3").equals(
                 hakukohteet2.stream()
                         .map(Hakukohde::getValintatapajonot)
                         .flatMap(List::stream)
@@ -217,7 +217,7 @@ public class SijoitteluBusinessTest {
 
         long sijoitteluajoId = captureSijoitteluajoForNextSijoittelu();
 
-        haku.getHakukohteet().remove(0);
+        removeJono(haku, "jono1");
 
         assertEquals(getValintatapaJonoOids(haku), newHashSet("jono2", "jono3"));
 
@@ -237,7 +237,7 @@ public class SijoitteluBusinessTest {
 
         long sijoitteluajoId = captureSijoitteluajoForNextSijoittelu();
 
-        haku.getHakukohteet().remove(0);
+        removeJono(haku, "jono1");
 
         thrown.expect(RuntimeException.class);
         thrown.expectMessage("Edellisessä sijoittelussa olleet jonot [jono1] puuttuvat sijoittelusta, vaikka ne ovat valintaperusteissa yhä aktiivisina");
@@ -256,7 +256,7 @@ public class SijoitteluBusinessTest {
 
         long sijoitteluajoId = captureSijoitteluajoForNextSijoittelu();
 
-        haku.getHakukohteet().remove(0);
+        removeJono(haku, "jono1");
 
         thrown.expect(RuntimeException.class);
         thrown.expectMessage("Edellisessä sijoittelussa olleet jonot [jono1] ovat kadonneet valintaperusteista");
@@ -275,7 +275,7 @@ public class SijoitteluBusinessTest {
 
         long sijoitteluajoId = captureSijoitteluajoForNextSijoittelu();
 
-        haku.getHakukohteet().remove(0);
+        removeJono(haku, "jono1");
 
         sijoitteluService.sijoittele(haku, newHashSet("jono2", "jono3"), newHashSet("jono1", "jono2", "jono3"), System.currentTimeMillis());
 
@@ -293,12 +293,36 @@ public class SijoitteluBusinessTest {
 
         long sijoitteluajoId = captureSijoitteluajoForNextSijoittelu();
 
-        haku.getHakukohteet().remove(0);
+        removeJono(haku, "jono1");
 
         assertEquals(getValintatapaJonoOids(haku), newHashSet("jono2", "jono3"));
 
         thrown.expect(RuntimeException.class);
         thrown.expectMessage("Edellisessä sijoittelussa olleet jonot [jono1] puuttuvat sijoittelusta, vaikka ne ovat valintaperusteissa yhä aktiivisina");
+
+        sijoitteluService.sijoittele(haku, newHashSet("jono1", "jono2", "jono3"), newHashSet("jono1", "jono2", "jono3"), System.currentTimeMillis());
+
+        assertSijoitteluUsedSijoitteluajo(sijoitteluajoId);
+    }
+
+    @Test()
+    @UsingDataSet(locations = "peruuta_alemmat.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
+    public void testPuuttuvaHakukohde() {
+        HakuDTO haku = valintatietoService.haeValintatiedot("haku1");
+
+        assertEquals(getValintatapaJonoOids(haku), newHashSet("jono1", "jono2", "jono3"));
+
+        sijoitteluService.sijoittele(haku, newHashSet("jono1", "jono2", "jono3"), newHashSet("jono1", "jono2", "jono3"), System.currentTimeMillis() );
+
+        long sijoitteluajoId = captureSijoitteluajoForNextSijoittelu();
+
+        String removedHakukohdeOid = "hakukohde1";
+        haku.getHakukohteet().removeIf(hk -> hk.getOid().equals(removedHakukohdeOid));
+
+        assertEquals(getValintatapaJonoOids(haku), newHashSet("jono2", "jono3"));
+
+        thrown.expect(RuntimeException.class);
+        thrown.expectMessage("Edellisessä sijoittelussa olleet hakukohteet [" + removedHakukohdeOid + "] puuttuvat sijoittelusta");
 
         sijoitteluService.sijoittele(haku, newHashSet("jono1", "jono2", "jono3"), newHashSet("jono1", "jono2", "jono3"), System.currentTimeMillis());
 
@@ -437,7 +461,7 @@ public class SijoitteluBusinessTest {
 
     @Test
     @UsingDataSet(locations = "valisijoittelu_hylkays.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
-    public void testAlahylkaaValisijoittelussaHylattyja() throws IOException {
+    public void testAlahylkaaValisijoittelussaHylattyja() {
 
         HakuDTO haku = valintatietoService.haeValintatiedot("haku1");
 
@@ -474,5 +498,13 @@ public class SijoitteluBusinessTest {
         return Collections.unmodifiableSet(haku.getHakukohteet().stream()
                 .flatMap(h -> h.getValinnanvaihe().stream().flatMap(v -> v.getValintatapajonot().stream().map(ValintatapajonoDTO::getOid)))
                 .collect(toSet()));
+    }
+
+    private void removeJono(HakuDTO haku, String jonoOid) {
+        haku.getHakukohteet().forEach(hakukohdeDTO ->
+            hakukohdeDTO.getValinnanvaihe().forEach(valintatietoValinnanvaiheDTO ->
+                valintatietoValinnanvaiheDTO.getValintatapajonot().removeIf(j -> {
+                    return j.getOid().equals(jonoOid);
+                })));
     }
 }
