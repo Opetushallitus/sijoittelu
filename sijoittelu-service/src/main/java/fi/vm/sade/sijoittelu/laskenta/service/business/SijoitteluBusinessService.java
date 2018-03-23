@@ -114,7 +114,7 @@ public class SijoitteluBusinessService {
         long startTime = sijoittelunTunniste;
         String hakuOid = haku.getHakuOid();
         StopWatch stopWatch = new StopWatch("Haun " + hakuOid + " sijoittelu");
-        LOG.info(String.format("Sijoittelu haulle %s alkaa. Luetaan parametrit tarjonnasta esivalidoidaan ne", hakuOid));
+        LOG.info(String.format("Sijoittelu haulle %s alkaa. Luetaan parametrit tarjonnasta ja esivalidoidaan ne", hakuOid));
         stopWatch.start("Luetaan parametrit tarjonnasta ja esivalidoidaan ne");
         SijoittelunParametrit sijoittelunParametrit = findParametersFromTarjontaAndPerformInitialValidation(hakuOid);
         stopWatch.stop();
