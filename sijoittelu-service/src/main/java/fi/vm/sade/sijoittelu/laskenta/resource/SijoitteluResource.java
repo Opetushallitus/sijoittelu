@@ -2,11 +2,15 @@ package fi.vm.sade.sijoittelu.laskenta.resource;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
+
 import fi.vm.sade.service.valintaperusteet.dto.HakijaryhmaValintatapajonoDTO;
 import fi.vm.sade.service.valintaperusteet.dto.ValintatapajonoCreateDTO;
 import fi.vm.sade.service.valintaperusteet.dto.ValintatapajonoDTO;
 import fi.vm.sade.service.valintaperusteet.resource.ValintalaskentakoostepalveluResource;
+import fi.vm.sade.sijoittelu.domain.Hakukohde;
 import fi.vm.sade.sijoittelu.domain.SijoitteluajonTila;
+import fi.vm.sade.sijoittelu.domain.Valintatapajono;
 import fi.vm.sade.sijoittelu.laskenta.service.business.SijoitteluBusinessService;
 import fi.vm.sade.sijoittelu.laskenta.util.EnumConverter;
 import fi.vm.sade.valintalaskenta.domain.dto.HakukohdeDTO;
@@ -30,6 +34,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import static java.lang.Boolean.TRUE;
@@ -193,7 +198,10 @@ public class SijoitteluResource {
                 "%s %s:lle hakukohteelle, jotka löytyvät laskennan tuloksista",
                 haku.getHakuOid(), aktiivisiaJonojaSisaltavienKohteidenOidit.size()));
             try {
-                return valintalaskentakoostepalveluResource.haeValintatapajonotSijoittelulle(new ArrayList<>(aktiivisiaJonojaSisaltavienKohteidenOidit));
+                Map<String, List<ValintatapajonoDTO>> valintaperusteidenJonotHakukohteittain =
+                    valintalaskentakoostepalveluResource.haeValintatapajonotSijoittelulle(new ArrayList<>(aktiivisiaJonojaSisaltavienKohteidenOidit));
+                assertKaikkiLaskennanTuloksistaLoytyvatJonotLoytyvatValintaPerusteista(haku, valintaperusteidenJonotHakukohteittain);
+                return valintaperusteidenJonotHakukohteittain;
             } catch (Exception e) {
                 LOGGER.error("Valintatapajonojen hakeminen epäonnistui virheeseen!", e);
                 throw e;
@@ -201,6 +209,30 @@ public class SijoitteluResource {
         } else {
             return Collections.emptyMap();
         }
+    }
+
+    private void assertKaikkiLaskennanTuloksistaLoytyvatJonotLoytyvatValintaPerusteista(HakuDTO hakuDTO, Map<String, List<ValintatapajonoDTO>> valintaperusteidenJonotHakukohteittain) {
+        Set<String> laskennanTulostenJonoOidit = hakuDTO.getHakukohteet().stream().flatMap(hk ->
+            hk.getValinnanvaihe().stream().flatMap(vv ->
+                vv.getValintatapajonot().stream().map(fi.vm.sade.valintalaskenta.domain.dto.ValintatapajonoDTO::getOid))).collect(toSet());
+        Set<String> valintaperusteidenJonoOidit = valintaperusteidenJonotHakukohteittain.values().stream().flatMap(js ->
+            js.stream().map(ValintatapajonoDTO::getOid)).collect(toSet());
+        Sets.SetView<String> valintaperusteistaKadonneetJonoOidit = Sets.difference(laskennanTulostenJonoOidit, valintaperusteidenJonoOidit);
+
+        if (valintaperusteistaKadonneetJonoOidit.isEmpty()) {
+            return;
+        }
+
+        List<String> poistuneidenJonojenTiedot = valintaperusteistaKadonneetJonoOidit.stream().map(jonoOid -> {
+            Predicate<ValintatietoValintatapajonoDTO> withJonoOid = j -> j.getOid().equals(jonoOid);
+            HakukohdeDTO poistuneenJononHakukohde = (hakuDTO.getHakukohteet()).stream()
+                .filter(h -> h.getValinnanvaihe().stream().anyMatch(vv -> vv.getValintatapajonot().stream().anyMatch(withJonoOid))).findFirst().get();
+            ValintatietoValintatapajonoDTO poistunutJono = poistuneenJononHakukohde.getValinnanvaihe().stream().flatMap(vv -> vv.getValintatapajonot().stream().filter(withJonoOid)).findFirst().get();
+            return String.format("Hakukohde %s , jono \"%s\" (%s , prio %d)", poistuneenJononHakukohde.getOid(),
+                poistunutJono.getNimi(), poistunutJono.getOid(), poistunutJono.getPrioriteetti());
+        }).collect(Collectors.toList());
+        throw new IllegalStateException(String.format("Haun %s sijoittelu : Laskennan tuloksista löytyvien jonojen tietoja on kadonnut valintaperusteista: %s",
+            hakuDTO.getHakuOid(), poistuneidenJonojenTiedot));
     }
 
     private Map<String, Map<String, ValintatapajonoDTO>> filtteroiAktiivisetJonotMappiinOideittain(Map<String, List<ValintatapajonoDTO>> valintatapajonotSijoittelulle) {

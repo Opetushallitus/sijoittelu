@@ -220,7 +220,10 @@ public class SijoitteluBusinessService {
                 handleError.accept("Edellisessä sijoittelussa olleet jonot puuttuvat laskennan tuloksista: " +
                     listaaPoistuneidenJonojenTiedot(edellisenSijoitteluajonTulokset, sijoittelustaPoistuneidenJonojenOidit));
             } else {
-                handleError.accept("Edellisessä sijoittelussa olleet jonot ovat kadonneet valintaperusteista: " +
+                handleError.accept("Edellisessä sijoittelussa olleet jonot ovat kadonneet valintaperusteista, minkä olisi " +
+                    "pitänyt ilmetä jo ladatessa tietoja SijoitteluResourcessa. Toisaalta tämän validoinnin ei pitäisi " +
+                    "voida triggeröityä, koska jonojen puuttumisen valintaperusteista pitäisi aiheuttaa se, etteivät " +
+                    "laskennan tuloksetkaan Tule tänne asti. Vaikuttaa siis bugilta: " +
                     listaaPoistuneidenJonojenTiedot(edellisenSijoitteluajonTulokset, valintaperusteistaTaiLaskennanTuloksistaPuuttuvatJonot));
             }
         }

@@ -16,7 +16,9 @@ import fi.vm.sade.valintalaskenta.domain.dto.valintatieto.HakuDTO;
 import fi.vm.sade.valintalaskenta.domain.dto.valintatieto.ValintatietoValinnanvaiheDTO;
 import fi.vm.sade.valintalaskenta.domain.dto.valintatieto.ValintatietoValintatapajonoDTO;
 import fi.vm.sade.valintalaskenta.tulos.service.impl.ValintatietoService;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 import java.util.*;
 
@@ -37,6 +39,8 @@ public class SijoitteluResourceTest {
     private final ValintalaskentakoostepalveluResource valintalaskentakoostepalveluResource;
     private final SijoitteluBookkeeperService sijoitteluBookkeeperService = new SijoitteluBookkeeperService();
 
+    @Rule
+    public ExpectedException thrown = ExpectedException.none();
 
     public SijoitteluResourceTest() {
         sijoitteluBusinessService = mock(SijoitteluBusinessService.class);
@@ -74,7 +78,7 @@ public class SijoitteluResourceTest {
             HakijaryhmaValintatapajonoDTO valintatapajononHakijaryhmavalintaperusteista = createHakijaryhmaValintatapajonoDTO(valintatapajononHakijaryhmaOid);
             final String valintatapajonoOid = laskennasta.getValintatapajonot().iterator().next().getOid();
             valintaperusteista.setOid(valintatapajonoOid);
-            HakuDTO haku = createHakuDTO(hakukohdeOid, createHakijaryhmaDTO(hakijaryhmaOid), createHakijaryhmaDTO(valintatapajononHakijaryhmaOid), laskennasta);
+            HakuDTO haku = createHakuDTO(EMPTY, hakukohdeOid, createHakijaryhmaDTO(hakijaryhmaOid), createHakijaryhmaDTO(valintatapajononHakijaryhmaOid), laskennasta);
             {
                 when(valintatietoService.haeValintatiedot(anyString())).thenReturn(haku);
                 when(valintalaskentakoostepalveluResource.readByHakukohdeOids(anyList())).thenReturn(asList(hakijaryhmavalintaperusteista));
@@ -153,6 +157,38 @@ public class SijoitteluResourceTest {
         }
     }
 
+    @Test
+    public void valintaperusteistaKadonneetJonotHuomataanJoTietojaLadatessa() {
+        String hakuOid = "hakuOid";
+        final String hakukohdeOid = "hakukohdeOid";
+        final String hakijaryhmaOid = UUID.randomUUID().toString();
+        final String valintatapajononHakijaryhmaOid = UUID.randomUUID().toString();
+        try {
+            ValintatietoValinnanvaiheDTO laskennasta = createValintatietoValinnanvaiheDTO();
+            ValintatapajonoDTO valintaperusteista = createValintatapajonoDTO();
+            HakijaryhmaValintatapajonoDTO hakijaryhmavalintaperusteista = createHakijaryhmaValintatapajonoDTO(hakijaryhmaOid);
+            HakijaryhmaValintatapajonoDTO valintatapajononHakijaryhmavalintaperusteista = createHakijaryhmaValintatapajonoDTO(valintatapajononHakijaryhmaOid);
+            ValintatietoValintatapajonoDTO laskennanValintatapajono = laskennasta.getValintatapajonot().iterator().next();
+            final String valintatapajonoOid = "valintatapaJonoOid";
+            laskennanValintatapajono.setOid(valintatapajonoOid);
+            laskennanValintatapajono.setNimi("Varsinainen testivalinta");
+            valintaperusteista.setOid(valintatapajonoOid + "-broken");
+            HakuDTO haku = createHakuDTO(hakuOid, hakukohdeOid, createHakijaryhmaDTO(hakijaryhmaOid), createHakijaryhmaDTO(valintatapajononHakijaryhmaOid), laskennasta);
+            when(valintatietoService.haeValintatiedot(hakuOid)).thenReturn(haku);
+            when(valintalaskentakoostepalveluResource.readByHakukohdeOids(Collections.singletonList(hakukohdeOid))).thenReturn(Collections.singletonList(hakijaryhmavalintaperusteista));
+            when(valintalaskentakoostepalveluResource.readByValintatapajonoOids(Collections.singletonList(valintatapajonoOid))).thenReturn(Collections.singletonList(valintatapajononHakijaryhmavalintaperusteista));
+            final HashMap<String, List<ValintatapajonoDTO>> vpMap = new HashMap<>();
+            vpMap.put(hakukohdeOid, Collections.singletonList(valintaperusteista));
+            when(valintalaskentakoostepalveluResource.haeValintatapajonotSijoittelulle(Collections.singletonList(hakukohdeOid))).thenReturn(vpMap);
+
+            thrown.expect(IllegalStateException.class);
+            thrown.expectMessage("Haun hakuOid sijoittelu : Laskennan tuloksista löytyvien jonojen tietoja on kadonnut valintaperusteista: [Hakukohde hakukohdeOid , jono \"Varsinainen testivalinta\" (valintatapaJonoOid , prio 0)]");
+            sijoitteluResource.toteutaSijoittelu(hakuOid, 12345L);
+        } finally{
+            reset(sijoitteluBusinessService, valintatietoService, valintalaskentakoostepalveluResource);
+        }
+    }
+
     private ValintatapajonoDTO createValintatapajonoDTO() {
         ValintatapajonoDTO valintatapajonoDTO = new ValintatapajonoDTO();
         valintatapajonoDTO.setOid(UUID.randomUUID().toString());
@@ -196,8 +232,9 @@ public class SijoitteluResourceTest {
         return valintatietoValinnanvaiheDTO;
     }
 
-    private HakuDTO createHakuDTO(String hakukohdeOid, HakijaryhmaDTO hakijaryhma, HakijaryhmaDTO valintatapajononHakijaryhma, ValintatietoValinnanvaiheDTO valinnanvaihe) {
+    private HakuDTO createHakuDTO(String hakuOid, String hakukohdeOid, HakijaryhmaDTO hakijaryhma, HakijaryhmaDTO valintatapajononHakijaryhma, ValintatietoValinnanvaiheDTO valinnanvaihe) {
         HakuDTO haku = new HakuDTO();
+        haku.setHakuOid(hakuOid);
         HakukohdeDTO hakukohde = new HakukohdeDTO();
         hakukohde.setOid(hakukohdeOid);
         hakukohde.setHakijaryhma(asList(hakijaryhma, valintatapajononHakijaryhma));

@@ -286,7 +286,13 @@ public class SijoitteluBusinessTest {
         long sijoitteluajoId = captureSijoitteluajoForNextSijoittelu();
 
         thrown.expect(RuntimeException.class);
-        thrown.expectMessage("Edellisessä sijoittelussa olleet jonot ovat kadonneet valintaperusteista: [Hakukohde hakukohde1 , jono \"Jono1\" (jono1 , prio 0)]");
+        thrown.expectMessage("Edellisessä sijoittelussa olleet jonot ovat kadonneet valintaperusteista, " +
+            "minkä olisi pitänyt ilmetä jo ladatessa tietoja SijoitteluResourcessa. " +
+            "Toisaalta tämän validoinnin ei pitäisi voida triggeröityä, " +
+            "koska jonojen puuttumisen valintaperusteista pitäisi aiheuttaa se, " +
+            "etteivät laskennan tuloksetkaan Tule tänne asti. " +
+            "Vaikuttaa siis bugilta: " +
+            "[Hakukohde hakukohde1 , jono \"Jono1\" (jono1 , prio 0)]");
 
         sijoitteluService.sijoittele(haku, Collections.emptySet(), newHashSet("jono2", "jono3"), System.currentTimeMillis());
 
