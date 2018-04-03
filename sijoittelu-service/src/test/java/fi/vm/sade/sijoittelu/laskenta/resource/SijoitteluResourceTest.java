@@ -171,6 +171,7 @@ public class SijoitteluResourceTest {
             ValintatietoValintatapajonoDTO laskennanValintatapajono = laskennasta.getValintatapajonot().iterator().next();
             final String valintatapajonoOid = "valintatapaJonoOid";
             laskennanValintatapajono.setOid(valintatapajonoOid);
+            laskennanValintatapajono.setSiirretaanSijoitteluun(true);
             laskennanValintatapajono.setNimi("Varsinainen testivalinta");
             valintaperusteista.setOid(valintatapajonoOid + "-broken");
             HakuDTO haku = createHakuDTO(hakuOid, hakukohdeOid, createHakijaryhmaDTO(hakijaryhmaOid), createHakijaryhmaDTO(valintatapajononHakijaryhmaOid), laskennasta);

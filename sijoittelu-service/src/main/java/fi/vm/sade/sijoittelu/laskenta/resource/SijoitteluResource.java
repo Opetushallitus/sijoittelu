@@ -8,9 +8,7 @@ import fi.vm.sade.service.valintaperusteet.dto.HakijaryhmaValintatapajonoDTO;
 import fi.vm.sade.service.valintaperusteet.dto.ValintatapajonoCreateDTO;
 import fi.vm.sade.service.valintaperusteet.dto.ValintatapajonoDTO;
 import fi.vm.sade.service.valintaperusteet.resource.ValintalaskentakoostepalveluResource;
-import fi.vm.sade.sijoittelu.domain.Hakukohde;
 import fi.vm.sade.sijoittelu.domain.SijoitteluajonTila;
-import fi.vm.sade.sijoittelu.domain.Valintatapajono;
 import fi.vm.sade.sijoittelu.laskenta.service.business.SijoitteluBusinessService;
 import fi.vm.sade.sijoittelu.laskenta.util.EnumConverter;
 import fi.vm.sade.valintalaskenta.domain.dto.HakukohdeDTO;
@@ -200,7 +198,7 @@ public class SijoitteluResource {
             try {
                 Map<String, List<ValintatapajonoDTO>> valintaperusteidenJonotHakukohteittain =
                     valintalaskentakoostepalveluResource.haeValintatapajonotSijoittelulle(new ArrayList<>(aktiivisiaJonojaSisaltavienKohteidenOidit));
-                assertKaikkiLaskennanTuloksistaLoytyvatJonotLoytyvatValintaPerusteista(haku, valintaperusteidenJonotHakukohteittain);
+                assertKaikkiLaskennanTuloksistaLoytyvatSijoittelunSiirrettavatJonotLoytyvatValintaPerusteista(haku, valintaperusteidenJonotHakukohteittain);
                 return valintaperusteidenJonotHakukohteittain;
             } catch (Exception e) {
                 LOGGER.error("Valintatapajonojen hakeminen epäonnistui virheeseen!", e);
@@ -211,10 +209,12 @@ public class SijoitteluResource {
         }
     }
 
-    private void assertKaikkiLaskennanTuloksistaLoytyvatJonotLoytyvatValintaPerusteista(HakuDTO hakuDTO, Map<String, List<ValintatapajonoDTO>> valintaperusteidenJonotHakukohteittain) {
+    private void assertKaikkiLaskennanTuloksistaLoytyvatSijoittelunSiirrettavatJonotLoytyvatValintaPerusteista(HakuDTO hakuDTO, Map<String, List<ValintatapajonoDTO>> valintaperusteidenJonotHakukohteittain) {
         Set<String> laskennanTulostenJonoOidit = hakuDTO.getHakukohteet().stream().flatMap(hk ->
             hk.getValinnanvaihe().stream().flatMap(vv ->
-                vv.getValintatapajonot().stream().map(fi.vm.sade.valintalaskenta.domain.dto.ValintatapajonoDTO::getOid))).collect(toSet());
+                vv.getValintatapajonot().stream()
+                    .filter(fi.vm.sade.valintalaskenta.domain.dto.ValintatapajonoDTO::isSiirretaanSijoitteluun)
+                    .map(fi.vm.sade.valintalaskenta.domain.dto.ValintatapajonoDTO::getOid))).collect(toSet());
         Set<String> valintaperusteidenJonoOidit = valintaperusteidenJonotHakukohteittain.values().stream().flatMap(js ->
             js.stream().map(ValintatapajonoDTO::getOid)).collect(toSet());
         Sets.SetView<String> valintaperusteistaKadonneetJonoOidit = Sets.difference(laskennanTulostenJonoOidit, valintaperusteidenJonoOidit);
