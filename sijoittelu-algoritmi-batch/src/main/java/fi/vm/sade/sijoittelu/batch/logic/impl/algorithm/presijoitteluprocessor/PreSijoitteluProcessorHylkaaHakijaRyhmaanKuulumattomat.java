@@ -2,6 +2,7 @@ package fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.presijoitteluprocessor;
 
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.util.TilanKuvaukset;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.HakijaryhmaWrapper;
+import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.HakukohdeWrapper;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.SijoitteluajoWrapper;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.ValintatapajonoWrapper;
 import fi.vm.sade.sijoittelu.domain.HakemuksenTila;
@@ -18,28 +19,14 @@ public class PreSijoitteluProcessorHylkaaHakijaRyhmaanKuulumattomat implements P
     }
 
     private void hylkaaHakijaryhmiinKuulumattomat(SijoitteluajoWrapper sijoitteluajoWrapper) {
+        assertKorkeintaanYksiRyhmaJostaVainRyhmaanKuuluvatHyvaksytaanPerHakukohde(sijoitteluajoWrapper);
+
         sijoitteluajoWrapper.getHakukohteet().forEach(hakukohde -> {
             List<HakijaryhmaWrapper> ryhmatJoistaVainKuuluvatHyvaksytaan = hakukohde
                 .getHakijaryhmaWrappers()
                 .stream()
                 .filter(h -> h.getHakijaryhma().isKaytaKaikki())
                 .collect(Collectors.toList());
-            if (ryhmatJoistaVainKuuluvatHyvaksytaan.size() > 1) {
-                List<String> ryhmienOiditJaNimet = ryhmatJoistaVainKuuluvatHyvaksytaan.stream().map(hjr ->
-                {
-                    Hakijaryhma hakijaryhma = hjr.getHakijaryhma();
-                    return String.format("%s (\"%s\"), hakukohdeOid= %s , valintatapajonoOid = %s .",
-                        hakijaryhma.getOid(),
-                        hakijaryhma.getNimi(),
-                        hakijaryhma.getHakukohdeOid(),
-                        hakijaryhma.getValintatapajonoOid());
-                }).collect(Collectors.toList());
-                throw new IllegalStateException(String.format("(Sijoitteluajo %s) Hakukohteelle %s on olemassa useampi kuin yksi hakijaryhmä, " +
-                    "josta vain ryhmään kuuluvat olisi tarkoitus hyväksyä. Sijoittelua ei voida suorittaa. Ryhmät: %s",
-                    sijoitteluajoWrapper.getSijoitteluAjoId(),
-                    hakukohde.getHakukohde().getOid(),
-                    ryhmienOiditJaNimet));
-            }
             // Hylätään hakijat, jotka eivät kuulu hakijaryhmään
             ryhmatJoistaVainKuuluvatHyvaksytaan.forEach(ryhmaWrapper -> {
                 String jonoOid = ryhmaWrapper.getHakijaryhma().getValintatapajonoOid();
@@ -63,5 +50,29 @@ public class PreSijoitteluProcessorHylkaaHakijaRyhmaanKuulumattomat implements P
                 hakemus.setTilaVoidaanVaihtaa(false);
             }
         });
+    }
+
+    private void assertKorkeintaanYksiRyhmaJostaVainRyhmaanKuuluvatHyvaksytaanPerHakukohde(SijoitteluajoWrapper sijoitteluajoWrapper) {
+        List<HakukohdeWrapper> hakukohteetJoissaOnUseampiRyhmaJoistaVainKuuluvatHyvaksytaan = sijoitteluajoWrapper.getHakukohteet().stream().filter(hkw ->
+            hkw.getHakijaryhmaWrappers().stream().filter(hrw ->
+                hrw.getHakijaryhma().isKaytaKaikki()).count() > 1)
+            .collect(Collectors.toList());
+
+        if (!hakukohteetJoissaOnUseampiRyhmaJoistaVainKuuluvatHyvaksytaan.isEmpty()) {
+            List<String> ryhmienOiditJaNimet = hakukohteetJoissaOnUseampiRyhmaJoistaVainKuuluvatHyvaksytaan.stream().flatMap(hkw ->
+                hkw.getHakijaryhmaWrappers().stream()).map(hjr -> {
+                Hakijaryhma hakijaryhma = hjr.getHakijaryhma();
+                return String.format("%s (\"%s\"), hakukohdeOid = %s , valintatapajonoOid = %s .",
+                    hakijaryhma.getOid(),
+                    hakijaryhma.getNimi(),
+                    hakijaryhma.getHakukohdeOid(),
+                    hakijaryhma.getValintatapajonoOid());
+            }).collect(Collectors.toList());
+            throw new IllegalStateException(String.format("(Sijoitteluajo %s) %s hakukohteelle on olemassa useampi kuin yksi hakijaryhmä, " +
+                    "josta vain ryhmään kuuluvat olisi tarkoitus hyväksyä. Sijoittelua ei voida suorittaa. Ryhmät: %s",
+                sijoitteluajoWrapper.getSijoitteluAjoId(),
+                hakukohteetJoissaOnUseampiRyhmaJoistaVainKuuluvatHyvaksytaan.size(),
+                ryhmienOiditJaNimet));
+        }
     }
 }
