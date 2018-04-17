@@ -1,5 +1,10 @@
 package fi.vm.sade.sijoittelu.laskenta.resource;
 
+import static java.lang.Boolean.TRUE;
+import static java.util.Collections.emptyList;
+import static java.util.Collections.unmodifiableSet;
+import static java.util.Optional.ofNullable;
+import static java.util.stream.Collectors.toSet;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -24,7 +29,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
-import javax.ws.rs.*;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -34,12 +41,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
-
-import static java.lang.Boolean.TRUE;
-import static java.util.Collections.emptyList;
-import static java.util.Collections.unmodifiableSet;
-import static java.util.Optional.ofNullable;
-import static java.util.stream.Collectors.toSet;
 
 @Path("sijoittele")
 @Controller
@@ -102,7 +103,8 @@ public class SijoitteluResource {
                 .collect(toSet()));
     }
 
-    private void updateValintatapajonotAndRemoveUsed(Map<String, ValintatapajonoDTO> valintatapajonoByOid, ValintatietoValinnanvaiheDTO vaihe) {
+    private void updateValintatapajonotAndRemoveUsed(Map<String, ValintatapajonoDTO> valintatapajonoByOid,
+                                                     ValintatietoValinnanvaiheDTO vaihe) {
         List<ValintatietoValintatapajonoDTO> konvertoidut = new ArrayList<>();
         vaihe.getValintatapajonot().forEach(jono -> {
             if (valintatapajonoByOid.containsKey(jono.getOid())
@@ -163,19 +165,19 @@ public class SijoitteluResource {
             try {
                 LOGGER.info("Haetaan hakukohdekohtaiset hakijaryhmät sijoittelua");
                 hakijaryhmaByOid =
-                        valintalaskentakoostepalveluResource.readByHakukohdeOids(Lists.newArrayList(hakukohdeOidsWithHakijaryhma))
-                                .stream()
-                                        // Valintaperusteet pitaisi palauttaa vain aktiivisia mutta filtteroidaan varmuuden vuoksi
-                                .filter(v -> TRUE.equals(v.getAktiivinen()))
-                                .collect(Collectors.toMap(v -> v.getOid(), v -> v));
+                    valintalaskentakoostepalveluResource.readByHakukohdeOids(Lists.newArrayList(hakukohdeOidsWithHakijaryhma))
+                        .stream()
+                        // Valintaperusteet pitaisi palauttaa vain aktiivisia mutta filtteroidaan varmuuden vuoksi
+                        .filter(v -> TRUE.equals(v.getAktiivinen()))
+                        .collect(Collectors.toMap(v -> v.getOid(), v -> v));
 
                 LOGGER.info("Haetaan valintatapajonokohtaiset hakijaryhmät sijoittelua varten");
                 Map<String, HakijaryhmaValintatapajonoDTO> valintatapajonojenHakijaryhmaByOid =
-                        valintalaskentakoostepalveluResource.readByValintatapajonoOids(Lists.newArrayList(valintatapajonoOidsWithHakijaryhma))
-                                .stream()
-                                // Valintaperusteet pitaisi palauttaa vain aktiivisia mutta filtteroidaan varmuuden vuoksi
-                                .filter(v -> TRUE.equals(v.getAktiivinen()))
-                                .collect(Collectors.toMap(v -> v.getOid(), v -> v));
+                    valintalaskentakoostepalveluResource.readByValintatapajonoOids(Lists.newArrayList(valintatapajonoOidsWithHakijaryhma))
+                        .stream()
+                        // Valintaperusteet pitaisi palauttaa vain aktiivisia mutta filtteroidaan varmuuden vuoksi
+                        .filter(v -> TRUE.equals(v.getAktiivinen()))
+                        .collect(Collectors.toMap(v -> v.getOid(), v -> v));
 
                 hakijaryhmaByOid.putAll(valintatapajonojenHakijaryhmaByOid);
 
@@ -183,8 +185,8 @@ public class SijoitteluResource {
                 LOGGER.error("Hakijaryhmien hakeminen epäonnistui virheeseen!", e);
                 throw e;
             }
-            LOGGER.info("Saatiin haun {} {}:lle hakukohteelle yhteensä {} aktiivista hakijaryhmää", haku.getHakuOid(), haku.getHakukohteet().size(),
-                    hakijaryhmaByOid.size());
+            LOGGER.info("Saatiin haun {} {}:lle hakukohteelle yhteensä {} aktiivista hakijaryhmää",
+                haku.getHakuOid(), haku.getHakukohteet().size(), hakijaryhmaByOid.size());
         }
         return hakijaryhmaByOid;
     }
@@ -198,7 +200,8 @@ public class SijoitteluResource {
             try {
                 Map<String, List<ValintatapajonoDTO>> valintaperusteidenJonotHakukohteittain =
                     valintalaskentakoostepalveluResource.haeValintatapajonotSijoittelulle(new ArrayList<>(aktiivisiaJonojaSisaltavienKohteidenOidit));
-                assertKaikkiLaskennanTuloksistaLoytyvatSijoittelunSiirrettavatJonotLoytyvatValintaPerusteista(haku, valintaperusteidenJonotHakukohteittain);
+                assertKaikkiLaskennanTuloksistaLoytyvatSijoittelunSiirrettavatJonotLoytyvatValintaPerusteista(haku,
+                    valintaperusteidenJonotHakukohteittain);
                 return valintaperusteidenJonotHakukohteittain;
             } catch (Exception e) {
                 LOGGER.error("Valintatapajonojen hakeminen epäonnistui virheeseen!", e);
@@ -226,26 +229,28 @@ public class SijoitteluResource {
         List<String> poistuneidenJonojenTiedot = valintaperusteistaKadonneetJonoOidit.stream().map(jonoOid -> {
             Predicate<ValintatietoValintatapajonoDTO> withJonoOid = j -> j.getOid().equals(jonoOid);
             HakukohdeDTO poistuneenJononHakukohde = (hakuDTO.getHakukohteet()).stream()
-                .filter(h -> h.getValinnanvaihe().stream().anyMatch(vv -> vv.getValintatapajonot().stream().anyMatch(withJonoOid))).findFirst().get();
-            ValintatietoValintatapajonoDTO poistunutJono = poistuneenJononHakukohde.getValinnanvaihe().stream().flatMap(vv -> vv.getValintatapajonot().stream().filter(withJonoOid)).findFirst().get();
+                .filter(h -> h.getValinnanvaihe().stream()
+                    .anyMatch(vv -> vv.getValintatapajonot().stream()
+                        .anyMatch(withJonoOid))).findFirst().get();
+            ValintatietoValintatapajonoDTO poistunutJono = poistuneenJononHakukohde.getValinnanvaihe().stream()
+                .flatMap(vv -> vv.getValintatapajonot().stream()
+                    .filter(withJonoOid)).findFirst().get();
             return String.format("Hakukohde %s , jono \"%s\" (%s , prio %d)", poistuneenJononHakukohde.getOid(),
                 poistunutJono.getNimi(), poistunutJono.getOid(), poistunutJono.getPrioriteetti());
         }).collect(Collectors.toList());
-        throw new IllegalStateException(String.format("Haun %s sijoittelu : Laskennan tuloksista löytyvien jonojen tietoja on kadonnut valintaperusteista: %s",
+        throw new IllegalStateException(String.format("Haun %s sijoittelu : " +
+                "Laskennan tuloksista löytyvien jonojen tietoja on kadonnut valintaperusteista: %s",
             hakuDTO.getHakuOid(), poistuneidenJonojenTiedot));
     }
 
-    private Map<String, Map<String, ValintatapajonoDTO>> filtteroiAktiivisetJonotMappiinOideittain(Map<String, List<ValintatapajonoDTO>> valintatapajonotSijoittelulle) {
+    private Map<String, Map<String, ValintatapajonoDTO>> filtteroiAktiivisetJonotMappiinOideittain(
+        Map<String, List<ValintatapajonoDTO>> valintatapajonotSijoittelulle) {
         return valintatapajonotSijoittelulle
             .entrySet()
             .stream()
-            .collect(Collectors.toMap(Map.Entry::getKey, v -> {
-                Map<String, ValintatapajonoDTO> jonot =
-                        v.getValue().stream()
-                                .filter(ValintatapajonoCreateDTO::getAktiivinen)
-                                .collect(Collectors.toMap(ValintatapajonoDTO::getOid, v0 -> v0));
-                return jonot;
-            }));
+            .collect(Collectors.toMap(Map.Entry::getKey, v -> v.getValue().stream()
+                .filter(ValintatapajonoCreateDTO::getAktiivinen)
+                .collect(Collectors.toMap(ValintatapajonoDTO::getOid, v0 -> v0))));
     }
 
     public void toteutaSijoittelu(String hakuOid, Long sijoitteluAjonTunniste) {
@@ -266,12 +271,13 @@ public class SijoitteluResource {
 
             haku.getHakukohteet().forEach(hakukohde -> {
                 updateHakijaRyhmat(hakijaryhmaByOid, hakukohde);
-                Map<String, ValintatapajonoDTO> valintatapajonoByOid = hakukohdeMapToValintatapajonoByOid.getOrDefault(hakukohde.getOid(), new HashMap<>());
-                hakukohde.getValinnanvaihe().forEach(vaihe -> {
-                    updateValintatapajonotAndRemoveUsed(valintatapajonoByOid, vaihe);
-                });
+                Map<String, ValintatapajonoDTO> valintatapajonoByOid =
+                    hakukohdeMapToValintatapajonoByOid.getOrDefault(hakukohde.getOid(), new HashMap<>());
+                hakukohde.getValinnanvaihe().forEach(vaihe ->
+                    updateValintatapajonotAndRemoveUsed(valintatapajonoByOid, vaihe));
                 if (!valintatapajonoByOid.isEmpty()) {
-                    LOGGER.warn("Kaikkia jonoja ei ole sijoiteltu {} hakukohteessa {}: {}", hakuOid, hakukohde.getOid(), valintatapajonoByOid.keySet());
+                    LOGGER.warn("Kaikkia jonoja ei ole sijoiteltu {} hakukohteessa {}: {}",
+                        hakuOid, hakukohde.getOid(), valintatapajonoByOid.keySet());
                     hakukohde.setKaikkiJonotSijoiteltu(false);
                 }
             });
@@ -282,12 +288,16 @@ public class SijoitteluResource {
                 laskennanTuloksistaJaValintaperusteistaLoytyvatJonot,
                 sijoitteluAjonTunniste);
             LOGGER.info("Sijoitteluajo {} suoritettu onnistuneesti haulle {}", sijoitteluAjonTunniste, hakuOid);
-            sijoitteluBookkeeperService.merkitseSijoitteluAjonTila(hakuOid, sijoitteluAjonTunniste, SijoitteluajonTila.VALMIS);
+            sijoitteluBookkeeperService.merkitseSijoitteluAjonTila(hakuOid,
+                sijoitteluAjonTunniste,
+                SijoitteluajonTila.VALMIS);
         } catch (Throwable t) {
-            LOGGER.error("Sijoitteluajo (tunniste " + sijoitteluAjonTunniste +") epäonnistui haulle " + hakuOid + " : " + t.getMessage(), t);
-            sijoitteluBookkeeperService.merkitseSijoitteluAjonTila(hakuOid, sijoitteluAjonTunniste, SijoitteluajonTila.VIRHE);
+            LOGGER.error(String.format("Sijoitteluajo (tunniste %d) epäonnistui haulle %s : %s",
+                sijoitteluAjonTunniste, hakuOid, t.getMessage()), t);
+            sijoitteluBookkeeperService.merkitseSijoitteluAjonTila(hakuOid,
+                sijoitteluAjonTunniste,
+                SijoitteluajonTila.VIRHE);
             throw t;
         }
     }
-
 }
