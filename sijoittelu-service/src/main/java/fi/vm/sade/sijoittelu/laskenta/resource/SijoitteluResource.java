@@ -200,7 +200,7 @@ public class SijoitteluResource {
             try {
                 Map<String, List<ValintatapajonoDTO>> valintaperusteidenJonotHakukohteittain =
                     valintalaskentakoostepalveluResource.haeValintatapajonotSijoittelulle(new ArrayList<>(aktiivisiaJonojaSisaltavienKohteidenOidit));
-                assertKaikkiLaskennanTuloksistaLoytyvatSijoittelunSiirrettavatJonotLoytyvatValintaPerusteista(haku,
+                assertKaikkiLaskennanTuloksistaLoytyvatSijoitteluunValmiitJonotLoytyvatValintaPerusteista(haku,
                     valintaperusteidenJonotHakukohteittain);
                 return valintaperusteidenJonotHakukohteittain;
             } catch (Exception e) {
@@ -212,11 +212,11 @@ public class SijoitteluResource {
         }
     }
 
-    private void assertKaikkiLaskennanTuloksistaLoytyvatSijoittelunSiirrettavatJonotLoytyvatValintaPerusteista(HakuDTO hakuDTO, Map<String, List<ValintatapajonoDTO>> valintaperusteidenJonotHakukohteittain) {
+    private void assertKaikkiLaskennanTuloksistaLoytyvatSijoitteluunValmiitJonotLoytyvatValintaPerusteista(HakuDTO hakuDTO, Map<String, List<ValintatapajonoDTO>> valintaperusteidenJonotHakukohteittain) {
         Set<String> laskennanTulostenJonoOidit = hakuDTO.getHakukohteet().stream().flatMap(hk ->
             hk.getValinnanvaihe().stream().flatMap(vv ->
                 vv.getValintatapajonot().stream()
-                    .filter(fi.vm.sade.valintalaskenta.domain.dto.ValintatapajonoDTO::isSiirretaanSijoitteluun)
+                    .filter(fi.vm.sade.valintalaskenta.domain.dto.ValintatapajonoDTO::getValmisSijoiteltavaksi)
                     .map(fi.vm.sade.valintalaskenta.domain.dto.ValintatapajonoDTO::getOid))).collect(toSet());
         Set<String> valintaperusteidenJonoOidit = valintaperusteidenJonotHakukohteittain.values().stream().flatMap(js ->
             js.stream().map(ValintatapajonoDTO::getOid)).collect(toSet());
