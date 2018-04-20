@@ -233,7 +233,7 @@ public class SijoitteluResourceTest {
         valintatapajonoDTO.setOid(UUID.randomUUID().toString());
         valintatapajonoDTO.setAktiivinen(true);
         valintatapajonoDTO.setAloituspaikat(Integer.MIN_VALUE);
-        valintatapajonoDTO.setAutomaattinenLaskentaanSiirto(true);
+        valintatapajonoDTO.setautomaattinenSijoitteluunSiirto(true);
         valintatapajonoDTO.setEiVarasijatayttoa(false);
         valintatapajonoDTO.setKaikkiEhdonTayttavatHyvaksytaan(false);
         valintatapajonoDTO.setKaytetaanValintalaskentaa(false);
