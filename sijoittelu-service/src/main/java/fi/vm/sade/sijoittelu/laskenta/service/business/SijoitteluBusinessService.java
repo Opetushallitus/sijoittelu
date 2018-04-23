@@ -238,7 +238,7 @@ public class SijoitteluBusinessService {
     }
 
     private List<String> listaaPoistuneidenJonojenTiedot(List<Hakukohde> edellisenSijoitteluajonTulokset, Collection<String> poistuneidenJonojenOidit) {
-        return poistuneidenJonojenOidit.stream().map(jonoOid -> {
+        return poistuneidenJonojenOidit.stream().sorted().map(jonoOid -> {
             Predicate<Valintatapajono> withJonoOid = j -> j.getOid().equals(jonoOid);
             Hakukohde poistuneenJononHakukohde = edellisenSijoitteluajonTulokset.stream()
                 .filter(h -> h.getValintatapajonot().stream().anyMatch(withJonoOid)).findFirst().get();
