@@ -19,7 +19,8 @@ public interface PostSijoitteluProcessor extends Processor {
                 new PostSijoitteluProcessorPeruuntuneetHakemuksenVastaanotonMuokkaus(),
                 new PrePostSijoitteluProcessorPeruunnaYlemmatHakutoiveet(),
                 new PostSijoitteluProcessorEhdollisetVastaanototSitoviksi(),
-                new PostSijoitteluProcessorMuutostiedonAsetus()
+                new PostSijoitteluProcessorMuutostiedonAsetus(),
+                new PostSijoitteluProcessorKorjaaSijoitteluajonTilankuvaukset()
         );
     }
 }
