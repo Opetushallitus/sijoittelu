@@ -156,6 +156,11 @@ public class HakuBuilder {
             return this;
         }
 
+        public HakemusBuilder withTilankuvauksenTarkenne(TilankuvauksenTarkenne val) {
+            this.h.setTilankuvauksenTarkenne(val);
+            return this;
+        }
+
         public HakemusBuilder withEdellinenTila(HakemuksenTila val) {
             this.h.setEdellinenTila(val);
             return this;
