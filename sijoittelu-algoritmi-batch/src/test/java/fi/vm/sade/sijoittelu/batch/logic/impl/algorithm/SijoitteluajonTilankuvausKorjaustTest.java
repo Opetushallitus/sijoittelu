@@ -23,14 +23,14 @@ public class SijoitteluajonTilankuvausKorjaustTest {
             .withJonosija(1).withTila(HYVAKSYTTY).withTilankuvauksenTarkenne(null).withPrioriteetti(1).build();
     private final Hakemus hakemus2 = new HakuBuilder.HakemusBuilder().withOid("hakemus2")
             .withJonosija(2).withTila(HYVAKSYTTY).withTilankuvauksenTarkenne(TilankuvauksenTarkenne.PERUUNTUNUT_HYVAKSYTTY_TOISESSA_JONOSSA).withPrioriteetti(1).build();
-    private final Hakemus hakemus3 = new HakuBuilder.HakemusBuilder().withOid("hakemus3")
-            .withJonosija(3).withTila(VARALLA).withTilankuvauksenTarkenne(null).withPrioriteetti(1).build();
+    private final Hakemus hakemus3 = new HakuBuilder.HakemusBuilder().withOid("hakemus4")
+            .withJonosija(3).withTila(VARASIJALTA_HYVAKSYTTY).withTilankuvauksenTarkenne(null).withPrioriteetti(1).build();
     private final Hakemus hakemus4 = new HakuBuilder.HakemusBuilder().withOid("hakemus4")
-            .withJonosija(4).withTila(VARALLA).withTilankuvauksenTarkenne(TilankuvauksenTarkenne.HYLATTY_HAKIJARYHMAAN_KUULUMATTOMANA).withPrioriteetti(1).build();
-    private final Hakemus hakemus5 = new HakuBuilder.HakemusBuilder().withOid("hakemus4")
-            .withJonosija(5).withTila(VARASIJALTA_HYVAKSYTTY).withTilankuvauksenTarkenne(null).withPrioriteetti(1).build();
+            .withJonosija(4).withTila(VARASIJALTA_HYVAKSYTTY).withTilankuvauksenTarkenne(TilankuvauksenTarkenne.PERUUNTUNUT_EI_MAHDU_VARASIJOJEN_MAARAAN).withPrioriteetti(1).build();
+    private final Hakemus hakemus5 = new HakuBuilder.HakemusBuilder().withOid("hakemus3")
+            .withJonosija(5).withTila(VARALLA).withTilankuvauksenTarkenne(null).withPrioriteetti(1).build();
     private final Hakemus hakemus6 = new HakuBuilder.HakemusBuilder().withOid("hakemus4")
-            .withJonosija(6).withTila(VARASIJALTA_HYVAKSYTTY).withTilankuvauksenTarkenne(TilankuvauksenTarkenne.PERUUNTUNUT_EI_MAHDU_VARASIJOJEN_MAARAAN).withPrioriteetti(1).build();
+            .withJonosija(6).withTila(VARALLA).withTilankuvauksenTarkenne(TilankuvauksenTarkenne.HYLATTY_HAKIJARYHMAAN_KUULUMATTOMANA).withPrioriteetti(1).build();
 
     private Valintatapajono jono = new HakuBuilder.ValintatapajonoBuilder().withOid("jono1")
             .withTasasijasaanto(YLITAYTTO)
