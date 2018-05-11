@@ -20,13 +20,17 @@ public class PostSijoitteluProcessorKorjaaSijoitteluajonTilankuvaukset  implemen
                 .forEach(hw -> {
                     if (hw.getHakemus().getTila() == HakemuksenTila.VARASIJALTA_HYVAKSYTTY
                             && hw.getHakemus().getTilankuvauksenTarkenne() != TilankuvauksenTarkenne.HYVAKSYTTY_VARASIJALTA) {
-                        LOG.info("Hakemuksen {} valintatuloksentila on {} ja tilan tarkenne {}. Asetetaan valintatuloksen tilan tarkenteeksi HYVAKSYTTY_VARASIJALTA. (hakijaOid: {}, hakukohdeOid: {})",
-                                hw.getHakemus().getHakemusOid(), hw.getHakemus().getTila(), hw.getHakemus().getTilankuvauksenTarkenne(), hw.getHakemus().getHakijaOid(), hw.getHakukohdeOid());
+                        LOG.info("Hakemuksen {} valintatuloksentila on {} ja tilan tarkenne {}. " +
+                                        "Asetetaan valintatuloksen tilan tarkenteeksi HYVAKSYTTY_VARASIJALTA. (hakijaOid: {}, hakukohdeOid: {})",
+                                hw.getHakemus().getHakemusOid(), hw.getHakemus().getTila(), hw.getHakemus().getTilankuvauksenTarkenne(),
+                                hw.getHakemus().getHakijaOid(), hw.getHakukohdeOid());
                         hw.getHakemus().setTilankuvauksenTarkenne(TilankuvauksenTarkenne.HYVAKSYTTY_VARASIJALTA);
                     } else if ((hw.getHakemus().getTila() == HakemuksenTila.HYVAKSYTTY || hw.getHakemus().getTila() == HakemuksenTila.VARALLA)
                             && hw.getHakemus().getTilankuvauksenTarkenne() != TilankuvauksenTarkenne.EI_TILANKUVAUKSEN_TARKENNETTA) {
-                        LOG.info("Hakemuksen {} valintatuloksentila on {} ja tilan tarkenne {}. Asetetaan valintatuloksen tilan tarkenteeksi EI_TILANKUVAUKSEN_TARKENNETTA. (hakijaOid: {}, hakukohdeOid: {})",
-                                hw.getHakemus().getHakemusOid(), hw.getHakemus().getTila(), hw.getHakemus().getTilankuvauksenTarkenne(), hw.getHakemus().getHakijaOid(), hw.getHakukohdeOid());
+                        LOG.info("Hakemuksen {} valintatuloksentila on {} ja tilan tarkenne {}. " +
+                                        "Asetetaan valintatuloksen tilan tarkenteeksi EI_TILANKUVAUKSEN_TARKENNETTA. (hakijaOid: {}, hakukohdeOid: {})",
+                                hw.getHakemus().getHakemusOid(), hw.getHakemus().getTila(), hw.getHakemus().getTilankuvauksenTarkenne(),
+                                hw.getHakemus().getHakijaOid(), hw.getHakukohdeOid());
                         hw.getHakemus().setTilankuvauksenTarkenne(TilankuvauksenTarkenne.EI_TILANKUVAUKSEN_TARKENNETTA);
                     }
                 });

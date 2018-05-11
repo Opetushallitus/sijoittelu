@@ -41,7 +41,7 @@ public class SijoitteluajonTilankuvausKorjausTest {
             .withHakemukset(hakemus1, hakemus2, hakemus3, hakemus4, hakemus5, hakemus6, hakemus7, hakemus8, hakemus9, hakemus10)
             .build();
 
-    private Hakukohde hakukohdeJossaVarasijojaRajoitetaan = new HakuBuilder.HakukohdeBuilder("hakukohdeOid")
+    private Hakukohde hakukohde = new HakuBuilder.HakukohdeBuilder("hakukohdeOid")
             .withValintatapajono(jono).build();
 
     @Test
@@ -50,12 +50,13 @@ public class SijoitteluajonTilankuvausKorjausTest {
         jono.setEiVarasijatayttoa(false);
         jono.setVarasijat(4);
 
-        sijoittele(kkHakuVarasijasaannotVoimassa, hakukohdeJossaVarasijojaRajoitetaan);
+        sijoittele(kkHakuVarasijasaannotVoimassa, hakukohde);
 
         assertHakemustenTilat(HYVAKSYTTY, HYVAKSYTTY, HYVAKSYTTY, VARASIJALTA_HYVAKSYTTY, VARASIJALTA_HYVAKSYTTY,
                 VARASIJALTA_HYVAKSYTTY, VARALLA, VARALLA, VARALLA, PERUUNTUNUT);
-        assertHakemustenTilakuvauksenTarkenteet(EI_TILANKUVAUKSEN_TARKENNETTA, EI_TILANKUVAUKSEN_TARKENNETTA, EI_TILANKUVAUKSEN_TARKENNETTA, HYVAKSYTTY_VARASIJALTA, HYVAKSYTTY_VARASIJALTA,
-                HYVAKSYTTY_VARASIJALTA, EI_TILANKUVAUKSEN_TARKENNETTA, EI_TILANKUVAUKSEN_TARKENNETTA, EI_TILANKUVAUKSEN_TARKENNETTA, PERUUNTUNUT_VASTAANOTTANUT_TOISEN_PAIKAN);
+        assertHakemustenTilakuvauksenTarkenteet(EI_TILANKUVAUKSEN_TARKENNETTA, EI_TILANKUVAUKSEN_TARKENNETTA, EI_TILANKUVAUKSEN_TARKENNETTA,
+                HYVAKSYTTY_VARASIJALTA, HYVAKSYTTY_VARASIJALTA, HYVAKSYTTY_VARASIJALTA, EI_TILANKUVAUKSEN_TARKENNETTA,
+                EI_TILANKUVAUKSEN_TARKENNETTA, EI_TILANKUVAUKSEN_TARKENNETTA, PERUUNTUNUT_VASTAANOTTANUT_TOISEN_PAIKAN);
     }
 
     @Test
@@ -70,34 +71,37 @@ public class SijoitteluajonTilankuvausKorjausTest {
         hakemus6.setTila(HYLATTY);
         hakemus6.setTilankuvauksenTarkenne(TilankuvauksenTarkenne.HYLATTY_HAKIJARYHMAAN_KUULUMATTOMANA);
 
-        sijoittele(kkHakuVarasijasaannotVoimassa, hakukohdeJossaVarasijojaRajoitetaan);
+        sijoittele(kkHakuVarasijasaannotVoimassa, hakukohde);
 
         assertHakemustenTilat(HYVAKSYTTY, HYVAKSYTTY, HYVAKSYTTY, VARASIJALTA_HYVAKSYTTY, HYLATTY,
                 HYLATTY, VARALLA, VARALLA, VARALLA, PERUUNTUNUT);
-        assertHakemustenTilakuvauksenTarkenteet(EI_TILANKUVAUKSEN_TARKENNETTA, EI_TILANKUVAUKSEN_TARKENNETTA, EI_TILANKUVAUKSEN_TARKENNETTA, HYVAKSYTTY_VARASIJALTA, PERUUNTUNUT_EI_MAHDU_VARASIJOJEN_MAARAAN,
-                HYLATTY_HAKIJARYHMAAN_KUULUMATTOMANA, EI_TILANKUVAUKSEN_TARKENNETTA, EI_TILANKUVAUKSEN_TARKENNETTA, EI_TILANKUVAUKSEN_TARKENNETTA, PERUUNTUNUT_VASTAANOTTANUT_TOISEN_PAIKAN);
+        assertHakemustenTilakuvauksenTarkenteet(EI_TILANKUVAUKSEN_TARKENNETTA, EI_TILANKUVAUKSEN_TARKENNETTA, EI_TILANKUVAUKSEN_TARKENNETTA,
+                HYVAKSYTTY_VARASIJALTA, PERUUNTUNUT_EI_MAHDU_VARASIJOJEN_MAARAAN, HYLATTY_HAKIJARYHMAAN_KUULUMATTOMANA,
+                EI_TILANKUVAUKSEN_TARKENNETTA, EI_TILANKUVAUKSEN_TARKENNETTA, EI_TILANKUVAUKSEN_TARKENNETTA, PERUUNTUNUT_VASTAANOTTANUT_TOISEN_PAIKAN);
 
         // Lisätään varasija ja muutetaan hakemuksen tila:
         jono.setVarasijat(1);
         hakemus5.setTila(VARASIJALTA_HYVAKSYTTY);
 
-        sijoittele(kkHakuVarasijasaannotVoimassa, hakukohdeJossaVarasijojaRajoitetaan);
+        sijoittele(kkHakuVarasijasaannotVoimassa, hakukohde);
 
         assertHakemustenTilat(HYVAKSYTTY, HYVAKSYTTY, HYVAKSYTTY, VARASIJALTA_HYVAKSYTTY, VARASIJALTA_HYVAKSYTTY,
                 HYLATTY, VARALLA, VARALLA, VARALLA, PERUUNTUNUT);
-        assertHakemustenTilakuvauksenTarkenteet(EI_TILANKUVAUKSEN_TARKENNETTA, EI_TILANKUVAUKSEN_TARKENNETTA, EI_TILANKUVAUKSEN_TARKENNETTA, HYVAKSYTTY_VARASIJALTA, HYVAKSYTTY_VARASIJALTA,
-                HYLATTY_HAKIJARYHMAAN_KUULUMATTOMANA, EI_TILANKUVAUKSEN_TARKENNETTA, EI_TILANKUVAUKSEN_TARKENNETTA, EI_TILANKUVAUKSEN_TARKENNETTA, PERUUNTUNUT_VASTAANOTTANUT_TOISEN_PAIKAN);
+        assertHakemustenTilakuvauksenTarkenteet(EI_TILANKUVAUKSEN_TARKENNETTA, EI_TILANKUVAUKSEN_TARKENNETTA, EI_TILANKUVAUKSEN_TARKENNETTA,
+                HYVAKSYTTY_VARASIJALTA, HYVAKSYTTY_VARASIJALTA, HYLATTY_HAKIJARYHMAAN_KUULUMATTOMANA,
+                EI_TILANKUVAUKSEN_TARKENNETTA, EI_TILANKUVAUKSEN_TARKENNETTA, EI_TILANKUVAUKSEN_TARKENNETTA, PERUUNTUNUT_VASTAANOTTANUT_TOISEN_PAIKAN);
 
         // Hakemus2 perutaan ja hakemus 6 varalle:
         hakemus2.setTila(PERUNUT);
         hakemus6.setTila(VARALLA);
 
-        sijoittele(kkHakuVarasijasaannotVoimassa, hakukohdeJossaVarasijojaRajoitetaan);
+        sijoittele(kkHakuVarasijasaannotVoimassa, hakukohde);
 
         assertHakemustenTilat(HYVAKSYTTY, PERUNUT, HYVAKSYTTY, VARASIJALTA_HYVAKSYTTY, VARASIJALTA_HYVAKSYTTY,
                 VARALLA, VARALLA, VARALLA,VARALLA, PERUUNTUNUT);
-        assertHakemustenTilakuvauksenTarkenteet(EI_TILANKUVAUKSEN_TARKENNETTA, EI_TILANKUVAUKSEN_TARKENNETTA, EI_TILANKUVAUKSEN_TARKENNETTA, HYVAKSYTTY_VARASIJALTA, HYVAKSYTTY_VARASIJALTA,
-                EI_TILANKUVAUKSEN_TARKENNETTA, EI_TILANKUVAUKSEN_TARKENNETTA, EI_TILANKUVAUKSEN_TARKENNETTA, EI_TILANKUVAUKSEN_TARKENNETTA, PERUUNTUNUT_VASTAANOTTANUT_TOISEN_PAIKAN);
+        assertHakemustenTilakuvauksenTarkenteet(EI_TILANKUVAUKSEN_TARKENNETTA, EI_TILANKUVAUKSEN_TARKENNETTA, EI_TILANKUVAUKSEN_TARKENNETTA,
+                HYVAKSYTTY_VARASIJALTA, HYVAKSYTTY_VARASIJALTA, EI_TILANKUVAUKSEN_TARKENNETTA,
+                EI_TILANKUVAUKSEN_TARKENNETTA, EI_TILANKUVAUKSEN_TARKENNETTA, EI_TILANKUVAUKSEN_TARKENNETTA, PERUUNTUNUT_VASTAANOTTANUT_TOISEN_PAIKAN);
     }
 
     Consumer<SijoitteluajoWrapper> kkHakuVarasijasaannotVoimassa = sijoitteluajoWrapper -> sijoitteluajoWrapper.setKKHaku(true);
@@ -119,7 +123,8 @@ public class SijoitteluajonTilankuvausKorjausTest {
 
     private void assertHakemustenTilakuvauksenTarkenteet(TilankuvauksenTarkenne t1, TilankuvauksenTarkenne t2, TilankuvauksenTarkenne t3,
                                                          TilankuvauksenTarkenne t4, TilankuvauksenTarkenne t5, TilankuvauksenTarkenne t6,
-                                                         TilankuvauksenTarkenne t7, TilankuvauksenTarkenne t8, TilankuvauksenTarkenne t9, TilankuvauksenTarkenne t10) {
+                                                         TilankuvauksenTarkenne t7, TilankuvauksenTarkenne t8, TilankuvauksenTarkenne t9,
+                                                         TilankuvauksenTarkenne t10) {
         assertEquals("Hakemus1", t1, hakemus1.getTilankuvauksenTarkenne());
         assertEquals("Hakemus2", t2, hakemus2.getTilankuvauksenTarkenne());
         assertEquals("Hakemus3", t3, hakemus3.getTilankuvauksenTarkenne());

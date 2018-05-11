@@ -262,7 +262,6 @@ public class SijoitteluBusinessService {
         LOG.info("Suoritetaan sijoittelu haulle {}", hakuOid);
         stopWatch.start("Suoritetaan sijoittelu");
         uusiSijoitteluajo.setStartMils(startTime);
-        //TODO: TÄSSÄ KAIKKI AJELLAAN!
         SijoitteluAlgorithm.sijoittele(preSijoitteluProcessors, postSijoitteluProcessors, sijoitteluajoWrapper);
         uusiSijoitteluajo.setEndMils(System.currentTimeMillis());
         stopWatch.stop();
