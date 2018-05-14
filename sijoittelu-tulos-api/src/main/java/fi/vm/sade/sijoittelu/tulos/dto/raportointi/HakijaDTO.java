@@ -9,7 +9,7 @@ import java.util.TreeSet;
  */
 public class HakijaDTO {
 
-    private String hakijaOid; // PETAR perhaps this is the information that has to be added to emails
+    private String hakijaOid;
 
     private String hakemusOid;
 
