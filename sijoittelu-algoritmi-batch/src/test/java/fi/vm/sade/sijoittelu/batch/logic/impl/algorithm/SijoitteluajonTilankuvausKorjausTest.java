@@ -12,6 +12,7 @@ import java.util.function.Consumer;
 
 import static fi.vm.sade.sijoittelu.domain.HakemuksenTila.*;
 import static fi.vm.sade.sijoittelu.domain.TilankuvauksenTarkenne.*;
+import static fi.vm.sade.sijoittelu.domain.TilanKuvaukset.*;
 import static org.junit.Assert.assertEquals;
 
 public class SijoitteluajonTilankuvausKorjausTest {
@@ -57,6 +58,10 @@ public class SijoitteluajonTilankuvausKorjausTest {
         assertHakemustenTilakuvauksenTarkenteet(EI_TILANKUVAUKSEN_TARKENNETTA, EI_TILANKUVAUKSEN_TARKENNETTA, EI_TILANKUVAUKSEN_TARKENNETTA,
                 HYVAKSYTTY_VARASIJALTA, HYVAKSYTTY_VARASIJALTA, HYVAKSYTTY_VARASIJALTA, EI_TILANKUVAUKSEN_TARKENNETTA,
                 EI_TILANKUVAUKSEN_TARKENNETTA, EI_TILANKUVAUKSEN_TARKENNETTA, PERUUNTUNUT_VASTAANOTTANUT_TOISEN_PAIKAN);
+        assertTilanKuvaukset(TilanKuvaukset.tyhja.get("FI"), TilanKuvaukset.tyhja.get("FI"), TilanKuvaukset.tyhja.get("FI"),
+                TilanKuvaukset.varasijaltaHyvaksytty().get("FI"), TilanKuvaukset.varasijaltaHyvaksytty().get("FI"), TilanKuvaukset.varasijaltaHyvaksytty().get("FI"),
+                TilanKuvaukset.tyhja.get("FI"), TilanKuvaukset.tyhja.get("FI"), TilanKuvaukset.tyhja.get("FI"),
+                TilanKuvaukset.peruuntunutVastaanottanutToisenOpiskelupaikan().get("FI"));
     }
 
     @Test
@@ -78,6 +83,10 @@ public class SijoitteluajonTilankuvausKorjausTest {
         assertHakemustenTilakuvauksenTarkenteet(EI_TILANKUVAUKSEN_TARKENNETTA, EI_TILANKUVAUKSEN_TARKENNETTA, EI_TILANKUVAUKSEN_TARKENNETTA,
                 HYVAKSYTTY_VARASIJALTA, PERUUNTUNUT_EI_MAHDU_VARASIJOJEN_MAARAAN, HYLATTY_HAKIJARYHMAAN_KUULUMATTOMANA,
                 EI_TILANKUVAUKSEN_TARKENNETTA, EI_TILANKUVAUKSEN_TARKENNETTA, EI_TILANKUVAUKSEN_TARKENNETTA, PERUUNTUNUT_VASTAANOTTANUT_TOISEN_PAIKAN);
+        assertTilanKuvaukset(TilanKuvaukset.tyhja.get("FI"), TilanKuvaukset.tyhja.get("FI"), TilanKuvaukset.tyhja.get("FI"),
+                TilanKuvaukset.varasijaltaHyvaksytty().get("FI"), TilanKuvaukset.peruuntunutEiMahduKasiteltavienVarasijojenMaaraan().get("FI"), TilanKuvaukset.hylattyHakijaryhmaanKuulumattomana(null).get("FI"),
+                TilanKuvaukset.tyhja.get("FI"), TilanKuvaukset.tyhja.get("FI"), TilanKuvaukset.tyhja.get("FI"),
+                TilanKuvaukset.peruuntunutVastaanottanutToisenOpiskelupaikan().get("FI"));
 
         // Lisätään varasija ja muutetaan hakemuksen tila:
         jono.setVarasijat(1);
@@ -90,6 +99,10 @@ public class SijoitteluajonTilankuvausKorjausTest {
         assertHakemustenTilakuvauksenTarkenteet(EI_TILANKUVAUKSEN_TARKENNETTA, EI_TILANKUVAUKSEN_TARKENNETTA, EI_TILANKUVAUKSEN_TARKENNETTA,
                 HYVAKSYTTY_VARASIJALTA, HYVAKSYTTY_VARASIJALTA, HYLATTY_HAKIJARYHMAAN_KUULUMATTOMANA,
                 EI_TILANKUVAUKSEN_TARKENNETTA, EI_TILANKUVAUKSEN_TARKENNETTA, EI_TILANKUVAUKSEN_TARKENNETTA, PERUUNTUNUT_VASTAANOTTANUT_TOISEN_PAIKAN);
+        assertTilanKuvaukset(TilanKuvaukset.tyhja.get("FI"), TilanKuvaukset.tyhja.get("FI"), TilanKuvaukset.tyhja.get("FI"),
+                TilanKuvaukset.varasijaltaHyvaksytty().get("FI"), TilanKuvaukset.varasijaltaHyvaksytty().get("FI"), TilanKuvaukset.hylattyHakijaryhmaanKuulumattomana(null).get("FI"),
+                TilanKuvaukset.tyhja.get("FI"), TilanKuvaukset.tyhja.get("FI"), TilanKuvaukset.tyhja.get("FI"),
+                TilanKuvaukset.peruuntunutVastaanottanutToisenOpiskelupaikan().get("FI"));
 
         // Hakemus2 perutaan ja hakemus 6 varalle:
         hakemus2.setTila(PERUNUT);
@@ -102,6 +115,10 @@ public class SijoitteluajonTilankuvausKorjausTest {
         assertHakemustenTilakuvauksenTarkenteet(EI_TILANKUVAUKSEN_TARKENNETTA, EI_TILANKUVAUKSEN_TARKENNETTA, EI_TILANKUVAUKSEN_TARKENNETTA,
                 HYVAKSYTTY_VARASIJALTA, HYVAKSYTTY_VARASIJALTA, EI_TILANKUVAUKSEN_TARKENNETTA,
                 EI_TILANKUVAUKSEN_TARKENNETTA, EI_TILANKUVAUKSEN_TARKENNETTA, EI_TILANKUVAUKSEN_TARKENNETTA, PERUUNTUNUT_VASTAANOTTANUT_TOISEN_PAIKAN);
+        assertTilanKuvaukset(TilanKuvaukset.tyhja.get("FI"), TilanKuvaukset.tyhja.get("FI"), TilanKuvaukset.tyhja.get("FI"),
+                TilanKuvaukset.varasijaltaHyvaksytty().get("FI"), TilanKuvaukset.varasijaltaHyvaksytty().get("FI"), TilanKuvaukset.tyhja.get("FI"),
+                TilanKuvaukset.tyhja.get("FI"), TilanKuvaukset.tyhja.get("FI"), TilanKuvaukset.tyhja.get("FI"),
+                TilanKuvaukset.peruuntunutVastaanottanutToisenOpiskelupaikan().get("FI"));
     }
 
     Consumer<SijoitteluajoWrapper> kkHakuVarasijasaannotVoimassa = sijoitteluajoWrapper -> sijoitteluajoWrapper.setKKHaku(true);
@@ -119,6 +136,21 @@ public class SijoitteluajonTilankuvausKorjausTest {
         assertEquals("hakemus9", h9, hakemus9.getTila());
         assertEquals("hakemus10", h10, hakemus10.getTila());
 
+    }
+
+
+    private void assertTilanKuvaukset(String t1, String t2, String t3, String t4, String t5,
+                                      String t6, String t7, String t8, String t9, String t10) {
+        assertEquals("Hakemus1", t1, hakemus1.getTilanKuvaukset().get("FI"));
+        assertEquals("Hakemus2", t2, hakemus2.getTilanKuvaukset().get("FI"));
+        assertEquals("Hakemus3", t3, hakemus3.getTilanKuvaukset().get("FI"));
+        assertEquals("Hakemus4", t4, hakemus4.getTilanKuvaukset().get("FI"));
+        assertEquals("Hakemus5", t5, hakemus5.getTilanKuvaukset().get("FI"));
+        assertEquals("Hakemus6", t6, hakemus6.getTilanKuvaukset().get("FI"));
+        assertEquals("Hakemus7", t7, hakemus7.getTilanKuvaukset().get("FI"));
+        assertEquals("Hakemus8", t8, hakemus8.getTilanKuvaukset().get("FI"));
+        assertEquals("Hakemus9", t9, hakemus9.getTilanKuvaukset().get("FI"));
+        assertEquals("Hakemus10", t10, hakemus10.getTilanKuvaukset().get("FI"));
     }
 
     private void assertHakemustenTilakuvauksenTarkenteet(TilankuvauksenTarkenne t1, TilankuvauksenTarkenne t2, TilankuvauksenTarkenne t3,
