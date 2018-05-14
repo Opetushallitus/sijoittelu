@@ -13,46 +13,46 @@ public class TilojenMuokkaus {
 
     public static void asetaTilaksiVaralla(HakemusWrapper hakemusWrapper) {
         hakemusWrapper.getHakemus().setTila(HakemuksenTila.VARALLA);
-        hakemusWrapper.getHakemus().clearTilanKuvaukset();
+        hakemusWrapper.getHakemus().setTilankuvauksenTarkenne(TilankuvauksenTarkenne.EI_TILANKUVAUKSEN_TARKENNETTA);
     }
 
-    public static void asetaTilaksiHyvaksytty(HakemusWrapper hakemus) {
-        hakemus.getHakemus().setTila(HakemuksenTila.HYVAKSYTTY);
-        hakemus.getHakemus().clearTilanKuvaukset();
+    public static void asetaTilaksiHyvaksytty(HakemusWrapper hakemusWrapper) {
+        hakemusWrapper.getHakemus().setTila(HakemuksenTila.HYVAKSYTTY);
+        hakemusWrapper.getHakemus().setTilankuvauksenTarkenne(TilankuvauksenTarkenne.EI_TILANKUVAUKSEN_TARKENNETTA);
     }
 
-    public static void asetaTilaksiPeruuntunutToinenJono(HakemusWrapper h) {
-        h.getHakemus().setTila(HakemuksenTila.PERUUNTUNUT);
-        h.getHakemus().setTilanKuvaukset(TilanKuvaukset.peruuntunutHyvaksyttyToisessaJonossa());
+    public static void asetaTilaksiPeruuntunutToinenJono(HakemusWrapper hakemusWrapper) {
+        hakemusWrapper.getHakemus().setTila(HakemuksenTila.PERUUNTUNUT);
+        hakemusWrapper.getHakemus().setTilankuvauksenTarkenne(TilankuvauksenTarkenne.PERUUNTUNUT_HYVAKSYTTY_TOISESSA_JONOSSA);
     }
 
-    public static void asetaTilaksiPeruuntunutYlempiToive(HakemusWrapper h) {
-        h.getHakemus().setTila(HakemuksenTila.PERUUNTUNUT);
-        h.getHakemus().setTilanKuvaukset(TilanKuvaukset.peruuntunutYlempiToive());
+    public static void asetaTilaksiPeruuntunutYlempiToive(HakemusWrapper hakemusWrapper) {
+        hakemusWrapper.getHakemus().setTila(HakemuksenTila.PERUUNTUNUT);
+        hakemusWrapper.getHakemus().setTilankuvauksenTarkenne(TilankuvauksenTarkenne.PERUUNTUNUT_HYVAKSYTTY_YLEMMALLE_HAKUTOIVEELLE);
     }
 
-    public static void asetaTilaksiVarasijaltaHyvaksytty(HakemusWrapper hakemus) {
-        hakemus.getHakemus().setTila(HakemuksenTila.VARASIJALTA_HYVAKSYTTY);
-        hakemus.getHakemus().setTilanKuvaukset(TilanKuvaukset.varasijaltaHyvaksytty());
+    public static void asetaTilaksiVarasijaltaHyvaksytty(HakemusWrapper hakemusWrapper) {
+        hakemusWrapper.getHakemus().setTila(HakemuksenTila.VARASIJALTA_HYVAKSYTTY);
+        hakemusWrapper.getHakemus().setTilankuvauksenTarkenne(TilankuvauksenTarkenne.HYVAKSYTTY_VARASIJALTA);
     }
 
     public static void asetaTilaksiPeruuntunutEiMahduKasiteltaviinSijoihin(HakemusWrapper hakemusWrapper) {
         hakemusWrapper.getHakemus().setTila(HakemuksenTila.PERUUNTUNUT);
-        hakemusWrapper.getHakemus().setTilanKuvaukset(TilanKuvaukset.peruuntunutEiMahduKasiteltavienVarasijojenMaaraan());
+        hakemusWrapper.getHakemus().setTilankuvauksenTarkenne(TilankuvauksenTarkenne.PERUUNTUNUT_EI_MAHDU_VARASIJOJEN_MAARAAN);
     }
 
     public static void asetaTilaksiPeruuntunutAloituspaikatTaynna(HakemusWrapper hakemusWrapper) {
         hakemusWrapper.getHakemus().setTila(HakemuksenTila.PERUUNTUNUT);
-        hakemusWrapper.getHakemus().setTilanKuvaukset(TilanKuvaukset.peruuntunutAloituspaikatTaynna());
+        hakemusWrapper.getHakemus().setTilankuvauksenTarkenne(TilankuvauksenTarkenne.PERUUNTUNUT_ALOITUSPAIKAT_TAYNNA);
     }
 
-    public static void asetaTilaksiPeruuntunutHakukierrosPaattynyt(HakemusWrapper hk) {
-        hk.getHakemus().setTila(HakemuksenTila.PERUUNTUNUT);
-        hk.getHakemus().setTilanKuvaukset(TilanKuvaukset.peruuntunutHakukierrosOnPaattynyt());
+    public static void asetaTilaksiPeruuntunutHakukierrosPaattynyt(HakemusWrapper hakemusWrapper) {
+        hakemusWrapper.getHakemus().setTila(HakemuksenTila.PERUUNTUNUT);
+        hakemusWrapper.getHakemus().setTilankuvauksenTarkenne(TilankuvauksenTarkenne.PERUUNTUNUT_HAKUKIERROS_PAATTYNYT);
     }
 
-    public static Optional<Valintatulos> findValintatulos(HakemusWrapper h, String jonoOid) {
-        return h.getHenkilo().getValintatulos().stream()
+    public static Optional<Valintatulos> findValintatulos(HakemusWrapper hakemusWrapper, String jonoOid) {
+        return hakemusWrapper.getHenkilo().getValintatulos().stream()
                 .filter(v -> jonoOid.equals(v.getValintatapajonoOid()))
                 .findAny();
     }
@@ -81,23 +81,23 @@ public class TilojenMuokkaus {
         return hyvaksyttyTulos;
     }
 
-    public static void asetaVastaanottanut(SijoitteluajoWrapper sijoitteluajo, HakemusWrapper hakemus) {
-        Valintatulos valintatulos = findValintatulos(hakemus, hakemus.getValintatapajono().getValintatapajono().getOid())
+    public static void asetaVastaanottanut(SijoitteluajoWrapper sijoitteluajo, HakemusWrapper hakemusWrapper) {
+        Valintatulos valintatulos = findValintatulos(hakemusWrapper, hakemusWrapper.getValintatapajono().getValintatapajono().getOid())
                 .orElseGet(() -> {
                     Valintatulos v = new Valintatulos(
-                            hakemus.getValintatapajono().getValintatapajono().getOid(),
-                            hakemus.getHakemus().getHakemusOid(),
-                            hakemus.getValintatapajono().getHakukohdeWrapper().getHakukohde().getOid(),
-                            hakemus.getHenkilo().getHakijaOid(),
+                            hakemusWrapper.getValintatapajono().getValintatapajono().getOid(),
+                            hakemusWrapper.getHakemus().getHakemusOid(),
+                            hakemusWrapper.getValintatapajono().getHakukohdeWrapper().getHakukohde().getOid(),
+                            hakemusWrapper.getHenkilo().getHakijaOid(),
                             sijoitteluajo.getSijoitteluajo().getHakuOid(),
-                            hakemus.getHakemus().getPrioriteetti()
+                            hakemusWrapper.getHakemus().getPrioriteetti()
                     );
-                    hakemus.getHenkilo().getValintatulos().add(v);
+                    hakemusWrapper.getHenkilo().getValintatulos().add(v);
                     return v;
                 });
         valintatulos.setIlmoittautumisTila(IlmoittautumisTila.EI_TEHTY, VASTAANOTTOTIETO_PERIYTYNYT_ALEMMALTA_HAKUTOIVEELTA);
         // TODO: Peritymisen yhteydessä muutetaan sitovaksi jos ylin hakutoive jolle hakija voi vielä tulla hyväksytyksi.
-        if (hakemus.getHakemus().getPrioriteetti() == 1) {
+        if (hakemusWrapper.getHakemus().getPrioriteetti() == 1) {
             valintatulos.setTila(ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI, VASTAANOTTOTIETO_PERIYTYNYT_ALEMMALTA_HAKUTOIVEELTA);
         } else {
             valintatulos.setTila(ValintatuloksenTila.EHDOLLISESTI_VASTAANOTTANUT, VASTAANOTTOTIETO_PERIYTYNYT_ALEMMALTA_HAKUTOIVEELTA);

@@ -1,7 +1,7 @@
 package fi.vm.sade.sijoittelu;
 
 import com.google.common.collect.Sets;
-import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.util.TilanKuvaukset;
+import fi.vm.sade.sijoittelu.domain.TilanKuvaukset;
 import fi.vm.sade.sijoittelu.domain.*;
 import fi.vm.sade.sijoittelu.domain.dto.VastaanottoDTO;
 import fi.vm.sade.sijoittelu.laskenta.external.resource.VirkailijaValintaTulosServiceResource;

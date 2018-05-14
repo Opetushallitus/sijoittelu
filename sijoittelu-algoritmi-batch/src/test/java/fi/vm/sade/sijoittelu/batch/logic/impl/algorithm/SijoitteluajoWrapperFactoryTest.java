@@ -1,7 +1,7 @@
 package fi.vm.sade.sijoittelu.batch.logic.impl.algorithm;
 
 import com.google.common.collect.Lists;
-import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.util.TilanKuvaukset;
+import fi.vm.sade.sijoittelu.domain.TilanKuvaukset;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.HakemusWrapper;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.SijoitteluajoWrapper;
 import fi.vm.sade.sijoittelu.domain.*;

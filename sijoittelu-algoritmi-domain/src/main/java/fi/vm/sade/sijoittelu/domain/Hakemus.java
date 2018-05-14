@@ -1,6 +1,7 @@
 package fi.vm.sade.sijoittelu.domain;
 
 import fi.vm.sade.sijoittelu.domain.converter.BigDecimalConverter;
+import org.apache.commons.lang3.tuple.Pair;
 import org.mongodb.morphia.annotations.*;
 
 import java.io.Serializable;
@@ -56,6 +57,23 @@ public class Hakemus implements Serializable {
     private Set<String> hyvaksyttyHakijaryhmista = new HashSet<>();
 
     private boolean siirtynytToisestaValintatapajonosta = false;
+
+    private final List<Pair<TilankuvauksenTarkenne, Map<String, String>>> TARKENTEET_JA_KUVAUKSET = Arrays.asList(
+            Pair.of(TilankuvauksenTarkenne.PERUUNTUNUT_HYVAKSYTTY_YLEMMALLE_HAKUTOIVEELLE, TilanKuvaukset.peruuntunutYlempiToive()),
+            Pair.of(TilankuvauksenTarkenne.PERUUNTUNUT_ALOITUSPAIKAT_TAYNNA, TilanKuvaukset.peruuntunutAloituspaikatTaynna()),
+            Pair.of(TilankuvauksenTarkenne.PERUUNTUNUT_HYVAKSYTTY_TOISESSA_JONOSSA, TilanKuvaukset.peruuntunutHyvaksyttyToisessaJonossa()),
+            Pair.of(TilankuvauksenTarkenne.HYVAKSYTTY_VARASIJALTA, TilanKuvaukset.varasijaltaHyvaksytty()),
+            Pair.of(TilankuvauksenTarkenne.PERUUNTUNUT_EI_VASTAANOTTANUT_MAARAAIKANA, TilanKuvaukset.peruuntunutEiVastaanottanutMaaraaikana()),
+            Pair.of(TilankuvauksenTarkenne.PERUUNTUNUT_VASTAANOTTANUT_TOISEN_PAIKAN, TilanKuvaukset.peruuntunutVastaanottanutToisenOpiskelupaikan()),
+            Pair.of(TilankuvauksenTarkenne.PERUUNTUNUT_EI_MAHDU_VARASIJOJEN_MAARAAN, TilanKuvaukset.peruuntunutEiMahduKasiteltavienVarasijojenMaaraan()),
+            Pair.of(TilankuvauksenTarkenne.PERUUNTUNUT_HAKUKIERROS_PAATTYNYT, TilanKuvaukset.peruuntunutHakukierrosOnPaattynyt()),
+            Pair.of(TilankuvauksenTarkenne.PERUUNTUNUT_EI_VARASIJATAYTTOA, TilanKuvaukset.peruuntunutEiVarasijaTayttoa()),
+            Pair.of(TilankuvauksenTarkenne.HYVAKSYTTY_TAYTTOJONO_SAANNOLLA, TilanKuvaukset.hyvaksyttyTayttojonoSaannolla(getTarkenteenLisatieto())),
+            Pair.of(TilankuvauksenTarkenne.HYLATTY_HAKIJARYHMAAN_KUULUMATTOMANA, TilanKuvaukset.hylattyHakijaryhmaanKuulumattomana(getTarkenteenLisatieto())),
+            Pair.of(TilankuvauksenTarkenne.PERUUNTUNUT_VASTAANOTTANUT_TOISEN_PAIKAN_YHDEN_SAANNON_PAIKAN_PIIRISSA, TilanKuvaukset.peruuntunutVastaanottanutToisenOpiskelupaikanYhdenPaikanSaannonPiirissa()),
+            Pair.of(TilankuvauksenTarkenne.PERUUNTUNUT_HYVAKSYTTY_ALEMMALLE_HAKUTOIVEELLE, TilanKuvaukset.peruuntunutHyvaksyttyAlemmallaHakutoiveella()),
+            Pair.of(TilankuvauksenTarkenne.EI_TILANKUVAUKSEN_TARKENNETTA, TilanKuvaukset.tyhja)
+    );
 
     public Set<String> getHyvaksyttyHakijaryhmista() {
         return this.hyvaksyttyHakijaryhmista;
@@ -242,11 +260,12 @@ public class Hakemus implements Serializable {
     }
 
     public TilankuvauksenTarkenne getTilankuvauksenTarkenne() {
-        return null == tilankuvauksenTarkenne ? getTilankuvauksenTarkenneFor(tilanKuvaukset) : tilankuvauksenTarkenne;
+        return null == tilankuvauksenTarkenne ? findTilankuvauksenTarkenne(tilanKuvaukset) : tilankuvauksenTarkenne;
     }
 
     public void setTilankuvauksenTarkenne(TilankuvauksenTarkenne tilankuvauksenTarkenne) {
         this.tilankuvauksenTarkenne = tilankuvauksenTarkenne;
+        setTilanKuvaukset(findTilanKuvaukset(tilankuvauksenTarkenne));
     }
 
     public String getTarkenteenLisatieto() {
@@ -260,7 +279,7 @@ public class Hakemus implements Serializable {
     @PostLoad
     public void postLoad() {
         if (tilankuvauksenTarkenne == null) {
-            tilankuvauksenTarkenne = getTilankuvauksenTarkenneFor(tilanKuvaukset);
+            tilankuvauksenTarkenne = findTilankuvauksenTarkenne(tilanKuvaukset);
             tarkenteenLisatieto = getTilankuvauksenTarkenteenLisatieto(tilankuvauksenTarkenne, tilanKuvaukset);
         }
     }
@@ -273,35 +292,18 @@ public class Hakemus implements Serializable {
         } else return null;
     }
 
-    private TilankuvauksenTarkenne getTilankuvauksenTarkenneFor(Map<String, String> tilanKuvaukset) {
+    private Map<String, String> findTilanKuvaukset(TilankuvauksenTarkenne tilankuvauksenTarkenne) {
+        if (tilankuvauksenTarkenne != null) {
+            return TARKENTEET_JA_KUVAUKSET.stream().filter(p -> p.getLeft().equals(tilankuvauksenTarkenne))
+                    .findFirst().map(m -> m.getRight()).orElse(TilanKuvaukset.tyhja);
+        }
+        return TilanKuvaukset.tyhja;
+    }
+
+    private TilankuvauksenTarkenne findTilankuvauksenTarkenne(Map<String, String> tilanKuvaukset) {
         if (tilanKuvaukset != null && tilanKuvaukset.get("FI") != null) {
-            String tkFi = tilanKuvaukset.get("FI");
-            switch (tkFi) {
-                case "Peruuntunut, hyväksytty ylemmälle hakutoiveelle":
-                    return TilankuvauksenTarkenne.PERUUNTUNUT_HYVAKSYTTY_YLEMMALLE_HAKUTOIVEELLE;
-                case "Peruuntunut, aloituspaikat täynnä":
-                    return TilankuvauksenTarkenne.PERUUNTUNUT_ALOITUSPAIKAT_TAYNNA;
-                case "Peruuntunut, hyväksytty toisessa valintatapajonossa":
-                    return TilankuvauksenTarkenne.PERUUNTUNUT_HYVAKSYTTY_TOISESSA_JONOSSA;
-                case "Varasijalta hyväksytty":
-                    return TilankuvauksenTarkenne.HYVAKSYTTY_VARASIJALTA;
-                case "Peruuntunut, ei vastaanottanut määräaikana":
-                    return TilankuvauksenTarkenne.PERUUNTUNUT_EI_VASTAANOTTANUT_MAARAAIKANA;
-                case "Peruuntunut, ottanut vastaan toisen opiskelupaikan":
-                    return TilankuvauksenTarkenne.PERUUNTUNUT_VASTAANOTTANUT_TOISEN_PAIKAN;
-                case "Peruuntunut, varasija ei mahdu käsiteltävien varasijojen määrään":
-                    return TilankuvauksenTarkenne.PERUUNTUNUT_EI_MAHDU_VARASIJOJEN_MAARAAN;
-                case "Peruuntunut, varasijatäyttö päättynyt":
-                    return TilankuvauksenTarkenne.PERUUNTUNUT_HAKUKIERROS_PAATTYNYT;
-                case "Peruuntunut, ei varasijatäyttöä":
-                    return TilankuvauksenTarkenne.PERUUNTUNUT_EI_VARASIJATAYTTOA;
-                case "Peruuntunut, vastaanottanut toisen korkeakoulupaikan":
-                    return TilankuvauksenTarkenne.PERUUNTUNUT_VASTAANOTTANUT_TOISEN_PAIKAN_YHDEN_SAANNON_PAIKAN_PIIRISSA;
-            }
-            if (tkFi.startsWith("Hyväksytty täyttöjonosäännöllä valintatapajonosta:"))
-                return TilankuvauksenTarkenne.HYVAKSYTTY_TAYTTOJONO_SAANNOLLA;
-            if (tkFi.startsWith("Hylätty, ei kuulu hakijaryhmään:"))
-                return TilankuvauksenTarkenne.HYLATTY_HAKIJARYHMAAN_KUULUMATTOMANA;
+            return TARKENTEET_JA_KUVAUKSET.stream().filter(p -> p.getRight().get("FI").equals(tilanKuvaukset.get("FI")))
+                .findFirst().map(m -> m.getLeft()).orElse(TilankuvauksenTarkenne.EI_TILANKUVAUKSEN_TARKENNETTA);
         }
         return TilankuvauksenTarkenne.EI_TILANKUVAUKSEN_TARKENNETTA;
     }

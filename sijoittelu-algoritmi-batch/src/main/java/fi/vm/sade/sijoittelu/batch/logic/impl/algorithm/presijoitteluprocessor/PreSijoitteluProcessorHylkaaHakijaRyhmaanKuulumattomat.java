@@ -1,6 +1,6 @@
 package fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.presijoitteluprocessor;
 
-import static fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.util.TilanKuvaukset.hylattyHakijaryhmaanKuulumattomana;
+import static fi.vm.sade.sijoittelu.domain.TilanKuvaukset.hylattyHakijaryhmaanKuulumattomana;
 import static fi.vm.sade.sijoittelu.domain.HakemuksenTila.HYLATTY;
 
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.HakijaryhmaWrapper;

@@ -1,4 +1,4 @@
-package fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.util;
+package fi.vm.sade.sijoittelu.domain;
 
 import java.util.HashMap;
 import java.util.Map;
