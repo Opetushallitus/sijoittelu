@@ -1,5 +1,6 @@
-package fi.vm.sade.sijoittelu.batch.logic.impl.algorithm;
+package fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.postsijoitteluprocessor;
 
+import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoitteluajoWrapperFactory;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.helper.HakuBuilder;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.util.SijoitteluAlgorithmUtil;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.SijoitteluajoWrapper;
@@ -8,14 +9,14 @@ import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.function.Consumer;
 
 import static fi.vm.sade.sijoittelu.domain.HakemuksenTila.*;
 import static fi.vm.sade.sijoittelu.domain.TilankuvauksenTarkenne.*;
-import static fi.vm.sade.sijoittelu.domain.TilanKuvaukset.*;
 import static org.junit.Assert.assertEquals;
 
-public class SijoitteluajonTilankuvausKorjausTest {
+public class PostSijoitteluProcessorKorjaaSijoitteluajonTilankuvauksetTest {
     private final Hakemus hakemus1 = new HakuBuilder.HakemusBuilder().withOid("hakemus1")
             .withJonosija(1).withTila(HYVAKSYTTY).withTilankuvauksenTarkenne(null).withPrioriteetti(1).build();
     private final Hakemus hakemus2 = new HakuBuilder.HakemusBuilder().withOid("hakemus2")
@@ -55,7 +56,7 @@ public class SijoitteluajonTilankuvausKorjausTest {
 
         assertHakemustenTilat(HYVAKSYTTY, HYVAKSYTTY, HYVAKSYTTY, VARASIJALTA_HYVAKSYTTY, VARASIJALTA_HYVAKSYTTY,
                 VARASIJALTA_HYVAKSYTTY, VARALLA, VARALLA, VARALLA, PERUUNTUNUT);
-        assertHakemustenTilakuvauksenTarkenteet(EI_TILANKUVAUKSEN_TARKENNETTA, EI_TILANKUVAUKSEN_TARKENNETTA, EI_TILANKUVAUKSEN_TARKENNETTA,
+        assertHakemustenTilaKuvauksenTarkenteet(EI_TILANKUVAUKSEN_TARKENNETTA, EI_TILANKUVAUKSEN_TARKENNETTA, EI_TILANKUVAUKSEN_TARKENNETTA,
                 HYVAKSYTTY_VARASIJALTA, HYVAKSYTTY_VARASIJALTA, HYVAKSYTTY_VARASIJALTA, EI_TILANKUVAUKSEN_TARKENNETTA,
                 EI_TILANKUVAUKSEN_TARKENNETTA, EI_TILANKUVAUKSEN_TARKENNETTA, PERUUNTUNUT_VASTAANOTTANUT_TOISEN_PAIKAN);
         assertTilanKuvaukset(TilanKuvaukset.tyhja.get("FI"), TilanKuvaukset.tyhja.get("FI"), TilanKuvaukset.tyhja.get("FI"),
@@ -80,7 +81,7 @@ public class SijoitteluajonTilankuvausKorjausTest {
 
         assertHakemustenTilat(HYVAKSYTTY, HYVAKSYTTY, HYVAKSYTTY, VARASIJALTA_HYVAKSYTTY, HYLATTY,
                 HYLATTY, VARALLA, VARALLA, VARALLA, PERUUNTUNUT);
-        assertHakemustenTilakuvauksenTarkenteet(EI_TILANKUVAUKSEN_TARKENNETTA, EI_TILANKUVAUKSEN_TARKENNETTA, EI_TILANKUVAUKSEN_TARKENNETTA,
+        assertHakemustenTilaKuvauksenTarkenteet(EI_TILANKUVAUKSEN_TARKENNETTA, EI_TILANKUVAUKSEN_TARKENNETTA, EI_TILANKUVAUKSEN_TARKENNETTA,
                 HYVAKSYTTY_VARASIJALTA, PERUUNTUNUT_EI_MAHDU_VARASIJOJEN_MAARAAN, HYLATTY_HAKIJARYHMAAN_KUULUMATTOMANA,
                 EI_TILANKUVAUKSEN_TARKENNETTA, EI_TILANKUVAUKSEN_TARKENNETTA, EI_TILANKUVAUKSEN_TARKENNETTA, PERUUNTUNUT_VASTAANOTTANUT_TOISEN_PAIKAN);
         assertTilanKuvaukset(TilanKuvaukset.tyhja.get("FI"), TilanKuvaukset.tyhja.get("FI"), TilanKuvaukset.tyhja.get("FI"),
@@ -96,7 +97,7 @@ public class SijoitteluajonTilankuvausKorjausTest {
 
         assertHakemustenTilat(HYVAKSYTTY, HYVAKSYTTY, HYVAKSYTTY, VARASIJALTA_HYVAKSYTTY, VARASIJALTA_HYVAKSYTTY,
                 HYLATTY, VARALLA, VARALLA, VARALLA, PERUUNTUNUT);
-        assertHakemustenTilakuvauksenTarkenteet(EI_TILANKUVAUKSEN_TARKENNETTA, EI_TILANKUVAUKSEN_TARKENNETTA, EI_TILANKUVAUKSEN_TARKENNETTA,
+        assertHakemustenTilaKuvauksenTarkenteet(EI_TILANKUVAUKSEN_TARKENNETTA, EI_TILANKUVAUKSEN_TARKENNETTA, EI_TILANKUVAUKSEN_TARKENNETTA,
                 HYVAKSYTTY_VARASIJALTA, HYVAKSYTTY_VARASIJALTA, HYLATTY_HAKIJARYHMAAN_KUULUMATTOMANA,
                 EI_TILANKUVAUKSEN_TARKENNETTA, EI_TILANKUVAUKSEN_TARKENNETTA, EI_TILANKUVAUKSEN_TARKENNETTA, PERUUNTUNUT_VASTAANOTTANUT_TOISEN_PAIKAN);
         assertTilanKuvaukset(TilanKuvaukset.tyhja.get("FI"), TilanKuvaukset.tyhja.get("FI"), TilanKuvaukset.tyhja.get("FI"),
@@ -112,11 +113,75 @@ public class SijoitteluajonTilankuvausKorjausTest {
 
         assertHakemustenTilat(HYVAKSYTTY, PERUNUT, HYVAKSYTTY, VARASIJALTA_HYVAKSYTTY, VARASIJALTA_HYVAKSYTTY,
                 VARALLA, VARALLA, VARALLA,VARALLA, PERUUNTUNUT);
-        assertHakemustenTilakuvauksenTarkenteet(EI_TILANKUVAUKSEN_TARKENNETTA, EI_TILANKUVAUKSEN_TARKENNETTA, EI_TILANKUVAUKSEN_TARKENNETTA,
+        assertHakemustenTilaKuvauksenTarkenteet(EI_TILANKUVAUKSEN_TARKENNETTA, EI_TILANKUVAUKSEN_TARKENNETTA, EI_TILANKUVAUKSEN_TARKENNETTA,
                 HYVAKSYTTY_VARASIJALTA, HYVAKSYTTY_VARASIJALTA, EI_TILANKUVAUKSEN_TARKENNETTA,
                 EI_TILANKUVAUKSEN_TARKENNETTA, EI_TILANKUVAUKSEN_TARKENNETTA, EI_TILANKUVAUKSEN_TARKENNETTA, PERUUNTUNUT_VASTAANOTTANUT_TOISEN_PAIKAN);
         assertTilanKuvaukset(TilanKuvaukset.tyhja.get("FI"), TilanKuvaukset.tyhja.get("FI"), TilanKuvaukset.tyhja.get("FI"),
                 TilanKuvaukset.varasijaltaHyvaksytty().get("FI"), TilanKuvaukset.varasijaltaHyvaksytty().get("FI"), TilanKuvaukset.tyhja.get("FI"),
+                TilanKuvaukset.tyhja.get("FI"), TilanKuvaukset.tyhja.get("FI"), TilanKuvaukset.tyhja.get("FI"),
+                TilanKuvaukset.peruuntunutVastaanottanutToisenOpiskelupaikan().get("FI"));
+    }
+
+    @Test
+    public void customHakemuksenTilanKuvausTeksti() {
+        jono.setAloituspaikat(2);
+        jono.setEiVarasijatayttoa(false);
+        jono.setVarasijat(4);
+
+        //Jos tila tai tilan tarkenne muuttuu, muuttuu myös tilankuvauksen teksti.
+
+        // Tarkenne muuttuu
+        hakemus2.setTilanKuvaukset(new HashMap<String, String>() {{
+            put("FI", "Suomenkielinen teksti 2");
+            put("SV", "Svensk text 2");
+            put("EN", "English Text 2");
+        }});
+
+        //Tarkenne ei muutu
+        hakemus3.setTilanKuvaukset(new HashMap<String, String>() {{
+            put("FI", "Suomenkielinen teksti 3");
+            put("SV", "Svensk text 3");
+            put("EN", "English Text 3");
+        }});
+
+        sijoittele(kkHakuVarasijasaannotVoimassa, hakukohde);
+
+        assertHakemustenTilat(HYVAKSYTTY, HYVAKSYTTY, HYVAKSYTTY, VARASIJALTA_HYVAKSYTTY, VARASIJALTA_HYVAKSYTTY,
+                VARASIJALTA_HYVAKSYTTY, VARALLA, VARALLA, VARALLA, PERUUNTUNUT);
+        assertHakemustenTilaKuvauksenTarkenteet(EI_TILANKUVAUKSEN_TARKENNETTA, EI_TILANKUVAUKSEN_TARKENNETTA, EI_TILANKUVAUKSEN_TARKENNETTA,
+                HYVAKSYTTY_VARASIJALTA, HYVAKSYTTY_VARASIJALTA, HYVAKSYTTY_VARASIJALTA, EI_TILANKUVAUKSEN_TARKENNETTA,
+                EI_TILANKUVAUKSEN_TARKENNETTA, EI_TILANKUVAUKSEN_TARKENNETTA, PERUUNTUNUT_VASTAANOTTANUT_TOISEN_PAIKAN);
+        assertTilanKuvaukset(TilanKuvaukset.tyhja.get("FI"), TilanKuvaukset.tyhja.get("FI"), "Suomenkielinen teksti 3",
+                TilanKuvaukset.varasijaltaHyvaksytty().get("FI"), TilanKuvaukset.varasijaltaHyvaksytty().get("FI"), TilanKuvaukset.varasijaltaHyvaksytty().get("FI"),
+                TilanKuvaukset.tyhja.get("FI"), TilanKuvaukset.tyhja.get("FI"), TilanKuvaukset.tyhja.get("FI"),
+                TilanKuvaukset.peruuntunutVastaanottanutToisenOpiskelupaikan().get("FI"));
+
+        jono.setVarasijat(3);
+
+        // Tila muuttuu
+        hakemus5.setTila(HYVAKSYTTY);
+        hakemus5.setTilanKuvaukset(new HashMap<String, String>() {{
+            put("FI", "Suomenkielinen teksti 5");
+            put("SV", "Svensk text 5");
+            put("EN", "English Text 5");
+        }});
+
+        // Tila ei muutu
+        hakemus6.setTilanKuvaukset(new HashMap<String, String>() {{
+            put("FI", "Suomenkielinen teksti 6");
+            put("SV", "Svensk text 6");
+            put("EN", "English Text 6");
+        }});
+
+        sijoittele(kkHakuVarasijasaannotVoimassa, hakukohde);
+
+        assertHakemustenTilat(HYVAKSYTTY, HYVAKSYTTY, HYVAKSYTTY, VARASIJALTA_HYVAKSYTTY, HYVAKSYTTY,
+                VARASIJALTA_HYVAKSYTTY, VARALLA, VARALLA, VARALLA, PERUUNTUNUT);
+        assertHakemustenTilaKuvauksenTarkenteet(EI_TILANKUVAUKSEN_TARKENNETTA, EI_TILANKUVAUKSEN_TARKENNETTA, EI_TILANKUVAUKSEN_TARKENNETTA,
+                HYVAKSYTTY_VARASIJALTA, EI_TILANKUVAUKSEN_TARKENNETTA, HYVAKSYTTY_VARASIJALTA,
+                EI_TILANKUVAUKSEN_TARKENNETTA, EI_TILANKUVAUKSEN_TARKENNETTA, EI_TILANKUVAUKSEN_TARKENNETTA, PERUUNTUNUT_VASTAANOTTANUT_TOISEN_PAIKAN);
+        assertTilanKuvaukset(TilanKuvaukset.tyhja.get("FI"), TilanKuvaukset.tyhja.get("FI"), "Suomenkielinen teksti 3",
+                TilanKuvaukset.varasijaltaHyvaksytty().get("FI"), TilanKuvaukset.tyhja.get("FI"), "Suomenkielinen teksti 6",
                 TilanKuvaukset.tyhja.get("FI"), TilanKuvaukset.tyhja.get("FI"), TilanKuvaukset.tyhja.get("FI"),
                 TilanKuvaukset.peruuntunutVastaanottanutToisenOpiskelupaikan().get("FI"));
     }
@@ -153,7 +218,7 @@ public class SijoitteluajonTilankuvausKorjausTest {
         assertEquals("Hakemus10", t10, hakemus10.getTilanKuvaukset().get("FI"));
     }
 
-    private void assertHakemustenTilakuvauksenTarkenteet(TilankuvauksenTarkenne t1, TilankuvauksenTarkenne t2, TilankuvauksenTarkenne t3,
+    private void assertHakemustenTilaKuvauksenTarkenteet(TilankuvauksenTarkenne t1, TilankuvauksenTarkenne t2, TilankuvauksenTarkenne t3,
                                                          TilankuvauksenTarkenne t4, TilankuvauksenTarkenne t5, TilankuvauksenTarkenne t6,
                                                          TilankuvauksenTarkenne t7, TilankuvauksenTarkenne t8, TilankuvauksenTarkenne t9,
                                                          TilankuvauksenTarkenne t10) {
@@ -166,6 +231,7 @@ public class SijoitteluajonTilankuvausKorjausTest {
         assertEquals("hakemus7", t7, hakemus7.getTilankuvauksenTarkenne());
         assertEquals("hakemus8", t8, hakemus8.getTilankuvauksenTarkenne());
         assertEquals("hakemus9", t9, hakemus9.getTilankuvauksenTarkenne());
+        assertEquals("hakemus10", t10, hakemus10.getTilankuvauksenTarkenne());
     }
 
     private void sijoittele(Consumer<SijoitteluajoWrapper> prepareAjoWrapper, Hakukohde... hakukohteet) {

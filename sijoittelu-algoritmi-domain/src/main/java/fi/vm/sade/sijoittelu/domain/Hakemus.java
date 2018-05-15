@@ -302,7 +302,7 @@ public class Hakemus implements Serializable {
 
     private TilankuvauksenTarkenne findTilankuvauksenTarkenne(Map<String, String> tilanKuvaukset) {
         if (tilanKuvaukset != null && tilanKuvaukset.get("FI") != null) {
-            return TARKENTEET_JA_KUVAUKSET.stream().filter(p -> p.getRight().get("FI").equals(tilanKuvaukset.get("FI")))
+            return TARKENTEET_JA_KUVAUKSET.stream().filter(p -> p.getRight().containsKey("FI") && p.getRight().get("FI").equals(tilanKuvaukset.get("FI")))
                 .findFirst().map(m -> m.getLeft()).orElse(TilankuvauksenTarkenne.EI_TILANKUVAUKSEN_TARKENNETTA);
         }
         return TilankuvauksenTarkenne.EI_TILANKUVAUKSEN_TARKENNETTA;
