@@ -57,7 +57,7 @@
         </jaxrs-client:client>
 
         <jaxrs-client:client id="ValintaperusteetKoostepalveluRestClient"
-                           address="${host.ilb}/valintaperusteet-service/resources"
+                           address="${host.alb}/valintaperusteet-service/resources"
                            serviceClass="fi.vm.sade.service.valintaperusteet.resource.ValintalaskentakoostepalveluResource"
                            inheritHeaders="true">
         <jaxrs-client:providers>
