@@ -276,14 +276,6 @@ public class Hakemus implements Serializable {
         this.tarkenteenLisatieto = tarkenteenLisatieto;
     }
 
-    @PostLoad
-    public void postLoad() {
-        if (tilankuvauksenTarkenne == null) {
-            tilankuvauksenTarkenne = findTilankuvauksenTarkenne(tilanKuvaukset);
-            tarkenteenLisatieto = getTilankuvauksenTarkenteenLisatieto(tilankuvauksenTarkenne, tilanKuvaukset);
-        }
-    }
-
     private String getTilankuvauksenTarkenteenLisatieto(TilankuvauksenTarkenne tarkenne, Map<String, String> tilanKuvaukset) {
         if (tarkenne == null) return null;
         else if (tarkenne.equals(TilankuvauksenTarkenne.HYVAKSYTTY_TAYTTOJONO_SAANNOLLA) || tarkenne.equals(TilankuvauksenTarkenne.HYLATTY_HAKIJARYHMAAN_KUULUMATTOMANA)) {
@@ -309,4 +301,16 @@ public class Hakemus implements Serializable {
     }
 
 
+    public boolean isTilaSiivottu() {
+        if (tila == HakemuksenTila.VARASIJALTA_HYVAKSYTTY
+                && tilankuvauksenTarkenne != TilankuvauksenTarkenne.HYVAKSYTTY_VARASIJALTA) {
+            this.setTilankuvauksenTarkenne(TilankuvauksenTarkenne.HYVAKSYTTY_VARASIJALTA);
+            return true;
+        } else if ((tila == HakemuksenTila.HYVAKSYTTY || tila == HakemuksenTila.VARALLA)
+                && (tilankuvauksenTarkenne != TilankuvauksenTarkenne.EI_TILANKUVAUKSEN_TARKENNETTA || !tilanKuvaukset.equals(TilanKuvaukset.tyhja))) {
+            this.setTilankuvauksenTarkenne(TilankuvauksenTarkenne.EI_TILANKUVAUKSEN_TARKENNETTA);
+            return true;
+        }
+        return false;
+    }
 }

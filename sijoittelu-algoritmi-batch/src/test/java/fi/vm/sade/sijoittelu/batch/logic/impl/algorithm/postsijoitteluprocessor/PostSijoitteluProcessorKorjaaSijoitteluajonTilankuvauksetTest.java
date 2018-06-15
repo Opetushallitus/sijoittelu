@@ -131,18 +131,27 @@ public class PostSijoitteluProcessorKorjaaSijoitteluajonTilankuvauksetTest {
         //Jos tila tai tilan tarkenne muuttuu, muuttuu myös tilankuvauksen teksti.
 
         // Tarkenne muuttuu
+        hakemus2.setTilankuvauksenTarkenne(TilankuvauksenTarkenne.PERUUNTUNUT_EI_MAHDU_VARASIJOJEN_MAARAAN);
         hakemus2.setTilanKuvaukset(new HashMap<String, String>() {{
             put("FI", "Suomenkielinen teksti 2");
             put("SV", "Svensk text 2");
             put("EN", "English Text 2");
         }});
 
-        //Tarkenne ei muutu
+        // Pitäisi olla tyhjä, koska tila on hyväksytty.
         hakemus3.setTilanKuvaukset(new HashMap<String, String>() {{
             put("FI", "Suomenkielinen teksti 3");
             put("SV", "Svensk text 3");
             put("EN", "English Text 3");
         }});
+
+        // Pitäisi olla tyhjä, koska tila on varalla.
+        hakemus7.setTilanKuvaukset(new HashMap<String, String>() {{
+            put("FI", "Suomenkielinen teksti 6");
+            put("SV", "Svensk text 6");
+            put("EN", "English Text 6");
+        }});
+
 
         sijoittele(kkHakuVarasijasaannotVoimassa, hakukohde);
 
@@ -151,7 +160,7 @@ public class PostSijoitteluProcessorKorjaaSijoitteluajonTilankuvauksetTest {
         assertHakemustenTilaKuvauksenTarkenteet(EI_TILANKUVAUKSEN_TARKENNETTA, EI_TILANKUVAUKSEN_TARKENNETTA, EI_TILANKUVAUKSEN_TARKENNETTA,
                 HYVAKSYTTY_VARASIJALTA, HYVAKSYTTY_VARASIJALTA, HYVAKSYTTY_VARASIJALTA, EI_TILANKUVAUKSEN_TARKENNETTA,
                 EI_TILANKUVAUKSEN_TARKENNETTA, EI_TILANKUVAUKSEN_TARKENNETTA, PERUUNTUNUT_VASTAANOTTANUT_TOISEN_PAIKAN);
-        assertTilanKuvaukset(TilanKuvaukset.tyhja.get("FI"), TilanKuvaukset.tyhja.get("FI"), "Suomenkielinen teksti 3",
+        assertTilanKuvaukset(TilanKuvaukset.tyhja.get("FI"), TilanKuvaukset.tyhja.get("FI"), TilanKuvaukset.tyhja.get("FI"),
                 TilanKuvaukset.varasijaltaHyvaksytty().get("FI"), TilanKuvaukset.varasijaltaHyvaksytty().get("FI"), TilanKuvaukset.varasijaltaHyvaksytty().get("FI"),
                 TilanKuvaukset.tyhja.get("FI"), TilanKuvaukset.tyhja.get("FI"), TilanKuvaukset.tyhja.get("FI"),
                 TilanKuvaukset.peruuntunutVastaanottanutToisenOpiskelupaikan().get("FI"));
@@ -166,12 +175,13 @@ public class PostSijoitteluProcessorKorjaaSijoitteluajonTilankuvauksetTest {
             put("EN", "English Text 5");
         }});
 
-        // Tila ei muutu
+        // Tila ei muutu.
         hakemus6.setTilanKuvaukset(new HashMap<String, String>() {{
             put("FI", "Suomenkielinen teksti 6");
             put("SV", "Svensk text 6");
             put("EN", "English Text 6");
         }});
+
 
         sijoittele(kkHakuVarasijasaannotVoimassa, hakukohde);
 
@@ -180,7 +190,7 @@ public class PostSijoitteluProcessorKorjaaSijoitteluajonTilankuvauksetTest {
         assertHakemustenTilaKuvauksenTarkenteet(EI_TILANKUVAUKSEN_TARKENNETTA, EI_TILANKUVAUKSEN_TARKENNETTA, EI_TILANKUVAUKSEN_TARKENNETTA,
                 HYVAKSYTTY_VARASIJALTA, EI_TILANKUVAUKSEN_TARKENNETTA, HYVAKSYTTY_VARASIJALTA,
                 EI_TILANKUVAUKSEN_TARKENNETTA, EI_TILANKUVAUKSEN_TARKENNETTA, EI_TILANKUVAUKSEN_TARKENNETTA, PERUUNTUNUT_VASTAANOTTANUT_TOISEN_PAIKAN);
-        assertTilanKuvaukset(TilanKuvaukset.tyhja.get("FI"), TilanKuvaukset.tyhja.get("FI"), "Suomenkielinen teksti 3",
+        assertTilanKuvaukset(TilanKuvaukset.tyhja.get("FI"), TilanKuvaukset.tyhja.get("FI"), TilanKuvaukset.tyhja.get("FI"),
                 TilanKuvaukset.varasijaltaHyvaksytty().get("FI"), TilanKuvaukset.tyhja.get("FI"), "Suomenkielinen teksti 6",
                 TilanKuvaukset.tyhja.get("FI"), TilanKuvaukset.tyhja.get("FI"), TilanKuvaukset.tyhja.get("FI"),
                 TilanKuvaukset.peruuntunutVastaanottanutToisenOpiskelupaikan().get("FI"));
