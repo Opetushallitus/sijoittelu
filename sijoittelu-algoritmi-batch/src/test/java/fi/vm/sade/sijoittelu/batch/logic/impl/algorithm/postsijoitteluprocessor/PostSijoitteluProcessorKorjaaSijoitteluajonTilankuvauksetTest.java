@@ -18,25 +18,25 @@ import static org.junit.Assert.assertEquals;
 
 public class PostSijoitteluProcessorKorjaaSijoitteluajonTilankuvauksetTest {
     private final Hakemus hakemus1 = new HakuBuilder.HakemusBuilder().withOid("hakemus1")
-            .withJonosija(1).withTila(HYVAKSYTTY).withTilankuvauksenTarkenne(null).withPrioriteetti(1).build();
+            .withJonosija(1).withTila(HYVAKSYTTY).withHakijaOid("test1").withTilankuvauksenTarkenne(null).withPrioriteetti(1).build();
     private final Hakemus hakemus2 = new HakuBuilder.HakemusBuilder().withOid("hakemus2")
-            .withJonosija(2).withTila(HYVAKSYTTY).withTilankuvauksenTarkenne(TilankuvauksenTarkenne.PERUUNTUNUT_HYVAKSYTTY_TOISESSA_JONOSSA).withPrioriteetti(1).build();
+            .withJonosija(2).withTila(HYVAKSYTTY).withHakijaOid("test2").withTilankuvauksenTarkenne(TilankuvauksenTarkenne.PERUUNTUNUT_HYVAKSYTTY_TOISESSA_JONOSSA).withPrioriteetti(1).build();
     private final Hakemus hakemus3 = new HakuBuilder.HakemusBuilder().withOid("hakemus3")
-            .withJonosija(3).withTila(HYVAKSYTTY).withTilankuvauksenTarkenne(TilankuvauksenTarkenne.EI_TILANKUVAUKSEN_TARKENNETTA).withPrioriteetti(1).build();
+            .withJonosija(3).withTila(HYVAKSYTTY).withHakijaOid("test3").withTilankuvauksenTarkenne(TilankuvauksenTarkenne.EI_TILANKUVAUKSEN_TARKENNETTA).withPrioriteetti(1).build();
     private final Hakemus hakemus4 = new HakuBuilder.HakemusBuilder().withOid("hakemus4")
-            .withJonosija(4).withTila(VARASIJALTA_HYVAKSYTTY).withTilankuvauksenTarkenne(null).withPrioriteetti(1).build();
+            .withJonosija(4).withTila(VARASIJALTA_HYVAKSYTTY).withHakijaOid("test4").withTilankuvauksenTarkenne(null).withPrioriteetti(1).build();
     private final Hakemus hakemus5 = new HakuBuilder.HakemusBuilder().withOid("hakemus5")
-            .withJonosija(5).withTila(VARASIJALTA_HYVAKSYTTY).withTilankuvauksenTarkenne(TilankuvauksenTarkenne.PERUUNTUNUT_EI_MAHDU_VARASIJOJEN_MAARAAN).withPrioriteetti(1).build();
+            .withJonosija(5).withTila(VARASIJALTA_HYVAKSYTTY).withHakijaOid("test5").withTilankuvauksenTarkenne(TilankuvauksenTarkenne.PERUUNTUNUT_EI_MAHDU_VARASIJOJEN_MAARAAN).withPrioriteetti(1).build();
     private final Hakemus hakemus6 = new HakuBuilder.HakemusBuilder().withOid("hakemus6")
-            .withJonosija(6).withTila(VARASIJALTA_HYVAKSYTTY).withTilankuvauksenTarkenne(TilankuvauksenTarkenne.HYVAKSYTTY_VARASIJALTA).withPrioriteetti(1).build();
+            .withJonosija(6).withTila(VARASIJALTA_HYVAKSYTTY).withHakijaOid("test6").withTilankuvauksenTarkenne(TilankuvauksenTarkenne.HYVAKSYTTY_VARASIJALTA).withPrioriteetti(1).build();
     private final Hakemus hakemus7 = new HakuBuilder.HakemusBuilder().withOid("hakemus7")
-            .withJonosija(7).withTila(VARALLA).withTilankuvauksenTarkenne(null).withPrioriteetti(1).build();
+            .withJonosija(7).withTila(VARALLA).withHakijaOid("test7").withTilankuvauksenTarkenne(null).withPrioriteetti(1).build();
     private final Hakemus hakemus8 = new HakuBuilder.HakemusBuilder().withOid("hakemus8")
-            .withJonosija(8).withTila(VARALLA).withTilankuvauksenTarkenne(TilankuvauksenTarkenne.HYLATTY_HAKIJARYHMAAN_KUULUMATTOMANA).withPrioriteetti(1).build();
+            .withJonosija(8).withTila(VARALLA).withHakijaOid("test8").withTilankuvauksenTarkenne(TilankuvauksenTarkenne.HYLATTY_HAKIJARYHMAAN_KUULUMATTOMANA).withPrioriteetti(1).build();
     private final Hakemus hakemus9 = new HakuBuilder.HakemusBuilder().withOid("hakemus9")
-            .withJonosija(9).withTila(VARALLA).withTilankuvauksenTarkenne(TilankuvauksenTarkenne.EI_TILANKUVAUKSEN_TARKENNETTA).withPrioriteetti(1).build();
+            .withJonosija(9).withTila(VARALLA).withHakijaOid("test9").withTilankuvauksenTarkenne(TilankuvauksenTarkenne.EI_TILANKUVAUKSEN_TARKENNETTA).withPrioriteetti(1).build();
     private final Hakemus hakemus10 = new HakuBuilder.HakemusBuilder().withOid("hakemus10")
-            .withJonosija(10).withTila(PERUUNTUNUT).withTilankuvauksenTarkenne(TilankuvauksenTarkenne.PERUUNTUNUT_VASTAANOTTANUT_TOISEN_PAIKAN).withPrioriteetti(1).build();
+            .withJonosija(10).withTila(PERUUNTUNUT).withHakijaOid("test10").withTilankuvauksenTarkenne(TilankuvauksenTarkenne.PERUUNTUNUT_VASTAANOTTANUT_TOISEN_PAIKAN).withPrioriteetti(1).build();
 
     private Valintatapajono jono = new HakuBuilder.ValintatapajonoBuilder().withOid("jono1")
             .withPrioriteetti(0)
