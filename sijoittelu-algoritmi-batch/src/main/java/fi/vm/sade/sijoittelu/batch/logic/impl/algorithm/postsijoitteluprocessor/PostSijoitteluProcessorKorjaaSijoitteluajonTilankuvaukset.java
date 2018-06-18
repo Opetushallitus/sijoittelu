@@ -2,8 +2,6 @@ package fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.postsijoitteluprocessor
 
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.SijoitteluajoWrapper;
 import fi.vm.sade.sijoittelu.domain.HakemuksenTila;
-import fi.vm.sade.sijoittelu.domain.TilanKuvaukset;
-import fi.vm.sade.sijoittelu.domain.TilankuvauksenTarkenne;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
