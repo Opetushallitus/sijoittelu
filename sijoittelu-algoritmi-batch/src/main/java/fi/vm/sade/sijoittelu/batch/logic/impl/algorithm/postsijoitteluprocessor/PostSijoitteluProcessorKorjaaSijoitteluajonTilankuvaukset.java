@@ -17,7 +17,7 @@ public class PostSijoitteluProcessorKorjaaSijoitteluajonTilankuvaukset  implemen
                         || h.getHakemus().getTila() == HakemuksenTila.VARALLA
                         || h.getHakemus().getTila() == HakemuksenTila.VARASIJALTA_HYVAKSYTTY))
                 .forEach(hw -> {
-                    if (hw.getHakemus().isTilaSiivottu()) {
+                    if (hw.getHakemus().siivoaTilankuvaustenTarkenteet()) {
                         LOG.info("Hakemuksen {} valintatuloksen tila on {}. " +
                                         "Asetettiin valintatuloksen tilan tarkenteeksi {}. (hakijaOid: {}, hakukohdeOid: {})",
                                 hw.getHakemus().getHakemusOid(), hw.getHakemus().getTila(), hw.getHakemus().getTilankuvauksenTarkenne(),

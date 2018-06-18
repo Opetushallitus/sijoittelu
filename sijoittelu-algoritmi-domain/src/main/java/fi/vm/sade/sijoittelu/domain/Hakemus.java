@@ -301,7 +301,7 @@ public class Hakemus implements Serializable {
     }
 
 
-    public boolean isTilaSiivottu() {
+    public boolean siivoaTilankuvaustenTarkenteet() {
         if (tila == HakemuksenTila.VARASIJALTA_HYVAKSYTTY
                 && tilankuvauksenTarkenne != TilankuvauksenTarkenne.HYVAKSYTTY_VARASIJALTA) {
             this.setTilankuvauksenTarkenne(TilankuvauksenTarkenne.HYVAKSYTTY_VARASIJALTA);
