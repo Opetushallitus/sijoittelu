@@ -1,5 +1,11 @@
 package fi.vm.sade.sijoittelu.domain;
 
+/**
+ * Note: changing these enum values requires changing their mappings in valinta-tulos-service
+ * - in code
+ * - database enum
+ * and updating mutual sijoittelu and VTS dependencies so that they stay in sync.
+ */
 public enum TilankuvauksenTarkenne {
     PERUUNTUNUT_HYVAKSYTTY_YLEMMALLE_HAKUTOIVEELLE,
     PERUUNTUNUT_ALOITUSPAIKAT_TAYNNA,
