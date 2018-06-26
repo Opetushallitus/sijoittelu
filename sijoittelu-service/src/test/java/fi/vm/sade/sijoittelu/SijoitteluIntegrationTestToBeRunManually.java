@@ -39,7 +39,9 @@ import org.springframework.util.StopWatch;
 import javax.inject.Named;
 import java.io.IOException;
 import java.net.URI;
+import java.time.Duration;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -61,13 +63,11 @@ import static org.junit.Assert.assertThat;
  *
  * Note: You need to
  *   ** add valintalaskentadb URL to run configuration VM parameters, e.g.
- *      <code>-ea -Xmx7G -DQA_VIRKAILIJAMONGO_URL=mongodb://oph:PASSWORD@qa-mongodb1.oph.ware.fi,qa-mongodb2.oph.ware.fi,qa-mongodb3.oph.ware.fi:27017</code>
+ *      <code>-ea -Xmx7G -DQA_VIRKAILIJAMONGO_URL=mongodb://oph:PASSWORD@localhost:37017</code>
  *      NB: be sure to tick off using <code>argLine</code> from Maven test runner IDEA settings, otherwise -Xmx512m will come
  *      to the command line from build-parent project that is the parent of valintaperusteet Maven project.
  *   ** add an ssh pipe to QA (or other similar environment) to access the /valintalaskentakoostepalvelu
- *      endpoint of valintaperusteet, e.g. <code>ssh -L 1234:testi.virkailija.opintopolku.fi:443 ruokala</code>
- *   ** change the local loopback IP address to point to the server you want to access, e.g. add this to
- *      <code>/etc/hosts</code> : <code>127.0.0.1       testi.virkailija.opintopolku.fi</code>
+ *      endpoint of valintaperusteet on the ALB, e.g. <code>ssh -L 1234:alb.testiopintopolku.fi:80 bastion.testiopintopolku.fi</code>
  *
  * @see SijoitteluBusinessService#sijoittele(HakuDTO, Set, Set, Long)
  * @see HakijaryhmaTest
@@ -78,9 +78,11 @@ import static org.junit.Assert.assertThat;
 @UsingDataSet
 @Ignore
 public class SijoitteluIntegrationTestToBeRunManually {
+    private static final Duration SIJOITTELU_STATE_POLL_INTERVAL = Duration.ofSeconds(30);
+
     static {
         if (System.getProperty("PIPED_HOST_VIRKAILIJA") == null) {
-            String defaultValue = "virkailija.untuvaopintopolku.fi:2345";
+            String defaultValue = "http://localhost:12345";
             System.out.println("No PIPED_HOST_VIRKAILIJA system property set, defaulting to " + defaultValue);
             System.setProperty("PIPED_HOST_VIRKAILIJA", defaultValue);
         }
@@ -99,18 +101,26 @@ public class SijoitteluIntegrationTestToBeRunManually {
     private MongoClientURI mongoClientURI;
 
 	@Test
-	public void testSijoittelu() throws IOException {
+	public void testSijoittelu() throws IOException, InterruptedException {
         ensureVirkailijaHostCanBeReached();
         LOG.info("Käytetään valintalaskentadb:tä klusterista " + mongoClientURI.getHosts());
-        sijoitteluResource.sijoittele("1.2.246.562.29.87593180141");
+        startSijoitteluAndPollUntilFinished();
         SijoitteluajoWrapper sijoitteluajoWrapper = lightWeightSijoitteluBusinessServiceForTesting.ajettuSijoittelu;
         assertThat(sijoitteluajoWrapper.getHakukohteet(), not(hasSize(0)));
         assertThat(sijoitteluajoWrapper.getHakukohteet().get(0).getValintatapajonot(), not(hasSize(0)));
         assertThat(sijoitteluajoWrapper.getHakukohteet().get(0).getValintatapajonot().get(0).getHakemukset(), not(hasSize(0)));
 
-        HakemusWrapper hakemusWrapper = findHakemusWrapper("1.2.246.562.20.12440626997", "14751510516182446649292011171466", "1.2.246.562.11.00007467028");
+        HakemusWrapper hakemusWrapper = findHakemusWrapper("1.2.246.562.20.33533744802", "1524747206010-8585833911442146692", "1.2.246.562.11.00012790612");
         System.out.println("hakemusWrapper = " + hakemusWrapper);
 	}
+
+    private void startSijoitteluAndPollUntilFinished() throws InterruptedException {
+        Long sijoitteluajoId = sijoitteluResource.sijoittele("1.2.246.562.29.26435854158");
+        while ("KESKEN".equals(sijoitteluResource.sijoittelunTila(sijoitteluajoId))) {
+            System.out.println("Polled at " + new Date());
+            Thread.sleep(SIJOITTELU_STATE_POLL_INTERVAL.toMillis());
+        }
+    }
 
     private HakemusWrapper findHakemusWrapper(String hakukohdeOid, String jonoOid, String hakemusOid) {
         HakukohdeWrapper hakukohdeWrapper = findHakukohdeWrapper(hakukohdeOid).orElseGet(() -> {
@@ -131,12 +141,12 @@ public class SijoitteluIntegrationTestToBeRunManually {
     }
 
     private void ensureVirkailijaHostCanBeReached() throws IOException {
-        HttpGet request = new HttpGet(URI.create("https://" + pipedHostVirkailija));
-        LOG.info("Checking that " + request.getURI() + " can be reached, for accessing e.g. valintaperusteet");
+        HttpGet request = new HttpGet(URI.create(pipedHostVirkailija + "/valintaperusteet-service/buildversion.txt"));
+        LOG.info("Checking that piped ALB connection works so that " + request.getURI() + " can be reached, for accessing e.g. valintaperusteet");
         int timeoutMillis = 1500;
         CloseableHttpResponse response = HttpClientBuilder.create().setDefaultRequestConfig(
             RequestConfig.custom().setRedirectsEnabled(false).setConnectionRequestTimeout(timeoutMillis).setConnectTimeout(timeoutMillis).build()).build().execute(request);
-        Assert.assertEquals(IOUtils.toString(response.getEntity().getContent(), "UTF-8"), HttpStatus.SC_MOVED_TEMPORARILY, response.getStatusLine().getStatusCode());
+        Assert.assertEquals(IOUtils.toString(response.getEntity().getContent(), "UTF-8"), HttpStatus.SC_OK, response.getStatusLine().getStatusCode());
     }
 
     public static class LightWeightSijoitteluBusinessServiceForTesting extends SijoitteluBusinessService {
