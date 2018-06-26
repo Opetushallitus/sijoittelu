@@ -173,7 +173,7 @@ public class SijoitteluIntegrationTestToBeRunManually {
             stopWatch.stop();
 
             SijoitteluAjo sijoitteluAjo = new SijoitteluAjo();
-            sijoitteluAjo.setSijoitteluajoId(System.currentTimeMillis());
+            sijoitteluAjo.setSijoitteluajoId(sijoittelunTunniste);
             sijoitteluAjo.setHakuOid(hakuOid);
             LOG.info(nameOfThisFakeSijoitteluRun + " sijoittelun koko: 0 olemassaolevaa, {} uutta, 0 valintatulosta", uudetHakukohteet.size());
             stopWatch.start("Luodaan sijoitteluajoWrapper ja asetetaan parametrit");
