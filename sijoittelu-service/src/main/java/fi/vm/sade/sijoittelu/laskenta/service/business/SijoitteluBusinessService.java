@@ -701,10 +701,10 @@ public class SijoitteluBusinessService {
     }
 
     private boolean containsHylkayksenSyyFromLaskenta(Hakemus hakemus) {
-        return  HakemuksenTila.HYLATTY.equals(hakemus.getTila()) && (
-                StringUtils.isNotEmpty(hakemus.getTilanKuvaukset().get("FI")) ||
-                    StringUtils.isNotEmpty(hakemus.getTilanKuvaukset().get("SV")) ||
-                    StringUtils.isNotEmpty(hakemus.getTilanKuvaukset().get("EN")));
+        return HakemuksenTila.HYLATTY.equals(hakemus.getTila()) && (
+            StringUtils.isNotEmpty(hakemus.getTilanKuvaukset().get("FI")) ||
+                StringUtils.isNotEmpty(hakemus.getTilanKuvaukset().get("SV")) ||
+                StringUtils.isNotEmpty(hakemus.getTilanKuvaukset().get("EN")));
     }
 
     private SijoitteluAjo createSijoitteluAjo(String hakuOid) {
