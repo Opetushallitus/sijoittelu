@@ -37,6 +37,7 @@ import fi.vm.sade.sijoittelu.tulos.dto.HakukohdeDTO;
 import fi.vm.sade.sijoittelu.tulos.service.impl.converters.SijoitteluTulosConverter;
 import fi.vm.sade.valintalaskenta.domain.dto.valintatieto.HakuDTO;
 import fi.vm.sade.valintatulosservice.valintarekisteri.domain.NotFoundException;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Triple;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -688,13 +689,22 @@ public class SijoitteluBusinessService {
                             hakemus.setEdellinenTila(tilaHashMap.get(valintatapajono.getOid() + hakemus.getHakemusOid()));
                         }
                         if (tilankuvauksetHashMap.get(valintatapajono.getOid() + hakemus.getHakemusOid()) != null) {
-                            hakemus.setTilanKuvaukset(tilankuvauksetHashMap.get(valintatapajono.getOid() + hakemus.getHakemusOid()));
+                            if (!containsHylkayksenSyyFromLaskenta(hakemus)) {
+                                hakemus.setTilanKuvaukset(tilankuvauksetHashMap.get(valintatapajono.getOid() + hakemus.getHakemusOid()));
+                            }
                         }
                     })
                 );
             }
             kaikkiHakukohteet.put(hakukohde.getOid(), hakukohde);
         });
+    }
+
+    private boolean containsHylkayksenSyyFromLaskenta(Hakemus hakemus) {
+        return  HakemuksenTila.HYLATTY.equals(hakemus.getTila()) && (
+                StringUtils.isNotEmpty(hakemus.getTilanKuvaukset().get("FI")) ||
+                    StringUtils.isNotEmpty(hakemus.getTilanKuvaukset().get("SV")) ||
+                    StringUtils.isNotEmpty(hakemus.getTilanKuvaukset().get("EN")));
     }
 
     private SijoitteluAjo createSijoitteluAjo(String hakuOid) {

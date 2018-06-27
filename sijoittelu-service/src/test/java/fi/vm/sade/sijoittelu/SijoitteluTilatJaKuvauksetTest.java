@@ -1,8 +1,22 @@
 package fi.vm.sade.sijoittelu;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import com.google.common.collect.Sets;
+
+import fi.vm.sade.sijoittelu.domain.HakemuksenTila;
+import fi.vm.sade.sijoittelu.domain.Hakemus;
+import fi.vm.sade.sijoittelu.domain.Hakukohde;
+import fi.vm.sade.sijoittelu.domain.HakukohdeItem;
+import fi.vm.sade.sijoittelu.domain.SijoitteluAjo;
+import fi.vm.sade.sijoittelu.domain.Tasasijasaanto;
 import fi.vm.sade.sijoittelu.domain.TilanKuvaukset;
-import fi.vm.sade.sijoittelu.domain.*;
+import fi.vm.sade.sijoittelu.domain.Valintatapajono;
+import fi.vm.sade.sijoittelu.domain.ValintatuloksenTila;
+import fi.vm.sade.sijoittelu.domain.Valintatulos;
 import fi.vm.sade.sijoittelu.domain.dto.VastaanottoDTO;
 import fi.vm.sade.sijoittelu.laskenta.external.resource.VirkailijaValintaTulosServiceResource;
 import fi.vm.sade.sijoittelu.laskenta.service.business.ActorService;
@@ -11,6 +25,8 @@ import fi.vm.sade.sijoittelu.laskenta.service.business.ValintarekisteriService;
 import fi.vm.sade.sijoittelu.laskenta.service.it.TarjontaIntegrationService;
 import fi.vm.sade.sijoittelu.tulos.service.impl.converters.SijoitteluTulosConverter;
 import fi.vm.sade.sijoittelu.tulos.service.impl.converters.SijoitteluTulosConverterImpl;
+import fi.vm.sade.valintalaskenta.domain.dto.AvainArvoDTO;
+import fi.vm.sade.valintalaskenta.domain.dto.HakijaDTO;
 import fi.vm.sade.valintalaskenta.domain.dto.HakukohdeDTO;
 import fi.vm.sade.valintalaskenta.domain.dto.JarjestyskriteerituloksenTilaDTO;
 import fi.vm.sade.valintalaskenta.domain.dto.valintatieto.HakuDTO;
@@ -24,10 +40,6 @@ import rx.functions.Func3;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.*;
 
 public class SijoitteluTilatJaKuvauksetTest {
     private String hakuOid = "12345";
@@ -44,7 +56,7 @@ public class SijoitteluTilatJaKuvauksetTest {
     private ValintarekisteriService valintarekisteriService;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         sijoitteluTulosConverter = new SijoitteluTulosConverterImpl();
         actorService = mock(ActorService.class);
         tarjontaIntegrationService = mock(TarjontaIntegrationService.class);
@@ -106,6 +118,31 @@ public class SijoitteluTilatJaKuvauksetTest {
         verifyAndCaptureAndAssert(assertFunction);
     }
 
+    @Test
+    public void testSijoitteluSailyttaaValinnoistaTulevanHylkayksenSyyn() {
+        setupMocksHakemuksenTilaHylatty();
+        HakuDTO hakuDTO = hakuDTO();
+        HakijaDTO hakijaDTO = hakuDTO.getHakukohteet().get(0).getValinnanvaihe().get(0).getValintatapajonot().get(0).getHakija().get(0);
+        hakijaDTO.setTila(JarjestyskriteerituloksenTilaDTO.HYLATTY);
+        hakijaDTO.setTilanKuvaus(Arrays.asList(
+            new AvainArvoDTO("FI", "Ei hakukelpoinen"),
+            new AvainArvoDTO("SV", "Inte ansökningsbehörig"),
+            new AvainArvoDTO("EN", "Not eligible")));
+        service.sijoittele(hakuDTO, Collections.emptySet(), Sets.newHashSet("112233.000000"), 1234567890L);
+
+        Func3<SijoitteluAjo, List<Hakukohde>, List<Valintatulos>, Boolean> assertFunction = (sijoitteluajo, hakukohteet, valintatulokset) -> {
+            Hakemus hakemus = hakukohteet.get(0).getValintatapajonot().get(0).getHakemukset().get(0);
+            assertEquals("peruuntunuthakija", hakemus.getHakijaOid());
+            assertEquals(HakemuksenTila.HYLATTY, hakemus.getTila());
+            assertEquals("Ei hakukelpoinen", hakemus.getTilanKuvaukset().get("FI"));
+            assertEquals("Inte ansökningsbehörig", hakemus.getTilanKuvaukset().get("SV"));
+            assertEquals("Not eligible", hakemus.getTilanKuvaukset().get("EN"));
+            return true;
+        };
+
+        verifyAndCaptureAndAssert(assertFunction);
+    }
+
     private void setupMocksHakemuksenTilaPeruuntunut() {
         when(valintarekisteriService.getLatestSijoitteluajo(hakuOid)).thenReturn(valintarekisteriSijoitteluajo());
         when(valintarekisteriService.getSijoitteluajonHakukohteet(sijoitteluajoId)).thenReturn(valintarekisteriHakukohteetHakemuksenTilalla(HakemuksenTila.PERUUNTUNUT));
@@ -121,6 +158,12 @@ public class SijoitteluTilatJaKuvauksetTest {
         valintatulos.setTila(ValintatuloksenTila.PERUNUT, "selite", "muokkaaja");
         List<Valintatulos> mockValintatulokset = Arrays.asList(valintatulos);
         when(valintarekisteriService.getValintatulokset(hakuOid)).thenReturn(mockValintatulokset);
+    }
+
+    private void setupMocksHakemuksenTilaHylatty() {
+        when(valintarekisteriService.getLatestSijoitteluajo(hakuOid)).thenReturn(valintarekisteriSijoitteluajo());
+        when(valintarekisteriService.getSijoitteluajonHakukohteet(sijoitteluajoId)).thenReturn(valintarekisteriHakukohteetHakemuksenTilalla(HakemuksenTila.HYLATTY));
+        when(valintaTulosServiceResource.haunKoulutuksenAlkamiskaudenVastaanototYhdenPaikanSaadoksenPiirissa(hakuOid)).thenReturn(Collections.emptyList());
     }
 
     private SijoitteluAjo valintarekisteriSijoitteluajo() {
