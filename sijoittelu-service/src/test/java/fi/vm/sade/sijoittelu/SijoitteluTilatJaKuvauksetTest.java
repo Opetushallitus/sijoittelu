@@ -247,6 +247,10 @@ public class SijoitteluTilatJaKuvauksetTest {
             hakemus.setTilanKuvaukset(TilanKuvaukset.peruuntunutEiMahduKasiteltavienVarasijojenMaaraan());
         }
 
+        if (hakemuksenTila == HakemuksenTila.HYLATTY) {
+            hakemus.setTilanKuvaukset(TilanKuvaukset.hylattyHakijaryhmaanKuulumattomana("testiryhmä"));
+        }
+
         hakemus.setJonosija(0);
         hakemus.setPrioriteetti(2);
         jono.setHakemukset(Arrays.asList(hakemus));
