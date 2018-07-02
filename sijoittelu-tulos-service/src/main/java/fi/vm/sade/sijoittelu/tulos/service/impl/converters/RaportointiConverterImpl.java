@@ -73,6 +73,7 @@ public class RaportointiConverterImpl implements RaportointiConverter {
         hakutoiveenValintatapajonoDTO.setHyvaksyttyHarkinnanvaraisesti(hakemusDTO.isHyvaksyttyHarkinnanvaraisesti());
         hakutoiveenValintatapajonoDTO.setValintatapajonoOid(valintatapajono.getOid());
         hakutoiveenValintatapajonoDTO.setHakemuksenTilanViimeisinMuutos(hakemusDTO.getViimeisenHakemuksenTilanMuutos());
+        hakutoiveenValintatapajonoDTO.setPrioriteetti(hakemusDTO.getPrioriteetti());
     }
 
     @Override
