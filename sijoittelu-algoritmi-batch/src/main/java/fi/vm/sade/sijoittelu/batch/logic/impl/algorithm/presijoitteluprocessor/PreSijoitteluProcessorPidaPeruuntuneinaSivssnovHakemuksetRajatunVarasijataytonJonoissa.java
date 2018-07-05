@@ -14,7 +14,7 @@ import java.util.function.Consumer;
 public class PreSijoitteluProcessorPidaPeruuntuneinaSivssnovHakemuksetRajatunVarasijataytonJonoissa implements PreSijoitteluProcessor {
     private final Consumer<HakemusWrapper> lukitseEdellinenPeruuntunutTila = hakemusWrapper -> {
         Hakemus hakemus = hakemusWrapper.getHakemus();
-        if (PERUUNTUNUT.equals(hakemus.getEdellinenTila())) {
+        if (PERUUNTUNUT.equals(hakemus.getEdellinenTila()) && !hakemusWrapper.getHyvaksyPeruuntunut()) {
             hakemus.setTila(HakemuksenTila.PERUUNTUNUT);
             hakemusWrapper.setTilaVoidaanVaihtaa(false);
         }
