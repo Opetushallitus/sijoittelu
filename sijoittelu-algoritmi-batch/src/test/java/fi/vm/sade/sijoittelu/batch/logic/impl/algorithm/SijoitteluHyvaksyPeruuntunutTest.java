@@ -78,13 +78,7 @@ public class SijoitteluHyvaksyPeruuntunutTest {
         jono.setVarasijat(1);
         jono.setSijoiteltuIlmanVarasijasaantojaNiidenOllessaVoimassa(true);
         valintatulos3.setHyvaksyPeruuntunut(true, "");
-        //hakemus2.setTila(VARALLA);
-        //hakemus3.setTila(VARALLA);
-        ///jono.setVarasijat(2);
         sijoittele(kkHakuVarasijasaannotVoimassa, Arrays.asList(valintatulos1, valintatulos2, valintatulos3), hakukohde);
         assertHakemustenTilat(HYVAKSYTTY, PERUUNTUNUT, HYVAKSYTTY);
-        System.out.println("hakemus1: " + hakemus1.getTila());
-        System.out.println("hakemus2: " + hakemus2.getTila());
-        System.out.println("hakemus3: " + hakemus3.getTila());
     }
 }
