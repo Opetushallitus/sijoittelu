@@ -1,8 +1,6 @@
 package fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.postsijoitteluprocessor;
 
-import static fi.vm.sade.sijoittelu.domain.HakemuksenTila.HYVAKSYTTY;
-import static fi.vm.sade.sijoittelu.domain.HakemuksenTila.PERUUNTUNUT;
-import static fi.vm.sade.sijoittelu.domain.HakemuksenTila.VARALLA;
+import static fi.vm.sade.sijoittelu.domain.HakemuksenTila.*;
 import static fi.vm.sade.sijoittelu.domain.Tasasijasaanto.YLITAYTTO;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -28,11 +26,11 @@ public class PostSijoitteluProcessorPeruunnutaRajatunVarasijataytonHakemuksetJot
     private final Hakemus hakemus1 = new HakemusBuilder().withOid("hakemus1")
         .withJonosija(1).withTila(HYVAKSYTTY).withPrioriteetti(1).build();
     private final Hakemus hakemus2 = new HakemusBuilder().withOid("hakemus2")
-        .withJonosija(2).withTila(VARALLA).build();
+        .withJonosija(2).withTila(VARALLA).withEdellinenTila(VARALLA).build();
     private final Hakemus hakemus3 = new HakemusBuilder().withOid("hakemus3")
-        .withJonosija(3).withTila(VARALLA).build();
+        .withJonosija(3).withTila(VARALLA).withEdellinenTila(VARALLA).build();
     private final Hakemus hakemus4 = new HakemusBuilder().withOid("hakemus4")
-        .withJonosija(4).withTila(VARALLA).build();
+        .withJonosija(4).withTila(VARALLA).withEdellinenTila(VARALLA).build();
 
     private Valintatapajono jono = new ValintatapajonoBuilder().withOid("jono1")
         .withTasasijasaanto(YLITAYTTO)
@@ -148,5 +146,43 @@ public class PostSijoitteluProcessorPeruunnutaRajatunVarasijataytonHakemuksetJot
         assertEquals(VARALLA, hakemus2.getTila());
         assertEquals(VARALLA, hakemus3.getTila());
         assertEquals(VARALLA, hakemus4.getTila());
+    }
+
+    @Test
+    public void hakijaNoussutVaralle1() {
+        sijoitteluajoWrapper.setVarasijaSaannotAstuvatVoimaan(LocalDateTime.now().minusDays(7));
+        sijoitteluajoWrapper.setKKHaku(true);
+        jono.setEiVarasijatayttoa(false);
+        jono.setVarasijat(2);
+        jono.setSijoiteltuIlmanVarasijasaantojaNiidenOllessaVoimassa(true);
+
+        hakemus2.setEdellinenTila(HYLATTY);
+        hakemus4.setEdellinenTila(HYLATTY);
+
+        p.process(sijoitteluajoWrapper);
+
+        assertEquals(HYVAKSYTTY, hakemus1.getTila());
+        assertEquals(VARALLA, hakemus2.getTila());
+        assertEquals(VARALLA, hakemus3.getTila());
+        assertEquals(PERUUNTUNUT, hakemus4.getTila());
+    }
+
+    @Test
+    public void hakijaNoussutVaralle2() {
+        sijoitteluajoWrapper.setVarasijaSaannotAstuvatVoimaan(LocalDateTime.now().minusDays(7));
+        sijoitteluajoWrapper.setKKHaku(true);
+        jono.setEiVarasijatayttoa(true);
+        jono.setVarasijat(null);
+        jono.setSijoiteltuIlmanVarasijasaantojaNiidenOllessaVoimassa(true);
+
+        hakemus2.setEdellinenTila(HYLATTY);
+        hakemus4.setEdellinenTila(HYLATTY);
+
+        p.process(sijoitteluajoWrapper);
+
+        assertEquals(HYVAKSYTTY, hakemus1.getTila());
+        assertEquals(PERUUNTUNUT, hakemus2.getTila());
+        assertEquals(PERUUNTUNUT, hakemus3.getTila());
+        assertEquals(PERUUNTUNUT, hakemus4.getTila());
     }
 }

@@ -6,6 +6,7 @@ import static fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.util.TilojenMuokk
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.HakemusWrapper;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.SijoitteluajoWrapper;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.ValintatapajonoWrapper;
+import fi.vm.sade.sijoittelu.domain.HakemuksenTila;
 import fi.vm.sade.sijoittelu.domain.Valintatapajono;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,29 +37,45 @@ public class PostSijoitteluProcessorPeruunnutaRajatunVarasijataytonHakemuksetJot
 
     private void process(ValintatapajonoWrapper jonoWrapper) {
         Valintatapajono jono = jonoWrapper.getValintatapajono();
-        if (jono.vapaaVarasijataytto() || jono.getSijoiteltuIlmanVarasijasaantojaNiidenOllessaVoimassa()) {
+        if (jono.vapaaVarasijataytto()) {
             return;
         }
         SijoitteluajoWrapper sijoitteluajoWrapper = jonoWrapper.getHakukohdeWrapper().getSijoitteluajoWrapper();
         assertSijoiteltuEnnenVarasijataytonLoppumista(jonoWrapper, sijoitteluajoWrapper);
         
         if (Boolean.TRUE.equals(jono.getEiVarasijatayttoa())) {
-            jonoWrapper.getHakemukset().forEach(h -> {
-                if (h.isVaralla() && sijoitteluajoWrapper.isKKHaku() && h.isTilaVoidaanVaihtaa()) {
-                    asetaTilaksiPeruuntunutAloituspaikatTaynna(h);
-                }
-            });
+            if(sijoitteluajoWrapper.isKKHaku()) {
+                jonoWrapper.getHakemukset().stream()
+                        .filter(h -> h.isVaralla() && h.isTilaVoidaanVaihtaa())
+                        .forEach(h -> asetaTilaksiPeruuntunutAloituspaikatTaynna(h));
+            }
             return;
         }
+
         if (jono.rajoitettuVarasijaTaytto()) {
-            int varasijat = jono.getVarasijat();
-            jonoWrapper.getHakemukset().stream()
-                    .filter(HakemusWrapper::isVaralla)
-                    .sorted(Comparator.comparing(h -> h.getHakemus().getJonosija()))
-                    .skip(varasijat)
-                    .forEach(h ->
-                        asetaTilaksiPeruuntunutEiMahduKasiteltaviinSijoihin(h));
-            return;
+            if(jono.getSijoiteltuIlmanVarasijasaantojaNiidenOllessaVoimassa()) {
+                int viimeisenEdellisessaSijoittelussaVarallaOlleenJonosija = jonoWrapper.getHakemukset().stream()
+                        .filter(h -> h.getHakemus().getEdellinenTila() == HakemuksenTila.VARALLA)
+                        .sorted(Comparator.comparing(h -> ((HakemusWrapper) h).getHakemus().getJonosija()).reversed())
+                        .map(h -> h.getHakemus().getJonosija())
+                        .findFirst()
+                        .orElse(0);
+
+                jonoWrapper.getHakemukset().stream()
+                        .filter(HakemusWrapper::isVaralla)
+                        .filter(h -> h.getHakemus().getJonosija() > viimeisenEdellisessaSijoittelussaVarallaOlleenJonosija)
+                        .forEach(h -> asetaTilaksiPeruuntunutEiMahduKasiteltaviinSijoihin(h));
+
+                return;
+            } else {
+                int varasijat = jono.getVarasijat();
+                jonoWrapper.getHakemukset().stream()
+                        .filter(HakemusWrapper::isVaralla)
+                        .sorted(Comparator.comparing(h -> h.getHakemus().getJonosija()))
+                        .skip(varasijat)
+                        .forEach(h -> asetaTilaksiPeruuntunutEiMahduKasiteltaviinSijoihin(h));
+                return;
+            }
         }
 
         throw new IllegalStateException("Jonolla " + jono.getOid() + " piti olla ei varasijatäyttöä tai rajoitettu varasijatäyttö. Vaikuttaa bugilta.");

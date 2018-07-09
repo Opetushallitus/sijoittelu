@@ -30,11 +30,11 @@ public class PostSijoitteluProcessorKorjaaSijoitteluajonTilankuvauksetTest {
     private final Hakemus hakemus6 = new HakuBuilder.HakemusBuilder().withOid("hakemus6")
             .withJonosija(6).withTila(VARASIJALTA_HYVAKSYTTY).withHakijaOid("test6").withTilankuvauksenTarkenne(TilankuvauksenTarkenne.HYVAKSYTTY_VARASIJALTA).withPrioriteetti(1).build();
     private final Hakemus hakemus7 = new HakuBuilder.HakemusBuilder().withOid("hakemus7")
-            .withJonosija(7).withTila(VARALLA).withHakijaOid("test7").withTilankuvauksenTarkenne(null).withPrioriteetti(1).build();
+            .withJonosija(7).withTila(VARALLA).withEdellinenTila(VARALLA).withHakijaOid("test7").withTilankuvauksenTarkenne(null).withPrioriteetti(1).build();
     private final Hakemus hakemus8 = new HakuBuilder.HakemusBuilder().withOid("hakemus8")
-            .withJonosija(8).withTila(VARALLA).withHakijaOid("test8").withTilankuvauksenTarkenne(TilankuvauksenTarkenne.HYLATTY_HAKIJARYHMAAN_KUULUMATTOMANA).withPrioriteetti(1).build();
+            .withJonosija(8).withTila(VARALLA).withEdellinenTila(VARALLA).withHakijaOid("test8").withTilankuvauksenTarkenne(TilankuvauksenTarkenne.HYLATTY_HAKIJARYHMAAN_KUULUMATTOMANA).withPrioriteetti(1).build();
     private final Hakemus hakemus9 = new HakuBuilder.HakemusBuilder().withOid("hakemus9")
-            .withJonosija(9).withTila(VARALLA).withHakijaOid("test9").withTilankuvauksenTarkenne(TilankuvauksenTarkenne.EI_TILANKUVAUKSEN_TARKENNETTA).withPrioriteetti(1).build();
+            .withJonosija(9).withTila(VARALLA).withEdellinenTila(VARALLA).withHakijaOid("test9").withTilankuvauksenTarkenne(TilankuvauksenTarkenne.EI_TILANKUVAUKSEN_TARKENNETTA).withPrioriteetti(1).build();
     private final Hakemus hakemus10 = new HakuBuilder.HakemusBuilder().withOid("hakemus10")
             .withJonosija(10).withTila(PERUUNTUNUT).withHakijaOid("test10").withTilankuvauksenTarkenne(TilankuvauksenTarkenne.PERUUNTUNUT_VASTAANOTTANUT_TOISEN_PAIKAN).withPrioriteetti(1).build();
 
