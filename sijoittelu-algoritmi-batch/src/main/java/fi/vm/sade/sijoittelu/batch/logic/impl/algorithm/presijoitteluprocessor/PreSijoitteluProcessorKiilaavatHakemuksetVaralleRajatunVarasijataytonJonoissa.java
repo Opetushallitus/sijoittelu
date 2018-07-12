@@ -19,7 +19,9 @@ public class PreSijoitteluProcessorKiilaavatHakemuksetVaralleRajatunVarasijatayt
 
     private Function<ValintatapajonoWrapper, Optional<Integer>> viimeisenVarallaolijanJonosija = (valintatapajono) ->
             valintatapajono.getHakemukset().stream().map(HakemusWrapper::getHakemus)
-              .filter(h -> HakemuksenTila.VARALLA.equals(h.getEdellinenTila())).map(h -> h.getJonosija()).max(Comparator.naturalOrder());
+                    .filter(h -> HakemuksenTila.VARALLA.equals(h.getEdellinenTila()))
+                    .filter(h -> !HakemuksenTila.HYLATTY.equals(h.getTila()))
+                    .map(h -> h.getJonosija()).max(Comparator.naturalOrder());
 
     @Override
     public void process(SijoitteluajoWrapper sijoitteluajoWrapper) {

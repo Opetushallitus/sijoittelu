@@ -56,6 +56,7 @@ public class PostSijoitteluProcessorPeruunnutaRajatunVarasijataytonHakemuksetJot
             if(jono.getSijoiteltuIlmanVarasijasaantojaNiidenOllessaVoimassa()) {
                 int viimeisenEdellisessaSijoittelussaVarallaOlleenJonosija = jonoWrapper.getHakemukset().stream()
                         .filter(h -> h.getHakemus().getEdellinenTila() == HakemuksenTila.VARALLA)
+                        .filter(h -> h.getHakemus().getTila() != HakemuksenTila.HYLATTY)
                         .sorted(Comparator.comparing(h -> ((HakemusWrapper) h).getHakemus().getJonosija()).reversed())
                         .map(h -> h.getHakemus().getJonosija())
                         .findFirst()
