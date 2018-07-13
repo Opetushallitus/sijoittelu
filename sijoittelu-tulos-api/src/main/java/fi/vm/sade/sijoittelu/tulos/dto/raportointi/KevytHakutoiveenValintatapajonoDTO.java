@@ -34,6 +34,7 @@ public class KevytHakutoiveenValintatapajonoDTO {
 
     private Integer jonosija;
     private BigDecimal pisteet;
+    private Integer prioriteetti;
 
     public HakemuksenTila getTila() {
         return tila;
@@ -187,5 +188,13 @@ public class KevytHakutoiveenValintatapajonoDTO {
     }
     public String getEhdollisenHyvaksymisenEhtoEN(){
         return ehdollisenHyvaksymisenEhtoEN;
+    }
+
+    public Integer getPrioriteetti() {
+        return prioriteetti;
+    }
+
+    public void setPrioriteetti(Integer prioriteetti) {
+        this.prioriteetti = prioriteetti;
     }
 }
