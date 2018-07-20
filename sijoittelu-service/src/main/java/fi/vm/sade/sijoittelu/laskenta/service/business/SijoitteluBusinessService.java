@@ -172,7 +172,7 @@ public class SijoitteluBusinessService {
         LOG.info("Haun {} sijoittelussa muuttui {} kpl valintatuloksia, pomppuja {} kpl",
             hakuOid, sijoitteluajoWrapper.getMuuttuneetValintatulokset().size(), varasijapomput.size());
 
-        LOG.warn("Tallennetaan sijoitteluajo ainoastaan Valintarekisteriin!");
+        LOG.info("Tallennetaan sijoitteluajo Valintarekisteriin");
         stopWatch.start("Tallennetaan sijoitteluajo, hakukohteet ja valintatulokset Valintarekisteriin");
         tallennaSijoitteluToValintarekisteri(hakuOid,
             uusiSijoitteluajo,
