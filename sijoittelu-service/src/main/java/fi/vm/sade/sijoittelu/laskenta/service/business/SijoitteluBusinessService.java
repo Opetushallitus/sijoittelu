@@ -104,7 +104,6 @@ public class SijoitteluBusinessService {
                            Set<String> eiSijoitteluunMenevatJonot,
                            Set<String> laskennanTuloksistaJaValintaperusteistaLoytyvatJonot,
                            Long sijoittelunTunniste) {
-        //long startTime = System.currentTimeMillis();
         long startTime = sijoittelunTunniste;
         String hakuOid = haku.getHakuOid();
         StopWatch stopWatch = new StopWatch("Haun " + hakuOid + " sijoittelu");
