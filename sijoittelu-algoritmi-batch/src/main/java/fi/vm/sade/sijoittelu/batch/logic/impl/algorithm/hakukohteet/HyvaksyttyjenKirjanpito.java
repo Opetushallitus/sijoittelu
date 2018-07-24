@@ -1,7 +1,9 @@
 package fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.hakukohteet;
 
+import static fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.hakukohteet.SijoitteleHakukohde.eiVoiKorvataIlmoittautumistilanPerusteella;
 import static fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.hakukohteet.SijoitteleHakukohde.hakijaHaluaa;
 import static fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.hakukohteet.SijoitteleHakukohde.saannotSallii;
+import static fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.hakukohteet.SijoitteleHakukohde.hyvaksyttyJotaEiVoiKorvata;
 import static fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.util.TilaTaulukot.kuuluuHyvaksyttyihinTiloihin;
 import static fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.util.TilaTaulukot.kuuluuVaraTiloihin;
 
@@ -17,19 +19,26 @@ import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 class HyvaksyttyjenKirjanpito {
     private final List<Hakemus> hakijaryhmastaHyvaksytyt;
+    private final List<Hakemus> hakijaryhmastaHyvaksytytJoitaEiVoiKorvata;
     private final LinkedList<Hakemus> hakijaryhmanUlkopuoleltaHyvaksytyt;
     private final LinkedList<Hakemus> hakijaryhmanUlkopuoleltaHyvaksytytJoitaVoidaanSiirtaaVaralle;
     private final LinkedList<Hakemus> hakijaryhmastaHyvaksyttavissa;
+    private final Predicate<HakemusWrapper> hyvaksyttyJotaEiVoiKorvata;
+    private final Predicate<Hakemus> eiVoiKorvataIlmoittautumistilanPerusteella;
 
     HyvaksyttyjenKirjanpito(SijoitteluajoWrapper sijoitteluajo, Set<String> hakijaryhmaanKuuluvat, ValintatapajonoWrapper jono, HakijaryhmaWrapper hakijaryhmaWrapper) {
         this.hakijaryhmastaHyvaksytyt = new LinkedList<>();
+        this.hakijaryhmastaHyvaksytytJoitaEiVoiKorvata = new LinkedList<>();
+        hyvaksyttyJotaEiVoiKorvata = hyvaksyttyJotaEiVoiKorvata(jono, sijoitteluajo);
+        eiVoiKorvataIlmoittautumistilanPerusteella = eiVoiKorvataIlmoittautumistilanPerusteella(jono, sijoitteluajo);
         List<HakemusWrapper> hakijaryhmanUlkopuoleltaHyvaksytytWrappers = jono.getHakemukset().stream()
             .filter(h -> !hakijaryhmaanKuuluvat.contains(h.getHakemus().getHakemusOid()))
-            .filter(h -> kuuluuHyvaksyttyihinTiloihin(h.getHakemus().getTila()))
+            .filter(hyvaksyttyJotaEiVoiKorvata)
             .sorted(new HakemusWrapperComparator())
             .collect(Collectors.toList());
         this.hakijaryhmanUlkopuoleltaHyvaksytyt = hakijaryhmanUlkopuoleltaHyvaksytytWrappers.stream()
@@ -41,7 +50,7 @@ class HyvaksyttyjenKirjanpito {
             .collect(Collectors.toCollection(LinkedList::new));
         this.hakijaryhmastaHyvaksyttavissa = jono.getHakemukset().stream()
             .filter(h -> hakijaryhmaanKuuluvat.contains(h.getHakemus().getHakemusOid()))
-            .filter(h -> kuuluuHyvaksyttyihinTiloihin(h.getHakemus().getTila()) ||
+            .filter(h -> hyvaksyttyJotaEiVoiKorvata.test(h) ||
                 (kuuluuVaraTiloihin(h.getHakemus().getTila()) &&
                     !sijoitteluajo.onkoVarasijaSaannotVoimassaJaVarasijaTayttoPaattynyt(jono) &&
                     hakijaHaluaa(h) &&
@@ -77,10 +86,11 @@ class HyvaksyttyjenKirjanpito {
 
     void addHakijaryhmastaHyvaksytyt(LinkedList<Hakemus> hyvaksytyt) {
         hakijaryhmastaHyvaksytyt.addAll(hyvaksytyt);
+        hakijaryhmastaHyvaksytytJoitaEiVoiKorvata.addAll(hyvaksytyt.stream().filter(eiVoiKorvataIlmoittautumistilanPerusteella).collect(Collectors.toList()));
     }
 
-    int hyvaksyttyjenKokonaismaara() {
-        return hakijaryhmastaHyvaksytyt.size() + hakijaryhmanUlkopuoleltaHyvaksytyt.size();
+    int hyvaksyttyjenKokonaismaaraMiinusKorvattavatPoissaolijat() {
+        return hakijaryhmastaHyvaksytytJoitaEiVoiKorvata.size() + hakijaryhmanUlkopuoleltaHyvaksytyt.size();
     }
 
     public Hakemus viimeinenHakijaryhmanUlkopuoleltaHyvaksyttyJokaVoidaanSiirtaaVaralle() {

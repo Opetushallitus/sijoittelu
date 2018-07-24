@@ -1,11 +1,15 @@
 package fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.hakukohteet;
 
+import static fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.hakukohteet.SijoitteleHakukohde.hakijaHaluaa;
+import static fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.hakukohteet.SijoitteleHakukohde.hyvaksyHakemus;
+import static fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.hakukohteet.SijoitteleHakukohde.saannotSallii;
+import static fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.hakukohteet.SijoitteleHakukohde.uudelleenSijoiteltavatHakukohteet;
+import static fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.hakukohteet.SijoitteleHakukohde.hyvaksyttyJotaEiVoiKorvata;
 import static fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.util.TilaTaulukot.kuuluuHylattyihinTiloihin;
 import static fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.util.TilaTaulukot.kuuluuHyvaksyttyihinTiloihin;
 import static fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.util.TilojenMuokkaus.asetaTilaksiVaralla;
 import static fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.WrapperHelperMethods.hakemuksenHakemusOid;
 import static fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.WrapperHelperMethods.hakemuksenTila;
-import static fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.WrapperHelperMethods.jononPrioriteetti;
 import static fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.WrapperHelperMethods.jononTasasijasaanto;
 import com.google.common.collect.Lists;
 
@@ -27,7 +31,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
@@ -37,8 +40,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
-
-import static fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.hakukohteet.SijoitteleHakukohde.*;
 
 class SijoitteleHakijaryhma {
     private static final Logger LOG = LoggerFactory.getLogger(SijoitteleHakijaryhma.class);
@@ -151,7 +152,9 @@ class SijoitteleHakijaryhma {
         final List<ValintatapajonoWrapper> liittyvatJonot = hakijaryhmaanLiittyvatJonot(hakijaryhmaWrapper);
         final List<HakemusWrapper> hakemusWrappers = liittyvatJonot.stream().flatMap(j -> j.getHakemukset().stream()).collect(Collectors.toList());
         final List<HakemusWrapper> ryhmaanKuuluvat = hakijaRyhmaanKuuluvat(hakemusWrappers, hakijaryhmaWrapper);
-        final long hyvaksyttyjenMaara = ryhmaanKuuluvat.stream().filter(h -> kuuluuHyvaksyttyihinTiloihin(hakemuksenTila(h))).count();
+        final long hyvaksyttyjenMaara = ryhmaanKuuluvat.stream()
+            .filter(h -> hyvaksyttyJotaEiVoiKorvata(h.getValintatapajono(), sijoitteluAjo).test(h))
+            .count();
         final boolean tarkkaKiintio = hakijaryhmaWrapper.getHakijaryhma().isTarkkaKiintio();
         final int aloituspaikat = sisaltaaSuoravalintajonon(liittyvatJonot) ? Integer.MAX_VALUE : liittyvatJonot.stream().mapToInt(WrapperHelperMethods::jononAloituspaikat).sum();
 
@@ -222,7 +225,7 @@ class SijoitteleHakijaryhma {
         if (!valituksiHaluavat.isEmpty()) {
             tarkistaEttaKaikkienTilaaVoidaanVaihtaa(valituksiHaluavat);
 
-            Pair<List<HakemusWrapper>, List<HakemusWrapper>> valittavatJaVarasijat = seuraavaksiParhaatHakijaryhmasta(valituksiHaluavat, hakijaryhmaWrapper);
+            Pair<List<HakemusWrapper>, List<HakemusWrapper>> valittavatJaVarasijat = seuraavaksiParhaatHakijaryhmasta(valituksiHaluavat, hakijaryhmaWrapper, sijoitteluAjo);
             // Aloituspaikat täynnä ylitäytöllä, joten tiputetaan varalle
             valittavatJaVarasijat.getRight().forEach(v -> muuttuneetHakemukset.addAll(asetaVaralleHakemus(v)));
             // Hyväksytään valittavat
@@ -259,7 +262,9 @@ class SijoitteleHakijaryhma {
         }
     }
 
-    private static Pair<List<HakemusWrapper>, List<HakemusWrapper>> seuraavaksiParhaatHakijaryhmasta(List<HakemusWrapper> valituksiHaluavat, HakijaryhmaWrapper hakijaryhmaWrapper) {
+    private static Pair<List<HakemusWrapper>, List<HakemusWrapper>> seuraavaksiParhaatHakijaryhmasta(List<HakemusWrapper> valituksiHaluavat,
+                                                                                                     HakijaryhmaWrapper hakijaryhmaWrapper,
+                                                                                                     SijoitteluajoWrapper sijoitteluajoWrapper) {
         HakemusWrapperComparator comparator = new HakemusWrapperComparator();
         // Valituksihaluavat jonoittain
         Map<ValintatapajonoWrapper, List<HakemusWrapper>> jonoittain = valituksiHaluavat
@@ -271,7 +276,7 @@ class SijoitteleHakijaryhma {
                 .stream()
                 .map(l -> l.get(0))
                 .collect(Collectors.groupingBy(h -> h.getHakemus().getJonosija()));
-        List<HakemusWrapper> valittavat = etsiValittavat(jonoittain, jonojenParhaat);
+        List<HakemusWrapper> valittavat = etsiValittavat(jonoittain, jonojenParhaat, sijoitteluajoWrapper);
         List<HakemusWrapper> varalleAsetetut = Lists.newArrayList();
         if (valittavat.isEmpty()) {
             // jossain on ylitäyttö ja pitäis saada hyväksytyks tai alitäyttö lukko
@@ -297,13 +302,15 @@ class SijoitteleHakijaryhma {
         return Pair.of(valittavat, varalleAsetetut);
     }
 
-    private static List<HakemusWrapper> etsiValittavat(Map<ValintatapajonoWrapper, List<HakemusWrapper>> jonoittain, Map<Integer, List<HakemusWrapper>> jonojenParhaat) {
+    private static List<HakemusWrapper> etsiValittavat(Map<ValintatapajonoWrapper, List<HakemusWrapper>> jonoittain,
+                                                       Map<Integer, List<HakemusWrapper>> jonojenParhaat,
+                                                       SijoitteluajoWrapper sijoitteluajoWrapper) {
         for (Integer i : new TreeSet<>(jonojenParhaat.keySet())) {
             List<HakemusWrapper> parhaat = jonojenParhaat.get(i);
             if (parhaat.size() == 1) {
                 // Vain yhdestä jonosta löytyi hakemus tältä sijalta
                 HakemusWrapper paras = parhaat.get(0);
-                List<HakemusWrapper> parhaatJonoonMahtuvat = haeParhaatJonoonMahtuvat(jonoittain, paras);
+                List<HakemusWrapper> parhaatJonoonMahtuvat = haeParhaatJonoonMahtuvat(jonoittain, paras, sijoitteluajoWrapper);
                 if (!parhaatJonoonMahtuvat.isEmpty()) {
                     return parhaatJonoonMahtuvat;
                 }
@@ -313,7 +320,7 @@ class SijoitteleHakijaryhma {
                         .sorted(Comparator.comparingInt(WrapperHelperMethods::jononPrioriteetti))
                         .collect(Collectors.toList());
                 for (HakemusWrapper paras : jononMukaanSortattu) {
-                    List<HakemusWrapper> parhaatJonoonMahtuvat = haeParhaatJonoonMahtuvat(jonoittain, paras);
+                    List<HakemusWrapper> parhaatJonoonMahtuvat = haeParhaatJonoonMahtuvat(jonoittain, paras, sijoitteluajoWrapper);
                     if (!parhaatJonoonMahtuvat.isEmpty()) {
                         return parhaatJonoonMahtuvat;
                     }
@@ -323,10 +330,12 @@ class SijoitteleHakijaryhma {
         return Lists.newArrayList();
     }
 
-    private static List<HakemusWrapper> haeParhaatJonoonMahtuvat(Map<ValintatapajonoWrapper, List<HakemusWrapper>> jonoittain, HakemusWrapper paras) {
+    private static List<HakemusWrapper> haeParhaatJonoonMahtuvat(Map<ValintatapajonoWrapper, List<HakemusWrapper>> jonoittain,
+                                                                 HakemusWrapper paras,
+                                                                 SijoitteluajoWrapper sijoitteluajoWrapper) {
         List<HakemusWrapper> samallaSijalla =
                 samallaSijalla(paras, jonoittain.get(paras.getValintatapajono()), jononTasasijasaanto(paras.getValintatapajono()));
-        if (mahtuukoJonoon(samallaSijalla, paras.getValintatapajono())) {
+        if (mahtuukoJonoon(samallaSijalla, paras.getValintatapajono(), sijoitteluajoWrapper)) {
             return samallaSijalla;
         } else {
             return Lists.newArrayList();
@@ -345,19 +354,18 @@ class SijoitteleHakijaryhma {
 
     }
 
-    private static boolean mahtuukoJonoon(List<HakemusWrapper> hakemukset, ValintatapajonoWrapper valintatapajonoWrapper) {
+    private static boolean mahtuukoJonoon(List<HakemusWrapper> hakemukset,
+                                          ValintatapajonoWrapper valintatapajonoWrapper,
+                                          SijoitteluajoWrapper sijoitteluajoWrapper) {
         int aloituspaikat = jononAloituspaikatSuoravalintajonoHuomioiden(valintatapajonoWrapper);
-        long hyvaksytyt = valintatapajonoWrapper.getHakemukset().stream().filter(h -> kuuluuHyvaksyttyihinTiloihin(hakemuksenTila(h))).count();
+        long hyvaksytyt = valintatapajonoWrapper.getHakemukset().stream().filter(hyvaksyttyJotaEiVoiKorvata(valintatapajonoWrapper, sijoitteluajoWrapper)).count();
         if (aloituspaikat - hyvaksytyt <= 0) {
             return false;
         } else {
             if (jononTasasijasaanto(valintatapajonoWrapper).equals(Tasasijasaanto.YLITAYTTO)) {
                 return true;
-            } else if (aloituspaikat - hyvaksytyt - hakemukset.size() >= 0) {
-                return true;
-            }
+            } else return aloituspaikat - hyvaksytyt - hakemukset.size() >= 0;
         }
-        return false;
     }
 
     private static void logError(String virhe, String hakemusOid, String hakukohdeOid) {

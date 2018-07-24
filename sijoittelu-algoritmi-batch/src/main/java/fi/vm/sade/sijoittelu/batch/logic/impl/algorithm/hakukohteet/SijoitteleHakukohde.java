@@ -170,19 +170,33 @@ public class SijoitteleHakukohde {
 
     private static List<HakemusWrapper> valintatapajononHyvaksytytHakemuksetJoitaEiVoiKorvata(
             ValintatapajonoWrapper valintatapajono, SijoitteluajoWrapper sijoitteluajo) {
-        List<Predicate<HakemusWrapper>> filters = new ArrayList<>();
-        filters.add(h -> kuuluuHyvaksyttyihinTiloihin(hakemuksenTila(h)));
-        if (taytetaankoPoissaOlevat(valintatapajono)) {
-            if (sijoitteluajo.isKKHaku()) {
-                filters.add(h -> !kuuluuPoissaoloTiloihin(h.getHakemus().getIlmoittautumisTila()));
-            } else {
-                filters.add(h -> !kuuluuPoissaoloTiloihin2Aste(h.getHakemus().getIlmoittautumisTila()));
-            }
-        }
+        Predicate<HakemusWrapper> hyvaksyttyJotaEiVoiKorvata = hyvaksyttyJotaEiVoiKorvata(valintatapajono, sijoitteluajo);
         return valintatapajono.getHakemukset()
             .stream()
-            .filter(filters.stream().reduce(h -> true, Predicate::and))
+            .filter(hyvaksyttyJotaEiVoiKorvata)
             .collect(Collectors.toList());
+    }
+
+    static Predicate<Hakemus> eiVoiKorvataIlmoittautumistilanPerusteella(ValintatapajonoWrapper valintatapajonoWrapper,
+                                                                         SijoitteluajoWrapper sijoitteluajoWrapper) {
+        if (taytetaankoPoissaOlevat(valintatapajonoWrapper)) {
+            if (sijoitteluajoWrapper.isKKHaku()) {
+                return h -> !kuuluuPoissaoloTiloihin(h.getIlmoittautumisTila());
+            } else {
+                return h -> !kuuluuPoissaoloTiloihin2Aste(h.getIlmoittautumisTila());
+            }
+        } else {
+            return h -> true;
+        }
+    }
+
+    static Predicate<HakemusWrapper> hyvaksyttyJotaEiVoiKorvata(ValintatapajonoWrapper valintatapajono, SijoitteluajoWrapper sijoitteluajo) {
+        return hakemusWrapper -> {
+            List<Predicate<Hakemus>> filters = new ArrayList<>();
+            filters.add(h -> kuuluuHyvaksyttyihinTiloihin(h.getTila()));
+            filters.add(eiVoiKorvataIlmoittautumistilanPerusteella(valintatapajono, sijoitteluajo));
+            return filters.stream().reduce(h -> true, Predicate::and).test(hakemusWrapper.getHakemus());
+        };
     }
 
     static boolean hakijaHaluaa(HakemusWrapper hakemusWrapper) {

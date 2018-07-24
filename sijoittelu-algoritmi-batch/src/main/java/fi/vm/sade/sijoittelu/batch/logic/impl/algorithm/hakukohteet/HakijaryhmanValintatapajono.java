@@ -31,7 +31,7 @@ class HakijaryhmanValintatapajono {
     }
 
     List<Hakemus> hyvaksyAloituspaikkoihinJaKiintioonMahtuvatParhaallaJonosijallaOlevat(int kiintiotaJaljella) {
-        int aloituspaikkoihinMahtuu = aloituspaikkoja - kirjanpito.hyvaksyttyjenKokonaismaara();
+        int aloituspaikkoihinMahtuu = aloituspaikkoja - kirjanpito.hyvaksyttyjenKokonaismaaraMiinusKorvattavatPoissaolijat();
         int paikkoja = tasasijasaanto == Tasasijasaanto.ALITAYTTO ? aloituspaikkoihinMahtuu : Math.min(aloituspaikkoihinMahtuu, kiintiotaJaljella);
         if (kirjanpito.eiKetaanHyvaksyttavissaHakijaryhmasta() || paikkoja <= 0) {
             return Collections.emptyList();
