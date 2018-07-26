@@ -1,10 +1,24 @@
 package fi.vm.sade.sijoittelu.batch.logic.impl.algorithm;
 
+import static fi.vm.sade.sijoittelu.domain.TilankuvauksenTarkenne.HYLATTY_HAKIJARYHMAAN_KUULUMATTOMANA;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import com.google.common.collect.Lists;
-import fi.vm.sade.sijoittelu.domain.TilanKuvaukset;
+
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.HakemusWrapper;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.SijoitteluajoWrapper;
-import fi.vm.sade.sijoittelu.domain.*;
+import fi.vm.sade.sijoittelu.domain.HakemuksenTila;
+import fi.vm.sade.sijoittelu.domain.Hakemus;
+import fi.vm.sade.sijoittelu.domain.Hakukohde;
+import fi.vm.sade.sijoittelu.domain.IlmoittautumisTila;
+import fi.vm.sade.sijoittelu.domain.SijoitteluAjo;
+import fi.vm.sade.sijoittelu.domain.TilanKuvaukset;
+import fi.vm.sade.sijoittelu.domain.TilankuvauksenTarkenne;
+import fi.vm.sade.sijoittelu.domain.Valintatapajono;
+import fi.vm.sade.sijoittelu.domain.ValintatuloksenTila;
+import fi.vm.sade.sijoittelu.domain.Valintatulos;
 import org.junit.Test;
 import org.junit.experimental.runners.Enclosed;
 import org.junit.runner.RunWith;
@@ -12,8 +26,6 @@ import org.junit.runner.RunWith;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
-import static org.junit.Assert.*;
 
 @RunWith(Enclosed.class)
 public class SijoitteluajoWrapperFactoryTest {
@@ -52,12 +64,16 @@ public class SijoitteluajoWrapperFactoryTest {
         }
 
         @Test
-        public void PERUUTETTU_peruuttaa_hakemuksen() {
+        public void PERUUTETTU_peruuttaa_hakemuksenJaTyhjentaaTilanTarkenteen() {
             SijoitteluajoWrapper sijoitteluAjo = sijoitteluAjo(valintatulosWithTila(ValintatuloksenTila.PERUUTETTU));
 
             assertEquals(sijoitteluAjo.getHakukohteet().size(), 1);
             HakemusWrapper hakemusWrapper = sijoitteluAjo.getHakukohteet().get(0).getValintatapajonot().get(0).getHakemukset().get(0);
             assertEquals(HakemuksenTila.PERUUTETTU, hakemusWrapper.getHakemus().getTila());
+            assertEquals(TilankuvauksenTarkenne.EI_TILANKUVAUKSEN_TARKENNETTA, hakemusWrapper.getHakemus().getTilankuvauksenTarkenne());
+            assertNull(hakemusWrapper.getHakemus().getTilanKuvaukset().get("FI"));
+            assertNull(hakemusWrapper.getHakemus().getTilanKuvaukset().get("SV"));
+            assertNull(hakemusWrapper.getHakemus().getTilanKuvaukset().get("EN"));
             assertTrue(!hakemusWrapper.isTilaVoidaanVaihtaa());
         }
 
@@ -173,6 +189,7 @@ public class SijoitteluajoWrapperFactoryTest {
 
     private static List<Hakemus> asetaRandomTilanKuvaus(final List<Hakemus> hakemukset) {
         hakemukset.get(0).setTilanKuvaukset(TilanKuvaukset.hylattyHakijaryhmaanKuulumattomana("blah"));
+        hakemukset.get(0).setTilankuvauksenTarkenne(HYLATTY_HAKIJARYHMAAN_KUULUMATTOMANA);
         return hakemukset;
     }
 

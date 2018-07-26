@@ -173,6 +173,7 @@ public class SijoitteluajoWrapperFactory {
                 hakemus.setTilanKuvaukset(TilanKuvaukset.peruuntunutEiVastaanottanutMaaraaikana());
             } else if (tila == ValintatuloksenTila.PERUUTETTU) {
                 hakemus.setTila(HakemuksenTila.PERUUTETTU);
+                hakemus.setTilankuvauksenTarkenne(TilankuvauksenTarkenne.EI_TILANKUVAUKSEN_TARKENNETTA);
             } else if (tila == ValintatuloksenTila.KESKEN) {
                 // tila == KESKEN
                 if (valintatulos.getJulkaistavissa() && hakemus.getEdellinenTila() == HakemuksenTila.HYVAKSYTTY) {
