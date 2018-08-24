@@ -136,6 +136,12 @@
 					<groupId>cglib</groupId>
 					<artifactId>cglib</artifactId>
 				</exclusion>
+				<!-- Tatu test-->
+				<exclusion>
+					<groupId>com.google.code.findbugs</groupId>
+					<artifactId>annotations</artifactId>
+				</exclusion>
+				<!-- Tatu test-->
 			</exclusions>
 		</dependency>
 		<dependency>
