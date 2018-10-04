@@ -20,8 +20,8 @@
   <mockito:mock id="valintarekisteriService"
                   class="fi.vm.sade.sijoittelu.laskenta.service.business.ValintarekisteriService"/>
   <mockito:mock id="authorizer" class="fi.vm.sade.authentication.business.service.Authorizer"/>
-  <mockito:mock id="valintaperusteetResource"
-                  class="fi.vm.sade.service.valintaperusteet.resource.ValintaperusteetResource"/>
+  <mockito:mock id="valintaperusteetResourceV2"
+                  class="fi.vm.sade.service.valintaperusteet.resource.ValintaperusteetResourceV2"/>
 
   <http:conduit name="*.http-conduit">
     <http:client ReceiveTimeout="3000000"/>
