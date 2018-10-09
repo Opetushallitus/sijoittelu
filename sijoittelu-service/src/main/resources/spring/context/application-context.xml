@@ -47,12 +47,22 @@
     <beans>
         <jaxrs-client:client id="ValintaperusteetLaskentaRestClient"
                            address="${valintalaskentakoostepalvelu.valintaperusteet.rest.url}"
-                           serviceClass="fi.vm.sade.service.valintaperusteet.resource.ValintaperusteetResourceV2"
+                           serviceClass="fi.vm.sade.service.valintaperusteet.resource.ValintaperusteetResource"
                            inheritHeaders="true">
         <jaxrs-client:providers>
             <bean class="com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider"/>
             <bean class="fi.vm.sade.sijoittelu.tulos.resource.ObjectMapperProvider" />
         </jaxrs-client:providers>
+        </jaxrs-client:client>
+
+        <jaxrs-client:client id="ValintaperusteetV2LaskentaRestClient"
+                             address="${valintalaskentakoostepalvelu.valintaperusteet.rest.url}"
+                             serviceClass="fi.vm.sade.service.valintaperusteet.resource.ValintaperusteetResourceV2"
+                             inheritHeaders="true">
+            <jaxrs-client:providers>
+                <bean class="com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider"/>
+                <bean class="fi.vm.sade.sijoittelu.tulos.resource.ObjectMapperProvider" />
+            </jaxrs-client:providers>
         </jaxrs-client:client>
 
         <jaxrs-client:client id="ValintaperusteetKoostepalveluRestClient"

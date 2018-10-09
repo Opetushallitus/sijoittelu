@@ -25,6 +25,7 @@
         location="classpath:sijoittelu-service.properties, classpath:it-profile.properties"
         ignore-resource-not-found="true"/>
 
+      <mockito:mock id="valintaperusteetResource" class="fi.vm.sade.service.valintaperusteet.resource.ValintaperusteetResource" />
       <mockito:mock id="valintaperusteetResourceV2" class="fi.vm.sade.service.valintaperusteet.resource.ValintaperusteetResourceV2" />
       <mockito:mock id="valintalaskentakoostepalvelu" class="fi.vm.sade.service.valintaperusteet.resource.ValintalaskentakoostepalveluResource" />
       <mockito:mock id="ohjausparametriResource" class="fi.vm.sade.sijoittelu.laskenta.external.resource.OhjausparametriResource" />

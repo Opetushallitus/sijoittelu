@@ -7,6 +7,7 @@
                         http://www.mockito.org/spring/mockito http://www.mockito.org/spring/mockito.xsd
                         http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
 
+    <mockito:mock id="valintaperusteetResource" class="fi.vm.sade.service.valintaperusteet.resource.ValintaperusteetResource" />
     <mockito:mock id="valintaperusteetResourceV2" class="fi.vm.sade.service.valintaperusteet.resource.ValintaperusteetResourceV2" />
     <mockito:mock id="ohjausparametriResource" class="fi.vm.sade.sijoittelu.laskenta.external.resource.OhjausparametriResource" />
     <mockito:mock id="hakuV1Resource" class="fi.vm.sade.sijoittelu.laskenta.external.resource.HakuV1Resource" />
