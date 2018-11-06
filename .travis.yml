@@ -27,7 +27,6 @@ install:
 - git clone https://github.com/Opetushallitus/ci-tools.git
 - source ci-tools/common/setup-tools.sh
 - sudo sh -c "printf '\n%s penaali.hard.ware.fi\n' $(dig +short artifactory.opintopolku.fi|head -n1) >> /etc/hosts"
-- export ARTIFACT_NAME="sijoittelu-service"
 - export TZ=Europe/Helsinki
 - date
 
@@ -39,15 +38,15 @@ script:
 
 - export BASE_IMAGE="base-legacy:0.1"
 - ./ci-tools/common/pull-image.sh
-- ./ci-tools/build/build-war.sh $ARTIFACT_NAME
+- ./ci-tools/build/build-war.sh sijoittelu-service
 
 deploy:
 - provider: script
-  script: mvn deploy -pl $ARTIFACT_NAME -service -DskipTests --settings ci-tools/common/maven-settings.xml
+  script: mvn deploy -pl sijoittelu-tulos-api -DskipTests --settings ci-tools/common/maven-settings.xml
   skip_cleanup: true
   on:
     branch: master
 - provider: script
-  script: ./ci-tools/build/upload-image.sh $ARTIFACT_NAME
+  script: ./ci-tools/build/upload-image.sh sijoittelu-service
   on:
     all_branches: true
