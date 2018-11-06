@@ -1,0 +1,53 @@
+sudo: required
+
+language: java
+
+jdk:
+- oraclejdk8
+
+services:
+- docker
+
+cache:
+  directories:
+  - $HOME/.m2
+
+env:
+  global:
+  # ARTIFACTORY_USERNAME
+  - secure: "tqpoXtBhLbj2o99VghMQOh2obfot99iwr1dd0XaaKZ375qcTjHajnrjOSXra0nOsFvZdBEOh/XgiZ5Hsm2gl0rq8K1qnY+AdPgHEOTFAuFn0rmrGGVnlW32yUrNCBjw5VvWqRgidBwEbRjzv79MRGfrLTEJAEXc/Z22XL67PWZbh35XtJ72FfbYD+fEvEvoNUf6Cz2a+PPVokGVTGmF3w238dymq8WfGqqPwzFoN+Ls3Gx54UuWIT7p01STVZu8Ko/12le18a+Sq2cbvA1dGy82qY6nDS2TGAtrXRoR8v1RftUAsr4woTWQMx7c86pPyJpa5ckFu8a1UHEbJF1KB+i6hoBxE8z5TkapOnZ43LK63vzmCrz7irMCv4cujGVL1C8Su29mkcliLWLIAPxKdiVGExq60LtQhZzTCxZSsRBvBQ+WY8RoCYS1o8BWO0a9S4E7SItw8zMS0IRECHVNiBvtNEduk6tlkQfABuCOR1RoFiadPVOXrOO0KliW9luUnMe/xOmL+GqsEwifOOJeM7qBdOUdrfyil+/+AuSrVIT775ZGTbxn8h0oRW7tUSSMuKNv7/XpNEpXigliwwucLRUeDoJe9haw4eqb5E/imwVMdznwTS6sDunQeY+QQKTy92VqvB8ANggw7DOwNPN5uyxV0UzDdZo0v8jRaY+bOGEo="
+  # ARTIFACTORY_PASSWORD
+  - secure: "qeTzum4IkVot/RDNs61qcyMbeEaIcSaZd60N2PIZl5h2hZVnoxoh6BGNsppiOqOdVGIrHm16eQidToAOHTshSszZZzIGKM8paaT+6hGrT0qGtEvmHvJok3smQxYVt6KbiX6Khra5e29L3GX5lFCxMgprY2IMSUpzs3kmHN8JtXptcoDQoc5ksuilix7UZwNon8rsSXhl6jdy44fiO+cASWVli9RBJi9RBvJMf/jAYpaCT1k10O+hT1FaYZPzWq6Bzr7CaoPiZV0SeuKt3dK9Vevcg5gkJcV/hztyEnFNz25YFx2rqxTB0EtKBzMnbloMCRe5Pt82jO6Ck0Ta0MBgBKxt4skphD7mhElA37t3gvFh6j/h12Qsw2+1KoVpisbI8C6aD8QObY4JLr2I0usaZ4P9rlB5/uM2YiP7Ohug5d6zuyTCb5ooisV+dLDbacmYKjMIkpphUgZ6xvVcDUyNTKOyPQJel2kJvjbJthnabtz+TU+WugkoFyc7lZhEL/2WQIx/ODE1Tb9iKKXWlB4craXafZ4E7riBGUTAlLPoxgvkbf3RROBP/NjYuIqOx4HRZ0uvxf4O6ltdGH1n9xgmj77PVr9gKwC2NRhNMZ+ZJCGor/3T0ksKKQyGT3EfvgOB6K5aRapPby0CMQBlqWovehYhMaTUdYhVXAgU9GG3Ox4="
+  # AWS_ACCESS_KEY_ID
+  - secure: "pzKJoINadlQUVTjNK74NRhVQFtPEavDstBtK9bqvOowke4lGa5KAvtf0S7BsOhWMjwIhYhxBe0pzr8H5mFktC04uHg7hVx1ndroyB5xCh37C02dosYJw0v67PDZ3kHm/1yNrawmDllEoeaSS3aZc3bG4biTApiGkHv8HcS8DgwaNZQHvEPAoUB6+prw+NXn8bdHCNQt4YVebb7TvDLSFB93zcfLVWenjwsDsKnJIQoM8KiEBocwtClFlF09LI2Hbn1w0PwMZgNbA2Qn4DxTtnwx3gD++O2uWuzm8M9fzBfWJZhAYSsE8epBZmC88SM/lRdMXxj6+HyPHGOe1i4Gcu1ET+dQfKHZ1yl9d7Tv+/1CmtwrSPNGlClxWehdLjMQkx8MIKCbqzm2959JakACs2waXVCTVkoqpFyQ8S4gfP3zv9eY3CX1l2H6YGNsIpcJAz5azJq6t1cXHnqnWiPzXOYPqidwuwdEStUdv+oFoi6nbNLhoQEPemHgxBzpHTdfV0wr2lQBWw+6Pale+GvTS/PnwJFAgqwEeBwVIa8yH6P5fQxXLkyEdp0JB135wzQBFtv4xxcVg4X7StHnU5NSlLV/ZBYUAajvlsSKEFzTOJhlBCw/6BlIOSP/YwRH18eFEWx+MpIx8pH/UB6x1O2YiCkrD87/wkJybe0b/qSMF1wg="
+  # AWS_SECRET_ACCESS_KEY
+  - secure: "LzUsMmRvV+67lJrWugk6nOGQ/ytV1Bg61lpYcva6UAR4BmjKi8SLHAqTdj2P2jy3eQXX2uM8chNLAhvPeeI5MFc+bTU2LFqSFaew21hokqH/nCAbewHTILeS0AXNr6PJCfui3dU+SlMxq3gPM/cSc3sj2QPox0Y3G5olHqNmuGyEtm9WFvwF9YL1UDBZ9iYk3DTm6xGvEfrRFbauizBjXdcZhlzfhIrEbafkugEA3AjH09fxmrXBJ2VutRMXJ73laS7elE75OnQ+YdS94KJOQ+JFRpwpFu547yJI2IZ0EAHR37GBPd4WEwGny6L9BMhIVKqatWg+Ctc0kVZyb/1GmzZvauKB3UqayDxSD+yjf+HywioI3x5VBh/GAqJaS2I6FsHRA/AM5HoFR0TPQlZjh40FDZamA59l9XMZg1QAxJ7REht6Z0NqcbEPeK3xrojEShCaw71hRT/ZMzv1/hcTdTGOHz8Pw3hlxIl+3tTNzw6bom/3FI/o+NcP/esaOUUoYJmRBNxIaslFQiXED15OyScabX1vdecd3V4Q/ugtPsFqEzZFk59xeOVj7xtDSl6kjg4gHYCC8Zcbp6zkcojIOabJbnmn/YOIvjqVO7D90m1Wfop+ONZ/fqRNYpQr6NuUVqPM8acWhspOkk2U3sNDBS4K0QLDU9u/Y8TCraIjN3c="
+
+install:
+- git clone https://github.com/Opetushallitus/ci-tools.git
+- source ci-tools/common/setup-tools.sh
+- sudo sh -c "printf '\n%s penaali.hard.ware.fi\n' $(dig +short artifactory.opintopolku.fi|head -n1) >> /etc/hosts"
+- export ARTIFACT_NAME="sijoittelu-service"
+- export TZ=Europe/Helsinki
+- date
+
+script:
+- mvn clean verify -B -Dbranch=${TRAVIS_BRANCH} -Drevision=${TRAVIS_COMMIT} -DbuildNumber=${TRAVIS_BUILD_NUMBER} -Pit -Dit.usePhantomJs=true
+
+- mv sijoittelu-service/target/sijoittelu-service.war $DOCKER_BUILD_DIR/artifact/sijoittelu-service.war
+- cp -vr src/main/resources/oph-configuration $DOCKER_BUILD_DIR/config/
+
+- export BASE_IMAGE="base-legacy:0.1"
+- ./ci-tools/common/pull-image.sh
+- ./ci-tools/build/build-war.sh $ARTIFACT_NAME
+
+deploy:
+- provider: script
+  script: mvn deploy -pl $ARTIFACT_NAME -DskipTests --settings ci-tools/common/maven-settings.xml
+  skip_cleanup: true
+  on:
+    branch: master
+- provider: script
+  script: ./ci-tools/build/upload-image.sh $ARTIFACT_NAME
+  on:
+    all_branches: true
