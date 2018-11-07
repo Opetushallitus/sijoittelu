@@ -984,6 +984,33 @@
   <build>
     <plugins>
         <plugin>
+            <artifactId>maven-antrun-plugin</artifactId>
+            <version>1.7</version>
+            <executions>
+                <execution>
+                    <id>write buildversion.txt</id>
+                    <phase>process-resources</phase>
+                    <goals>
+                        <goal>run</goal>
+                    </goals>
+                    <configuration>
+                        <target>
+                            <echo message="writing buildversion.txt" />
+                            <echo file="target/sijoittelu-service/buildversion.txt">artifactId=${artifactId}
+                                version=${version}
+                                buildNumber=${buildNumber}
+                                branchName=${branch}
+                                vcsRevision=${revision}
+                                buildTtime=${maven.build.timestamp}</echo>
+                            <loadfile property="buildversiontxt" srcFile="target/sijoittelu-service/buildversion.txt" />
+                            <echo message="${buildversiontxt}" />
+                            <echo file="target/mavenversion.txt">${version}</echo>
+                        </target>
+                    </configuration>
+                </execution>
+            </executions>
+        </plugin>
+        <plugin>
             <artifactId>maven-compiler-plugin</artifactId>
             <version>3.1</version>
             <inherited>true</inherited>
