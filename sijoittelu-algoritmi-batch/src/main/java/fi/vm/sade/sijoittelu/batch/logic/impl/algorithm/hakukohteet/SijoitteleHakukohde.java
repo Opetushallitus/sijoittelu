@@ -48,10 +48,10 @@ import java.util.stream.Collectors;
 public class SijoitteleHakukohde {
     private static final Logger LOG = LoggerFactory.getLogger(SijoitteleHakukohde.class);
     private static HakemusWrapperComparator comparator = new HakemusWrapperComparator();
-    private static final String baseStr = "HRS - ";
 
 
     public static Set<HakukohdeWrapper> sijoitteleHakukohde(SijoitteluajoWrapper sijoitteluAjo, HakukohdeWrapper hakukohde) {
+
         Set<HakukohdeWrapper> muuttuneetHakukohteet = Sets.newHashSet();
         for (HakijaryhmaWrapper hakijaryhmaWrapper : hakukohde.getHakijaryhmaWrappers()) {
             muuttuneetHakukohteet.addAll(SijoitteleHakijaryhma.sijoitteleHakijaryhma(sijoitteluAjo, hakijaryhmaWrapper));
@@ -93,6 +93,7 @@ public class SijoitteleHakukohde {
 
     private static Set<HakukohdeWrapper> sijoitteleValintatapajono(SijoitteluajoWrapper sijoitteluAjo, ValintatapajonoWrapper valintatapajono) {
         Set<HakukohdeWrapper> muuttuneetHakukohteet = new HashSet<>();
+        final String baseStr = "HRS - Hakukohde " + valintatapajono.getHakukohdeWrapper().getHakukohde().getOid()+ " ";
         if (valintatapajono.isAlitayttoLukko()) {
             // Hakijaryhmäkäsittelyssä alitäyttösääntö käytetty
             return muuttuneetHakukohteet;
@@ -131,11 +132,11 @@ public class SijoitteleHakukohde {
         int tilaa = aloituspaikat - eiKorvattavissaOlevatHyvaksytytHakemukset.size();
         boolean hakukohteessaValintaryhmia = !valintatapajono.getHakukohdeWrapper().getHakijaryhmaWrappers().isEmpty();
 
-        LOG.info(baseStr + "------");
-        LOG.info(baseStr + "Hakukohteen " + valintatapajono.getHakukohdeWrapper().getHakukohde().getOid() + " valintatapajono " + valintatapajono.getValintatapajono().getOid()
-                + ", aloituspaikkoja: "+ aloituspaikat + ", valituiksi haluaa: " + valituksiHaluavatHakemukset.size() + ", tilaa (ilman mahdollisia lisäpaikkoja): " + tilaa);
+        //LOG.info(baseStr + "------");
         boolean kaikkiEhdot = false;
         if (hakukohteessaValintaryhmia) {
+            LOG.info(baseStr + " valintatapajono " + valintatapajono.getValintatapajono().getOid()
+                    + ", aloituspaikkoja: "+ aloituspaikat + ", valituiksi haluaa: " + valituksiHaluavatHakemukset.size() + ", tilaa (ilman mahdollisia lisäpaikkoja): " + tilaa);
             //EHTO 1: jonon alimmalla hyväksytyllä jonosijalla olevat hakijat ovat hakijaryhmästä hyväksyttyjä
             //EHTO 2: edellämainitut hyväksytyt ovat hakijaryhmänsä alimmat hyväksytyt
             //EHTO 3: tässä hakijaryhmässä on hyväksytty hakijoita yli kiintiön verran
@@ -160,15 +161,13 @@ public class SijoitteleHakukohde {
 
         if (tilaa <= 0) {
             if(hakukohteessaValintaryhmia && kaikkiEhdot) {
-                LOG.info(baseStr+"Jonossa ei tilaa. Olisi kuitenkin mahdollisia lisäpaikkoja: ");
-                LOG.info(baseStr+"(TAPA 1) Ehdolliset lisäpaikat: " + ehdollisetAloituspaikatTapa1 + ", jos jonosija vähintään: " + huonoimpienHakijaryhmastaHyvaksyttyjenJonosijaJaMaara(valintatapajono).getLeft());
-                LOG.info(baseStr+"(TAPA 2) Ehdolliset lisäpaikat: " + ehdollisetAloituspaikatTapa2 + ", jos jonosija vähintään: " + huonoimpienHakijaryhmastaHyvaksyttyjenJonosijaJaMaara(valintatapajono).getLeft());
+                LOG.info(baseStr+"Jonossa ei tilaa. (TAPA 1) Ehdolliset lisäpaikat: " + ehdollisetAloituspaikatTapa1 + ", jos jonosija vähintään: " + huonoimpienHakijaryhmastaHyvaksyttyjenJonosijaJaMaara(valintatapajono).getLeft());
+                LOG.info(baseStr+"Jonossa ei tilaa. (TAPA 2) Ehdolliset lisäpaikat: " + ehdollisetAloituspaikatTapa2 + ", jos jonosija vähintään: " + huonoimpienHakijaryhmastaHyvaksyttyjenJonosijaJaMaara(valintatapajono).getLeft());
             }
             return muuttuneetHakukohteet;
         } else if (hakukohteessaValintaryhmia && kaikkiEhdot){
-            LOG.info(baseStr+"Jonossa on tilaa. Olisi lisäksi mahdollisia lisäpaikkoja: ");
-            LOG.info(baseStr+"(TAPA 1) Ehdolliset lisäpaikat: " + ehdollisetAloituspaikatTapa1 + ", jos jonosija vähintään: " + huonoimpienHakijaryhmastaHyvaksyttyjenJonosijaJaMaara(valintatapajono).getLeft());
-            LOG.info(baseStr+"(TAPA 2) Ehdolliset lisäpaikat: " + ehdollisetAloituspaikatTapa2 + ", jos jonosija vähintään: " + huonoimpienHakijaryhmastaHyvaksyttyjenJonosijaJaMaara(valintatapajono).getLeft());
+            LOG.info(baseStr+"Jonossa on tilaa. (TAPA 1) Ehdolliset lisäpaikat: " + ehdollisetAloituspaikatTapa1 + ", jos jonosija vähintään: " + huonoimpienHakijaryhmastaHyvaksyttyjenJonosijaJaMaara(valintatapajono).getLeft());
+            LOG.info(baseStr+"Jonossa on tilaa. (TAPA 2) Ehdolliset lisäpaikat: " + ehdollisetAloituspaikatTapa2 + ", jos jonosija vähintään: " + huonoimpienHakijaryhmastaHyvaksyttyjenJonosijaJaMaara(valintatapajono).getLeft());
         }
         Tasasijasaanto saanto = jononTasasijasaanto(valintatapajono);
         List<HakemusWrapper> kaikkiTasasijaHakemukset = getTasasijaHakemus(valituksiHaluavatHakemukset, saanto);
