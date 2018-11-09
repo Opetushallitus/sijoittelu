@@ -93,7 +93,7 @@ public class SijoitteleHakukohde {
 
     private static Set<HakukohdeWrapper> sijoitteleValintatapajono(SijoitteluajoWrapper sijoitteluAjo, ValintatapajonoWrapper valintatapajono) {
         Set<HakukohdeWrapper> muuttuneetHakukohteet = new HashSet<>();
-        final String baseStr = "HRS - Hakukohde " + valintatapajono.getHakukohdeWrapper().getHakukohde().getOid()+ " ";
+        final String baseStr = "HRS - Hakukohde " + valintatapajono.getHakukohdeWrapper().getHakukohde().getOid()+ " - ";
         if (valintatapajono.isAlitayttoLukko()) {
             // Hakijaryhmäkäsittelyssä alitäyttösääntö käytetty
             return muuttuneetHakukohteet;
@@ -132,42 +132,56 @@ public class SijoitteleHakukohde {
         int tilaa = aloituspaikat - eiKorvattavissaOlevatHyvaksytytHakemukset.size();
         boolean hakukohteessaValintaryhmia = !valintatapajono.getHakukohdeWrapper().getHakijaryhmaWrappers().isEmpty();
 
-        //LOG.info(baseStr + "------");
+        //EHTO 1: jonon alimmalla hyväksytyllä jonosijalla olevat hakijat ovat hakijaryhmästä hyväksyttyjä
+        //EHTO 2: edellämainitut hyväksytyt ovat hakijaryhmänsä alimmat hyväksytyt
+        //EHTO 3: tässä hakijaryhmässä on hyväksytty hakijoita yli kiintiön verran
+        boolean ehto1 = false;
+        boolean ehto2 = false;
+        boolean ehto3 = false;
         boolean kaikkiEhdot = false;
+
+
         if (hakukohteessaValintaryhmia) {
-            LOG.info(baseStr + " valintatapajono " + valintatapajono.getValintatapajono().getOid()
-                    + ", aloituspaikkoja: "+ aloituspaikat + ", valituiksi haluaa: " + valituksiHaluavatHakemukset.size() + ", tilaa (ilman mahdollisia lisäpaikkoja): " + tilaa);
-            //EHTO 1: jonon alimmalla hyväksytyllä jonosijalla olevat hakijat ovat hakijaryhmästä hyväksyttyjä
-            //EHTO 2: edellämainitut hyväksytyt ovat hakijaryhmänsä alimmat hyväksytyt
-            //EHTO 3: tässä hakijaryhmässä on hyväksytty hakijoita yli kiintiön verran
+            LOG.info(baseStr + "valintatapajono " + valintatapajono.getValintatapajono().getOid()
+                    + ", aloituspaikkoja: "+ aloituspaikat + ", valituiksi haluaa: " + valituksiHaluavatHakemukset.size() + ", tilaa (ilman mahdollisia lisäpaikkoja): " + tilaa + ". Hakukohteessa valintaryhmiä: " + valintatapajono.getHakukohdeWrapper().getHakijaryhmaWrappers().size());
 
             List<HakemusWrapper> alimmallaSijallaOlevatHyvaksytyt = alimmallaHyvaksytyllaJonosijallaOlevatHyvaksytyt(valintatapajono);
-            boolean ehto1 = alimmallaSijallaOlevatHyvaksytyt.size() > 0
+            ehto1 = alimmallaSijallaOlevatHyvaksytyt.size() > 0
                     && alimmallaSijallaOlevatHyvaksytyt.get(0).isHyvaksyttyHakijaryhmastaTallaKierroksella();
-            boolean ehto2 = huonoimmatHakijaryhmastaHyvaksytytOvatTastaJonosta(valintatapajono);
-            boolean ehto3 = kokoHakukohteenValintaryhmakiintionYlitysmaaraTietylleHakijaryhmalle(valintatapajono, valintatapajono.getHakukohdeWrapper().getHakijaryhmaWrappers().get(0)) > 0;
+            Set<String> alimpienHyvaksyttyjenHakijaryhmat = new HashSet<>();
+            alimmallaSijallaOlevatHyvaksytyt.forEach(h -> alimpienHyvaksyttyjenHakijaryhmat.addAll(h.getHakemus().getHyvaksyttyHakijaryhmista()));
+
+            if(alimpienHyvaksyttyjenHakijaryhmat.size() > 1) {
+                LOG.warn(baseStr+"Alimmalla jonosijalla on hyväksyttyjä useista hakijaryhmistä: " + alimpienHyvaksyttyjenHakijaryhmat);
+            } else {
+                LOG.info(baseStr+"Alimman jonosijan hakijaryhmät: " + alimpienHyvaksyttyjenHakijaryhmat);
+            }
+            ehto2 = huonoimmatHakijaryhmastaHyvaksytytOvatTastaJonosta(valintatapajono);
+            ehto3 = kokoHakukohteenValintaryhmakiintionYlitysmaaraTietylleHakijaryhmalle(valintatapajono, valintatapajono.getHakukohdeWrapper().getHakijaryhmaWrappers().get(0)) > 0;
             //LOG.info("Ehto1: " + ehto1 + ", ehto2: " + ehto2 + ", ehto3: " + ehto3);
             //LOG.info("***Alimmalla jonosijalla olevat hyväksytyt ovat hakijaryhmästä hyväksyttyjä: " + ehto1);
             //LOG.info("***Nämä hyväksytyt ovat hakijaryhmänsä alimmat hyväksytyt: " + ehto2); //HMM
             //LOG.info("***Tässä hakijaryhmässä on hyväksytty hakijoita yli kiintiön verran " + ehto3);
             kaikkiEhdot = ehto1 && ehto2 && ehto3;
 
-            Pair<Integer, Integer> huonoinValintaryhmastaHyvaksyttyJonosijaJaMaara = huonoimpienHakijaryhmastaHyvaksyttyjenJonosijaJaMaara(valintatapajono);
+            Pair<Integer, Integer> huonoinHakijaryhmastaHyvaksyttyJonosijaJaMaara = huonoimpienHakijaryhmastaHyvaksyttyjenJonosijaJaMaara(valintatapajono);
             ehdollisetAloituspaikatTapa1 = kokoHakukohteenValintaryhmakiintionYlitysmaaraTietylleHakijaryhmalle(valintatapajono, valintatapajono.getHakukohdeWrapper().getHakijaryhmaWrappers().get(0)); //hakijaryhmästä hyväksyttyjen ja hakijaryhmän kiintiö erotus
-            ehdollisetAloituspaikatTapa2 = huonoinValintaryhmastaHyvaksyttyJonosijaJaMaara.getRight() - 1; //alimmalla hyväksytyllä jonosijalla olevien määrä vähennettynä yhdellä
+            ehdollisetAloituspaikatTapa2 = huonoinHakijaryhmastaHyvaksyttyJonosijaJaMaara.getRight() - 1; //alimmalla hyväksytyllä jonosijalla olevien määrä vähennettynä yhdellä
             //LOG.info(baseStr+"Aloituspaikkoja jonossa: " + aloituspaikat + ", niistä vielä vapaina (ilman mahdollisia lisäpaikkoja): " + tilaa);
-            //LOG.info("Huonoin jonosija: " + huonoinValintaryhmastaHyvaksyttyJonosijaJaMaara.getLeft() + ", määrä: " + huonoinValintaryhmastaHyvaksyttyJonosijaJaMaara.getRight());
+            //LOG.info("Huonoin jonosija: " + huonoinHakijaryhmastaHyvaksyttyJonosijaJaMaara.getLeft() + ", määrä: " + huonoinHakijaryhmastaHyvaksyttyJonosijaJaMaara.getRight());
         }
 
         if (tilaa <= 0) {
-            if(hakukohteessaValintaryhmia && kaikkiEhdot) {
-                LOG.info(baseStr+"Jonossa ei tilaa. (TAPA 1) Ehdolliset lisäpaikat: " + ehdollisetAloituspaikatTapa1 + ", jos jonosija vähintään: " + huonoimpienHakijaryhmastaHyvaksyttyjenJonosijaJaMaara(valintatapajono).getLeft());
-                LOG.info(baseStr+"Jonossa ei tilaa. (TAPA 2) Ehdolliset lisäpaikat: " + ehdollisetAloituspaikatTapa2 + ", jos jonosija vähintään: " + huonoimpienHakijaryhmastaHyvaksyttyjenJonosijaJaMaara(valintatapajono).getLeft());
+            if (kaikkiEhdot) {
+                LOG.info(baseStr+"Jono " + valintatapajono.getValintatapajono().getOid() + " on täysi. Ehdolliset lisäpaikat: " +
+                        "(TAPA 1) " + ehdollisetAloituspaikatTapa1 + ", (TAPA 2): " + ehdollisetAloituspaikatTapa2 +
+                        ", jos jonosija vähintään: " + huonoimpienHakijaryhmastaHyvaksyttyjenJonosijaJaMaara(valintatapajono).getLeft());
             }
             return muuttuneetHakukohteet;
-        } else if (hakukohteessaValintaryhmia && kaikkiEhdot){
-            LOG.info(baseStr+"Jonossa on tilaa. (TAPA 1) Ehdolliset lisäpaikat: " + ehdollisetAloituspaikatTapa1 + ", jos jonosija vähintään: " + huonoimpienHakijaryhmastaHyvaksyttyjenJonosijaJaMaara(valintatapajono).getLeft());
-            LOG.info(baseStr+"Jonossa on tilaa. (TAPA 2) Ehdolliset lisäpaikat: " + ehdollisetAloituspaikatTapa2 + ", jos jonosija vähintään: " + huonoimpienHakijaryhmastaHyvaksyttyjenJonosijaJaMaara(valintatapajono).getLeft());
+        } else if (kaikkiEhdot){
+            LOG.info(baseStr+"Jonossa " + valintatapajono.getValintatapajono().getOid() + " on tilaa. Ehdolliset lisäpaikat: " +
+                    "(TAPA 1) " + ehdollisetAloituspaikatTapa1 + ", (TAPA 2): " + ehdollisetAloituspaikatTapa2 +
+                    ", jos jonosija vähintään: " + huonoimpienHakijaryhmastaHyvaksyttyjenJonosijaJaMaara(valintatapajono).getLeft());
         }
         Tasasijasaanto saanto = jononTasasijasaanto(valintatapajono);
         List<HakemusWrapper> kaikkiTasasijaHakemukset = getTasasijaHakemus(valituksiHaluavatHakemukset, saanto);
