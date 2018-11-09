@@ -315,8 +315,8 @@ public class SijoitteleHakukohdeTest {
         kaytettavatHakemukset2.add(generateHakemus(45, 4, null));
         kaytettavatHakemukset2.add(generateHakemus(46, 4, null));
         kaytettavatHakemukset2.add(generateHakemus(23, 6, null));
-        kaytettavatHakemukset2.add(generateHakemus(24, 7, null));
-*/
+        kaytettavatHakemukset2.add(generateHakemus(24, 7, null));*/
+
         valintatapajono.setHakemukset(kaytettavatHakemukset);
 
         valintatapajono2.setHakemukset(kaytettavatHakemukset2);
