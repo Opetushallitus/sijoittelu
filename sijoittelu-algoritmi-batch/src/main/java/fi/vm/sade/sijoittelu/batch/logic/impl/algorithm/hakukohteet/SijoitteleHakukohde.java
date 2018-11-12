@@ -538,21 +538,6 @@ public class SijoitteleHakukohde {
             return -1;
         }
 
-   /*     if(yksiHuonoimmallaJonosijallaOlevistaHakemuksista.isPresent()) {
-            Set<String> huonoimmanOidit = yksiHuonoimmallaJonosijallaOlevistaHakemuksista.get().getHakemus().getHyvaksyttyHakijaryhmista();
-            Optional<HakijaryhmaWrapper> huonoinHakijaryhma = tutkittavaJono.getHakukohdeWrapper().getHakijaryhmaWrappers()
-                    .stream().filter(w -> huonoimmanOidit.contains(w.getHakijaryhma().getOid())).findFirst();
-            if(huonoinHakijaryhma.isPresent()) {
-                //LOG.info("Huonoin hakijaryhma: " + huonoinHakijaryhma.get().getHakijaryhma().getOid() + ", siinä kiintiö: "
-                //        + huonoinHakijaryhma.get().getHakijaryhma().getKiintio() + ", hakijaryhmästä hyväksyttyjä: " + hyvaksyttyjaHakijaryhmasta);
-                return hyvaksyttyjaHakijaryhmasta - huonoinHakijaryhma.get().getHakijaryhma().getKiintio();
-            } else {
-                LOG.info("kaik hyv mut");
-                return 0;
-            }
-        }
-        else return -111; //fixme
-*/
     }
 
     private static Pair<Integer, Integer> huonoimpienHakijaryhmastaHyvaksyttyjenJonosijaJaMaara(ValintatapajonoWrapper valintatapajonoWrapper, Set<String> hakijaryhmaOids) {
