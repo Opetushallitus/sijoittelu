@@ -166,10 +166,15 @@ public class SijoitteleHakukohde {
             Pair<Integer, Integer> huonoinHakijaryhmastaHyvaksyttyJonosijaJaMaara = huonoimpienHakijaryhmastaHyvaksyttyjenJonosijaJaMaara(valintatapajono, alimpienHyvaksyttyjenHakijaryhmat);
             ehdollisetAloituspaikatTapa1 = kiintionYlitys; //hakijaryhmästä hyväksyttyjen ja hakijaryhmän kiintiö erotus
             ehdollisetAloituspaikatTapa2 = huonoinHakijaryhmastaHyvaksyttyJonosijaJaMaara.getRight() - 1; //alimmalla hyväksytyllä jonosijalla olevien määrä vähennettynä yhdellä
+
         }
+
 
         if (tilaa <= 0) {
             if (kaikkiEhdot) {
+                List<HakemusWrapper> kiinnostavat = samallaTaiParemmallaJonosijallaOlevatHakijaryhmaanKuulumattomat(valintatapajono, huonoimpienHakijaryhmastaHyvaksyttyjenJonosijaJaMaara(valintatapajono, alimpienHyvaksyttyjenHakijaryhmat).getLeft());
+                List<Pair<String, Integer>> paremmatHakemuksetJaJonosijat = kiinnostavat.stream().map(hw -> Pair.of(hw.getHakemus().getHakemusOid(), hw.getHakemus().getJonosija())).collect(Collectors.toList());
+
                 LOG.info(baseStr + "valintatapajono " + valintatapajono.getValintatapajono().getOid() +
                         ", aloituspaikkoja: "+ aloituspaikat + ", valituiksi haluaa: " + valituksiHaluavatHakemukset.size() + ", tilaa (ilman mahdollisia lisäpaikkoja): " + tilaa +
                         ". Hakukohteessa valintaryhmiä: " + valintatapajono.getHakukohdeWrapper().getHakijaryhmaWrappers().size());
@@ -177,6 +182,7 @@ public class SijoitteleHakukohde {
                         "(TAPA 1) " + ehdollisetAloituspaikatTapa1 + ", (TAPA 2): " + ehdollisetAloituspaikatTapa2 +
                         ", jos jonosija vähintään: " + huonoimpienHakijaryhmastaHyvaksyttyjenJonosijaJaMaara(valintatapajono, alimpienHyvaksyttyjenHakijaryhmat).getLeft() +
                         ", ylitykset ryhmittäin: "+ kiintionYlityksetRyhmittain);
+                LOG.info(baseStr+"Hakemuksia jotka eivät kuulu valintaryhmiin ja joilla on parempi jonosija: " + paremmatHakemuksetJaJonosijat);
             }
             return muuttuneetHakukohteet;
         }
@@ -465,6 +471,14 @@ public class SijoitteleHakukohde {
 
         return aloituspaikat - aloituspaikkojaVievat.size() > 0;
 
+    }
+
+    private static List<HakemusWrapper> samallaTaiParemmallaJonosijallaOlevatHakijaryhmaanKuulumattomat(ValintatapajonoWrapper jono, int jonosija) {
+        return jono.getHakemukset().stream()
+                .filter(hw -> jono.getHakukohdeWrapper().getHakijaryhmaWrappers().stream().filter(hrw -> hrw.getHakijaryhma().getHakemusOid().contains(hw.getHakemus().getHakemusOid())).collect(Collectors.toList()).size() == 0)
+                .filter(hw -> !kuuluuHyvaksyttyihinTiloihin(hw.getHakemus().getTila()))
+                .filter(hw -> hw.getHakemus().getJonosija() <= jonosija)
+                .collect(Collectors.toList());
     }
 
     private static List<HakemusWrapper> alimmallaHyvaksytyllaJonosijallaOlevatHyvaksytyt(ValintatapajonoWrapper wrapper) {
