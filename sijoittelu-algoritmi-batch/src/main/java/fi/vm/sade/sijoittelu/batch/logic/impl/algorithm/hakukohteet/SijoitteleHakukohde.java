@@ -136,30 +136,45 @@ public class SijoitteleHakukohde {
         //EHTO 2: edellämainitut hyväksytyt ovat hakijaryhmänsä alimmat hyväksytyt
         //EHTO 3: tässä hakijaryhmässä on hyväksytty hakijoita yli kiintiön verran
         boolean ehto1 = false;
+        boolean ehto1b = false;
         boolean ehto2 = false;
         boolean ehto3 = false;
         boolean kaikkiEhdot = false;
         Set<String> alimpienHyvaksyttyjenHakijaryhmat = new HashSet<>();
         List<Pair<String, Integer>> kiintionYlityksetRyhmittain = new ArrayList<>();
 
+        int kokoHakukohteenHakijaryhmakiintiot = 0;
+        int hakijaryhmastaHyvaksyttyjaKokoHakukohteessa = 0;
+
+
         if (hakukohteessaValintaryhmia) {
 
             List<HakemusWrapper> alimmallaSijallaOlevatHyvaksytyt = alimmallaHyvaksytyllaJonosijallaOlevatHyvaksytyt(valintatapajono);
             ehto1 = alimmallaSijallaOlevatHyvaksytyt.size() > 0
                     && alimmallaSijallaOlevatHyvaksytyt.get(0).isHyvaksyttyHakijaryhmastaTallaKierroksella();
+            ehto1b = alimmallaSijallaOlevatHyvaksytyt.stream().allMatch(HakemusWrapper::isHyvaksyttyHakijaryhmastaTallaKierroksella);
             alimmallaSijallaOlevatHyvaksytyt.forEach(h -> alimpienHyvaksyttyjenHakijaryhmat.addAll(h.getHakemus().getHyvaksyttyHakijaryhmista()));
 
+            for (HakijaryhmaWrapper hw : valintatapajono.getHakukohdeWrapper().getHakijaryhmaWrappers()) {
+                kokoHakukohteenHakijaryhmakiintiot += hw.getHakijaryhma().getKiintio();
+            }
+            for (ValintatapajonoWrapper jono : valintatapajono.getHakukohdeWrapper().getValintatapajonot()) {
+                hakijaryhmastaHyvaksyttyjaKokoHakukohteessa += jono.getHakemukset().stream().filter(HakemusWrapper::isHyvaksyttyHakijaryhmastaTallaKierroksella).count();
+            }
             /*if(alimpienHyvaksyttyjenHakijaryhmat.size() > 1) {
                 LOG.warn(baseStr+"Alimmalla jonosijalla on hyväksyttyjä useista hakijaryhmistä: " + alimpienHyvaksyttyjenHakijaryhmat);
-            }
-*/
-            int kiintionYlitys = hakukohteenKiintionYlitysValintaryhmalle(valintatapajono, alimpienHyvaksyttyjenHakijaryhmat.size() >= 1 ? alimpienHyvaksyttyjenHakijaryhmat.iterator().next() : null);
-            for (String ryhmaOid: alimpienHyvaksyttyjenHakijaryhmat) {
-                kiintionYlityksetRyhmittain.add(Pair.of(ryhmaOid, hakukohteenKiintionYlitysValintaryhmalle(valintatapajono, ryhmaOid)));
+            }*/
+
+            //int kiintionYlitys = hakukohteenKiintionYlitysHakijaryhmalle(valintatapajono, alimpienHyvaksyttyjenHakijaryhmat.size() >= 1 ? alimpienHyvaksyttyjenHakijaryhmat.iterator().next() : null);
+            int kiintionYlitys = hakijaryhmastaHyvaksyttyjaKokoHakukohteessa - kokoHakukohteenHakijaryhmakiintiot;
+            //LOG.info("kiintiön ylitys:" + kiintionYlitys);
+            for (HakijaryhmaWrapper ryhma: valintatapajono.getHakukohdeWrapper().getHakijaryhmaWrappers()) {
+                String ryhmaOid = ryhma.getHakijaryhma().getOid();
+                kiintionYlityksetRyhmittain.add(Pair.of(ryhmaOid, hakukohteenKiintionYlitysHakijaryhmalle(valintatapajono, ryhmaOid)));
             }
 
-            ehto2 = huonoimmatHakijaryhmastaHyvaksytytOvatTastaJonosta(valintatapajono, alimpienHyvaksyttyjenHakijaryhmat);
-            ehto3 = kiintionYlitys> 0;
+            ehto2 = huonoimmatHakijaryhmastaHyvaksytytOvatTastaJonosta(valintatapajono, alimpienHyvaksyttyjenHakijaryhmat); //FIXME - tämä ei oikeasti nyt toimi
+            ehto3 = kiintionYlitys > 0;
 
             kaikkiEhdot = ehto1 && ehto2 && ehto3;
 
@@ -172,26 +187,30 @@ public class SijoitteleHakukohde {
 
         if (tilaa <= 0) {
             if (kaikkiEhdot) {
+
                 List<HakemusWrapper> kiinnostavat = samallaTaiParemmallaJonosijallaOlevatHakijaryhmaanKuulumattomat(valintatapajono, huonoimpienHakijaryhmastaHyvaksyttyjenJonosijaJaMaara(valintatapajono, alimpienHyvaksyttyjenHakijaryhmat).getLeft());
                 List<Pair<String, Integer>> paremmatHakemuksetJaJonosijat = kiinnostavat.stream().map(hw -> Pair.of(hw.getHakemus().getHakemusOid(), hw.getHakemus().getJonosija())).collect(Collectors.toList());
 
                 LOG.info(baseStr + "valintatapajono " + valintatapajono.getValintatapajono().getOid() +
-                        ", aloituspaikkoja: "+ aloituspaikat + ", valituiksi haluaa: " + valituksiHaluavatHakemukset.size() + ", tilaa (ilman mahdollisia lisäpaikkoja): " + tilaa +
-                        ". Hakukohteessa valintaryhmiä: " + valintatapajono.getHakukohdeWrapper().getHakijaryhmaWrappers().size());
-                LOG.info(baseStr+"Jono " + valintatapajono.getValintatapajono().getOid() + " on täysi. Ehdolliset lisäpaikat: " +
-                        "(TAPA 1) " + ehdollisetAloituspaikatTapa1 + ", (TAPA 2): " + ehdollisetAloituspaikatTapa2 +
-                        ", jos jonosija vähintään: " + huonoimpienHakijaryhmastaHyvaksyttyjenJonosijaJaMaara(valintatapajono, alimpienHyvaksyttyjenHakijaryhmat).getLeft() +
-                        ", ylitykset ryhmittäin: "+ kiintionYlityksetRyhmittain);
-                LOG.info(baseStr+"Hakemuksia jotka eivät kuulu valintaryhmiin ja joilla on parempi jonosija: " + paremmatHakemuksetJaJonosijat);
+                        ", aloituspaikkoja: "+ aloituspaikat +
+                        ", kaikki viimeisellä jonosijalla olevat hyväksytty hakijaryhmistä tällä kierroksella: " + ehto1b +
+                        ", valituiksi haluaa: " + valituksiHaluavatHakemukset.size() +
+                        ", tilaa (ilman mahdollisia lisäpaikkoja): " + tilaa +
+                        ". Hakukohteessa valintaryhmiä: " + valintatapajono.getHakukohdeWrapper().getHakijaryhmaWrappers().size() +
+                        ". Koko hakukohteen hakijaryhmistä_hyväksytyt/ryhmäkiintiöiden_summa: " + hakijaryhmastaHyvaksyttyjaKokoHakukohteessa + "/" + kokoHakukohteenHakijaryhmakiintiot +
+                        ". Ehdolliset lisäpaikat:" +
+                        " (TAPA 1) " + ehdollisetAloituspaikatTapa1 +
+                        ", (TAPA 2): " + ehdollisetAloituspaikatTapa2 +
+                        ", jos jonosija parempi kuin: " + huonoimpienHakijaryhmastaHyvaksyttyjenJonosijaJaMaara(valintatapajono, alimpienHyvaksyttyjenHakijaryhmat).getLeft() +
+                        ". Ylitykset ryhmittäin: "+ kiintionYlityksetRyhmittain +
+                        ". Jonon alimman hyväksytyn jonosijan hakijaryhmät joista hyväksytty: " + alimpienHyvaksyttyjenHakijaryhmat +
+                        ". Hakemuksia jotka eivät kuulu valintaryhmiin ja joilla on parempi jonosija: " + paremmatHakemuksetJaJonosijat);
             }
             return muuttuneetHakukohteet;
         }
         /*else if (kaikkiEhdot){ TODO mietitään tätä keissiä myöhemmin; lisäpaikat voivat olla relevantteja myös sellaisessa jonossa, jossa on muutenkin tilaa, jos seuraavaksi valituiksi on tulossa
-        isompi joukko tasasijalaisia kerralla.
-            LOG.info(baseStr+"Jonossa " + valintatapajono.getValintatapajono().getOid() + " on tilaa. Ehdolliset lisäpaikat: " +
-                    "(TAPA 1) " + ehdollisetAloituspaikatTapa1 + ", (TAPA 2): " + ehdollisetAloituspaikatTapa2 +
-                    ", jos jonosija vähintään: " + huonoimpienHakijaryhmastaHyvaksyttyjenJonosijaJaMaara(valintatapajono, alimpienHyvaksyttyjenHakijaryhmat).getLeft() +
-                    ", relevantit hakijaryhmät: " + alimpienHyvaksyttyjenHakijaryhmat);
+        isompi joukko tasasijalaisia kerralla. Tämä aiheuttaa logispammia koska samaa jonoa iteroidaan paikka kerrallaan kunnes se on täynnä, joten toistaiseksi disabloitu.
+            LOG.info("...");
         }*/
         Tasasijasaanto saanto = jononTasasijasaanto(valintatapajono);
         List<HakemusWrapper> kaikkiTasasijaHakemukset = getTasasijaHakemus(valituksiHaluavatHakemukset, saanto);
@@ -537,7 +556,7 @@ public class SijoitteleHakukohde {
 
     }
 
-    private static int hakukohteenKiintionYlitysValintaryhmalle(ValintatapajonoWrapper tutkittavaJono, String ryhmaOid) {
+    private static int hakukohteenKiintionYlitysHakijaryhmalle(ValintatapajonoWrapper tutkittavaJono, String ryhmaOid) {
         String useOid = ryhmaOid != null ? ryhmaOid : ""; //ainakin testeissä näitä liikkuu nulleina, vaikka ei kai siinä järkeä ole
         int hyvaksyttyjaHakijaryhmasta = hakijaryhmastaHyvaksyttyjaHakukohteenKaikissaJonoissa(tutkittavaJono.getHakukohdeWrapper(), useOid);
 
