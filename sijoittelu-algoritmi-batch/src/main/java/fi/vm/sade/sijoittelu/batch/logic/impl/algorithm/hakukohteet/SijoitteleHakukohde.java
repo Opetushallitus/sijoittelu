@@ -153,8 +153,10 @@ public class SijoitteleHakukohde {
         int kokoHakukohteenHakijaryhmakiintiot = 0;
         int hakijaryhmastaHyvaksyttyjaKokoHakukohteessa = 0;
         List<HakemusWrapper> alimmallaSijallaOlevatHyvaksytyt = new ArrayList<>();
+        Pair<Integer, Integer> huonoinHakijaryhmastaHyvaksyttyJonosijaJaMaara = null;
+        boolean halutaanLogittaa = tilaa <= 0;
 
-        if (hakukohteessaValintaryhmia) {
+        if (hakukohteessaValintaryhmia && halutaanLogittaa) {
 
             alimmallaSijallaOlevatHyvaksytyt = alimmallaHyvaksytyllaJonosijallaOlevatHyvaksytyt(valintatapajono);
             ehto1 = alimmallaSijallaOlevatHyvaksytyt.size() > 0
@@ -185,7 +187,7 @@ public class SijoitteleHakukohde {
 
             kaikkiEhdot = ehto1 && ehto2 && ehto3;
 
-            Pair<Integer, Integer> huonoinHakijaryhmastaHyvaksyttyJonosijaJaMaara = huonoimpienHakijaryhmastaHyvaksyttyjenJonosijaJaMaara(valintatapajono, alimpienHyvaksyttyjenHakijaryhmat);
+            huonoinHakijaryhmastaHyvaksyttyJonosijaJaMaara = huonoimpienHakijaryhmastaHyvaksyttyjenJonosijaJaMaara(valintatapajono, alimpienHyvaksyttyjenHakijaryhmat);
             ehdollisetAloituspaikatTapa1 = kiintionYlitys; //hakijaryhmästä hyväksyttyjen ja hakijaryhmän kiintiö erotus
             ehdollisetAloituspaikatTapa2 = huonoinHakijaryhmastaHyvaksyttyJonosijaJaMaara.getRight() - 1; //alimmalla hyväksytyllä jonosijalla olevien määrä vähennettynä yhdellä
 
@@ -197,10 +199,14 @@ public class SijoitteleHakukohde {
 
                 List<HakemusWrapper> kiinnostavat = samallaTaiParemmallaJonosijallaOlevatHakijaryhmaanKuulumattomat(valintatapajono, huonoimpienHakijaryhmastaHyvaksyttyjenJonosijaJaMaara(valintatapajono, alimpienHyvaksyttyjenHakijaryhmat).getLeft());
                 List<Pair<String, Integer>> paremmatHakemuksetJaJonosijat = kiinnostavat.stream().map(hw -> Pair.of(hw.getHakemus().getHakemusOid(), hw.getHakemus().getJonosija())).collect(Collectors.toList());
+                int alinJonosija = huonoinHakijaryhmastaHyvaksyttyJonosijaJaMaara.getLeft();
+                if (!alimmallaSijallaOlevatHyvaksytyt.stream().allMatch(hw -> hw.getHakemus().getJonosija() == alinJonosija)) {
+                    LOG.error("Sanity!");
+                }
 
                 LOG.info(baseStr + "valintatapajono " + valintatapajono.getValintatapajono().getOid() +
                         ", aloituspaikkoja: "+ aloituspaikat +
-                        ", Hyväksytyt alimmalla jonosijalla: " + alimmallaSijallaOlevatHyvaksytyt.stream().map(hw -> hw.getHakemus().getHakemusOid() + ", " + hw.isHyvaksyttyHakijaryhmastaTallaKierroksella() + ", tila: " + hw.getHakemus().getTila()).collect(Collectors.toList()) +
+                        ", Hyväksytyt alimmalla jonosijalla (" + alinJonosija + "): " + alimmallaSijallaOlevatHyvaksytyt.stream().map(hw -> "(" + hw.getHakemus().getHakemusOid() + ", hyvaksyttyHakijaryhmastaTallaKierroksella: " + hw.isHyvaksyttyHakijaryhmastaTallaKierroksella()+")").collect(Collectors.toList()) +
                         ", kaikki viimeisellä jonosijalla olevat hyväksytty hakijaryhmistä tällä kierroksella: " + ehto1b +
                         ", valituiksi haluaa: " + valituksiHaluavatHakemukset.size() +
                         ", tilaa (ilman mahdollisia lisäpaikkoja): " + tilaa +
@@ -209,7 +215,7 @@ public class SijoitteleHakukohde {
                         ". Ehdolliset lisäpaikat:" +
                         " (TAPA 1) " + ehdollisetAloituspaikatTapa1 +
                         ", (TAPA 2): " + ehdollisetAloituspaikatTapa2 +
-                        ", jos jonosija parempi kuin: " + huonoimpienHakijaryhmastaHyvaksyttyjenJonosijaJaMaara(valintatapajono, alimpienHyvaksyttyjenHakijaryhmat).getLeft() +
+                        ", jos jonosija parempi kuin: " + alinJonosija +
                         ". Ylitykset ryhmittäin: "+ kiintionYlityksetRyhmittain +
                         ". Jonon alimman hyväksytyn jonosijan hakijaryhmät joista hyväksytty: " + alimpienHyvaksyttyjenHakijaryhmat +
                         ". Hakemuksia jotka eivät kuulu hakijaryhmiin ja joilla on parempi jonosija: " + paremmatHakemuksetJaJonosijat);
