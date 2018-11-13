@@ -48,7 +48,7 @@ import java.util.stream.Collectors;
 public class SijoitteleHakukohde {
     private static final Logger LOG = LoggerFactory.getLogger(SijoitteleHakukohde.class);
     private static HakemusWrapperComparator comparator = new HakemusWrapperComparator();
-
+    private static int jono_depth = 0;
 
     public static Set<HakukohdeWrapper> sijoitteleHakukohde(SijoitteluajoWrapper sijoitteluAjo, HakukohdeWrapper hakukohde) {
 
@@ -63,7 +63,12 @@ public class SijoitteleHakukohde {
         }
 
         for (ValintatapajonoWrapper valintatapajono : hakukohde.getValintatapajonot()) {
+            //LOG.info("Hakukohde " + valintatapajono.getHakukohdeWrapper().getHakukohde().getOid() + ": käsitellään valintatapajono " + valintatapajono.getValintatapajono().getOid());
+            jono_depth = 0;
             muuttuneetHakukohteet.addAll(sijoitteleValintatapajono(sijoitteluAjo, valintatapajono));
+            if(jono_depth > 10) {
+                LOG.info("Hakukohde " + valintatapajono.getHakukohdeWrapper().getHakukohde().getOid() + "Jono " + valintatapajono.getValintatapajono().getOid() + " valmis, käytiin syvyydessä: " + jono_depth);
+            }
         }
 
         if (LOG.isDebugEnabled()) {
@@ -91,7 +96,9 @@ public class SijoitteleHakukohde {
 
     }
 
-    private static Set<HakukohdeWrapper> sijoitteleValintatapajono(SijoitteluajoWrapper sijoitteluAjo, ValintatapajonoWrapper valintatapajono) {
+        private static Set<HakukohdeWrapper> sijoitteleValintatapajono(SijoitteluajoWrapper sijoitteluAjo, ValintatapajonoWrapper valintatapajono) {
+        jono_depth++;
+        //LOG.info("Sijoittele valintatapajono");
         Set<HakukohdeWrapper> muuttuneetHakukohteet = new HashSet<>();
         final String baseStr = "HRS - Hakukohde " + valintatapajono.getHakukohdeWrapper().getHakukohde().getOid()+ " - ";
         if (valintatapajono.isAlitayttoLukko()) {
@@ -145,11 +152,11 @@ public class SijoitteleHakukohde {
 
         int kokoHakukohteenHakijaryhmakiintiot = 0;
         int hakijaryhmastaHyvaksyttyjaKokoHakukohteessa = 0;
-
+        List<HakemusWrapper> alimmallaSijallaOlevatHyvaksytyt = new ArrayList<>();
 
         if (hakukohteessaValintaryhmia) {
 
-            List<HakemusWrapper> alimmallaSijallaOlevatHyvaksytyt = alimmallaHyvaksytyllaJonosijallaOlevatHyvaksytyt(valintatapajono);
+            alimmallaSijallaOlevatHyvaksytyt = alimmallaHyvaksytyllaJonosijallaOlevatHyvaksytyt(valintatapajono);
             ehto1 = alimmallaSijallaOlevatHyvaksytyt.size() > 0
                     && alimmallaSijallaOlevatHyvaksytyt.get(0).isHyvaksyttyHakijaryhmastaTallaKierroksella();
             ehto1b = alimmallaSijallaOlevatHyvaksytyt.stream().allMatch(HakemusWrapper::isHyvaksyttyHakijaryhmastaTallaKierroksella);
@@ -193,10 +200,11 @@ public class SijoitteleHakukohde {
 
                 LOG.info(baseStr + "valintatapajono " + valintatapajono.getValintatapajono().getOid() +
                         ", aloituspaikkoja: "+ aloituspaikat +
+                        ", Hyväksytyt alimmalla jonosijalla: " + alimmallaSijallaOlevatHyvaksytyt.stream().map(hw -> hw.getHakemus().getHakemusOid() + ", " + hw.isHyvaksyttyHakijaryhmastaTallaKierroksella() + ", tila: " + hw.getHakemus().getTila()).collect(Collectors.toList()) +
                         ", kaikki viimeisellä jonosijalla olevat hyväksytty hakijaryhmistä tällä kierroksella: " + ehto1b +
                         ", valituiksi haluaa: " + valituksiHaluavatHakemukset.size() +
                         ", tilaa (ilman mahdollisia lisäpaikkoja): " + tilaa +
-                        ". Hakukohteessa valintaryhmiä: " + valintatapajono.getHakukohdeWrapper().getHakijaryhmaWrappers().size() +
+                        ". Hakukohteessa hakijaryhmiä: " + valintatapajono.getHakukohdeWrapper().getHakijaryhmaWrappers().size() +
                         ". Koko hakukohteen hakijaryhmistä_hyväksytyt/ryhmäkiintiöiden_summa: " + hakijaryhmastaHyvaksyttyjaKokoHakukohteessa + "/" + kokoHakukohteenHakijaryhmakiintiot +
                         ". Ehdolliset lisäpaikat:" +
                         " (TAPA 1) " + ehdollisetAloituspaikatTapa1 +
@@ -204,7 +212,7 @@ public class SijoitteleHakukohde {
                         ", jos jonosija parempi kuin: " + huonoimpienHakijaryhmastaHyvaksyttyjenJonosijaJaMaara(valintatapajono, alimpienHyvaksyttyjenHakijaryhmat).getLeft() +
                         ". Ylitykset ryhmittäin: "+ kiintionYlityksetRyhmittain +
                         ". Jonon alimman hyväksytyn jonosijan hakijaryhmät joista hyväksytty: " + alimpienHyvaksyttyjenHakijaryhmat +
-                        ". Hakemuksia jotka eivät kuulu valintaryhmiin ja joilla on parempi jonosija: " + paremmatHakemuksetJaJonosijat);
+                        ". Hakemuksia jotka eivät kuulu hakijaryhmiin ja joilla on parempi jonosija: " + paremmatHakemuksetJaJonosijat);
             }
             return muuttuneetHakukohteet;
         }
