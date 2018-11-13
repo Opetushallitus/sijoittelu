@@ -137,7 +137,7 @@ public class SijoitteleHakukohde {
         int ehdollisetAloituspaikatTapa2 = 0;
         int aloituspaikat = jononAloituspaikat(valintatapajono);
         int tilaa = aloituspaikat - eiKorvattavissaOlevatHyvaksytytHakemukset.size();
-        boolean hakukohteessaValintaryhmia = !valintatapajono.getHakukohdeWrapper().getHakijaryhmaWrappers().isEmpty();
+        boolean hakukohteessaHakijaryhmia = !valintatapajono.getHakukohdeWrapper().getHakijaryhmaWrappers().isEmpty();
 
         //EHTO 1: jonon alimmalla hyväksytyllä jonosijalla olevat hakijat ovat hakijaryhmästä hyväksyttyjä
         //EHTO 2: edellämainitut hyväksytyt ovat hakijaryhmänsä alimmat hyväksytyt
@@ -153,16 +153,15 @@ public class SijoitteleHakukohde {
         int kokoHakukohteenHakijaryhmakiintiot = 0;
         int hakijaryhmastaHyvaksyttyjaKokoHakukohteessa = 0;
         List<HakemusWrapper> alimmallaSijallaOlevatHyvaksytyt = new ArrayList<>();
+        List<HakemusWrapper> alimmallaSijallaOlevatHakijaryhmastaHyvaksytyt = new ArrayList<>();
         Pair<Integer, Integer> huonoinHakijaryhmastaHyvaksyttyJonosijaJaMaara = null;
         boolean halutaanLogittaa = tilaa <= 0;
 
-        if (hakukohteessaValintaryhmia && halutaanLogittaa) {
+        if (hakukohteessaHakijaryhmia && halutaanLogittaa) {
 
             alimmallaSijallaOlevatHyvaksytyt = alimmallaHyvaksytyllaJonosijallaOlevatHyvaksytyt(valintatapajono);
-            ehto1 = alimmallaSijallaOlevatHyvaksytyt.size() > 0
-                    && alimmallaSijallaOlevatHyvaksytyt.get(0).isHyvaksyttyHakijaryhmastaTallaKierroksella();
-            ehto1b = alimmallaSijallaOlevatHyvaksytyt.stream().allMatch(HakemusWrapper::isHyvaksyttyHakijaryhmastaTallaKierroksella);
-            alimmallaSijallaOlevatHyvaksytyt.forEach(h -> alimpienHyvaksyttyjenHakijaryhmat.addAll(h.getHakemus().getHyvaksyttyHakijaryhmista()));
+            alimmallaSijallaOlevatHakijaryhmastaHyvaksytyt = alimmallaSijallaOlevatHyvaksytyt.stream().filter(HakemusWrapper::isHyvaksyttyHakijaryhmastaTallaKierroksella).collect(Collectors.toList());
+            alimmallaSijallaOlevatHakijaryhmastaHyvaksytyt.forEach(h -> alimpienHyvaksyttyjenHakijaryhmat.addAll(h.getHakemus().getHyvaksyttyHakijaryhmista()));
 
             for (HakijaryhmaWrapper hw : valintatapajono.getHakukohdeWrapper().getHakijaryhmaWrappers()) {
                 kokoHakukohteenHakijaryhmakiintiot += hw.getHakijaryhma().getKiintio();
@@ -182,14 +181,16 @@ public class SijoitteleHakukohde {
                 kiintionYlityksetRyhmittain.add(Pair.of(ryhmaOid, hakukohteenKiintionYlitysHakijaryhmalle(valintatapajono, ryhmaOid)));
             }
 
-            ehto2 = huonoimmatHakijaryhmastaHyvaksytytOvatTastaJonosta(valintatapajono, alimpienHyvaksyttyjenHakijaryhmat); //FIXME - tämä ei oikeasti nyt toimi
+            ehto1 = alimmallaSijallaOlevatHakijaryhmastaHyvaksytyt.size() > 0;
+            ehto1b = alimmallaSijallaOlevatHyvaksytyt.stream().allMatch(HakemusWrapper::isHyvaksyttyHakijaryhmastaTallaKierroksella);
+            ehto2 = huonoimmatHakijaryhmastaHyvaksytytOvatTastaJonosta(valintatapajono, alimpienHyvaksyttyjenHakijaryhmat); //FIXME ehkä; nyt saattaa toimiakin.
             ehto3 = kiintionYlitys > 0;
 
             kaikkiEhdot = ehto1 && ehto2 && ehto3;
 
             huonoinHakijaryhmastaHyvaksyttyJonosijaJaMaara = huonoimpienHakijaryhmastaHyvaksyttyjenJonosijaJaMaara(valintatapajono, alimpienHyvaksyttyjenHakijaryhmat);
-            ehdollisetAloituspaikatTapa1 = kiintionYlitys; //hakijaryhmästä hyväksyttyjen ja hakijaryhmän kiintiö erotus
-            ehdollisetAloituspaikatTapa2 = huonoinHakijaryhmastaHyvaksyttyJonosijaJaMaara.getRight() - 1; //alimmalla hyväksytyllä jonosijalla olevien määrä vähennettynä yhdellä
+            ehdollisetAloituspaikatTapa1 = kiintionYlitys; //hakijaryhmästä hyväksyttyjen ja hakijaryhmän kiintiön erotus
+            ehdollisetAloituspaikatTapa2 = alimmallaSijallaOlevatHakijaryhmastaHyvaksytyt.size() - 1; //alimmalla hyväksytyllä jonosijalla olevien määrä vähennettynä yhdellä
 
         }
 
@@ -197,14 +198,15 @@ public class SijoitteleHakukohde {
         if (tilaa <= 0) {
             if (kaikkiEhdot) {
 
-                List<HakemusWrapper> kiinnostavat = samallaTaiParemmallaJonosijallaOlevatHakijaryhmaanKuulumattomat(valintatapajono, huonoimpienHakijaryhmastaHyvaksyttyjenJonosijaJaMaara(valintatapajono, alimpienHyvaksyttyjenHakijaryhmat).getLeft());
-                List<Pair<String, Integer>> paremmatHakemuksetJaJonosijat = kiinnostavat.stream().map(hw -> Pair.of(hw.getHakemus().getHakemusOid(), hw.getHakemus().getJonosija())).collect(Collectors.toList());
                 int alinJonosija = huonoinHakijaryhmastaHyvaksyttyJonosijaJaMaara.getLeft();
+                List<HakemusWrapper> kiinnostavat = samallaTaiParemmallaJonosijallaOlevatHakijaryhmaanKuulumattomat(valintatapajono, alinJonosija);
+                List<Pair<String, Integer>> paremmatHakemuksetJaJonosijat = kiinnostavat.stream().map(hw -> Pair.of(hw.getHakemus().getHakemusOid(), hw.getHakemus().getJonosija())).collect(Collectors.toList());
                 if (!alimmallaSijallaOlevatHyvaksytyt.stream().allMatch(hw -> hw.getHakemus().getJonosija() == alinJonosija)) {
                     LOG.error("Sanity!");
                 }
 
                 LOG.info(baseStr + "valintatapajono " + valintatapajono.getValintatapajono().getOid() +
+                        ": " + valintatapajono.getValintatapajono().getNimi() +
                         ", aloituspaikkoja: "+ aloituspaikat +
                         ", Hyväksytyt alimmalla jonosijalla (" + alinJonosija + "): " + alimmallaSijallaOlevatHyvaksytyt.stream().map(hw -> "(" + hw.getHakemus().getHakemusOid() + ", hyvaksyttyHakijaryhmastaTallaKierroksella: " + hw.isHyvaksyttyHakijaryhmastaTallaKierroksella()+")").collect(Collectors.toList()) +
                         ", kaikki viimeisellä jonosijalla olevat hyväksytty hakijaryhmistä tällä kierroksella: " + ehto1b +
@@ -508,7 +510,7 @@ public class SijoitteleHakukohde {
 
     private static List<HakemusWrapper> samallaTaiParemmallaJonosijallaOlevatHakijaryhmaanKuulumattomat(ValintatapajonoWrapper jono, int jonosija) {
         return jono.getHakemukset().stream()
-                .filter(hw -> jono.getHakukohdeWrapper().getHakijaryhmaWrappers().stream().filter(hrw -> hrw.getHakijaryhma().getHakemusOid().contains(hw.getHakemus().getHakemusOid())).collect(Collectors.toList()).size() == 0)
+                .filter(hw -> jono.getHakukohdeWrapper().getHakijaryhmaWrappers().stream().filter(hrw -> hrw.getHakijaryhma().getHakemusOid().contains(hw.getHakemus().getHakemusOid())).collect(Collectors.toList()).size() == 0) //Fixme tämän voi saletisti tehdä selkeämmin
                 .filter(hw -> !kuuluuHyvaksyttyihinTiloihin(hw.getHakemus().getTila()))
                 .filter(hw -> hw.getHakemus().getJonosija() <= jonosija)
                 .collect(Collectors.toList());
@@ -550,16 +552,15 @@ public class SijoitteleHakukohde {
     private static boolean huonoimmatHakijaryhmastaHyvaksytytOvatTastaJonosta(ValintatapajonoWrapper tamaJono, Set<String> hakijaryhmaOids) {
         int huonoinJonosija = -1;
         int huonoinJonoPrioriteetti = -1; //tiebreaker jos sama jonosija
-        List<ValintatapajonoWrapper> kaikkiJonot = tamaJono.getHakukohdeWrapper().getValintatapajonot();
-        for(ValintatapajonoWrapper ehdokasJono : kaikkiJonot) {
-            int huonoinJonosijaTastaJonosta = huonoimpienHakijaryhmastaHyvaksyttyjenJonosijaJaMaara(ehdokasJono, hakijaryhmaOids).getLeft();
-            if(huonoinJonosijaTastaJonosta >= huonoinJonosija) {
-                if(huonoinJonosijaTastaJonosta == huonoinJonosija) {
+        for(ValintatapajonoWrapper ehdokasJono : tamaJono.getHakukohdeWrapper().getValintatapajonot()) {
+            int huonoinJonosijaEhdokasjonosta = huonoimpienHakijaryhmastaHyvaksyttyjenJonosijaJaMaara(ehdokasJono, hakijaryhmaOids).getLeft();
+            if(huonoinJonosijaEhdokasjonosta >= huonoinJonosija) {
+                if(huonoinJonosijaEhdokasjonosta == huonoinJonosija) {
                     if(huonoinJonoPrioriteetti < ehdokasJono.getValintatapajono().getPrioriteetti()) {
                         huonoinJonoPrioriteetti = ehdokasJono.getValintatapajono().getPrioriteetti(); //Löytyi sama jonosija heikomman prioriteetin jonosta, päivitetään siihen
                     }
                 } else {
-                    huonoinJonosija = huonoinJonosijaTastaJonosta; //Löytyi heikompi jonosija, päivitetään siihen
+                    huonoinJonosija = huonoinJonosijaEhdokasjonosta; //Löytyi heikompi jonosija, päivitetään siihen
                     huonoinJonoPrioriteetti = ehdokasJono.getValintatapajono().getPrioriteetti();
                 }
             }
@@ -590,16 +591,17 @@ public class SijoitteleHakukohde {
     private static Pair<Integer, Integer> huonoimpienHakijaryhmastaHyvaksyttyjenJonosijaJaMaara(ValintatapajonoWrapper valintatapajonoWrapper, Set<String> hakijaryhmaOids) {
         Optional<HakemusWrapper> huonoin = valintatapajonoWrapper.getHakemukset()
                 .stream()
-                .filter(hw -> hakijaryhmaOids.containsAll(hw.getHakemus().getHyvaksyttyHakijaryhmista()))
+                .filter(hw -> hw.getHakemus().getHyvaksyttyHakijaryhmista().containsAll(hakijaryhmaOids))
                 .filter(HakemusWrapper::isHyvaksyttyHakijaryhmastaTallaKierroksella).min((h1, h2) -> comparator.compare(h2, h1));
 
         final int viimeinenJonosija = huonoin.isPresent() ? huonoin.get().getHakemus().getJonosija() : -1;
-        int hakemuksiaViimeisellaJonosijalla = valintatapajonoWrapper.getHakemukset()
+        int hakijaryhmastaHyvaksyttyjaHakemuksiaViimeisellaJonosijalla = valintatapajonoWrapper.getHakemukset()
                 .stream()
                 .filter(h -> h.getHakemus().getJonosija() == viimeinenJonosija)
+                .filter(HakemusWrapper::isHyvaksyttyHakijaryhmastaTallaKierroksella)
                 .collect(Collectors.toList()).size();
 
-        return Pair.of(viimeinenJonosija, hakemuksiaViimeisellaJonosijalla);
+        return Pair.of(viimeinenJonosija, hakijaryhmastaHyvaksyttyjaHakemuksiaViimeisellaJonosijalla);
     }
 
     static boolean eiPeruttuaKorkeampaaTaiSamaaHakutoivetta(HakemusWrapper hakemusWrapper) {
