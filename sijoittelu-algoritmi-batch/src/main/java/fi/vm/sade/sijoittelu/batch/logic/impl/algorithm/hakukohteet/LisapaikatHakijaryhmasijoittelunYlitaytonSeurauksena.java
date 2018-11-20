@@ -40,7 +40,7 @@ public class LisapaikatHakijaryhmasijoittelunYlitaytonSeurauksena {
     private int ehdollisetAloituspaikatTapa2;
 
 
-    LisapaikatHakijaryhmasijoittelunYlitaytonSeurauksena(ValintatapajonoWrapper valintatapajono, int tilaa, int seuraaviaTasasijalla) {
+    LisapaikatHakijaryhmasijoittelunYlitaytonSeurauksena(ValintatapajonoWrapper valintatapajono, int tilaa, int seuraaviaTasasijalla, List<HakemusWrapper> valituiksiHaluavatHakemukset) {
         this.hakukohdeOid = valintatapajono.getHakukohdeWrapper().getHakukohde().getOid();
         this.valintatapajonoOid = valintatapajono.getValintatapajono().getOid();
         this.valintatapajonoNimi = valintatapajono.getValintatapajono().getNimi();
@@ -93,7 +93,7 @@ public class LisapaikatHakijaryhmasijoittelunYlitaytonSeurauksena {
         ehdollisetAloituspaikatTapa2 = alimmallaSijallaOlevatHakijaryhmastaHyvaksytyt.size() - 1;
 
         alinHakijaryhmaJonosija = alimmallaSijallaOlevatHakijaryhmastaHyvaksytyt.size() > 0 ? alimmallaSijallaOlevatHakijaryhmastaHyvaksytyt.get(0).getHakemus().getJonosija() : -1;
-        List<HakemusWrapper> kiinnostavat = samallaTaiParemmallaJonosijallaOlevatHakijaryhmaanKuulumattomat(valintatapajono, alinHakijaryhmaJonosija);
+        List<HakemusWrapper> kiinnostavat = samallaTaiParemmallaJonosijallaOlevatHakijaryhmaanKuulumattomat(valintatapajono, valituiksiHaluavatHakemukset, alinHakijaryhmaJonosija);
         paremmatHakemuksetJaJonosijat = kiinnostavat.stream()
                 .map(hw -> Pair.of(hw.getHakemus().getHakemusOid(), hw.getHakemus().getJonosija()))
                 .collect(Collectors.toList());
@@ -103,8 +103,8 @@ public class LisapaikatHakijaryhmasijoittelunYlitaytonSeurauksena {
     }
 
 
-    private static List<HakemusWrapper> samallaTaiParemmallaJonosijallaOlevatHakijaryhmaanKuulumattomat(ValintatapajonoWrapper jono, int jonosija) {
-        return jono.getHakemukset().stream()
+    private static List<HakemusWrapper> samallaTaiParemmallaJonosijallaOlevatHakijaryhmaanKuulumattomat(ValintatapajonoWrapper jono, List<HakemusWrapper> valituiksiHaluavat, int jonosija) {
+        return valituiksiHaluavat.stream()
                 .filter(hw -> hw.getHakemus().getJonosija() <= jonosija)
                 .filter(hw -> !kuuluuHyvaksyttyihinTiloihin(hw.getHakemus().getTila()))
                 .filter(hw -> jono.getHakukohdeWrapper().getHakijaryhmaWrappers().stream()

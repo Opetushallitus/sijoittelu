@@ -120,7 +120,7 @@ public class SijoitteleHakukohde {
         Tasasijasaanto saanto = jononTasasijasaanto(valintatapajono);
         List<HakemusWrapper> kaikkiTasasijaHakemukset = getTasasijaHakemus(valituksiHaluavatHakemukset, saanto);
 
-        LisapaikatHakijaryhmasijoittelunYlitaytonSeurauksena lisaPaikat = new LisapaikatHakijaryhmasijoittelunYlitaytonSeurauksena(valintatapajono, tilaa, kaikkiTasasijaHakemukset.size());
+        LisapaikatHakijaryhmasijoittelunYlitaytonSeurauksena lisaPaikat = new LisapaikatHakijaryhmasijoittelunYlitaytonSeurauksena(valintatapajono, tilaa, kaikkiTasasijaHakemukset.size(), valituksiHaluavatHakemukset);
 
         if (tilaa <= 0) {
             if (lisaPaikat.isKaikkiEhdot()) {
