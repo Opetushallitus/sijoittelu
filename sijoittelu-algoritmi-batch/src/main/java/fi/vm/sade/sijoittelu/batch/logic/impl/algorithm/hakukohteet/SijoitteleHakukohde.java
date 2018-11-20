@@ -130,7 +130,7 @@ public class SijoitteleHakukohde {
             }
             return muuttuneetHakukohteet;
         } else if (lisaPaikat.isKaikkiEhdot() && tilaa-kaikkiTasasijaHakemukset.size() < 0){
-            LOG.info("JONOSSA TILAA MUTTA LOGITETAAN KUITENKIN! " + lisaPaikat.toString());
+            LOG.info("JONOSSA TILAA MUTTA KAIKKI TASASIJALTA EIVÄT MAHDU ILMAN LISÄPAIKKOJA! " + lisaPaikat.toString());
         }
 
         List<HakemusWrapper> muuttuneet = new ArrayList<>();
