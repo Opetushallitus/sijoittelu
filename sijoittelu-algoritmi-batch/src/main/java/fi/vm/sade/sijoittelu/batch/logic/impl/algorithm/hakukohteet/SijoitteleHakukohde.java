@@ -30,7 +30,6 @@ import fi.vm.sade.sijoittelu.domain.Tasasijasaanto;
 import fi.vm.sade.sijoittelu.domain.Valintatapajono;
 import fi.vm.sade.sijoittelu.domain.ValintatuloksenTila;
 import fi.vm.sade.sijoittelu.domain.Valintatulos;
-import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,7 +40,6 @@ import java.util.stream.Collectors;
 
 public class SijoitteleHakukohde {
     private static final Logger LOG = LoggerFactory.getLogger(SijoitteleHakukohde.class);
-    private static HakemusWrapperComparator comparator = new HakemusWrapperComparator();
     public static Set<HakukohdeWrapper> sijoitteleHakukohde(SijoitteluajoWrapper sijoitteluAjo, HakukohdeWrapper hakukohde) {
 
         Set<HakukohdeWrapper> muuttuneetHakukohteet = Sets.newHashSet();

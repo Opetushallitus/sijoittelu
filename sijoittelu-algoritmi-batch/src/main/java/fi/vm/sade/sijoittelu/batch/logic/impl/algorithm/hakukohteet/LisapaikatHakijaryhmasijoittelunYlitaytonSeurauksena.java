@@ -32,16 +32,13 @@ public class LisapaikatHakijaryhmasijoittelunYlitaytonSeurauksena {
     private int hakukohteessaHakijaryhmia;
     private List<Pair<String, Integer>> kiintionYlityksetRyhmittain;
     private List<Pair<String, Integer>> paremmatHakemuksetJaJonosijat;
+    private Set<String> alimpienHyvaksyttyjenHakijaryhmaOids = new HashSet<>();
     //--
-
-
-    private String toLog = "";
 
     private boolean kaikkiEhdot;
     private int ehdollisetAloituspaikatTapa1;
     private int ehdollisetAloituspaikatTapa2;
 
-    private Set<String> alimpienHyvaksyttyjenHakijaryhmaOids = new HashSet<>();
 
     LisapaikatHakijaryhmasijoittelunYlitaytonSeurauksena(ValintatapajonoWrapper valintatapajono, int tilaa, int seuraaviaTasasijalla) {
         this.hakukohdeOid = valintatapajono.getHakukohdeWrapper().getHakukohde().getOid();
@@ -115,16 +112,16 @@ public class LisapaikatHakijaryhmasijoittelunYlitaytonSeurauksena {
                 .collect(Collectors.toList());
     }
 
-    private static List<HakemusWrapper> alimmallaHyvaksytyllaJonosijallaOlevatHyvaksytyt(ValintatapajonoWrapper wrapper) {
-        Optional<HakemusWrapper> hakemusHyvaksytyistaMatalimmallaJonosijalla = wrapper.getHakemukset()
-                .stream()
+    private static List<HakemusWrapper> alimmallaHyvaksytyllaJonosijallaOlevatHyvaksytyt(ValintatapajonoWrapper jono) {
+        Optional<HakemusWrapper> hakemusHyvaksytyistaMatalimmallaJonosijalla = jono.getHakemukset().stream()
                 .filter(h -> kuuluuHyvaksyttyihinTiloihin(hakemuksenTila(h)))
                 .min((h1, h2) -> comparator.compare(h2, h1));
         if (hakemusHyvaksytyistaMatalimmallaJonosijalla.isPresent()) {
             HakemusWrapper h = hakemusHyvaksytyistaMatalimmallaJonosijalla.get();
             int matalinJonosija = h.getHakemus().getJonosija();
-            return wrapper.getHakemukset().stream()
+            return jono.getHakemukset().stream()
                     .filter(hw -> hw.getHakemus().getJonosija() == matalinJonosija)
+                    .filter(hw -> kuuluuHyvaksyttyihinTiloihin(hakemuksenTila(hw)))
                     .collect(Collectors.toList());
         } else return Collections.emptyList();
     }
@@ -206,9 +203,9 @@ public class LisapaikatHakijaryhmasijoittelunYlitaytonSeurauksena {
                 ". Hakemuksia jotka eivät kuulu hakijaryhmiin ja joilla on parempi jonosija: " + paremmatHakemuksetJaJonosijat);
     }
 
-    public int lisapaikatKaytossa(int tapa) {
+    public int lisapaikatJonosijoittelunKaytossa(int laskutapa) {
         if (kaikkiEhdot) {
-            switch (tapa) {
+            switch (laskutapa) {
                 case 1: return ehdollisetAloituspaikatTapa1;
                 case 2: return ehdollisetAloituspaikatTapa2;
             }
