@@ -83,11 +83,8 @@ public class SijoitteleHakukohde {
 
     }
 
-        private static Set<HakukohdeWrapper> sijoitteleValintatapajono(SijoitteluajoWrapper sijoitteluAjo, ValintatapajonoWrapper valintatapajono) {
+    private static Set<HakukohdeWrapper> sijoitteleValintatapajono(SijoitteluajoWrapper sijoitteluAjo, ValintatapajonoWrapper valintatapajono) {
         Set<HakukohdeWrapper> muuttuneetHakukohteet = new HashSet<>();
-        final String baseStr = "HRS - Hakukohde " + valintatapajono.getHakukohdeWrapper().getHakukohde().getOid()+ " - "
-                + "valintatapajono " + valintatapajono.getValintatapajono().getOid() +
-                ": " + valintatapajono.getValintatapajono().getNimi() + ".";
         if (valintatapajono.isAlitayttoLukko()) {
             // Hakijaryhmäkäsittelyssä alitäyttösääntö käytetty
             return muuttuneetHakukohteet;
@@ -121,7 +118,6 @@ public class SijoitteleHakukohde {
 
         int aloituspaikat = jononAloituspaikat(valintatapajono);
         int tilaa = aloituspaikat - eiKorvattavissaOlevatHyvaksytytHakemukset.size();
-        boolean hakukohteessaHakijaryhmia = !valintatapajono.getHakukohdeWrapper().getHakijaryhmaWrappers().isEmpty();
 
         Tasasijasaanto saanto = jononTasasijasaanto(valintatapajono);
         List<HakemusWrapper> kaikkiTasasijaHakemukset = getTasasijaHakemus(valituksiHaluavatHakemukset, saanto);

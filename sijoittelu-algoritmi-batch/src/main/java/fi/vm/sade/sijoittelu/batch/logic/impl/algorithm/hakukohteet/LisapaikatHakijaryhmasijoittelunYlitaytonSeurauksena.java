@@ -207,12 +207,9 @@ public class LisapaikatHakijaryhmasijoittelunYlitaytonSeurauksena {
     }
 
     public int lisapaikatKaytossa(int tapa) {
-        if(true)
-            return 4;
         if (kaikkiEhdot) {
             switch (tapa) {
-                //case 1: return ehdollisetAloituspaikatTapa1;
-                case 1: return 4;
+                case 1: return ehdollisetAloituspaikatTapa1;
                 case 2: return ehdollisetAloituspaikatTapa2;
             }
         }
