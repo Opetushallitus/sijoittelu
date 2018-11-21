@@ -66,15 +66,12 @@ public class SijoitteleHakukohde {
     }
 
     private static void debugLogHakemusStates(HakukohdeWrapper hakukohde) {
-        List<HakijaryhmaWrapper> hrws = hakukohde.getHakijaryhmaWrappers();
-        Optional<HakijaryhmaWrapper> hrw;
-        if (hrws.size() > 0 ) { hrw = Optional.of(hrws.get(0)); } else { hrw = Optional.empty(); }
-        Optional<HakijaryhmaWrapper> finalHrw = hrw;
         hakukohde.getValintatapajonot().forEach(jono -> {
             LOG.debug("        jono " + jono.getValintatapajono().getOid() + " :");
             List<HakemusWrapper> jononHakemukset = jono.getHakemukset().stream()
                     .sorted(new HakemusWrapperComparator()).collect(Collectors.toList());
-            jononHakemukset.forEach(h -> LOG.debug("                " + (finalHrw.isPresent() && finalHrw.get().getHenkiloWrappers().contains(h.getHenkilo()) ? " * " : " - ") +
+            jononHakemukset.forEach(h -> LOG.debug("                " +
+                    (hakukohde.getHakijaryhmaWrappers().stream().anyMatch(r -> r.getHenkiloWrappers().contains(h.getHenkilo())) ? " * " : " - ") +
                     h.getHakemus().getHakemusOid() + " / jonosija " + h.getHakemus().getJonosija() + " / " + h.getHakemus().getTila() + " / hyväksytty hakijaryhmistä " +
                     h.getHakemus().getHyvaksyttyHakijaryhmista() + " / hyväksytty hakijaryhmästä tällä kierroksella " + h.isHyvaksyttyHakijaryhmastaTallaKierroksella()));
         });
