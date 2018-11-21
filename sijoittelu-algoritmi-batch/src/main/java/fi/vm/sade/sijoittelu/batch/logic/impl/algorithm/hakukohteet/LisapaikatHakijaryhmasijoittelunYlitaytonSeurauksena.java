@@ -17,27 +17,27 @@ public class LisapaikatHakijaryhmasijoittelunYlitaytonSeurauksena {
     private static HakemusWrapperComparator comparator = new HakemusWrapperComparator();
 
     //Apumuuttujat login ja jsonin parsimiseen
-    private String hakukohdeOid;
-    private String valintatapajonoOid;
-    private String valintatapajonoNimi;
-    private int tilaa;
-    private int seuraaviaTasasijalla;
-    private int alinHakijaryhmaJonosija;
-    private int relevanteistaRyhmistaHyvaksyttyja;
-    private int relevantitHakijaryhmakiintiot;
-    private int relevanttienKiintioidenYlitys;
-    private int alimmallaSijallaHyvaksyttyja;
-    private int alimmallaSijallaHakijaryhmastaHyvaksyttyja;
-    private List<String> alimmallaSijallaOlevienTiedot;
-    private int hakukohteessaHakijaryhmia;
-    private List<Pair<String, Integer>> kiintionYlityksetRyhmittain;
-    private List<Pair<String, Integer>> paremmatHakemuksetJaJonosijat;
-    private Set<String> alimpienHyvaksyttyjenHakijaryhmaOids = new HashSet<>();
+    final private String hakukohdeOid;
+    final private String valintatapajonoOid;
+    final private String valintatapajonoNimi;
+    final private int tilaa;
+    final private int seuraaviaTasasijalla;
+    final private int alinHakijaryhmaJonosija;
+    final private int relevanteistaRyhmistaHyvaksyttyja;
+    final private int relevantitHakijaryhmakiintiot;
+    final private int relevanttienKiintioidenYlitys;
+    final private int alimmallaSijallaHyvaksyttyja;
+    final private int alimmallaSijallaHakijaryhmastaHyvaksyttyja;
+    final private List<String> alimmallaSijallaOlevienTiedot;
+    final private int hakukohteessaHakijaryhmia;
+    final private List<Pair<String, Integer>> kiintionYlityksetRyhmittain;
+    final private List<Pair<String, Integer>> paremmatHakemuksetJaJonosijat;
+    final private Set<String> alimpienHyvaksyttyjenHakijaryhmaOids = new HashSet<>();
     //--
 
-    private boolean kaikkiEhdot;
-    private int ehdollisetAloituspaikatTapa1;
-    private int ehdollisetAloituspaikatTapa2;
+    final private boolean kaikkiEhdot;
+    final private int ehdollisetAloituspaikatTapa1;
+    final private int ehdollisetAloituspaikatTapa2;
 
 
     LisapaikatHakijaryhmasijoittelunYlitaytonSeurauksena(ValintatapajonoWrapper valintatapajono, int tilaa, int seuraaviaTasasijalla, List<HakemusWrapper> valituiksiHaluavatHakemukset) {
@@ -65,16 +65,18 @@ public class LisapaikatHakijaryhmasijoittelunYlitaytonSeurauksena {
                 .filter(hrw -> alimpienHyvaksyttyjenHakijaryhmaOids.contains(hrw.getHakijaryhma().getOid()))
                 .collect(Collectors.toList());
 
-        alimmallaSijallaHyvaksyttyja = alimmallaSijallaOlevatHyvaksytyt.size();
-        alimmallaSijallaHakijaryhmastaHyvaksyttyja = alimmallaSijallaOlevatHakijaryhmastaHyvaksytyt.size();
-
-        relevantitHakijaryhmakiintiot = 0;
-        relevanteistaRyhmistaHyvaksyttyja = 0;
+        int hyvaksyttyja = 0;
+        int kiintiot = 0;
         for (HakijaryhmaWrapper hw : relevantitHakijaryhmat) {
-            relevantitHakijaryhmakiintiot += hw.getHakijaryhma().getKiintio();
-            relevanteistaRyhmistaHyvaksyttyja += hakijaryhmastaHyvaksyttyjaHakukohteenKaikissaJonoissa(valintatapajono.getHakukohdeWrapper(), hw.getHakijaryhma().getOid());
+            kiintiot += hw.getHakijaryhma().getKiintio();
+            hyvaksyttyja += hakijaryhmastaHyvaksyttyjaHakukohteenKaikissaJonoissa(valintatapajono.getHakukohdeWrapper(), hw.getHakijaryhma().getOid());
         }
-        relevanttienKiintioidenYlitys = relevanteistaRyhmistaHyvaksyttyja - relevantitHakijaryhmakiintiot; //kiintiön ylitys tämän jonon viimeisellä sijalla olevien hakijaryhmissä
+        relevanteistaRyhmistaHyvaksyttyja = hyvaksyttyja;
+        relevantitHakijaryhmakiintiot = kiintiot;
+        relevanttienKiintioidenYlitys = hyvaksyttyja - kiintiot; //kiintiön ylitys tämän jonon viimeisellä sijalla olevien hakijaryhmissä
+
+        this.alimmallaSijallaHyvaksyttyja = alimmallaSijallaOlevatHyvaksytyt.size();
+        alimmallaSijallaHakijaryhmastaHyvaksyttyja = alimmallaSijallaOlevatHakijaryhmastaHyvaksytyt.size();
 
         //EHTO: Tämän jonon alimmalla hyväksytyllä jonosijalla on yli yksi hakijaryhmästä hyväksyttyä
         boolean ehto1 = alimmallaSijallaOlevatHakijaryhmastaHyvaksytyt.size() > 1;
@@ -98,7 +100,6 @@ public class LisapaikatHakijaryhmasijoittelunYlitaytonSeurauksena {
                 .map(hw -> Pair.of(hw.getHakemus().getHakemusOid(), hw.getHakemus().getJonosija()))
                 .collect(Collectors.toList());
 
-
         alimmallaSijallaOlevienTiedot = alimmallaSijallaOlevatHyvaksytyt.stream().map(hw -> "(" + hw.getHakemus().getHakemusOid() + ", hyvaksyttyHakijaryhmista: " + hw.getHakemus().getHyvaksyttyHakijaryhmista() + ")").collect(Collectors.toList());
     }
 
@@ -106,7 +107,6 @@ public class LisapaikatHakijaryhmasijoittelunYlitaytonSeurauksena {
     private static List<HakemusWrapper> samallaTaiParemmallaJonosijallaOlevatHakijaryhmaanKuulumattomat(ValintatapajonoWrapper jono, List<HakemusWrapper> valituiksiHaluavat, int jonosija) {
         return valituiksiHaluavat.stream()
                 .filter(hw -> hw.getHakemus().getJonosija() <= jonosija)
-                .filter(hw -> !kuuluuHyvaksyttyihinTiloihin(hw.getHakemus().getTila()))
                 .filter(hw -> jono.getHakukohdeWrapper().getHakijaryhmaWrappers().stream()
                         .noneMatch(hrw -> hrw.getHakijaryhma().getHakemusOid().contains(hw.getHakemus().getHakemusOid())))
                 .collect(Collectors.toList());
