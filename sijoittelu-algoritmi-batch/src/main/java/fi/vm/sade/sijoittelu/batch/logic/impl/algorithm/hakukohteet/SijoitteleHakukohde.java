@@ -127,8 +127,8 @@ public class SijoitteleHakukohde {
                 LOG.info(lisaPaikat.toString());
             }
             return muuttuneetHakukohteet;
-        } else if (lisaPaikat.isKaikkiEhdot() && tilaa-kaikkiTasasijaHakemukset.size() < 0){
-            LOG.info("JONOSSA TILAA MUTTA KAIKKI TASASIJALTA EIVÄT MAHDU ILMAN LISÄPAIKKOJA! " + lisaPaikat.toString());
+        } else if (lisaPaikat.isKaikkiEhdot() && tilaa-kaikkiTasasijaHakemukset.size() < 0 && !saanto.equals(Tasasijasaanto.YLITAYTTO)){
+            LOG.info("JONOSSA TILAA MUTTA KAIKKI TASASIJALTA EIVÄT MAHDU ILMAN LISÄPAIKKOJA! Tasasijasääntö: " + saanto + ". " + lisaPaikat.toString());
         }
 
         List<HakemusWrapper> muuttuneet = new ArrayList<>();
