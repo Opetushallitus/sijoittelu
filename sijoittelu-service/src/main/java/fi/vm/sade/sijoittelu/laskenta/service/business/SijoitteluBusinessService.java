@@ -61,6 +61,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -666,6 +667,8 @@ public class SijoitteluBusinessService {
             Map<String, HakemuksenTila> tilaHashMap = new ConcurrentHashMap<>();
             Map<String, Map<String, String>> tilankuvauksetHashMap = new ConcurrentHashMap<>();
             if (kaikkiHakukohteet.containsKey(hakukohde.getOid())) {
+                List<String> passiveHakemusOids = etsiPassivoituja(kaikkiHakukohteet.get(hakukohde.getOid()), hakukohde);
+                LOG.info("Käsiteltiin passivoidut tai hakutoiveiltaan muuttuneet hakemusOidit:" + passiveHakemusOids);
                 kaikkiHakukohteet.get(hakukohde.getOid()).getValintatapajonot().parallelStream().forEach(valintatapajono ->
                     valintatapajono.getHakemukset().parallelStream().forEach(h -> {
                         if (h.getTasasijaJonosija() != null) {
@@ -697,6 +700,42 @@ public class SijoitteluBusinessService {
             }
             kaikkiHakukohteet.put(hakukohde.getOid(), hakukohde);
         });
+    }
+
+    //Selvitetään, onko edellisen sijoitteluajon hakukohteen valintatapajonoissa hakemuksia, joita ei ole uuden jonoissa. Tulkitaan sellaiset passivoituina kadonneiksi.
+    private List<String> etsiPassivoituja(Hakukohde edellinen, Hakukohde uusi) {
+        AtomicInteger passivoituja = new AtomicInteger(0);
+        AtomicInteger ok = new AtomicInteger(0);
+        List<String> passivoidutHakemusOidit = new ArrayList<>();
+        edellinen.getValintatapajonot().forEach(ejono -> ejono.getHakemukset().forEach(ehak -> {
+            boolean loytyy = uusi.getValintatapajonot()
+                    .stream()
+                    .anyMatch(uusiJono -> uusiJono.getHakemukset()
+                            .stream()
+                            .anyMatch(uusiHakemus -> uusiHakemus.getHakemusOid().equals(ehak.getHakemusOid())));
+            if (!loytyy) {
+                passivoidutHakemusOidit.add(ehak.getHakemusOid());
+                LOG.warn("Hakemus {} hakukohteessa {} saattaa olla passivoitu!", ehak.getHakemusOid(), uusi.getOid());
+                //LOG.info("Hakukohde {} -- EDELLINEN: {}", uusi.getOid(), allHakemuksesByJonoForHakukohde(edellinen));
+                //LOG.info("Hakukohde {} -- UUSI: {}", uusi.getOid(), allHakemuksesByJonoForHakukohde(uusi));
+                valintarekisteriService.cleanRedundantSijoitteluTuloksesForHakemusInHakukohde(ehak.getHakemusOid(), uusi.getOid());
+                passivoituja.incrementAndGet();
+            } else {
+                //LOG.info("Hakemus {} hakukohteessa {} löytyy myös uudesta hakukohteesta.", ehak.getHakemusOid(), uusi.getOid());
+                ok.incrementAndGet();
+            }
+        }));
+        LOG.info("Hakukohde {} käsitelty. Mahdollisesti passivoituja {}, ok: {}. Passivoitujen hakemusOidit: {}", uusi.getOid(), passivoituja.get(), ok.get(), passivoidutHakemusOidit );
+        return passivoidutHakemusOidit;
+    }
+
+    private String allHakemuksesByJonoForHakukohde(Hakukohde hk) {
+        List<String> hakemusOidsWithJono = new ArrayList<>();
+        for(Valintatapajono v : hk.getValintatapajonot()) {
+            v.getHakemukset().forEach(hak -> hakemusOidsWithJono.add(v.getOid() + " - " + hak.getHakemusOid()));
+        }
+        return hakemusOidsWithJono.toString();
+
     }
 
     private boolean containsHylkayksenSyyFromLaskenta(Hakemus hakemus) {
