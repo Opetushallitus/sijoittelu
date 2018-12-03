@@ -702,7 +702,9 @@ public class SijoitteluBusinessService {
         });
     }
 
-    //Selvitetään, onko edellisen sijoitteluajon hakukohteen valintatapajonoissa hakemuksia, joita ei ole uuden jonoissa. Tulkitaan sellaiset passivoituina kadonneiksi.
+    //Selvitetään, onko edellisen sijoitteluajon hakukohteen valintatapajonoissa hakemuksia,
+    //joita ei ole uuden jonoissa. Tulkitaan sellaiset passivoituina kadonneiksi.
+    //Myös tämän hakukohteen osalta muuttunut (poistunut) hakutoive ilmenee samoin.
     private List<String> etsiPassivoituja(Hakukohde edellinen, Hakukohde uusi) {
         AtomicInteger passivoituja = new AtomicInteger(0);
         AtomicInteger ok = new AtomicInteger(0);
@@ -715,27 +717,15 @@ public class SijoitteluBusinessService {
                             .anyMatch(uusiHakemus -> uusiHakemus.getHakemusOid().equals(ehak.getHakemusOid())));
             if (!loytyy) {
                 passivoidutHakemusOidit.add(ehak.getHakemusOid());
-                LOG.warn("Hakemus {} hakukohteessa {} saattaa olla passivoitu!", ehak.getHakemusOid(), uusi.getOid());
-                //LOG.info("Hakukohde {} -- EDELLINEN: {}", uusi.getOid(), allHakemuksesByJonoForHakukohde(edellinen));
-                //LOG.info("Hakukohde {} -- UUSI: {}", uusi.getOid(), allHakemuksesByJonoForHakukohde(uusi));
+                LOG.warn("Hakemus {} hakukohteessa {} saattaa olla passivoitu! Kutsutaan siivoustoteutusta.", ehak.getHakemusOid(), uusi.getOid());
                 valintarekisteriService.cleanRedundantSijoitteluTuloksesForHakemusInHakukohde(ehak.getHakemusOid(), uusi.getOid());
                 passivoituja.incrementAndGet();
             } else {
-                //LOG.info("Hakemus {} hakukohteessa {} löytyy myös uudesta hakukohteesta.", ehak.getHakemusOid(), uusi.getOid());
                 ok.incrementAndGet();
             }
         }));
         LOG.info("Hakukohde {} käsitelty. Mahdollisesti passivoituja {}, ok: {}. Passivoitujen hakemusOidit: {}", uusi.getOid(), passivoituja.get(), ok.get(), passivoidutHakemusOidit );
         return passivoidutHakemusOidit;
-    }
-
-    private String allHakemuksesByJonoForHakukohde(Hakukohde hk) {
-        List<String> hakemusOidsWithJono = new ArrayList<>();
-        for(Valintatapajono v : hk.getValintatapajonot()) {
-            v.getHakemukset().forEach(hak -> hakemusOidsWithJono.add(v.getOid() + " - " + hak.getHakemusOid()));
-        }
-        return hakemusOidsWithJono.toString();
-
     }
 
     private boolean containsHylkayksenSyyFromLaskenta(Hakemus hakemus) {
