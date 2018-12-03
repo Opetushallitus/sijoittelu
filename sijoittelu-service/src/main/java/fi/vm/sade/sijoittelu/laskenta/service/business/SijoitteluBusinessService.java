@@ -607,7 +607,7 @@ public class SijoitteluBusinessService {
             hakukohde.setId(null);
             kaikkiHakukohteet.put(hakukohde.getOid(), hakukohde);
         });
-        talletaTasasijaJonosijatJaEdellisetTilatJaTilanKuvaukset(uudetHakukohteet, kaikkiHakukohteet);
+        kopioiTiedotEdelliseltaSijoitteluajoltaJaPoistaPassivoitujenTulokset(uudetHakukohteet, kaikkiHakukohteet);
         siirraSivssnov(olemassaolevatHakukohteet, kaikkiHakukohteet);
         kopioiHakemuksenTietoja(olemassaolevatHakukohteet, kaikkiHakukohteet);
         kaikkiHakukohteet.values().forEach(hakukohde -> {
@@ -662,7 +662,10 @@ public class SijoitteluBusinessService {
         });
     }
 
-    private void talletaTasasijaJonosijatJaEdellisetTilatJaTilanKuvaukset(List<Hakukohde> uudetHakukohteet, Map<String, Hakukohde> kaikkiHakukohteet) {
+    //Haetaan edelliseltä sijoitteluajolta tasasijajonosijat ja hakemusten edelliset tilat sekä niiden kuvaukset.
+    //Poistetaan valintarekisteristä sijoittelun tulokset sellaisille hakemus-hakukohdepareille,
+    // jotka löytyvät edellisen mutta eivät uuden sijoitteluajon valintatapajonoista.
+    private void kopioiTiedotEdelliseltaSijoitteluajoltaJaPoistaPassivoitujenTulokset(List<Hakukohde> uudetHakukohteet, Map<String, Hakukohde> kaikkiHakukohteet) {
         List<Pair<String, String>> poistettavatHakemusHakukohdeParit = Collections.synchronizedList(new ArrayList<>());
         uudetHakukohteet.parallelStream().forEach(hakukohde -> {
             Map<String, Integer> tasasijaHashMap = new ConcurrentHashMap<>();
@@ -702,14 +705,13 @@ public class SijoitteluBusinessService {
             kaikkiHakukohteet.put(hakukohde.getOid(), hakukohde);
         });
         if(poistettavatHakemusHakukohdeParit.size() > 0) {
-            LOG.warn("Löytyi poistettavia hakemus-hakukohdepareja! " + poistettavatHakemusHakukohdeParit);
+            LOG.warn("Löytyi tuloksista poistettavia hakemus-hakukohdepareja. Suoritetaan poisto valintarekisteristä seuraaville: " + poistettavatHakemusHakukohdeParit);
             poistettavatHakemusHakukohdeParit.forEach(pari -> valintarekisteriService.cleanRedundantSijoitteluTuloksesForHakemusInHakukohde(pari.getLeft(), pari.getRight()));
         }
     }
 
     //Selvitetään, onko edellisen sijoitteluajon hakukohteen valintatapajonoissa hakemuksia,
-    //joita ei ole uuden jonoissa. Tulkitaan sellaiset passivoituina kadonneiksi.
-    //Myös tämän hakukohteen osalta muuttunut (poistunut) hakutoive ilmenee samoin.
+    //joita ei ole uuden jonoissa. Tulkitaan sellaiset passivoituina tai muuttuneiden hakutoiveidenseurauksena tältä hakukohteelta kadonneiksi.
     private List<Pair<String, String>> etsiPassivoituja(Hakukohde edellinen, Hakukohde uusi) {
         AtomicInteger passivoituja = new AtomicInteger(0);
         AtomicInteger ok = new AtomicInteger(0);
@@ -723,7 +725,6 @@ public class SijoitteluBusinessService {
             if (!loytyy) {
                 LOG.warn("Hakemus {} hakukohteessa {} saattaa olla passivoitu! Lisätään siivottavien listalle.", ehak.getHakemusOid(), uusi.getOid());
                 passivoidutHakemusOidit.add(Pair.of(ehak.getHakemusOid(), uusi.getOid()));
-                valintarekisteriService.cleanRedundantSijoitteluTuloksesForHakemusInHakukohde(ehak.getHakemusOid(), uusi.getOid());
                 passivoituja.incrementAndGet();
             } else {
                 ok.incrementAndGet();
