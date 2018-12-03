@@ -38,6 +38,7 @@ import fi.vm.sade.sijoittelu.tulos.service.impl.converters.SijoitteluTulosConver
 import fi.vm.sade.valintalaskenta.domain.dto.valintatieto.HakuDTO;
 import fi.vm.sade.valintatulosservice.valintarekisteri.domain.NotFoundException;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -662,13 +663,13 @@ public class SijoitteluBusinessService {
     }
 
     private void talletaTasasijaJonosijatJaEdellisetTilatJaTilanKuvaukset(List<Hakukohde> uudetHakukohteet, Map<String, Hakukohde> kaikkiHakukohteet) {
+        List<Pair<String, String>> poistettavatHakemusHakukohdeParit = Collections.synchronizedList(new ArrayList<>());
         uudetHakukohteet.parallelStream().forEach(hakukohde -> {
             Map<String, Integer> tasasijaHashMap = new ConcurrentHashMap<>();
             Map<String, HakemuksenTila> tilaHashMap = new ConcurrentHashMap<>();
             Map<String, Map<String, String>> tilankuvauksetHashMap = new ConcurrentHashMap<>();
             if (kaikkiHakukohteet.containsKey(hakukohde.getOid())) {
-                List<String> passiveHakemusOids = etsiPassivoituja(kaikkiHakukohteet.get(hakukohde.getOid()), hakukohde);
-                LOG.info("Käsiteltiin passivoidut tai hakutoiveiltaan muuttuneet hakemusOidit:" + passiveHakemusOids);
+                poistettavatHakemusHakukohdeParit.addAll(etsiPassivoituja(kaikkiHakukohteet.get(hakukohde.getOid()), hakukohde));
                 kaikkiHakukohteet.get(hakukohde.getOid()).getValintatapajonot().parallelStream().forEach(valintatapajono ->
                     valintatapajono.getHakemukset().parallelStream().forEach(h -> {
                         if (h.getTasasijaJonosija() != null) {
@@ -700,15 +701,19 @@ public class SijoitteluBusinessService {
             }
             kaikkiHakukohteet.put(hakukohde.getOid(), hakukohde);
         });
+        if(poistettavatHakemusHakukohdeParit.size() > 0) {
+            LOG.warn("Löytyi poistettavia hakemus-hakukohdepareja! " + poistettavatHakemusHakukohdeParit);
+            poistettavatHakemusHakukohdeParit.forEach(pari -> valintarekisteriService.cleanRedundantSijoitteluTuloksesForHakemusInHakukohde(pari.getLeft(), pari.getRight()));
+        }
     }
 
     //Selvitetään, onko edellisen sijoitteluajon hakukohteen valintatapajonoissa hakemuksia,
     //joita ei ole uuden jonoissa. Tulkitaan sellaiset passivoituina kadonneiksi.
     //Myös tämän hakukohteen osalta muuttunut (poistunut) hakutoive ilmenee samoin.
-    private List<String> etsiPassivoituja(Hakukohde edellinen, Hakukohde uusi) {
+    private List<Pair<String, String>> etsiPassivoituja(Hakukohde edellinen, Hakukohde uusi) {
         AtomicInteger passivoituja = new AtomicInteger(0);
         AtomicInteger ok = new AtomicInteger(0);
-        List<String> passivoidutHakemusOidit = new ArrayList<>();
+        List<Pair<String, String>> passivoidutHakemusOidit = new ArrayList<>();
         edellinen.getValintatapajonot().forEach(ejono -> ejono.getHakemukset().forEach(ehak -> {
             boolean loytyy = uusi.getValintatapajonot()
                     .stream()
@@ -716,8 +721,8 @@ public class SijoitteluBusinessService {
                             .stream()
                             .anyMatch(uusiHakemus -> uusiHakemus.getHakemusOid().equals(ehak.getHakemusOid())));
             if (!loytyy) {
-                passivoidutHakemusOidit.add(ehak.getHakemusOid());
-                LOG.warn("Hakemus {} hakukohteessa {} saattaa olla passivoitu! Kutsutaan siivoustoteutusta.", ehak.getHakemusOid(), uusi.getOid());
+                LOG.warn("Hakemus {} hakukohteessa {} saattaa olla passivoitu! Lisätään siivottavien listalle.", ehak.getHakemusOid(), uusi.getOid());
+                passivoidutHakemusOidit.add(Pair.of(ehak.getHakemusOid(), uusi.getOid()));
                 valintarekisteriService.cleanRedundantSijoitteluTuloksesForHakemusInHakukohde(ehak.getHakemusOid(), uusi.getOid());
                 passivoituja.incrementAndGet();
             } else {
