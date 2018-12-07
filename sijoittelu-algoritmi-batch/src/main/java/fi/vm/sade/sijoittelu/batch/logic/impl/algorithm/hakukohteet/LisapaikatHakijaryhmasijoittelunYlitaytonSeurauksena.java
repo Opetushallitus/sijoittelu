@@ -10,6 +10,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.hakukohteet.LisapaikkaTapa.*;
 import static fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.util.TilaTaulukot.kuuluuHyvaksyttyihinTiloihin;
 import static fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.WrapperHelperMethods.hakemuksenTila;
 
@@ -38,6 +39,7 @@ public class LisapaikatHakijaryhmasijoittelunYlitaytonSeurauksena {
     final private boolean kaikkiEhdot;
     final private int ehdollisetAloituspaikatTapa1;
     final private int ehdollisetAloituspaikatTapa2;
+    final private List<HakemusWrapper> lisapaikoilleKelpaavat;
 
 
     LisapaikatHakijaryhmasijoittelunYlitaytonSeurauksena(ValintatapajonoWrapper valintatapajono, int tilaa, int seuraaviaTasasijalla, List<HakemusWrapper> valituiksiHaluavatHakemukset) {
@@ -95,8 +97,8 @@ public class LisapaikatHakijaryhmasijoittelunYlitaytonSeurauksena {
         ehdollisetAloituspaikatTapa2 = alimmallaSijallaOlevatHakijaryhmastaHyvaksytyt.size() - 1;
 
         alinHakijaryhmaJonosija = alimmallaSijallaOlevatHakijaryhmastaHyvaksytyt.size() > 0 ? alimmallaSijallaOlevatHakijaryhmastaHyvaksytyt.get(0).getHakemus().getJonosija() : -1;
-        List<HakemusWrapper> kiinnostavat = samallaTaiParemmallaJonosijallaOlevatHakijaryhmaanKuulumattomat(valintatapajono, valituiksiHaluavatHakemukset, alinHakijaryhmaJonosija);
-        paremmatHakemuksetJaJonosijat = kiinnostavat.stream()
+        lisapaikoilleKelpaavat = samallaTaiParemmallaJonosijallaOlevatHakijaryhmaanKuulumattomat(valintatapajono, valituiksiHaluavatHakemukset, alinHakijaryhmaJonosija);
+        paremmatHakemuksetJaJonosijat = lisapaikoilleKelpaavat.stream()
                 .map(hw -> Pair.of(hw.getHakemus().getHakemusOid(), hw.getHakemus().getJonosija()))
                 .collect(Collectors.toList());
 
@@ -203,14 +205,33 @@ public class LisapaikatHakijaryhmasijoittelunYlitaytonSeurauksena {
                 ". Hakemuksia jotka eivät kuulu hakijaryhmiin ja joilla on parempi jonosija: " + paremmatHakemuksetJaJonosijat);
     }
 
-    public int lisapaikatJonosijoittelunKaytossa(int laskutapa) {
+    public String toMinString() {
+        return ("HRS - Hakukohde " + hakukohdeOid + " - " +
+                "valintatapajono " + valintatapajonoOid +
+                ": " + valintatapajonoNimi +
+                ". **Ehdolliset lisäpaikat:" +
+                " (TAPA 1): " + ehdollisetAloituspaikatTapa1 +
+                ", (TAPA 2): " + ehdollisetAloituspaikatTapa2 +
+                ". Hakemuksia jotka eivät kuulu hakijaryhmiin ja joilla on parempi jonosija: " + paremmatHakemuksetJaJonosijat);
+    }
+
+    public int getLisapaikat(LisapaikkaTapa tapa) {
         if (kaikkiEhdot) {
-            switch (laskutapa) {
-                case 1: return ehdollisetAloituspaikatTapa1;
-                case 2: return ehdollisetAloituspaikatTapa2;
+            switch (tapa) {
+                case EI_KAYTOSSA: return 0;
+                case TAPA1: return ehdollisetAloituspaikatTapa1;
+                case TAPA2: return ehdollisetAloituspaikatTapa2;
             }
         }
         return 0;
+    }
+
+    public int minimiJonosija() {
+        return alinHakijaryhmaJonosija;
+    }
+
+    public List<HakemusWrapper> lisapaikoilleKelpaavatHakemukset() {
+        return lisapaikoilleKelpaavat;
     }
 
     public String toJsonString() {

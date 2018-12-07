@@ -247,7 +247,7 @@ public class SijoitteleHakukohdeTest {
     }
 
     @Test
-    public void reproduceNastyCase() {
+    public void reproduceNastyHakijaryhmaYlitayttoCase() {
         Hakijaryhma hakijaryhma = new Hakijaryhma();
         hakijaryhma.setOid(hakijaryhmaOid);
         hakijaryhma.setHakukohdeOid("hakukohdeOid");
@@ -267,6 +267,8 @@ public class SijoitteleHakukohdeTest {
         kaytettavatHakemukset.add(generateHakemus(0, 0, null));
         kaytettavatHakemukset.add(generateHakemus(1, 1, hakijaryhma));
         kaytettavatHakemukset.add(generateHakemus(2, 1, null));
+        kaytettavatHakemukset.add(generateHakemus(234, 2, null));
+        kaytettavatHakemukset.add(generateHakemus(235, 3, null));
         //kaytettavatHakemukset.add(generateHakemus(3, 2, hakijaryhma));
         kaytettavatHakemukset.add(generateHakemus(4, 2, hakijaryhma));
         kaytettavatHakemukset.add(generateHakemus(5, 3, null));
@@ -294,6 +296,7 @@ public class SijoitteleHakukohdeTest {
         kaytettavatHakemukset2.add(generateHakemus(10, 2, hakijaryhma));
         kaytettavatHakemukset2.add(generateHakemus(11, 3, null));
         kaytettavatHakemukset2.add(generateHakemus(12, 3, null));
+        kaytettavatHakemukset2.add(generateHakemus(77, 4, null));
         kaytettavatHakemukset2.add(generateHakemus(13, 4, hakijaryhma));
         kaytettavatHakemukset2.add(generateHakemus(14, 4, hakijaryhma));
         kaytettavatHakemukset2.add(generateHakemus(15, 4, hakijaryhma));
@@ -337,6 +340,7 @@ public class SijoitteleHakukohdeTest {
                         Collections.emptyMap()
                 );
         HakukohdeWrapper hakukohdeWrapper = ajoWrapper.getHakukohteet().get(0);
+        ajoWrapper.setLisapaikkaTapa(LisapaikkaTapa.TAPA1);
 
         SijoitteleHakukohde.sijoitteleHakukohde(ajoWrapper, hakukohdeWrapper);
 
