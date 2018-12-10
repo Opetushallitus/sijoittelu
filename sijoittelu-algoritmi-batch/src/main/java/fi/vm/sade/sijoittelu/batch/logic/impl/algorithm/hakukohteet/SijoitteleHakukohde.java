@@ -113,8 +113,6 @@ public class SijoitteleHakukohde {
 
         int aloituspaikat = jononAloituspaikat(valintatapajono);
         int tilaa = aloituspaikat - eiKorvattavissaOlevatHyvaksytytHakemukset.size();
-        int valittujaHakijaryhmista = (int) eiKorvattavissaOlevatHyvaksytytHakemukset.stream().filter(hw -> hw.isHyvaksyttyHakijaryhmastaTallaKierroksella()).count();
-        int valittujaEiHakijaryhmista = (int) eiKorvattavissaOlevatHyvaksytytHakemukset.stream().filter(hw -> !hw.isHyvaksyttyHakijaryhmastaTallaKierroksella()).count();
 
         Tasasijasaanto saanto = jononTasasijasaanto(valintatapajono);
         List<HakemusWrapper> kaikkiTasasijaHakemukset = getTasasijaHakemus(valituksiHaluavatHakemukset, saanto);
@@ -127,12 +125,8 @@ public class SijoitteleHakukohde {
                 || ((getTasasijaHakemus(hakemuksetEligibleForLisapaikat, saanto).size() - (tilaa+lisaPaikkoja)) >= 0));
 
         if (tilaa <= 0 && !otetaanLisapaikoille) {
-            LOG.info("EI AIOTA HYVÄKSYÄ ENÄÄ KETÄÄN jonossa {} Tilaa {}. aloituspaikkoja {}, josta hakijaryhmistä {} ja ei-hakijaryhmistä {}. {}", valintatapajono.getValintatapajono().getOid(), tilaa, aloituspaikat, valittujaHakijaryhmista, valittujaEiHakijaryhmista, lp.toMinString());
+            //LOG.info("EI AIOTA HYVÄKSYÄ ENÄÄ KETÄÄN jonossa {} Tilaa {}. aloituspaikkoja {}, josta hakijaryhmistä {} ja ei-hakijaryhmistä {}. {}", valintatapajono.getValintatapajono().getOid(), tilaa, aloituspaikat, valittujaHakijaryhmista, valittujaEiHakijaryhmista, lp.toMinString());
             return muuttuneetHakukohteet;
-        }
-
-        if (otetaanLisapaikoille) {
-            LOG.info(lp.toString());
         }
 
         List<HakemusWrapper> muuttuneet = new ArrayList<>();
@@ -140,74 +134,23 @@ public class SijoitteleHakukohde {
             if (tilaa - kaikkiTasasijaHakemukset.size() >= 0) {
                 hyvaksyKaikkiTasasijaHakemukset(sijoitteluAjo, kaikkiTasasijaHakemukset, muuttuneet);
                 muuttuneetHakukohteet.addAll(uudelleenSijoiteltavatHakukohteet(muuttuneet));
-                    muuttuneetHakukohteet.addAll(sijoitteleValintatapajono(sijoitteluAjo, valintatapajono));
+                muuttuneetHakukohteet.addAll(sijoitteleValintatapajono(sijoitteluAjo, valintatapajono));
 
             } else if (tilaa > 0 && saanto.equals(Tasasijasaanto.YLITAYTTO)) {
                 // Tasasijavertailu
-                //LOG.info("Jono {}: hyväksytään ylitäyttösijoille", valintatapajono.getValintatapajono().getOid());
                 hyvaksyKaikkiTasasijaHakemukset(sijoitteluAjo, kaikkiTasasijaHakemukset, muuttuneet);
                 muuttuneetHakukohteet.addAll(uudelleenSijoiteltavatHakukohteet(muuttuneet));
                 muuttuneetHakukohteet.addAll(sijoitteleValintatapajono(sijoitteluAjo, valintatapajono));
             } else if (otetaanLisapaikoille) {
-                //Tässä hyväksytään lisäpaikoille hakemuksia kunnes jono täynnä myös lisäpaikat huomioiden. Tarkoitus olla viimeinen askel jonosijoittelussa,
-                //joka suoritetaan kun ketään muuta tästä jonosta ei enää normaalimenettelyllä olla hyväksymässä tällä sijoitteluajon iteraatiolla.
-                //(Ennen kuin lisäpaikkoja esim. peruuntumisten seurauksena vapautuu.)
-                List<HakemusWrapper> eligibleHakemuksesForLisapaikat = hakemuksetEligibleForLisapaikat;
-                List<HakemusWrapper> tallaIteraatiollaHyvaksyttavat;
-                int tilaaLisapaikkoineen = tilaa + lisaPaikkoja;
-                boolean allDone = false;
-
-                while (!allDone && !eligibleHakemuksesForLisapaikat.isEmpty()) {
-                    List<HakemusWrapper> kaikkiHyvaksytytJonossa = valintatapajononHyvaksytytHakemuksetJoitaEiVoiKorvata(valintatapajono, sijoitteluAjo);
-
-                    valittujaHakijaryhmista = (int) kaikkiHyvaksytytJonossa.stream().filter(HakemusWrapper::isHyvaksyttyHakijaryhmastaTallaKierroksella).count();
-                    valittujaEiHakijaryhmista = kaikkiHyvaksytytJonossa.size()- valittujaHakijaryhmista;
-
-                    tallaIteraatiollaHyvaksyttavat = getTasasijaHakemus(eligibleHakemuksesForLisapaikat, saanto);
-                    if (tilaaLisapaikkoineen > 0 && saanto.equals(Tasasijasaanto.YLITAYTTO)) {
-                        LOG.info("YLITÄYTTÖ Jono {}: HYVÄKSYTÄÄN LISÄPAIKKAMENETTELYSSÄ {} hakijaa: {}. Tasasijasääntö {}. Tilaa lisäpaikkoineen {}. Aloituspaikkoja {}, hyväksyttyjä hakijaryhmäsijoittelussa {} ja ei-hakijaryhmistä {}.",
-                                valintatapajono.getValintatapajono().getOid(),
-                                tallaIteraatiollaHyvaksyttavat.size(),
-                                tallaIteraatiollaHyvaksyttavat.stream().map(hw -> hw.getHakemus().getHakemusOid()).collect(Collectors.toList()),
-                                saanto,
-                                tilaaLisapaikkoineen,
-                                aloituspaikat,
-                                valittujaHakijaryhmista,
-                                valittujaEiHakijaryhmista);
-                        hyvaksyKaikkiTasasijaHakemukset(sijoitteluAjo, tallaIteraatiollaHyvaksyttavat, muuttuneet);
-                        tilaaLisapaikkoineen -= tallaIteraatiollaHyvaksyttavat.size();
-                    } else if (tilaaLisapaikkoineen - tallaIteraatiollaHyvaksyttavat.size() >= 0) {
-                        LOG.info("EI-YLITAYTTO Jono {}: HYVÄKSYTÄÄN LISÄPAIKKAMENETTELYSSÄ {} hakijaa: {}. Tasasijasääntö {}. Tilaa lisäpaikkoineen {}. Aloituspaikkoja {}, hyväksyttyjä hakijaryhmäsijoittelussa {} ja ei-hakijaryhmistä {}.",
-                                valintatapajono.getValintatapajono().getOid(),
-                                tallaIteraatiollaHyvaksyttavat.size(),
-                                tallaIteraatiollaHyvaksyttavat.stream().map(hw -> hw.getHakemus().getHakemusOid()).collect(Collectors.toList()),
-                                saanto,
-                                tilaaLisapaikkoineen,
-                                aloituspaikat,
-                                valittujaHakijaryhmista,
-                                valittujaEiHakijaryhmista);
-                        hyvaksyKaikkiTasasijaHakemukset(sijoitteluAjo, tallaIteraatiollaHyvaksyttavat, muuttuneet);
-                        tilaaLisapaikkoineen -= tallaIteraatiollaHyvaksyttavat.size();
-                    } else {
-                        LOG.info("Lisäpaikkasijoittelu valmis jonossa {}, kiintiö {}. Tilaa lisäpaikkoineen {}, hyväksyttyjä hakijaryhmistä {}, ei-hakijaryhmistä {}",
-                                valintatapajono.getValintatapajono().getOid(),
-                                aloituspaikat,
-                                tilaaLisapaikkoineen,
-                                valittujaHakijaryhmista,
-                                valittujaEiHakijaryhmista);
-                        allDone = true;
-                    }
-                    eligibleHakemuksesForLisapaikat = eligibleHakemuksesForLisapaikat.stream().filter(hw -> !kuuluuHyvaksyttyihinTiloihin(hw.getHakemus().getTila())).collect(Collectors.toList());
-                    if(eligibleHakemuksesForLisapaikat.isEmpty()) {
-                        LOG.warn("Lisäpaikoille ei enää ole haluavia & sääntöjen sallimia!");
-                    }
-                }
+                LOG.info(lp.toString());
+                hyvaksyHakemuksiaLisapaikoille(sijoitteluAjo, valintatapajono, hakemuksetEligibleForLisapaikat,
+                        tilaa+lisaPaikkoja, muuttuneet);
             } else {
                 LOG.warn("Mitäs me täällä tehdään? {}", lp.toString());
             }
         } catch (Throwable t) {
         String msg = "Sijoitteluajon " + sijoitteluAjo.getSijoitteluAjoId() +
-                " Hyväksymisvaiheessa meni jokin vikaan." +
+                " valintatapajonosijoittelussa meni jokin vikaan." +
                 " Hakukohde : " + valintatapajono.getHakukohdeWrapper().getHakukohde().getOid() + " , " +
                 "valintatapajono: " + valintatapajono.getValintatapajono().getOid() + " valituksi haluavat: " +
                 valituksiHaluavatHakemukset;
@@ -215,6 +158,68 @@ public class SijoitteleHakukohde {
         throw new RuntimeException(t);
     }
         return muuttuneetHakukohteet;
+    }
+
+    //Hyväksytään lisäpaikoille hakemuksia kunnes jono täynnä myös lisäpaikat huomioiden. Tarkoitus olla viimeinen askel jonosijoittelussa,
+    //joka suoritetaan kun ketään muuta tästä jonosta ei enää normaalimenettelyllä olla hyväksymässä ennen kuin lisäpaikkoja esim.
+    //peruuntumisten seurauksena vapautuu.
+    private static void hyvaksyHakemuksiaLisapaikoille(SijoitteluajoWrapper sijoitteluAjo, ValintatapajonoWrapper valintatapajono, List<HakemusWrapper> eligibleHakemuksesForLisapaikat, int tilaaLisapaikkoineen, List<HakemusWrapper> muuttuneet) {
+        LOG.info("HRS - HYVÄKSYTÄÄN HAKEMUKSIA LISÄPAIKOILLE. Kandidaatteja: {}, tilaa: {}", eligibleHakemuksesForLisapaikat.size(), tilaaLisapaikkoineen);
+        int aloituspaikat = jononAloituspaikat(valintatapajono);
+        List<HakemusWrapper> kaikkiHyvaksytytJonossa;
+        int hyvaksyttyHakijaryhmista;
+        int hyvaksyttyEiHakijaryhmista;
+        List<HakemusWrapper> tallaIteraatiollaHyvaksyttavat;
+        boolean allDone = false;
+        Tasasijasaanto saanto = jononTasasijasaanto(valintatapajono);
+
+        while (!allDone && !eligibleHakemuksesForLisapaikat.isEmpty()) {
+            kaikkiHyvaksytytJonossa = valintatapajononHyvaksytytHakemuksetJoitaEiVoiKorvata(valintatapajono, sijoitteluAjo);
+            hyvaksyttyHakijaryhmista = (int) kaikkiHyvaksytytJonossa.stream().filter(HakemusWrapper::isHyvaksyttyHakijaryhmastaTallaKierroksella).count();
+            hyvaksyttyEiHakijaryhmista = kaikkiHyvaksytytJonossa.size()- hyvaksyttyHakijaryhmista;
+
+            tallaIteraatiollaHyvaksyttavat = getTasasijaHakemus(eligibleHakemuksesForLisapaikat, saanto);
+            if (tilaaLisapaikkoineen > 0 && saanto.equals(Tasasijasaanto.YLITAYTTO)) {
+                LOG.info("HRS {} Jono {}: HYVÄKSYTÄÄN LISÄPAIKKAMENETTELYSSÄ {} hakijaa: {}. Tilaa lisäpaikkoineen (ennen hyväksymisiä) {}. " +
+                                "Aloituspaikkoja {}, hyväksyttyjä hakijaryhmäsijoittelussa {} ja ei-hakijaryhmistä {}.",
+                        saanto,
+                        valintatapajono.getValintatapajono().getOid(),
+                        tallaIteraatiollaHyvaksyttavat.size(),
+                        tallaIteraatiollaHyvaksyttavat.stream().map(hw -> hw.getHakemus().getHakemusOid()).collect(Collectors.toList()),
+                        tilaaLisapaikkoineen,
+                        aloituspaikat,
+                        hyvaksyttyHakijaryhmista,
+                        hyvaksyttyEiHakijaryhmista);
+                hyvaksyKaikkiTasasijaHakemukset(sijoitteluAjo, tallaIteraatiollaHyvaksyttavat, muuttuneet);
+                tilaaLisapaikkoineen -= tallaIteraatiollaHyvaksyttavat.size();
+            } else if (tilaaLisapaikkoineen - tallaIteraatiollaHyvaksyttavat.size() >= 0) {
+                LOG.info("HRS {} Jono {}: HYVÄKSYTÄÄN LISÄPAIKKAMENETTELYSSÄ {} hakijaa: {}. Tilaa lisäpaikkoineen (ennen hyväksymisiä) {}. " +
+                                "Aloituspaikkoja {}, hyväksyttyjä hakijaryhmäsijoittelussa {} ja ei-hakijaryhmistä {}.",
+                        saanto,
+                        valintatapajono.getValintatapajono().getOid(),
+                        tallaIteraatiollaHyvaksyttavat.size(),
+                        tallaIteraatiollaHyvaksyttavat.stream().map(hw -> hw.getHakemus().getHakemusOid()).collect(Collectors.toList()),
+                        tilaaLisapaikkoineen,
+                        aloituspaikat,
+                        hyvaksyttyHakijaryhmista,
+                        hyvaksyttyEiHakijaryhmista);
+                hyvaksyKaikkiTasasijaHakemukset(sijoitteluAjo, tallaIteraatiollaHyvaksyttavat, muuttuneet);
+                tilaaLisapaikkoineen -= tallaIteraatiollaHyvaksyttavat.size();
+            } else {
+                LOG.info("Lisäpaikkasijoittelu valmis jonossa {}, kiintiö {}. Tilaa lisäpaikkoineen {}, hyväksyttyjä hakijaryhmistä {}, ei-hakijaryhmistä {}",
+                        valintatapajono.getValintatapajono().getOid(),
+                        aloituspaikat,
+                        tilaaLisapaikkoineen,
+                        hyvaksyttyHakijaryhmista,
+                        hyvaksyttyEiHakijaryhmista);
+                allDone = true;
+            }
+            eligibleHakemuksesForLisapaikat = eligibleHakemuksesForLisapaikat.stream()
+                    .filter(hw -> !kuuluuHyvaksyttyihinTiloihin(hw.getHakemus().getTila())).collect(Collectors.toList());
+            if(eligibleHakemuksesForLisapaikat.isEmpty()) {
+                LOG.warn("Lisäpaikoille ei enää ole haluavia & sääntöjen sallimia jonossa {}!", valintatapajono.getValintatapajono().getOid());
+            }
+        }
     }
 
     private static void poistaAjokierroksenLukot(HakukohdeWrapper hakukohde) {

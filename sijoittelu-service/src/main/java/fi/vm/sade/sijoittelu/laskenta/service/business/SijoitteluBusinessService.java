@@ -158,7 +158,7 @@ public class SijoitteluBusinessService {
         stopWatch.stop();
 
         if(!sijoitteluajoWrapper.getLisapaikkaTapa().equals(LisapaikkaTapa.EI_KAYTOSSA)) {
-            LOG.warn("HUOM: Sijoitteluajossa {} käytetään lisäpaikkoja. Lisäpaikkojen laskentatapa: {}", sijoitteluajoWrapper.getSijoitteluajo(), sijoitteluajoWrapper.getLisapaikkaTapa());
+            LOG.warn("HRS HUOM: Sijoitteluajossa {} käytetään lisäpaikkoja. Lisäpaikkojen laskentatapa: {}", sijoitteluajoWrapper.getSijoitteluajo(), sijoitteluajoWrapper.getLisapaikkaTapa());
         }
         suoritaSijoittelu(startTime, stopWatch, hakuOid, uusiSijoitteluajo, sijoitteluajoWrapper);
         stopWatch.start("Kopioidaan edellisen sijoitteluajon tietoja");

@@ -231,7 +231,9 @@ public class LisapaikatHakijaryhmasijoittelunYlitaytonSeurauksena {
     }
 
     public List<HakemusWrapper> lisapaikoilleKelpaavatHakemukset() {
-        return lisapaikoilleKelpaavat;
+        if (kaikkiEhdot) {
+            return lisapaikoilleKelpaavat;
+        } else return Collections.emptyList();
     }
 
     public String toJsonString() {
