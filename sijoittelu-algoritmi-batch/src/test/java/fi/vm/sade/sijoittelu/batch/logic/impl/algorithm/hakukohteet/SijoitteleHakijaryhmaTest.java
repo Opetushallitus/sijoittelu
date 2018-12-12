@@ -60,7 +60,7 @@ public class SijoitteleHakijaryhmaTest {
         valintatapajono.setAloituspaikat(17);
         valintatapajono.setPrioriteetti(0);
         valintatapajono.setTasasijasaanto(Tasasijasaanto.ARVONTA);
-        valintatapajono.setHakemukset(generateHakemukset(N_OF_HAKEMUKSET_TO_GENERATE, hakijaryhma));
+        valintatapajono.setHakemukset(SijoitteluAlgorithmUtil.generateHakemukset(N_OF_HAKEMUKSET_TO_GENERATE, hakijaryhma));
 
         hakukohde.setOid("hakukohdeOid");
         hakukohde.setValintatapajonot(Collections.singletonList(valintatapajono));
@@ -75,32 +75,6 @@ public class SijoitteleHakijaryhmaTest {
         ajoWrapper = SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(ajo, Collections.singletonList(hakukohde), Collections.emptyList(), Collections.emptyMap());
         hakukohdeWrapper = ajoWrapper.getHakukohteet().get(0);
         hakijaryhmaWrapper = hakukohdeWrapper.getHakijaryhmaWrappers().get(0);
-    }
-
-    private static List<Hakemus> generateHakemukset(int nToGenerate, Hakijaryhma hakijaryhma) {
-        List<Hakemus> results = new ArrayList<>(nToGenerate);
-        for (int i = 0; i < nToGenerate; i++) {
-            results.add(generateHakemus(i, hakijaryhma));
-        }
-        return results;
-    }
-
-    private static Hakemus generateHakemus(int i, Hakijaryhma hakijaryhma) {
-        return generateHakemus(i, i, hakijaryhma);
-    }
-
-    private static Hakemus generateHakemus(int i, int jonosija, Hakijaryhma hakijaryhma) {
-        Hakemus h = new Hakemus();
-        h.setJonosija(jonosija);
-        h.setPrioriteetti(0);
-        h.setHakemusOid("hakemus" + i);
-        h.setHakijaOid("hakija" + i);
-        if (hakijaryhma != null) {
-            hakijaryhma.getHakemusOid().add(h.getHakemusOid());
-        }
-        h.setPisteet(new BigDecimal(i));
-        h.setTila(HakemuksenTila.VARALLA);
-        return h;
     }
 
     @Test
@@ -158,7 +132,7 @@ public class SijoitteleHakijaryhmaTest {
         valintatapajono.setAloituspaikat(3);
         valintatapajono.setPrioriteetti(0);
         valintatapajono.setTasasijasaanto(Tasasijasaanto.ALITAYTTO);
-        valintatapajono.setHakemukset(generateHakemukset(4, hakijaryhma));
+        valintatapajono.setHakemukset(SijoitteluAlgorithmUtil.generateHakemukset(4, hakijaryhma));
         hakijaryhma.getHakemusOid().remove(3);
 
         Hakukohde hakukohde = new Hakukohde();
@@ -201,7 +175,7 @@ public class SijoitteleHakijaryhmaTest {
         valintatapajono.setAloituspaikat(3);
         valintatapajono.setPrioriteetti(0);
         valintatapajono.setTasasijasaanto(Tasasijasaanto.ALITAYTTO);
-        valintatapajono.setHakemukset(generateHakemukset(3, hakijaryhma));
+        valintatapajono.setHakemukset(SijoitteluAlgorithmUtil.generateHakemukset(3, hakijaryhma));
 
         Hakukohde hakukohde = new Hakukohde();
         hakukohde.setOid("hakukohdeOid");
@@ -238,7 +212,7 @@ public class SijoitteleHakijaryhmaTest {
         valintatapajono.setAloituspaikat(3);
         valintatapajono.setPrioriteetti(0);
         valintatapajono.setTasasijasaanto(Tasasijasaanto.ALITAYTTO);
-        valintatapajono.setHakemukset(generateHakemukset(4, hakijaryhma));
+        valintatapajono.setHakemukset(SijoitteluAlgorithmUtil.generateHakemukset(4, hakijaryhma));
 
         Hakukohde hakukohde = new Hakukohde();
         hakukohde.setOid("hakukohdeOid");
@@ -280,7 +254,7 @@ public class SijoitteleHakijaryhmaTest {
         valintatapajono.setAloituspaikat(3);
         valintatapajono.setPrioriteetti(0);
         valintatapajono.setTasasijasaanto(Tasasijasaanto.YLITAYTTO);
-        valintatapajono.setHakemukset(generateHakemukset(4, hakijaryhma));
+        valintatapajono.setHakemukset(SijoitteluAlgorithmUtil.generateHakemukset(4, hakijaryhma));
 
         Hakukohde hakukohde = new Hakukohde();
         hakukohde.setOid("hakukohdeOid");
@@ -322,7 +296,7 @@ public class SijoitteleHakijaryhmaTest {
         valintatapajono.setAloituspaikat(3);
         valintatapajono.setPrioriteetti(0);
         valintatapajono.setTasasijasaanto(Tasasijasaanto.ARVONTA);
-        valintatapajono.setHakemukset(generateHakemukset(4, hakijaryhma));
+        valintatapajono.setHakemukset(SijoitteluAlgorithmUtil.generateHakemukset(4, hakijaryhma));
 
         Hakukohde hakukohde = new Hakukohde();
         hakukohde.setOid("hakukohdeOid");
@@ -365,21 +339,21 @@ public class SijoitteleHakijaryhmaTest {
         valintatapajono1.setPrioriteetti(0);
         valintatapajono1.setTasasijasaanto(Tasasijasaanto.ALITAYTTO);
         valintatapajono1.setHakemukset(new ArrayList<>(6));
-        valintatapajono1.getHakemukset().add(generateHakemus(3, 0, null));
-        valintatapajono1.getHakemukset().add(generateHakemus(4, 1, null));
-        valintatapajono1.getHakemukset().add(generateHakemus(5, 2, null));
-        valintatapajono1.getHakemukset().add(generateHakemus(0, 3, hakijaryhma));
-        valintatapajono1.getHakemukset().add(generateHakemus(1, 4, hakijaryhma));
-        valintatapajono1.getHakemukset().add(generateHakemus(2, 5, hakijaryhma));
+        valintatapajono1.getHakemukset().add(SijoitteluAlgorithmUtil.generateHakemus(3, 0, null));
+        valintatapajono1.getHakemukset().add(SijoitteluAlgorithmUtil.generateHakemus(4, 1, null));
+        valintatapajono1.getHakemukset().add(SijoitteluAlgorithmUtil.generateHakemus(5, 2, null));
+        valintatapajono1.getHakemukset().add(SijoitteluAlgorithmUtil.generateHakemus(0, 3, hakijaryhma));
+        valintatapajono1.getHakemukset().add(SijoitteluAlgorithmUtil.generateHakemus(1, 4, hakijaryhma));
+        valintatapajono1.getHakemukset().add(SijoitteluAlgorithmUtil.generateHakemus(2, 5, hakijaryhma));
 
         Valintatapajono valintatapajono2 = new Valintatapajono();
         valintatapajono2.setAloituspaikat(3);
         valintatapajono2.setPrioriteetti(1);
         valintatapajono2.setTasasijasaanto(Tasasijasaanto.ALITAYTTO);
         valintatapajono2.setHakemukset(new ArrayList<>(3));
-        valintatapajono2.getHakemukset().add(generateHakemus(0, 0, hakijaryhma));
-        valintatapajono2.getHakemukset().add(generateHakemus(1, 1, hakijaryhma));
-        valintatapajono2.getHakemukset().add(generateHakemus(2, 2, hakijaryhma));
+        valintatapajono2.getHakemukset().add(SijoitteluAlgorithmUtil.generateHakemus(0, 0, hakijaryhma));
+        valintatapajono2.getHakemukset().add(SijoitteluAlgorithmUtil.generateHakemus(1, 1, hakijaryhma));
+        valintatapajono2.getHakemukset().add(SijoitteluAlgorithmUtil.generateHakemus(2, 2, hakijaryhma));
 
         Hakukohde hakukohde = new Hakukohde();
         hakukohde.setOid("hakukohdeOid");
@@ -428,10 +402,10 @@ public class SijoitteleHakijaryhmaTest {
         valintatapajono1.setPrioriteetti(0);
         valintatapajono1.setTasasijasaanto(Tasasijasaanto.ALITAYTTO);
         valintatapajono1.setHakemukset(new ArrayList<>(4));
-        valintatapajono1.getHakemukset().add(generateHakemus(0, 0, hakijaryhma));
-        valintatapajono1.getHakemukset().add(generateHakemus(1, 1, hakijaryhma));
-        valintatapajono1.getHakemukset().add(generateHakemus(2, 1, hakijaryhma));
-        valintatapajono1.getHakemukset().add(generateHakemus(3, 1, hakijaryhma));
+        valintatapajono1.getHakemukset().add(SijoitteluAlgorithmUtil.generateHakemus(0, 0, hakijaryhma));
+        valintatapajono1.getHakemukset().add(SijoitteluAlgorithmUtil.generateHakemus(1, 1, hakijaryhma));
+        valintatapajono1.getHakemukset().add(SijoitteluAlgorithmUtil.generateHakemus(2, 1, hakijaryhma));
+        valintatapajono1.getHakemukset().add(SijoitteluAlgorithmUtil.generateHakemus(3, 1, hakijaryhma));
 
         Valintatapajono valintatapajono2 = new Valintatapajono();
         valintatapajono2.setOid("valintatapajono2");
@@ -439,10 +413,10 @@ public class SijoitteleHakijaryhmaTest {
         valintatapajono2.setPrioriteetti(1);
         valintatapajono2.setTasasijasaanto(Tasasijasaanto.ALITAYTTO);
         valintatapajono2.setHakemukset(new ArrayList<>(4));
-        valintatapajono2.getHakemukset().add(generateHakemus(4, 0, hakijaryhma));
-        valintatapajono2.getHakemukset().add(generateHakemus(5, 1, hakijaryhma));
-        valintatapajono2.getHakemukset().add(generateHakemus(6, 1, hakijaryhma));
-        valintatapajono2.getHakemukset().add(generateHakemus(7, 1, null));
+        valintatapajono2.getHakemukset().add(SijoitteluAlgorithmUtil.generateHakemus(4, 0, hakijaryhma));
+        valintatapajono2.getHakemukset().add(SijoitteluAlgorithmUtil.generateHakemus(5, 1, hakijaryhma));
+        valintatapajono2.getHakemukset().add(SijoitteluAlgorithmUtil.generateHakemus(6, 1, hakijaryhma));
+        valintatapajono2.getHakemukset().add(SijoitteluAlgorithmUtil.generateHakemus(7, 1, null));
 
         Hakukohde hakukohde = new Hakukohde();
         hakukohde.setOid("hakukohdeOid");
@@ -491,20 +465,20 @@ public class SijoitteleHakijaryhmaTest {
         valintatapajono1.setPrioriteetti(0);
         valintatapajono1.setTasasijasaanto(Tasasijasaanto.ALITAYTTO);
         valintatapajono1.setHakemukset(new ArrayList<>(4));
-        valintatapajono1.getHakemukset().add(generateHakemus(0, 0, hakijaryhma));
-        valintatapajono1.getHakemukset().add(generateHakemus(1, 1, hakijaryhma));
-        valintatapajono1.getHakemukset().add(generateHakemus(2, 2, hakijaryhma));
-        valintatapajono1.getHakemukset().add(generateHakemus(3, 3, hakijaryhma));
+        valintatapajono1.getHakemukset().add(SijoitteluAlgorithmUtil.generateHakemus(0, 0, hakijaryhma));
+        valintatapajono1.getHakemukset().add(SijoitteluAlgorithmUtil.generateHakemus(1, 1, hakijaryhma));
+        valintatapajono1.getHakemukset().add(SijoitteluAlgorithmUtil.generateHakemus(2, 2, hakijaryhma));
+        valintatapajono1.getHakemukset().add(SijoitteluAlgorithmUtil.generateHakemus(3, 3, hakijaryhma));
 
         Valintatapajono valintatapajono2 = new Valintatapajono();
         valintatapajono2.setAloituspaikat(2);
         valintatapajono2.setPrioriteetti(1);
         valintatapajono2.setTasasijasaanto(Tasasijasaanto.ALITAYTTO);
         valintatapajono2.setHakemukset(new ArrayList<>(4));
-        valintatapajono2.getHakemukset().add(generateHakemus(0, 0, hakijaryhma));
-        valintatapajono2.getHakemukset().add(generateHakemus(4, 1, hakijaryhma));
-        valintatapajono2.getHakemukset().add(generateHakemus(5, 2, hakijaryhma));
-        valintatapajono2.getHakemukset().add(generateHakemus(6, 3, null));
+        valintatapajono2.getHakemukset().add(SijoitteluAlgorithmUtil.generateHakemus(0, 0, hakijaryhma));
+        valintatapajono2.getHakemukset().add(SijoitteluAlgorithmUtil.generateHakemus(4, 1, hakijaryhma));
+        valintatapajono2.getHakemukset().add(SijoitteluAlgorithmUtil.generateHakemus(5, 2, hakijaryhma));
+        valintatapajono2.getHakemukset().add(SijoitteluAlgorithmUtil.generateHakemus(6, 3, null));
 
         Hakukohde hakukohde = new Hakukohde();
         hakukohde.setOid("hakukohdeOid");
@@ -553,8 +527,8 @@ public class SijoitteleHakijaryhmaTest {
         valintatapajono1.setPrioriteetti(0);
         valintatapajono1.setTasasijasaanto(Tasasijasaanto.YLITAYTTO);
         valintatapajono1.setHakemukset(new ArrayList<>(2));
-        valintatapajono1.getHakemukset().add(generateHakemus(0, 0, hakijaryhma));
-        valintatapajono1.getHakemukset().add(generateHakemus(1, 1, hakijaryhma));
+        valintatapajono1.getHakemukset().add(SijoitteluAlgorithmUtil.generateHakemus(0, 0, hakijaryhma));
+        valintatapajono1.getHakemukset().add(SijoitteluAlgorithmUtil.generateHakemus(1, 1, hakijaryhma));
 
         Valintatapajono valintatapajono2 = new Valintatapajono();
         valintatapajono2.setOid("valintatapajonoOid");
@@ -562,9 +536,9 @@ public class SijoitteleHakijaryhmaTest {
         valintatapajono2.setPrioriteetti(1);
         valintatapajono2.setTasasijasaanto(Tasasijasaanto.YLITAYTTO);
         valintatapajono2.setHakemukset(new ArrayList<>(3));
-        valintatapajono2.getHakemukset().add(generateHakemus(2, 0, hakijaryhma));
-        valintatapajono2.getHakemukset().add(generateHakemus(3, 1, hakijaryhma));
-        Hakemus peruuntuneenaHyvaksytty = generateHakemus(4, 2, hakijaryhma);
+        valintatapajono2.getHakemukset().add(SijoitteluAlgorithmUtil.generateHakemus(2, 0, hakijaryhma));
+        valintatapajono2.getHakemukset().add(SijoitteluAlgorithmUtil.generateHakemus(3, 1, hakijaryhma));
+        Hakemus peruuntuneenaHyvaksytty = SijoitteluAlgorithmUtil.generateHakemus(4, 2, hakijaryhma);
         Valintatulos peruuntuneenaHyvaksytynValintatulos = new Valintatulos(
                 "valintatapajonoOid",
                 "hakemus4",
@@ -620,30 +594,30 @@ public class SijoitteleHakijaryhmaTest {
         valintatapajono1.setPrioriteetti(0);
         valintatapajono1.setTasasijasaanto(Tasasijasaanto.ALITAYTTO);
         valintatapajono1.setHakemukset(new ArrayList<>(2));
-        Hakemus h1 = generateHakemus(0, 0, null);
+        Hakemus h1 = SijoitteluAlgorithmUtil.generateHakemus(0, 0, null);
         h1.setTila(HakemuksenTila.HYVAKSYTTY);
         valintatapajono1.getHakemukset().add(h1);
-        valintatapajono1.getHakemukset().add(generateHakemus(1, 1, hakijaryhma));
+        valintatapajono1.getHakemukset().add(SijoitteluAlgorithmUtil.generateHakemus(1, 1, hakijaryhma));
 
         Valintatapajono valintatapajono2 = new Valintatapajono();
         valintatapajono2.setAloituspaikat(1);
         valintatapajono2.setPrioriteetti(1);
         valintatapajono2.setTasasijasaanto(Tasasijasaanto.ARVONTA);
         valintatapajono2.setHakemukset(new ArrayList<>(2));
-        Hakemus h2 = generateHakemus(2, 0, null);
+        Hakemus h2 = SijoitteluAlgorithmUtil.generateHakemus(2, 0, null);
         h2.setTila(HakemuksenTila.HYVAKSYTTY);
         valintatapajono2.getHakemukset().add(h2);
-        valintatapajono2.getHakemukset().add(generateHakemus(3, 1, hakijaryhma));
+        valintatapajono2.getHakemukset().add(SijoitteluAlgorithmUtil.generateHakemus(3, 1, hakijaryhma));
 
         Valintatapajono valintatapajono3 = new Valintatapajono();
         valintatapajono3.setAloituspaikat(1);
         valintatapajono3.setPrioriteetti(2);
         valintatapajono3.setTasasijasaanto(Tasasijasaanto.YLITAYTTO);
         valintatapajono3.setHakemukset(new ArrayList<>(2));
-        Hakemus h3 = generateHakemus(4, 0, null);
+        Hakemus h3 = SijoitteluAlgorithmUtil.generateHakemus(4, 0, null);
         h3.setTila(HakemuksenTila.HYVAKSYTTY);
         valintatapajono3.getHakemukset().add(h3);
-        valintatapajono3.getHakemukset().add(generateHakemus(5, 1, hakijaryhma));
+        valintatapajono3.getHakemukset().add(SijoitteluAlgorithmUtil.generateHakemus(5, 1, hakijaryhma));
 
         Hakukohde hakukohde = new Hakukohde();
         hakukohde.setOid("hakukohdeOid");
@@ -698,8 +672,8 @@ public class SijoitteleHakijaryhmaTest {
         valintatapajono.getHakemukset().clear();
 
         for (int i = 0; i < 10; i++) {
-            valintatapajono.getHakemukset().add(generateHakemus(i, i, hakijaryhma));
-            valintatapajono.getHakemukset().add(generateHakemus(100 + i, 100 + i, toinenHakijaryhma));
+            valintatapajono.getHakemukset().add(SijoitteluAlgorithmUtil.generateHakemus(i, i, hakijaryhma));
+            valintatapajono.getHakemukset().add(SijoitteluAlgorithmUtil.generateHakemus(100 + i, 100 + i, toinenHakijaryhma));
         }
 
         Hakukohde toinenHakukohdeMuuttumisenTriggeroimiseksi = new Hakukohde();
@@ -710,7 +684,7 @@ public class SijoitteleHakijaryhmaTest {
         toisenKohteenJono.setAloituspaikat(1);
         toisenKohteenJono.setPrioriteetti(1);
         toisenKohteenJono.setTasasijasaanto(Tasasijasaanto.YLITAYTTO);
-        toisenKohteenJono.getHakemukset().add(generateHakemus(0, 1, null));
+        toisenKohteenJono.getHakemukset().add(SijoitteluAlgorithmUtil.generateHakemus(0, 1, null));
         toinenHakukohdeMuuttumisenTriggeroimiseksi.setValintatapajonot(Collections.singletonList(toisenKohteenJono));
 
         Hakemus hakemusWithTwoHakutoives = valintatapajono.getHakemukset().get(0);
@@ -768,28 +742,28 @@ public class SijoitteleHakijaryhmaTest {
         hakijaryhma.setHakukohdeOid("hakukohdeOid");
         hakijaryhma.setKiintio(6);
 
-        Hakemus hakemus0jono1 = generateHakemus(0, 0, null);
-        Hakemus hakemus1jono1 = generateHakemus(1, 1, hakijaryhma);
-        Hakemus hakemus2jono1 = generateHakemus(2, 2, hakijaryhma);
-        Hakemus hakemus3jono1 = generateHakemus(3, 3, null);
-        Hakemus hakemus4jono1 = generateHakemus(4, 4, hakijaryhma);
-        Hakemus hakemus5jono1 = generateHakemus(5, 5, null);
-        Hakemus hakemus6jono1 = generateHakemus(6, 6, hakijaryhma);
-        Hakemus hakemus7jono1 = generateHakemus(7, 7, hakijaryhma);
-        Hakemus hakemus8jono1 = generateHakemus(8, 8, hakijaryhma);
+        Hakemus hakemus0jono1 = SijoitteluAlgorithmUtil.generateHakemus(0, 0, null);
+        Hakemus hakemus1jono1 = SijoitteluAlgorithmUtil.generateHakemus(1, 1, hakijaryhma);
+        Hakemus hakemus2jono1 = SijoitteluAlgorithmUtil.generateHakemus(2, 2, hakijaryhma);
+        Hakemus hakemus3jono1 = SijoitteluAlgorithmUtil.generateHakemus(3, 3, null);
+        Hakemus hakemus4jono1 = SijoitteluAlgorithmUtil.generateHakemus(4, 4, hakijaryhma);
+        Hakemus hakemus5jono1 = SijoitteluAlgorithmUtil.generateHakemus(5, 5, null);
+        Hakemus hakemus6jono1 = SijoitteluAlgorithmUtil.generateHakemus(6, 6, hakijaryhma);
+        Hakemus hakemus7jono1 = SijoitteluAlgorithmUtil.generateHakemus(7, 7, hakijaryhma);
+        Hakemus hakemus8jono1 = SijoitteluAlgorithmUtil.generateHakemus(8, 8, hakijaryhma);
 
-        Hakemus hakemus0jono2 = generateHakemus(0, 0, null);
-        Hakemus hakemus1jono2 = generateHakemus(1, 1, hakijaryhma);
-        Hakemus hakemus2jono2 = generateHakemus(2, 2, hakijaryhma);
-        Hakemus hakemus3jono2 = generateHakemus(3, 3, null);
-        Hakemus hakemus4jono2 = generateHakemus(4, 4, hakijaryhma);
-        Hakemus hakemus5jono2 = generateHakemus(5, 4, null);
-        Hakemus hakemus6jono2 = generateHakemus(6, 4, hakijaryhma);
+        Hakemus hakemus0jono2 = SijoitteluAlgorithmUtil.generateHakemus(0, 0, null);
+        Hakemus hakemus1jono2 = SijoitteluAlgorithmUtil.generateHakemus(1, 1, hakijaryhma);
+        Hakemus hakemus2jono2 = SijoitteluAlgorithmUtil.generateHakemus(2, 2, hakijaryhma);
+        Hakemus hakemus3jono2 = SijoitteluAlgorithmUtil.generateHakemus(3, 3, null);
+        Hakemus hakemus4jono2 = SijoitteluAlgorithmUtil.generateHakemus(4, 4, hakijaryhma);
+        Hakemus hakemus5jono2 = SijoitteluAlgorithmUtil.generateHakemus(5, 4, null);
+        Hakemus hakemus6jono2 = SijoitteluAlgorithmUtil.generateHakemus(6, 4, hakijaryhma);
         hakemus4jono2.setTasasijaJonosija(1);
         hakemus5jono2.setTasasijaJonosija(2);
         hakemus6jono2.setTasasijaJonosija(3);
-        Hakemus hakemus7jono2 = generateHakemus(7, 7, hakijaryhma);
-        Hakemus hakemus8jono2 = generateHakemus(8, 8, hakijaryhma);
+        Hakemus hakemus7jono2 = SijoitteluAlgorithmUtil.generateHakemus(7, 7, hakijaryhma);
+        Hakemus hakemus8jono2 = SijoitteluAlgorithmUtil.generateHakemus(8, 8, hakijaryhma);
 
         Valintatapajono valintatapajono1 = new HakuBuilder.ValintatapajonoBuilder().
             withAloituspaikat(3).
@@ -885,7 +859,7 @@ public class SijoitteleHakijaryhmaTest {
                 withTasasijasaanto(Tasasijasaanto.YLITAYTTO).build();
 
             for (int h = 0; h  < 10; h++) {
-                Hakemus hakemus = generateHakemus(999 + i + h, 100 + i + jono.hashCode(), hakijaryhma); // produce varying high jonosijas
+                Hakemus hakemus = SijoitteluAlgorithmUtil.generateHakemus(999 + i + h, 100 + i + jono.hashCode(), hakijaryhma); // produce varying high jonosijas
                 hyvinMatalallaJonoissaOleviaHakemuksia.add(hakemus);
                 jono.getHakemukset().add(hakemus);
             }
@@ -939,17 +913,17 @@ public class SijoitteleHakijaryhmaTest {
         hakijaryhma.setHakukohdeOid("hakukohdeOid");
         hakijaryhma.setKiintio(6);
 
-        Hakemus hakemus0jono1 = generateHakemus(0, 0, null);
-        Hakemus hakemus1jono1 = generateHakemus(1, 1, hakijaryhma);
+        Hakemus hakemus0jono1 = SijoitteluAlgorithmUtil.generateHakemus(0, 0, null);
+        Hakemus hakemus1jono1 = SijoitteluAlgorithmUtil.generateHakemus(1, 1, hakijaryhma);
         hakemus1jono1.setIlmoittautumisTila(POISSA_KOKO_LUKUVUOSI);
-        Hakemus hakemus2jono1 = generateHakemus(2, 2, hakijaryhma);
-        Hakemus hakemus3jono1 = generateHakemus(3, 3, null);
-        Hakemus hakemus4jono1 = generateHakemus(4, 4, hakijaryhma);
+        Hakemus hakemus2jono1 = SijoitteluAlgorithmUtil.generateHakemus(2, 2, hakijaryhma);
+        Hakemus hakemus3jono1 = SijoitteluAlgorithmUtil.generateHakemus(3, 3, null);
+        Hakemus hakemus4jono1 = SijoitteluAlgorithmUtil.generateHakemus(4, 4, hakijaryhma);
         hakemus4jono1.setIlmoittautumisTila(POISSA_KOKO_LUKUVUOSI);
-        Hakemus hakemus5jono1 = generateHakemus(5, 5, null);
-        Hakemus hakemus6jono1 = generateHakemus(6, 6, hakijaryhma);
-        Hakemus hakemus7jono1 = generateHakemus(7, 7, hakijaryhma);
-        Hakemus hakemus8jono1 = generateHakemus(8, 8, hakijaryhma);
+        Hakemus hakemus5jono1 = SijoitteluAlgorithmUtil.generateHakemus(5, 5, null);
+        Hakemus hakemus6jono1 = SijoitteluAlgorithmUtil.generateHakemus(6, 6, hakijaryhma);
+        Hakemus hakemus7jono1 = SijoitteluAlgorithmUtil.generateHakemus(7, 7, hakijaryhma);
+        Hakemus hakemus8jono1 = SijoitteluAlgorithmUtil.generateHakemus(8, 8, hakijaryhma);
 
         Valintatapajono valintatapajono1 = new HakuBuilder.ValintatapajonoBuilder().
             withAloituspaikat(3).
