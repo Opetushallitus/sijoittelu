@@ -247,7 +247,7 @@ public class SijoitteleHakukohdeTest {
     }
 
     @Test
-    public void reproduceNastyHakijaryhmaYlitayttoCase() {
+    public void hakijaryhmanYlitayttotilanteessaHyvaksytaanParempiaHakijoitaLisapaikoilleKunLisapaikatKaytossa() {
         Hakijaryhma hakijaryhma = new Hakijaryhma();
         hakijaryhma.setOid(hakijaryhmaOid);
         hakijaryhma.setHakukohdeOid("hakukohdeOid");
@@ -259,11 +259,7 @@ public class SijoitteleHakukohdeTest {
         valintatapajono.setPrioriteetti(0);
         valintatapajono.setTasasijasaanto(Tasasijasaanto.YLITAYTTO);
         List<Hakemus> kaytettavatHakemukset = new ArrayList<>();
-        //JONO A
-        //-
-        //-*
-        //**
-        //--
+
         kaytettavatHakemukset.add(generateHakemus(0, 0, null));
         kaytettavatHakemukset.add(generateHakemus(1, 1, hakijaryhma));
         kaytettavatHakemukset.add(generateHakemus(2, 1, null));
@@ -276,7 +272,6 @@ public class SijoitteleHakukohdeTest {
         kaytettavatHakemukset.add(generateHakemus(17, 4, null));
         kaytettavatHakemukset.add(generateHakemus(18, 5, null));
 
-
         Valintatapajono valintatapajono2 = new Valintatapajono();
         valintatapajono2.setOid("testijono B");
         valintatapajono2.setAloituspaikat(5);
@@ -284,15 +279,10 @@ public class SijoitteleHakukohdeTest {
         valintatapajono2.setTasasijasaanto(Tasasijasaanto.YLITAYTTO);
         List<Hakemus> kaytettavatHakemukset2 = new ArrayList<>();
 
-        //JONO B
-        //*
-        //--
-        //*
-        //--
-        //**
-        //kaytettavatHakemukset2.add(generateHakemus(7, 0, hakijaryhma));
-        kaytettavatHakemukset2.add(generateHakemus(8, 1, null));
-        kaytettavatHakemukset2.add(generateHakemus(9, 1, null));
+        Hakemus parempiHakemus1EiHakijarymaa = generateHakemus(8, 1, null);
+        Hakemus parempiHakemus2EiHakijarymaa = generateHakemus(9, 1, null);
+        kaytettavatHakemukset2.add(parempiHakemus1EiHakijarymaa);
+        kaytettavatHakemukset2.add(parempiHakemus2EiHakijarymaa);
         kaytettavatHakemukset2.add(generateHakemus(10, 2, hakijaryhma));
         kaytettavatHakemukset2.add(generateHakemus(11, 3, null));
         kaytettavatHakemukset2.add(generateHakemus(12, 3, null));
@@ -305,20 +295,6 @@ public class SijoitteleHakukohdeTest {
         kaytettavatHakemukset2.add(generateHakemus(46, 4, hakijaryhma));
         kaytettavatHakemukset2.add(generateHakemus(23, 6, hakijaryhma));
         kaytettavatHakemukset2.add(generateHakemus(24, 7, hakijaryhma));
-
-        /*kaytettavatHakemukset2.add(generateHakemus(8, 1, null));
-        kaytettavatHakemukset2.add(generateHakemus(9, 1, null));
-        kaytettavatHakemukset2.add(generateHakemus(10, 2, null));
-        kaytettavatHakemukset2.add(generateHakemus(11, 3, null));
-        kaytettavatHakemukset2.add(generateHakemus(12, 3, null));
-        kaytettavatHakemukset2.add(generateHakemus(13, 4, null));
-        kaytettavatHakemukset2.add(generateHakemus(14, 4, null));
-        kaytettavatHakemukset2.add(generateHakemus(15, 4, null));
-        kaytettavatHakemukset2.add(generateHakemus(44, 4, null));
-        kaytettavatHakemukset2.add(generateHakemus(45, 4, null));
-        kaytettavatHakemukset2.add(generateHakemus(46, 4, null));
-        kaytettavatHakemukset2.add(generateHakemus(23, 6, null));
-        kaytettavatHakemukset2.add(generateHakemus(24, 7, null));*/
 
         valintatapajono.setHakemukset(kaytettavatHakemukset);
 
@@ -340,9 +316,19 @@ public class SijoitteleHakukohdeTest {
                         Collections.emptyMap()
                 );
         HakukohdeWrapper hakukohdeWrapper = ajoWrapper.getHakukohteet().get(0);
-        ajoWrapper.setLisapaikkaTapa(LisapaikkaTapa.TAPA1);
+        ajoWrapper.setLisapaikkaTapa(LisapaikkaTapa.TAPA1); //Olennainen säätö tämän testin kannalta
+
+        Assert.assertThat(parempiHakemus1EiHakijarymaa, hasTila(VARALLA));
+        Assert.assertThat(parempiHakemus2EiHakijarymaa, hasTila(VARALLA));
 
         SijoitteleHakukohde.sijoitteleHakukohde(ajoWrapper, hakukohdeWrapper);
+        int hyvaksyttyjaJonossaB = (int) kaytettavatHakemukset2.stream().filter(hw -> hw.getTila().equals(HYVAKSYTTY)).count();
+        int hakijaryhmastaHyvaksyttyjaJonossaB = (int) kaytettavatHakemukset2.stream().filter(hw -> !hw.getHyvaksyttyHakijaryhmista().isEmpty()).count();
+        Assert.assertEquals(9, hyvaksyttyjaJonossaB);
+        Assert.assertEquals(7, hakijaryhmastaHyvaksyttyjaJonossaB);
+        Assert.assertThat(parempiHakemus1EiHakijarymaa, hasTila(HYVAKSYTTY));
+        Assert.assertThat(parempiHakemus2EiHakijarymaa, hasTila(HYVAKSYTTY));
+
 
     }
 

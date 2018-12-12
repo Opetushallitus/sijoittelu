@@ -57,7 +57,6 @@ public class SijoitteleHakukohde {
         }
 
         if (LOG.isDebugEnabled()) {
-            LOG.debug("Hakemusten tilat valintatapajonosijoittelun jälkeen:");
             debugLogHakemusStates(hakukohde);
         }
 
@@ -66,6 +65,7 @@ public class SijoitteleHakukohde {
     }
 
     private static void debugLogHakemusStates(HakukohdeWrapper hakukohde) {
+        LOG.debug("Hakemusten tilat valintatapajonosijoittelun jälkeen (* = kuuluu johonkin hakijaryhmään):");
         hakukohde.getValintatapajonot().forEach(jono -> {
             LOG.debug("        jono " + jono.getValintatapajono().getOid() + " :");
             List<HakemusWrapper> jononHakemukset = jono.getHakemukset().stream()
