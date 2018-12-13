@@ -53,11 +53,10 @@ public class SijoitteluAlgorithmUtil {
         return results;
     }
 
-
     public static List<Hakemus> generateHakemukset(int nToGenerate, Hakijaryhma hakijaryhma) {
         List<Hakemus> results = new ArrayList<>(nToGenerate);
         for (int i = 0; i < nToGenerate; i++) {
-            results.add(SijoitteluAlgorithmUtil.generateHakemus(i, hakijaryhma));
+            results.add(generateHakemus(i, hakijaryhma));
         }
         return results;
     }

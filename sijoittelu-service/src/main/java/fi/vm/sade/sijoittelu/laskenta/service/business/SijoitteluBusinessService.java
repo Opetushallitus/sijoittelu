@@ -158,7 +158,7 @@ public class SijoitteluBusinessService {
         stopWatch.stop();
 
         if(!sijoitteluajoWrapper.getLisapaikkaTapa().equals(LisapaikkaTapa.EI_KAYTOSSA)) {
-            LOG.warn("HRS HUOM: Sijoitteluajossa {} käytetään lisäpaikkoja. Lisäpaikkojen laskentatapa: {}", sijoitteluajoWrapper.getSijoitteluajo(), sijoitteluajoWrapper.getLisapaikkaTapa());
+            LOG.warn("HRS HUOM: Sijoitteluajossa {} käytetään lisäpaikkoja hakijaryhmäylitäyttötilanteissa (OK-223). Lisäpaikkojen laskentatapa: {}", sijoitteluajoWrapper.getSijoitteluajo(), sijoitteluajoWrapper.getLisapaikkaTapa());
         }
         suoritaSijoittelu(startTime, stopWatch, hakuOid, uusiSijoitteluajo, sijoitteluajoWrapper);
         stopWatch.start("Kopioidaan edellisen sijoitteluajon tietoja");
@@ -329,14 +329,15 @@ public class SijoitteluBusinessService {
             sijoitteluAjo.setLisapaikkaTapa(LisapaikkaTapa.TAPA1);
             LOG.info("Sijoittelun ohjausparametrit asetettu haulle {}. onko korkeakouluhaku: {}, " +
                     "kaikki kohteet sijoittelussa: {}, hakukierros päätty: {}, varasijasäännöt astuvat voimaan: {}, " +
-                    "varasijasäännöt voimassa: {}, sijoiteltu ilman varasijasääntöjä niiden ollessa voimassa: {}",
+                    "varasijasäännöt voimassa: {}, sijoiteltu ilman varasijasääntöjä niiden ollessa voimassa: {}, käytettävä lisäpaikkatapa: {}",
                 hakuOid,
                 sijoitteluAjo.isKKHaku(),
                 sijoitteluAjo.getKaikkiKohteetSijoittelussa(),
                 sijoitteluAjo.getHakuKierrosPaattyy(),
                 sijoitteluAjo.getVarasijaSaannotAstuvatVoimaan(),
                 sijoitteluAjo.varasijaSaannotVoimassa(),
-                sijoitteluAjo.onkoKaikkiJonotSijoiteltuIlmanVarasijasaantojaNiidenOllessaVoimassa());
+                sijoitteluAjo.onkoKaikkiJonotSijoiteltuIlmanVarasijasaantojaNiidenOllessaVoimassa(),
+                sijoitteluAjo.getLisapaikkaTapa());
         } catch (IllegalStateException e) {
             throw new RuntimeException(String.format("Sijoittelua haulle %s ei voida suorittaa", hakuOid), e);
         }
