@@ -31,7 +31,7 @@ install:
 - date
 
 script:
-- mvn clean verify -B -U -Dbranch=${TRAVIS_BRANCH} -Drevision=${TRAVIS_COMMIT} -DbuildNumber=${TRAVIS_BUILD_NUMBER} -Pit -Dit.usePhantomJs=true
+- mvn clean verify -B -Dbranch=${TRAVIS_BRANCH} -Drevision=${TRAVIS_COMMIT} -DbuildNumber=${TRAVIS_BUILD_NUMBER} -Pit -Dit.usePhantomJs=true
 
 - mv sijoittelu-service/target/sijoittelu-service.war $DOCKER_BUILD_DIR/artifact/sijoittelu-service.war
 - cp -vr src/main/resources/oph-configuration $DOCKER_BUILD_DIR/config/
