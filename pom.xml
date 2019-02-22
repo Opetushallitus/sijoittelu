@@ -34,31 +34,6 @@
     </distributionManagement>
 
 <properties>
-    <activemq.version>5.5.1</activemq.version>
-    <ant-contrib.version>1.0b3</ant-contrib.version>
-    <ant-jsch.version>1.8.1</ant-jsch.version>
-    <ant.file>build.xml</ant.file>
-    <antisamy.version>1.4.5</antisamy.version>
-    <aopalliance.version>1.0</aopalliance.version>
-    <aspectj.version>1.6.3</aspectj.version>
-    <atomikos.version>3.6.6</atomikos.version>
-    <auditlog.api.version>8.3.0-SNAPSHOT</auditlog.api.version>
-    <blackboard.version>2.1.1</blackboard.version>
-    <buildversion_prefix />
-    <camel.version>2.12.1</camel.version>
-    <cglib.nodep.version>2.2.2</cglib.nodep.version>
-    <checkstyle.configLocation>https://sonar.oph.ware.fi/sonar/profiles/export?format=checkstyle&amp;amp;language=java&amp;amp;name=SonarWayWithFindbugsAndOPHCheckstyle</checkstyle.configLocation>
-    <checkstyle.consoleOutput>true</checkstyle.consoleOutput>
-    <checkstyle.excludes>**/generated/**/*,**/com/**/*,**/org/**/*,**/net/**/*,**/*Mock.java</checkstyle.excludes>
-    <checkstyle.failsOnError>true</checkstyle.failsOnError>
-    <checkstyle.plugin.version>2.9.1</checkstyle.plugin.version>
-    <checkstyle.skip>false</checkstyle.skip>
-    <commons-codec.version>1.6</commons-codec.version>
-    <commons-dbcp.version>1.4_1</commons-dbcp.version>
-    <commons-lang.version>2.6</commons-lang.version>
-    <compiler.debug>false</compiler.debug>
-    <compiler.plugin.version>2.3.2</compiler.plugin.version>
-    <cxf.codegen.version>2.4.6</cxf.codegen.version>
     <cxf.version>3.2.4</cxf.version>
     <daemon>false</daemon>
     <dbunit.version>2.4.8</dbunit.version>
