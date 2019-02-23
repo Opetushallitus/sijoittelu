@@ -35,81 +35,14 @@
 
 <properties>
     <cxf.version>3.2.4</cxf.version>
-    <daemon>false</daemon>
-    <dbunit.version>2.4.8</dbunit.version>
-    <deploy.plugin.version>2.7</deploy.plugin.version>
-    <ehcache.version>2.5.0</ehcache.version>
-    <embedService.serviceArtifactId>valintaperusteet-service</embedService.serviceArtifactId>
-    <enforcer.plugin.version>1.4.1</enforcer.plugin.version>
-    <failsafe.plugin.version>2.12</failsafe.plugin.version>
     <fasterxml.jackson.version>2.9.5</fasterxml.jackson.version>
-    <findbugs.plugin.version>2.3.3</findbugs.plugin.version>
     <flapdoodle.embed.mongo.version>1.50.5</flapdoodle.embed.mongo.version>
-    <google.map.widget.version>0.9.13</google.map.widget.version>
-    <gson.version>2.2.2</gson.version>
-    <guava.version>18.0</guava.version>
-    <gwt.plugin.version>2.2.0</gwt.plugin.version>
-    <gwt.version>2.3.0</gwt.version>
-    <hakemus.api.version>14.0-SNAPSHOT</hakemus.api.version>
-    <hibernate-validator.version>4.1.0.Final</hibernate-validator.version>
-    <hibernate.version>4.2.7.Final</hibernate.version>
-    <hsqldb.version>2.3.4</hsqldb.version>
-    <httpcomponents.core.version>4.4.4</httpcomponents.core.version>
-    <httpcomponents.version>4.5.2</httpcomponents.version>
     <jackson.version>1.9.13</jackson.version>
-    <jar.plugin.version>2.4</jar.plugin.version>
-    <jersey.version>1.17.1</jersey.version>
-    <jetty.embed.version>6.1.26</jetty.embed.version>
-    <jetty.module>sijoittelu</jetty.module>
-    <jetty.version>9.2.11.v20150529</jetty.version>
-    <jetty.webApp>target/sijoittelu.war</jetty.webApp>
-    <joda.version>2.9.4</joda.version>
-    <jodatime.version>2.1</jodatime.version>
-    <jpa-api.version>2.0.0</jpa-api.version>
-    <jrebel.plugin.version>1.1.3</jrebel.plugin.version>
-    <jsch.version>0.1.48</jsch.version>
-    <jta.version>1.1</jta.version>
-    <junit.version>4.12</junit.version>
-    <kela.version>12.0-SNAPSHOT</kela.version>
-    <koodisto.api.version>6.3-SNAPSHOT</koodisto.api.version>
-    <log4j.version>1.2.17</log4j.version>
-    <mockito.version>1.10.19</mockito.version>
-    <modelmapper.version>2.1.0</modelmapper.version>
-    <mongo.java.driver.version>3.4.2</mongo.java.driver.version>
-    <mongo.version>2.7.1</mongo.version>
-    <morphia.version>1.2.1</morphia.version>
-    <nosql-junit.version>0.7.6</nosql-junit.version>
-    <organisaatio.api.version>6.2-SNAPSHOT</organisaatio.api.version>
-    <portlet.api.version>2.0</portlet.api.version>
-    <portlet.scope>provided</portlet.scope>
-    <postgresql.version>42.2.4</postgresql.version>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-    <project.svn.base>https://penaali.hard.ware.fi/svn/generic/sijoittelu</project.svn.base>
-    <querydsl.version>2.6.0</querydsl.version>
-    <release.plugin.version>2.2.1</release.plugin.version>
-    <resources.plugin.version>2.5</resources.plugin.version>
-    <rxjava.version>1.0.11</rxjava.version>
-    <selenium.version>2.37.0</selenium.version>
-    <servlet.api.version>3.1.0</servlet.api.version>
-    <servlet.version>3.0.1</servlet.version>
-    <slf4j-api.scope>compile</slf4j-api.scope>
     <slf4j.version>1.7.5</slf4j.version>
-    <source.plugin.version>2.1.2</source.plugin.version>
-    <spring.asm.version>3.1.4.RELEASE</spring.asm.version>
     <spring.security.version>4.1.2.RELEASE</spring.security.version>
-    <spring.version>4.3.2.RELEASE</spring.version>
     <surefire.plugin.version>2.12</surefire.plugin.version>
-    <surefire.reportsDirectory>target/surefire-reports</surefire.reportsDirectory>
-    <surefire.testFailureIgnore>false</surefire.testFailureIgnore>
     <swagger.version>1.5.16</swagger.version>
-    <tarjonta.api.version>2018-15-SNAPSHOT</tarjonta.api.version>
     <tomcat.version>7.0.39</tomcat.version>
-    <vaadin.formbinder.version>2.1.1</vaadin.formbinder.version>
-    <vaadin.version>6.8.12</vaadin.version>
-    <webapp.port>8180</webapp.port>
-    <wss4j.version>1.6.4</wss4j.version>
-    <xml.plugin.version>1.0</xml.plugin.version>
   </properties>
 
     <dependencyManagement>
