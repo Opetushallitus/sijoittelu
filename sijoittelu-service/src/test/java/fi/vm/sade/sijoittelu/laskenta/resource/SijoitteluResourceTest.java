@@ -71,7 +71,6 @@ public class SijoitteluResourceTest {
     @Test
     public void testaaSijoittelunLuonti() {
         String haku1 = "1.2.3.4444";
-        String haku2 = "1.2.3.555";
 
         Long id = sijoitteluResource.sijoittele(haku1);
         Long id2 = sijoitteluResource.sijoittele(haku1);
