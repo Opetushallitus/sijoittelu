@@ -4,7 +4,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import fi.vm.sade.authentication.business.service.Authorizer;
-import fi.vm.sade.generic.service.exception.NotAuthorizedException;
+import fi.vm.sade.authorization.NotAuthorizedException;
 
 @Component
 @Profile("it")
