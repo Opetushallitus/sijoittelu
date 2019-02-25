@@ -45,7 +45,7 @@ deploy:
   script: mvn deploy -pl fi.vm.sade.sijoittelu:sijoittelu,sijoittelu-tulos-api,sijoittelu-algoritmi-domain -DskipTests --settings ci-tools/common/maven-settings.xml
   skip_cleanup: true
   on:
-    branch: master
+    branch: VTKU-28__generic-common_pois
 - provider: script
   script: ./ci-tools/build/upload-image.sh sijoittelu-service
   on:
