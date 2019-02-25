@@ -3,9 +3,9 @@ package fi.vm.sade.sijoittelu.laskenta.resource;
 import static java.util.Arrays.asList;
 import static org.apache.commons.lang.StringUtils.EMPTY;
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.anyList;
 import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.mock;
@@ -30,6 +30,7 @@ import fi.vm.sade.valintalaskenta.domain.dto.valintatieto.HakuDTO;
 import fi.vm.sade.valintalaskenta.domain.dto.valintatieto.ValintatietoValinnanvaiheDTO;
 import fi.vm.sade.valintalaskenta.domain.dto.valintatieto.ValintatietoValintatapajonoDTO;
 import fi.vm.sade.valintalaskenta.tulos.service.impl.ValintatietoService;
+import org.hamcrest.Matchers;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -78,10 +79,10 @@ public class SijoitteluResourceTest {
         String tila = sijoitteluResource.sijoittelunTila(id);
         String tila2 = sijoitteluResource.sijoittelunTila(id2);
 
-        assertTrue(-1L == id2);
-        assertTrue(id > 0);
-        assertTrue(SijoitteluajonTila.KESKEN.toString().equals(tila));
-        assertTrue(SijoitteluajonTila.EI_LOYTYNYT.toString().equals(tila2));
+        assertEquals(Long.valueOf(-1), id2);
+        assertThat(id, Matchers.greaterThan(0L));
+        assertEquals(SijoitteluajonTila.KESKEN.toString(), tila);
+        assertEquals(SijoitteluajonTila.EI_LOYTYNYT.toString(), tila2);
     }
 
     @Test
