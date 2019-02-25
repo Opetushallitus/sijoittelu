@@ -60,19 +60,19 @@
       <dependency>
         <groupId>fi.vm.sade.valintaperusteet</groupId>
         <artifactId>sharedutils</artifactId>
-        <version>5.1-SNAPSHOT</version>
+        <version>5.3-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>fi.vm.sade.valintaperusteet</groupId>
         <artifactId>sharedutils</artifactId>
-        <version>5.1-SNAPSHOT</version>
+        <version>5.3-SNAPSHOT</version>
         <type>test-jar</type>
         <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>fi.vm.sade.valintaperusteet</groupId>
         <artifactId>valintalaskenta-laskenta-api</artifactId>
-        <version>5.2-SNAPSHOT</version>
+        <version>5.3-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>fi.vm.sade.generic</groupId>
@@ -763,6 +763,11 @@
         <groupId>com.google.code.findbugs</groupId>
         <artifactId>annotations</artifactId>
         <version>3.0.1</version>
+      </dependency>
+      <dependency>
+        <groupId>org.reactivestreams</groupId>
+        <artifactId>reactive-streams</artifactId>
+        <version>1.0.2</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
