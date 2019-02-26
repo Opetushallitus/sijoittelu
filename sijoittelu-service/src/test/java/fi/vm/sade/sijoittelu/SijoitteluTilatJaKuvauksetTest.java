@@ -80,7 +80,7 @@ public class SijoitteluTilatJaKuvauksetTest {
     private fi.vm.sade.sijoittelu.laskenta.external.resource.dto.ParametriDTO haunParametrit() {
         fi.vm.sade.sijoittelu.laskenta.external.resource.dto.ParametriDTO parametrit = new fi.vm.sade.sijoittelu.laskenta.external.resource.dto.ParametriDTO();
         parametrit.setPH_HKP(new fi.vm.sade.sijoittelu.laskenta.external.resource.dto.ParametriArvoDTO(System.currentTimeMillis() + ONE_DAY.toMillis()));
-        parametrit.setPH_VTSSV(new fi.vm.sade.sijoittelu.laskenta.external.resource.dto.ParametriArvoDTO(System.currentTimeMillis() + ONE_DAY.toMillis()));
+        parametrit.setPH_VTSSV(new fi.vm.sade.sijoittelu.laskenta.external.resource.dto.ParametriArvoDTO(System.currentTimeMillis()));
         parametrit.setPH_VSTP(new fi.vm.sade.sijoittelu.laskenta.external.resource.dto.ParametriArvoDTO(System.currentTimeMillis() + ONE_DAY.toMillis()));
         parametrit.setPH_VSSAV(new fi.vm.sade.sijoittelu.laskenta.external.resource.dto.ParametriArvoDTO(System.currentTimeMillis() - ONE_DAY.toMillis()));
         return parametrit;
