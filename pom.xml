@@ -43,7 +43,7 @@
     <spring.security.version>4.2.11.RELEASE</spring.security.version>
     <surefire.plugin.version>2.12</surefire.plugin.version>
     <swagger.version>1.5.16</swagger.version>
-    <tomcat.version>7.0.39</tomcat.version>
+    <jetty.version>9.4.15.v20190215</jetty.version>
   </properties>
 
     <dependencyManagement>
@@ -677,19 +677,17 @@
       <dependency>
         <groupId>org.eclipse.jetty</groupId>
         <artifactId>jetty-server</artifactId>
-        <version>9.2.11.v20150529</version>
-        <scope>test</scope>
+        <version>${jetty.version}</version>
       </dependency>
       <dependency>
         <groupId>org.eclipse.jetty</groupId>
         <artifactId>jetty-webapp</artifactId>
-        <version>9.2.11.v20150529</version>
-        <scope>test</scope>
+        <version>${jetty.version}</version>
       </dependency>
       <dependency>
         <groupId>org.eclipse.jetty</groupId>
         <artifactId>jetty-maven-plugin</artifactId>
-        <version>9.2.11.v20150529</version>
+        <version>${jetty.version}</version>
       </dependency>
       <dependency>
         <groupId>com.zaxxer</groupId>
@@ -722,19 +720,39 @@
         <version>1.8.1</version>
       </dependency>
       <dependency>
-        <groupId>com.sun.xml.bind</groupId>
-        <artifactId>jaxb-core</artifactId>
-        <version>2.2.11</version>
+          <groupId>javax.xml.bind</groupId>
+          <artifactId>jaxb-api</artifactId>
+          <version>2.3.1</version>
       </dependency>
       <dependency>
-        <groupId>com.sun.xml.bind</groupId>
-        <artifactId>jaxb-impl</artifactId>
-        <version>2.2.11</version>
+          <groupId>com.sun.xml.bind</groupId>
+          <artifactId>jaxb-core</artifactId>
+          <version>2.2.11</version>
       </dependency>
       <dependency>
-        <groupId>asm</groupId>
-        <artifactId>asm</artifactId>
-        <version>3.3.1</version>
+          <groupId>com.sun.xml.bind</groupId>
+          <artifactId>jaxb-impl</artifactId>
+          <version>2.2.11</version>
+      </dependency>
+      <dependency>
+          <groupId>javax.xml.ws</groupId>
+          <artifactId>jaxws-api</artifactId>
+          <version>2.3.1</version>
+      </dependency>
+      <dependency>
+          <groupId>javax.annotation</groupId>
+          <artifactId>javax.annotation-api</artifactId>
+          <version>1.3.2</version>
+      </dependency>
+      <dependency>
+          <groupId>javax.validation</groupId>
+          <artifactId>validation-api</artifactId>
+          <version>1.1.0.Final</version>
+      </dependency>
+      <dependency>
+          <groupId>org.reflections</groupId>
+          <artifactId>reflections</artifactId>
+          <version>0.9.10</version>
       </dependency>
       <dependency>
         <groupId>com.google.code.gson</groupId>
@@ -915,16 +933,20 @@
                     </goals>
                     <configuration>
                         <target>
-                            <echo message="writing buildversion.txt" />
-                            <echo file="target/sijoittelu-service/buildversion.txt">artifactId=${artifactId}
-                                version=${version}
-                                buildNumber=${buildNumber}
-                                branchName=${branch}
-                                vcsRevision=${revision}
-                                buildTtime=${maven.build.timestamp}</echo>
-                            <loadfile property="buildversiontxt" srcFile="target/sijoittelu-service/buildversion.txt" />
-                            <echo message="${buildversiontxt}" />
-                            <echo file="target/mavenversion.txt">${version}</echo>
+                            <echo message="writing ${project.build.outputDirectory}/webapp/buildversion.txt"/>
+                            <echo file="${project.build.outputDirectory}/webapp/buildversion.txt">
+                                <![CDATA[artifactId=${project.artifactId}
+version=${project.version}
+buildNumber=${build}
+branchName=${branch}
+vcsRevision=${revision}
+buildTtime=${maven.build.timestamp}
+]]>
+                            </echo>
+                            <loadfile property="buildversiontxt"
+                                      srcFile="${project.build.outputDirectory}/webapp/buildversion.txt"/>
+                            <echo message="${buildversiontxt}"/>
+                            <echo file="target/mavenversion.txt">${project.version}</echo>
                         </target>
                     </configuration>
                 </execution>
