@@ -33,10 +33,6 @@ public class WrapperHelperMethods {
         return hakemusWrapper.getValintatapajono().getValintatapajono().getEiVarasijatayttoa();
     }
 
-    public static Integer jononVarasijat(HakemusWrapper hakemusWrapper) {
-        return hakemusWrapper.getValintatapajono().getValintatapajono().getVarasijat();
-    }
-
     public static Boolean jononKaikkiEhdonTayttavatHyvaksytaan(HakemusWrapper hakemusWrapper) {
         return hakemusWrapper.getValintatapajono().getValintatapajono().getKaikkiEhdonTayttavatHyvaksytaan();
     }
