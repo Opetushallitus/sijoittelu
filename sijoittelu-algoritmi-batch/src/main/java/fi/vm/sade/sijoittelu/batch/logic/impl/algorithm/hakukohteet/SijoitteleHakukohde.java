@@ -224,16 +224,22 @@ public class SijoitteleHakukohde {
     }
 
     static boolean saannotSallii(HakemusWrapper hakemusWrapper, SijoitteluajoWrapper sijoittaluajo) {
-        Supplier<Boolean> eiVarasijatayttoa = () -> sijoittaluajo.varasijaSaannotVoimassa() &&
-                Boolean.TRUE.equals(jononEiVarasijatayttoa(hakemusWrapper)) &&
-                !jononKaikkiEhdonTayttavatHyvaksytaan(hakemusWrapper);
-
-        if (!sijoittaluajo.isKKHaku() && eiVarasijatayttoa.get() && !hakijaAloistuspaikkojenSisalla(hakemusWrapper)) {
+        if (toisenAsteenErikoissaantoEstaa(hakemusWrapper, sijoittaluajo)) {
             return false;
         }
         return !kuuluuHylattyihinTiloihin(hakemuksenTila(hakemusWrapper)) &&
                 eiPeruttuaKorkeampaaTaiSamaaHakutoivetta(hakemusWrapper) &&
                 hakemusWrapper.isHyvaksyttavissaHakijaryhmanJalkeen();
+    }
+
+    private static boolean toisenAsteenErikoissaantoEstaa(HakemusWrapper hakemusWrapper, SijoitteluajoWrapper sijoitteluajo) {
+        if (sijoitteluajo.isKKHaku()) {
+            return false;
+        }
+        boolean eiVarasijatayttoa = sijoitteluajo.varasijaSaannotVoimassa() &&
+            Boolean.TRUE.equals(jononEiVarasijatayttoa(hakemusWrapper)) &&
+            !jononKaikkiEhdonTayttavatHyvaksytaan(hakemusWrapper);
+        return eiVarasijatayttoa && !hakijaAloistuspaikkojenSisalla(hakemusWrapper);
     }
 
     //Asetetaan kaikki syötteenä saadut hakemukset tilaan PERUUNTUNUT, paitsi jos hakemus oli edellisessä sijoitteluajossa HYVAKSYTTY tai VARASIJALTA_HYVAKSYTTY
