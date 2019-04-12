@@ -4,6 +4,7 @@ import com.google.common.hash.HashCode;
 import com.google.common.hash.HashFunction;
 import com.google.common.hash.Hasher;
 import com.google.common.hash.Hashing;
+import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.hakukohteet.LisapaikkaTapa;
 import fi.vm.sade.sijoittelu.domain.Hakukohde;
 import fi.vm.sade.sijoittelu.domain.SijoitteluAjo;
 import fi.vm.sade.sijoittelu.domain.Valintatapajono;
@@ -46,6 +47,8 @@ public class SijoitteluajoWrapper {
     private boolean isKKHaku = false;
 
     private boolean isAmkopeHaku = false;
+
+    private LisapaikkaTapa lisapaikkaTapa = LisapaikkaTapa.EI_KAYTOSSA;
 
     private List<String> varasijapomput = new ArrayList<>();
 
@@ -245,4 +248,13 @@ public class SijoitteluajoWrapper {
     private Optional<LocalDateTime> asInstant(Date d) {
         return Optional.ofNullable(d).map(i -> LocalDateTime.ofInstant(i.toInstant(), ZoneId.systemDefault()));
     }
+
+    public void setLisapaikkaTapa(LisapaikkaTapa tapa) {
+        this.lisapaikkaTapa = tapa;
+    }
+
+    public LisapaikkaTapa getLisapaikkaTapa() {
+        return this.lisapaikkaTapa;
+    }
+
 }

@@ -72,7 +72,7 @@ public abstract class SijoitteluAlgorithm {
                     LOG.error("Sijoittelu on iteraatiolla {} uudelleen aikaisemmassa tilassa (tila {}). Tämä tarkoittaa että sijoittelualgoritmi ei tuota aina samannäköisiä silmukoita.", tila.depth, hash);
                     //throw new SijoitteluFailedException("Sijoittelu on iteraatiolla "+depth+" uudelleen aikaisemmassa tilassa (tila " + hash + ")");
                 } else {
-                    LOG.debug("Iteraatio {} HASH {}", tila.depth, hash);
+                    LOG.info("Iteraatio {} HASH {}", tila.depth, hash);
                     hashset.add(hash);
                 }
                 ++tila.depth;
@@ -104,7 +104,7 @@ public abstract class SijoitteluAlgorithm {
                 iteraationHakukohteet = muuttuneetHakukohteet;
                 jatkuukoSijoittelu = !muuttuneetHakukohteet.isEmpty();
                 edellinenHash = Optional.ofNullable(iteraationHash);
-                LOG.debug("Iteraatio {} HASH {} ja muuttuneet hakukohteet {}", tila.depth, iteraationHash, muuttuneetHakukohteet.size());
+                LOG.info("Iteraatio {} HASH {} ja muuttuneet hakukohteet {}", tila.depth, iteraationHash, muuttuneetHakukohteet.size());
                 if (jatkuukoSijoittelu && hashset.contains(iteraationHash)) {
                     LOG.error("Sijoittelu on iteraatiolla {} uudelleen aikaisemmassa tilassa (tila {})", tila.depth, iteraationHash);
                     throw new SijoitteluSilmukkaException("Sijoittelu on iteraatiolla " + tila.depth + " uudelleen aikaisemmassa tilassa (tila " + iteraationHash + ")");

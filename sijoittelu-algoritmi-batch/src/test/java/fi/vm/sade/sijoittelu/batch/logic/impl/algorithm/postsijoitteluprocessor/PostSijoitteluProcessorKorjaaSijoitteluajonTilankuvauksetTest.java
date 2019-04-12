@@ -40,6 +40,7 @@ public class PostSijoitteluProcessorKorjaaSijoitteluajonTilankuvauksetTest {
 
     private Valintatapajono jono = new HakuBuilder.ValintatapajonoBuilder().withOid("jono1")
             .withPrioriteetti(0)
+            .withTasasijasaanto(Tasasijasaanto.YLITAYTTO)
             .withHakemukset(hakemus1, hakemus2, hakemus3, hakemus4, hakemus5, hakemus6, hakemus7, hakemus8, hakemus9, hakemus10)
             .build();
 

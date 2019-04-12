@@ -6,11 +6,11 @@ import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoittelunTila;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.postsijoitteluprocessor.PostSijoitteluProcessor;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.presijoitteluprocessor.*;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.SijoitteluajoWrapper;
-import fi.vm.sade.sijoittelu.domain.Hakukohde;
-import fi.vm.sade.sijoittelu.domain.SijoitteluAjo;
-import fi.vm.sade.sijoittelu.domain.Valintatulos;
+import fi.vm.sade.sijoittelu.domain.*;
 import fi.vm.sade.sijoittelu.domain.dto.VastaanottoDTO;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -43,5 +43,39 @@ public class SijoitteluAlgorithmUtil {
         return SijoitteluAlgorithm.sijoittele(PreSijoitteluProcessor.defaultPreProcessors(),
             PostSijoitteluProcessor.defaultPostProcessors(),
             ajo);
+    }
+
+    public static List<Hakemus> generateHakemukset(int nToGenerate, int startingJonosija, Hakijaryhma hakijaryhma) {
+        List<Hakemus> results = new ArrayList<>(nToGenerate);
+        for (int i = startingJonosija; i < startingJonosija+nToGenerate; i++) {
+            results.add(generateHakemus(i, hakijaryhma));
+        }
+        return results;
+    }
+
+    public static List<Hakemus> generateHakemukset(int nToGenerate, Hakijaryhma hakijaryhma) {
+        List<Hakemus> results = new ArrayList<>(nToGenerate);
+        for (int i = 0; i < nToGenerate; i++) {
+            results.add(generateHakemus(i, hakijaryhma));
+        }
+        return results;
+    }
+
+    private static Hakemus generateHakemus(int i, Hakijaryhma hakijaryhma) {
+        return generateHakemus(i, i, hakijaryhma);
+    }
+
+    public static Hakemus generateHakemus(int i, int jonosija, Hakijaryhma hakijaryhma) {
+        Hakemus h = new Hakemus();
+        h.setJonosija(jonosija);
+        h.setPrioriteetti(0);
+        h.setHakemusOid("hakemus" + i);
+        h.setHakijaOid("hakija" + i);
+        if (hakijaryhma != null) {
+            hakijaryhma.getHakemusOid().add(h.getHakemusOid());
+        }
+        h.setPisteet(new BigDecimal(i));
+        h.setTila(HakemuksenTila.VARALLA);
+        return h;
     }
 }
