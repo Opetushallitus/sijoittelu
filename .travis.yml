@@ -3,7 +3,7 @@ sudo: required
 language: java
 
 jdk:
-- oraclejdk8
+- openjdk11
 
 services:
 - docker
@@ -29,24 +29,25 @@ install:
 - sudo sh -c "printf '\n%s penaali.hard.ware.fi\n' $(dig +short artifactory.opintopolku.fi|head -n1) >> /etc/hosts"
 - export TZ=Europe/Helsinki
 - date
+- export ARTIFACT_NAME="sijoittelu-service"
 
 script:
 - mvn clean verify -B -Dbranch=${TRAVIS_BRANCH} -Drevision=${TRAVIS_COMMIT} -DbuildNumber=${TRAVIS_BUILD_NUMBER} -Pit -Dit.usePhantomJs=true
 
-- mv sijoittelu-service/target/sijoittelu-service.war $DOCKER_BUILD_DIR/artifact/sijoittelu-service.war
+- mv sijoittelu-service/target/sijoittelu-service-*allinone.jar $DOCKER_BUILD_DIR/artifact/${ARTIFACT_NAME}.jar
 - cp -vr src/main/resources/oph-configuration $DOCKER_BUILD_DIR/config/
 
-- export BASE_IMAGE="baseimage-war:master"
+- export BASE_IMAGE="baseimage-fatjar:jdk11"
 - ./ci-tools/common/pull-image.sh
-- ./ci-tools/build/build-war.sh sijoittelu-service
+- ./ci-tools/build/build-fatjar.sh $ARTIFACT_NAME
 
 deploy:
 - provider: script
-  script: mvn deploy -pl fi.vm.sade.sijoittelu:sijoittelu,sijoittelu-tulos-api -DskipTests --settings ci-tools/common/maven-settings.xml
+  script: mvn deploy -pl fi.vm.sade.sijoittelu:sijoittelu,sijoittelu-tulos-api,sijoittelu-algoritmi-domain,sijoittelu-tulos-service -DskipTests --settings ci-tools/common/maven-settings.xml
   skip_cleanup: true
   on:
     branch: master
 - provider: script
-  script: ./ci-tools/build/upload-image.sh sijoittelu-service
+  script: ./ci-tools/build/upload-image.sh $ARTIFACT_NAME
   on:
     all_branches: true

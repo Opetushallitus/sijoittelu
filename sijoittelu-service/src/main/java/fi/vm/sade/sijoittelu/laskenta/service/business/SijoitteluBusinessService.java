@@ -313,8 +313,8 @@ public class SijoitteluBusinessService {
                 .map(this::fromTimestamp);
 
         if (kaikkiKohteetSijoittelussa.isPresent() && hakukierrosPaattyy.isBefore(kaikkiKohteetSijoittelussa.get())) {
-            throw new IllegalStateException(
-                "hakukierros on asetettu päättymään ennen kuin kaikkien kohteiden tulee olla sijoittelussa");
+            throw new IllegalStateException("hakukierros on asetettu päättymään " + hakukierrosPaattyy +
+                " ennen kuin kaikkien kohteiden tulee olla sijoittelussa " + kaikkiKohteetSijoittelussa.get());
         }
         if (hakukierrosPaattyy.isBefore(LocalDateTime.now())) {
             throw new IllegalStateException("hakukierros on päättynyt");

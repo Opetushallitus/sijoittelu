@@ -4,7 +4,7 @@
     <parent>
         <artifactId>sijoittelu</artifactId>
         <groupId>fi.vm.sade.sijoittelu</groupId>
-        <version>6.1.4-SNAPSHOT</version>
+        <version>7.0-SNAPSHOT</version>
         <relativePath>..</relativePath>
     </parent>
 
@@ -41,4 +41,15 @@
             <version>${jackson.version}</version>
         </dependency>
     </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <release>8</release>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 </project>

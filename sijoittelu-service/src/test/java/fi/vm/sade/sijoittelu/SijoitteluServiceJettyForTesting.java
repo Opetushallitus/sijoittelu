@@ -11,8 +11,8 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.util.Optional;
 
-public class SijoitteluServiceJetty {
-    private static final Logger LOG = LoggerFactory.getLogger(SijoitteluServiceJetty.class);
+public class SijoitteluServiceJettyForTesting {
+    private static final Logger LOG = LoggerFactory.getLogger(SijoitteluServiceJettyForTesting.class);
 
     public final static int port;
     private static Server server;
@@ -125,8 +125,8 @@ public class SijoitteluServiceJetty {
                 String root =  ProjectRootFinder.findProjectRoot() + "/sijoittelu/sijoittelu-service";
                 LOG.info("Project root {}", root);
                 WebAppContext wac = new WebAppContext();
-                wac.setDescriptor(SijoitteluServiceJetty.class.getResource("/test-web.xml").toString());
-                wac.setResourceBase(root + "/src/main/webapp");
+                wac.setDescriptor(SijoitteluServiceJettyForTesting.class.getResource("/test-web.xml").toString());
+                wac.setResourceBase(root + "/src/main/resources/webapp");
                 wac.setContextPath("/sijoittelu-service");
                 wac.setParentLoaderPriority(true);
                 server.setHandler(wac);
