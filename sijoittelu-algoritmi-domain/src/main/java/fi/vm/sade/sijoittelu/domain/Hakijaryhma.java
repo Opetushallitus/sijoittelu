@@ -1,13 +1,10 @@
 package fi.vm.sade.sijoittelu.domain;
 
-import org.mongodb.morphia.annotations.Embedded;
-
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
-@Embedded
 public class Hakijaryhma implements Serializable {
 
     private Integer prioriteetti;

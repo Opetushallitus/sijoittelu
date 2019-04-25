@@ -1,21 +1,11 @@
 package fi.vm.sade.sijoittelu.domain;
 
-import org.bson.types.ObjectId;
-import org.mongodb.morphia.annotations.Embedded;
-import org.mongodb.morphia.annotations.Entity;
-import org.mongodb.morphia.annotations.Id;
-import org.mongodb.morphia.annotations.Reference;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-@Entity("ValiSijoittelu")
 public class ValiSijoittelu implements Serializable {
-    @SuppressWarnings("unused")
-    @Id
-    private ObjectId id;
 
     private String hakuOid;
 
@@ -28,10 +18,8 @@ public class ValiSijoittelu implements Serializable {
      */
     private boolean sijoittele = true;
 
-    @Reference(value = "Valintatulos", lazy = true)
     private List<Valintatulos> valintatulokset = new ArrayList<Valintatulos>();
 
-    @Embedded
     private List<SijoitteluAjo> sijoitteluajot = new ArrayList<SijoitteluAjo>();
 
     public SijoitteluAjo getLatestSijoitteluajo() {

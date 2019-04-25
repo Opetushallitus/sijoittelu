@@ -1,11 +1,8 @@
 package fi.vm.sade.sijoittelu.domain;
 
-import org.mongodb.morphia.annotations.Embedded;
-
 import java.io.Serializable;
 import java.util.Date;
 
-@Embedded("TilaHistoria")
 public class TilaHistoria implements Serializable {
 
     private Date luotu;

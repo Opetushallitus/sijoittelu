@@ -1,19 +1,21 @@
 package fi.vm.sade.sijoittelu.domain;
 
-import fi.vm.sade.sijoittelu.domain.converter.BigDecimalConverter;
 import org.apache.commons.lang3.tuple.Pair;
-import org.mongodb.morphia.annotations.*;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
-@Embedded
-@Converters(BigDecimalConverter.class)
 public class Hakemus implements Serializable {
     private String hakijaOid;
 
-    @Indexed
     private String hakemusOid;
 
     private String etunimi;
@@ -47,7 +49,6 @@ public class Hakemus implements Serializable {
 
     private Map<String, String> tilanKuvaukset = new HashMap<String, String>();
 
-    @Transient
     private TilankuvauksenTarkenne tilankuvauksenTarkenne;
 
     private String tarkenteenLisatieto;

@@ -1,8 +1,6 @@
 package fi.vm.sade.sijoittelu.domain;
 
-import fi.vm.sade.sijoittelu.domain.converter.BigDecimalConverter;
 import org.apache.commons.lang3.BooleanUtils;
-import org.mongodb.morphia.annotations.*;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -10,15 +8,12 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-@Embedded
-@Converters(BigDecimalConverter.class)
 public class Valintatapajono implements Serializable {
 
     private Tasasijasaanto tasasijasaanto;
 
     private ValintatapajonoTila tila;
 
-    @Indexed
     private String oid;
 
     private String nimi;
@@ -57,13 +52,7 @@ public class Valintatapajono implements Serializable {
 
     private boolean sijoiteltuIlmanVarasijasaantojaNiidenOllessaVoimassa;
 
-    @Embedded
     private List<Hakemus> hakemukset = new ArrayList<Hakemus>();
-
-    @PreLoad
-    public void setSivssnovIfMissing() {
-        this.setSijoiteltuIlmanVarasijasaantojaNiidenOllessaVoimassa(false);
-    }
 
     public Integer getHakemustenMaara() {
         return hakemustenMaara;

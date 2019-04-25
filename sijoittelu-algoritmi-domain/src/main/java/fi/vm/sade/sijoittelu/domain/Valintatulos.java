@@ -2,28 +2,16 @@ package fi.vm.sade.sijoittelu.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.common.collect.ImmutableList;
-import org.bson.types.ObjectId;
-import org.mongodb.morphia.annotations.*;
 
 import java.io.Serializable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
 
-@Entity("Valintatulos")
-@Indexes({
-        @Index(fields = {@Field("hakukohdeOid"), @Field("valintatapajonoOid"), @Field("hakemusOid")},
-                options = @IndexOptions(unique = true)),
-        @Index(fields = {@Field("hakukohdeOid"), @Field("valintatapajonoOid")}),
-        @Index(fields = {@Field("hakukohdeOid")}),
-        @Index(fields = {@Field("hakemusOid")}),
-        @Index(fields = {@Field("hakuOid"), @Field("julkaistavissa"), @Field("mailStatus.sent"), @Field("mailStatus.previousCheck")}),
-        @Index(fields = {@Field("hakuOid")})
-})
 public class Valintatulos implements Serializable {
 
     public static final String JARJESTELMA = "järjestelmä";
-    @SuppressWarnings("unused")
-    @Id
-    private ObjectId id;
 
     //Maarittaa 2 muun kanssa taman luokan hakemisen
     private String valintatapajonoOid;
@@ -57,23 +45,17 @@ public class Valintatulos implements Serializable {
 
     private Date hyvaksymiskirjeLahetetty;
 
-    @Transient
     private ValintatuloksenTila tila;
 
-    @Transient
     private ValintatuloksenTila tilaHakijalle;
 
-    @Embedded
     private List<LogEntry> logEntries = new ArrayList<>();
 
-    @Transient
     private Date read = new Date();
 
-    @Transient
     private Date viimeinenMuutos;
 
     @JsonIgnore
-    @Transient
     private List<LogEntry> originalLogEntries = Collections.emptyList();
 
     public Valintatulos() {}
@@ -146,19 +128,6 @@ public class Valintatulos implements Serializable {
 
     //This shuould only be used in in valintarekisteri!!
     public void setOriginalLogEntries(List<LogEntry> entries) { this.originalLogEntries = entries; }
-
-    public Date getViimeinenMuutos() {
-        return viimeinenMuutos;
-    }
-
-    @PostLoad
-    public void postLoad() {
-        originalLogEntries = ImmutableList.copyOf(logEntries);
-        viimeinenMuutos = logEntries.stream()
-                    .filter(e -> e.getLuotu() != null)
-                    .map(LogEntry::getLuotu)
-                    .sorted((e1,e2) -> e2.compareTo(e1)).findFirst().orElse(null);
-    }
 
     private void modified(String field, Object oldVal, Object newVal, String muokkaaja, String selite) {
         if ((null == oldVal && null != newVal) || (null != oldVal && !oldVal.equals(newVal))) {
@@ -265,19 +234,6 @@ public class Valintatulos implements Serializable {
     public void setValintatapajonoOid(String valintatapajonoOid, String selite, String muokkaaja) {
         modified("valintatapajonoOid", this.valintatapajonoOid, valintatapajonoOid, muokkaaja, selite);
         this.valintatapajonoOid = valintatapajonoOid;
-    }
-
-    public ObjectId getId() {
-        return id;
-    }
-
-    public void setId(ObjectId id, String selite) {
-        setId(id, selite, JARJESTELMA);
-    }
-
-    public void setId(ObjectId id, String selite, String muokkaaja) {
-        modified("id", this.id, id, muokkaaja, selite);
-        this.id = id;
     }
 
     public String getHakuOid() {
@@ -410,7 +366,6 @@ public class Valintatulos implements Serializable {
     @Override
     public String toString() {
         return "Valintatulos{" +
-                "id=" + id +
                 ", valintatapajonoOid='" + valintatapajonoOid + '\'' +
                 ", hakemusOid='" + hakemusOid + '\'' +
                 ", hakukohdeOid='" + hakukohdeOid + '\'' +

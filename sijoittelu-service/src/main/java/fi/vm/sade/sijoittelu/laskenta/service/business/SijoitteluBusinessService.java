@@ -490,7 +490,6 @@ public class SijoitteluBusinessService {
         kaikkiTallennettavatHakukohteet.addAll(viimeisimmanSijoitteluajonHakukohteet.stream()
             .filter(hk -> !hk.getOid().equals(sijoiteltavanHakukohteenOid))
             .map(hakukohde -> {
-                hakukohde.setId(null);
                 hakukohde.setSijoitteluajoId(uusiSijoitteluajo.getSijoitteluajoId());
                 HakukohdeItem item = new HakukohdeItem();
                 item.setOid(hakukohde.getOid());
@@ -609,8 +608,6 @@ public class SijoitteluBusinessService {
     private List<Hakukohde> merge(SijoitteluAjo uusiSijoitteluajo, List<Hakukohde> olemassaolevatHakukohteet, List<Hakukohde> uudetHakukohteet) {
         Map<String, Hakukohde> kaikkiHakukohteet = new ConcurrentHashMap<>();
         olemassaolevatHakukohteet.parallelStream().forEach(hakukohde -> {
-            // poista id vanhoilta hakukohteilta, niin etta ne voidaan peristoida uusina dokumentteina
-            hakukohde.setId(null);
             kaikkiHakukohteet.put(hakukohde.getOid(), hakukohde);
         });
         kopioiTiedotEdelliseltaSijoitteluajoltaJaPoistaPassivoitujenTulokset(uudetHakukohteet, kaikkiHakukohteet);

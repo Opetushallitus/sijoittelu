@@ -1,12 +1,10 @@
 package fi.vm.sade.sijoittelu.domain;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.mongodb.morphia.annotations.Embedded;
 
 import java.io.Serializable;
 import java.util.Date;
 
-@Embedded("LogEntry")
 public class LogEntry implements Serializable {
 
     private Date luotu;

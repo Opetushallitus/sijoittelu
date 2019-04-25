@@ -1,19 +1,10 @@
 package fi.vm.sade.sijoittelu.domain;
 
-import org.mongodb.morphia.annotations.Embedded;
-import org.mongodb.morphia.annotations.Id;
-import org.bson.types.ObjectId;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-@Embedded
 public class SijoitteluAjo implements Serializable {
-
-    @SuppressWarnings("unused")
-    @Id
-    private ObjectId id;
 
     private Long sijoitteluajoId;
 
@@ -23,16 +14,7 @@ public class SijoitteluAjo implements Serializable {
 
     private Long endMils;
 
-    @Embedded
     private List<HakukohdeItem> hakukohteet = new ArrayList<HakukohdeItem>();
-
-    public ObjectId getId() {
-        return id;
-    }
-
-    public void setId(ObjectId id) {
-        this.id = id;
-    }
 
     public Long getSijoitteluajoId() {
         return sijoitteluajoId;
