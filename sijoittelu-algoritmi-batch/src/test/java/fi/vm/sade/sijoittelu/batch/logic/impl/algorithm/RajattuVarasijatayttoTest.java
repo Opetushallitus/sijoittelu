@@ -19,6 +19,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class RajattuVarasijatayttoTest {
     private final Hakemus hakemus1 = new HakemusBuilder().withOid("hakemus1")
@@ -338,10 +340,9 @@ public class RajattuVarasijatayttoTest {
     };
 
     private void assertHakemustenTilat(HakemuksenTila h1, HakemuksenTila h2, HakemuksenTila h3, HakemuksenTila h4) {
-        assertEquals("Hakemus1", h1, hakemus1.getTila());
-        assertEquals("Hakemus2", h2, hakemus2.getTila());
-        assertEquals("Hakemus3", h3, hakemus3.getTila());
-        assertEquals("hakemus4", h4, hakemus4.getTila());
+        List<HakemuksenTila> tilat = Stream.of(hakemus1, hakemus2, hakemus3, hakemus4)
+            .map(Hakemus::getTila).collect(Collectors.toList());
+        assertEquals(Arrays.asList(h1, h2, h3, h4), tilat);
     }
 
     private void sijoittele(Consumer<SijoitteluajoWrapper> prepareAjoWrapper, Hakukohde... hakukohteet) {
