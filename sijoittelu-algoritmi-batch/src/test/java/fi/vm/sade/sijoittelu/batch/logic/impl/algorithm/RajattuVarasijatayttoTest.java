@@ -310,6 +310,49 @@ public class RajattuVarasijatayttoTest {
         assertEquals("Peruuntunut, ottanut vastaan toisen opiskelupaikan", kiilaavaHakemus.getTilanKuvaukset().get("FI"));
     }
 
+    @Test
+    public void josViimeisellaVarasijallaOlevanPisteetHuononevatVarasijataytonAikanaEiOtetaYlimaaraisiaVaralle() {
+        jono.setAloituspaikat(1);
+        jono.setEiVarasijatayttoa(false);
+        jono.setVarasijat(1);
+
+        sijoittele(kkHakuVarasijasaannotVoimassa, hakukohdeJossaVarasijojaRajoitetaan);
+        assertHakemustenTilat(HYVAKSYTTY, VARALLA, PERUUNTUNUT, PERUUNTUNUT);
+
+        korjaaTilaJaEdellinenTilaSijoittelunJalkeen();
+
+        hakemus1.setJonosija(1);
+        hakemus2.setJonosija(4);
+        hakemus3.setJonosija(2);
+        hakemus4.setJonosija(3);
+
+        sijoittele(kkHakuVarasijasaannotVoimassa, hakukohdeJossaVarasijojaRajoitetaan);
+
+        // assertHakemustenTilat(HYVAKSYTTY, PERUUNTUNUT, VARALLA, PERUUNTUNUT); // TODO VTKU-31 problem exposed here
+        assertHakemustenTilat(HYVAKSYTTY, VARALLA, VARALLA, VARALLA);
+    }
+
+    @Test
+    public void josViimeisellaVarasijallaOlevanPisteetParanevatVarasijataytonAikanaEiPeruunnutetaLiikaaHakijoita() {
+        jono.setAloituspaikat(1);
+        jono.setEiVarasijatayttoa(false);
+        jono.setVarasijat(2);
+
+        sijoittele(kkHakuVarasijasaannotVoimassa, hakukohdeJossaVarasijojaRajoitetaan);
+        assertHakemustenTilat(HYVAKSYTTY, VARALLA, VARALLA, PERUUNTUNUT);
+
+        korjaaTilaJaEdellinenTilaSijoittelunJalkeen();
+
+        hakemus1.setJonosija(2);
+        hakemus2.setJonosija(3);
+        hakemus3.setJonosija(1);
+        hakemus4.setJonosija(4);
+
+        sijoittele(kkHakuVarasijasaannotVoimassa, hakukohdeJossaVarasijojaRajoitetaan);
+
+        assertHakemustenTilat(VARALLA, VARALLA, VARASIJALTA_HYVAKSYTTY, PERUUNTUNUT);
+    }
+
     private void hakemusKiilaa(Hakemus kiilaavaHakemus) {
         jono.getHakemukset().add(kiilaavaHakemus);
         hakemus1.setJonosija(0);
