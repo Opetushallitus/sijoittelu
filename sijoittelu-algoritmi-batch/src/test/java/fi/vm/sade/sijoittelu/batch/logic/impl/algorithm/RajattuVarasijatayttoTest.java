@@ -65,7 +65,7 @@ public class RajattuVarasijatayttoTest {
                             .withTila(VARALLA).build())
                     .build()).build();
 
-    final boolean bugiKorjattu = true;
+    private final boolean bugiKorjattu = true;
 
     @Test
     public void peruuntuvaHakijaHyvaksytaanEnsimmaisessaSijoittelussaVarasijojenAstuttuaVoimaanJosAloituspaikoilleTuleeTilaaKunEiVarasijatayttoa() {
@@ -286,14 +286,14 @@ public class RajattuVarasijatayttoTest {
                 IlmoittautumisTila.EI_TEHTY, true, ValintatuloksenTila.EHDOLLISESTI_VASTAANOTTANUT, false,
                 alempiHakukohdeJohonVastaanottoKohdistuu.getValintatapajonot().get(0).getOid());
 
-        sijoittele(kkHakuVarasijasaannotEiVoimassa, Arrays.asList(vastaanotto), hakukohdeJossaVarasijojaRajoitetaan, alempiHakukohdeJohonVastaanottoKohdistuu);
+        sijoittele(kkHakuVarasijasaannotEiVoimassa, Collections.singletonList(vastaanotto), hakukohdeJossaVarasijojaRajoitetaan, alempiHakukohdeJohonVastaanottoKohdistuu);
         assertHakemustenTilat(HYVAKSYTTY, VARALLA, VARALLA, VARALLA);
         assertEquals(HYVAKSYTTY, kiilaavaHakemusAlemmassaHakutoiveessa.getTila());
 
         korjaaTilaJaEdellinenTilaSijoittelunJalkeen();
         korjaaTilaJaEdellinenTilaSijoittelunJalkeen(kiilaavaHakemusAlemmassaHakutoiveessa);
 
-        sijoittele(kkHakuVarasijasaannotVoimassa, Arrays.asList(vastaanotto), hakukohdeJossaVarasijojaRajoitetaan, alempiHakukohdeJohonVastaanottoKohdistuu);
+        sijoittele(kkHakuVarasijasaannotVoimassa, Collections.singletonList(vastaanotto), hakukohdeJossaVarasijojaRajoitetaan, alempiHakukohdeJohonVastaanottoKohdistuu);
         assertHakemustenTilat(HYVAKSYTTY, VARALLA, PERUUNTUNUT, PERUUNTUNUT);
         assertEquals(HYVAKSYTTY, kiilaavaHakemusAlemmassaHakutoiveessa.getTila());
 
@@ -303,7 +303,7 @@ public class RajattuVarasijatayttoTest {
         final Hakemus kiilaavaHakemus = new HakemusBuilder().withOid("kiilaavaHakemus").withHakijaOid("kiilaavaHakija").withEdellinenTila(HYLATTY).withTila(VARALLA).withPrioriteetti(1).build();
         hakemusKiilaa(kiilaavaHakemus);
 
-        sijoittele(kkHakuVarasijasaannotVoimassa, Arrays.asList(vastaanotto), hakukohdeJossaVarasijojaRajoitetaan, alempiHakukohdeJohonVastaanottoKohdistuu);
+        sijoittele(kkHakuVarasijasaannotVoimassa, Collections.singletonList(vastaanotto), hakukohdeJossaVarasijojaRajoitetaan, alempiHakukohdeJohonVastaanottoKohdistuu);
         assertHakemustenTilat(HYVAKSYTTY, VARALLA, PERUUNTUNUT, PERUUNTUNUT);
         assertEquals(HYVAKSYTTY, kiilaavaHakemusAlemmassaHakutoiveessa.getTila());
         assertEquals(PERUUNTUNUT, kiilaavaHakemus.getTila());
@@ -363,7 +363,7 @@ public class RajattuVarasijatayttoTest {
     }
 
     private void korjaaTilaJaEdellinenTilaSijoittelunJalkeen() {
-        Arrays.asList(hakemus1, hakemus2, hakemus3, hakemus4).forEach(h -> korjaaTilaJaEdellinenTilaSijoittelunJalkeen(h));
+        Arrays.asList(hakemus1, hakemus2, hakemus3, hakemus4).forEach(this::korjaaTilaJaEdellinenTilaSijoittelunJalkeen);
     }
 
     private void korjaaTilaJaEdellinenTilaSijoittelunJalkeen(Hakemus hakemus) {
@@ -375,9 +375,9 @@ public class RajattuVarasijatayttoTest {
         hakemus.setTilanKuvaukset(Collections.emptyMap());
     }
 
-    Consumer<SijoitteluajoWrapper> toinenAsteVarasijasaannotVoimassa = sijoitteluajoWrapper -> sijoitteluajoWrapper.setKKHaku(false);
-    Consumer<SijoitteluajoWrapper> kkHakuVarasijasaannotVoimassa = sijoitteluajoWrapper -> sijoitteluajoWrapper.setKKHaku(true);
-    Consumer<SijoitteluajoWrapper> kkHakuVarasijasaannotEiVoimassa = sijoitteluajoWrapper -> {
+    private Consumer<SijoitteluajoWrapper> toinenAsteVarasijasaannotVoimassa = sijoitteluajoWrapper -> sijoitteluajoWrapper.setKKHaku(false);
+    private Consumer<SijoitteluajoWrapper> kkHakuVarasijasaannotVoimassa = sijoitteluajoWrapper -> sijoitteluajoWrapper.setKKHaku(true);
+    private Consumer<SijoitteluajoWrapper> kkHakuVarasijasaannotEiVoimassa = sijoitteluajoWrapper -> {
         sijoitteluajoWrapper.setVarasijaSaannotAstuvatVoimaan(LocalDateTime.now().plusDays(1));
         sijoitteluajoWrapper.setKKHaku(true);
     };
