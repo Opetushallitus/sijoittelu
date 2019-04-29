@@ -164,13 +164,10 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-test</artifactId>
-            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.kubek2k.mockito.spring</groupId>
             <artifactId>springockito</artifactId>
-            <version>1.0.0</version>
-            <scope>test</scope>
         </dependency>
 
     </dependencies>
