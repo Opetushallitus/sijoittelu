@@ -7,11 +7,13 @@ import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.HakemusWrapper;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.SijoitteluajoWrapper;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.ValintatapajonoWrapper;
 import fi.vm.sade.sijoittelu.domain.HakemuksenTila;
+import fi.vm.sade.sijoittelu.domain.Hakemus;
 import fi.vm.sade.sijoittelu.domain.Valintatapajono;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Comparator;
+import java.util.Optional;
 
 /**
  * Tämä prosessori on ajettava ennen <code>PostSijoitteluProcessorAsetaSivssnov</code> :ia, jotta tämä voi tunnistaa
@@ -54,12 +56,15 @@ public class PostSijoitteluProcessorPeruunnutaRajatunVarasijataytonHakemuksetJot
 
         if (jono.rajoitettuVarasijaTaytto()) {
             if(jono.getSijoiteltuIlmanVarasijasaantojaNiidenOllessaVoimassa()) {
-                int viimeisenEdellisessaSijoittelussaVarallaOlleenJonosija = jonoWrapper.getHakemukset().stream()
-                        .filter(h -> h.getHakemus().getEdellinenTila() == HakemuksenTila.VARALLA)
-                        .filter(h -> h.getHakemus().getTila() != HakemuksenTila.HYLATTY)
-                        .sorted(Comparator.comparing(h -> ((HakemusWrapper) h).getHakemus().getJonosija()).reversed())
-                        .map(h -> h.getHakemus().getJonosija())
-                        .findFirst()
+                Optional<Hakemus> viimeinenEdellisessaSijoittelussaVarallaOllutHakemus = jonoWrapper.getHakemukset().stream()
+                    .filter(h -> h.getHakemus().getEdellinenTila() == HakemuksenTila.VARALLA)
+                    .filter(h -> h.getHakemus().getTila() != HakemuksenTila.HYLATTY)
+                    .sorted(Comparator.comparing(h -> ((HakemusWrapper) h).getHakemus().getJonosija()).reversed())
+                    .map(HakemusWrapper::getHakemus)
+                    .findFirst();
+
+                int viimeisenEdellisessaSijoittelussaVarallaOlleenJonosija = viimeinenEdellisessaSijoittelussaVarallaOllutHakemus
+                        .map(Hakemus::getJonosija)
                         .orElse(0);
 
                 jonoWrapper.getHakemukset().stream()
