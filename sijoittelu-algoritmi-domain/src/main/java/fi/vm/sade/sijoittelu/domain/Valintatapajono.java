@@ -1,12 +1,17 @@
 package fi.vm.sade.sijoittelu.domain;
 
 import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Optional;
 
 public class Valintatapajono implements Serializable {
 
@@ -51,6 +56,8 @@ public class Valintatapajono implements Serializable {
     private Integer hakemustenMaara;
 
     private boolean sijoiteltuIlmanVarasijasaantojaNiidenOllessaVoimassa;
+
+    private Optional<JonosijaTieto> sivssnovSijoittelunViimeistenVarallaolijoidenJonosija = Optional.empty();
 
     private List<Hakemus> hakemukset = new ArrayList<Hakemus>();
 
@@ -247,7 +254,42 @@ public class Valintatapajono implements Serializable {
         this.sijoiteltuIlmanVarasijasaantojaNiidenOllessaVoimassa = sijoiteltuIlmanVarasijasaantojaNiidenOllessaVoimassa;
     }
 
+    public Optional<JonosijaTieto> getSivssnovSijoittelunViimeistenVarallaolijoidenJonosija() {
+        return sivssnovSijoittelunViimeistenVarallaolijoidenJonosija;
+    }
+
+    public void setSivssnovSijoittelunViimeistenVarallaolijoidenJonosija(Optional<JonosijaTieto> sivssnovSijoittelunViimeistenVarallaolijoidenJonosija) {
+        this.sivssnovSijoittelunViimeistenVarallaolijoidenJonosija = sivssnovSijoittelunViimeistenVarallaolijoidenJonosija;
+    }
+
     public boolean vapaaVarasijataytto() {
         return !BooleanUtils.isTrue(eiVarasijatayttoa) && !rajoitettuVarasijaTaytto();
+    }
+
+    public static class JonosijaTieto {
+        public final int jonosija;
+        public final int tasasijaJonosija;
+        public final String hakemusOidit;
+
+        public JonosijaTieto(int jonosija, int tasasijaJonosija, String hakemusOidit) {
+            this.jonosija = jonosija;
+            this.tasasijaJonosija = tasasijaJonosija;
+            this.hakemusOidit = hakemusOidit;
+        }
+
+        @Override
+        public int hashCode() {
+            return HashCodeBuilder.reflectionHashCode(this);
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            return EqualsBuilder.reflectionEquals(this, obj);
+        }
+
+        @Override
+        public String toString() {
+            return ToStringBuilder.reflectionToString(this);
+        }
     }
 }
