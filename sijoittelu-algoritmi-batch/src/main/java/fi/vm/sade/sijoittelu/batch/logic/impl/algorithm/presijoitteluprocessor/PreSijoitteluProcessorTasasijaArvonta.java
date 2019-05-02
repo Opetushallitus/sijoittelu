@@ -40,12 +40,7 @@ public class PreSijoitteluProcessorTasasijaArvonta implements PreSijoitteluProce
                 jonosija.add(hakemusWrapper);
             }
         }
-        Collections.sort(jonosija, new Comparator<HakemusWrapper>() {
-            @Override
-            public int compare(HakemusWrapper hakemusWrapper, HakemusWrapper hakemusWrapper2) {
-                return hakemusWrapper.getHakemus().getTasasijaJonosija().compareTo(hakemusWrapper2.getHakemus().getTasasijaJonosija());
-            }
-        });
+        jonosija.sort(Comparator.comparing(hakemusWrapper -> hakemusWrapper.getHakemus().getTasasijaJonosija()));
         for (int i = 0; tasasijaHakemukset.size() > i; i++) {
             if (tasasijaHakemukset.get(i).getHakemus().getTasasijaJonosija() != null) {
                 tasasijaHakemukset.remove(i);
