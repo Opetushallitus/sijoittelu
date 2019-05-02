@@ -3,17 +3,21 @@ package fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.postsijoitteluprocessor
 import static fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.util.TilojenMuokkaus.asetaTilaksiPeruuntunutAloituspaikatTaynna;
 import static fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.util.TilojenMuokkaus.asetaTilaksiPeruuntunutEiMahduKasiteltaviinSijoihin;
 
+import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.comparator.HakemusWrapperComparator;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.HakemusWrapper;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.SijoitteluajoWrapper;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.ValintatapajonoWrapper;
 import fi.vm.sade.sijoittelu.domain.HakemuksenTila;
 import fi.vm.sade.sijoittelu.domain.Hakemus;
 import fi.vm.sade.sijoittelu.domain.Valintatapajono;
+import fi.vm.sade.sijoittelu.domain.Valintatapajono.JonosijaTieto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Comparator;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Tämä prosessori on ajettava ennen <code>PostSijoitteluProcessorAsetaSivssnov</code> :ia, jotta tämä voi tunnistaa
@@ -57,21 +61,10 @@ public class PostSijoitteluProcessorPeruunnutaRajatunVarasijataytonHakemuksetJot
 
         if (jono.rajoitettuVarasijaTaytto()) {
             if (jono.getSijoiteltuIlmanVarasijasaantojaNiidenOllessaVoimassa()) {
-                final int jonosijaJonkaAllaOlevatPeruunnutetaan = paatteleJonosijaJonkaAllaOlevatPeruunnutetaan(jonoWrapper);
-
-                jonoWrapper.getHakemukset().stream()
-                    .filter(HakemusWrapper::isVaralla)
-                    .filter(h -> h.getHakemus().getJonosija() > jonosijaJonkaAllaOlevatPeruunnutetaan)
-                    .forEach(h -> asetaTilaksiPeruuntunutEiMahduKasiteltaviinSijoihin(h));
-
+                peruunnutaVarasijasaantojenOllessaVoimassa(jonoWrapper);
                 return;
             } else {
-                int varasijat = jono.getVarasijat();
-                jonoWrapper.getHakemukset().stream()
-                        .filter(HakemusWrapper::isVaralla)
-                        .sorted(Comparator.comparing(h -> h.getHakemus().getJonosija()))
-                        .skip(varasijat)
-                        .forEach(h -> asetaTilaksiPeruuntunutEiMahduKasiteltaviinSijoihin(h));
+                peruunnutaEnnenVarasijataytonAlkamista(jonoWrapper, jono);
                 return;
             }
         }
@@ -79,7 +72,53 @@ public class PostSijoitteluProcessorPeruunnutaRajatunVarasijataytonHakemuksetJot
         throw new IllegalStateException("Jonolla " + jono.getOid() + " piti olla ei varasijatäyttöä tai rajoitettu varasijatäyttö. Vaikuttaa bugilta.");
     }
 
-    private int paatteleJonosijaJonkaAllaOlevatPeruunnutetaan(ValintatapajonoWrapper jonoJollaRajoitettuVarasijaTaytto) {
+    private void peruunnutaEnnenVarasijataytonAlkamista(ValintatapajonoWrapper jonoWrapper, Valintatapajono jono) {
+        List<HakemusWrapper> varallaOlijatEnnenRajoittamista = jonoWrapper.getHakemukset().stream()
+            .filter(HakemusWrapper::isVaralla)
+            .sorted(new HakemusWrapperComparator())
+            .collect(Collectors.toList());
+
+        Optional<Integer> viimeinenJonosijaJokaMahtuuVaralle = paatteleViimeinenJonosijaJokaMahtuuVaralle(jono, varallaOlijatEnnenRajoittamista);
+
+        if (viimeinenJonosijaJokaMahtuuVaralle.isPresent()) {
+            varallaOlijatEnnenRajoittamista.forEach(h -> {
+                if (h.getHakemus().getJonosija() > viimeinenJonosijaJokaMahtuuVaralle.get()) {
+                    asetaTilaksiPeruuntunutEiMahduKasiteltaviinSijoihin(h);
+                }
+            });
+        } else {
+            LOG.warn(String.format("Ei löytynyt viimeistä varallaolijaa jonosta %s . Ei voida peruunnuttaa ketään " +
+                "eikä tallentaa tietoa viimeisistä varallaolijoista.", jono.getOid()));
+        }
+    }
+
+    private Optional<Integer> paatteleViimeinenJonosijaJokaMahtuuVaralle(Valintatapajono jono, List<HakemusWrapper> varallaOlijatEnnenRajoittamista) {
+        int varasijat = jono.getVarasijat();
+        int varallaolijoidenMaara = varallaOlijatEnnenRajoittamista.size();
+        if (varallaolijoidenMaara < varasijat) {
+            LOG.warn(String.format("Jonossa %s on vain %d hakemusta varalla ja varasijojen määrä on %d, " +
+                "joten %d varasijaa jää käyttämättä.", jono.getOid(), varallaolijoidenMaara, varasijat, (varasijat - varallaolijoidenMaara)));
+            return varallaOlijatEnnenRajoittamista.stream()
+                .reduce((first, second) -> second)
+                .map(hw -> hw.getHakemus().getJonosija());
+        } else {
+            return varallaOlijatEnnenRajoittamista.stream()
+                .skip(varasijat - 1)
+                .map(hw -> hw.getHakemus().getJonosija())
+                .findFirst();
+        }
+    }
+
+    private void peruunnutaVarasijasaantojenOllessaVoimassa(ValintatapajonoWrapper jonoWrapper) {
+        final int jonosijaJonkaAllaOlevatPeruunnutetaan = paatteleJonosijaJonkaAllaOlevatPeruunnutetaanVarasijasaantojenOllessaVoimassa(jonoWrapper);
+
+        jonoWrapper.getHakemukset().stream()
+            .filter(HakemusWrapper::isVaralla)
+            .filter(h -> h.getHakemus().getJonosija() > jonosijaJonkaAllaOlevatPeruunnutetaan)
+            .forEach(h -> asetaTilaksiPeruuntunutEiMahduKasiteltaviinSijoihin(h));
+    }
+
+    private int paatteleJonosijaJonkaAllaOlevatPeruunnutetaanVarasijasaantojenOllessaVoimassa(ValintatapajonoWrapper jonoJollaRajoitettuVarasijaTaytto) {
         Optional<Hakemus> viimeinenEdellisessaSijoittelussaVarallaOllutHakemus = jonoJollaRajoitettuVarasijaTaytto.getHakemukset().stream()
             .filter(h -> h.getHakemus().getEdellinenTila() == HakemuksenTila.VARALLA)
             .filter(h -> h.getHakemus().getTila() != HakemuksenTila.HYLATTY)

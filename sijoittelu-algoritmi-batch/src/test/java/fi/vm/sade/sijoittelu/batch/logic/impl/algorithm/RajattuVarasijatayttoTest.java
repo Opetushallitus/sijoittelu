@@ -1,6 +1,7 @@
 package fi.vm.sade.sijoittelu.batch.logic.impl.algorithm;
 
 import static fi.vm.sade.sijoittelu.domain.HakemuksenTila.*;
+import static fi.vm.sade.sijoittelu.domain.Tasasijasaanto.ALITAYTTO;
 import static fi.vm.sade.sijoittelu.domain.Tasasijasaanto.YLITAYTTO;
 import static org.junit.Assert.assertEquals;
 
@@ -316,6 +317,30 @@ public class RajattuVarasijatayttoTest {
         sijoittele(kkHakuVarasijasaannotVoimassa, hakukohdeJossaVarasijojaRajoitetaan);
 
         assertHakemustenTilat(VARALLA, VARALLA, VARASIJALTA_HYVAKSYTTY, PERUUNTUNUT);
+    }
+
+    @Test
+    public void rajattuVarasijatayttoYlitayttaaVarasijojaJononTasasijasaannostaRiippumatta() {
+        jono.setAloituspaikat(2);
+        jono.setEiVarasijatayttoa(false);
+        jono.setVarasijat(1);
+        jono.setTasasijasaanto(ALITAYTTO);
+
+        hakemus1.setJonosija(1);
+        hakemus1.setTasasijaJonosija(1);
+
+        hakemus2.setJonosija(1);
+        hakemus2.setTasasijaJonosija(2);
+
+        hakemus3.setJonosija(2);
+        hakemus3.setTasasijaJonosija(1);
+
+        hakemus4.setJonosija(2);
+        hakemus4.setTasasijaJonosija(2);
+
+        sijoittele(kkHakuVarasijasaannotVoimassa, hakukohdeJossaVarasijojaRajoitetaan);
+
+        assertHakemustenTilat(HYVAKSYTTY, HYVAKSYTTY, VARALLA, VARALLA);
     }
 
     private void hakemusKiilaa(Hakemus kiilaavaHakemus) {
