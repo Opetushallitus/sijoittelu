@@ -874,31 +874,6 @@
       <url>https://artifactory.opintopolku.fi/artifactory/com.springsource.repository.maven.milestone/</url>
     </repository>
     <repository>
-      <id>atomikos</id>
-      <name>Atomikos repository</name>
-      <url>https://artifactory.opintopolku.fi/artifactory/atomikos/</url>
-    </repository>
-    <repository>
-      <id>shibboleth</id>
-      <name>Shibboleth</name>
-      <url>https://artifactory.opintopolku.fi/artifactory/shibboleth/</url>
-    </repository>
-    <repository>
-      <id>libs-3rd-party</id>
-      <name>libs-3rd-party</name>
-      <url>https://artifactory.opintopolku.fi/artifactory/libs-3rd-party</url>
-    </repository>
-    <repository>
-      <id>bedatadriven</id>
-      <name>bedatadriven</name>
-      <url>https://artifactory.opintopolku.fi/artifactory/bedatadriven/</url>
-    </repository>
-    <repository>
-      <id>cpdetector</id>
-      <name>cpdetector</name>
-      <url>https://artifactory.opintopolku.fi/artifactory/cpdetector</url>
-    </repository>
-    <repository>
       <snapshots>
         <enabled>false</enabled>
       </snapshots>
