@@ -1,6 +1,7 @@
 package fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.presijoitteluprocessor;
 
 
+import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoitteluConfiguration;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.*;
 import fi.vm.sade.sijoittelu.domain.*;
 import org.junit.Assert;
@@ -436,7 +437,7 @@ public class PreSijoitteluProcessorPeruutaAlemmatPeruneetJaHyvaksytytTest {
     }
 
     private SijoitteluajoWrapper generateSijoitteluajoWrapper() {
-        SijoitteluajoWrapper sijoitteluajo = new SijoitteluajoWrapper(new SijoitteluAjo());
+        SijoitteluajoWrapper sijoitteluajo = new SijoitteluajoWrapper(new SijoitteluConfiguration(), new SijoitteluAjo());
         List<HakukohdeWrapper> hakukohdeWrapper = generateHakukohdeWrapper();
 
         sijoitteluajo.setHakukohteet(hakukohdeWrapper);

@@ -3,9 +3,10 @@ package fi.vm.sade.sijoittelu;
 import com.lordofthejars.nosqlunit.annotation.UsingDataSet;
 import com.lordofthejars.nosqlunit.core.LoadStrategyEnum;
 import com.lordofthejars.nosqlunit.mongodb.MongoDbRule;
-import fi.vm.sade.authentication.business.service.Authorizer;
+
 import fi.vm.sade.sijoittelu.batch.logic.impl.DomainConverter;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.PrintHelper;
+import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoitteluConfiguration;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoitteluajoWrapperFactory;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoittelunTila;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.util.SijoitteluAlgorithmUtil;
@@ -113,10 +114,10 @@ public class VastaanottoTest {
         ehdollinenPoistettava.setTila(ValintatuloksenTila.EHDOLLISESTI_VASTAANOTTANUT, "");
         ehdollinenPoistettava.setValintatapajonoOid("jono2", "");
 
-        System.out.println(PrintHelper.tulostaSijoittelu(SijoitteluAlgorithmUtil.sijoittele(SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(new SijoitteluAjo(), tallennaEdellisetTilat(hakukohteet), Arrays.asList(), Collections.emptyMap()))));
+        System.out.println(PrintHelper.tulostaSijoittelu(SijoitteluAlgorithmUtil.sijoittele(SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(new SijoitteluConfiguration(), new SijoitteluAjo(), tallennaEdellisetTilat(hakukohteet), Arrays.asList(), Collections.emptyMap()))));
 
         hakukohteet.stream().flatMap(hk -> hk.getValintatapajonot().stream()).forEach(jono -> jono.setAloituspaikat(3));
-        final SijoitteluajoWrapper sijoitteluAjo = SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(new SijoitteluAjo(), tallennaEdellisetTilat(hakukohteet), Arrays.asList(sitova, ehdollinen, perunut, ehdollinenPidettava, ehdollinenPoistettava) , Collections.emptyMap());
+        final SijoitteluajoWrapper sijoitteluAjo = SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(new SijoitteluConfiguration(), new SijoitteluAjo(), tallennaEdellisetTilat(hakukohteet), Arrays.asList(sitova, ehdollinen, perunut, ehdollinenPidettava, ehdollinenPoistettava) , Collections.emptyMap());
 
         SijoittelunTila s = SijoitteluAlgorithmUtil.sijoittele(sijoitteluAjo);
 
@@ -170,7 +171,7 @@ public class VastaanottoTest {
         HakuDTO haku = valintatietoService.haeValintatiedot("1.2.246.562.29.173465377510");
         List<Hakukohde> hakukohteet = haku.getHakukohteet().parallelStream().map(DomainConverter::convertToHakukohde).collect(Collectors.toList());
 
-        SijoitteluajoWrapper sijoitteluAjo = SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(new SijoitteluAjo(), tallennaEdellisetTilat(hakukohteet), Arrays.asList(), Collections.emptyMap());
+        SijoitteluajoWrapper sijoitteluAjo = SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(new SijoitteluConfiguration(), new SijoitteluAjo(), tallennaEdellisetTilat(hakukohteet), Arrays.asList(), Collections.emptyMap());
         SijoittelunTila s = SijoitteluAlgorithmUtil.sijoittele(sijoitteluAjo);
         System.out.println(PrintHelper.tulostaSijoittelu(s));
 
@@ -199,7 +200,7 @@ public class VastaanottoTest {
         jono1Tulos.setTila(ValintatuloksenTila.PERUUTETTU, "");
         jono1Tulos.setValintatapajonoOid("jono2", "");
 
-        sijoitteluAjo = SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(new SijoitteluAjo(), tallennaEdellisetTilat(hakukohteet), Arrays.asList(jono1Tulos, jono2Tulos), Collections.emptyMap());
+        sijoitteluAjo = SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(new SijoitteluConfiguration(), new SijoitteluAjo(), tallennaEdellisetTilat(hakukohteet), Arrays.asList(jono1Tulos, jono2Tulos), Collections.emptyMap());
 
         s = SijoitteluAlgorithmUtil.sijoittele(sijoitteluAjo);
 
@@ -219,7 +220,7 @@ public class VastaanottoTest {
         HakuDTO haku = valintatietoService.haeValintatiedot("1.2.246.562.29.173465377510");
         List<Hakukohde> hakukohteet = haku.getHakukohteet().parallelStream().map(DomainConverter::convertToHakukohde).collect(Collectors.toList());
 
-        SijoitteluajoWrapper sijoitteluAjo = SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(new SijoitteluAjo(), tallennaEdellisetTilat(hakukohteet), Arrays.asList(), Collections.emptyMap());
+        SijoitteluajoWrapper sijoitteluAjo = SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(new SijoitteluConfiguration(), new SijoitteluAjo(), tallennaEdellisetTilat(hakukohteet), Arrays.asList(), Collections.emptyMap());
 
         SijoittelunTila s = SijoitteluAlgorithmUtil.sijoittele(sijoitteluAjo);
 
@@ -249,7 +250,7 @@ public class VastaanottoTest {
         jono1Tulos.setTila(ValintatuloksenTila.EI_VASTAANOTETTU_MAARA_AIKANA, "");
         jono1Tulos.setValintatapajonoOid("jono1", "");
 
-        sijoitteluAjo = SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(new SijoitteluAjo(), tallennaEdellisetTilat(hakukohteet), Arrays.asList(jono1Tulos, jono2Tulos), Collections.emptyMap());
+        sijoitteluAjo = SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(new SijoitteluConfiguration(), new SijoitteluAjo(), tallennaEdellisetTilat(hakukohteet), Arrays.asList(jono1Tulos, jono2Tulos), Collections.emptyMap());
 
         s = SijoitteluAlgorithmUtil.sijoittele(sijoitteluAjo);
 
@@ -269,7 +270,7 @@ public class VastaanottoTest {
         HakuDTO haku = valintatietoService.haeValintatiedot("1.2.246.562.29.173465377510");
         List<Hakukohde> hakukohteet = haku.getHakukohteet().parallelStream().map(DomainConverter::convertToHakukohde).collect(Collectors.toList());
 
-        SijoitteluajoWrapper sijoitteluAjo = SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(new SijoitteluAjo(), tallennaEdellisetTilat(hakukohteet), Arrays.asList(), Collections.emptyMap());
+        SijoitteluajoWrapper sijoitteluAjo = SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(new SijoitteluConfiguration(), new SijoitteluAjo(), tallennaEdellisetTilat(hakukohteet), Arrays.asList(), Collections.emptyMap());
 
         SijoittelunTila s = SijoitteluAlgorithmUtil.sijoittele(sijoitteluAjo);
 
@@ -299,7 +300,7 @@ public class VastaanottoTest {
         jono1Tulos.setTila(ValintatuloksenTila.PERUNUT, "");
         jono1Tulos.setValintatapajonoOid("jono1", "");
 
-        sijoitteluAjo = SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(new SijoitteluAjo(), tallennaEdellisetTilat(hakukohteet), Arrays.asList(jono1Tulos, jono2Tulos), Collections.emptyMap());
+        sijoitteluAjo = SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(new SijoitteluConfiguration(), new SijoitteluAjo(), tallennaEdellisetTilat(hakukohteet), Arrays.asList(jono1Tulos, jono2Tulos), Collections.emptyMap());
 
         s = SijoitteluAlgorithmUtil.sijoittele(sijoitteluAjo);
 

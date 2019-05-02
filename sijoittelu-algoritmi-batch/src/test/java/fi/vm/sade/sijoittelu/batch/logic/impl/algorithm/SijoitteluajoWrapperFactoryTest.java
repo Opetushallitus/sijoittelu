@@ -222,7 +222,7 @@ public class SijoitteluajoWrapperFactoryTest {
     private static SijoitteluajoWrapper sijoitteluAjo(List<Valintatulos> valintatulokset, List<Hakemus>... hakemukset) {
         List<Valintatapajono> valintatapajonot = generateValintatapajono(hakemukset);
         final List<Hakukohde> hakukohteet = generateHakukohteet(valintatapajonot);
-        return SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(new SijoitteluAjo(), hakukohteet, valintatulokset, Collections.emptyMap());
+        return SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(new SijoitteluConfiguration(), new SijoitteluAjo(), hakukohteet, valintatulokset, Collections.emptyMap());
     }
 
     private static Valintatulos valintatulosWithTila(ValintatuloksenTila tila) {

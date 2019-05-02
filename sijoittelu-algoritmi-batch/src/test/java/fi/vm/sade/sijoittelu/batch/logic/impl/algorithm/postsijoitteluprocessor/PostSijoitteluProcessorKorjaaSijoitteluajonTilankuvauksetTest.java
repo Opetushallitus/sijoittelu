@@ -1,5 +1,6 @@
 package fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.postsijoitteluprocessor;
 
+import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoitteluConfiguration;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoitteluajoWrapperFactory;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.helper.HakuBuilder;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.util.SijoitteluAlgorithmUtil;
@@ -247,7 +248,7 @@ public class PostSijoitteluProcessorKorjaaSijoitteluajonTilankuvauksetTest {
 
     private void sijoittele(Consumer<SijoitteluajoWrapper> prepareAjoWrapper, Hakukohde... hakukohteet) {
         SijoitteluajoWrapper sijoitteluAjoWrapper =
-                SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(new SijoitteluAjo(), Arrays.asList(hakukohteet), Collections.emptyList(), Collections.emptyMap());
+                SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(new SijoitteluConfiguration(), new SijoitteluAjo(), Arrays.asList(hakukohteet), Collections.emptyList(), Collections.emptyMap());
         prepareAjoWrapper.accept(sijoitteluAjoWrapper);
         SijoitteluAlgorithmUtil.sijoittele(sijoitteluAjoWrapper);
     }

@@ -3,6 +3,7 @@ package fi.vm.sade.sijoittelu;
 import com.lordofthejars.nosqlunit.annotation.UsingDataSet;
 import com.mongodb.MongoClientURI;
 import fi.vm.sade.sijoittelu.batch.logic.impl.DomainConverter;
+import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoitteluConfiguration;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoitteluajoWrapperFactory;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.util.SijoitteluAlgorithmUtil;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.HakemusWrapper;
@@ -154,7 +155,7 @@ public class SijoitteluIntegrationTestToBeRunManually {
 
         @Autowired
         public LightWeightSijoitteluBusinessServiceForTesting(SijoitteluTulosConverter sijoitteluTulosConverter, TarjontaIntegrationService tarjontaIntegrationService, VirkailijaValintaTulosServiceResource valintaTulosServiceResource, ValintarekisteriService valintarekisteriService) {
-            super(sijoitteluTulosConverter, tarjontaIntegrationService, valintaTulosServiceResource, valintarekisteriService);
+            super(sijoitteluTulosConverter, tarjontaIntegrationService, valintaTulosServiceResource, valintarekisteriService, new SijoitteluConfiguration());
         }
 
         /**
@@ -177,7 +178,7 @@ public class SijoitteluIntegrationTestToBeRunManually {
             sijoitteluAjo.setHakuOid(hakuOid);
             LOG.info(nameOfThisFakeSijoitteluRun + " sijoittelun koko: 0 olemassaolevaa, {} uutta, 0 valintatulosta", uudetHakukohteet.size());
             stopWatch.start("Luodaan sijoitteluajoWrapper ja asetetaan parametrit");
-            final SijoitteluajoWrapper sijoitteluajoWrapper = SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(sijoitteluAjo, uudetHakukohteet, Collections.emptyList(), Collections.emptyMap());
+            final SijoitteluajoWrapper sijoitteluajoWrapper = SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(new SijoitteluConfiguration(), sijoitteluAjo, uudetHakukohteet, Collections.emptyList(), Collections.emptyMap());
             asetaSijoittelunParametrit(hakuOid, sijoitteluajoWrapper, findParametersFromTarjontaAndPerformInitialValidation(hakuOid));
             stopWatch.stop();
 

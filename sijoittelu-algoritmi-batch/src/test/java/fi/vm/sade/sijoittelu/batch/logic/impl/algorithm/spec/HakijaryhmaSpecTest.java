@@ -8,6 +8,7 @@ import static fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.TestHelper.valint
 import static fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.TestHelper.varallaAinoastaan;
 
 import fi.vm.sade.sijoittelu.batch.logic.impl.DomainConverter;
+import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoitteluConfiguration;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoitteluTestSpec;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoitteluajoWrapperFactory;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoittelunTila;
@@ -62,7 +63,7 @@ public class HakijaryhmaSpecTest extends SijoitteluTestSpec {
         Hakukohde ensimmainenHk = hakukohteet.stream().filter(h -> h.getOid().endsWith("1")).findAny().get();
         ensimmainenHk.getValintatapajonot().iterator().next().getHakemukset().iterator().next().setEdellinenTila(HakemuksenTila.HYVAKSYTTY);
 
-        final SijoitteluajoWrapper sijoitteluAjo = SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(new SijoitteluAjo(), hakukohteet, valintatulokset, Collections.emptyMap());
+        final SijoitteluajoWrapper sijoitteluAjo = SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(new SijoitteluConfiguration(), new SijoitteluAjo(), hakukohteet, valintatulokset, Collections.emptyMap());
         SijoittelunTila s = SijoitteluAlgorithmUtil.sijoittele(sijoitteluAjo);
 
         HakukohdeWrapper ekaHakukohde = s.sijoitteluAjo.getHakukohteet().stream().filter(h -> h.getHakukohde().getOid().equals("1.2.246.562.11.00000000001")).findAny().get();

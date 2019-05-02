@@ -27,7 +27,6 @@ import java.util.stream.Collectors;
  */
 public class PostSijoitteluProcessorPeruunnutaRajatunVarasijataytonHakemuksetJotkaEivatMahduVaralle implements PostSijoitteluProcessor {
     private static final Logger LOG = LoggerFactory.getLogger(PostSijoitteluProcessorPeruunnutaRajatunVarasijataytonHakemuksetJotkaEivatMahduVaralle.class);
-    private static final boolean ENABLE_VTKU_31 = false;
 
     @Override
     public void process(SijoitteluajoWrapper ajoWrapper) {
@@ -162,7 +161,7 @@ public class PostSijoitteluProcessorPeruunnutaRajatunVarasijataytonHakemuksetJot
                     viimeisenEdellisessaSijoittelussaVarallaOlleenJonosija, sivssnovSijoittelunViimeistenVarallaolijoidenJonosija.get()));
             }
         }
-        if (ENABLE_VTKU_31) {
+        if (jonoJollaRajoitettuVarasijaTaytto.getSijoitteluConfiguration().kaytaVtku31SaantoaRajoitetussaVarasijataytossa) {
             LOG.info("Käytetään VTKU-31:n uutta logiikkaa ja rajoitetaan varasijoja SIVSSNOV-sijoittelussa tallennetun tiedon perusteella.");
             return sivssnovSijoittelunViimeistenVarallaolijoidenJonosija.get();
         } else {

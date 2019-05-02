@@ -400,7 +400,7 @@ public class RajattuVarasijatayttoTest {
 
     private void sijoittele(Consumer<SijoitteluajoWrapper> prepareAjoWrapper, List<Valintatulos> valintatulokset, Hakukohde... hakukohteet) {
         SijoitteluajoWrapper sijoitteluAjoWrapper =
-            SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(new SijoitteluAjo(), Arrays.asList(hakukohteet), valintatulokset, Collections.emptyMap());
+            SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(new SijoitteluConfiguration(), new SijoitteluAjo(), Arrays.asList(hakukohteet), valintatulokset, Collections.emptyMap());
         prepareAjoWrapper.accept(sijoitteluAjoWrapper);
         SijoitteluAlgorithmUtil.sijoittele(sijoitteluAjoWrapper);
     }

@@ -32,13 +32,13 @@ public class SijoitteluajoWrapperFactory {
 
     private static final Logger LOG = LoggerFactory.getLogger(SijoitteluajoWrapperFactory.class);
 
-    public static SijoitteluajoWrapper createSijoitteluAjoWrapper(SijoitteluAjo sijoitteluAjo,
+    public static SijoitteluajoWrapper createSijoitteluAjoWrapper(SijoitteluConfiguration sijoitteluConfiguration, SijoitteluAjo sijoitteluAjo,
                                                                   List<Hakukohde> hakukohteet,
                                                                   List<Valintatulos> valintatulokset,
                                                                   Map<String, VastaanottoDTO> aiemmanVastaanotonHakukohdePerHakija) {
         LOG.info("Luodaan SijoitteluAjoWrapper haulle {}", sijoitteluAjo.getHakuOid());
         final Map<String, Map<String, Map<String, Valintatulos>>> indeksoidutTulokset = indexValintatulokset(valintatulokset);
-        SijoitteluajoWrapper sijoitteluajoWrapper = new SijoitteluajoWrapper(sijoitteluAjo);
+        SijoitteluajoWrapper sijoitteluajoWrapper = new SijoitteluajoWrapper(sijoitteluConfiguration, sijoitteluAjo);
         Map<String, HenkiloWrapper> hakemusOidMap = new HashMap<String, HenkiloWrapper>();
         hakukohteet.forEach(hakukohde -> {
             HakukohdeWrapper hakukohdeWrapper = new HakukohdeWrapper();

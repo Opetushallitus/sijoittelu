@@ -58,6 +58,7 @@ valintalaskenta-laskenta-service.global.http.receiveTimeoutMillis={{valintalaske
 sijoittelu-service.global.http.connectionTimeoutMillis={{sijoitteluservice_global_http_connectiontimeoutmillis}}
 sijoittelu-service.global.http.receiveTimeoutMillis={{sijoitteluservice_global_http_receivetimeoutmillis}}
 sijoittelu-service.swagger.basepath=/sijoittelu-service/resources/
+sijoittelu.kayta.vtku31.saantoa.rajatussa.varasijataytossa={{ sijoittelu_kayta_vtku31_saantoa_rajatussa_varasijataytossa | default('false') }}
 
 #VALINTAREKISTERI
 valintarekisteri.db.user={{host_postgresql_valintarekisteri_user}}

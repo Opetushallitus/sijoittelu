@@ -1,6 +1,7 @@
 package fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.helper;
 
 
+import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoitteluConfiguration;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoitteluajoWrapperFactory;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.SijoitteluajoWrapper;
 import fi.vm.sade.sijoittelu.domain.*;
@@ -24,7 +25,7 @@ public class HakuBuilder {
             SijoitteluAjo sa = new SijoitteluAjo();
             sa.setHakuOid(hakuOid);
             this.wrapper = SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(
-                sa, hakukohteet, new ArrayList<>(), Collections.emptyMap());
+                new SijoitteluConfiguration(), sa, hakukohteet, new ArrayList<>(), Collections.emptyMap());
         }
 
         public SijoitteluajoWrapperBuilder withVarasijaSaannotAstuvatVoimaan(LocalDateTime varasijaSaannotAstuvatVoimaan) {

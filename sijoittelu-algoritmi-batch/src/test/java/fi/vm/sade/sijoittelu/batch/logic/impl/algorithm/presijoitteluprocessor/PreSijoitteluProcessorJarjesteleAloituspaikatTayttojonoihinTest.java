@@ -1,6 +1,8 @@
 package fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.presijoitteluprocessor;
 
 import com.google.common.collect.Lists;
+
+import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoitteluConfiguration;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoitteluSilmukkaException;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoitteluTestSpec;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoitteluajoWrapperFactory;
@@ -277,7 +279,7 @@ public class PreSijoitteluProcessorJarjesteleAloituspaikatTayttojonoihinTest ext
                                 .build())
                 .build());
         final SijoitteluajoWrapper sijoitteluAjo = SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(
-                new SijoitteluAjo(), hakukohteet, new ArrayList<>(), Collections.emptyMap());
+            new SijoitteluConfiguration(), new SijoitteluAjo(), hakukohteet, new ArrayList<>(), Collections.emptyMap());
 
         p.process(sijoitteluAjo);
 
@@ -299,7 +301,7 @@ public class PreSijoitteluProcessorJarjesteleAloituspaikatTayttojonoihinTest ext
 
         SijoitteluajoWrapperBuilder(List<Hakukohde> hakukohteet) {
             this.wrapper = SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(
-                    new SijoitteluAjo(), hakukohteet, new ArrayList<>(), Collections.emptyMap());
+                new SijoitteluConfiguration(), new SijoitteluAjo(), hakukohteet, new ArrayList<>(), Collections.emptyMap());
         }
 
         SijoitteluajoWrapperBuilder withVarasijaSaannotAstuvatVoimaan(LocalDateTime varasijaSaannotAstuvatVoimaan) {
