@@ -9,9 +9,11 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 public class Valintatapajono implements Serializable {
 
@@ -275,6 +277,25 @@ public class Valintatapajono implements Serializable {
             this.jonosija = jonosija;
             this.tasasijaJonosija = tasasijaJonosija;
             this.hakemusOidit = hakemusOidit;
+        }
+
+        public JonosijaTieto(List<Hakemus> hakemuksista) {
+            Set<Integer> jonosijat = new HashSet<>();
+            List<String> hakemusOidit = new LinkedList<>();
+            int viimeinenTasasijaJonosija = -1;
+            for (Hakemus hakemus : hakemuksista) {
+                jonosijat.add(hakemus.getJonosija());
+                hakemusOidit.add(hakemus.getHakemusOid());
+                viimeinenTasasijaJonosija = hakemus.getTasasijaJonosija();
+            }
+            if (jonosijat.size() != 1) {
+                throw new IllegalStateException(String.format("Jonosijatietoa ollaan muodostamassa hakemuksista %s, " +
+                    "mutta niistä löytyi yhdestä poikkeava määrä jonosijoja: %s. Vaikuttaa bugilta.", hakemusOidit, jonosijat));
+            }
+            this.jonosija = jonosijat.iterator().next();
+            this.tasasijaJonosija = viimeinenTasasijaJonosija;
+            this.hakemusOidit = String.join(",", hakemusOidit);
+
         }
 
         @Override

@@ -24,13 +24,13 @@ public class PostSijoitteluProcessorPeruunnutaRajatunVarasijataytonHakemuksetJot
         new PostSijoitteluProcessorPeruunnutaRajatunVarasijataytonHakemuksetJotkaEivatMahduVaralle();
 
     private final Hakemus hakemus1 = new HakemusBuilder().withOid("hakemus1")
-        .withJonosija(1).withTila(HYVAKSYTTY).withPrioriteetti(1).build();
+        .withJonosija(1).withTasasijaJonosija(1).withTila(HYVAKSYTTY).withPrioriteetti(1).build();
     private final Hakemus hakemus2 = new HakemusBuilder().withOid("hakemus2")
-        .withJonosija(2).withTila(VARALLA).withEdellinenTila(VARALLA).build();
+        .withJonosija(2).withTasasijaJonosija(1).withTila(VARALLA).withEdellinenTila(VARALLA).build();
     private final Hakemus hakemus3 = new HakemusBuilder().withOid("hakemus3")
-        .withJonosija(3).withTila(VARALLA).withEdellinenTila(VARALLA).build();
+        .withJonosija(3).withTasasijaJonosija(1).withTila(VARALLA).withEdellinenTila(VARALLA).build();
     private final Hakemus hakemus4 = new HakemusBuilder().withOid("hakemus4")
-        .withJonosija(4).withTila(VARALLA).withEdellinenTila(VARALLA).build();
+        .withJonosija(4).withTasasijaJonosija(1).withTila(VARALLA).withEdellinenTila(VARALLA).build();
 
     private Valintatapajono jono = new ValintatapajonoBuilder().withOid("jono1")
         .withTasasijasaanto(YLITAYTTO)

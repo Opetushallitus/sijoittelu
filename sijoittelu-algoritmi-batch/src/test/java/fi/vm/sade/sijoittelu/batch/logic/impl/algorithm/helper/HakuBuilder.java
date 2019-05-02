@@ -181,6 +181,11 @@ public class HakuBuilder {
             return this;
         }
 
+        public HakemusBuilder withTasasijaJonosija(int tasasijaJonosija) {
+            this.h.setTasasijaJonosija(tasasijaJonosija);
+            return this;
+        }
+
         public Hakemus build() {
             return this.h;
         }

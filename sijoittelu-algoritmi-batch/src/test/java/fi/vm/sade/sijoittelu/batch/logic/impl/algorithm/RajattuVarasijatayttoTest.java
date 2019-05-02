@@ -12,6 +12,7 @@ import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.helper.HakuBuilder.Valin
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.util.SijoitteluAlgorithmUtil;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.SijoitteluajoWrapper;
 import fi.vm.sade.sijoittelu.domain.*;
+import fi.vm.sade.sijoittelu.domain.Valintatapajono.JonosijaTieto;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -19,6 +20,7 @@ import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -341,6 +343,20 @@ public class RajattuVarasijatayttoTest {
         sijoittele(kkHakuVarasijasaannotVoimassa, hakukohdeJossaVarasijojaRajoitetaan);
 
         assertHakemustenTilat(HYVAKSYTTY, HYVAKSYTTY, VARALLA, VARALLA);
+    }
+
+    @Test
+    public void rajattuVarasijaTayttoTallentaaTiedonAlimmastaVarallaOlleestaJonosijastaSivssnovSijoittelussa() {
+        assertEquals(Optional.empty(), jono.getSivssnovSijoittelunViimeistenVarallaolijoidenJonosija());
+
+        jono.setAloituspaikat(1);
+        jono.setEiVarasijatayttoa(false);
+        jono.setVarasijat(1);
+
+        sijoittele(kkHakuVarasijasaannotVoimassa, hakukohdeJossaVarasijojaRajoitetaan);
+        assertHakemustenTilat(HYVAKSYTTY, VARALLA, PERUUNTUNUT, PERUUNTUNUT);
+
+        assertEquals(Optional.of(new JonosijaTieto(Collections.singletonList(hakemus2))), jono.getSivssnovSijoittelunViimeistenVarallaolijoidenJonosija());
     }
 
     private void hakemusKiilaa(Hakemus kiilaavaHakemus) {
