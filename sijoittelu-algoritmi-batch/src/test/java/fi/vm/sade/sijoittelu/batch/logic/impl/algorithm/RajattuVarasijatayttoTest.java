@@ -347,7 +347,7 @@ public class RajattuVarasijatayttoTest {
 
     @Test
     public void rajattuVarasijaTayttoTallentaaTiedonAlimmastaVarallaOlleestaJonosijastaSivssnovSijoittelussa() {
-        assertEquals(Optional.empty(), jono.getSivssnovSijoittelunViimeistenVarallaolijoidenJonosija());
+        assertEquals(Optional.empty(), jono.getSivssnovSijoittelunVarasijataytonRajoitus());
 
         jono.setAloituspaikat(1);
         jono.setEiVarasijatayttoa(false);
@@ -356,7 +356,7 @@ public class RajattuVarasijatayttoTest {
         sijoittele(kkHakuVarasijasaannotVoimassa, hakukohdeJossaVarasijojaRajoitetaan);
         assertHakemustenTilat(HYVAKSYTTY, VARALLA, PERUUNTUNUT, PERUUNTUNUT);
 
-        assertEquals(Optional.of(new JonosijaTieto(Collections.singletonList(hakemus2))), jono.getSivssnovSijoittelunViimeistenVarallaolijoidenJonosija());
+        assertEquals(Optional.of(new JonosijaTieto(Collections.singletonList(hakemus2))), jono.getSivssnovSijoittelunVarasijataytonRajoitus());
     }
 
     private void hakemusKiilaa(Hakemus kiilaavaHakemus) {

@@ -87,7 +87,7 @@ public class PostSijoitteluProcessorPeruunnutaRajatunVarasijataytonHakemuksetJot
             JonosijaTieto viimeistenVarallaolijoidenSija = new JonosijaTieto(viimeisenVarallaolosijanHakemukset);
             LOG.info(String.format("Muodostettiin tieto viimeisestä varasijasta jonolle %s, jossa on %d varasijaa: %s",
                 jono.getOid(), jono.getVarasijat(), viimeistenVarallaolijoidenSija));
-            jono.setSivssnovSijoittelunViimeistenVarallaolijoidenJonosija(Optional.of(viimeistenVarallaolijoidenSija));
+            jono.setSivssnovSijoittelunVarasijataytonRajoitus(Optional.of(viimeistenVarallaolijoidenSija));
 
             varallaOlijatEnnenRajoittamista.forEach(h -> {
                 if (h.getHakemus().getJonosija() > viimeinenJonosijaJokaMahtuuVaralle.get()) {
@@ -137,7 +137,7 @@ public class PostSijoitteluProcessorPeruunnutaRajatunVarasijataytonHakemuksetJot
         Valintatapajono jono = jonoJollaRajoitettuVarasijaTaytto.getValintatapajono();
 
         Optional<Integer> sivssnovSijoittelunViimeistenVarallaolijoidenJonosija =
-            jono.getSivssnovSijoittelunViimeistenVarallaolijoidenJonosija().map(j -> j.jonosija);
+            jono.getSivssnovSijoittelunVarasijataytonRajoitus().map(j -> j.jonosija);
 
         int viimeisenEdellisessaSijoittelussaVarallaOlleenJonosija = viimeinenEdellisessaSijoittelussaVarallaOllutHakemus
             .map(Hakemus::getJonosija)

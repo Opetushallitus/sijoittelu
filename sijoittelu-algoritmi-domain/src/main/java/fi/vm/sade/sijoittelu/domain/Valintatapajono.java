@@ -62,7 +62,7 @@ public class Valintatapajono implements Serializable {
 
     private boolean sijoiteltuIlmanVarasijasaantojaNiidenOllessaVoimassa;
 
-    private Optional<JonosijaTieto> sivssnovSijoittelunViimeistenVarallaolijoidenJonosija = Optional.empty();
+    private Optional<JonosijaTieto> sivssnovSijoittelunVarasijataytonRajoitus = Optional.empty();
 
     private List<Hakemus> hakemukset = new ArrayList<Hakemus>();
 
@@ -259,12 +259,12 @@ public class Valintatapajono implements Serializable {
         this.sijoiteltuIlmanVarasijasaantojaNiidenOllessaVoimassa = sijoiteltuIlmanVarasijasaantojaNiidenOllessaVoimassa;
     }
 
-    public Optional<JonosijaTieto> getSivssnovSijoittelunViimeistenVarallaolijoidenJonosija() {
-        return sivssnovSijoittelunViimeistenVarallaolijoidenJonosija;
+    public Optional<JonosijaTieto> getSivssnovSijoittelunVarasijataytonRajoitus() {
+        return sivssnovSijoittelunVarasijataytonRajoitus;
     }
 
-    public void setSivssnovSijoittelunViimeistenVarallaolijoidenJonosija(Optional<JonosijaTieto> sivssnovSijoittelunViimeistenVarallaolijoidenJonosija) {
-        this.sivssnovSijoittelunViimeistenVarallaolijoidenJonosija = sivssnovSijoittelunViimeistenVarallaolijoidenJonosija;
+    public void setSivssnovSijoittelunVarasijataytonRajoitus(Optional<JonosijaTieto> sivssnovSijoittelunVarasijataytonRajoitus) {
+        this.sivssnovSijoittelunVarasijataytonRajoitus = sivssnovSijoittelunVarasijataytonRajoitus;
     }
 
     public boolean vapaaVarasijataytto() {
