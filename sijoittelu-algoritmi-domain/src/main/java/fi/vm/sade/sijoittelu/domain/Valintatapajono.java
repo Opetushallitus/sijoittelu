@@ -1,5 +1,8 @@
 package fi.vm.sade.sijoittelu.domain;
 
+import static fi.vm.sade.sijoittelu.domain.HakemuksenTila.HYVAKSYTTY;
+import static fi.vm.sade.sijoittelu.domain.HakemuksenTila.VARASIJALTA_HYVAKSYTTY;
+
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
@@ -271,20 +274,24 @@ public class Valintatapajono implements Serializable {
     public static class JonosijaTieto {
         public final int jonosija;
         public final int tasasijaJonosija;
+        public final HakemuksenTila tila;
         public final String hakemusOidit;
 
-        public JonosijaTieto(int jonosija, int tasasijaJonosija, String hakemusOidit) {
+        public JonosijaTieto(int jonosija, int tasasijaJonosija, HakemuksenTila tila, String hakemusOidit) {
             this.jonosija = jonosija;
             this.tasasijaJonosija = tasasijaJonosija;
+            this.tila = tila;
             this.hakemusOidit = hakemusOidit;
         }
 
         public JonosijaTieto(List<Hakemus> hakemuksista) {
             Set<Integer> jonosijat = new HashSet<>();
+            Set<HakemuksenTila> tilat = new HashSet<>();
             List<String> hakemusOidit = new LinkedList<>();
             int viimeinenTasasijaJonosija = -1;
             for (Hakemus hakemus : hakemuksista) {
                 jonosijat.add(hakemus.getJonosija());
+                tilat.add(hakemus.getTila() == VARASIJALTA_HYVAKSYTTY ? HYVAKSYTTY : hakemus.getTila());
                 hakemusOidit.add(hakemus.getHakemusOid());
                 viimeinenTasasijaJonosija = hakemus.getTasasijaJonosija();
             }
@@ -292,7 +299,12 @@ public class Valintatapajono implements Serializable {
                 throw new IllegalStateException(String.format("Jonosijatietoa ollaan muodostamassa hakemuksista %s, " +
                     "mutta niistä löytyi yhdestä poikkeava määrä jonosijoja: %s. Vaikuttaa bugilta.", hakemusOidit, jonosijat));
             }
+            if (tilat.size() != 1) {
+                throw new IllegalStateException(String.format("Jonosijatietoa ollaan muodostamassa hakemuksista %s, " +
+                    "mutta niistä löytyi yhdestä poikkeava määrä tiloja: %s. Vaikuttaa bugilta.", hakemusOidit, tilat));
+            }
             this.jonosija = jonosijat.iterator().next();
+            this.tila = tilat.iterator().next();
             this.tasasijaJonosija = viimeinenTasasijaJonosija;
             this.hakemusOidit = String.join(",", hakemusOidit);
 
