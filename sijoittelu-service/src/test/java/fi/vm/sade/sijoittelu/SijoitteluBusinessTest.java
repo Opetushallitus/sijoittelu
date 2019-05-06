@@ -5,6 +5,8 @@ import static com.lordofthejars.nosqlunit.mongodb.MongoDbRule.MongoDbRuleBuilder
 import static java.util.stream.Collectors.toSet;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.anyLong;
@@ -22,8 +24,10 @@ import fi.vm.sade.sijoittelu.batch.logic.impl.DomainConverter;
 import fi.vm.sade.sijoittelu.domain.HakemuksenTila;
 import fi.vm.sade.sijoittelu.domain.Hakemus;
 import fi.vm.sade.sijoittelu.domain.Hakukohde;
+import fi.vm.sade.sijoittelu.domain.HakukohdeItem;
 import fi.vm.sade.sijoittelu.domain.SijoitteluAjo;
 import fi.vm.sade.sijoittelu.domain.Valintatapajono;
+import fi.vm.sade.sijoittelu.domain.Valintatapajono.JonosijaTieto;
 import fi.vm.sade.sijoittelu.domain.ValintatuloksenTila;
 import fi.vm.sade.sijoittelu.domain.Valintatulos;
 import fi.vm.sade.sijoittelu.laskenta.external.resource.dto.ParametriDTO;
@@ -34,6 +38,7 @@ import fi.vm.sade.sijoittelu.laskenta.service.it.TarjontaIntegrationService;
 import fi.vm.sade.valintalaskenta.domain.dto.ValintatapajonoDTO;
 import fi.vm.sade.valintalaskenta.domain.dto.valintatieto.HakuDTO;
 import fi.vm.sade.valintalaskenta.tulos.service.impl.ValintatietoService;
+import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -50,6 +55,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -333,6 +339,49 @@ public class SijoitteluBusinessTest {
         sijoitteluService.sijoittele(haku, newHashSet("jono1", "jono2", "jono3"), newHashSet("jono1", "jono2", "jono3"), System.currentTimeMillis());
 
         assertSijoitteluUsedSijoitteluajo(sijoitteluajoId);
+    }
+
+    @Test()
+    @UsingDataSet(locations = "peruuta_alemmat.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
+    public void testSivssnovSijoittelunRajaKopioidaanEdellisestaSijoittelusta() {
+        Optional<JonosijaTieto> dummyJonosijaTieto = Optional.of(new JonosijaTieto(9, 1, HakemuksenTila.HYVAKSYTTY, "[1.2.3]"));
+        HakuDTO haku = valintatietoService.haeValintatiedot("haku1");
+
+        assertEquals(getValintatapaJonoOids(haku), newHashSet("jono1", "jono2", "jono3"));
+
+        SijoitteluAjo previousAjo = new SijoitteluAjo();
+        previousAjo.setSijoitteluajoId(1928391L);
+        HakukohdeItem hakukohdeItem = new HakukohdeItem();
+        String hakukohdeOid = haku.getHakukohteet().iterator().next().getOid();
+        hakukohdeItem.setOid(hakukohdeOid);
+        previousAjo.setHakukohteet(Collections.singletonList(hakukohdeItem));
+        when(valintarekisteriService.getLatestSijoitteluajo("haku1")).thenReturn(previousAjo);
+
+        Hakukohde previousHakukohde = new Hakukohde();
+        previousHakukohde.setOid(hakukohdeItem.getOid());
+        Valintatapajono previousJono = new Valintatapajono();
+        previousJono.setOid("jono1");
+        previousJono.setSivssnovSijoittelunVarasijataytonRajoitus(dummyJonosijaTieto);
+        previousHakukohde.setValintatapajonot(Collections.singletonList(previousJono));
+        when(valintarekisteriService.getSijoitteluajonHakukohteet(previousAjo.getSijoitteluajoId())).thenReturn(Collections.singletonList(previousHakukohde));
+
+        sijoitteluService.sijoittele(haku, newHashSet("jono2", "jono3"), newHashSet("jono1"), System.currentTimeMillis());
+
+        verify(valintarekisteriService, times(1)).tallennaSijoittelu(
+                sijoitteluAjoArgumentCaptor.capture(),
+                hakukohdeArgumentCaptor.capture(),
+                valintatulosArgumentCaptor.capture());
+
+        List<Hakukohde> hakukohteetFromSijoittelu = hakukohdeArgumentCaptor.getValue();
+
+        assertThat(hakukohteetFromSijoittelu, Matchers.hasSize(3));
+        Hakukohde hakukohdeFromSijoittelu = hakukohteetFromSijoittelu.stream().filter(hk -> hk.getOid().equals(previousHakukohde.getOid())).findFirst().get();
+        assertNotSame(hakukohdeFromSijoittelu, previousHakukohde);
+
+        assertThat(hakukohdeFromSijoittelu.getValintatapajonot(), Matchers.hasSize(1));
+        Valintatapajono jonoFromSijoittelu = hakukohdeFromSijoittelu.getValintatapajonot().iterator().next();
+        assertNotSame(jonoFromSijoittelu, previousJono);
+        assertEquals(dummyJonosijaTieto, jonoFromSijoittelu.getSivssnovSijoittelunVarasijataytonRajoitus());
     }
 
     private Long captureSijoitteluajoForNextSijoittelu() {
