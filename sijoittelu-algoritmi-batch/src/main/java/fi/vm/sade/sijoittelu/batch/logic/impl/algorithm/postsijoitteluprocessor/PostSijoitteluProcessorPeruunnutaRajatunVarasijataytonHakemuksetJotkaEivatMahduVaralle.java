@@ -2,6 +2,8 @@ package fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.postsijoitteluprocessor
 
 import static fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.util.TilojenMuokkaus.asetaTilaksiPeruuntunutAloituspaikatTaynna;
 import static fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.util.TilojenMuokkaus.asetaTilaksiPeruuntunutEiMahduKasiteltaviinSijoihin;
+import static fi.vm.sade.sijoittelu.domain.HakemuksenTila.HYVAKSYTTY;
+import static fi.vm.sade.sijoittelu.domain.HakemuksenTila.VARALLA;
 
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.comparator.HakemusWrapperComparator;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.HakemusWrapper;
@@ -13,7 +15,9 @@ import fi.vm.sade.sijoittelu.domain.Valintatapajono;
 import fi.vm.sade.sijoittelu.domain.Valintatapajono.JonosijaTieto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.Assert;
 
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
@@ -137,7 +141,11 @@ public class PostSijoitteluProcessorPeruunnutaRajatunVarasijataytonHakemuksetJot
         Valintatapajono jono = jonoJollaRajoitettuVarasijaTaytto.getValintatapajono();
 
         Optional<Integer> sivssnovSijoittelunTallennettuRaja =
-            jono.getSivssnovSijoittelunVarasijataytonRajoitus().map(j -> j.jonosija);
+            jono.getSivssnovSijoittelunVarasijataytonRajoitus().map(j -> {
+                Assert.isTrue(VARALLA.equals(j.tila), String.format("Jonolla %s on rajattu varasijatäyttö (%d), " +
+                                    "joten sen sivssnov-rajan pitäisi olla varalla-tyyppinen, mutta se on %s", jono.getOid(), jono.getVarasijat(), j));
+                return j.jonosija;
+            });
 
         int viimeisenEdellisessaSijoittelussaVarallaOlleenJonosija = viimeinenEdellisessaSijoittelussaVarallaOllutHakemus
             .map(Hakemus::getJonosija)
