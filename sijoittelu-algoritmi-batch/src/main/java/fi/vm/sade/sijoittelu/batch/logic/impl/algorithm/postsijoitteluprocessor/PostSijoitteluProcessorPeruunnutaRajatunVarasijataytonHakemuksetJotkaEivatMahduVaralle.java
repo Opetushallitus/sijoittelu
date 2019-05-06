@@ -60,10 +60,10 @@ public class PostSijoitteluProcessorPeruunnutaRajatunVarasijataytonHakemuksetJot
 
         if (jono.rajoitettuVarasijaTaytto()) {
             if (jono.getSijoiteltuIlmanVarasijasaantojaNiidenOllessaVoimassa()) {
-                peruunnutaVarasijasaantojenOllessaVoimassa(jonoWrapper);
+                peruunnutaRajatunVarasijataytonJonossaSivssnovSijoittelunJalkeen(jonoWrapper);
                 return;
             } else {
-                peruunnutaEnnenVarasijataytonAlkamista(jonoWrapper, jono);
+                peruunnutaRajatunVarasijataytonJonossaEnnenSivssnovia(jonoWrapper, jono);
                 return;
             }
         }
@@ -71,7 +71,7 @@ public class PostSijoitteluProcessorPeruunnutaRajatunVarasijataytonHakemuksetJot
         throw new IllegalStateException("Jonolla " + jono.getOid() + " piti olla ei varasijatäyttöä tai rajoitettu varasijatäyttö. Vaikuttaa bugilta.");
     }
 
-    private void peruunnutaEnnenVarasijataytonAlkamista(ValintatapajonoWrapper jonoWrapper, Valintatapajono jono) {
+    private void peruunnutaRajatunVarasijataytonJonossaEnnenSivssnovia(ValintatapajonoWrapper jonoWrapper, Valintatapajono jono) {
         List<HakemusWrapper> varallaOlijatEnnenRajoittamista = jonoWrapper.getHakemukset().stream()
             .filter(HakemusWrapper::isVaralla)
             .sorted(new HakemusWrapperComparator())
@@ -117,7 +117,7 @@ public class PostSijoitteluProcessorPeruunnutaRajatunVarasijataytonHakemuksetJot
         }
     }
 
-    private void peruunnutaVarasijasaantojenOllessaVoimassa(ValintatapajonoWrapper jonoWrapper) {
+    private void peruunnutaRajatunVarasijataytonJonossaSivssnovSijoittelunJalkeen(ValintatapajonoWrapper jonoWrapper) {
         final int jonosijaJonkaAllaOlevatPeruunnutetaan = paatteleJonosijaJonkaAllaOlevatPeruunnutetaanVarasijasaantojenOllessaVoimassa(jonoWrapper);
 
         jonoWrapper.getHakemukset().stream()
