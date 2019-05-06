@@ -1,5 +1,6 @@
 package fi.vm.sade.sijoittelu.batch.logic.impl.algorithm;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -16,5 +17,10 @@ public class SijoitteluConfiguration {
 
     public SijoitteluConfiguration() {
         this(false);
+    }
+
+    @Override
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this);
     }
 }
