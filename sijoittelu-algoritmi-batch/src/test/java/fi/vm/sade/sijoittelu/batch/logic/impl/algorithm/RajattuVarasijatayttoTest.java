@@ -296,8 +296,7 @@ public class RajattuVarasijatayttoTest {
 
         sijoittele(kkHakuVarasijasaannotVoimassa, hakukohdeJossaVarasijojaRajoitetaan);
 
-        // assertHakemustenTilat(HYVAKSYTTY, PERUUNTUNUT, VARALLA, PERUUNTUNUT); // TODO VTKU-31 problem exposed here
-        assertHakemustenTilat(HYVAKSYTTY, VARALLA, VARALLA, VARALLA);
+        assertHakemustenTilat(HYVAKSYTTY, PERUUNTUNUT, VARALLA, PERUUNTUNUT);
     }
 
     @Test
@@ -400,7 +399,7 @@ public class RajattuVarasijatayttoTest {
 
     private void sijoittele(Consumer<SijoitteluajoWrapper> prepareAjoWrapper, List<Valintatulos> valintatulokset, Hakukohde... hakukohteet) {
         SijoitteluajoWrapper sijoitteluAjoWrapper =
-            SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(new SijoitteluConfiguration(), new SijoitteluAjo(), Arrays.asList(hakukohteet), valintatulokset, Collections.emptyMap());
+            SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(new SijoitteluConfiguration(true), new SijoitteluAjo(), Arrays.asList(hakukohteet), valintatulokset, Collections.emptyMap());
         prepareAjoWrapper.accept(sijoitteluAjoWrapper);
         SijoitteluAlgorithmUtil.sijoittele(sijoitteluAjoWrapper);
     }
