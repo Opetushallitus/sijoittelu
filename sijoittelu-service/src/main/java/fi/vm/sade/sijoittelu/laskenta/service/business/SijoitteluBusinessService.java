@@ -630,9 +630,12 @@ public class SijoitteluBusinessService {
     private void siirraSivssnov(List<Hakukohde> olemassaolevatHakukohteet, Map<String, Hakukohde> kaikkiHakukohteet) {
         olemassaolevatHakukohteet.forEach(h ->
             h.getValintatapajonot().forEach(olemassaolevaValintatapajono -> {
-                kaikkiHakukohteet.get(h.getOid()).getValintatapajonot().forEach(v ->
+                kaikkiHakukohteet.get(h.getOid()).getValintatapajonot().forEach(v -> {
                     v.setSijoiteltuIlmanVarasijasaantojaNiidenOllessaVoimassa(
-                        olemassaolevaValintatapajono.getSijoiteltuIlmanVarasijasaantojaNiidenOllessaVoimassa()));
+                        olemassaolevaValintatapajono.getSijoiteltuIlmanVarasijasaantojaNiidenOllessaVoimassa());
+                    v.setSivssnovSijoittelunVarasijataytonRajoitus(
+                        olemassaolevaValintatapajono.getSivssnovSijoittelunVarasijataytonRajoitus());
+                });
             }));
     }
 
