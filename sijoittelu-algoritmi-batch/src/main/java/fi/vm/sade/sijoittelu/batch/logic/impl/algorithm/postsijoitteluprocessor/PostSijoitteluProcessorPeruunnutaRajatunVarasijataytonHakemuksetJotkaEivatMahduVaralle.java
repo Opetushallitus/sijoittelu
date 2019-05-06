@@ -136,14 +136,14 @@ public class PostSijoitteluProcessorPeruunnutaRajatunVarasijataytonHakemuksetJot
 
         Valintatapajono jono = jonoJollaRajoitettuVarasijaTaytto.getValintatapajono();
 
-        Optional<Integer> sivssnovSijoittelunViimeistenVarallaolijoidenJonosija =
+        Optional<Integer> sivssnovSijoittelunTallennettuRaja =
             jono.getSivssnovSijoittelunVarasijataytonRajoitus().map(j -> j.jonosija);
 
         int viimeisenEdellisessaSijoittelussaVarallaOlleenJonosija = viimeinenEdellisessaSijoittelussaVarallaOllutHakemus
             .map(Hakemus::getJonosija)
             .orElse(0);
 
-        if (viimeinenEdellisessaSijoittelussaVarallaOllutHakemus.isPresent() && sivssnovSijoittelunViimeistenVarallaolijoidenJonosija.isEmpty()) {
+        if (viimeinenEdellisessaSijoittelussaVarallaOllutHakemus.isPresent() && sivssnovSijoittelunTallennettuRaja.isEmpty()) {
             LOG.warn(String.format("Jonolla %s on rajoitettu varasijatäyttö ja sen edellisessä sijoittelussa " +
                     "viimeinen varasijalla ollut hakemus %s on ollut jonosijalla %d, mutta jonon tietoihin ei ole tallennettu tietoa sivssnov-" +
                     "sijoittelussa viimeisenä varalla olleen hakemuksen jonosijasta. Joko jono on sijoiteltu vanhalla sovellusversiolla tai tämä on bugi.",
@@ -152,20 +152,23 @@ public class PostSijoitteluProcessorPeruunnutaRajatunVarasijataytonHakemuksetJot
             return viimeisenEdellisessaSijoittelussaVarallaOlleenJonosija;
         }
 
-        if (viimeinenEdellisessaSijoittelussaVarallaOllutHakemus.isPresent() && sivssnovSijoittelunViimeistenVarallaolijoidenJonosija.isPresent()) {
-            if (viimeisenEdellisessaSijoittelussaVarallaOlleenJonosija != sivssnovSijoittelunViimeistenVarallaolijoidenJonosija.get()) {
+        if (viimeinenEdellisessaSijoittelussaVarallaOllutHakemus.isPresent() && sivssnovSijoittelunTallennettuRaja.isPresent()) {
+            if (viimeisenEdellisessaSijoittelussaVarallaOlleenJonosija != sivssnovSijoittelunTallennettuRaja.get()) {
                 LOG.info(String.format("Jonolla %s on rajoitettu varasijatäyttö ja sen edellisessä sijoittelussa " +
                         "viimeinen varasijalla ollut hakemus %s on ollut jonosijalla %d, mutta jonon tietoihin tallennettu tieto sivssnov-" +
                         "sijoittelussa viimeisenä varalla olleen hakemuksen jonosijasta on %s. Ilmeisesti pisteet ovat muuttuneet tms.",
                     jono.getOid(), viimeinenEdellisessaSijoittelussaVarallaOllutHakemus.get().getHakemusOid(),
-                    viimeisenEdellisessaSijoittelussaVarallaOlleenJonosija, sivssnovSijoittelunViimeistenVarallaolijoidenJonosija.get()));
+                    viimeisenEdellisessaSijoittelussaVarallaOlleenJonosija, sivssnovSijoittelunTallennettuRaja.get()));
             }
         }
         if (jonoJollaRajoitettuVarasijaTaytto.getSijoitteluConfiguration().kaytaVtku31SaantoaRajoitetussaVarasijataytossa) {
-            LOG.info("Käytetään VTKU-31:n uutta logiikkaa ja rajoitetaan varasijoja SIVSSNOV-sijoittelussa tallennetun tiedon perusteella.");
-            return sivssnovSijoittelunViimeistenVarallaolijoidenJonosija.get();
+            Integer raja = sivssnovSijoittelunTallennettuRaja.get();
+            LOG.info("Käytetään VTKU-31:n uutta logiikkaa ja rajoitetaan varasijoja SIVSSNOV-sijoittelussa tallennetun tiedon perusteella (" +
+                raja + ")" );
+            return sivssnovSijoittelunTallennettuRaja.get();
         } else {
-            LOG.info("Ei vielä käytetä VTKU-31:n uutta logiikkaa vaan rajoitetaan varasijoja edellisten tilojen perusteella.");
+            LOG.info("Ei vielä käytetä VTKU-31:n uutta logiikkaa vaan rajoitetaan varasijoja edellisten tilojen perusteella (" +
+                viimeinenEdellisessaSijoittelussaVarallaOllutHakemus + ")");
             return viimeisenEdellisessaSijoittelussaVarallaOlleenJonosija;
         }
     }
