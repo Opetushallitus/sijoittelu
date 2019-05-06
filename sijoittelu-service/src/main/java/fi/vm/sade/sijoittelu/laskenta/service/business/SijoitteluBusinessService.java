@@ -628,15 +628,24 @@ public class SijoitteluBusinessService {
     }
 
     private void siirraSivssnov(List<Hakukohde> olemassaolevatHakukohteet, Map<String, Hakukohde> kaikkiHakukohteet) {
-        olemassaolevatHakukohteet.forEach(h ->
-            h.getValintatapajonot().forEach(olemassaolevaValintatapajono -> {
-                kaikkiHakukohteet.get(h.getOid()).getValintatapajonot().forEach(v -> {
-                    v.setSijoiteltuIlmanVarasijasaantojaNiidenOllessaVoimassa(
-                        olemassaolevaValintatapajono.getSijoiteltuIlmanVarasijasaantojaNiidenOllessaVoimassa());
-                    v.setSivssnovSijoittelunVarasijataytonRajoitus(
-                        olemassaolevaValintatapajono.getSivssnovSijoittelunVarasijataytonRajoitus());
-                });
-            }));
+        olemassaolevatHakukohteet.forEach(h -> {
+            Map<String, List<Valintatapajono>> olemassaolevatJonotOideittain = h.getValintatapajonot().stream()
+                .collect(Collectors.groupingBy(Valintatapajono::getOid));
+            kaikkiHakukohteet.get(h.getOid()).getValintatapajonot().forEach(v -> {
+                siirraSivssnov(v, olemassaolevatJonotOideittain.get(v.getOid()));
+            });
+        });
+    }
+
+    private void siirraSivssnov(Valintatapajono jonoJokaMeneeSijoitteluun, List<Valintatapajono> olemassaOlevaJonoListassa) {
+        if (olemassaOlevaJonoListassa != null) {
+            olemassaOlevaJonoListassa.forEach(olemassaOlevaJono -> {
+                jonoJokaMeneeSijoitteluun.setSijoiteltuIlmanVarasijasaantojaNiidenOllessaVoimassa(
+                    olemassaOlevaJono.getSijoiteltuIlmanVarasijasaantojaNiidenOllessaVoimassa());
+                jonoJokaMeneeSijoitteluun.setSivssnovSijoittelunVarasijataytonRajoitus(
+                    olemassaOlevaJono.getSivssnovSijoittelunVarasijataytonRajoitus());
+            });
+        }
     }
 
     private void kopioiHakemuksenTietoja(List<Hakukohde> olemassaolevatHakukohteet, Map<String, Hakukohde> kaikkiHakukohteet) {
