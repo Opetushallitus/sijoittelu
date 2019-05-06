@@ -40,8 +40,6 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.ContextConfiguration;
@@ -58,8 +56,6 @@ import java.util.stream.Collectors;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = { "classpath:test-sijoittelu-batch-mongo.xml" })
 public class SijoitteluBusinessTest {
-
-    private static final Logger LOG = LoggerFactory.getLogger(SijoitteluBusinessTest.class);
 
     @Autowired
     private ValintarekisteriService valintarekisteriService;
@@ -135,7 +131,7 @@ public class SijoitteluBusinessTest {
         SijoitteluAjo sijoitteluAjo1 = sijoitteluAjoArgumentCaptor.getValue();
         System.out.println("SijoitteluajoID: " + sijoitteluAjo1.getSijoitteluajoId());
 
-        List<Hakukohde> hakukohteet1 = hakukohdeArgumentCaptor.<List<Hakukohde>>getValue();
+        List<Hakukohde> hakukohteet1 = hakukohdeArgumentCaptor.getValue();
         assertEquals(3, hakukohteet1.size());
         assertTrue(Arrays.asList("jono1", "jono2", "jono3").equals(
           hakukohteet1.stream()
@@ -161,7 +157,7 @@ public class SijoitteluBusinessTest {
         SijoitteluAjo sijoitteluAjo2 = sijoitteluAjoArgumentCaptor.getAllValues().get(2);
         assertFalse(sijoitteluAjo2.getSijoitteluajoId().equals(sijoitteluAjo1.getSijoitteluajoId()));
 
-        List<Hakukohde> hakukohteet2 = hakukohdeArgumentCaptor.<List<Hakukohde>>getAllValues().get(2);
+        List<Hakukohde> hakukohteet2 = hakukohdeArgumentCaptor.getAllValues().get(2);
         assertEquals(3, hakukohteet2.size());
         assertTrue(Arrays.asList("jono2", "jono3").equals(
                 hakukohteet2.stream()
@@ -188,7 +184,7 @@ public class SijoitteluBusinessTest {
         SijoitteluAjo sijoitteluAjo3 = sijoitteluAjoArgumentCaptor.getAllValues().get(5);
         assertFalse(sijoitteluAjo3.getSijoitteluajoId().equals(sijoitteluAjo1.getSijoitteluajoId()));
 
-        List<Hakukohde> hakukohteet3 = hakukohdeArgumentCaptor.<List<Hakukohde>>getAllValues().get(5);
+        List<Hakukohde> hakukohteet3 = hakukohdeArgumentCaptor.getAllValues().get(5);
         assertEquals(3, hakukohteet3.size());
         assertTrue(Arrays.asList("jono1", "jono2", "jono3").equals(
                 hakukohteet3.stream()
@@ -346,7 +342,7 @@ public class SijoitteluBusinessTest {
                 valintatulosArgumentCaptor.capture());
 
         SijoitteluAjo sijoitteluAjo = sijoitteluAjoArgumentCaptor.getValue();
-        List<Hakukohde> hakukohteet = hakukohdeArgumentCaptor.<List<Hakukohde>>getValue();
+        List<Hakukohde> hakukohteet = hakukohdeArgumentCaptor.getValue();
         List<Valintatulos> valintatulokset = createValintatuloksetFromHakukohteet(hakukohteet);
 
         when(valintarekisteriService.getLatestSijoitteluajo("haku1")).thenReturn(sijoitteluAjo);
@@ -401,7 +397,7 @@ public class SijoitteluBusinessTest {
                 valintatulosArgumentCaptor.capture());
 
         SijoitteluAjo sijoitteluAjo = sijoitteluAjoArgumentCaptor.getValue();
-        List<Hakukohde> hakukohteet = hakukohdeArgumentCaptor.<List<Hakukohde>>getValue();
+        List<Hakukohde> hakukohteet = hakukohdeArgumentCaptor.getValue();
         List<Valintatulos> valintatulokset = createValintatuloksetFromHakukohteet(hakukohteet);
 
         Hakemus hakija3YlempiToive = hakukohteet.stream()
@@ -448,7 +444,7 @@ public class SijoitteluBusinessTest {
                 hakukohdeArgumentCaptor.capture(),
                 valintatulosArgumentCaptor.capture());
 
-        List<Hakukohde> hakukohteet2 = hakukohdeArgumentCaptor.<List<Hakukohde>>getAllValues().get(2);
+        List<Hakukohde> hakukohteet2 = hakukohdeArgumentCaptor.getAllValues().get(2);
         hakija3YlempiToive = hakukohteet2.stream()
                 .filter(h -> h.getOid().equals("hakukohde1")).findAny().get().getValintatapajonot().get(0)
                 .getHakemukset().stream().filter(h -> h.getHakemusOid().equals("hakija3")).findAny().get();
