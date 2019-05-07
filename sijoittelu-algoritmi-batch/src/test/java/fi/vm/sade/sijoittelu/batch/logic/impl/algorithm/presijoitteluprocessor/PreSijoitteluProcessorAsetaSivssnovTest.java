@@ -15,12 +15,7 @@ import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.helper.HakuBuilder.*;
 
 
 public class PreSijoitteluProcessorAsetaSivssnovTest extends SijoitteluTestSpec {
-
-    private PreSijoitteluProcessorAsetaSivssnov p;
-
-    public PreSijoitteluProcessorAsetaSivssnovTest() {
-        p = new PreSijoitteluProcessorAsetaSivssnov();
-    }
+    private PreSijoitteluProcessorAsetaSivssnov p = new PreSijoitteluProcessorAsetaSivssnov();
 
     private void assertJonoSivssnov(String name, Boolean assertion, SijoitteluajoWrapper sijoitteluAjo) {
         assertEquals(name + " should have " + assertion + " sivssnov", true, sijoitteluAjo.getHakukohteet().stream()
