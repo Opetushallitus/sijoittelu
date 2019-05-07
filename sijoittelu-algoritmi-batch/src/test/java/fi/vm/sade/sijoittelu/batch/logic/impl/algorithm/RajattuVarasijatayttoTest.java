@@ -27,7 +27,6 @@ import fi.vm.sade.sijoittelu.domain.ValintatuloksenTila;
 import fi.vm.sade.sijoittelu.domain.Valintatulos;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.objenesis.instantiator.perc.PercInstantiator;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
@@ -312,25 +311,28 @@ public class RajattuVarasijatayttoTest {
     }
 
     @Test
-    @Ignore //Onko validi testi?
-    public void peruuntuneetEivatNouseHyvaksytyksiEnsimmaisenVarasijojenAstuttuaVoimaanAjetunSijoittelunJalkeenKunEiVarasijatayttoa() {
+    public void vainSivssnovSijoittelussaVarallePaasseetVoivatNoustaHyvaksytyiksiMyohemmissaSijoitteluissa() {
         jono.setAloituspaikat(1);
         jono.setEiVarasijatayttoa(false);
         jono.setVarasijat(1);
 
-        sijoittele(kkHakuVarasijasaannotEiVoimassa, hakukohdeJossaVarasijojaRajoitetaan);
-        assertHakemustenTilat(HYVAKSYTTY, VARALLA, VARALLA, VARALLA);
+        hakemus3.setTila(HYLATTY);
 
-        sijoittele(kkHakuVarasijasaannotVoimassa, hakukohdeJossaVarasijojaRajoitetaan, toinenHakukohdeJohonHakemus1Hyvaksytaan);
+        sijoittele(kkHakuVarasijasaannotEiVoimassa, hakukohdeJossaVarasijojaRajoitetaan);
+        assertHakemustenTilat(HYVAKSYTTY, VARALLA, HYLATTY, VARALLA);
+
+        korjaaTilaJaEdellinenTilaSijoittelunJalkeen();
+        sijoittele(kkHakuVarasijasaannotVoimassa, hakukohdeJossaVarasijojaRajoitetaan);
+
+        assertHakemustenTilat(HYVAKSYTTY, VARALLA, HYLATTY, PERUUNTUNUT);
+
+        korjaaTilaJaEdellinenTilaSijoittelunJalkeen();
+        sijoittele(kkHakuVarasijasaannotVoimassa, hakukohdeJossaVarasijojaRajoitetaan, toinenHakukohdeJohonHakemus1Hyvaksytaan, toinenHakukohdeJohonHakemus2Hyvaksytaan);
 
         assertEquals(hakemus1.getHakemusOid(), toinenHakukohdeJohonHakemus1Hyvaksytaan.getValintatapajonot().get(0).getHakemukset().get(0).getHakemusOid());
         assertEquals(HYVAKSYTTY, toinenHakukohdeJohonHakemus1Hyvaksytaan.getValintatapajonot().get(0).getHakemukset().get(0).getTila());
 
-        assertHakemustenTilat(PERUUNTUNUT, HYVAKSYTTY, PERUUNTUNUT, PERUUNTUNUT);
-
-        sijoittele(kkHakuVarasijasaannotVoimassa, hakukohdeJossaVarasijojaRajoitetaan, toinenHakukohdeJohonHakemus1Hyvaksytaan, toinenHakukohdeJohonHakemus2Hyvaksytaan);
-
-        assertHakemustenTilat(PERUUNTUNUT, PERUUNTUNUT, PERUUNTUNUT, PERUUNTUNUT);
+        assertHakemustenTilat(PERUUNTUNUT, PERUUNTUNUT, HYLATTY, PERUUNTUNUT);
     }
 
     @Test
