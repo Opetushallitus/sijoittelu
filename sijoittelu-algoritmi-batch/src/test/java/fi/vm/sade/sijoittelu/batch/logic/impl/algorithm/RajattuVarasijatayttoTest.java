@@ -1,6 +1,10 @@
 package fi.vm.sade.sijoittelu.batch.logic.impl.algorithm;
 
-import static fi.vm.sade.sijoittelu.domain.HakemuksenTila.*;
+import static fi.vm.sade.sijoittelu.domain.HakemuksenTila.HYLATTY;
+import static fi.vm.sade.sijoittelu.domain.HakemuksenTila.HYVAKSYTTY;
+import static fi.vm.sade.sijoittelu.domain.HakemuksenTila.PERUUNTUNUT;
+import static fi.vm.sade.sijoittelu.domain.HakemuksenTila.VARALLA;
+import static fi.vm.sade.sijoittelu.domain.HakemuksenTila.VARASIJALTA_HYVAKSYTTY;
 import static fi.vm.sade.sijoittelu.domain.Tasasijasaanto.ALITAYTTO;
 import static fi.vm.sade.sijoittelu.domain.Tasasijasaanto.YLITAYTTO;
 import static org.junit.Assert.assertEquals;
@@ -11,8 +15,15 @@ import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.helper.HakuBuilder.Hakuk
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.helper.HakuBuilder.ValintatapajonoBuilder;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.util.SijoitteluAlgorithmUtil;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.SijoitteluajoWrapper;
-import fi.vm.sade.sijoittelu.domain.*;
+import fi.vm.sade.sijoittelu.domain.HakemuksenTila;
+import fi.vm.sade.sijoittelu.domain.Hakemus;
+import fi.vm.sade.sijoittelu.domain.Hakukohde;
+import fi.vm.sade.sijoittelu.domain.IlmoittautumisTila;
+import fi.vm.sade.sijoittelu.domain.SijoitteluAjo;
+import fi.vm.sade.sijoittelu.domain.Valintatapajono;
 import fi.vm.sade.sijoittelu.domain.Valintatapajono.JonosijaTieto;
+import fi.vm.sade.sijoittelu.domain.ValintatuloksenTila;
+import fi.vm.sade.sijoittelu.domain.Valintatulos;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -102,6 +113,27 @@ public class RajattuVarasijatayttoTest {
         sijoittele(toinenAsteVarasijasaannotVoimassa, hakukohdeJossaVarasijojaRajoitetaan, toinenHakukohdeJohonHakemus1Hyvaksytaan, toinenHakukohdeJohonHakemus2Hyvaksytaan);
 
         assertHakemustenTilat(PERUUNTUNUT, PERUUNTUNUT, VARALLA, VARALLA);
+    }
+
+    @Test
+    public void hyvaksyttyihinNousevaHakijaJaaVaralleVarasijasaantojenOllessaVoimassaKunEiVarasijatayttoa() {
+        jono.setAloituspaikat(2);
+        jono.setEiVarasijatayttoa(true);
+
+        sijoittele(kkHakuVarasijasaannotVoimassa, hakukohdeJossaVarasijojaRajoitetaan);
+
+        assertHakemustenTilat(HYVAKSYTTY, HYVAKSYTTY, PERUUNTUNUT, PERUUNTUNUT);
+
+        korjaaTilaJaEdellinenTilaSijoittelunJalkeen();
+
+        hakemus1.setJonosija(1);
+        hakemus2.setJonosija(4);
+        hakemus3.setJonosija(2);
+        hakemus4.setJonosija(3);
+
+        sijoittele(kkHakuVarasijasaannotVoimassa, hakukohdeJossaVarasijojaRajoitetaan);
+
+        assertHakemustenTilat(HYVAKSYTTY, PERUUNTUNUT, VARALLA, PERUUNTUNUT);
     }
 
     @Test
@@ -225,7 +257,7 @@ public class RajattuVarasijatayttoTest {
         sijoittele(kkHakuVarasijasaannotVoimassa, hakukohdeJossaVarasijojaRajoitetaan);
         assertHakemustenTilat(HYVAKSYTTY, VARALLA, PERUUNTUNUT, PERUUNTUNUT);
 
-        final Hakemus kiilaavaHakemus = new HakemusBuilder().withOid("kiilaavaHakemus").withEdellinenTila(PERUUNTUNUT).withTila(PERUUNTUNUT).build();
+        final Hakemus kiilaavaHakemus = new HakemusBuilder().withOid("kiilaavaHakemus").withEdellinenTila(PERUUNTUNUT).withTila(VARALLA).build();
         hakemusKiilaa(kiilaavaHakemus);
 
         sijoittele(kkHakuVarasijasaannotVoimassa, hakukohdeJossaVarasijojaRajoitetaan);
