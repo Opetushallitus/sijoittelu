@@ -8,11 +8,11 @@ import fi.vm.sade.sijoittelu.domain.Hakemus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 public class PreSijoitteluProcessorKiilaavatHakemuksetVaralleRajatunVarasijataytonJonoissa implements PreSijoitteluProcessor {
     private static final Logger LOG = LoggerFactory.getLogger(PreSijoitteluProcessorKiilaavatHakemuksetVaralleRajatunVarasijataytonJonoissa.class);
@@ -40,8 +40,6 @@ public class PreSijoitteluProcessorKiilaavatHakemuksetVaralleRajatunVarasijatayt
             return;
         }
 
-        List<String> kiilaavatHakemukset = new ArrayList<>();
-
         int rajaJonosija = valintatapajono.getValintatapajono().getSivssnovSijoittelunVarasijataytonRajoitus()
             .map(r -> r.jonosija)
             .orElse(Integer.MIN_VALUE);
@@ -49,19 +47,19 @@ public class PreSijoitteluProcessorKiilaavatHakemuksetVaralleRajatunVarasijatayt
         Predicate<Hakemus> kiilaavaJonosija = (h) -> h.getJonosija() <= rajaJonosija;
         Predicate<Hakemus> hylattyTaiPeruuntunutEdellinenTila = (h) -> HYLATTY_TAI_PERUUNTUNUT.contains(h.getEdellinenTila());
 
-        valintatapajono.getHakemukset().stream()
-                .filter(HakemusWrapper::isTilaVoidaanVaihtaa)
-                .map(HakemusWrapper::getHakemus)
-                .filter(kiilaavaJonosija)
-                .filter(hylattyTaiPeruuntunutEdellinenTila).forEach((h) -> {
-            h.setEdellinenTila(HakemuksenTila.VARALLA);
-            h.setTila(HakemuksenTila.VARALLA);
-            kiilaavatHakemukset.add(h.getHakemusOid());
-        });
+        List<String> kiilaavienOidit = valintatapajono.getHakemukset().stream()
+            .filter(HakemusWrapper::isTilaVoidaanVaihtaa)
+            .map(HakemusWrapper::getHakemus)
+            .filter(kiilaavaJonosija)
+            .filter(hylattyTaiPeruuntunutEdellinenTila).map(h -> {
+                h.setEdellinenTila(HakemuksenTila.VARALLA);
+                h.setTila(HakemuksenTila.VARALLA);
+                return h.getHakemusOid();
+            }).collect(Collectors.toList());
 
-        if(!kiilaavatHakemukset.isEmpty()) {
+        if (!kiilaavienOidit.isEmpty()) {
             LOG.info("Valintatapajonossa {} on {} kpl kiilaavia hakemuksia: {}",
-                    valintatapajonoOid, kiilaavatHakemukset.size(), String.join(",", kiilaavatHakemukset));
+                valintatapajonoOid, kiilaavienOidit.size(), String.join(",", kiilaavienOidit));
         }
     }
 }
