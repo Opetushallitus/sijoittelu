@@ -81,6 +81,7 @@ public class PostSijoitteluProcessorKorjaaHakemustenTilatJonoissaJoissaEiOleVara
         final AtomicInteger hyvaksytyt = new AtomicInteger(0);
 
         jono.getHakemukset().stream().sorted(new HakemusComparator()).forEach(h -> {
+            LOG.debug("hakemus: " + h.getHakemusOid() + " (" + h.getTila() + ") jonosija: " + h.getJonosija() + " raja: " + raja.jonosija + " , hyvaksytyt: " + hyvaksytyt.get());
             if (Arrays.asList(VARALLA, PERUUNTUNUT, HYLATTY).contains(h.getEdellinenTila()) &&
                 kuuluuHyvaksyttyihinTiloihin(h.getTila()) && (h.getJonosija() <= raja.jonosija)) {
                 LOG.info(String.format("Jätetään tilassa %s ollut hakemus %s (edellinen tila %s, jonosija/tasasijajonosija %s/%s) varalle jonossa %s, " +
