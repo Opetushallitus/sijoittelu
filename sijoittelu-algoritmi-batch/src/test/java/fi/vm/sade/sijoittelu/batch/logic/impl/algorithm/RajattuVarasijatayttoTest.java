@@ -27,6 +27,7 @@ import fi.vm.sade.sijoittelu.domain.ValintatuloksenTila;
 import fi.vm.sade.sijoittelu.domain.Valintatulos;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.objenesis.instantiator.perc.PercInstantiator;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
@@ -188,6 +189,32 @@ public class RajattuVarasijatayttoTest {
     }
 
     @Test
+    public void varasijojaVoiYlitayttaaKunEiVarasijatayttoaJaTasasijasaantoYlitaytto2() {
+        jono.setAloituspaikat(3);
+        jono.setEiVarasijatayttoa(true);
+        jono.setTasasijasaanto(YLITAYTTO);
+
+        sijoittele(kkHakuVarasijasaannotVoimassa, hakukohdeJossaVarasijojaRajoitetaan);
+
+        assertHakemustenTilat(HYVAKSYTTY, HYVAKSYTTY, HYVAKSYTTY, PERUUNTUNUT);
+
+        korjaaTilaJaEdellinenTilaSijoittelunJalkeen();
+
+        hakemus1.setJonosija(2);
+        hakemus1.setTasasijaJonosija(1);
+        hakemus2.setJonosija(1);
+        hakemus2.setTasasijaJonosija(1);
+        hakemus3.setJonosija(1);
+        hakemus3.setTasasijaJonosija(2);
+        hakemus4.setJonosija(1);
+        hakemus4.setTasasijaJonosija(3);
+
+        sijoittele(kkHakuVarasijasaannotVoimassa, hakukohdeJossaVarasijojaRajoitetaan);
+
+        assertHakemustenTilat(PERUUNTUNUT, HYVAKSYTTY, HYVAKSYTTY, VARALLA);
+    }
+
+    @Test
     public void varasijojaVoiAlitayttaaKunEiVarasijatayttoaJaTasasijasaantoAlitaytto() {
         jono.setAloituspaikat(2);
         jono.setEiVarasijatayttoa(true);
@@ -210,6 +237,32 @@ public class RajattuVarasijatayttoTest {
         sijoittele(kkHakuVarasijasaannotVoimassa, hakukohdeJossaVarasijojaRajoitetaan);
 
         assertHakemustenTilat(HYVAKSYTTY, PERUUNTUNUT, PERUUNTUNUT, PERUUNTUNUT);
+    }
+
+    @Test
+    public void varasijojaVoiAlitayttaaKunEiVarasijatayttoaJaTasasijasaantoAlitaytto2() {
+        jono.setAloituspaikat(2);
+        jono.setEiVarasijatayttoa(true);
+        jono.setTasasijasaanto(ALITAYTTO);
+
+        sijoittele(kkHakuVarasijasaannotVoimassa, hakukohdeJossaVarasijojaRajoitetaan);
+
+        assertHakemustenTilat(HYVAKSYTTY, HYVAKSYTTY, PERUUNTUNUT, PERUUNTUNUT);
+
+        korjaaTilaJaEdellinenTilaSijoittelunJalkeen();
+
+        hakemus1.setJonosija(2);
+        hakemus1.setTasasijaJonosija(1);
+        hakemus2.setJonosija(1);
+        hakemus2.setTasasijaJonosija(1);
+        hakemus3.setJonosija(1);
+        hakemus3.setTasasijaJonosija(2);
+        hakemus4.setJonosija(1);
+        hakemus4.setTasasijaJonosija(3);
+
+        sijoittele(kkHakuVarasijasaannotVoimassa, hakukohdeJossaVarasijojaRajoitetaan);
+
+        assertHakemustenTilat(PERUUNTUNUT, PERUUNTUNUT, PERUUNTUNUT, PERUUNTUNUT);
     }
 
     @Test
@@ -339,6 +392,39 @@ public class RajattuVarasijatayttoTest {
         sijoittele(kkHakuVarasijasaannotVoimassa, hakukohdeJossaVarasijojaRajoitetaan);
         assertHakemustenTilat(HYVAKSYTTY, VARALLA, PERUUNTUNUT, PERUUNTUNUT);
         assertEquals(VARALLA, kiilaavaHakemus.getTila());
+    }
+
+    @Test
+    public void hylatytHakemuksetPysyvatHylattyinaRajatunVarasijataytonJonoissa() {
+        jono.setAloituspaikat(1);
+        jono.setEiVarasijatayttoa(false);
+        jono.setVarasijat(1);
+
+        sijoittele(kkHakuVarasijasaannotEiVoimassa, hakukohdeJossaVarasijojaRajoitetaan);
+        assertHakemustenTilat(HYVAKSYTTY, VARALLA, VARALLA, VARALLA);
+
+        korjaaTilaJaEdellinenTilaSijoittelunJalkeen();
+
+        hakemus3.setTila(HYLATTY);
+
+        sijoittele(kkHakuVarasijasaannotVoimassa, hakukohdeJossaVarasijojaRajoitetaan);
+        assertHakemustenTilat(HYVAKSYTTY, VARALLA, HYLATTY, PERUUNTUNUT);
+    }
+
+    @Test
+    public void hylatytHakemuksetPysyvatHylattyinaJonoissaIlmanVarasijatayttoa() {
+        jono.setAloituspaikat(1);
+        jono.setEiVarasijatayttoa(true);
+
+        sijoittele(kkHakuVarasijasaannotEiVoimassa, hakukohdeJossaVarasijojaRajoitetaan);
+        assertHakemustenTilat(HYVAKSYTTY, VARALLA, VARALLA, VARALLA);
+
+        korjaaTilaJaEdellinenTilaSijoittelunJalkeen();
+
+        hakemus3.setTila(HYLATTY);
+
+        sijoittele(kkHakuVarasijasaannotVoimassa, hakukohdeJossaVarasijojaRajoitetaan);
+        assertHakemustenTilat(HYVAKSYTTY, PERUUNTUNUT, HYLATTY, PERUUNTUNUT);
     }
 
     @Test
