@@ -265,6 +265,24 @@ public class RajattuVarasijatayttoTest {
     }
 
     @Test
+    public void alleSivssnovSijoittelussaOlleenJonosijanOlevaHakijaJaaPeruuntuneeksiJosEiVarasijatayttoa() {
+        jono.setAloituspaikat(2);
+        jono.setEiVarasijatayttoa(true);
+
+        hakemus3.setTila(HYLATTY);
+        sijoittele(kkHakuVarasijasaannotVoimassa, hakukohdeJossaVarasijojaRajoitetaan);
+
+        assertHakemustenTilat(HYVAKSYTTY, HYVAKSYTTY, HYLATTY, PERUUNTUNUT);
+
+        korjaaTilaJaEdellinenTilaSijoittelunJalkeen();
+
+        hakemus3.setTila(VARALLA);
+        sijoittele(kkHakuVarasijasaannotVoimassa, hakukohdeJossaVarasijojaRajoitetaan, toinenHakukohdeJohonHakemus1Hyvaksytaan, toinenHakukohdeJohonHakemus2Hyvaksytaan);
+
+        assertHakemustenTilat(PERUUNTUNUT, PERUUNTUNUT, PERUUNTUNUT, PERUUNTUNUT);
+    }
+
+    @Test
     public void peruuntuvaHakijaNostetaanVarasijalleJaVarallaOlevaHyvaksytyksiEnsimmaisessaSijoittelussaVarasijojenAstuttuaVoimaanJosTuleeTilaaKunVarasijojaOnRajoitettu_v1() {
         jono.setAloituspaikat(1);
         jono.setEiVarasijatayttoa(false);
