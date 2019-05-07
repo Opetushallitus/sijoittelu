@@ -74,7 +74,7 @@ public class SijoitteluHyvaksyPeruuntunutTest {
     @Test
     public void hyvaksyPeruuntunutJonollaEiVarasijatayttoa() {
         jono.setEiVarasijatayttoa(true);
-        jono.setVarasijat(1);
+        jono.setVarasijat(0);
         jono.setSijoiteltuIlmanVarasijasaantojaNiidenOllessaVoimassa(true);
         valintatulos3.setHyvaksyPeruuntunut(true, "");
         sijoittele(kkHakuVarasijasaannotVoimassa, Arrays.asList(valintatulos1, valintatulos2, valintatulos3), hakukohde);
