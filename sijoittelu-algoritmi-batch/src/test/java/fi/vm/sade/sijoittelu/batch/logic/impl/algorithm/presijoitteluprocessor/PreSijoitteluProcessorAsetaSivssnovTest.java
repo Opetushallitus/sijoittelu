@@ -26,7 +26,7 @@ public class PreSijoitteluProcessorAsetaSivssnovTest extends SijoitteluTestSpec 
     }
 
     @Test
-    public void testShouldNotProcessWhenVarasijasaannotEiVoimassa()  {
+    public void testShouldRemoveFlagsWhenVarasijasäännötVoimassaTulevaisuudessa()  {
         List<Hakukohde> hakukohteet = Lists.newArrayList();
         hakukohteet.add(new HakukohdeBuilder("hk1")
                 .withValintatapajono(
@@ -45,12 +45,12 @@ public class PreSijoitteluProcessorAsetaSivssnovTest extends SijoitteluTestSpec 
 
         p.process(sijoitteluAjo);
 
-        assertJonoSivssnov("jono1", true, sijoitteluAjo);
+        assertJonoSivssnov("jono1", false, sijoitteluAjo);
         assertJonoSivssnov("jono2", false, sijoitteluAjo);
     }
 
     @Test
-    public void testMissingFlagfShouldSetAllFlagsToFalse()  {
+    public void testMissingFlagfShouldNotSetAllFlagsToFalseWhenVarasijasäännötVoimassa()  {
         List<Hakukohde> hakukohteet = Lists.newArrayList();
         hakukohteet.add(new HakukohdeBuilder("hk1")
                 .withValintatapajono(
@@ -68,9 +68,8 @@ public class PreSijoitteluProcessorAsetaSivssnovTest extends SijoitteluTestSpec 
 
         p.process(sijoitteluAjo);
 
-        assertEquals("All valintatapajonot should have false sivssnov", true, sijoitteluAjo.getHakukohteet().stream()
-                .flatMap(hkw -> hkw.getValintatapajonot().stream())
-                .noneMatch(vtj -> vtj.getValintatapajono().getSijoiteltuIlmanVarasijasaantojaNiidenOllessaVoimassa()));
+        assertJonoSivssnov("jono1", true, sijoitteluAjo);
+        assertJonoSivssnov("jono2", false, sijoitteluAjo);
     }
 
     @Test
@@ -89,7 +88,7 @@ public class PreSijoitteluProcessorAsetaSivssnovTest extends SijoitteluTestSpec 
                                 .build())
                 .build());
         final SijoitteluajoWrapper sijoitteluAjo = new SijoitteluajoWrapperBuilder(hakukohteet)
-                .withKKHaku(true).withAmkopeHaku(true).withVarasijaSaannotAstuvatVoimaan(LocalDateTime.now().plusDays(1)).build();
+                .withKKHaku(true).withAmkopeHaku(true).withVarasijaSaannotAstuvatVoimaan(LocalDateTime.now().minusDays(1)).build();
 
         p.process(sijoitteluAjo);
 
@@ -117,7 +116,7 @@ public class PreSijoitteluProcessorAsetaSivssnovTest extends SijoitteluTestSpec 
 
         p.process(sijoitteluAjo);
 
-        assertJonoSivssnov("jono1", false, sijoitteluAjo);
+        assertJonoSivssnov("jono1", true, sijoitteluAjo);
         assertJonoSivssnov("jono2", false, sijoitteluAjo);
 
         hakukohteet.get(0).getValintatapajonot().forEach(j -> j.setSijoiteltuIlmanVarasijasaantojaNiidenOllessaVoimassa(true));
