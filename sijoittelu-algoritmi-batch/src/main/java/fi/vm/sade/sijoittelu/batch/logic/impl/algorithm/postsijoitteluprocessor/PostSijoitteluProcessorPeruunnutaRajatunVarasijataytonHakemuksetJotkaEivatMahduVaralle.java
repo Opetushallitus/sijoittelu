@@ -148,6 +148,14 @@ public class PostSijoitteluProcessorPeruunnutaRajatunVarasijataytonHakemuksetJot
                     viimeisenEdellisessaSijoittelussaVarallaOlleenJonosija, sivssnovSijoittelunTallennettuRaja.get()));
             }
         }
+
+        if (!sivssnovSijoittelunTallennettuRaja.isPresent()) {
+            LOG.warn("Jonolla %s on rajoitettu varasijatäyttö, mutta siltä ei löytynyt edellisessä sijoittelussa alinta varalla ollutta " +
+                "hakemusta eikä SIVSSNOV-sijoittelussa tallennettua tietoa alimmasta varallaolijasta. Ei voida siis peruunnuttaa ketään. " +
+                "Vaikuttaa bugilta tai oudolta datata.");
+            return Integer.MAX_VALUE;
+        }
+
         if (jonoJollaRajoitettuVarasijaTaytto.getSijoitteluConfiguration().kaytaVtku31SaantoaRajoitetussaVarasijataytossa) {
             Integer raja = sivssnovSijoittelunTallennettuRaja.get();
             LOG.info("Käytetään VTKU-31:n uutta logiikkaa ja rajoitetaan varasijoja SIVSSNOV-sijoittelussa tallennetun tiedon perusteella (" +
