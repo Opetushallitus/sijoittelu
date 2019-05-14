@@ -1,7 +1,9 @@
 package fi.vm.sade.sijoittelu.domain;
 
 import static fi.vm.sade.sijoittelu.domain.HakemuksenTila.HYVAKSYTTY;
+import static fi.vm.sade.sijoittelu.domain.HakemuksenTila.VARALLA;
 import static fi.vm.sade.sijoittelu.domain.HakemuksenTila.VARASIJALTA_HYVAKSYTTY;
+import static java.lang.Boolean.TRUE;
 
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.builder.EqualsBuilder;
@@ -11,6 +13,7 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -264,6 +267,23 @@ public class Valintatapajono implements Serializable {
     }
 
     public void setSivssnovSijoittelunVarasijataytonRajoitus(Optional<JonosijaTieto> sivssnovSijoittelunVarasijataytonRajoitus) {
+        sivssnovSijoittelunVarasijataytonRajoitus.ifPresent(jonosijaTieto -> {
+            if (vapaaVarasijataytto()) {
+                throw new IllegalArgumentException(String.format("Jonolla %s on vapaa varasijatäyttö, mutta sille oltiin " +
+                    "asettamassa sivssnovSijoittelunVarasijataytonRajoitus == %s. Vaikuttaa bugilta.", oid, jonosijaTieto));
+            }
+            if (varasijat != null && varasijat > 0 && !VARALLA.equals(jonosijaTieto.tila)) {
+                throw new IllegalArgumentException(String.format("Jonolla %s on rajattu varasijojen määrä (%d), mutta sille oltiin " +
+                    "asettamassa sivssnovSijoittelunVarasijataytonRajoitus == %s, vaikka rajalla olevan hakemuksen pitäisi " +
+                    "olla tilassa %s. Vaikuttaa bugilta.", oid, varasijat, jonosijaTieto, VARALLA));
+            }
+            List<HakemuksenTila> hyvaksytytTilat = Arrays.asList(HYVAKSYTTY, VARASIJALTA_HYVAKSYTTY);
+            if (TRUE.equals(eiVarasijatayttoa) && !hyvaksytytTilat.contains(jonosijaTieto.tila)) {
+                throw new IllegalArgumentException(String.format("Jonolla %s ei ole varasijatäyttöä, mutta sille oltiin asettamassa " +
+                    "sivssnovSijoittelunVarasijataytonRajoitus == %s, vaikka rajalla olevan hakemuksen tilan pitäisi olla jokin seuraavista: %s",
+                    oid, jonosijaTieto, hyvaksytytTilat));
+            }
+        });
         this.sivssnovSijoittelunVarasijataytonRajoitus = sivssnovSijoittelunVarasijataytonRajoitus;
     }
 

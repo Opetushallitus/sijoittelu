@@ -344,8 +344,16 @@ public class SijoitteluBusinessTest {
     @Test()
     @UsingDataSet(locations = "peruuta_alemmat.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
     public void testSivssnovSijoittelunRajaKopioidaanEdellisestaSijoittelusta() {
-        Optional<JonosijaTieto> dummyJonosijaTieto = Optional.of(new JonosijaTieto(9, 1, HakemuksenTila.HYVAKSYTTY, "[1.2.3]"));
+        Optional<JonosijaTieto> jonosijaTieto = Optional.of(new JonosijaTieto(6, 1, HakemuksenTila.VARALLA, "hakija6"));
         HakuDTO haku = valintatietoService.haeValintatiedot("haku1");
+        haku.getHakukohteet().forEach(hk ->
+            hk.getValinnanvaihe().forEach(vv -> {
+                vv.getValintatapajonot().forEach(j -> {
+                    if ("jono1".equals(j.getOid())) {
+                        j.setVarasijat(4);
+                    }
+                });
+            }));
 
         assertEquals(getValintatapaJonoOids(haku), newHashSet("jono1", "jono2", "jono3"));
 
@@ -361,7 +369,8 @@ public class SijoitteluBusinessTest {
         previousHakukohde.setOid(hakukohdeItem.getOid());
         Valintatapajono previousJono = new Valintatapajono();
         previousJono.setOid("jono1");
-        previousJono.setSivssnovSijoittelunVarasijataytonRajoitus(dummyJonosijaTieto);
+        previousJono.setVarasijat(4);
+        previousJono.setSivssnovSijoittelunVarasijataytonRajoitus(jonosijaTieto);
         previousHakukohde.setValintatapajonot(Collections.singletonList(previousJono));
         when(valintarekisteriService.getSijoitteluajonHakukohteet(previousAjo.getSijoitteluajoId())).thenReturn(Collections.singletonList(previousHakukohde));
 
@@ -381,7 +390,7 @@ public class SijoitteluBusinessTest {
         assertThat(hakukohdeFromSijoittelu.getValintatapajonot(), Matchers.hasSize(1));
         Valintatapajono jonoFromSijoittelu = hakukohdeFromSijoittelu.getValintatapajonot().iterator().next();
         assertNotSame(jonoFromSijoittelu, previousJono);
-        assertEquals(dummyJonosijaTieto, jonoFromSijoittelu.getSivssnovSijoittelunVarasijataytonRajoitus());
+        assertEquals(jonosijaTieto, jonoFromSijoittelu.getSivssnovSijoittelunVarasijataytonRajoitus());
     }
 
     private Long captureSijoitteluajoForNextSijoittelu() {
