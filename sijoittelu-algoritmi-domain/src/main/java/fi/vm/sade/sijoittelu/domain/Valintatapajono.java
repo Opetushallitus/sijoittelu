@@ -295,9 +295,9 @@ public class Valintatapajono implements Serializable {
         public final int jonosija;
         public final int tasasijaJonosija;
         public final HakemuksenTila tila;
-        public final String hakemusOidit;
+        public final List<String> hakemusOidit;
 
-        public JonosijaTieto(int jonosija, int tasasijaJonosija, HakemuksenTila tila, String hakemusOidit) {
+        public JonosijaTieto(int jonosija, int tasasijaJonosija, HakemuksenTila tila, List<String> hakemusOidit) {
             this.jonosija = jonosija;
             this.tasasijaJonosija = tasasijaJonosija;
             this.tila = tila;
@@ -326,7 +326,7 @@ public class Valintatapajono implements Serializable {
             this.jonosija = jonosijat.iterator().next();
             this.tila = tilat.iterator().next();
             this.tasasijaJonosija = viimeinenTasasijaJonosija;
-            this.hakemusOidit = String.join(",", hakemusOidit);
+            this.hakemusOidit = hakemusOidit;
 
         }
 

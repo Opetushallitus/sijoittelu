@@ -344,7 +344,7 @@ public class SijoitteluBusinessTest {
     @Test()
     @UsingDataSet(locations = "peruuta_alemmat.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
     public void testSivssnovSijoittelunRajaKopioidaanEdellisestaSijoittelusta() {
-        Optional<JonosijaTieto> jonosijaTieto = Optional.of(new JonosijaTieto(6, 1, HakemuksenTila.VARALLA, "hakija6"));
+        Optional<JonosijaTieto> jonosijaTieto = Optional.of(new JonosijaTieto(6, 1, HakemuksenTila.VARALLA, Collections.singletonList("hakija6")));
         HakuDTO haku = valintatietoService.haeValintatiedot("haku1");
         haku.getHakukohteet().forEach(hk ->
             hk.getValinnanvaihe().forEach(vv -> {

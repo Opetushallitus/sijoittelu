@@ -113,7 +113,7 @@ public class PostSijoitteluProcessorKorjaaHakemustenTilatJonoissaJoissaEiOleVara
         Collections.reverse(kaikkiHyvaksytyt);
         Optional<JonosijaTieto> alinHyvaksyttyJonosija = kaikkiHyvaksytyt.stream()
             .findFirst()
-            .map(h -> new JonosijaTieto(h.getJonosija(), h.getTasasijaJonosija(), h.getTila(), h.getHakemusOid()));
+            .map(h -> new JonosijaTieto(h.getJonosija(), h.getTasasijaJonosija(), h.getTila(), Collections.singletonList(h.getHakemusOid())));
 
         Valintatapajono jono = jonoWrapper.getValintatapajono();
         if (alinHyvaksyttyJonosija.isPresent()) {
