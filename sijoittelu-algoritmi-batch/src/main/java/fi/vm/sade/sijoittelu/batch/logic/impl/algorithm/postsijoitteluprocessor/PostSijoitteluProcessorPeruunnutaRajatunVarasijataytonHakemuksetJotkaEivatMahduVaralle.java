@@ -18,6 +18,7 @@ import org.springframework.util.Assert;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 /**
@@ -101,7 +102,9 @@ public class PostSijoitteluProcessorPeruunnutaRajatunVarasijataytonHakemuksetJot
     }
 
     private void peruunnutaRajatunVarasijataytonJonossaSivssnovSijoittelunJalkeen(ValintatapajonoWrapper jonoWrapper) {
-        final int jonosijaJonkaAllaOlevatPeruunnutetaan = paatteleJonosijaJonkaAllaOlevatPeruunnutetaanVarasijasaantojenOllessaVoimassa(jonoWrapper);
+        ViimeinenJonosijaJokaMahtuuVaralle viimeinenJonosijaJokaMahtuuVaralle =
+            paatteleJonosijaJonkaAllaOlevatPeruunnutetaanVarasijasaantojenOllessaVoimassa(jonoWrapper);
+        final int jonosijaJonkaAllaOlevatPeruunnutetaan = viimeinenJonosijaJokaMahtuuVaralle.jonosija;
 
         jonoWrapper.getHakemukset().stream()
             .filter(HakemusWrapper::isVaralla)
@@ -109,7 +112,7 @@ public class PostSijoitteluProcessorPeruunnutaRajatunVarasijataytonHakemuksetJot
             .forEach(h -> asetaTilaksiPeruuntunutEiMahduKasiteltaviinSijoihin(h));
     }
 
-    private int paatteleJonosijaJonkaAllaOlevatPeruunnutetaanVarasijasaantojenOllessaVoimassa(ValintatapajonoWrapper jonoJollaRajoitettuVarasijaTaytto) {
+    private ViimeinenJonosijaJokaMahtuuVaralle paatteleJonosijaJonkaAllaOlevatPeruunnutetaanVarasijasaantojenOllessaVoimassa(ValintatapajonoWrapper jonoJollaRajoitettuVarasijaTaytto) {
         Optional<Hakemus> viimeinenEdellisessaSijoittelussaVarallaOllutHakemus = jonoJollaRajoitettuVarasijaTaytto.getHakemukset().stream()
             .filter(h -> h.getHakemus().getEdellinenTila() == HakemuksenTila.VARALLA)
             .filter(h -> h.getHakemus().getTila() != HakemuksenTila.HYLATTY)
@@ -118,25 +121,28 @@ public class PostSijoitteluProcessorPeruunnutaRajatunVarasijataytonHakemuksetJot
             .findFirst();
 
         Valintatapajono jono = jonoJollaRajoitettuVarasijaTaytto.getValintatapajono();
+        assertCorrectLimitType(jono);
+        return valitseRajaJonosija(jonoJollaRajoitettuVarasijaTaytto, viimeinenEdellisessaSijoittelussaVarallaOllutHakemus);
+    }
 
-        Optional<Integer> sivssnovSijoittelunTallennettuRaja =
-            jono.getSivssnovSijoittelunVarasijataytonRajoitus().map(j -> {
-                Assert.isTrue(VARALLA.equals(j.tila), String.format("Jonolla %s on rajattu varasijatäyttö (%d), " +
-                                    "joten sen sivssnov-rajan pitäisi olla varalla-tyyppinen, mutta se on %s", jono.getOid(), jono.getVarasijat(), j));
-                return j.jonosija;
-            });
+    private ViimeinenJonosijaJokaMahtuuVaralle valitseRajaJonosija(ValintatapajonoWrapper jonoJollaRajoitettuVarasijaTaytto,
+                                                                   Optional<Hakemus> viimeinenEdellisessaSijoittelussaVarallaOllutHakemus) {
+        Valintatapajono jono = jonoJollaRajoitettuVarasijaTaytto.getValintatapajono();
+        Optional<Integer> sivssnovSijoittelunTallennettuRaja = jono.getSivssnovSijoittelunVarasijataytonRajoitus().map(j -> j.jonosija);
 
         int viimeisenEdellisessaSijoittelussaVarallaOlleenJonosija = viimeinenEdellisessaSijoittelussaVarallaOllutHakemus
             .map(Hakemus::getJonosija)
             .orElse(0);
 
         if (viimeinenEdellisessaSijoittelussaVarallaOllutHakemus.isPresent() && sivssnovSijoittelunTallennettuRaja.isEmpty()) {
-            LOG.warn(String.format("Jonolla %s on rajoitettu varasijatäyttö ja sen edellisessä sijoittelussa " +
-                    "viimeinen varasijalla ollut hakemus %s on ollut jonosijalla %d, mutta jonon tietoihin ei ole tallennettu tietoa sivssnov-" +
-                    "sijoittelussa viimeisenä varalla olleen hakemuksen jonosijasta. Joko jono on sijoiteltu vanhalla sovellusversiolla tai tämä on bugi.",
-                jono.getOid(), viimeinenEdellisessaSijoittelussaVarallaOllutHakemus.get().getHakemusOid(),
-                viimeisenEdellisessaSijoittelussaVarallaOlleenJonosija));
-            return viimeisenEdellisessaSijoittelussaVarallaOlleenJonosija;
+            return new ViimeinenJonosijaJokaMahtuuVaralle(
+                String.format("Jonolla %s on rajoitettu varasijatäyttö ja sen edellisessä sijoittelussa " +
+                        "viimeinen varasijalla ollut hakemus %s on ollut jonosijalla %d, mutta jonon tietoihin ei ole tallennettu tietoa sivssnov-" +
+                        "sijoittelussa viimeisenä varalla olleen hakemuksen jonosijasta. Joko jono on sijoiteltu vanhalla sovellusversiolla tai tämä on bugi.",
+                    jono.getOid(), viimeinenEdellisessaSijoittelussaVarallaOllutHakemus.get().getHakemusOid(),
+                    viimeisenEdellisessaSijoittelussaVarallaOlleenJonosija),
+                LOG::warn,
+                viimeisenEdellisessaSijoittelussaVarallaOlleenJonosija);
         }
 
         if (viimeinenEdellisessaSijoittelussaVarallaOllutHakemus.isPresent() && sivssnovSijoittelunTallennettuRaja.isPresent()) {
@@ -150,21 +156,44 @@ public class PostSijoitteluProcessorPeruunnutaRajatunVarasijataytonHakemuksetJot
         }
 
         if (!sivssnovSijoittelunTallennettuRaja.isPresent()) {
-            LOG.warn("Jonolla %s on rajoitettu varasijatäyttö, mutta siltä ei löytynyt edellisessä sijoittelussa alinta varalla ollutta " +
+            return new ViimeinenJonosijaJokaMahtuuVaralle(String.format("Jonolla %s on rajoitettu varasijatäyttö, mutta siltä ei löytynyt edellisessä sijoittelussa alinta varalla ollutta " +
                 "hakemusta eikä SIVSSNOV-sijoittelussa tallennettua tietoa alimmasta varallaolijasta. Ei voida siis peruunnuttaa ketään. " +
-                "Vaikuttaa bugilta tai oudolta datata.");
-            return Integer.MAX_VALUE;
+                "Vaikuttaa bugilta tai oudolta datata.", jono.getOid()),
+                LOG::warn,
+                Integer.MAX_VALUE);
         }
 
         if (jonoJollaRajoitettuVarasijaTaytto.getSijoitteluConfiguration().kaytaVtku31SaantoaRajoitetussaVarasijataytossa) {
             Integer raja = sivssnovSijoittelunTallennettuRaja.get();
-            LOG.info("Käytetään VTKU-31:n uutta logiikkaa ja rajoitetaan varasijoja SIVSSNOV-sijoittelussa tallennetun tiedon perusteella (" +
-                raja + ")" );
-            return sivssnovSijoittelunTallennettuRaja.get();
+            return new ViimeinenJonosijaJokaMahtuuVaralle("Käytetään VTKU-31:n uutta logiikkaa ja rajoitetaan varasijoja SIVSSNOV-sijoittelussa tallennetun tiedon perusteella (" +
+                raja + ")",
+                LOG::info,
+                sivssnovSijoittelunTallennettuRaja.get());
         } else {
-            LOG.info("Ei vielä käytetä VTKU-31:n uutta logiikkaa vaan rajoitetaan varasijoja edellisten tilojen perusteella (" +
-                viimeinenEdellisessaSijoittelussaVarallaOllutHakemus + ")");
-            return viimeisenEdellisessaSijoittelussaVarallaOlleenJonosija;
+            return new ViimeinenJonosijaJokaMahtuuVaralle("Ei vielä käytetä VTKU-31:n uutta logiikkaa vaan rajoitetaan varasijoja edellisten tilojen perusteella (" +
+                viimeinenEdellisessaSijoittelussaVarallaOllutHakemus + ")",
+                LOG::info,
+                viimeisenEdellisessaSijoittelussaVarallaOlleenJonosija);
+        }
+    }
+
+
+    private void assertCorrectLimitType(Valintatapajono jono) {
+        jono.getSivssnovSijoittelunVarasijataytonRajoitus().ifPresent(j -> {
+            Assert.isTrue(VARALLA.equals(j.tila), String.format("Jonolla %s on rajattu varasijatäyttö (%d), " +
+                "joten sen sivssnov-rajan pitäisi olla varalla-tyyppinen, mutta se on %s", jono.getOid(), jono.getVarasijat(), j));
+        });
+    }
+
+    private class ViimeinenJonosijaJokaMahtuuVaralle {
+        private final int jonosija;
+
+        /**
+         * @param doLog  a workaround for the fact that slf4j does not support passing log level as a parameter.
+         */
+        private ViimeinenJonosijaJokaMahtuuVaralle(String logMessage, Consumer<String> doLog, int jonosija) {
+            doLog.accept(logMessage);
+            this.jonosija = jonosija;
         }
     }
 }
