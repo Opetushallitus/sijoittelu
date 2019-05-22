@@ -1,6 +1,5 @@
 package fi.vm.sade.sijoittelu.tulos.dto.raportointi;
 
-import fi.vm.sade.sijoittelu.tulos.dto.PistetietoDTO;
 import fi.vm.sade.sijoittelu.tulos.dto.ValintatuloksenTila;
 import io.swagger.annotations.ApiModel;
 
@@ -22,8 +21,6 @@ public class HakutoiveDTO implements Comparable<HakutoiveDTO> {
     private String tarjoajaOid;
 
     private ValintatuloksenTila vastaanottotieto = ValintatuloksenTila.KESKEN;
-
-    private List<PistetietoDTO> pistetiedot = new ArrayList<PistetietoDTO>();
 
     private List<HakutoiveenValintatapajonoDTO> hakutoiveenValintatapajonot = new ArrayList<HakutoiveenValintatapajonoDTO>();
 
@@ -93,14 +90,6 @@ public class HakutoiveDTO implements Comparable<HakutoiveDTO> {
 
     public void setHakutoiveenValintatapajonot(List<HakutoiveenValintatapajonoDTO> hakutoiveenValintatapajonot) {
         this.hakutoiveenValintatapajonot = hakutoiveenValintatapajonot;
-    }
-
-    public List<PistetietoDTO> getPistetiedot() {
-        return pistetiedot;
-    }
-
-    public void setPistetiedot(List<PistetietoDTO> pistetiedot) {
-        this.pistetiedot = pistetiedot;
     }
 
     public boolean isKaikkiJonotSijoiteltu() {
