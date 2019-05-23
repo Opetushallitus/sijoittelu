@@ -79,8 +79,6 @@ public class HakemusDTO implements Serializable {
         this.onkoMuuttunutViimeSijoittelussa = onkoMuuttunutViimeSijoittelussa;
     }
 
-    private List<PistetietoDTO> pistetiedot = new ArrayList<PistetietoDTO>();
-
     /*
      public String getValintatuloksenTila() {
          return valintatuloksenTila;
@@ -224,10 +222,6 @@ public class HakemusDTO implements Serializable {
 
     public void setPisteet(BigDecimal pisteet) {
         this.pisteet = pisteet;
-    }
-
-    public List<PistetietoDTO> getPistetiedot() {
-        return pistetiedot;
     }
 
     public List<TilaHistoriaDTO> getTilaHistoria() {
