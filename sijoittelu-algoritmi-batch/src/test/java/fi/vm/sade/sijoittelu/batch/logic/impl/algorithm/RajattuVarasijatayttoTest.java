@@ -669,6 +669,59 @@ public class RajattuVarasijatayttoTest {
         assertEquals(Optional.of(new JonosijaTieto(Collections.singletonList(hakemus2))), jono.getSivssnovSijoittelunVarasijataytonRajoitus());
     }
 
+    @Test
+    public void hyvaksyttyJulkaistuTulosEiPeruunnuRajatunVarasijataytonJonossaVaikkaSenJonosijaHuononisi() {
+        jono.setAloituspaikat(1);
+        jono.setEiVarasijatayttoa(false);
+        jono.setVarasijat(1);
+
+        sijoittele(kkHakuVarasijasaannotVoimassa, hakukohdeJossaVarasijojaRajoitetaan);
+        assertHakemustenTilat(HYVAKSYTTY, VARALLA, PERUUNTUNUT, PERUUNTUNUT);
+
+        korjaaTilaJaEdellinenTilaSijoittelunJalkeen();
+
+        final Valintatulos julkaistuHakemuksen1Tulos = new Valintatulos(hakemus1.getHakemusOid(),
+                "hakemus1HakijaOid", hakukohdeJossaVarasijojaRajoitetaan.getOid(), false,
+                IlmoittautumisTila.EI_TEHTY, true, ValintatuloksenTila.KESKEN, false,
+                hakukohdeJossaVarasijojaRajoitetaan.getValintatapajonot().get(0).getOid());
+
+        hakemus1.setJonosija(3);
+        hakemus2.setJonosija(1);
+        hakemus3.setJonosija(2);
+        hakemus4.setJonosija(4);
+
+        sijoittele(kkHakuVarasijasaannotVoimassa, Collections.singletonList(julkaistuHakemuksen1Tulos), hakukohdeJossaVarasijojaRajoitetaan);
+
+        assertHakemustenTilat(HYVAKSYTTY, VARALLA, VARALLA, PERUUNTUNUT);
+    }
+
+    @Test
+    public void hyvaksyttyJulkaistuTulosEiPeruunnuJonossaIlmanVarasijatayttoaVaikkaSenJonosijaHuononisi() {
+        jono.setAloituspaikat(1);
+        jono.setEiVarasijatayttoa(true);
+
+        sijoittele(kkHakuVarasijasaannotVoimassa, hakukohdeJossaVarasijojaRajoitetaan);
+        assertHakemustenTilat(HYVAKSYTTY, PERUUNTUNUT, PERUUNTUNUT, PERUUNTUNUT);
+
+        korjaaTilaJaEdellinenTilaSijoittelunJalkeen();
+
+        final Valintatulos julkaistuHakemuksen1Tulos = new Valintatulos(hakemus1.getHakemusOid(),
+                "hakemus1HakijaOid", hakukohdeJossaVarasijojaRajoitetaan.getOid(), false,
+                IlmoittautumisTila.EI_TEHTY, true, ValintatuloksenTila.KESKEN, false,
+                hakukohdeJossaVarasijojaRajoitetaan.getValintatapajonot().get(0).getOid());
+
+        hakemus1.setJonosija(3);
+        hakemus2.setJonosija(1);
+        hakemus3.setJonosija(2);
+        hakemus4.setJonosija(4);
+
+        sijoittele(kkHakuVarasijasaannotVoimassa, Collections.singletonList(julkaistuHakemuksen1Tulos), hakukohdeJossaVarasijojaRajoitetaan);
+
+        // TODO which one would be correct here?
+        //assertHakemustenTilat(HYVAKSYTTY, VARALLA, VARALLA, PERUUNTUNUT);
+        assertHakemustenTilat(HYVAKSYTTY, PERUUNTUNUT, PERUUNTUNUT, PERUUNTUNUT);
+    }
+
     private void hakemusKiilaa(Hakemus kiilaavaHakemus) {
         jono.getHakemukset().add(kiilaavaHakemus);
         hakemus1.setJonosija(0);
