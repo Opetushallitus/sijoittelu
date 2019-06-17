@@ -4,6 +4,8 @@ import com.google.common.hash.HashCode;
 import com.google.common.hash.HashFunction;
 import com.google.common.hash.Hasher;
 import com.google.common.hash.Hashing;
+
+import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoitteluConfiguration;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.hakukohteet.LisapaikkaTapa;
 import fi.vm.sade.sijoittelu.domain.Hakukohde;
 import fi.vm.sade.sijoittelu.domain.SijoitteluAjo;
@@ -25,6 +27,8 @@ import static java.util.Optional.ofNullable;
 public class SijoitteluajoWrapper {
     private static final Logger LOG = LoggerFactory.getLogger(SijoitteluajoWrapper.class);
     public static final String VALUE_FOR_HASH_FUNCTION_WHEN_UNDEFINED = "undefined"; // määrittelemättömän arvon syöte hash-funktioon
+
+    public final SijoitteluConfiguration sijoitteluConfiguration;
 
     private SijoitteluAjo sijoitteluajo;
 
@@ -52,7 +56,8 @@ public class SijoitteluajoWrapper {
 
     private List<String> varasijapomput = new ArrayList<>();
 
-    public SijoitteluajoWrapper(final SijoitteluAjo sijoitteluAjo) {
+    public SijoitteluajoWrapper(SijoitteluConfiguration sijoitteluConfiguration, final SijoitteluAjo sijoitteluAjo) {
+        this.sijoitteluConfiguration = sijoitteluConfiguration;
         this.sijoitteluajo = sijoitteluAjo;
     }
 

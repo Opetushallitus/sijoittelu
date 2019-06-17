@@ -1,24 +1,32 @@
 package fi.vm.sade.sijoittelu.domain;
 
-import fi.vm.sade.sijoittelu.domain.converter.BigDecimalConverter;
+import static fi.vm.sade.sijoittelu.domain.HakemuksenTila.HYVAKSYTTY;
+import static fi.vm.sade.sijoittelu.domain.HakemuksenTila.VARALLA;
+import static fi.vm.sade.sijoittelu.domain.HakemuksenTila.VARASIJALTA_HYVAKSYTTY;
+import static java.lang.Boolean.TRUE;
+
 import org.apache.commons.lang3.BooleanUtils;
-import org.mongodb.morphia.annotations.*;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 
-@Embedded
-@Converters(BigDecimalConverter.class)
 public class Valintatapajono implements Serializable {
 
     private Tasasijasaanto tasasijasaanto;
 
     private ValintatapajonoTila tila;
 
-    @Indexed
     private String oid;
 
     private String nimi;
@@ -57,13 +65,9 @@ public class Valintatapajono implements Serializable {
 
     private boolean sijoiteltuIlmanVarasijasaantojaNiidenOllessaVoimassa;
 
-    @Embedded
-    private List<Hakemus> hakemukset = new ArrayList<Hakemus>();
+    private Optional<JonosijaTieto> sivssnovSijoittelunVarasijataytonRajoitus = Optional.empty();
 
-    @PreLoad
-    public void setSivssnovIfMissing() {
-        this.setSijoiteltuIlmanVarasijasaantojaNiidenOllessaVoimassa(false);
-    }
+    private List<Hakemus> hakemukset = new ArrayList<Hakemus>();
 
     public Integer getHakemustenMaara() {
         return hakemustenMaara;
@@ -258,7 +262,87 @@ public class Valintatapajono implements Serializable {
         this.sijoiteltuIlmanVarasijasaantojaNiidenOllessaVoimassa = sijoiteltuIlmanVarasijasaantojaNiidenOllessaVoimassa;
     }
 
+    public Optional<JonosijaTieto> getSivssnovSijoittelunVarasijataytonRajoitus() {
+        return sivssnovSijoittelunVarasijataytonRajoitus;
+    }
+
+    public void setSivssnovSijoittelunVarasijataytonRajoitus(Optional<JonosijaTieto> sivssnovSijoittelunVarasijataytonRajoitus) {
+        sivssnovSijoittelunVarasijataytonRajoitus.ifPresent(jonosijaTieto -> {
+            if (vapaaVarasijataytto()) {
+                throw new IllegalArgumentException(String.format("Jonolla %s on vapaa varasijatäyttö, mutta sille oltiin " +
+                    "asettamassa sivssnovSijoittelunVarasijataytonRajoitus == %s. Vaikuttaa bugilta.", oid, jonosijaTieto));
+            }
+            if (varasijat != null && varasijat > 0 && !VARALLA.equals(jonosijaTieto.tila)) {
+                throw new IllegalArgumentException(String.format("Jonolla %s on rajattu varasijojen määrä (%d), mutta sille oltiin " +
+                    "asettamassa sivssnovSijoittelunVarasijataytonRajoitus == %s, vaikka rajalla olevan hakemuksen pitäisi " +
+                    "olla tilassa %s. Vaikuttaa bugilta.", oid, varasijat, jonosijaTieto, VARALLA));
+            }
+            List<HakemuksenTila> hyvaksytytTilat = Arrays.asList(HYVAKSYTTY, VARASIJALTA_HYVAKSYTTY);
+            if (TRUE.equals(eiVarasijatayttoa) && !hyvaksytytTilat.contains(jonosijaTieto.tila)) {
+                throw new IllegalArgumentException(String.format("Jonolla %s ei ole varasijatäyttöä, mutta sille oltiin asettamassa " +
+                    "sivssnovSijoittelunVarasijataytonRajoitus == %s, vaikka rajalla olevan hakemuksen tilan pitäisi olla jokin seuraavista: %s",
+                    oid, jonosijaTieto, hyvaksytytTilat));
+            }
+        });
+        this.sivssnovSijoittelunVarasijataytonRajoitus = sivssnovSijoittelunVarasijataytonRajoitus;
+    }
+
     public boolean vapaaVarasijataytto() {
         return !BooleanUtils.isTrue(eiVarasijatayttoa) && !rajoitettuVarasijaTaytto();
+    }
+
+    public static class JonosijaTieto {
+        public final int jonosija;
+        public final int tasasijaJonosija;
+        public final HakemuksenTila tila;
+        public final List<String> hakemusOidit;
+
+        public JonosijaTieto(int jonosija, int tasasijaJonosija, HakemuksenTila tila, List<String> hakemusOidit) {
+            this.jonosija = jonosija;
+            this.tasasijaJonosija = tasasijaJonosija;
+            this.tila = tila;
+            this.hakemusOidit = hakemusOidit;
+        }
+
+        public JonosijaTieto(List<Hakemus> hakemuksista) {
+            Set<Integer> jonosijat = new HashSet<>();
+            Set<HakemuksenTila> tilat = new HashSet<>();
+            List<String> hakemusOidit = new LinkedList<>();
+            int viimeinenTasasijaJonosija = -1;
+            for (Hakemus hakemus : hakemuksista) {
+                jonosijat.add(hakemus.getJonosija());
+                tilat.add(hakemus.getTila() == VARASIJALTA_HYVAKSYTTY ? HYVAKSYTTY : hakemus.getTila());
+                hakemusOidit.add(hakemus.getHakemusOid());
+                viimeinenTasasijaJonosija = hakemus.getTasasijaJonosija();
+            }
+            if (jonosijat.size() != 1) {
+                throw new IllegalStateException(String.format("Jonosijatietoa ollaan muodostamassa hakemuksista %s, " +
+                    "mutta niistä löytyi yhdestä poikkeava määrä jonosijoja: %s. Vaikuttaa bugilta.", hakemusOidit, jonosijat));
+            }
+            if (tilat.size() != 1) {
+                throw new IllegalStateException(String.format("Jonosijatietoa ollaan muodostamassa hakemuksista %s, " +
+                    "mutta niistä löytyi yhdestä poikkeava määrä tiloja: %s. Vaikuttaa bugilta.", hakemusOidit, tilat));
+            }
+            this.jonosija = jonosijat.iterator().next();
+            this.tila = tilat.iterator().next();
+            this.tasasijaJonosija = viimeinenTasasijaJonosija;
+            this.hakemusOidit = hakemusOidit;
+
+        }
+
+        @Override
+        public int hashCode() {
+            return HashCodeBuilder.reflectionHashCode(this);
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            return EqualsBuilder.reflectionEquals(this, obj);
+        }
+
+        @Override
+        public String toString() {
+            return ToStringBuilder.reflectionToString(this);
+        }
     }
 }

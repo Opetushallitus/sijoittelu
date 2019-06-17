@@ -55,6 +55,7 @@ public class SijoitteluServiceJettyForTesting {
         System.setProperty("cas.callback.sijoittelu-service", "http://localhost");
         System.setProperty("cas.service.sijoittelu-service", "http://localhost");
         System.setProperty("cas.service.organisaatio-service", "http://localhost");
+
         System.setProperty("valintalaskenta-laskenta-service.mongodb.dbname", "valintalaskentadb");
         System.setProperty("valintalaskenta-laskenta-service.mongodb.uri", Optional.ofNullable(System.getProperty("valintalaskentaMongoUri")).orElse(""));
         System.setProperty("sijoittelu-service.swagger.basepath", resourcesAddress);

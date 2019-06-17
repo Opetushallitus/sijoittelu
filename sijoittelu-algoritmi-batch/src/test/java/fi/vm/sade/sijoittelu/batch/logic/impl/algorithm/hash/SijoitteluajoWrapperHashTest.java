@@ -2,9 +2,8 @@ package fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.hash;
 
 import com.google.common.collect.Sets;
 import com.google.common.hash.HashCode;
-import com.google.common.hash.HashFunction;
-import com.google.common.hash.Hasher;
-import com.google.common.hash.Hashing;
+
+import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoitteluConfiguration;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.*;
 import fi.vm.sade.sijoittelu.domain.Hakemus;
 import fi.vm.sade.sijoittelu.domain.Hakukohde;
@@ -69,7 +68,7 @@ public class SijoitteluajoWrapperHashTest {
     }
 
     private SijoitteluajoWrapper createSijoitteluAjoHashTestiin() {
-        SijoitteluajoWrapper ajo = new SijoitteluajoWrapper(new SijoitteluAjo());
+        SijoitteluajoWrapper ajo = new SijoitteluajoWrapper(new SijoitteluConfiguration(), new SijoitteluAjo());
         HenkiloWrapper henkilo1 = new HenkiloWrapper();
         HakemusWrapper hakemus1 = new HakemusWrapper();
         Hakemus hakemus = new Hakemus();

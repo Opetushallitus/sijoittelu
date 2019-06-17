@@ -1,22 +1,10 @@
 package fi.vm.sade.sijoittelu.domain;
 
-import org.mongodb.morphia.annotations.*;
-import org.bson.types.ObjectId;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-@Entity("Hakukohde")
-@Indexes({
-        @Index(fields = {@Field("oid"), @Field("sijoitteluajoId")}),
-        @Index(fields = {@Field("sijoitteluajoId")}),
-        @Index(fields = {@Field("sijoitteluajoId"), @Field("valintatapajonot.hakemukset.hakemusOid")})
-})
 public class Hakukohde implements Serializable {
-    @Id
-    private ObjectId id;
-
     private Long sijoitteluajoId;
 
     private String oid;
@@ -27,10 +15,8 @@ public class Hakukohde implements Serializable {
 
     private boolean kaikkiJonotSijoiteltu = true;
 
-    @Embedded
     private List<Valintatapajono> valintatapajonot = new ArrayList<Valintatapajono>();
     
-    @Embedded
     private List<Hakijaryhma> hakijaryhmat = new ArrayList<Hakijaryhma>();
 
     public List<Valintatapajono> getValintatapajonot() {
@@ -73,14 +59,6 @@ public class Hakukohde implements Serializable {
         this.sijoitteluajoId = sijoitteluajoId;
     }
 
-    public ObjectId getId() {
-        return id;
-    }
-
-    public void setId(ObjectId id) {
-        this.id = id;
-    }
-
     public String getTarjoajaOid() {
         return tarjoajaOid;
     }
@@ -92,7 +70,6 @@ public class Hakukohde implements Serializable {
     @Override
     public String toString() {
         return "Hakukohde{" +
-                "id=" + id +
                 ", sijoitteluajoId=" + sijoitteluajoId +
                 ", oid='" + oid + '\'' +
                 ", tila=" + tila +

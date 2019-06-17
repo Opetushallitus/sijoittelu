@@ -183,23 +183,6 @@ public class SijoitteluTulosConverterImpl implements SijoitteluTulosConverter {
     }
 
     @Override
-    public SijoitteluDTO convert(Sijoittelu s) {
-        SijoitteluDTO dto = new SijoitteluDTO();
-        dto.setCreated(s.getCreated());
-        dto.setHakuOid(s.getHakuOid());
-        dto.setSijoittele(s.isSijoittele());
-        dto.setSijoitteluId(s.getSijoitteluId());
-        for (SijoitteluAjo sa : s.getSijoitteluajot()) {
-            SijoitteluajoDTO sdto = new SijoitteluajoDTO();
-            sdto.setEndMils(sa.getEndMils());
-            sdto.setSijoitteluajoId(sa.getSijoitteluajoId());
-            sdto.setStartMils(sa.getStartMils());
-            dto.getSijoitteluajot().add(sdto);
-        }
-        return dto;
-    }
-
-    @Override
     public void sortHakemukset(ValintatapajonoDTO valintatapajonoDTO) {
         Collections.sort(valintatapajonoDTO.getHakemukset(), hakemusDTOComparator);
     }

@@ -5,6 +5,7 @@ import static org.junit.Assert.assertEquals;
 import java.util.Collections;
 import java.util.List;
 
+import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoitteluConfiguration;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.util.SijoitteluAlgorithmUtil;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.HakemusWrapper;
 import fi.vm.sade.sijoittelu.domain.*;
@@ -67,7 +68,7 @@ public class PostSijoitteluProcessorPeruuntuneetHakemuksenVastaanotonMuokkausTes
 
     private SijoitteluajoWrapper luoSijoitteluAjonTulokset(List<Hakukohde> hakukohdeList, List<Valintatulos> valintatulosList) {
         hakukohdeList.forEach(h -> h.getValintatapajonot().forEach(v -> v.setSijoiteltuIlmanVarasijasaantojaNiidenOllessaVoimassa(true)));
-        final SijoitteluajoWrapper sijoitteluajoWrapper = SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(new SijoitteluAjo(), hakukohdeList, valintatulosList, Collections.emptyMap());
+        final SijoitteluajoWrapper sijoitteluajoWrapper = SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(new SijoitteluConfiguration(), new SijoitteluAjo(), hakukohdeList, valintatulosList, Collections.emptyMap());
         sijoitteluajoWrapper.setKKHaku(true);
         SijoittelunTila tila = SijoitteluAlgorithmUtil.sijoittele(sijoitteluajoWrapper);
         System.out.println(PrintHelper.tulostaSijoittelu(tila));

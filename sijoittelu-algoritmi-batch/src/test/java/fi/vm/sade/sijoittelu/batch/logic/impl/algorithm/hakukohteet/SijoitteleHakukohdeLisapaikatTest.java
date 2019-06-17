@@ -1,5 +1,6 @@
 package fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.hakukohteet;
 
+import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoitteluConfiguration;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoitteluajoWrapperFactory;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.util.SijoitteluAlgorithmUtil;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.HakukohdeWrapper;
@@ -98,7 +99,7 @@ public class SijoitteleHakukohdeLisapaikatTest {
         hakukohde.setHakijaryhmat(Collections.singletonList(hakijaryhma));
 
         ajoWrapper = SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(
-                        new SijoitteluAjo(),
+            new SijoitteluConfiguration(), new SijoitteluAjo(),
                         Collections.singletonList(hakukohde),
                         Collections.emptyList(),
                         Collections.emptyMap());
@@ -159,7 +160,7 @@ public class SijoitteleHakukohdeLisapaikatTest {
         hakukohde.setHakijaryhmat(Collections.singletonList(hakijaryhma));
 
         SijoitteluajoWrapper aw = SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(
-                new SijoitteluAjo(),
+            new SijoitteluConfiguration(), new SijoitteluAjo(),
                 Collections.singletonList(hakukohde),
                 Collections.emptyList(),
                 Collections.emptyMap());

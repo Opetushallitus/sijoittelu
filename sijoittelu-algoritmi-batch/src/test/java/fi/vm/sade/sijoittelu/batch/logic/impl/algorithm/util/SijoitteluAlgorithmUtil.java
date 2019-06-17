@@ -1,6 +1,7 @@
 package fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.util;
 
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoitteluAlgorithm;
+import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoitteluConfiguration;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoitteluajoWrapperFactory;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoittelunTila;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.postsijoitteluprocessor.PostSijoitteluProcessor;
@@ -33,7 +34,7 @@ public class SijoitteluAlgorithmUtil {
                                               List<Hakukohde> hakukohteet,
                                               List<Valintatulos> valintatulokset,
                                               Map<String, VastaanottoDTO> aiemmanVastaanotonHakukohdePerHakija) {
-        SijoitteluajoWrapper wrapper = SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(sijoitteluAjo, hakukohteet,
+        SijoitteluajoWrapper wrapper = SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(new SijoitteluConfiguration(), sijoitteluAjo, hakukohteet,
                 valintatulokset, aiemmanVastaanotonHakukohdePerHakija);
         wrapper.setKKHaku(true);
         return SijoitteluAlgorithm.sijoittele(preProcessors, postProcessors, wrapper);

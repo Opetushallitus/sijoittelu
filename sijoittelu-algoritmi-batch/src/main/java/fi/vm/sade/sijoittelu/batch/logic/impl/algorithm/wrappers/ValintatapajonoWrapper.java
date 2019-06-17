@@ -1,5 +1,6 @@
 package fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers;
 
+import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoitteluConfiguration;
 import fi.vm.sade.sijoittelu.domain.Valintatapajono;
 import fi.vm.sade.sijoittelu.domain.ValintatuloksenTila;
 
@@ -59,5 +60,9 @@ public class ValintatapajonoWrapper {
 
     public Optional<HakemusWrapper> findHakemus(String hakemusOid) {
         return hakemukset.stream().filter(h -> hakemusOid.equals(h.getHakemus().getHakemusOid())).findFirst();
+    }
+
+    public SijoitteluConfiguration getSijoitteluConfiguration() {
+        return getHakukohdeWrapper().getSijoitteluajoWrapper().sijoitteluConfiguration;
     }
 }

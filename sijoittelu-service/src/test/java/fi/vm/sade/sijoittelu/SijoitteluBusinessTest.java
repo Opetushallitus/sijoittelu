@@ -5,6 +5,8 @@ import static com.lordofthejars.nosqlunit.mongodb.MongoDbRule.MongoDbRuleBuilder
 import static java.util.stream.Collectors.toSet;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.anyLong;
@@ -22,8 +24,10 @@ import fi.vm.sade.sijoittelu.batch.logic.impl.DomainConverter;
 import fi.vm.sade.sijoittelu.domain.HakemuksenTila;
 import fi.vm.sade.sijoittelu.domain.Hakemus;
 import fi.vm.sade.sijoittelu.domain.Hakukohde;
+import fi.vm.sade.sijoittelu.domain.HakukohdeItem;
 import fi.vm.sade.sijoittelu.domain.SijoitteluAjo;
 import fi.vm.sade.sijoittelu.domain.Valintatapajono;
+import fi.vm.sade.sijoittelu.domain.Valintatapajono.JonosijaTieto;
 import fi.vm.sade.sijoittelu.domain.ValintatuloksenTila;
 import fi.vm.sade.sijoittelu.domain.Valintatulos;
 import fi.vm.sade.sijoittelu.laskenta.external.resource.dto.ParametriDTO;
@@ -34,14 +38,13 @@ import fi.vm.sade.sijoittelu.laskenta.service.it.TarjontaIntegrationService;
 import fi.vm.sade.valintalaskenta.domain.dto.ValintatapajonoDTO;
 import fi.vm.sade.valintalaskenta.domain.dto.valintatieto.HakuDTO;
 import fi.vm.sade.valintalaskenta.tulos.service.impl.ValintatietoService;
+import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.ContextConfiguration;
@@ -52,14 +55,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = { "classpath:test-sijoittelu-batch-mongo.xml" })
 public class SijoitteluBusinessTest {
-
-    private static final Logger LOG = LoggerFactory.getLogger(SijoitteluBusinessTest.class);
 
     @Autowired
     private ValintarekisteriService valintarekisteriService;
@@ -135,7 +137,7 @@ public class SijoitteluBusinessTest {
         SijoitteluAjo sijoitteluAjo1 = sijoitteluAjoArgumentCaptor.getValue();
         System.out.println("SijoitteluajoID: " + sijoitteluAjo1.getSijoitteluajoId());
 
-        List<Hakukohde> hakukohteet1 = hakukohdeArgumentCaptor.<List<Hakukohde>>getValue();
+        List<Hakukohde> hakukohteet1 = hakukohdeArgumentCaptor.getValue();
         assertEquals(3, hakukohteet1.size());
         assertTrue(Arrays.asList("jono1", "jono2", "jono3").equals(
           hakukohteet1.stream()
@@ -161,7 +163,7 @@ public class SijoitteluBusinessTest {
         SijoitteluAjo sijoitteluAjo2 = sijoitteluAjoArgumentCaptor.getAllValues().get(2);
         assertFalse(sijoitteluAjo2.getSijoitteluajoId().equals(sijoitteluAjo1.getSijoitteluajoId()));
 
-        List<Hakukohde> hakukohteet2 = hakukohdeArgumentCaptor.<List<Hakukohde>>getAllValues().get(2);
+        List<Hakukohde> hakukohteet2 = hakukohdeArgumentCaptor.getAllValues().get(2);
         assertEquals(3, hakukohteet2.size());
         assertTrue(Arrays.asList("jono2", "jono3").equals(
                 hakukohteet2.stream()
@@ -188,7 +190,7 @@ public class SijoitteluBusinessTest {
         SijoitteluAjo sijoitteluAjo3 = sijoitteluAjoArgumentCaptor.getAllValues().get(5);
         assertFalse(sijoitteluAjo3.getSijoitteluajoId().equals(sijoitteluAjo1.getSijoitteluajoId()));
 
-        List<Hakukohde> hakukohteet3 = hakukohdeArgumentCaptor.<List<Hakukohde>>getAllValues().get(5);
+        List<Hakukohde> hakukohteet3 = hakukohdeArgumentCaptor.getAllValues().get(5);
         assertEquals(3, hakukohteet3.size());
         assertTrue(Arrays.asList("jono1", "jono2", "jono3").equals(
                 hakukohteet3.stream()
@@ -339,6 +341,58 @@ public class SijoitteluBusinessTest {
         assertSijoitteluUsedSijoitteluajo(sijoitteluajoId);
     }
 
+    @Test()
+    @UsingDataSet(locations = "peruuta_alemmat.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
+    public void testSivssnovSijoittelunRajaKopioidaanEdellisestaSijoittelusta() {
+        Optional<JonosijaTieto> jonosijaTieto = Optional.of(new JonosijaTieto(6, 1, HakemuksenTila.VARALLA, Collections.singletonList("hakija6")));
+        HakuDTO haku = valintatietoService.haeValintatiedot("haku1");
+        haku.getHakukohteet().forEach(hk ->
+            hk.getValinnanvaihe().forEach(vv -> {
+                vv.getValintatapajonot().forEach(j -> {
+                    if ("jono1".equals(j.getOid())) {
+                        j.setVarasijat(4);
+                    }
+                });
+            }));
+
+        assertEquals(getValintatapaJonoOids(haku), newHashSet("jono1", "jono2", "jono3"));
+
+        SijoitteluAjo previousAjo = new SijoitteluAjo();
+        previousAjo.setSijoitteluajoId(1928391L);
+        HakukohdeItem hakukohdeItem = new HakukohdeItem();
+        String hakukohdeOid = haku.getHakukohteet().iterator().next().getOid();
+        hakukohdeItem.setOid(hakukohdeOid);
+        previousAjo.setHakukohteet(Collections.singletonList(hakukohdeItem));
+        when(valintarekisteriService.getLatestSijoitteluajo("haku1")).thenReturn(previousAjo);
+
+        Hakukohde previousHakukohde = new Hakukohde();
+        previousHakukohde.setOid(hakukohdeItem.getOid());
+        Valintatapajono previousJono = new Valintatapajono();
+        previousJono.setOid("jono1");
+        previousJono.setVarasijat(4);
+        previousJono.setSivssnovSijoittelunVarasijataytonRajoitus(jonosijaTieto);
+        previousHakukohde.setValintatapajonot(Collections.singletonList(previousJono));
+        when(valintarekisteriService.getSijoitteluajonHakukohteet(previousAjo.getSijoitteluajoId())).thenReturn(Collections.singletonList(previousHakukohde));
+
+        sijoitteluService.sijoittele(haku, newHashSet("jono2", "jono3"), newHashSet("jono1"), System.currentTimeMillis());
+
+        verify(valintarekisteriService, times(1)).tallennaSijoittelu(
+                sijoitteluAjoArgumentCaptor.capture(),
+                hakukohdeArgumentCaptor.capture(),
+                valintatulosArgumentCaptor.capture());
+
+        List<Hakukohde> hakukohteetFromSijoittelu = hakukohdeArgumentCaptor.getValue();
+
+        assertThat(hakukohteetFromSijoittelu, Matchers.hasSize(3));
+        Hakukohde hakukohdeFromSijoittelu = hakukohteetFromSijoittelu.stream().filter(hk -> hk.getOid().equals(previousHakukohde.getOid())).findFirst().get();
+        assertNotSame(hakukohdeFromSijoittelu, previousHakukohde);
+
+        assertThat(hakukohdeFromSijoittelu.getValintatapajonot(), Matchers.hasSize(1));
+        Valintatapajono jonoFromSijoittelu = hakukohdeFromSijoittelu.getValintatapajonot().iterator().next();
+        assertNotSame(jonoFromSijoittelu, previousJono);
+        assertEquals(jonosijaTieto, jonoFromSijoittelu.getSivssnovSijoittelunVarasijataytonRajoitus());
+    }
+
     private Long captureSijoitteluajoForNextSijoittelu() {
         verify(valintarekisteriService, times(1)).tallennaSijoittelu(
                 sijoitteluAjoArgumentCaptor.capture(),
@@ -346,7 +400,7 @@ public class SijoitteluBusinessTest {
                 valintatulosArgumentCaptor.capture());
 
         SijoitteluAjo sijoitteluAjo = sijoitteluAjoArgumentCaptor.getValue();
-        List<Hakukohde> hakukohteet = hakukohdeArgumentCaptor.<List<Hakukohde>>getValue();
+        List<Hakukohde> hakukohteet = hakukohdeArgumentCaptor.getValue();
         List<Valintatulos> valintatulokset = createValintatuloksetFromHakukohteet(hakukohteet);
 
         when(valintarekisteriService.getLatestSijoitteluajo("haku1")).thenReturn(sijoitteluAjo);
@@ -401,7 +455,7 @@ public class SijoitteluBusinessTest {
                 valintatulosArgumentCaptor.capture());
 
         SijoitteluAjo sijoitteluAjo = sijoitteluAjoArgumentCaptor.getValue();
-        List<Hakukohde> hakukohteet = hakukohdeArgumentCaptor.<List<Hakukohde>>getValue();
+        List<Hakukohde> hakukohteet = hakukohdeArgumentCaptor.getValue();
         List<Valintatulos> valintatulokset = createValintatuloksetFromHakukohteet(hakukohteet);
 
         Hakemus hakija3YlempiToive = hakukohteet.stream()
@@ -448,7 +502,7 @@ public class SijoitteluBusinessTest {
                 hakukohdeArgumentCaptor.capture(),
                 valintatulosArgumentCaptor.capture());
 
-        List<Hakukohde> hakukohteet2 = hakukohdeArgumentCaptor.<List<Hakukohde>>getAllValues().get(2);
+        List<Hakukohde> hakukohteet2 = hakukohdeArgumentCaptor.getAllValues().get(2);
         hakija3YlempiToive = hakukohteet2.stream()
                 .filter(h -> h.getOid().equals("hakukohde1")).findAny().get().getValintatapajonot().get(0)
                 .getHakemukset().stream().filter(h -> h.getHakemusOid().equals("hakija3")).findAny().get();

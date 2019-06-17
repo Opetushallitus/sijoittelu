@@ -9,7 +9,6 @@ import org.junit.Test;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -61,7 +60,7 @@ public class SijoitteluHyvaksyPeruuntunutTest {
 
     private void sijoittele(Consumer<SijoitteluajoWrapper> prepareAjoWrapper, List<Valintatulos> valintatulokset, Hakukohde... hakukohteet) {
         SijoitteluajoWrapper sijoitteluAjoWrapper =
-                SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(new SijoitteluAjo(), Arrays.asList(hakukohteet), valintatulokset, Collections.emptyMap());
+                SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(new SijoitteluConfiguration(), new SijoitteluAjo(), Arrays.asList(hakukohteet), valintatulokset, Collections.emptyMap());
         prepareAjoWrapper.accept(sijoitteluAjoWrapper);
         SijoitteluAlgorithmUtil.sijoittele(sijoitteluAjoWrapper);
     }
@@ -75,7 +74,7 @@ public class SijoitteluHyvaksyPeruuntunutTest {
     @Test
     public void hyvaksyPeruuntunutJonollaEiVarasijatayttoa() {
         jono.setEiVarasijatayttoa(true);
-        jono.setVarasijat(1);
+        jono.setVarasijat(0);
         jono.setSijoiteltuIlmanVarasijasaantojaNiidenOllessaVoimassa(true);
         valintatulos3.setHyvaksyPeruuntunut(true, "");
         sijoittele(kkHakuVarasijasaannotVoimassa, Arrays.asList(valintatulos1, valintatulos2, valintatulos3), hakukohde);

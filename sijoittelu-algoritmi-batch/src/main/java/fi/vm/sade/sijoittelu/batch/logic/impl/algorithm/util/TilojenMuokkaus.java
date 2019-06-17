@@ -2,7 +2,13 @@ package fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.util;
 
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.HakemusWrapper;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.SijoitteluajoWrapper;
-import fi.vm.sade.sijoittelu.domain.*;
+import fi.vm.sade.sijoittelu.domain.HakemuksenTila;
+import fi.vm.sade.sijoittelu.domain.Hakemus;
+import fi.vm.sade.sijoittelu.domain.IlmoittautumisTila;
+import fi.vm.sade.sijoittelu.domain.TilankuvauksenTarkenne;
+import fi.vm.sade.sijoittelu.domain.Valintatapajono;
+import fi.vm.sade.sijoittelu.domain.ValintatuloksenTila;
+import fi.vm.sade.sijoittelu.domain.Valintatulos;
 
 import java.util.Optional;
 
@@ -42,8 +48,12 @@ public class TilojenMuokkaus {
     }
 
     public static void asetaTilaksiPeruuntunutAloituspaikatTaynna(HakemusWrapper hakemusWrapper) {
-        hakemusWrapper.getHakemus().setTila(HakemuksenTila.PERUUNTUNUT);
-        hakemusWrapper.getHakemus().setTilankuvauksenTarkenne(TilankuvauksenTarkenne.PERUUNTUNUT_ALOITUSPAIKAT_TAYNNA);
+        asetaTilaksiPeruuntunutAloituspaikatTaynna(hakemusWrapper.getHakemus());
+    }
+
+    public static void asetaTilaksiPeruuntunutAloituspaikatTaynna(Hakemus hakemus) {
+        hakemus.setTila(HakemuksenTila.PERUUNTUNUT);
+        hakemus.setTilankuvauksenTarkenne(TilankuvauksenTarkenne.PERUUNTUNUT_ALOITUSPAIKAT_TAYNNA);
     }
 
     public static void asetaTilaksiPeruuntunutHakukierrosPaattynyt(HakemusWrapper hakemusWrapper) {

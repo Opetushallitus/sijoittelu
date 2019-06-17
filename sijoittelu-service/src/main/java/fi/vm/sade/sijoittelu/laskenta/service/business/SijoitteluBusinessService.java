@@ -13,6 +13,7 @@ import com.google.common.collect.Sets.SetView;
 
 import fi.vm.sade.sijoittelu.batch.logic.impl.DomainConverter;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoitteluAlgorithm;
+import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoitteluConfiguration;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoitteluajoWrapperFactory;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.hakukohteet.LisapaikkaTapa;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.postsijoitteluprocessor.PostSijoitteluProcessor;
@@ -88,12 +89,14 @@ public class SijoitteluBusinessService {
     private final Collection<PostSijoitteluProcessor> postSijoitteluProcessors;
     private final Collection<PreSijoitteluProcessor> preSijoitteluProcessors;
     private final ValintarekisteriService valintarekisteriService;
+    private final SijoitteluConfiguration sijoitteluConfiguration;
 
     @Autowired
     public SijoitteluBusinessService(SijoitteluTulosConverter sijoitteluTulosConverter,
                                      TarjontaIntegrationService tarjontaIntegrationService,
                                      VirkailijaValintaTulosServiceResource valintaTulosServiceResource,
-                                     ValintarekisteriService valintarekisteriService) {
+                                     ValintarekisteriService valintarekisteriService,
+                                     SijoitteluConfiguration sijoitteluConfiguration) {
         this.sijoitteluTulosConverter = sijoitteluTulosConverter;
         this.tarjontaIntegrationService = tarjontaIntegrationService;
         this.valintaTulosServiceResource = valintaTulosServiceResource;
@@ -101,6 +104,7 @@ public class SijoitteluBusinessService {
         this.preSijoitteluProcessors = PreSijoitteluProcessor.defaultPreProcessors();
         this.postSijoitteluProcessors = PostSijoitteluProcessor.defaultPostProcessors();
         this.valintarekisteriService = valintarekisteriService;
+        this.sijoitteluConfiguration = sijoitteluConfiguration;
     }
 
     public void sijoittele(HakuDTO haku,
@@ -152,7 +156,7 @@ public class SijoitteluBusinessService {
 
         stopWatch.start("Luodaan sijoitteluajoWrapper ja asetetaan parametrit");
         final SijoitteluajoWrapper sijoitteluajoWrapper = SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(
-            uusiSijoitteluajo, kaikkiHakukohteet, valintatulokset, kaudenAiemmatVastaanotot);
+            sijoitteluConfiguration, uusiSijoitteluajo, kaikkiHakukohteet, valintatulokset, kaudenAiemmatVastaanotot);
         asetaSijoittelunParametrit(hakuOid, sijoitteluajoWrapper, sijoittelunParametrit);
         sijoitteluajoWrapper.setEdellisenSijoittelunHakukohteet(edellisenSijoitteluajonTulokset);
         stopWatch.stop();
@@ -402,7 +406,7 @@ public class SijoitteluBusinessService {
         List<Hakukohde> kaikkiHakukohteet =
             merge(uusiSijoitteluajo, olemassaolevatHakukohteet, uudetHakukohteet);
         SijoitteluajoWrapper sijoitteluajoWrapper =
-            SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(uusiSijoitteluajo,
+            SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(sijoitteluConfiguration, uusiSijoitteluajo,
                 kaikkiHakukohteet, Collections.emptyList(), Collections.emptyMap());
         stopWatch.stop();
 
@@ -477,7 +481,7 @@ public class SijoitteluBusinessService {
         stopWatch.start("Luodaan sijoitteluajoWrapper");
         final SijoitteluajoWrapper sijoitteluajoWrapper =
             SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(
-                uusiSijoitteluajo, hakukohdeTassaSijoittelussa, valintatulokset, kaudenAiemmatVastaanotot);
+                sijoitteluConfiguration, uusiSijoitteluajo, hakukohdeTassaSijoittelussa, valintatulokset, kaudenAiemmatVastaanotot);
         asetaSijoittelunParametrit(hakuOid, sijoitteluajoWrapper, sijoittelunParametrit);
         stopWatch.stop();
 
@@ -490,7 +494,6 @@ public class SijoitteluBusinessService {
         kaikkiTallennettavatHakukohteet.addAll(viimeisimmanSijoitteluajonHakukohteet.stream()
             .filter(hk -> !hk.getOid().equals(sijoiteltavanHakukohteenOid))
             .map(hakukohde -> {
-                hakukohde.setId(null);
                 hakukohde.setSijoitteluajoId(uusiSijoitteluajo.getSijoitteluajoId());
                 HakukohdeItem item = new HakukohdeItem();
                 item.setOid(hakukohde.getOid());
@@ -609,8 +612,6 @@ public class SijoitteluBusinessService {
     private List<Hakukohde> merge(SijoitteluAjo uusiSijoitteluajo, List<Hakukohde> olemassaolevatHakukohteet, List<Hakukohde> uudetHakukohteet) {
         Map<String, Hakukohde> kaikkiHakukohteet = new ConcurrentHashMap<>();
         olemassaolevatHakukohteet.parallelStream().forEach(hakukohde -> {
-            // poista id vanhoilta hakukohteilta, niin etta ne voidaan peristoida uusina dokumentteina
-            hakukohde.setId(null);
             kaikkiHakukohteet.put(hakukohde.getOid(), hakukohde);
         });
         kopioiTiedotEdelliseltaSijoitteluajoltaJaPoistaPassivoitujenTulokset(uudetHakukohteet, kaikkiHakukohteet);
@@ -627,12 +628,24 @@ public class SijoitteluBusinessService {
     }
 
     private void siirraSivssnov(List<Hakukohde> olemassaolevatHakukohteet, Map<String, Hakukohde> kaikkiHakukohteet) {
-        olemassaolevatHakukohteet.forEach(h ->
-            h.getValintatapajonot().forEach(olemassaolevaValintatapajono -> {
-                kaikkiHakukohteet.get(h.getOid()).getValintatapajonot().forEach(v ->
-                    v.setSijoiteltuIlmanVarasijasaantojaNiidenOllessaVoimassa(
-                        olemassaolevaValintatapajono.getSijoiteltuIlmanVarasijasaantojaNiidenOllessaVoimassa()));
-            }));
+        olemassaolevatHakukohteet.forEach(h -> {
+            Map<String, List<Valintatapajono>> olemassaolevatJonotOideittain = h.getValintatapajonot().stream()
+                .collect(Collectors.groupingBy(Valintatapajono::getOid));
+            kaikkiHakukohteet.get(h.getOid()).getValintatapajonot().forEach(v -> {
+                siirraSivssnov(v, olemassaolevatJonotOideittain.get(v.getOid()));
+            });
+        });
+    }
+
+    private void siirraSivssnov(Valintatapajono jonoJokaMeneeSijoitteluun, List<Valintatapajono> olemassaOlevaJonoListassa) {
+        if (olemassaOlevaJonoListassa != null) {
+            olemassaOlevaJonoListassa.forEach(olemassaOlevaJono -> {
+                jonoJokaMeneeSijoitteluun.setSijoiteltuIlmanVarasijasaantojaNiidenOllessaVoimassa(
+                    olemassaOlevaJono.getSijoiteltuIlmanVarasijasaantojaNiidenOllessaVoimassa());
+                jonoJokaMeneeSijoitteluun.setSivssnovSijoittelunVarasijataytonRajoitus(
+                    olemassaOlevaJono.getSivssnovSijoittelunVarasijataytonRajoitus());
+            });
+        }
     }
 
     private void kopioiHakemuksenTietoja(List<Hakukohde> olemassaolevatHakukohteet, Map<String, Hakukohde> kaikkiHakukohteet) {

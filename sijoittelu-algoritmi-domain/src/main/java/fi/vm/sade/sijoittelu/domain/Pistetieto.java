@@ -1,11 +1,5 @@
 package fi.vm.sade.sijoittelu.domain;
 
-import org.mongodb.morphia.annotations.Converters;
-import org.mongodb.morphia.annotations.Embedded;
-import fi.vm.sade.sijoittelu.domain.converter.BigDecimalConverter;
-
-@Embedded
-@Converters(BigDecimalConverter.class)
 public class Pistetieto {
 
     private String tunniste;
