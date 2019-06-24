@@ -226,13 +226,25 @@ class SijoitteleHakijaryhma {
             tarkistaEttaKaikkienTilaaVoidaanVaihtaa(valituksiHaluavat);
 
             Pair<List<HakemusWrapper>, List<HakemusWrapper>> valittavatJaVarasijat = seuraavaksiParhaatHakijaryhmasta(valituksiHaluavat, hakijaryhmaWrapper, sijoitteluAjo);
+
+            final long ryhmastaHyvaksyttyjenMaara = ryhmaanKuuluvat.stream()
+                .filter(h -> hyvaksyttyJotaEiVoiKorvata(h.getValintatapajono(), sijoitteluAjo).test(h))
+                .count();
+
             // Aloituspaikat täynnä ylitäytöllä, joten tiputetaan varalle
             valittavatJaVarasijat.getRight().forEach(v -> {
-                LOG.info(String.format("Hakukohteen %s hakijaryhmän %s sijoittelussa asetetaan varalle jonon %s hakemus %s",
+                ValintatapajonoWrapper valintatapajonoWrapper = v.getValintatapajono();
+                int aloituspaikat = jononAloituspaikatSuoravalintajonoHuomioiden(valintatapajonoWrapper);
+                long hyvaksytyt = valintatapajonoWrapper.getHakemukset().stream().filter(hyvaksyttyJotaEiVoiKorvata(valintatapajonoWrapper, sijoitteluAjo)).count();
+
+                LOG.info(String.format("Hakukohteen %s hakijaryhmän %s sijoittelussa asetetaan varalle jonon %s hakemus %s . " +
+                        "Hakijaryhmän täyttöaste %s/%s, jonon täyttöaste %s/%s",
                         hakijaryhmaWrapper.getHakukohdeWrapper().getHakukohde().getOid(),
                         hakijaryhmaWrapper.getHakijaryhma().getOid(),
                         v.getValintatapajono().getValintatapajono().getOid(),
-                        v.getHakemus().getHakemusOid()
+                        v.getHakemus().getHakemusOid(),
+                        ryhmastaHyvaksyttyjenMaara, hakijaryhmaWrapper.getHakijaryhma().getKiintio(),
+                        hyvaksytyt, aloituspaikat
                 ));
                 muuttuneetHakemukset.addAll(asetaVaralleHakemus(v));
             });
