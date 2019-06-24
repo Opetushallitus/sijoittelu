@@ -222,14 +222,14 @@ class SijoitteleHakijaryhma {
                 .filter(h -> hakemuksenTila(h).equals(HakemuksenTila.VARALLA))
                 .filter(h -> hakijaHaluaa(h) && saannotSallii(h, sijoitteluAjo))
                 .collect(Collectors.toList());
+        final long ryhmastaHyvaksyttyjenMaara = ryhmaanKuuluvat.stream()
+            .filter(h -> hyvaksyttyJotaEiVoiKorvata(h.getValintatapajono(), sijoitteluAjo).test(h))
+            .count();
+
         if (!valituksiHaluavat.isEmpty()) {
             tarkistaEttaKaikkienTilaaVoidaanVaihtaa(valituksiHaluavat);
 
             Pair<List<HakemusWrapper>, List<HakemusWrapper>> valittavatJaVarasijat = seuraavaksiParhaatHakijaryhmasta(valituksiHaluavat, hakijaryhmaWrapper, sijoitteluAjo);
-
-            final long ryhmastaHyvaksyttyjenMaara = ryhmaanKuuluvat.stream()
-                .filter(h -> hyvaksyttyJotaEiVoiKorvata(h.getValintatapajono(), sijoitteluAjo).test(h))
-                .count();
 
             // Aloituspaikat täynnä ylitäytöllä, joten tiputetaan varalle
             valittavatJaVarasijat.getRight().forEach(v -> {
@@ -258,6 +258,12 @@ class SijoitteleHakijaryhma {
             if (!lukko && (!valittavatJaVarasijat.getLeft().isEmpty() || !valittavatJaVarasijat.getRight().isEmpty())) {
                 muuttuneetHakemukset.addAll(sijoitteleHakijaryhmaRecur(sijoitteluAjo, hakijaryhmaWrapper));
             }
+        } else {
+            LOG.info(String.format("Hakukohteen %s hakijaryhmän %s sijoittelussa ei löytynyt lisää hyväksyttäviä hakijaryhmästä, " +
+                    "vaikka ryhmän täyttöaste on vasta %s/%s !",
+                    hakijaryhmaWrapper.getHakukohdeWrapper().getHakukohde().getOid(),
+                    hakijaryhmaWrapper.getHakijaryhma().getOid(),
+                    ryhmastaHyvaksyttyjenMaara, hakijaryhmaWrapper.getHakijaryhma().getKiintio()));
         }
         if (LOG.isDebugEnabled()) {
             LOG.debug("SijoitteleHakijaryhma.kasitteleValituksiHaluavat: muuttuneetHakemukset.size() == " + muuttuneetHakemukset.size());
