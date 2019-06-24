@@ -227,7 +227,15 @@ class SijoitteleHakijaryhma {
 
             Pair<List<HakemusWrapper>, List<HakemusWrapper>> valittavatJaVarasijat = seuraavaksiParhaatHakijaryhmasta(valituksiHaluavat, hakijaryhmaWrapper, sijoitteluAjo);
             // Aloituspaikat täynnä ylitäytöllä, joten tiputetaan varalle
-            valittavatJaVarasijat.getRight().forEach(v -> muuttuneetHakemukset.addAll(asetaVaralleHakemus(v)));
+            valittavatJaVarasijat.getRight().forEach(v -> {
+                LOG.info(String.format("Hakukohteen %s hakijaryhmän %s sijoittelussa asetetaan varalle jonon %s hakemus %s",
+                        hakijaryhmaWrapper.getHakukohdeWrapper().getHakukohde().getOid(),
+                        hakijaryhmaWrapper.getHakijaryhma().getOid(),
+                        v.getValintatapajono().getValintatapajono().getOid(),
+                        v.getHakemus().getHakemusOid()
+                ));
+                muuttuneetHakemukset.addAll(asetaVaralleHakemus(v));
+            });
             // Hyväksytään valittavat
             valittavatJaVarasijat.getLeft().forEach(h -> {
                 h.setHyvaksyttyHakijaryhmastaTallaKierroksella(true);
