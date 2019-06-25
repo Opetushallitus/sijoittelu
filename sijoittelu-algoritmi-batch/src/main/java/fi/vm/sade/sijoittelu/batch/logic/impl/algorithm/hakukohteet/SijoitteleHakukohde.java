@@ -43,18 +43,25 @@ public class SijoitteleHakukohde {
     public static Set<HakukohdeWrapper> sijoitteleHakukohde(SijoitteluajoWrapper sijoitteluAjo, HakukohdeWrapper hakukohde) {
 
         Set<HakukohdeWrapper> muuttuneetHakukohteet = Sets.newHashSet();
-        for (HakijaryhmaWrapper hakijaryhmaWrapper : hakukohde.getHakijaryhmaWrappers()) {
-            muuttuneetHakukohteet.addAll(SijoitteleHakijaryhma.sijoitteleHakijaryhma(sijoitteluAjo, hakijaryhmaWrapper));
-        }
+        hakukohde.getHakijaryhmaWrappers().stream()
+            .filter(hrw -> hrw.getHakijaryhma().getValintatapajonoOid() == null)
+            .sorted(Comparator.comparing(hrw -> hrw.getHakijaryhma().getPrioriteetti()))
+            .forEachOrdered(hakijaryhmaWrapper ->
+                muuttuneetHakukohteet.addAll(SijoitteleHakijaryhma.sijoitteleHakijaryhma(sijoitteluAjo, hakijaryhmaWrapper)));
 
         if (LOG.isDebugEnabled()) {
             LOG.debug("Hakemusten tilat hakijaryhmäsijoittelun jälkeen:");
             debugLogHakemusStates(hakukohde);
         }
 
-        for (ValintatapajonoWrapper valintatapajono : hakukohde.getValintatapajonot()) {
+        hakukohde.getValintatapajonot().stream().sorted(Comparator.comparing(j -> j.getValintatapajono().getPrioriteetti())).forEachOrdered(valintatapajono -> {
+            hakukohde.getHakijaryhmaWrappers().stream()
+                .filter(hrw -> valintatapajono.getValintatapajono().getOid().equals(hrw.getHakijaryhma().getValintatapajonoOid()))
+                .sorted(Comparator.comparing(hrw -> hrw.getHakijaryhma().getPrioriteetti()))
+                .forEachOrdered(hakijaryhmaWrapper ->
+                    muuttuneetHakukohteet.addAll(SijoitteleHakijaryhma.sijoitteleHakijaryhma(sijoitteluAjo, hakijaryhmaWrapper)));
             muuttuneetHakukohteet.addAll(sijoitteleValintatapajono(sijoitteluAjo, valintatapajono));
-        }
+        });
 
         if (LOG.isDebugEnabled()) {
             debugLogHakemusStates(hakukohde);

@@ -57,6 +57,7 @@ public class SijoitteleHakijaryhmaTest {
         hakijaryhma.setOid(hakijaryhmaOid);
         hakijaryhma.setHakukohdeOid("hakukohdeOid");
 
+        valintatapajono.setOid("valintatapajonoOid");
         valintatapajono.setAloituspaikat(17);
         valintatapajono.setPrioriteetti(0);
         valintatapajono.setTasasijasaanto(Tasasijasaanto.ARVONTA);
@@ -129,6 +130,7 @@ public class SijoitteleHakijaryhmaTest {
         hakijaryhma.setKiintio(3);
 
         Valintatapajono valintatapajono = new Valintatapajono();
+        valintatapajono.setOid("valintatapajono1");
         valintatapajono.setAloituspaikat(3);
         valintatapajono.setPrioriteetti(0);
         valintatapajono.setTasasijasaanto(Tasasijasaanto.ALITAYTTO);
@@ -172,6 +174,7 @@ public class SijoitteleHakijaryhmaTest {
         hakijaryhma.setKiintio(1);
 
         Valintatapajono valintatapajono = new Valintatapajono();
+        valintatapajono.setOid("valintatapajono1");
         valintatapajono.setAloituspaikat(3);
         valintatapajono.setPrioriteetti(0);
         valintatapajono.setTasasijasaanto(Tasasijasaanto.ALITAYTTO);
@@ -209,6 +212,7 @@ public class SijoitteleHakijaryhmaTest {
         hakijaryhma.setKiintio(4);
 
         Valintatapajono valintatapajono = new Valintatapajono();
+        valintatapajono.setOid("valintatapajono1");
         valintatapajono.setAloituspaikat(3);
         valintatapajono.setPrioriteetti(0);
         valintatapajono.setTasasijasaanto(Tasasijasaanto.ALITAYTTO);
@@ -251,6 +255,7 @@ public class SijoitteleHakijaryhmaTest {
         hakijaryhma.setKiintio(3);
 
         Valintatapajono valintatapajono = new Valintatapajono();
+        valintatapajono.setOid("valintatapajono1");
         valintatapajono.setAloituspaikat(3);
         valintatapajono.setPrioriteetti(0);
         valintatapajono.setTasasijasaanto(Tasasijasaanto.YLITAYTTO);
@@ -293,6 +298,7 @@ public class SijoitteleHakijaryhmaTest {
         hakijaryhma.setKiintio(3);
 
         Valintatapajono valintatapajono = new Valintatapajono();
+        valintatapajono.setOid("valintatapajono1");
         valintatapajono.setAloituspaikat(3);
         valintatapajono.setPrioriteetti(0);
         valintatapajono.setTasasijasaanto(Tasasijasaanto.ARVONTA);
@@ -335,6 +341,7 @@ public class SijoitteleHakijaryhmaTest {
         hakijaryhma.setKiintio(3);
 
         Valintatapajono valintatapajono1 = new Valintatapajono();
+        valintatapajono1.setOid("valintatapajono1");
         valintatapajono1.setAloituspaikat(3);
         valintatapajono1.setPrioriteetti(0);
         valintatapajono1.setTasasijasaanto(Tasasijasaanto.ALITAYTTO);
@@ -347,6 +354,7 @@ public class SijoitteleHakijaryhmaTest {
         valintatapajono1.getHakemukset().add(SijoitteluAlgorithmUtil.generateHakemus(2, 5, hakijaryhma));
 
         Valintatapajono valintatapajono2 = new Valintatapajono();
+        valintatapajono2.setOid("valintatapajono2");
         valintatapajono2.setAloituspaikat(3);
         valintatapajono2.setPrioriteetti(1);
         valintatapajono2.setTasasijasaanto(Tasasijasaanto.ALITAYTTO);
@@ -461,6 +469,7 @@ public class SijoitteleHakijaryhmaTest {
         hakijaryhma.setKiintio(2);
 
         Valintatapajono valintatapajono1 = new Valintatapajono();
+        valintatapajono1.setOid("valintatapajono1");
         valintatapajono1.setAloituspaikat(2);
         valintatapajono1.setPrioriteetti(0);
         valintatapajono1.setTasasijasaanto(Tasasijasaanto.ALITAYTTO);
@@ -471,6 +480,7 @@ public class SijoitteleHakijaryhmaTest {
         valintatapajono1.getHakemukset().add(SijoitteluAlgorithmUtil.generateHakemus(3, 3, hakijaryhma));
 
         Valintatapajono valintatapajono2 = new Valintatapajono();
+        valintatapajono2.setOid("valintatapajono2");
         valintatapajono2.setAloituspaikat(2);
         valintatapajono2.setPrioriteetti(1);
         valintatapajono2.setTasasijasaanto(Tasasijasaanto.ALITAYTTO);
@@ -523,6 +533,7 @@ public class SijoitteleHakijaryhmaTest {
         hakijaryhma.setKiintio(3);
 
         Valintatapajono valintatapajono1 = new Valintatapajono();
+        valintatapajono1.setOid("valintatapajono1");
         valintatapajono1.setAloituspaikat(2);
         valintatapajono1.setPrioriteetti(0);
         valintatapajono1.setTasasijasaanto(Tasasijasaanto.YLITAYTTO);
@@ -590,6 +601,7 @@ public class SijoitteleHakijaryhmaTest {
         hakijaryhma.setKiintio(3);
 
         Valintatapajono valintatapajono1 = new Valintatapajono();
+        valintatapajono1.setOid("valintatapajono1");
         valintatapajono1.setAloituspaikat(1);
         valintatapajono1.setPrioriteetti(0);
         valintatapajono1.setTasasijasaanto(Tasasijasaanto.ALITAYTTO);
@@ -600,6 +612,7 @@ public class SijoitteleHakijaryhmaTest {
         valintatapajono1.getHakemukset().add(SijoitteluAlgorithmUtil.generateHakemus(1, 1, hakijaryhma));
 
         Valintatapajono valintatapajono2 = new Valintatapajono();
+        valintatapajono2.setOid("valintatapajono2");
         valintatapajono2.setAloituspaikat(1);
         valintatapajono2.setPrioriteetti(1);
         valintatapajono2.setTasasijasaanto(Tasasijasaanto.ARVONTA);
@@ -610,6 +623,7 @@ public class SijoitteleHakijaryhmaTest {
         valintatapajono2.getHakemukset().add(SijoitteluAlgorithmUtil.generateHakemus(3, 1, hakijaryhma));
 
         Valintatapajono valintatapajono3 = new Valintatapajono();
+        valintatapajono3.setOid("valintatapajono3");
         valintatapajono3.setAloituspaikat(1);
         valintatapajono3.setPrioriteetti(2);
         valintatapajono3.setTasasijasaanto(Tasasijasaanto.YLITAYTTO);
@@ -664,7 +678,6 @@ public class SijoitteleHakijaryhmaTest {
         toinenHakijaryhma.setValintatapajonoOid(valintatapajono.getOid());
         hakukohde.setHakijaryhmat(Arrays.asList(hakijaryhma, toinenHakijaryhma));
 
-        valintatapajono.setOid("koejono-oid");
         valintatapajono.setAloituspaikat(5);
         hakijaryhma.setKiintio(3);
         toinenHakijaryhma.setKiintio(3);
