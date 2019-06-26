@@ -60,10 +60,10 @@ public class PostSijoitteluProcessorKorjaaHakemustenTilatJonoissaJoissaEiOleVara
                 peruunnutaLeikkurisijanAllaOlevatJaJataHyvaksytyiksiNousevatvaralle(jonoWrapper);
                 return;
             } else {
-                LOG.warn(String.format("Jonosta %s ei löytynyt tietoa alimmasta hyväksytystä, vaikka siinä ei ole varasijatäyttöä ja se on " +
+                LOG.warn(String.format("Hakukohteen %s jonosta %s ei löytynyt tietoa alimmasta hyväksytystä, vaikka siinä ei ole varasijatäyttöä ja se on " +
                     "sijoiteltu ilman varasijasääntöjä niiden ollessa voimassa. Joko se on sijoiteltu vanhalla sovellusversiolla tai jossain " +
                     "on bugi tai outoa dataa. Peruunnutetaan kaikki varallolijat ja tallennetaan tieto alimmasta hyväksytystä.",
-                    jono.getOid()));
+                    jonoWrapper.getHakukohdeWrapper().getHakukohde().getOid(), jono.getOid()));
             }
         }
         peruunnutaKaikkiVarallaolijat(jonoWrapper);
@@ -72,32 +72,33 @@ public class PostSijoitteluProcessorKorjaaHakemustenTilatJonoissaJoissaEiOleVara
     private void peruunnutaLeikkurisijanAllaOlevatJaJataHyvaksytyiksiNousevatvaralle(ValintatapajonoWrapper jonoWrapper) {
         Valintatapajono jono = jonoWrapper.getValintatapajono();
         JonosijaTieto raja = jono.getSivssnovSijoittelunVarasijataytonRajoitus().get();
-        Assert.isTrue(kuuluuHyvaksyttyihinTiloihin(raja.tila), String.format("Jonolla %s ei ole varasijatäyttöä, " +
-            "joten sen sivssnov-rajan pitäisi olla hyväksytty-tyyppinen, mutta se on %s", jono.getOid(), raja));
+        String hakukohdeOid = jonoWrapper.getHakukohdeWrapper().getHakukohde().getOid();
+        Assert.isTrue(kuuluuHyvaksyttyihinTiloihin(raja.tila), String.format("Hakukohteen %s jonolla %s ei ole varasijatäyttöä, " +
+            "joten sen sivssnov-rajan pitäisi olla hyväksytty-tyyppinen, mutta se on %s", hakukohdeOid, jono.getOid(), raja));
 
         jonoWrapper.getHakemukset().forEach(hw -> {
             Hakemus h = hw.getHakemus();
             LOG.debug("hakemus: " + h.getHakemusOid() + " (" + h.getTila() + ") jonosija: " + h.getJonosija() + " raja: " + raja.jonosija);
             if (noussutHyvaksyttyjenJoukkoon(h, raja)) {
-                LOG.info(String.format("Jätetään tilassa %s ollut hakemus %s (edellinen tila %s, jonosija/tasasijajonosija %s/%s) varalle jonossa %s, " +
+                LOG.info(String.format("Jätetään tilassa %s ollut hakemus %s (edellinen tila %s, jonosija/tasasijajonosija %s/%s) varalle hakukohteen %s jonossa %s, " +
                     "koska jonossa ei ole varasijatäyttöä, SIVSSNOV on päällä ja leikkurijonosija %s",
-                    h.getTila(), h.getHakemusOid(), h.getEdellinenTila(), h.getJonosija(), h.getTasasijaJonosija(), jono.getOid(), raja));
+                    h.getTila(), h.getHakemusOid(), h.getEdellinenTila(), h.getJonosija(), h.getTasasijaJonosija(), hakukohdeOid, jono.getOid(), raja));
                 h.setTila(VARALLA);
             } else if (tulisiHyvaksytyksiMuttaOnSivssnovissaAsetetunRajanAlapuolella(h, raja)) {
                 if (hw.isTilaVoidaanVaihtaa()) {
-                    LOG.info(String.format("Siirretään tilassa %s ollut hakemus %s peruuntuneeksi jonossa %s, jolla ei ole varasijatäyttöä " +
+                    LOG.info(String.format("Siirretään tilassa %s ollut hakemus %s peruuntuneeksi hakukohteen %s jonossa %s, jolla ei ole varasijatäyttöä " +
                             "ja jonka tasasijasääntö on %s, koska hakemuksen jonosija on %d ja leikkurijonosija on %s", h.getTila(),
-                        h.getHakemusOid(), jono.getOid(), jono.getTasasijasaanto(), h.getJonosija(), raja));
+                        h.getHakemusOid(), hakukohdeOid, jono.getOid(), jono.getTasasijasaanto(), h.getJonosija(), raja));
                     asetaTilaksiPeruuntunutAloituspaikatTaynna(h);
                 } else {
-                    LOG.info(String.format("Tilassa %s ollutta hakemusta %s ei voida siirtää peruuntuneeksi jonossa %s, jolla ei ole varasijatäyttöä " +
+                    LOG.info(String.format("Tilassa %s ollutta hakemusta %s ei voida siirtää peruuntuneeksi hakukohteen %s jonossa %s, jolla ei ole varasijatäyttöä " +
                             "ja jonka tasasijasääntö on %s, vaikka hakemuksen jonosija on %d ja leikkurijonosija on %s.", h.getTila(),
-                        h.getHakemusOid(), jono.getOid(), jono.getTasasijasaanto(), h.getJonosija(), raja));
+                        h.getHakemusOid(), hakukohdeOid, jono.getOid(), jono.getTasasijasaanto(), h.getJonosija(), raja));
                 }
             } else if (VARALLA.equals(h.getTila())) {
-                LOG.info(String.format("Siirretään varalla ollut hakemus %s (jonosija %s) peruuntuneeksi jonossa %s, jolla ei ole varasijatäyttöä " +
+                LOG.info(String.format("Siirretään varalla ollut hakemus %s (jonosija %s) peruuntuneeksi hakukohteen %s jonossa %s, jolla ei ole varasijatäyttöä " +
                         "ja jonka tasasijasääntö on %s ja SIVSSNOV-raja %s.",
-                    h.getHakemusOid(), h.getJonosija(), jono.getOid(), jono.getTasasijasaanto(), raja));
+                    h.getHakemusOid(), h.getJonosija(), hakukohdeOid, jono.getOid(), jono.getTasasijasaanto(), raja));
                 asetaTilaksiPeruuntunutAloituspaikatTaynna(h);
             }
         });
@@ -124,13 +125,15 @@ public class PostSijoitteluProcessorKorjaaHakemustenTilatJonoissaJoissaEiOleVara
             .map(h -> new JonosijaTieto(h.getJonosija(), h.getTasasijaJonosija(), h.getTila(), Collections.singletonList(h.getHakemusOid())));
 
         Valintatapajono jono = jonoWrapper.getValintatapajono();
+        String hakukohdeOid = jonoWrapper.getHakukohdeWrapper().getHakukohde().getOid();
         if (alinHyvaksyttyJonosija.isPresent()) {
-            LOG.info(String.format("Muodostettiin tieto alimmasta hyväksytystä jonolle %s, jossa ei ole varasijatäyttöä: %s",
+            LOG.info(String.format("Muodostettiin tieto alimmasta hyväksytystä hakukohteen %s jonolle %s, jossa ei ole varasijatäyttöä: %s",
+                hakukohdeOid,
                 jono.getOid(), alinHyvaksyttyJonosija.get()));
             jono.setSivssnovSijoittelunVarasijataytonRajoitus(alinHyvaksyttyJonosija);
         } else {
-            LOG.warn(String.format("Ei löytynyt viimeistä hyväksyttyä jonosta %s . Ei voida tallentaa tietoa " +
-                "alimmasta hyväksytystä sijasta.", jono.getOid()));
+            LOG.warn(String.format("Ei löytynyt viimeistä hyväksyttyä hakukohteen %s jonosta %s . Ei voida tallentaa tietoa " +
+                "alimmasta hyväksytystä sijasta.", hakukohdeOid, jono.getOid()));
         }
 
         jonoWrapper.getHakemukset().stream()
