@@ -91,11 +91,6 @@
         <version>0.1.1-SNAPSHOT</version>
       </dependency>
       <dependency>
-        <groupId>fi.vm.sade.java-utils</groupId>
-        <artifactId>java-auth</artifactId>
-        <version>0.1.1-SNAPSHOT</version>
-      </dependency>
-      <dependency>
         <groupId>fi.vm.sade.organisaatio</groupId>
         <artifactId>organisaatio-api</artifactId>
         <version>6.2-SNAPSHOT</version>
