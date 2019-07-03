@@ -117,103 +117,6 @@ public class RajattuVarasijatayttoTest {
     }
 
     @Test
-    public void hyvaksyttyihinNousevaHakijaJaaVaralleVarasijasaantojenOllessaVoimassaKunEiVarasijatayttoa() {
-        jono.setAloituspaikat(2);
-        jono.setEiVarasijatayttoa(true);
-
-        sijoittele(kkHakuVarasijasaannotVoimassa, hakukohdeJossaVarasijojaRajoitetaan);
-
-        assertHakemustenTilat(HYVAKSYTTY, HYVAKSYTTY, PERUUNTUNUT, PERUUNTUNUT);
-
-        korjaaTilaJaEdellinenTilaSijoittelunJalkeen();
-
-        hakemus1.setJonosija(1);
-        hakemus2.setJonosija(4);
-        hakemus3.setJonosija(2);
-        hakemus4.setJonosija(3);
-
-        sijoittele(kkHakuVarasijasaannotVoimassa, hakukohdeJossaVarasijojaRajoitetaan);
-
-        assertHakemustenTilat(HYVAKSYTTY, PERUUNTUNUT, VARALLA, PERUUNTUNUT);
-    }
-
-    @Test
-    public void varalleVoiNoustaTasmalleenJonosijojenVerranKunEiVarasijatayttoaJaTasasijasaantoArvonta() {
-        jono.setAloituspaikat(2);
-        jono.setEiVarasijatayttoa(true);
-        jono.setTasasijasaanto(ARVONTA);
-
-        sijoittele(kkHakuVarasijasaannotVoimassa, hakukohdeJossaVarasijojaRajoitetaan);
-
-        assertHakemustenTilat(HYVAKSYTTY, HYVAKSYTTY, PERUUNTUNUT, PERUUNTUNUT);
-
-        korjaaTilaJaEdellinenTilaSijoittelunJalkeen();
-
-        hakemus1.setJonosija(1);
-        hakemus1.setTasasijaJonosija(1);
-        hakemus2.setJonosija(3);
-        hakemus3.setJonosija(2);
-        hakemus3.setTasasijaJonosija(1);
-        hakemus4.setJonosija(2);
-        hakemus4.setTasasijaJonosija(2);
-
-        sijoittele(kkHakuVarasijasaannotVoimassa, hakukohdeJossaVarasijojaRajoitetaan);
-
-        assertHakemustenTilat(HYVAKSYTTY, PERUUNTUNUT, VARALLA, PERUUNTUNUT);
-    }
-
-    @Test
-    public void varasijojaVoiYlitayttaaKunEiVarasijatayttoaJaTasasijasaantoYlitaytto() {
-        jono.setAloituspaikat(2);
-        jono.setEiVarasijatayttoa(true);
-        jono.setTasasijasaanto(YLITAYTTO);
-
-        sijoittele(kkHakuVarasijasaannotVoimassa, hakukohdeJossaVarasijojaRajoitetaan);
-
-        assertHakemustenTilat(HYVAKSYTTY, HYVAKSYTTY, PERUUNTUNUT, PERUUNTUNUT);
-
-        korjaaTilaJaEdellinenTilaSijoittelunJalkeen();
-
-        hakemus1.setJonosija(1);
-        hakemus1.setTasasijaJonosija(1);
-        hakemus2.setJonosija(3);
-        hakemus3.setJonosija(2);
-        hakemus3.setTasasijaJonosija(1);
-        hakemus4.setJonosija(2);
-        hakemus4.setTasasijaJonosija(2);
-
-        sijoittele(kkHakuVarasijasaannotVoimassa, hakukohdeJossaVarasijojaRajoitetaan);
-
-        assertHakemustenTilat(HYVAKSYTTY, PERUUNTUNUT, VARALLA, VARALLA);
-    }
-
-    @Test
-    public void varasijojaVoiYlitayttaaKunEiVarasijatayttoaJaTasasijasaantoYlitaytto2() {
-        jono.setAloituspaikat(3);
-        jono.setEiVarasijatayttoa(true);
-        jono.setTasasijasaanto(YLITAYTTO);
-
-        sijoittele(kkHakuVarasijasaannotVoimassa, hakukohdeJossaVarasijojaRajoitetaan);
-
-        assertHakemustenTilat(HYVAKSYTTY, HYVAKSYTTY, HYVAKSYTTY, PERUUNTUNUT);
-
-        korjaaTilaJaEdellinenTilaSijoittelunJalkeen();
-
-        hakemus1.setJonosija(2);
-        hakemus1.setTasasijaJonosija(1);
-        hakemus2.setJonosija(1);
-        hakemus2.setTasasijaJonosija(1);
-        hakemus3.setJonosija(1);
-        hakemus3.setTasasijaJonosija(2);
-        hakemus4.setJonosija(1);
-        hakemus4.setTasasijaJonosija(3);
-
-        sijoittele(kkHakuVarasijasaannotVoimassa, hakukohdeJossaVarasijojaRajoitetaan);
-
-        assertHakemustenTilat(PERUUNTUNUT, HYVAKSYTTY, HYVAKSYTTY, VARALLA);
-    }
-
-    @Test
     public void varasijojaVoiAlitayttaaKunEiVarasijatayttoaJaTasasijasaantoAlitaytto() {
         jono.setAloituspaikat(2);
         jono.setEiVarasijatayttoa(true);
@@ -239,32 +142,6 @@ public class RajattuVarasijatayttoTest {
     }
 
     @Test
-    public void varasijojaVoiAlitayttaaKunEiVarasijatayttoaJaTasasijasaantoAlitaytto2() {
-        jono.setAloituspaikat(2);
-        jono.setEiVarasijatayttoa(true);
-        jono.setTasasijasaanto(ALITAYTTO);
-
-        sijoittele(kkHakuVarasijasaannotVoimassa, hakukohdeJossaVarasijojaRajoitetaan);
-
-        assertHakemustenTilat(HYVAKSYTTY, HYVAKSYTTY, PERUUNTUNUT, PERUUNTUNUT);
-
-        korjaaTilaJaEdellinenTilaSijoittelunJalkeen();
-
-        hakemus1.setJonosija(2);
-        hakemus1.setTasasijaJonosija(1);
-        hakemus2.setJonosija(1);
-        hakemus2.setTasasijaJonosija(1);
-        hakemus3.setJonosija(1);
-        hakemus3.setTasasijaJonosija(2);
-        hakemus4.setJonosija(1);
-        hakemus4.setTasasijaJonosija(3);
-
-        sijoittele(kkHakuVarasijasaannotVoimassa, hakukohdeJossaVarasijojaRajoitetaan);
-
-        assertHakemustenTilat(PERUUNTUNUT, PERUUNTUNUT, PERUUNTUNUT, PERUUNTUNUT);
-    }
-
-    @Test
     public void alleSivssnovSijoittelussaOlleenJonosijanOlevaHakijaJaaPeruuntuneeksiJosEiVarasijatayttoa() {
         jono.setAloituspaikat(2);
         jono.setEiVarasijatayttoa(true);
@@ -280,53 +157,6 @@ public class RajattuVarasijatayttoTest {
         sijoittele(kkHakuVarasijasaannotVoimassa, hakukohdeJossaVarasijojaRajoitetaan, toinenHakukohdeJohonHakemus1Hyvaksytaan, toinenHakukohdeJohonHakemus2Hyvaksytaan);
 
         assertHakemustenTilat(PERUUNTUNUT, PERUUNTUNUT, PERUUNTUNUT, PERUUNTUNUT);
-    }
-
-    @Test
-    public void alleSivssnovSijoittelussaOlleenJonosijanOlevaHakijaJaaPeruuntuneeksiJosEiVarasijatayttoa2() {
-        jono.setAloituspaikat(2);
-        jono.setEiVarasijatayttoa(true);
-
-        hakemus3.setTila(HYLATTY);
-        sijoittele(kkHakuVarasijasaannotVoimassa, hakukohdeJossaVarasijojaRajoitetaan);
-
-        assertHakemustenTilat(HYVAKSYTTY, HYVAKSYTTY, HYLATTY, PERUUNTUNUT);
-
-        korjaaTilaJaEdellinenTilaSijoittelunJalkeen();
-
-        hakemus3.setTila(VARALLA);
-        hakemus1.setJonosija(4);
-        hakemus2.setJonosija(1);
-        hakemus3.setJonosija(3);
-        hakemus4.setJonosija(2);
-        sijoittele(kkHakuVarasijasaannotVoimassa, hakukohdeJossaVarasijojaRajoitetaan, toinenHakukohdeJohonHakemus1Hyvaksytaan, toinenHakukohdeJohonHakemus2Hyvaksytaan);
-
-        assertHakemustenTilat(PERUUNTUNUT, PERUUNTUNUT, PERUUNTUNUT, VARALLA);
-    }
-
-    @Test
-    public void ylitayttoJonossaSivssnovRajallaOlevaHakijaPaaseeVaralleJosEiVarasijatayttoa() {
-        jono.setAloituspaikat(2);
-        jono.setEiVarasijatayttoa(true);
-        jono.setTasasijasaanto(YLITAYTTO);
-
-        hakemus3.setTila(HYLATTY);
-        sijoittele(kkHakuVarasijasaannotVoimassa, hakukohdeJossaVarasijojaRajoitetaan);
-
-        assertHakemustenTilat(HYVAKSYTTY, HYVAKSYTTY, HYLATTY, PERUUNTUNUT);
-
-        korjaaTilaJaEdellinenTilaSijoittelunJalkeen();
-
-        hakemus3.setTila(VARALLA);
-        hakemus2.setJonosija(2);
-        hakemus2.setTasasijaJonosija(1);
-        hakemus3.setJonosija(2);
-        hakemus3.setTasasijaJonosija(2);
-        hakemus4.setJonosija(2);
-        hakemus4.setTasasijaJonosija(3);
-        sijoittele(kkHakuVarasijasaannotVoimassa, hakukohdeJossaVarasijojaRajoitetaan);
-
-        assertHakemustenTilat(HYVAKSYTTY, HYVAKSYTTY, VARALLA, VARALLA);
     }
 
     @Test
