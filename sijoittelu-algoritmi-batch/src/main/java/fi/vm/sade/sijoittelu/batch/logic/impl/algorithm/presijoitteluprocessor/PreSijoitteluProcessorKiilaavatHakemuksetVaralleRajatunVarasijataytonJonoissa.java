@@ -26,7 +26,7 @@ public class PreSijoitteluProcessorKiilaavatHakemuksetVaralleRajatunVarasijatayt
         }
         sijoitteluajoWrapper.getHakukohteet().forEach(hakukohdeWrapper -> {
             hakukohdeWrapper.getValintatapajonot().stream()
-                .filter(v -> !v.getValintatapajono().vapaaVarasijataytto())
+                .filter(v -> v.getValintatapajono().rajoitettuVarasijaTaytto())
                 .forEach(this::processValintatapajononKiilaavatHakemukset);
         });
     }
