@@ -230,17 +230,14 @@ public class PreSijoitteluProcessorPeruutaAlemmatPeruneetJaHyvaksytyt implements
     private void lisaaMuokattavaValintatulos(SijoitteluajoWrapper sijoitteluajoWrapper, Valintatulos nykyinen) {
         IlmoittautumisTila uusiIlmoittautumistila = EI_TEHTY;
         ValintatuloksenTila uusiValintatuloksenTila = KESKEN;
-        boolean uusiHyvaksyttyVarasijaltaArvo = false;
         boolean muokattavatArvotOvatSamatKuinEnnen =
             uusiIlmoittautumistila.equals(nykyinen.getIlmoittautumisTila()) &&
-            uusiValintatuloksenTila.equals(nykyinen.getTila()) &&
-            uusiHyvaksyttyVarasijaltaArvo == nykyinen.getHyvaksyttyVarasijalta();
+            uusiValintatuloksenTila.equals(nykyinen.getTila());
         if (muokattavatArvotOvatSamatKuinEnnen) {
             LOG.debug(String.format("Ei lisätä valintatulosta muuttuneisiin, koska muokattavat arvot ovat samat kuin ennen. Valintatulos: %s", nykyinen));
         } else {
             nykyinen.setIlmoittautumisTila(uusiIlmoittautumistila, "Peruutettu alempi hakutoive");
             nykyinen.setTila(uusiValintatuloksenTila, "Peruutettu alempi hakutoive");
-            nykyinen.setHyvaksyttyVarasijalta(uusiHyvaksyttyVarasijaltaArvo, "Peruutettu alempi hakutoive");
             sijoitteluajoWrapper.addMuuttuneetValintatulokset(nykyinen);
         }
     }

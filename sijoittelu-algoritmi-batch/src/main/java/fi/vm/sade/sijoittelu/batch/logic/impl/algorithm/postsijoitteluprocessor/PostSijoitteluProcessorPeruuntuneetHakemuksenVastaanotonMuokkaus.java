@@ -56,7 +56,6 @@ public class PostSijoitteluProcessorPeruuntuneetHakemuksenVastaanotonMuokkaus im
     private static void poistaVastaanottoTieto(Valintatulos valintatulos) {
         valintatulos.setTila(ValintatuloksenTila.KESKEN, "Peruuntunut hakutoive");
         valintatulos.setIlmoittautumisTila(IlmoittautumisTila.EI_TEHTY, "Peruuntunut hakutoive");
-        valintatulos.setHyvaksyttyVarasijalta(false, "Peruuntunut hakutoive");
     }
 }
 

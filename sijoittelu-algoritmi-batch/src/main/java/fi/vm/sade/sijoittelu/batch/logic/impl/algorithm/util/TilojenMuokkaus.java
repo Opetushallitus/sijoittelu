@@ -155,7 +155,6 @@ public class TilojenMuokkaus {
                     hyvaksyttyHakemus.getHenkilo().getValintatulos().add(v);
                     return v;
                 });
-        hyvaksyttyTulos.setHyvaksyttyVarasijalta(vanhaTulos.getHyvaksyttyVarasijalta(), VASTAANOTTOTIETO_PERIYTYNYT_ALEMMALTA_VALINTATAPAJONOLTA);
         hyvaksyttyTulos.setIlmoittautumisTila(vanhaTulos.getIlmoittautumisTila(), VASTAANOTTOTIETO_PERIYTYNYT_ALEMMALTA_VALINTATAPAJONOLTA);
         hyvaksyttyTulos.setJulkaistavissa(vanhaTulos.getJulkaistavissa(), VASTAANOTTOTIETO_PERIYTYNYT_ALEMMALTA_VALINTATAPAJONOLTA);
         hyvaksyttyTulos.setTila(vanhaTulos.getTila(), VASTAANOTTOTIETO_PERIYTYNYT_ALEMMALTA_VALINTATAPAJONOLTA);
