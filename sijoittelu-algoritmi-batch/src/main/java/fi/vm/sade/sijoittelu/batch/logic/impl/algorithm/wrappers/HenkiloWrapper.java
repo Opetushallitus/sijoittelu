@@ -82,7 +82,6 @@ public class HenkiloWrapper {
             ifPresentOrIfNotPresent(v.getHakukohdeOid(), t -> hf.putUnencodedChars(t), undefined, delimeter.apply(VALUE_DELIMETER_HAKUKOHDE));
             hf.putInt(v.getHakutoive());
             delimeter.apply(VALUE_DELIMETER_HAKUTOIVE).get();
-            hf.putBoolean(v.getHyvaksyttyVarasijalta());
             delimeter.apply(VALUE_DELIMETER_HYVAKSYTTY_VARASIJALTA).get();
             if (v.getIlmoittautumisTila() != null) {
                 hf.putInt(v.getIlmoittautumisTila().ordinal());
