@@ -232,7 +232,7 @@
 		<dependency>
 			<groupId>fi.vm.sade</groupId>
 			<artifactId>valinta-tulos-valintarekisteri-db</artifactId>
-			<version>4.12-SNAPSHOT</version>
+			<version>5.1-VTKU-38</version>
 			<exclusions>
 				<exclusion>
 					<groupId>fi.vm.sade.sijoittelu</groupId>
