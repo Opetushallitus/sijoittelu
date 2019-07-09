@@ -112,17 +112,6 @@ public class SijoitteluajoWrapperFactory {
         }
     }
 
-    private static boolean voiTullaHyvaksytyksi(Hakemus hakemus) {
-        if (hakemus.getTila() == HakemuksenTila.HYLATTY) {
-            return false;
-        }
-        if (hakemus.getTila() == HakemuksenTila.VARALLA) {
-            return true;
-        }
-        throw new RuntimeException(String.format("Hakemuksen tilan piti olla HYLATTY tai VARALLA, oli %s. Hakemus %s",
-                hakemus.getTila(), hakemus));
-    }
-
     private static boolean vastaanotonTilaSaaMuuttaaHakemuksenTilaa(Hakemus hakemus) {
         return TilaTaulukot.kuuluuVastaanotonMuokattavissaTiloihin(hakemus.getEdellinenTila());
     }
@@ -135,7 +124,7 @@ public class SijoitteluajoWrapperFactory {
         if (estaaVastaanotonYhdenPaikanSaannoksenTakia(aiempiVastaanottoSamalleKaudelle, hakemusWrapper)) {
              if (valintatulos != null && valintatulos.getTila() == ValintatuloksenTila.PERUNUT) {
                 hakemus.setTila(HakemuksenTila.PERUNUT);
-            } else if (voiTullaHyvaksytyksi(hakemus) || hakemus.getEdellinenTila() == HakemuksenTila.PERUUNTUNUT) {
+            } else if (hakemus.getTila() == HakemuksenTila.VARALLA) {
                 hakemus.setTila(HakemuksenTila.PERUUNTUNUT);
                 if (hakemus.getEdellinenTila() != HakemuksenTila.PERUUNTUNUT || hakemus.getTilanKuvaukset() == null || hakemus.getTilanKuvaukset().isEmpty()) {
                     hakemus.setTilanKuvaukset(TilanKuvaukset.peruuntunutVastaanottanutToisenOpiskelupaikanYhdenPaikanSaannonPiirissa());
