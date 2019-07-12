@@ -79,12 +79,12 @@ public class PostSijoitteluProcessorKorjaaHakemustenTilatJonoissaJoissaEiOleVara
         jonoWrapper.getHakemukset().forEach(hw -> {
             Hakemus h = hw.getHakemus();
             LOG.debug("hakemus: " + h.getHakemusOid() + " (" + h.getTila() + ") jonosija: " + h.getJonosija() + " raja: " + raja.jonosija);
-            if (noussutHyvaksyttyjenJoukkoon(h, raja)) {
-                LOG.info(String.format("Jätetään tilassa %s ollut hakemus %s (edellinen tila %s, jonosija/tasasijajonosija %s/%s) varalle hakukohteen %s jonossa %s, " +
-                    "koska jonossa ei ole varasijatäyttöä, SIVSSNOV on päällä ja leikkurijonosija %s",
-                    h.getTila(), h.getHakemusOid(), h.getEdellinenTila(), h.getJonosija(), h.getTasasijaJonosija(), hakukohdeOid, jono.getOid(), raja));
-                h.setTila(VARALLA);
-            } else if (tulisiHyvaksytyksiMuttaOnSivssnovissaAsetetunRajanAlapuolella(h, raja)) {
+            if (noussutHyvaksyttyjenJoukkoon(h, raja) && !hw.getHyvaksyPeruuntunut()) {
+                LOG.info(String.format("Siirretään tilassa %s ollut hakemus %s (edellinen tila %s, jonosija/tasasijajonosija %s/%s) peruuntuneeksi hakukohteen %s jonossa %s, " +
+                                "koska jonossa ei ole varasijatäyttöä, SIVSSNOV on päällä ja hakemus ei ollut hyväksytty edellisessä sijoittelussa, mutta on nyt yli leikkurijonosijan %s",
+                        h.getTila(), h.getHakemusOid(), h.getEdellinenTila(), h.getJonosija(), h.getTasasijaJonosija(), hakukohdeOid, jono.getOid(), raja));
+                asetaTilaksiPeruuntunutAloituspaikatTaynna(h);
+            } else if (tulisiHyvaksytyksiMuttaOnSivssnovissaAsetetunRajanAlapuolella(h, raja) && !hw.getHyvaksyPeruuntunut()) {
                 if (hw.isTilaVoidaanVaihtaa()) {
                     LOG.info(String.format("Siirretään tilassa %s ollut hakemus %s peruuntuneeksi hakukohteen %s jonossa %s, jolla ei ole varasijatäyttöä " +
                             "ja jonka tasasijasääntö on %s, koska hakemuksen jonosija on %d ja leikkurijonosija on %s", h.getTila(),
