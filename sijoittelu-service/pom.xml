@@ -129,7 +129,7 @@
 		<dependency>
 			<groupId>fi.vm.sade.valintaperusteet</groupId>
 			<artifactId>valintalaskenta-tulos-service</artifactId>
-			<version>5.3-SNAPSHOT</version>
+			<version>${valintalaskenta.version}</version>
 			<exclusions>
 				<exclusion>
 					<groupId>org.codehaus.jackson</groupId>
@@ -164,7 +164,7 @@
 		<dependency>
 			<groupId>fi.vm.sade.valintaperusteet</groupId>
 			<artifactId>valintaperusteet-api</artifactId>
-			<version>5.3-SNAPSHOT</version>
+			<version>${valintaperusteet-api.version}</version>
 		</dependency>
 
 		<dependency>
