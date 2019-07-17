@@ -64,7 +64,7 @@ import static org.junit.Assert.assertThat;
  *
  * Note: You need to
  *   ** add valintalaskentadb URL to run configuration VM parameters, e.g.
- *      <code>-ea -Xmx7G -DQA_VIRKAILIJAMONGO_URL=mongodb://oph:PASSWORD@localhost:37017</code>
+ *      <code>-ea -Xmx7G -DQA_VIRKAILIJAMONGO_URL=mongodb://valintalaskentauser:PASSWORD@localhost:37017</code>
  *      NB: be sure to tick off using <code>argLine</code> from Maven test runner IDEA settings, otherwise -Xmx512m will come
  *      to the command line from build-parent project that is the parent of valintaperusteet Maven project.
  *   ** add an ssh pipe to QA (or other similar environment) to access the /valintalaskentakoostepalvelu
