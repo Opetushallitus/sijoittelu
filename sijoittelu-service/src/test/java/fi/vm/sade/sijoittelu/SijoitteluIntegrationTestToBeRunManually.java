@@ -83,7 +83,7 @@ public class SijoitteluIntegrationTestToBeRunManually {
 
     static {
         if (System.getProperty("PIPED_HOST_VIRKAILIJA") == null) {
-            String defaultValue = "http://localhost:12345";
+            String defaultValue = "http://must.be.accessed.with.something.dot.opintopolku.fi:12345";
             System.out.println("No PIPED_HOST_VIRKAILIJA system property set, defaulting to " + defaultValue);
             System.setProperty("PIPED_HOST_VIRKAILIJA", defaultValue);
         }
