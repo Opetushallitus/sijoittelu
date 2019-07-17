@@ -116,7 +116,7 @@ public class SijoitteluIntegrationTestToBeRunManually {
 	}
 
     private void startSijoitteluAndPollUntilFinished() throws InterruptedException {
-        Long sijoitteluajoId = sijoitteluResource.sijoittele("1.2.246.562.29.26435854158");
+        Long sijoitteluajoId = sijoitteluResource.sijoittele("1.2.246.562.29.70000333388");
         while ("KESKEN".equals(sijoitteluResource.sijoittelunTila(sijoitteluajoId))) {
             System.out.println("Polled at " + new Date());
             Thread.sleep(SIJOITTELU_STATE_POLL_INTERVAL.toMillis());
