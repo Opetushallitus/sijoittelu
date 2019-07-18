@@ -34,7 +34,7 @@
     </distributionManagement>
 
 <properties>
-    <cxf.version>3.2.4</cxf.version>
+    <cxf.version>3.3.2</cxf.version>
     <fasterxml.jackson.version>2.9.5</fasterxml.jackson.version>
     <flapdoodle.embed.mongo.version>2.2.0</flapdoodle.embed.mongo.version>
     <jackson.version>1.9.13</jackson.version>
@@ -232,32 +232,32 @@
       <dependency>
         <groupId>org.apache.cxf</groupId>
         <artifactId>cxf-rt-rs-client</artifactId>
-        <version>3.2.4</version>
+        <version>${cxf.version}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.cxf</groupId>
         <artifactId>cxf-rt-frontend-jaxws</artifactId>
-        <version>3.2.4</version>
+        <version>${cxf.version}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.cxf</groupId>
         <artifactId>cxf-rt-frontend-jaxrs</artifactId>
-        <version>3.2.4</version>
+        <version>${cxf.version}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.cxf</groupId>
         <artifactId>cxf-rt-transports-http</artifactId>
-        <version>3.2.4</version>
+        <version>${cxf.version}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.cxf</groupId>
         <artifactId>cxf-core</artifactId>
-        <version>3.2.4</version>
+        <version>${cxf.version}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.cxf</groupId>
         <artifactId>cxf-rt-rs-service-description-swagger</artifactId>
-        <version>3.2.4</version>
+        <version>${cxf.version}</version>
       </dependency>
       <dependency>
         <groupId>io.swagger</groupId>
