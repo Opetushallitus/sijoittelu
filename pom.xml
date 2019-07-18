@@ -200,6 +200,11 @@
         <version>0.3.2-SNAPSHOT</version>
       </dependency>
       <dependency>
+        <groupId>org.ow2.asm</groupId>
+        <artifactId>asm</artifactId>
+        <version>7.0</version>
+      </dependency>
+      <dependency>
         <groupId>fi.vm.sade.valinta</groupId>
         <artifactId>valinta-sharedutils</artifactId>
         <version>5.6-SNAPSHOT</version>
