@@ -46,7 +46,7 @@
     </beans>
     <beans>
         <bean id="ophRequestHeaders" class="fi.vm.sade.javautils.cxf.OphRequestHeadersCxfInterceptor">
-            <property name="callerId" value="1.2.246.562.10.00000000001.sijoittelu.sijoittelu-service"/>
+            <constructor-arg index="0"  name="callerId" value="1.2.246.562.10.00000000001.sijoittelu.sijoittelu-service"/>
         </bean>
 
         <jaxrs-client:client id="ValintaperusteetLaskentaRestClient"
