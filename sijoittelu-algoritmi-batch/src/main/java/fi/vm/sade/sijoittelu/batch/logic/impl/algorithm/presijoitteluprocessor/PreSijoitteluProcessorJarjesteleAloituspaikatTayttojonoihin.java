@@ -4,6 +4,7 @@ import com.google.common.collect.Collections2;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Queues;
 import com.google.common.collect.Sets;
+
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoitteluSilmukkaException;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.HakemusWrapper;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.HakukohdeWrapper;
@@ -21,9 +22,7 @@ import java.util.Queue;
 import java.util.Set;
 
 class PreSijoitteluProcessorJarjesteleAloituspaikatTayttojonoihin implements PreSijoitteluProcessor {
-
     private static final Logger LOG = LoggerFactory.getLogger(PreSijoitteluProcessorJarjesteleAloituspaikatTayttojonoihin.class);
-
     private static final int LIMIT = 1000;
 
     private Map<String, ValintatapajonoWrapper> oid2Valintatapajono;
@@ -36,10 +35,8 @@ class PreSijoitteluProcessorJarjesteleAloituspaikatTayttojonoihin implements Pre
 
     @Override
     public void process(SijoitteluajoWrapper sijoitteluajoWrapper) {
-
         // Käy läpi jokaisen sijoitteluajon hakukohteen valintatapajonot
         for (HakukohdeWrapper hakukohde : sijoitteluajoWrapper.getHakukohteet()) {
-
             setAlkuperaisetAloituspaikat(hakukohde);
 
             if(sijoitteluajoWrapper.isKKHaku()) {
@@ -65,13 +62,10 @@ class PreSijoitteluProcessorJarjesteleAloituspaikatTayttojonoihin implements Pre
 
                     if (ylijaamaPaikat > 0 && StringUtils.isNotBlank(valintatapajono.getTayttojono())) {
                         siirraYlijaamaPaikatTayttojonolle(valintatapajono, ylijaamaPaikat);
-                        // Poistettu loopin mahdollisuus
-                        //reCheckTayttojono(valintatapajono);
                     }
                 }
             }
         }
-
     }
 
     private void setAlkuperaisetAloituspaikat(HakukohdeWrapper hakukohde) {
@@ -107,9 +101,5 @@ class PreSijoitteluProcessorJarjesteleAloituspaikatTayttojonoihin implements Pre
         } else {
             LOG.warn("Valintatapajonon {} (OID: {}) täyttöjonoa (OID: {}) ei löytynyt.", valintatapajono.getNimi(), valintatapajono.getOid(), valintatapajono.getTayttojono());
         }
-    }
-
-    private void reCheckTayttojono(Valintatapajono valintatapajono) {
-        toBeProcessed.add(oid2Valintatapajono.get(valintatapajono.getTayttojono()));
     }
 }
