@@ -1,12 +1,12 @@
 package fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.presijoitteluprocessor;
 
-import fi.vm.sade.sijoittelu.domain.TilanKuvaukset;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.HakemusWrapper;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.HenkiloWrapper;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.SijoitteluajoWrapper;
 import fi.vm.sade.sijoittelu.domain.HakemuksenTila;
 import fi.vm.sade.sijoittelu.domain.Hakemus;
 import fi.vm.sade.sijoittelu.domain.IlmoittautumisTila;
+import fi.vm.sade.sijoittelu.domain.TilanKuvaukset;
 import fi.vm.sade.sijoittelu.domain.ValintatuloksenTila;
 import fi.vm.sade.sijoittelu.domain.Valintatulos;
 import org.slf4j.Logger;
@@ -27,8 +27,8 @@ import java.util.function.Consumer;
 public class PreSijoitteluProcessorPeruutaAlemmatPeruneetJaHyvaksytyt implements PreSijoitteluProcessor {
     private static final Logger LOG = LoggerFactory.getLogger(PreSijoitteluProcessorPeruutaAlemmatPeruneetJaHyvaksytyt.class);
 
-    private final List<ValintatuloksenTila> vastaanotot = Arrays.asList(ValintatuloksenTila.EHDOLLISESTI_VASTAANOTTANUT, ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI);
-    private final List<HakemuksenTila> yliajettavat = Arrays.asList(HakemuksenTila.HYVAKSYTTY, HakemuksenTila.VARALLA, HakemuksenTila.VARASIJALTA_HYVAKSYTTY);
+    private static final List<ValintatuloksenTila> vastaanotot = Arrays.asList(ValintatuloksenTila.EHDOLLISESTI_VASTAANOTTANUT, ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI);
+    private static final List<HakemuksenTila> yliajettavat = Arrays.asList(HakemuksenTila.HYVAKSYTTY, HakemuksenTila.VARALLA, HakemuksenTila.VARASIJALTA_HYVAKSYTTY);
 
     @Override
     public void process(SijoitteluajoWrapper sijoitteluajoWrapper) {
