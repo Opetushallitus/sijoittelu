@@ -26,7 +26,7 @@ class PreSijoitteluProcessorJarjesteleAloituspaikatTayttojonoihin implements Pre
     private static final int LIMIT = 1000;
 
     private Map<String, ValintatapajonoWrapper> oid2Valintatapajono;
-    private Set<HakemuksenTila> hyvaksyttavissaTilat = Sets.newHashSet(
+    private static Set<HakemuksenTila> hyvaksyttavissaTilat = Sets.newHashSet(
             null,
             HakemuksenTila.HYVAKSYTTY,
             HakemuksenTila.VARALLA,
