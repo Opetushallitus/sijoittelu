@@ -58,6 +58,7 @@ public class RajattuVarasijatayttoTest {
         .withValintatapajono(jono).build();
     private Hakukohde toinenHakukohdeJohonHakemus1Hyvaksytaan = new HakukohdeBuilder("toinenHakukohdeOid")
         .withValintatapajono(new ValintatapajonoBuilder()
+            .withOid("jono2")
             .withAloituspaikat(1)
             .withTasasijasaanto(YLITAYTTO)
             .withPrioriteetti(0)
@@ -69,6 +70,7 @@ public class RajattuVarasijatayttoTest {
             .build()).build();
     private Hakukohde toinenHakukohdeJohonHakemus2Hyvaksytaan = new HakukohdeBuilder("kolmasHakukohdeOid")
             .withValintatapajono(new ValintatapajonoBuilder()
+                    .withOid("jono3")
                     .withAloituspaikat(1)
                     .withTasasijasaanto(YLITAYTTO)
                     .withPrioriteetti(0)

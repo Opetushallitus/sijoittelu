@@ -1,7 +1,6 @@
 package fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.presijoitteluprocessor;
 
 import com.google.common.collect.Collections2;
-import com.google.common.collect.Maps;
 import com.google.common.collect.Queues;
 import com.google.common.collect.Sets;
 
@@ -16,11 +15,12 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 class PreSijoitteluProcessorJarjesteleAloituspaikatTayttojonoihin implements PreSijoitteluProcessor {
     private static final Logger LOG = LoggerFactory.getLogger(PreSijoitteluProcessorJarjesteleAloituspaikatTayttojonoihin.class);
@@ -39,7 +39,8 @@ class PreSijoitteluProcessorJarjesteleAloituspaikatTayttojonoihin implements Pre
             setAlkuperaisetAloituspaikat(hakukohde);
 
             if(sijoitteluajoWrapper.isKKHaku()) {
-                HashMap<String, ValintatapajonoWrapper> oid2Valintatapajono = populateOid2Valintatapajono(hakukohde);
+                Map<String, ValintatapajonoWrapper> oid2Valintatapajono = hakukohde.getValintatapajonot().stream()
+                    .collect(Collectors.toUnmodifiableMap(j -> j.getValintatapajono().getOid(), Function.identity()));
 
                 Queue<ValintatapajonoWrapper> toBeProcessed = Queues.newConcurrentLinkedQueue(hakukohde.getValintatapajonot());
 
@@ -72,14 +73,6 @@ class PreSijoitteluProcessorJarjesteleAloituspaikatTayttojonoihin implements Pre
             Valintatapajono valintatapajono = valintatapajonoWrapper.getValintatapajono();
             valintatapajono.setAlkuperaisetAloituspaikat(valintatapajono.getAloituspaikat());
         });
-    }
-
-    private HashMap<String, ValintatapajonoWrapper> populateOid2Valintatapajono(HakukohdeWrapper hakukohde) {
-        HashMap<String, ValintatapajonoWrapper> oid2Valintatapajono = Maps.newHashMap();
-        hakukohde.getValintatapajonot().forEach(valintatapajonoWrapper ->
-            oid2Valintatapajono.put(valintatapajonoWrapper.getValintatapajono().getOid(), valintatapajonoWrapper)
-        );
-        return oid2Valintatapajono;
     }
 
     private int getJaljellaOlevatAloituspaikat(ValintatapajonoWrapper wrapper) {
