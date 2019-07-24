@@ -16,6 +16,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
@@ -25,7 +26,6 @@ class PreSijoitteluProcessorJarjesteleAloituspaikatTayttojonoihin implements Pre
     private static final Logger LOG = LoggerFactory.getLogger(PreSijoitteluProcessorJarjesteleAloituspaikatTayttojonoihin.class);
     private static final int LIMIT = 1000;
 
-    private Map<String, ValintatapajonoWrapper> oid2Valintatapajono;
     private static Set<HakemuksenTila> hyvaksyttavissaTilat = Sets.newHashSet(
             null,
             HakemuksenTila.HYVAKSYTTY,
@@ -39,7 +39,7 @@ class PreSijoitteluProcessorJarjesteleAloituspaikatTayttojonoihin implements Pre
             setAlkuperaisetAloituspaikat(hakukohde);
 
             if(sijoitteluajoWrapper.isKKHaku()) {
-                populateOid2Valintatapajono(hakukohde);
+                HashMap<String, ValintatapajonoWrapper> oid2Valintatapajono = populateOid2Valintatapajono(hakukohde);
 
                 Queue<ValintatapajonoWrapper> toBeProcessed = Queues.newConcurrentLinkedQueue(hakukohde.getValintatapajonot());
 
@@ -60,7 +60,7 @@ class PreSijoitteluProcessorJarjesteleAloituspaikatTayttojonoihin implements Pre
                     int ylijaamaPaikat = getJaljellaOlevatAloituspaikat(valintatapajonoWrapper);
 
                     if (ylijaamaPaikat > 0 && StringUtils.isNotBlank(valintatapajono.getTayttojono())) {
-                        siirraYlijaamaPaikatTayttojonolle(valintatapajono, ylijaamaPaikat);
+                        siirraYlijaamaPaikatTayttojonolle(valintatapajono, ylijaamaPaikat, oid2Valintatapajono);
                     }
                 }
             }
@@ -74,11 +74,12 @@ class PreSijoitteluProcessorJarjesteleAloituspaikatTayttojonoihin implements Pre
         });
     }
 
-    private void populateOid2Valintatapajono(HakukohdeWrapper hakukohde) {
-        oid2Valintatapajono = Maps.newHashMap();
+    private HashMap<String, ValintatapajonoWrapper> populateOid2Valintatapajono(HakukohdeWrapper hakukohde) {
+        HashMap<String, ValintatapajonoWrapper> oid2Valintatapajono = Maps.newHashMap();
         hakukohde.getValintatapajonot().forEach(valintatapajonoWrapper ->
             oid2Valintatapajono.put(valintatapajonoWrapper.getValintatapajono().getOid(), valintatapajonoWrapper)
         );
+        return oid2Valintatapajono;
     }
 
     private int getJaljellaOlevatAloituspaikat(ValintatapajonoWrapper wrapper) {
@@ -91,7 +92,9 @@ class PreSijoitteluProcessorJarjesteleAloituspaikatTayttojonoihin implements Pre
         ).size();
     }
 
-    private void siirraYlijaamaPaikatTayttojonolle(Valintatapajono valintatapajono, int jaljellaOlevatAloituspaikat) {
+    private void siirraYlijaamaPaikatTayttojonolle(Valintatapajono valintatapajono,
+                                                   int jaljellaOlevatAloituspaikat,
+                                                   Map<String, ValintatapajonoWrapper> oid2Valintatapajono) {
         ValintatapajonoWrapper valintatapajonoWrapper = oid2Valintatapajono.get(valintatapajono.getTayttojono());
         if(valintatapajonoWrapper != null) {
             Valintatapajono tayttojono = oid2Valintatapajono.get(valintatapajono.getTayttojono()).getValintatapajono();
