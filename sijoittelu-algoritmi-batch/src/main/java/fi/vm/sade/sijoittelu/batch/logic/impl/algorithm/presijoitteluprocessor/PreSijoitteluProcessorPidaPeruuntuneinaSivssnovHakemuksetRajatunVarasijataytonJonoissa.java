@@ -12,7 +12,7 @@ import fi.vm.sade.sijoittelu.domain.Valintatapajono;
 import java.util.function.Consumer;
 
 public class PreSijoitteluProcessorPidaPeruuntuneinaSivssnovHakemuksetRajatunVarasijataytonJonoissa implements PreSijoitteluProcessor {
-    private final Consumer<HakemusWrapper> lukitseEdellinenPeruuntunutTila = hakemusWrapper -> {
+    private static final Consumer<HakemusWrapper> lukitseEdellinenPeruuntunutTila = hakemusWrapper -> {
         Hakemus hakemus = hakemusWrapper.getHakemus();
         if (PERUUNTUNUT.equals(hakemus.getEdellinenTila()) && !hakemusWrapper.getHyvaksyPeruuntunut()) {
             hakemus.setTila(HakemuksenTila.PERUUNTUNUT);
