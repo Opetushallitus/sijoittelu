@@ -31,7 +31,6 @@ class PreSijoitteluProcessorJarjesteleAloituspaikatTayttojonoihin implements Pre
             HakemuksenTila.HYVAKSYTTY,
             HakemuksenTila.VARALLA,
             HakemuksenTila.VARASIJALTA_HYVAKSYTTY);
-    private Queue<ValintatapajonoWrapper> toBeProcessed;
 
     @Override
     public void process(SijoitteluajoWrapper sijoitteluajoWrapper) {
@@ -42,7 +41,7 @@ class PreSijoitteluProcessorJarjesteleAloituspaikatTayttojonoihin implements Pre
             if(sijoitteluajoWrapper.isKKHaku()) {
                 populateOid2Valintatapajono(hakukohde);
 
-                toBeProcessed = Queues.newConcurrentLinkedQueue(hakukohde.getValintatapajonot());
+                Queue<ValintatapajonoWrapper> toBeProcessed = Queues.newConcurrentLinkedQueue(hakukohde.getValintatapajonot());
 
                 // Iteroidaan jokaisen jonon ja täyttöjonojen läpi
                 int iterationCount = 0;
