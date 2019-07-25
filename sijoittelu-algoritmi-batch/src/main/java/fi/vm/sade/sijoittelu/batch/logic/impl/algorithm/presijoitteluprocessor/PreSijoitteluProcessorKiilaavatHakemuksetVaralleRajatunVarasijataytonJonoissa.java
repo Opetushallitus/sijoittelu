@@ -16,8 +16,7 @@ import java.util.stream.Collectors;
 
 public class PreSijoitteluProcessorKiilaavatHakemuksetVaralleRajatunVarasijataytonJonoissa implements PreSijoitteluProcessor {
     private static final Logger LOG = LoggerFactory.getLogger(PreSijoitteluProcessorKiilaavatHakemuksetVaralleRajatunVarasijataytonJonoissa.class);
-
-    private final Collection<HakemuksenTila> HYLATTY_TAI_PERUUNTUNUT = Arrays.asList(HakemuksenTila.HYLATTY, HakemuksenTila.PERUUNTUNUT);
+    private static final Collection<HakemuksenTila> HYLATTY_TAI_PERUUNTUNUT = Arrays.asList(HakemuksenTila.HYLATTY, HakemuksenTila.PERUUNTUNUT);
 
     @Override
     public void process(SijoitteluajoWrapper sijoitteluajoWrapper) {

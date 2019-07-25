@@ -1,7 +1,6 @@
 package fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.presijoitteluprocessor;
 
 import com.google.common.collect.Collections2;
-import com.google.common.collect.Maps;
 import com.google.common.collect.Queues;
 import com.google.common.collect.Sets;
 
@@ -20,18 +19,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 class PreSijoitteluProcessorJarjesteleAloituspaikatTayttojonoihin implements PreSijoitteluProcessor {
     private static final Logger LOG = LoggerFactory.getLogger(PreSijoitteluProcessorJarjesteleAloituspaikatTayttojonoihin.class);
     private static final int LIMIT = 1000;
 
-    private Map<String, ValintatapajonoWrapper> oid2Valintatapajono;
-    private Set<HakemuksenTila> hyvaksyttavissaTilat = Sets.newHashSet(
+    private static Set<HakemuksenTila> hyvaksyttavissaTilat = Sets.newHashSet(
             null,
             HakemuksenTila.HYVAKSYTTY,
             HakemuksenTila.VARALLA,
             HakemuksenTila.VARASIJALTA_HYVAKSYTTY);
-    private Queue<ValintatapajonoWrapper> toBeProcessed;
 
     @Override
     public void process(SijoitteluajoWrapper sijoitteluajoWrapper) {
@@ -40,9 +39,10 @@ class PreSijoitteluProcessorJarjesteleAloituspaikatTayttojonoihin implements Pre
             setAlkuperaisetAloituspaikat(hakukohde);
 
             if(sijoitteluajoWrapper.isKKHaku()) {
-                populateOid2Valintatapajono(hakukohde);
+                Map<String, ValintatapajonoWrapper> oid2Valintatapajono = hakukohde.getValintatapajonot().stream()
+                    .collect(Collectors.toUnmodifiableMap(j -> j.getValintatapajono().getOid(), Function.identity()));
 
-                toBeProcessed = Queues.newConcurrentLinkedQueue(hakukohde.getValintatapajonot());
+                Queue<ValintatapajonoWrapper> toBeProcessed = Queues.newConcurrentLinkedQueue(hakukohde.getValintatapajonot());
 
                 // Iteroidaan jokaisen jonon ja täyttöjonojen läpi
                 int iterationCount = 0;
@@ -61,7 +61,7 @@ class PreSijoitteluProcessorJarjesteleAloituspaikatTayttojonoihin implements Pre
                     int ylijaamaPaikat = getJaljellaOlevatAloituspaikat(valintatapajonoWrapper);
 
                     if (ylijaamaPaikat > 0 && StringUtils.isNotBlank(valintatapajono.getTayttojono())) {
-                        siirraYlijaamaPaikatTayttojonolle(valintatapajono, ylijaamaPaikat);
+                        siirraYlijaamaPaikatTayttojonolle(valintatapajono, ylijaamaPaikat, oid2Valintatapajono);
                     }
                 }
             }
@@ -75,13 +75,6 @@ class PreSijoitteluProcessorJarjesteleAloituspaikatTayttojonoihin implements Pre
         });
     }
 
-    private void populateOid2Valintatapajono(HakukohdeWrapper hakukohde) {
-        oid2Valintatapajono = Maps.newHashMap();
-        hakukohde.getValintatapajonot().forEach(valintatapajonoWrapper ->
-            oid2Valintatapajono.put(valintatapajonoWrapper.getValintatapajono().getOid(), valintatapajonoWrapper)
-        );
-    }
-
     private int getJaljellaOlevatAloituspaikat(ValintatapajonoWrapper wrapper) {
         return wrapper.getValintatapajono().getAloituspaikat() - getHyvaksyttavatHakemuksetSize(wrapper.getHakemukset());
     }
@@ -92,7 +85,9 @@ class PreSijoitteluProcessorJarjesteleAloituspaikatTayttojonoihin implements Pre
         ).size();
     }
 
-    private void siirraYlijaamaPaikatTayttojonolle(Valintatapajono valintatapajono, int jaljellaOlevatAloituspaikat) {
+    private void siirraYlijaamaPaikatTayttojonolle(Valintatapajono valintatapajono,
+                                                   int jaljellaOlevatAloituspaikat,
+                                                   Map<String, ValintatapajonoWrapper> oid2Valintatapajono) {
         ValintatapajonoWrapper valintatapajonoWrapper = oid2Valintatapajono.get(valintatapajono.getTayttojono());
         if(valintatapajonoWrapper != null) {
             Valintatapajono tayttojono = oid2Valintatapajono.get(valintatapajono.getTayttojono()).getValintatapajono();
