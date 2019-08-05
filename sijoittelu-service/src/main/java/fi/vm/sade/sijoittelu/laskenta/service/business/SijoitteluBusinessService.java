@@ -652,6 +652,7 @@ public class SijoitteluBusinessService {
                                 sijoiteltavaHakemus.setVarasijanNumero(vanhaHakemus.getVarasijanNumero());
                                 sijoiteltavaHakemus.setIlmoittautumisTila(vanhaHakemus.getIlmoittautumisTila());
                                 if (sijoiteltavaHakemus.getTila() != HYLATTY) {
+                                    sijoiteltavaHakemus.setTilankuvauksenTarkenne(vanhaHakemus.getTilankuvauksenTarkenne());
                                     sijoiteltavaHakemus.setTilanKuvaukset(vanhaHakemus.getTilanKuvaukset());
                                 }
                             }
