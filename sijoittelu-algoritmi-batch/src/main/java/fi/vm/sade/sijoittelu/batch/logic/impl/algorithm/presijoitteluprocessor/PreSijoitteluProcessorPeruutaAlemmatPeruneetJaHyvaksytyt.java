@@ -209,7 +209,7 @@ public class PreSijoitteluProcessorPeruutaAlemmatPeruneetJaHyvaksytyt implements
     }
 
     private void periTila(HakemusWrapper perija, HakemusWrapper perittava) {
-        TilojenMuokkaus.periTila(perija, perittava);
+        perija.getHakemus().periTila(perittava.getHakemus());
         perija.setTilaVoidaanVaihtaa(false);
     }
 

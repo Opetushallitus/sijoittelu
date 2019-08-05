@@ -134,12 +134,6 @@ public class TilojenMuokkaus {
         hakemusWrapper.getHakemus().setTilankuvauksenTarkenne(TilankuvauksenTarkenne.EI_TILANKUVAUKSEN_TARKENNETTA);
     }
 
-    public static void periTila(HakemusWrapper perija, HakemusWrapper perittava) {
-        perija.getHakemus().setTila(perittava.getHakemus().getTila());
-        perija.getHakemus().setTilankuvauksenTarkenne(perittava.getHakemus().getTilankuvauksenTarkenne());
-        perija.getHakemus().setTilanKuvaukset(perittava.getHakemus().getTilanKuvaukset());
-    }
-
     public static Optional<Valintatulos> findValintatulos(HakemusWrapper hakemusWrapper, String jonoOid) {
         return hakemusWrapper.getHenkilo().getValintatulos().stream()
                 .filter(v -> jonoOid.equals(v.getValintatapajonoOid()))

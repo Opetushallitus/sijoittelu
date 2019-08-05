@@ -277,6 +277,12 @@ public class Hakemus implements Serializable {
         this.tarkenteenLisatieto = tarkenteenLisatieto;
     }
 
+    public void periTila(Hakemus hakemus) {
+        this.tila = hakemus.getTila();
+        this.tilankuvauksenTarkenne = hakemus.getTilankuvauksenTarkenne();
+        this.tilanKuvaukset = hakemus.getTilanKuvaukset();
+    }
+
     private String getTilankuvauksenTarkenteenLisatieto(TilankuvauksenTarkenne tarkenne, Map<String, String> tilanKuvaukset) {
         if (tarkenne == null) return null;
         else if (tarkenne.equals(TilankuvauksenTarkenne.HYVAKSYTTY_TAYTTOJONO_SAANNOLLA) || tarkenne.equals(TilankuvauksenTarkenne.HYLATTY_HAKIJARYHMAAN_KUULUMATTOMANA)) {
