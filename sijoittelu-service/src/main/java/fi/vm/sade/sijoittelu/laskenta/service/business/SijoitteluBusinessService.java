@@ -2,6 +2,7 @@ package fi.vm.sade.sijoittelu.laskenta.service.business;
 
 import static com.google.common.collect.Sets.difference;
 import static com.google.common.collect.Sets.intersection;
+import static fi.vm.sade.sijoittelu.domain.HakemuksenTila.HYLATTY;
 import static fi.vm.sade.sijoittelu.domain.HakemuksenTila.HYVAKSYTTY;
 import static fi.vm.sade.sijoittelu.domain.HakemuksenTila.VARALLA;
 import static fi.vm.sade.sijoittelu.domain.HakemuksenTila.VARASIJALTA_HYVAKSYTTY;
@@ -141,8 +142,11 @@ public class SijoitteluBusinessService {
         SijoitteluAjo uusiSijoitteluajo = createSijoitteluAjo(hakuOid);
         uusiSijoitteluajo.setSijoitteluajoId(sijoittelunTunniste); //Korvataan sijoitteluajon tunniste (=luontiaika) parametrina saadulla tunnisteella
         stopWatch.start("Mergataan hakukohteet");
-        List<Hakukohde> kaikkiHakukohteet = merge(uusiSijoitteluajo, edellisenSijoitteluajonTulokset, uudenSijoitteluajonHakukohteet);
+        Pair<List<Hakukohde>, Set<Pair<String, String>>> mergeResult = merge(uusiSijoitteluajo, edellisenSijoitteluajonTulokset, uudenSijoitteluajonHakukohteet);
+        List<Hakukohde> kaikkiHakukohteet = mergeResult.getLeft();
         stopWatch.stop();
+
+        poistaTarpeettomatValinnantulokset(stopWatch, mergeResult);
 
         stopWatch.start("Haetaan valintatulokset vastaanottoineen");
         List<Valintatulos> valintatulokset = valintarekisteriService.getValintatulokset(hakuOid);
@@ -190,6 +194,17 @@ public class SijoitteluBusinessService {
             stopWatch);
         stopWatch.stop();
         LOG.info(stopWatch.prettyPrint());
+    }
+
+    private void poistaTarpeettomatValinnantulokset(StopWatch stopWatch, Pair<List<Hakukohde>, Set<Pair<String, String>>> tarpeettomatValinnantulokset) {
+        stopWatch.start("Poistetaan tarpeettomat valinnantulokset");
+        tarpeettomatValinnantulokset.getRight().forEach(p -> {
+            String hakemusOid = p.getLeft();
+            String hakukohdeOid = p.getRight();
+            LOG.warn(String.format("Poistetaan hakemuksen %s valinnantulokset hakukohteeseen %s, sillä hakemus ei ole enää mukana hakukohteen valintatapajonoissa", hakemusOid, hakukohdeOid));
+            valintarekisteriService.cleanRedundantSijoitteluTuloksesForHakemusInHakukohde(hakemusOid, hakukohdeOid);
+        });
+        stopWatch.stop();
     }
 
     private SijoitteluAjo readSijoitteluajoFromValintarekisteri(String hakuOid) {
@@ -403,8 +418,7 @@ public class SijoitteluBusinessService {
             .map(DomainConverter::convertToHakukohde).collect(Collectors.toList());
         List<Hakukohde> olemassaolevatHakukohteet = Collections.emptyList();
         SijoitteluAjo uusiSijoitteluajo = createValiSijoitteluAjo(sijoittelu);
-        List<Hakukohde> kaikkiHakukohteet =
-            merge(uusiSijoitteluajo, olemassaolevatHakukohteet, uudetHakukohteet);
+        List<Hakukohde> kaikkiHakukohteet = merge(uusiSijoitteluajo, olemassaolevatHakukohteet, uudetHakukohteet).getLeft();
         SijoitteluajoWrapper sijoitteluajoWrapper =
             SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(sijoitteluConfiguration, uusiSijoitteluajo,
                 kaikkiHakukohteet, Collections.emptyList(), Collections.emptyMap());
@@ -466,10 +480,13 @@ public class SijoitteluBusinessService {
         }
 
         SijoitteluAjo uusiSijoitteluajo = createSijoitteluAjo(hakuOid);
-        List<Hakukohde> hakukohdeTassaSijoittelussa = merge(uusiSijoitteluajo,
-            hakukohdeViimeisimmassaSijoitteluajossa,
-            Collections.singletonList(hakukohdeValintalaskennassa));
+        Pair<List<Hakukohde>, Set<Pair<String, String>>> mergeResult = merge(uusiSijoitteluajo,
+                hakukohdeViimeisimmassaSijoitteluajossa,
+                Collections.singletonList(hakukohdeValintalaskennassa));
+        List<Hakukohde> hakukohdeTassaSijoittelussa = mergeResult.getLeft();
         stopWatch.stop();
+
+        poistaTarpeettomatValinnantulokset(stopWatch, mergeResult);
 
         stopWatch.start("Haetaan valintatulokset vastaanottoineen");
         List<Valintatulos> valintatulokset = valintarekisteriService.getValintatulokset(hakuOid);
@@ -608,165 +625,48 @@ public class SijoitteluBusinessService {
                 .min(BigDecimal::compareTo);
     }
 
-    // nykyisellaan vain korvaa hakukohteet, mietittava toiminta tarkemmin
-    private List<Hakukohde> merge(SijoitteluAjo uusiSijoitteluajo, List<Hakukohde> olemassaolevatHakukohteet, List<Hakukohde> uudetHakukohteet) {
-        Map<String, Hakukohde> kaikkiHakukohteet = new ConcurrentHashMap<>();
-        olemassaolevatHakukohteet.parallelStream().forEach(hakukohde -> {
-            kaikkiHakukohteet.put(hakukohde.getOid(), hakukohde);
-        });
-        kopioiTiedotEdelliseltaSijoitteluajoltaJaPoistaPassivoitujenTulokset(uudetHakukohteet, kaikkiHakukohteet);
-        siirraSivssnov(olemassaolevatHakukohteet, kaikkiHakukohteet);
-        kopioiHakemuksenTietoja(olemassaolevatHakukohteet, kaikkiHakukohteet);
-        kaikkiHakukohteet.values().forEach(hakukohde -> {
-                    HakukohdeItem hki = new HakukohdeItem();
-                    hki.setOid(hakukohde.getOid());
-                    uusiSijoitteluajo.getHakukohteet().add(hki);
-                    hakukohde.setSijoitteluajoId(uusiSijoitteluajo.getSijoitteluajoId());
-                }
-        );
-        return new ArrayList<>(kaikkiHakukohteet.values());
-    }
+    private Pair<List<Hakukohde>, Set<Pair<String, String>>> merge(SijoitteluAjo uusiSijoitteluajo, List<Hakukohde> olemassaolevatHakukohteet, List<Hakukohde> uudetHakukohteet) {
+        Set<Pair<String, String>> poistettavatValinnantulokset = new HashSet<>();
+        Map<String, Hakukohde> sijoiteltavatHakukohteet = uudetHakukohteet.stream().collect(Collectors.toMap(Hakukohde::getOid, h -> h));
+        olemassaolevatHakukohteet.forEach(vanhaHakukohde -> {
+            Hakukohde sijoiteltavaHakukohde = sijoiteltavatHakukohteet.get(vanhaHakukohde.getOid());
+            if (sijoiteltavaHakukohde == null) {
+                sijoiteltavatHakukohteet.put(vanhaHakukohde.getOid(), vanhaHakukohde);
+            } else {
+                Map<String, Valintatapajono> sijoiteltavatValintatapajonot = sijoiteltavaHakukohde.getValintatapajonot().stream().collect(Collectors.toMap(Valintatapajono::getOid, v -> v));
+                vanhaHakukohde.getValintatapajonot().forEach(vanhaValintatapajono -> {
+                    Valintatapajono sijoiteltavaValintatapajono = sijoiteltavatValintatapajonot.get(vanhaValintatapajono.getOid());
+                    if (sijoiteltavaValintatapajono != null) {
+                        sijoiteltavaValintatapajono.setSijoiteltuIlmanVarasijasaantojaNiidenOllessaVoimassa(vanhaValintatapajono.getSijoiteltuIlmanVarasijasaantojaNiidenOllessaVoimassa());
+                        sijoiteltavaValintatapajono.setSivssnovSijoittelunVarasijataytonRajoitus(vanhaValintatapajono.getSivssnovSijoittelunVarasijataytonRajoitus());
 
-    private void siirraSivssnov(List<Hakukohde> olemassaolevatHakukohteet, Map<String, Hakukohde> kaikkiHakukohteet) {
-        olemassaolevatHakukohteet.forEach(h -> {
-            Map<String, List<Valintatapajono>> olemassaolevatJonotOideittain = h.getValintatapajonot().stream()
-                .collect(Collectors.groupingBy(Valintatapajono::getOid));
-            kaikkiHakukohteet.get(h.getOid()).getValintatapajonot().forEach(v -> {
-                siirraSivssnov(v, olemassaolevatJonotOideittain.get(v.getOid()));
-            });
-        });
-    }
-
-    private void siirraSivssnov(Valintatapajono jonoJokaMeneeSijoitteluun, List<Valintatapajono> olemassaOlevaJonoListassa) {
-        if (olemassaOlevaJonoListassa != null) {
-            olemassaOlevaJonoListassa.forEach(olemassaOlevaJono -> {
-                jonoJokaMeneeSijoitteluun.setSijoiteltuIlmanVarasijasaantojaNiidenOllessaVoimassa(
-                    olemassaOlevaJono.getSijoiteltuIlmanVarasijasaantojaNiidenOllessaVoimassa());
-                jonoJokaMeneeSijoitteluun.setSivssnovSijoittelunVarasijataytonRajoitus(
-                    olemassaOlevaJono.getSivssnovSijoittelunVarasijataytonRajoitus());
-            });
-        }
-    }
-
-    private void kopioiHakemuksenTietoja(List<Hakukohde> olemassaolevatHakukohteet, Map<String, Hakukohde> kaikkiHakukohteet) {
-        Map<Triple<String, String, String>, Hakemus> hakemusIndex = new HashMap<>();
-        olemassaolevatHakukohteet.forEach(hk -> {
-            String hakukohdeOid = hk.getOid();
-            hk.getValintatapajonot().forEach(j -> {
-                String valintatapajonoOid = j.getOid();
-                j.getHakemukset().forEach(h -> {
-                    String hakemusOid = h.getHakemusOid();
-                    Triple<String, String, String> id = Triple.of(hakukohdeOid, valintatapajonoOid, hakemusOid);
-                    hakemusIndex.put(id, h);
-                });
-            });
-        });
-
-        kaikkiHakukohteet.values().forEach(hk -> {
-            String hakukohdeOid = hk.getOid();
-            hk.getValintatapajonot().forEach(j -> {
-                String valintatapajonoOid = j.getOid();
-                j.getHakemukset().forEach(h -> {
-                    String hakemusOid = h.getHakemusOid();
-                    Triple id = Triple.of(hakukohdeOid, valintatapajonoOid, hakemusOid);
-                    if(hakemusIndex.containsKey(id)) {
-                        Hakemus alkuperainen = hakemusIndex.get(id);
-                        h.setTilaHistoria(alkuperainen.getTilaHistoria());
-                        h.setVarasijanNumero(alkuperainen.getVarasijanNumero());
-                        h.setIlmoittautumisTila(alkuperainen.getIlmoittautumisTila());
-                        //h.setEdellinenTila(alkuperainen.getEdellinenTila());
+                        Map<String, Hakemus> sijoiteltavatHakemukset = sijoiteltavaValintatapajono.getHakemukset().stream().collect(Collectors.toMap(Hakemus::getHakemusOid, h -> h));
+                        vanhaValintatapajono.getHakemukset().forEach(vanhaHakemus -> {
+                            Hakemus sijoiteltavaHakemus = sijoiteltavatHakemukset.get(vanhaHakemus.getHakemusOid());
+                            if (sijoiteltavaHakemus == null) {
+                                poistettavatValinnantulokset.add(Pair.of(vanhaHakemus.getHakemusOid(), vanhaHakukohde.getOid()));
+                            } else {
+                                sijoiteltavaHakemus.setEdellinenTila(vanhaHakemus.getTila());
+                                sijoiteltavaHakemus.setTilaHistoria(vanhaHakemus.getTilaHistoria());
+                                sijoiteltavaHakemus.setTasasijaJonosija(vanhaHakemus.getTasasijaJonosija());
+                                sijoiteltavaHakemus.setVarasijanNumero(vanhaHakemus.getVarasijanNumero());
+                                sijoiteltavaHakemus.setIlmoittautumisTila(vanhaHakemus.getIlmoittautumisTila());
+                                if (sijoiteltavaHakemus.getTila() != HYLATTY) {
+                                    sijoiteltavaHakemus.setTilanKuvaukset(vanhaHakemus.getTilanKuvaukset());
+                                }
+                            }
+                        });
                     }
                 });
-            });
-        });
-    }
-
-    //Haetaan edelliseltä sijoitteluajolta tasasijajonosijat ja hakemusten edelliset tilat sekä niiden kuvaukset.
-    //Poistetaan valintarekisteristä sijoittelun tulokset sellaisille hakemus-hakukohdepareille,
-    // jotka löytyvät edellisen mutta eivät uuden sijoitteluajon valintatapajonoista.
-    private void kopioiTiedotEdelliseltaSijoitteluajoltaJaPoistaPassivoitujenTulokset(List<Hakukohde> uudetHakukohteet, Map<String, Hakukohde> kaikkiHakukohteet) {
-        List<Pair<String, String>> poistettavatHakemusHakukohdeParit = Collections.synchronizedList(new ArrayList<>());
-        uudetHakukohteet.parallelStream().forEach(hakukohde -> {
-            Map<String, Integer> tasasijaHashMap = new ConcurrentHashMap<>();
-            Map<String, HakemuksenTila> tilaHashMap = new ConcurrentHashMap<>();
-            Map<String, Map<String, String>> tilankuvauksetHashMap = new ConcurrentHashMap<>();
-            if (kaikkiHakukohteet.containsKey(hakukohde.getOid())) {
-                poistettavatHakemusHakukohdeParit.addAll(etsiPassivoituja(kaikkiHakukohteet.get(hakukohde.getOid()), hakukohde));
-                kaikkiHakukohteet.get(hakukohde.getOid()).getValintatapajonot().parallelStream().forEach(valintatapajono ->
-                    valintatapajono.getHakemukset().parallelStream().forEach(h -> {
-                        if (h.getTasasijaJonosija() != null) {
-                            tasasijaHashMap.put(valintatapajono.getOid() + h.getHakemusOid(), h.getTasasijaJonosija());
-                        }
-                        if (h.getTila() != null) {
-                            tilaHashMap.put(valintatapajono.getOid() + h.getHakemusOid(), h.getTila());
-                        }
-                        if (h.getTilanKuvaukset() != null && !h.getTilanKuvaukset().isEmpty()) {
-                            tilankuvauksetHashMap.put(valintatapajono.getOid() + h.getHakemusOid(), h.getTilanKuvaukset());
-                        }
-                    })
-                );
-                hakukohde.getValintatapajonot().forEach(valintatapajono ->
-                    valintatapajono.getHakemukset().forEach(hakemus -> {
-                        if (tasasijaHashMap.get(valintatapajono.getOid() + hakemus.getHakemusOid()) != null) {
-                            hakemus.setTasasijaJonosija(tasasijaHashMap.get(valintatapajono.getOid() + hakemus.getHakemusOid()));
-                        }
-                        if (tilaHashMap.get(valintatapajono.getOid() + hakemus.getHakemusOid()) != null) {
-                            hakemus.setEdellinenTila(tilaHashMap.get(valintatapajono.getOid() + hakemus.getHakemusOid()));
-                        }
-                        if (tilankuvauksetHashMap.get(valintatapajono.getOid() + hakemus.getHakemusOid()) != null) {
-                            if (!containsHylkayksenSyyFromLaskenta(hakemus)) {
-                                hakemus.setTilanKuvaukset(tilankuvauksetHashMap.get(valintatapajono.getOid() + hakemus.getHakemusOid()));
-                            }
-                        }
-                    })
-                );
             }
-            kaikkiHakukohteet.put(hakukohde.getOid(), hakukohde);
         });
-        if(poistettavatHakemusHakukohdeParit.size() > 0) {
-            LOG.warn("Löytyi tuloksista poistettavia hakemus-hakukohdepareja. Suoritetaan poisto valintarekisteristä seuraaville: "
-                    + poistettavatHakemusHakukohdeParit);
-            poistettavatHakemusHakukohdeParit.forEach(pari -> valintarekisteriService
-                    .cleanRedundantSijoitteluTuloksesForHakemusInHakukohde(pari.getLeft(), pari.getRight()));
-        }
-    }
-
-    //Selvitetään, onko edellisen sijoitteluajon hakukohteen valintatapajonoissa hakemuksia, joita ei ole uuden jonoissa.
-    //Tulkitaan sellaiset passivoituina tai muuttuneiden hakutoiveiden seurauksena tältä hakukohteelta kadonneiksi.
-    private List<Pair<String, String>> etsiPassivoituja(Hakukohde edellinenHakukohde, Hakukohde uusiHakukohde) {
-        AtomicInteger passivoituja = new AtomicInteger(0);
-        AtomicInteger ok = new AtomicInteger(0);
-        List<Pair<String, String>> passivoidutHakemusOidit = new ArrayList<>();
-        edellinenHakukohde.getValintatapajonot().forEach(ejono -> ejono.getHakemukset().forEach(ehak -> {
-            boolean loytyy = uusiHakukohde.getValintatapajonot()
-                    .stream()
-                    .anyMatch(uusiJono -> uusiJono.getHakemukset()
-                            .stream()
-                            .anyMatch(uusiHakemus -> uusiHakemus.getHakemusOid().equals(ehak.getHakemusOid())));
-            if (!loytyy) {
-                LOG.warn("Edellisessä sijoitteluajossa ollut hakemus {} hakukohteessa {} ei löydy uuden sijoitteluajon valintatapajonoista. " +
-                        "Tulkitaan se passivoiduksi tai hakutoiveeltaan muuttuneeksi. Lisätään siivottavien listalle.",
-                        ehak.getHakemusOid(),
-                        uusiHakukohde.getOid());
-                passivoidutHakemusOidit.add(Pair.of(ehak.getHakemusOid(), uusiHakukohde.getOid()));
-                passivoituja.incrementAndGet();
-            } else {
-                ok.incrementAndGet();
-            }
-        }));
-        LOG.info("Hakukohde {} käsitelty. Siivottavia {}, ok: {}. Siivottavien hakemusOidit: {}",
-                uusiHakukohde.getOid(),
-                passivoituja.get(),
-                ok.get(),
-                passivoidutHakemusOidit );
-        return passivoidutHakemusOidit;
-    }
-
-    private boolean containsHylkayksenSyyFromLaskenta(Hakemus hakemus) {
-        return HakemuksenTila.HYLATTY.equals(hakemus.getTila()) && (
-            StringUtils.isNotEmpty(hakemus.getTilanKuvaukset().get("FI")) ||
-                StringUtils.isNotEmpty(hakemus.getTilanKuvaukset().get("SV")) ||
-                StringUtils.isNotEmpty(hakemus.getTilanKuvaukset().get("EN")));
+        sijoiteltavatHakukohteet.values().forEach(hakukohde -> {
+            HakukohdeItem hki = new HakukohdeItem();
+            hki.setOid(hakukohde.getOid());
+            uusiSijoitteluajo.getHakukohteet().add(hki);
+            hakukohde.setSijoitteluajoId(uusiSijoitteluajo.getSijoitteluajoId());
+        });
+        return Pair.of(new ArrayList<>(sijoiteltavatHakukohteet.values()), poistettavatValinnantulokset);
     }
 
     private SijoitteluAjo createSijoitteluAjo(String hakuOid) {
