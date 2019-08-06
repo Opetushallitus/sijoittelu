@@ -328,6 +328,27 @@ public class SijoitteluBusinessServiceValintarekisteriTest {
         return jonoDto;
     }
 
+    @Test
+    public void testSijoitteleIlmanPriorisointia() {
+        setUpMocks2();
+
+        service.sijoitteleIlmanPriorisointia(hakuDTO2(true), Collections.emptySet(), Sets.newHashSet(
+            "112233.111111", "112244.111111", "112255.111111", "112233.222222", "112244.222222", "112255.222222"), (long)123456789);
+
+        Function3<SijoitteluAjo, List<Hakukohde>, List<Valintatulos>, Boolean> assertFunction = (sijoitteluajo, hakukohteet, valintatulokset) -> {
+            assertSijoitteluajo(sijoitteluajo);
+            assertHakukohteet(sijoitteluajo.getSijoitteluajoId(), hakukohteet);
+            assertHakemuksetKaksiJonoHyvaksyVarallaJaPeruAlempi(hakukohteet);
+            //assertVastaanotetutValintatuloksetUudelleHakukohteelle(valintatulokset);
+            assertHyvaksyttyVaralla(hakukohteet, uusiHakukohdeOid, "112233.111111", 2, 0);
+            assertHyvaksyttyVaralla(hakukohteet, uusiHakukohdeOid, "112233.222222", 0, 0);
+
+            return true;
+        };
+
+        verifyAndCaptureAndAssert(assertFunction);
+    }
+
     private void assertYksiHyvaksyttyKaksiVarallaSamallaVarasijalla(ValintatietoValintatapajonoDTO jonoDto) {
         ArgumentCaptor<SijoitteluAjo> sijoitteluajoCaptor = ArgumentCaptor.forClass(SijoitteluAjo.class);
         ArgumentCaptor<List<Hakukohde>> hakukohteetCaptor = ArgumentCaptor.forClass((Class)List.class);
