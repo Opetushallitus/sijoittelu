@@ -23,6 +23,7 @@ import fi.vm.sade.sijoittelu.domain.Hakukohde;
 import fi.vm.sade.sijoittelu.domain.IlmoittautumisTila;
 import fi.vm.sade.sijoittelu.domain.SijoitteluAjo;
 import fi.vm.sade.sijoittelu.domain.TilanKuvaukset;
+import fi.vm.sade.sijoittelu.domain.TilankuvauksenTarkenne;
 import fi.vm.sade.sijoittelu.domain.Valintatapajono;
 import fi.vm.sade.sijoittelu.domain.Valintatapajono.JonosijaTieto;
 import fi.vm.sade.sijoittelu.domain.ValintatuloksenTila;
@@ -420,7 +421,8 @@ public class RajattuVarasijatayttoTest {
         assertHakemustenTilat(HYVAKSYTTY, VARALLA, PERUUNTUNUT, PERUUNTUNUT);
         assertEquals(HYVAKSYTTY, kiilaavaHakemusAlemmassaHakutoiveessa.getTila());
         assertEquals(PERUUNTUNUT, kiilaavaHakemus.getTila());
-        assertEquals("Peruuntunut, ottanut vastaan toisen opiskelupaikan", kiilaavaHakemus.getTilanKuvaukset().get("FI"));
+        assertEquals(TilankuvauksenTarkenne.PERUUNTUNUT_VASTAANOTTANUT_TOISEN_PAIKAN, kiilaavaHakemus.getTilankuvauksenTarkenne());
+        assertEquals(TilanKuvaukset.peruuntunutVastaanottanutToisenOpiskelupaikan, kiilaavaHakemus.getTilanKuvaukset());
     }
 
     @Test

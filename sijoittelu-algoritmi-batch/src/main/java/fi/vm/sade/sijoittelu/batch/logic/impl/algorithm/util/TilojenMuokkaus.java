@@ -22,8 +22,7 @@ public class TilojenMuokkaus {
 
     public static void asetaTilaksiHylatty(Hakemus hakemus, Map<String, String> tilanKuvaukset) {
         hakemus.setTila(HakemuksenTila.HYLATTY);
-        hakemus.setTilankuvauksenTarkenne(TilankuvauksenTarkenne.EI_TILANKUVAUKSEN_TARKENNETTA);
-        hakemus.setTilanKuvaukset(tilanKuvaukset);
+        hakemus.setTilankuvauksenTarkenne(TilankuvauksenTarkenne.EI_TILANKUVAUKSEN_TARKENNETTA, tilanKuvaukset);
     }
 
     public static void asetaTilaksiHylattyHakijaryhmaanKuulumattomana(HakemusWrapper hakemusWrapper, Hakijaryhma hakijaryhma) {
@@ -32,8 +31,7 @@ public class TilojenMuokkaus {
 
     public static void asetaTilaksiHylattyHakijaryhmaanKuulumattomana(Hakemus hakemus, Hakijaryhma hakijaryhma) {
         hakemus.setTila(HakemuksenTila.HYLATTY);
-        hakemus.setTilankuvauksenTarkenne(TilankuvauksenTarkenne.HYLATTY_HAKIJARYHMAAN_KUULUMATTOMANA);
-        hakemus.setTilanKuvaukset(TilanKuvaukset.hylattyHakijaryhmaanKuulumattomana(hakijaryhma.getNimi()));
+        hakemus.setTilankuvauksenTarkenne(TilankuvauksenTarkenne.HYLATTY_HAKIJARYHMAAN_KUULUMATTOMANA, TilanKuvaukset.hylattyHakijaryhmaanKuulumattomana(hakijaryhma.getNimi()));
     }
 
     public static void asetaTilaksiVaralla(HakemusWrapper hakemusWrapper) {
@@ -42,7 +40,7 @@ public class TilojenMuokkaus {
 
     public static void asetaTilaksiVaralla(Hakemus hakemus) {
         hakemus.setTila(HakemuksenTila.VARALLA);
-        hakemus.setTilankuvauksenTarkenne(TilankuvauksenTarkenne.EI_TILANKUVAUKSEN_TARKENNETTA);
+        hakemus.setTilankuvauksenTarkenne(TilankuvauksenTarkenne.EI_TILANKUVAUKSEN_TARKENNETTA, TilanKuvaukset.tyhja);
     }
 
     public static void asetaTilaksiHyvaksytty(HakemusWrapper hakemusWrapper) {
@@ -51,7 +49,7 @@ public class TilojenMuokkaus {
 
     public static void asetaTilaksiHyvaksytty(Hakemus hakemus) {
         hakemus.setTila(HakemuksenTila.HYVAKSYTTY);
-        hakemus.setTilankuvauksenTarkenne(TilankuvauksenTarkenne.EI_TILANKUVAUKSEN_TARKENNETTA);
+        hakemus.setTilankuvauksenTarkenne(TilankuvauksenTarkenne.EI_TILANKUVAUKSEN_TARKENNETTA, TilanKuvaukset.tyhja);
     }
 
     public static void asetaTilaksiPeruuntunutToinenJono(HakemusWrapper hakemusWrapper) {
@@ -121,7 +119,7 @@ public class TilojenMuokkaus {
 
     public static void asetaTilaksiPerunut(Hakemus hakemus) {
         hakemus.setTila(HakemuksenTila.PERUNUT);
-        hakemus.setTilankuvauksenTarkenne(TilankuvauksenTarkenne.EI_TILANKUVAUKSEN_TARKENNETTA);
+        hakemus.setTilankuvauksenTarkenne(TilankuvauksenTarkenne.EI_TILANKUVAUKSEN_TARKENNETTA, TilanKuvaukset.tyhja);
     }
 
     public static void asetaTilaksiPerunutEiVastaanottanutMaaraaikana(HakemusWrapper hakemusWrapper) {
@@ -131,7 +129,7 @@ public class TilojenMuokkaus {
 
     public static void asetaTilaksiPeruutettu(HakemusWrapper hakemusWrapper) {
         hakemusWrapper.getHakemus().setTila(HakemuksenTila.PERUUTETTU);
-        hakemusWrapper.getHakemus().setTilankuvauksenTarkenne(TilankuvauksenTarkenne.EI_TILANKUVAUKSEN_TARKENNETTA);
+        hakemusWrapper.getHakemus().setTilankuvauksenTarkenne(TilankuvauksenTarkenne.EI_TILANKUVAUKSEN_TARKENNETTA, TilanKuvaukset.tyhja);
     }
 
     public static Optional<Valintatulos> findValintatulos(HakemusWrapper hakemusWrapper, String jonoOid) {

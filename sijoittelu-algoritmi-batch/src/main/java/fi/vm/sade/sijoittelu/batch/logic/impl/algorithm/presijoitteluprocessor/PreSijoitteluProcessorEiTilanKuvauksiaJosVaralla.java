@@ -2,6 +2,7 @@ package fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.presijoitteluprocessor;
 
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.SijoitteluajoWrapper;
 import fi.vm.sade.sijoittelu.domain.HakemuksenTila;
+import fi.vm.sade.sijoittelu.domain.TilanKuvaukset;
 import fi.vm.sade.sijoittelu.domain.TilankuvauksenTarkenne;
 
 /* Hakemuksen tilan kuvaukset kopioidaan edellisen sijoittelun tuloksista ennen sijoittelun ajoa
@@ -17,7 +18,7 @@ public class PreSijoitteluProcessorEiTilanKuvauksiaJosVaralla implements PreSijo
             hk.getValintatapajonot().forEach(j -> {
                 j.getHakemukset().forEach(h -> {
                     if (h.getHakemus().getTila() == HakemuksenTila.VARALLA) {
-                        h.getHakemus().setTilankuvauksenTarkenne(TilankuvauksenTarkenne.EI_TILANKUVAUKSEN_TARKENNETTA);
+                        h.getHakemus().setTilankuvauksenTarkenne(TilankuvauksenTarkenne.EI_TILANKUVAUKSEN_TARKENNETTA, TilanKuvaukset.tyhja);
                     }
                 });
             });

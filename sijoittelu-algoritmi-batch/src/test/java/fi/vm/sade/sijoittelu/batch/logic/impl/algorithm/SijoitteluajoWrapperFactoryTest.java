@@ -59,7 +59,8 @@ public class SijoitteluajoWrapperFactoryTest {
             assertEquals(sijoitteluAjo.getHakukohteet().size(), 1);
             HakemusWrapper hakemusWrapper = sijoitteluAjo.getHakukohteet().get(0).getValintatapajonot().get(0).getHakemukset().get(0);
             assertEquals(HakemuksenTila.PERUNUT, hakemusWrapper.getHakemus().getTila());
-            assertEquals("Peruuntunut, ei vastaanottanut määräaikana", hakemusWrapper.getHakemus().getTilanKuvaukset().get("FI"));
+            assertEquals(TilankuvauksenTarkenne.PERUUNTUNUT_EI_VASTAANOTTANUT_MAARAAIKANA, hakemusWrapper.getHakemus().getTilankuvauksenTarkenne());
+            assertEquals(TilanKuvaukset.peruuntunutEiVastaanottanutMaaraaikana, hakemusWrapper.getHakemus().getTilanKuvaukset());
             assertFalse(hakemusWrapper.isTilaVoidaanVaihtaa());
         }
 
@@ -71,9 +72,7 @@ public class SijoitteluajoWrapperFactoryTest {
             HakemusWrapper hakemusWrapper = sijoitteluAjo.getHakukohteet().get(0).getValintatapajonot().get(0).getHakemukset().get(0);
             assertEquals(HakemuksenTila.PERUUTETTU, hakemusWrapper.getHakemus().getTila());
             assertEquals(TilankuvauksenTarkenne.EI_TILANKUVAUKSEN_TARKENNETTA, hakemusWrapper.getHakemus().getTilankuvauksenTarkenne());
-            assertNull(hakemusWrapper.getHakemus().getTilanKuvaukset().get("FI"));
-            assertNull(hakemusWrapper.getHakemus().getTilanKuvaukset().get("SV"));
-            assertNull(hakemusWrapper.getHakemus().getTilanKuvaukset().get("EN"));
+            assertEquals(TilanKuvaukset.tyhja, hakemusWrapper.getHakemus().getTilanKuvaukset());
             assertTrue(!hakemusWrapper.isTilaVoidaanVaihtaa());
         }
 
@@ -190,7 +189,8 @@ public class SijoitteluajoWrapperFactoryTest {
 
             HakemusWrapper hakemusWrapper = sijoitteluAjo.getHakukohteet().get(0).getValintatapajonot().get(0).getHakemukset().get(0);
             assertEquals(HakemuksenTila.VARASIJALTA_HYVAKSYTTY, hakemusWrapper.getHakemus().getTila());
-            assertEquals("Varasijalta hyväksytty", hakemusWrapper.getHakemus().getTilanKuvaukset().get("FI"));
+            assertEquals(TilankuvauksenTarkenne.HYVAKSYTTY_VARASIJALTA, hakemusWrapper.getHakemus().getTilankuvauksenTarkenne());
+            assertEquals(TilanKuvaukset.varasijaltaHyvaksytty, hakemusWrapper.getHakemus().getTilanKuvaukset());
             assertFalse(hakemusWrapper.isTilaVoidaanVaihtaa());
         }
     }
@@ -219,7 +219,7 @@ public class SijoitteluajoWrapperFactoryTest {
     private static void assertPeruuntunut(final HakemusWrapper hakemusWrapper) {
         assertEquals(HakemuksenTila.PERUUNTUNUT, hakemusWrapper.getHakemus().getTila());
         assertEquals(TilankuvauksenTarkenne.PERUUNTUNUT_HYVAKSYTTY_TOISESSA_JONOSSA, hakemusWrapper.getHakemus().getTilankuvauksenTarkenne());
-        assertEquals(TilanKuvaukset.peruuntunutHyvaksyttyToisessaJonossa(), hakemusWrapper.getHakemus().getTilanKuvaukset());
+        assertEquals(TilanKuvaukset.peruuntunutHyvaksyttyToisessaJonossa, hakemusWrapper.getHakemus().getTilanKuvaukset());
     }
 
     private static SijoitteluajoWrapper sijoitteluAjo(Valintatulos valintatulos) {

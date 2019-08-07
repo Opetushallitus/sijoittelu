@@ -127,7 +127,7 @@ public class SijoitteluajoWrapperFactory {
                 TilojenMuokkaus.asetaTilaksiPerunut(hakemusWrapper);
             } else if (hakemus.getTila() == HakemuksenTila.VARALLA) {
                 hakemus.setTila(HakemuksenTila.PERUUNTUNUT);
-                if (hakemus.getEdellinenTila() != HakemuksenTila.PERUUNTUNUT || hakemus.getTilanKuvaukset() == null || hakemus.getTilanKuvaukset().isEmpty()) {
+                if (hakemus.getEdellinenTila() != HakemuksenTila.PERUUNTUNUT || hakemus.getTilanKuvaukset() == TilanKuvaukset.tyhja) {
                     TilojenMuokkaus.asetaTilaksiPeruuntunutVastaanottanutToisenPaikanYhdenPaikanSaannonPiirissa(hakemusWrapper);
                 }
             }
