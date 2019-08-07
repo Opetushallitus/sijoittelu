@@ -7,6 +7,7 @@ import static java.util.Arrays.asList;
 import static java.util.Collections.emptyMap;
 
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.util.TilaTaulukot;
+import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.util.TilojenMuokkaus;
 import fi.vm.sade.sijoittelu.domain.TilanKuvaukset;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.HakemusWrapper;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.HakijaryhmaWrapper;
@@ -122,12 +123,12 @@ public class SijoitteluajoWrapperFactory {
                                                          Optional<VastaanottoDTO> aiempiVastaanottoSamalleKaudelle) {
         Hakemus hakemus = hakemusWrapper.getHakemus();
         if (estaaVastaanotonYhdenPaikanSaannoksenTakia(aiempiVastaanottoSamalleKaudelle, hakemusWrapper)) {
-             if (valintatulos != null && valintatulos.getTila() == ValintatuloksenTila.PERUNUT) {
-                hakemus.setTila(HakemuksenTila.PERUNUT);
+            if (valintatulos != null && valintatulos.getTila() == ValintatuloksenTila.PERUNUT) {
+                TilojenMuokkaus.asetaTilaksiPerunut(hakemusWrapper);
             } else if (hakemus.getTila() == HakemuksenTila.VARALLA) {
                 hakemus.setTila(HakemuksenTila.PERUUNTUNUT);
                 if (hakemus.getEdellinenTila() != HakemuksenTila.PERUUNTUNUT || hakemus.getTilanKuvaukset() == null || hakemus.getTilanKuvaukset().isEmpty()) {
-                    hakemus.setTilanKuvaukset(TilanKuvaukset.peruuntunutVastaanottanutToisenOpiskelupaikanYhdenPaikanSaannonPiirissa());
+                    TilojenMuokkaus.asetaTilaksiPeruuntunutVastaanottanutToisenPaikanYhdenPaikanSaannonPiirissa(hakemusWrapper);
                 }
             }
             hakemusWrapper.setTilaVoidaanVaihtaa(false);
@@ -146,43 +147,41 @@ public class SijoitteluajoWrapperFactory {
             ValintatuloksenTila tila = valintatulos.getTila();
             boolean voidaanVaihtaa = false;
             if (tila == ValintatuloksenTila.PERUNUT) {
-                hakemus.setTila(HakemuksenTila.PERUNUT);
+                TilojenMuokkaus.asetaTilaksiPerunut(hakemusWrapper);
             } else if (asList(VASTAANOTTANUT_SITOVASTI, EHDOLLISESTI_VASTAANOTTANUT).contains(tila)) {
                 if (viimeisinHyvaksyttyJono(hakemusWrapper)) {
                     if (hakemus.getEdellinenTila() == HakemuksenTila.VARALLA || hakemus.getEdellinenTila() == HakemuksenTila.VARASIJALTA_HYVAKSYTTY) {
-                        hyvaksyVarasijalta(hakemus, valintatulos);
+                        hyvaksyVarasijalta(hakemusWrapper, valintatulos);
                     } else {
-                        hyvaksy(hakemus, valintatulos);
+                        hyvaksy(hakemusWrapper, valintatulos);
                     }
                 } else {
                     valintatulos.setTila(KESKEN, "Peitetään vastaanottotieto ei-hyväksytyltä jonolta"); // See ValintatulosWithVastaanotto.persistValintatulokset check
                     voidaanVaihtaa = false;
                 }
             } else if (tila == ValintatuloksenTila.EI_VASTAANOTETTU_MAARA_AIKANA) {
-                hakemus.setTila(HakemuksenTila.PERUNUT);
-                hakemus.setTilanKuvaukset(TilanKuvaukset.peruuntunutEiVastaanottanutMaaraaikana());
+                TilojenMuokkaus.asetaTilaksiPerunutEiVastaanottanutMaaraaikana(hakemusWrapper);
             } else if (tila == ValintatuloksenTila.PERUUTETTU) {
-                hakemus.setTila(HakemuksenTila.PERUUTETTU);
-                hakemus.setTilankuvauksenTarkenne(TilankuvauksenTarkenne.EI_TILANKUVAUKSEN_TARKENNETTA);
+                TilojenMuokkaus.asetaTilaksiPeruutettu(hakemusWrapper);
             } else if (tila == ValintatuloksenTila.KESKEN) {
                 // tila == KESKEN
                 if (valintatulos.getJulkaistavissa() && hakemus.getEdellinenTila() == HakemuksenTila.HYVAKSYTTY) {
-                    hyvaksy(hakemus, valintatulos);
+                    hyvaksy(hakemusWrapper, valintatulos);
                 } else if (valintatulos.getJulkaistavissa() && hakemus.getEdellinenTila() == HakemuksenTila.VARASIJALTA_HYVAKSYTTY) {
-                    hyvaksyVarasijalta(hakemus, valintatulos);
+                    hyvaksyVarasijalta(hakemusWrapper, valintatulos);
                 } else if (valintatulos.getHyvaksyttyVarasijalta()) {
                     if (hasHigherJulkaistuHyvaksytty(hakukohdeWrapper, hakemusWrapper)) {
                         voidaanVaihtaa = true;
                         logDidNotHyvaksy(hakemusWrapper, tila, "hyvaksyttyVarasijalta");
                     } else {
-                        hyvaksyVarasijalta(hakemus, valintatulos);
+                        hyvaksyVarasijalta(hakemusWrapper, valintatulos);
                     }
                 } else if (valintatulos.getHyvaksyPeruuntunut()) {
                     if (hasHigherJulkaistuHyvaksytty(hakukohdeWrapper, hakemusWrapper)) {
                         voidaanVaihtaa = true;
                         logDidNotHyvaksy(hakemusWrapper, tila, "hyvaksyPeruuntunut");
                     } else {
-                        hyvaksy(hakemus, valintatulos);
+                        hyvaksy(hakemusWrapper, valintatulos);
                         hakemusWrapper.hyvaksyPeruuntunut();
                     }
                 } else if (HakemuksenTila.HYLATTY == hakemus.getTila()) {
@@ -261,16 +260,14 @@ public class SijoitteluajoWrapperFactory {
             h.getHakukohdeOid().equals(aiempiVastaanotto.getHakukohdeOid()));
     }
 
-    private static void hyvaksyVarasijalta(final Hakemus hakemus, final Valintatulos valintatulos) {
-        hakemus.setTilanKuvaukset(TilanKuvaukset.varasijaltaHyvaksytty());
-        hakemus.setTila(HakemuksenTila.VARASIJALTA_HYVAKSYTTY);
-        hakemus.setIlmoittautumisTila(valintatulos.getIlmoittautumisTila());
+    private static void hyvaksyVarasijalta(final HakemusWrapper hakemusWrapper, final Valintatulos valintatulos) {
+        TilojenMuokkaus.asetaTilaksiVarasijaltaHyvaksytty(hakemusWrapper);
+        hakemusWrapper.getHakemus().setIlmoittautumisTila(valintatulos.getIlmoittautumisTila());
     }
 
-    private static void hyvaksy(final Hakemus hakemus, final Valintatulos valintatulos) {
-        hakemus.setTila(HakemuksenTila.HYVAKSYTTY);
-        hakemus.setTilanKuvaukset(TilanKuvaukset.tyhja);
-        hakemus.setIlmoittautumisTila(valintatulos.getIlmoittautumisTila());
+    private static void hyvaksy(final HakemusWrapper hakemusWrapper, final Valintatulos valintatulos) {
+        TilojenMuokkaus.asetaTilaksiHyvaksytty(hakemusWrapper);
+        hakemusWrapper.getHakemus().setIlmoittautumisTila(valintatulos.getIlmoittautumisTila());
     }
 
     private static HenkiloWrapper getOrCreateHenkilo(Hakemus hakemus, Map<String, HenkiloWrapper> hakemusOidMap) {

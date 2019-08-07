@@ -76,7 +76,7 @@ public class SijoitteluAlgorithmUtil {
             hakijaryhma.getHakemusOid().add(h.getHakemusOid());
         }
         h.setPisteet(new BigDecimal(i));
-        h.setTila(HakemuksenTila.VARALLA);
+        TilojenMuokkaus.asetaTilaksiVaralla(h);
         return h;
     }
 }

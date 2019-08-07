@@ -13,6 +13,7 @@ import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.helper.HakuBuilder.Hakem
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.helper.HakuBuilder.HakukohdeBuilder;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.helper.HakuBuilder.ValintatapajonoBuilder;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.util.SijoitteluAlgorithmUtil;
+import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.util.TilojenMuokkaus;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.*;
 import fi.vm.sade.sijoittelu.domain.*;
 import org.junit.Assert;
@@ -125,13 +126,13 @@ public class SijoitteleHakukohdeTest {
 
 
         hakemus1.setPrioriteetti(1);
-        hakemus1.setTila(VARALLA);
+        TilojenMuokkaus.asetaTilaksiVaralla(hakemus1);
         hakemus2.setPrioriteetti(2);
-        hakemus2.setTila(PERUNUT);
+        TilojenMuokkaus.asetaTilaksiPerunut(hakemus2);
         hakemus3.setPrioriteetti(3);
-        hakemus3.setTila(VARALLA);
+        TilojenMuokkaus.asetaTilaksiVaralla(hakemus3);
         hakemus4.setPrioriteetti(4);
-        hakemus4.setTila(VARALLA);
+        TilojenMuokkaus.asetaTilaksiVaralla(hakemus4);
 
 
         Assert.assertTrue(SijoitteleHakukohde.eiPeruttuaKorkeampaaTaiSamaaHakutoivetta(hakemusWrapper1));

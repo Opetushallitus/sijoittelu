@@ -9,6 +9,7 @@ import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoittelunTila;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.comparator.HakemusWrapperComparator;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.helper.HakuBuilder;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.util.SijoitteluAlgorithmUtil;
+import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.util.TilojenMuokkaus;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.HakemusWrapper;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.HakijaryhmaWrapper;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.HakukohdeWrapper;
@@ -549,7 +550,7 @@ public class SijoitteleHakijaryhmaTest {
         );
         peruuntuneenaHyvaksytynValintatulos.setTila(ValintatuloksenTila.KESKEN, "");
         peruuntuneenaHyvaksytynValintatulos.setHyvaksyPeruuntunut(true, "");
-        peruuntuneenaHyvaksytty.setTila(HakemuksenTila.PERUUNTUNUT);
+        TilojenMuokkaus.asetaTilaksiPeruuntunutToinenJono(peruuntuneenaHyvaksytty);
         valintatapajono2.getHakemukset().add(peruuntuneenaHyvaksytty);
 
         Hakukohde hakukohde = new Hakukohde();
@@ -595,7 +596,7 @@ public class SijoitteleHakijaryhmaTest {
         valintatapajono1.setTasasijasaanto(Tasasijasaanto.ALITAYTTO);
         valintatapajono1.setHakemukset(new ArrayList<>(2));
         Hakemus h1 = SijoitteluAlgorithmUtil.generateHakemus(0, 0, null);
-        h1.setTila(HakemuksenTila.HYVAKSYTTY);
+        TilojenMuokkaus.asetaTilaksiHyvaksytty(h1);
         valintatapajono1.getHakemukset().add(h1);
         valintatapajono1.getHakemukset().add(SijoitteluAlgorithmUtil.generateHakemus(1, 1, hakijaryhma));
 
@@ -605,7 +606,7 @@ public class SijoitteleHakijaryhmaTest {
         valintatapajono2.setTasasijasaanto(Tasasijasaanto.ARVONTA);
         valintatapajono2.setHakemukset(new ArrayList<>(2));
         Hakemus h2 = SijoitteluAlgorithmUtil.generateHakemus(2, 0, null);
-        h2.setTila(HakemuksenTila.HYVAKSYTTY);
+        TilojenMuokkaus.asetaTilaksiHyvaksytty(h2);
         valintatapajono2.getHakemukset().add(h2);
         valintatapajono2.getHakemukset().add(SijoitteluAlgorithmUtil.generateHakemus(3, 1, hakijaryhma));
 
@@ -615,7 +616,7 @@ public class SijoitteleHakijaryhmaTest {
         valintatapajono3.setTasasijasaanto(Tasasijasaanto.YLITAYTTO);
         valintatapajono3.setHakemukset(new ArrayList<>(2));
         Hakemus h3 = SijoitteluAlgorithmUtil.generateHakemus(4, 0, null);
-        h3.setTila(HakemuksenTila.HYVAKSYTTY);
+        TilojenMuokkaus.asetaTilaksiHyvaksytty(h3);
         valintatapajono3.getHakemukset().add(h3);
         valintatapajono3.getHakemukset().add(SijoitteluAlgorithmUtil.generateHakemus(5, 1, hakijaryhma));
 

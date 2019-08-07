@@ -1,5 +1,6 @@
 package fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.presijoitteluprocessor;
 
+import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.util.TilojenMuokkaus;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.HakemusWrapper;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.SijoitteluajoWrapper;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.ValintatapajonoWrapper;
@@ -52,7 +53,7 @@ public class PreSijoitteluProcessorKiilaavatHakemuksetVaralleRajatunVarasijatayt
             .filter(kiilaavaJonosija)
             .filter(hylattyTaiPeruuntunutEdellinenTila).map(h -> {
                 h.setEdellinenTila(HakemuksenTila.VARALLA);
-                h.setTila(HakemuksenTila.VARALLA);
+                TilojenMuokkaus.asetaTilaksiVaralla(h);
                 return h.getHakemusOid();
             }).collect(Collectors.toList());
 

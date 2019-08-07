@@ -4,6 +4,7 @@ import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoitteluConfiguration;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoitteluajoWrapperFactory;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.helper.HakuBuilder;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.util.SijoitteluAlgorithmUtil;
+import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.util.TilojenMuokkaus;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.SijoitteluajoWrapper;
 import fi.vm.sade.sijoittelu.domain.*;
 import org.junit.Test;
@@ -73,27 +74,27 @@ public class PostSijoitteluProcessorKorjaaSijoitteluajonTilankuvauksetTest {
         jono.setEiVarasijatayttoa(false);
         jono.setVarasijat(0);
 
-        hakemus5.setTila(HYLATTY);
-        hakemus5.setTilankuvauksenTarkenne(TilankuvauksenTarkenne.PERUUNTUNUT_EI_MAHDU_VARASIJOJEN_MAARAAN);
+        TilojenMuokkaus.asetaTilaksiHylatty(hakemus5, TilanKuvaukset.tyhja);
 
-        hakemus6.setTila(HYLATTY);
-        hakemus6.setTilankuvauksenTarkenne(TilankuvauksenTarkenne.HYLATTY_HAKIJARYHMAAN_KUULUMATTOMANA);
+        Hakijaryhma hakijaryhma = new Hakijaryhma();
+        hakijaryhma.setNimi("ryhmä");
+        TilojenMuokkaus.asetaTilaksiHylattyHakijaryhmaanKuulumattomana(hakemus6, hakijaryhma);
 
         sijoittele(kkHakuVarasijasaannotVoimassa, hakukohde);
 
         assertHakemustenTilat(HYVAKSYTTY, HYVAKSYTTY, HYVAKSYTTY, VARASIJALTA_HYVAKSYTTY, HYLATTY,
                 HYLATTY, VARALLA, VARALLA, VARALLA, PERUUNTUNUT);
         assertHakemustenTilaKuvauksenTarkenteet(EI_TILANKUVAUKSEN_TARKENNETTA, EI_TILANKUVAUKSEN_TARKENNETTA, EI_TILANKUVAUKSEN_TARKENNETTA,
-                HYVAKSYTTY_VARASIJALTA, PERUUNTUNUT_EI_MAHDU_VARASIJOJEN_MAARAAN, HYLATTY_HAKIJARYHMAAN_KUULUMATTOMANA,
+                HYVAKSYTTY_VARASIJALTA, EI_TILANKUVAUKSEN_TARKENNETTA, HYLATTY_HAKIJARYHMAAN_KUULUMATTOMANA,
                 EI_TILANKUVAUKSEN_TARKENNETTA, EI_TILANKUVAUKSEN_TARKENNETTA, EI_TILANKUVAUKSEN_TARKENNETTA, PERUUNTUNUT_VASTAANOTTANUT_TOISEN_PAIKAN);
         assertTilanKuvaukset(TilanKuvaukset.tyhja.get("FI"), TilanKuvaukset.tyhja.get("FI"), TilanKuvaukset.tyhja.get("FI"),
-                TilanKuvaukset.varasijaltaHyvaksytty().get("FI"), TilanKuvaukset.peruuntunutEiMahduKasiteltavienVarasijojenMaaraan().get("FI"), TilanKuvaukset.hylattyHakijaryhmaanKuulumattomana(null).get("FI"),
+                TilanKuvaukset.varasijaltaHyvaksytty().get("FI"), TilanKuvaukset.tyhja.get("FI"), TilanKuvaukset.hylattyHakijaryhmaanKuulumattomana("ryhmä").get("FI"),
                 TilanKuvaukset.tyhja.get("FI"), TilanKuvaukset.tyhja.get("FI"), TilanKuvaukset.tyhja.get("FI"),
                 TilanKuvaukset.peruuntunutVastaanottanutToisenOpiskelupaikan().get("FI"));
 
         // Lisätään varasija ja muutetaan hakemuksen tila:
         jono.setVarasijat(1);
-        hakemus5.setTila(VARASIJALTA_HYVAKSYTTY);
+        TilojenMuokkaus.asetaTilaksiVarasijaltaHyvaksytty(hakemus5);
 
         sijoittele(kkHakuVarasijasaannotVoimassa, hakukohde);
 
@@ -103,13 +104,13 @@ public class PostSijoitteluProcessorKorjaaSijoitteluajonTilankuvauksetTest {
                 HYVAKSYTTY_VARASIJALTA, HYVAKSYTTY_VARASIJALTA, HYLATTY_HAKIJARYHMAAN_KUULUMATTOMANA,
                 EI_TILANKUVAUKSEN_TARKENNETTA, EI_TILANKUVAUKSEN_TARKENNETTA, EI_TILANKUVAUKSEN_TARKENNETTA, PERUUNTUNUT_VASTAANOTTANUT_TOISEN_PAIKAN);
         assertTilanKuvaukset(TilanKuvaukset.tyhja.get("FI"), TilanKuvaukset.tyhja.get("FI"), TilanKuvaukset.tyhja.get("FI"),
-                TilanKuvaukset.varasijaltaHyvaksytty().get("FI"), TilanKuvaukset.varasijaltaHyvaksytty().get("FI"), TilanKuvaukset.hylattyHakijaryhmaanKuulumattomana(null).get("FI"),
+                TilanKuvaukset.varasijaltaHyvaksytty().get("FI"), TilanKuvaukset.varasijaltaHyvaksytty().get("FI"), TilanKuvaukset.hylattyHakijaryhmaanKuulumattomana("ryhmä").get("FI"),
                 TilanKuvaukset.tyhja.get("FI"), TilanKuvaukset.tyhja.get("FI"), TilanKuvaukset.tyhja.get("FI"),
                 TilanKuvaukset.peruuntunutVastaanottanutToisenOpiskelupaikan().get("FI"));
 
         // Hakemus2 perutaan ja hakemus 6 varalle:
-        hakemus2.setTila(PERUNUT);
-        hakemus6.setTila(VARALLA);
+        TilojenMuokkaus.asetaTilaksiPerunut(hakemus2);
+        TilojenMuokkaus.asetaTilaksiVaralla(hakemus6);
 
         sijoittele(kkHakuVarasijasaannotVoimassa, hakukohde);
 
@@ -170,7 +171,7 @@ public class PostSijoitteluProcessorKorjaaSijoitteluajonTilankuvauksetTest {
         jono.setVarasijat(3);
 
         // Tila muuttuu
-        hakemus5.setTila(HYVAKSYTTY);
+        TilojenMuokkaus.asetaTilaksiHyvaksytty(hakemus5);
         hakemus5.setTilanKuvaukset(new HashMap<String, String>() {{
             put("FI", "Suomenkielinen teksti 5");
             put("SV", "Svensk text 5");
