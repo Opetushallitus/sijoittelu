@@ -385,7 +385,7 @@ public class SijoitteluMontaJonoaTest {
         hakukohteet.get(0).getValintatapajonot().get(0).getHakemukset().forEach(hak -> {
             if(hak.getHakemusOid().equals("1.2.246.562.11.00001067411")) {
                 Assert.assertTrue(hak.getTila().equals(HakemuksenTila.PERUUNTUNUT));
-                Assert.assertEquals(hak.getTilanKuvaukset().get("FI"), TilanKuvaukset.peruuntunutAloituspaikatTaynna().get("FI"));
+                Assert.assertEquals(hak.getTilanKuvaukset().get("FI"), TilanKuvaukset.peruuntunutAloituspaikatTaynna.get("FI"));
             }
         });
 
@@ -425,7 +425,7 @@ public class SijoitteluMontaJonoaTest {
         hakukohteet.get(0).getValintatapajonot().get(0).getHakemukset().forEach(hak -> {
             if(hak.getHakemusOid().equals("1.2.246.562.11.00001067411")) {
                 Assert.assertTrue(hak.getTila().equals(HakemuksenTila.PERUUNTUNUT));
-                Assert.assertEquals(hak.getTilanKuvaukset().get("FI"), TilanKuvaukset.peruuntunutEiMahduKasiteltavienVarasijojenMaaraan().get("FI"));
+                Assert.assertEquals(hak.getTilanKuvaukset().get("FI"), TilanKuvaukset.peruuntunutEiMahduKasiteltavienVarasijojenMaaraan.get("FI"));
             }
         });
 

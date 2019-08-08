@@ -247,7 +247,7 @@ public class SijoitteluTilatJaKuvauksetTest {
         hakemus.setTila(hakemuksenTila);
 
         if (hakemuksenTila == HakemuksenTila.PERUUNTUNUT) {
-            hakemus.setTilanKuvaukset(TilanKuvaukset.peruuntunutEiMahduKasiteltavienVarasijojenMaaraan());
+            hakemus.setTilanKuvaukset(TilanKuvaukset.peruuntunutEiMahduKasiteltavienVarasijojenMaaraan);
         }
 
         if (hakemuksenTila == HakemuksenTila.HYLATTY) {
