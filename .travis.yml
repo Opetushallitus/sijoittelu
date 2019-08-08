@@ -43,7 +43,7 @@ script:
 
 deploy:
 - provider: script
-  script: mvn deploy -pl fi.vm.sade.sijoittelu:sijoittelu,sijoittelu-tulos-api,sijoittelu-algoritmi-domain,sijoittelu-tulos-service -DskipTests --settings ci-tools/common/maven-settings.xml
+  script: mvn deploy -pl fi.vm.sade.sijoittelu:sijoittelu,sijoittelu-tulos-api,sijoittelu-algoritmi-domain,sijoittelu-algoritmi-batch,sijoittelu-tulos-service -DskipTests --settings ci-tools/common/maven-settings.xml
   skip_cleanup: true
   on:
     branch: master
