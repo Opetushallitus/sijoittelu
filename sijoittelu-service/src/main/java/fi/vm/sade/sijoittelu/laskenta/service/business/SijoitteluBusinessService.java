@@ -174,17 +174,12 @@ public class SijoitteluBusinessService {
         kopioiHakukohteenTiedotVanhaltaSijoitteluajolta(edellisenSijoitteluajonTulokset, kaikkiHakukohteet);
         stopWatch.stop();
 
-        LOG.info("Muuttuneita valintatuloksia: " + sijoitteluajoWrapper.getMuuttuneetValintatulokset().size());
-        LOG.info("Muuttuneet valintatulokset: " + sijoitteluajoWrapper.getMuuttuneetValintatulokset());
+        LOG.info(String.format("Haun %s sijoitteluajossa muuttui %d valintatulosta.", hakuOid, sijoitteluajoWrapper.getMuuttuneetValintatulokset().size()));
+        LOG.info(String.format("Haun %s sijoitteluajossa muuttuneet valintatulokset: %s", hakuOid, sijoitteluajoWrapper.getMuuttuneetValintatulokset()));
 
         stopWatch.start("Tallennetaan vastaanotot");
         valintatulosWithVastaanotto.persistVastaanotot(sijoitteluajoWrapper.getMuuttuneetValintatulokset());
         stopWatch.stop();
-
-        List<String> varasijapomput = sijoitteluajoWrapper.getVarasijapomput();
-        varasijapomput.forEach(LOG::info);
-        LOG.info("Haun {} sijoittelussa muuttui {} kpl valintatuloksia, pomppuja {} kpl",
-            hakuOid, sijoitteluajoWrapper.getMuuttuneetValintatulokset().size(), varasijapomput.size());
 
         LOG.info("Tallennetaan sijoitteluajo Valintarekisteriin");
         stopWatch.start("Tallennetaan sijoitteluajo, hakukohteet ja valintatulokset Valintarekisteriin");
@@ -288,17 +283,12 @@ public class SijoitteluBusinessService {
         kopioiHakukohteenTiedotVanhaltaSijoitteluajolta(edellisenSijoitteluajonTulokset, kaikkiHakukohteet);
         stopWatch.stop();
 
-        LOG.info("Muuttuneita valintatuloksia: " + kaikkiMuuttuneetValintatulokset.size());
-        LOG.info("Muuttuneet valintatulokset: " + kaikkiMuuttuneetValintatulokset);
+        LOG.info(String.format("Haun %s sijoitteluajossa muuttui %d valintatulosta.", hakuOid, kaikkiMuuttuneetValintatulokset.size()));
+        LOG.info(String.format("Haun %s sijoitteluajossa muuttuneet valintatulokset: %s", hakuOid, kaikkiMuuttuneetValintatulokset));
 
         stopWatch.start("Tallennetaan vastaanotot");
         valintatulosWithVastaanotto.persistVastaanotot(kaikkiMuuttuneetValintatulokset);
         stopWatch.stop();
-
-        List<String> varasijapomput = kokoSijoitteluajoWrapper.getVarasijapomput();
-        varasijapomput.forEach(LOG::info);
-        LOG.info("Haun {} sijoittelussa muuttui {} kpl valintatuloksia, pomppuja {} kpl",
-            hakuOid, kaikkiMuuttuneetValintatulokset.size(), varasijapomput.size());
 
         LOG.info("Tallennetaan sijoitteluajo Valintarekisteriin");
         stopWatch.start("Tallennetaan sijoitteluajo, hakukohteet ja valintatulokset Valintarekisteriin");
@@ -495,7 +485,6 @@ public class SijoitteluBusinessService {
 
         String kohdejoukko = HakuUtil.getHaunKohdejoukko(hakuDto).orElseThrow(() ->
                 new IllegalStateException("tarjonnasta ei saatu haun kohdejoukkoa"));
-
         boolean isKKHaku = kohdejoukko.equals(KK_KOHDEJOUKKO);
         sijoitteluAjo.setKKHaku(isKKHaku);
 
