@@ -60,6 +60,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -268,6 +269,8 @@ public class SijoitteluBusinessService {
             LOG.warn("HRS HUOM: Sijoitteluajossa {} käytetään lisäpaikkoja hakijaryhmäylitäyttötilanteissa (OK-223). Lisäpaikkojen laskentatapa: {}", kokoSijoitteluajoWrapper.getSijoitteluajo(), kokoSijoitteluajoWrapper.getLisapaikkaTapa());
         }
 
+        List<Valintatulos> kaikkiMuuttuneetValintatulokset = new LinkedList<>();
+
         for (Hakukohde hakukohde : kaikkiHakukohteet) {
             stopWatch.start(String.format("Sijoitellaan hakukohde %s ilman priorisointia", hakukohde.getOid()));
             final SijoitteluajoWrapper yhdenHakukohteenSijoitteluajoWrapper = SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(
@@ -276,6 +279,7 @@ public class SijoitteluBusinessService {
             yhdenHakukohteenSijoitteluajoWrapper.setEdellisenSijoittelunHakukohteet(edellisenSijoitteluajonTulokset.stream().filter(h -> h.getOid().equals(hakukohde.getOid())).collect(Collectors.toList()));
             StopWatch hakukohteenStopWatch = new StopWatch(String.format("Haun %s hakukohteen %s sijoittelu ilman hakutoiveiden priorisointia", hakuOid, hakukohde.getOid()));;
             suoritaSijoittelu(startTime, hakukohteenStopWatch, hakuOid, uusiSijoitteluajo, yhdenHakukohteenSijoitteluajoWrapper);
+            kaikkiMuuttuneetValintatulokset.addAll(yhdenHakukohteenSijoitteluajoWrapper.getMuuttuneetValintatulokset());
             LOG.info(hakukohteenStopWatch.prettyPrint());
             stopWatch.stop();
         }
@@ -284,24 +288,24 @@ public class SijoitteluBusinessService {
         kopioiHakukohteenTiedotVanhaltaSijoitteluajolta(edellisenSijoitteluajonTulokset, kaikkiHakukohteet);
         stopWatch.stop();
 
-        LOG.info("Muuttuneita valintatuloksia: " + kokoSijoitteluajoWrapper.getMuuttuneetValintatulokset().size());
-        LOG.info("Muuttuneet valintatulokset: " + kokoSijoitteluajoWrapper.getMuuttuneetValintatulokset());
+        LOG.info("Muuttuneita valintatuloksia: " + kaikkiMuuttuneetValintatulokset.size());
+        LOG.info("Muuttuneet valintatulokset: " + kaikkiMuuttuneetValintatulokset);
 
         stopWatch.start("Tallennetaan vastaanotot");
-        valintatulosWithVastaanotto.persistVastaanotot(kokoSijoitteluajoWrapper.getMuuttuneetValintatulokset());
+        valintatulosWithVastaanotto.persistVastaanotot(kaikkiMuuttuneetValintatulokset);
         stopWatch.stop();
 
         List<String> varasijapomput = kokoSijoitteluajoWrapper.getVarasijapomput();
         varasijapomput.forEach(LOG::info);
         LOG.info("Haun {} sijoittelussa muuttui {} kpl valintatuloksia, pomppuja {} kpl",
-            hakuOid, kokoSijoitteluajoWrapper.getMuuttuneetValintatulokset().size(), varasijapomput.size());
+            hakuOid, kaikkiMuuttuneetValintatulokset.size(), varasijapomput.size());
 
         LOG.info("Tallennetaan sijoitteluajo Valintarekisteriin");
         stopWatch.start("Tallennetaan sijoitteluajo, hakukohteet ja valintatulokset Valintarekisteriin");
         tallennaSijoitteluToValintarekisteri(hakuOid,
             uusiSijoitteluajo,
             kaikkiHakukohteet,
-            kokoSijoitteluajoWrapper.getMuuttuneetValintatulokset(),
+            kaikkiMuuttuneetValintatulokset,
             stopWatch);
         stopWatch.stop();
         LOG.info(stopWatch.prettyPrint());
