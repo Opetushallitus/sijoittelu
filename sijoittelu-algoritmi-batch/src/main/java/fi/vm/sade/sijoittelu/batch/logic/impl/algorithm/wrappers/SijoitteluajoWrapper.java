@@ -1,5 +1,6 @@
 package fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers;
 
+import static java.util.Optional.ofNullable;
 import com.google.common.hash.HashCode;
 import com.google.common.hash.HashFunction;
 import com.google.common.hash.Hasher;
@@ -16,13 +17,16 @@ import org.slf4j.LoggerFactory;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import static java.util.Optional.ofNullable;
 
 public class SijoitteluajoWrapper {
     private static final Logger LOG = LoggerFactory.getLogger(SijoitteluajoWrapper.class);
@@ -53,8 +57,6 @@ public class SijoitteluajoWrapper {
     private boolean isAmkopeHaku = false;
 
     private LisapaikkaTapa lisapaikkaTapa = LisapaikkaTapa.EI_KAYTOSSA;
-
-    private List<String> varasijapomput = new ArrayList<>();
 
     public SijoitteluajoWrapper(SijoitteluConfiguration sijoitteluConfiguration, final SijoitteluAjo sijoitteluAjo) {
         this.sijoitteluConfiguration = sijoitteluConfiguration;
@@ -143,14 +145,6 @@ public class SijoitteluajoWrapper {
 
     public void setHakuKierrosPaattyy(LocalDateTime hakuKierrosPaattyy) {
         this.hakuKierrosPaattyy = hakuKierrosPaattyy;
-    }
-
-    public List<String> getVarasijapomput() {
-        return varasijapomput;
-    }
-
-    public void setVarasijapomput(List<String> varasijapomput) {
-        this.varasijapomput = varasijapomput;
     }
 
     private static final HashFunction MD5 = Hashing.md5(); // hieman nopeampi kuin SHA1 ja yhta tarkoitukseen sopiva
