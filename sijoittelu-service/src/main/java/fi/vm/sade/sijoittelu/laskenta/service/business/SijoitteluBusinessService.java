@@ -443,9 +443,9 @@ public class SijoitteluBusinessService {
         LOG.info(ajonKuvaus + " alkaa. Luetaan parametrit tarjonnasta ja esivalidoidaan ne");
         SijoittelunParametrit sijoittelunParametrit = sijoitteluajoResourcesLoader.findParametersFromTarjontaAndPerformInitialValidation(hakuOid, stopWatch);
 
-        LOG.info(String.format("Luetaan sijoittelu valintarekisteristä haun %s hakukohteelle %s .", hakuOid, hakukohdeOid));
+        LOG.info(String.format("%s: luetaan sijoittelu valintarekisteristä.", ajonKuvaus));
 
-        stopWatch.start("Luetaan viimeisin erillissijoitteluajo valintarekisteristä");
+        stopWatch.start(String.format("%s: luetaan sijoittelu valintarekisteristä.", ajonKuvaus));
         SijoitteluAjo viimeisinSijoitteluajo = readSijoitteluajoFromValintarekisteri(haku.getHakuOid());
         stopWatch.stop();
 
