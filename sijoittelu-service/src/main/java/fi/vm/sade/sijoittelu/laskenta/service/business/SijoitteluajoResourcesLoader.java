@@ -2,9 +2,12 @@ package fi.vm.sade.sijoittelu.laskenta.service.business;
 
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.hakukohteet.LisapaikkaTapa;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.SijoitteluajoWrapper;
+import fi.vm.sade.sijoittelu.domain.SijoitteluAjo;
 import fi.vm.sade.sijoittelu.laskenta.external.resource.dto.ParametriDTO;
 import fi.vm.sade.sijoittelu.laskenta.service.it.TarjontaIntegrationService;
 import fi.vm.sade.sijoittelu.laskenta.util.HakuUtil;
+import fi.vm.sade.valintalaskenta.domain.dto.valintatieto.HakuDTO;
+import fi.vm.sade.valintatulosservice.valintarekisteri.domain.NotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,11 +33,13 @@ public class SijoitteluajoResourcesLoader {
     }};
 
     private final TarjontaIntegrationService tarjontaIntegrationService;
-
+    private final ValintarekisteriService valintarekisteriService;
 
     @Autowired
-    public SijoitteluajoResourcesLoader(TarjontaIntegrationService tarjontaIntegrationService) {
+    public SijoitteluajoResourcesLoader(TarjontaIntegrationService tarjontaIntegrationService,
+                                        ValintarekisteriService valintarekisteriService) {
         this.tarjontaIntegrationService = tarjontaIntegrationService;
+        this.valintarekisteriService = valintarekisteriService;
     }
 
     SijoittelunParametrit findParametersFromTarjontaAndPerformInitialValidation(String hakuOid, StopWatch stopWatch, String ajonKuvaus) {
@@ -95,6 +100,14 @@ public class SijoitteluajoResourcesLoader {
         return new SijoittelunParametrit(parametri);
     }
 
+    SijoitteluAjo readSijoitteluFromValintarekisteri(HakuDTO haku, String ajonKuvaus, StopWatch stopWatch) {
+        LOG.info(String.format("%s : luetaan sijoittelu valintarekisteristä!", ajonKuvaus));
+        stopWatch.start(String.format("%s : luetaan sijoittelu valintarekisteristä", ajonKuvaus));
+        SijoitteluAjo viimeisinSijoitteluajo = readSijoitteluajoFromValintarekisteri(haku.getHakuOid());
+        stopWatch.stop();
+        return viimeisinSijoitteluajo;
+    }
+
     private void setOptionalHakuAttributes(String hakuOid, SijoitteluajoWrapper sijoitteluAjo) {
         fi.vm.sade.sijoittelu.laskenta.external.resource.dto.HakuDTO hakuDto;
         try {
@@ -130,6 +143,17 @@ public class SijoitteluajoResourcesLoader {
         sijoittelunParametrit.kaikkiKohteetSijoittelussa.ifPresent(sijoitteluAjo::setKaikkiKohteetSijoittelussa);
         sijoittelunParametrit.varasijasaannotAstuvatVoimaan.ifPresent(sijoitteluAjo::setVarasijaSaannotAstuvatVoimaan);
         sijoittelunParametrit.varasijatayttoPaattyy.ifPresent(sijoitteluAjo::setVarasijaTayttoPaattyy);
+    }
+
+    private SijoitteluAjo readSijoitteluajoFromValintarekisteri(String hakuOid) {
+        try {
+            LOG.info("Luetaan sijoittelu valintarekisteristä");
+            return valintarekisteriService.getLatestSijoitteluajo(hakuOid);
+        } catch (NotFoundException iae) {
+            LOG.info("Viimeisintä sijoitteluajoa haulle {} ei löydy valintarekisteristä.", hakuOid);
+            LOG.warn(iae.getMessage());
+            return null;
+        }
     }
 
     private static boolean isAmmatillinenOpettajakoulutus(String haunKohdeJoukonTarkenne) {
