@@ -37,7 +37,8 @@ public class SijoitteluajoResourcesLoader {
         this.tarjontaIntegrationService = tarjontaIntegrationService;
     }
 
-    SijoittelunParametrit findParametersFromTarjontaAndPerformInitialValidation(String hakuOid, StopWatch stopWatch) {
+    SijoittelunParametrit findParametersFromTarjontaAndPerformInitialValidation(String hakuOid, StopWatch stopWatch, String ajonKuvaus) {
+        LOG.info(String.format("%s alkaa. Luetaan parametrit tarjonnasta ja esivalidoidaan ne", ajonKuvaus));
         stopWatch.start("Luetaan parametrit tarjonnasta ja esivalidoidaan ne");
         SijoittelunParametrit sijoittelunParametrit = findParametersFromTarjontaAndPerformInitialValidation(hakuOid);
         stopWatch.stop();
