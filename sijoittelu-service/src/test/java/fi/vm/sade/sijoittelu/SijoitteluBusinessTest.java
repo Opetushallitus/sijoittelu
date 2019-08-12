@@ -32,6 +32,7 @@ import fi.vm.sade.sijoittelu.domain.ValintatuloksenTila;
 import fi.vm.sade.sijoittelu.domain.Valintatulos;
 import fi.vm.sade.sijoittelu.laskenta.external.resource.dto.ParametriDTO;
 import fi.vm.sade.sijoittelu.laskenta.service.business.SijoitteluBusinessService;
+import fi.vm.sade.sijoittelu.laskenta.service.business.SijoitteluajoResourcesLoader;
 import fi.vm.sade.sijoittelu.laskenta.service.business.ValintarekisteriService;
 import fi.vm.sade.sijoittelu.laskenta.service.business.ValintatulosWithVastaanotto;
 import fi.vm.sade.sijoittelu.laskenta.service.it.TarjontaIntegrationService;
@@ -92,13 +93,14 @@ public class SijoitteluBusinessTest {
 
     @Before
     public void setup() {
-        tarjontaIntegrationService = mock(TarjontaIntegrationService.class);
         valintatulosWithVastaanotto = mock(ValintatulosWithVastaanotto.class);
         valintarekisteriService = mock(ValintarekisteriService.class);
+        tarjontaIntegrationService = mock(TarjontaIntegrationService.class);
+        SijoitteluajoResourcesLoader sijoitteluajoResourcesLoader = new SijoitteluajoResourcesLoader(tarjontaIntegrationService);
 
         ReflectionTestUtils.setField(sijoitteluService,
-                "tarjontaIntegrationService",
-                tarjontaIntegrationService);
+                "sijoitteluajoResourcesLoader",
+                sijoitteluajoResourcesLoader);
         ReflectionTestUtils.setField(sijoitteluService,
                 "valintatulosWithVastaanotto",
                 valintatulosWithVastaanotto);
