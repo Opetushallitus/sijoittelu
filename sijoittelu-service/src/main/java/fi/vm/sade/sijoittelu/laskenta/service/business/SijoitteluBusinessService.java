@@ -105,9 +105,10 @@ public class SijoitteluBusinessService {
                            Long sijoittelunTunniste) {
         long startTime = sijoittelunTunniste;
         String hakuOid = haku.getHakuOid();
-        StopWatch stopWatch = new StopWatch("Haun " + hakuOid + " sijoittelu");
-        LOG.info(String.format("Sijoittelu haulle %s alkaa. Luetaan parametrit tarjonnasta ja esivalidoidaan ne", hakuOid));
-        SijoittelunParametrit sijoittelunParametrit = sijoitteluajoResourcesLoader.findParametersFromTarjontaAndPerformInitialValidation(hakuOid, stopWatch);
+        String ajonTunniste = String.format("Haun %s sijoittelu", hakuOid);
+        StopWatch stopWatch = new StopWatch(ajonTunniste);
+
+        SijoittelunParametrit sijoittelunParametrit = sijoitteluajoResourcesLoader.findParametersFromTarjontaAndPerformInitialValidation(hakuOid, stopWatch, ajonTunniste);
 
         LOG.info("Luetaan sijoittelu valintarekisteristä!", hakuOid);
         stopWatch.start("Luetaan sijoittelu valintarekisteristä");
@@ -197,9 +198,9 @@ public class SijoitteluBusinessService {
                            Long sijoittelunTunniste) {
         long startTime = sijoittelunTunniste;
         String hakuOid = haku.getHakuOid();
-        StopWatch stopWatch = new StopWatch("Haun " + hakuOid + " sijoittelu ilman hakutoiveiden priorisointia");
-        LOG.info(String.format("Sijoittelu ilman priorisointia haulle %s alkaa. Luetaan parametrit tarjonnasta ja esivalidoidaan ne", hakuOid));
-        SijoittelunParametrit sijoittelunParametrit = sijoitteluajoResourcesLoader.findParametersFromTarjontaAndPerformInitialValidation(hakuOid, stopWatch);
+        String ajonTunniste = String.format("Haun %s sijoittelu ilman hakutoiveiden priorisointia", hakuOid);
+        StopWatch stopWatch = new StopWatch(ajonTunniste);
+        SijoittelunParametrit sijoittelunParametrit = sijoitteluajoResourcesLoader.findParametersFromTarjontaAndPerformInitialValidation(hakuOid, stopWatch, ajonTunniste);
 
         LOG.info("Luetaan sijoittelu valintarekisteristä!", hakuOid);
         stopWatch.start("Luetaan sijoittelu valintarekisteristä");
@@ -435,13 +436,11 @@ public class SijoitteluBusinessService {
         String hakuOid = haku.getHakuOid();
         String hakukohdeOid = haku.getHakukohteet().size() > 0 ? haku.getHakukohteet().get(0).getOid() : "";
         long startTime = System.currentTimeMillis();
-
-        StopWatch stopWatch = new StopWatch(String.format("Haun %s hakukohteen %s erillissijoittelu",
-            hakuOid, hakukohdeOid));
-
         String ajonKuvaus = String.format("Erillissijoittelu haun %s hakukohteelle %s", hakuOid, hakukohdeOid);
-        LOG.info(ajonKuvaus + " alkaa. Luetaan parametrit tarjonnasta ja esivalidoidaan ne");
-        SijoittelunParametrit sijoittelunParametrit = sijoitteluajoResourcesLoader.findParametersFromTarjontaAndPerformInitialValidation(hakuOid, stopWatch);
+
+        StopWatch stopWatch = new StopWatch(ajonKuvaus);
+
+        SijoittelunParametrit sijoittelunParametrit = sijoitteluajoResourcesLoader.findParametersFromTarjontaAndPerformInitialValidation(hakuOid, stopWatch, ajonKuvaus);
 
         LOG.info(String.format("%s: luetaan sijoittelu valintarekisteristä.", ajonKuvaus));
 
