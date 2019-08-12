@@ -78,7 +78,7 @@ public class SijoitteluBusinessService {
 
     private HakemusComparator hakemusComparator = new HakemusComparator();
     private final String KK_KOHDEJOUKKO = "haunkohdejoukko_12";
-    private final Set<String> amkopeKohdejoukonTarkenteet = new HashSet<String>() {{
+    private final Set<String> amkopeKohdejoukonTarkenteet = new HashSet<>() {{
         add("haunkohdejoukontarkenne_2");
         add("haunkohdejoukontarkenne_4");
         add("haunkohdejoukontarkenne_5");
