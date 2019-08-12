@@ -34,11 +34,9 @@ import fi.vm.sade.sijoittelu.domain.comparator.HakemusComparator;
 import fi.vm.sade.sijoittelu.domain.dto.VastaanottoDTO;
 import fi.vm.sade.sijoittelu.laskenta.external.resource.VirkailijaValintaTulosServiceResource;
 import fi.vm.sade.sijoittelu.laskenta.service.business.SijoitteluajoResourcesLoader.SijoittelunParametrit;
-import fi.vm.sade.sijoittelu.laskenta.service.it.TarjontaIntegrationService;
 import fi.vm.sade.sijoittelu.tulos.dto.HakukohdeDTO;
 import fi.vm.sade.sijoittelu.tulos.service.impl.converters.SijoitteluTulosConverter;
 import fi.vm.sade.valintalaskenta.domain.dto.valintatieto.HakuDTO;
-import fi.vm.sade.valintatulosservice.valintarekisteri.domain.NotFoundException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
@@ -110,10 +108,7 @@ public class SijoitteluBusinessService {
 
         SijoittelunParametrit sijoittelunParametrit = sijoitteluajoResourcesLoader.findParametersFromTarjontaAndPerformInitialValidation(hakuOid, stopWatch, ajonTunniste);
 
-        LOG.info("Luetaan sijoittelu valintarekisteristä!", hakuOid);
-        stopWatch.start("Luetaan sijoittelu valintarekisteristä");
-        SijoitteluAjo viimeisinSijoitteluajo = readSijoitteluajoFromValintarekisteri(haku.getHakuOid());
-        stopWatch.stop();
+        SijoitteluAjo viimeisinSijoitteluajo = sijoitteluajoResourcesLoader.readSijoitteluFromValintarekisteri(haku, ajonTunniste, stopWatch);
 
         stopWatch.start("Päätellään hakukohde- ja valintatapajonotiedot");
         List<Hakukohde> uudenSijoitteluajonHakukohteet = haku.getHakukohteet().stream().map(DomainConverter::convertToHakukohde).collect(Collectors.toList());
@@ -202,10 +197,7 @@ public class SijoitteluBusinessService {
         StopWatch stopWatch = new StopWatch(ajonTunniste);
         SijoittelunParametrit sijoittelunParametrit = sijoitteluajoResourcesLoader.findParametersFromTarjontaAndPerformInitialValidation(hakuOid, stopWatch, ajonTunniste);
 
-        LOG.info("Luetaan sijoittelu valintarekisteristä!", hakuOid);
-        stopWatch.start("Luetaan sijoittelu valintarekisteristä");
-        SijoitteluAjo viimeisinSijoitteluajo = readSijoitteluajoFromValintarekisteri(haku.getHakuOid());
-        stopWatch.stop();
+        SijoitteluAjo viimeisinSijoitteluajo = sijoitteluajoResourcesLoader.readSijoitteluFromValintarekisteri(haku, ajonTunniste, stopWatch);
 
         stopWatch.start("Päätellään hakukohde- ja valintatapajonotiedot");
         List<Hakukohde> uudenSijoitteluajonHakukohteet = haku.getHakukohteet().stream().map(DomainConverter::convertToHakukohde).collect(Collectors.toList());
@@ -286,17 +278,6 @@ public class SijoitteluBusinessService {
             stopWatch);
         stopWatch.stop();
         LOG.info(stopWatch.prettyPrint());
-    }
-
-    private SijoitteluAjo readSijoitteluajoFromValintarekisteri(String hakuOid) {
-        try {
-            LOG.info("Luetaan sijoittelu valintarekisteristä");
-            return valintarekisteriService.getLatestSijoitteluajo(hakuOid);
-        } catch (NotFoundException iae) {
-            LOG.info("Viimeisintä sijoitteluajoa haulle {} ei löydy valintarekisteristä.", hakuOid);
-            LOG.warn(iae.getMessage());
-            return null;
-        }
     }
 
     private void validateSijoittelunJonot(List<Hakukohde> uudenSijoitteluajonHakukohteet,
@@ -442,11 +423,7 @@ public class SijoitteluBusinessService {
 
         SijoittelunParametrit sijoittelunParametrit = sijoitteluajoResourcesLoader.findParametersFromTarjontaAndPerformInitialValidation(hakuOid, stopWatch, ajonKuvaus);
 
-        LOG.info(String.format("%s: luetaan sijoittelu valintarekisteristä.", ajonKuvaus));
-
-        stopWatch.start(String.format("%s: luetaan sijoittelu valintarekisteristä.", ajonKuvaus));
-        SijoitteluAjo viimeisinSijoitteluajo = readSijoitteluajoFromValintarekisteri(haku.getHakuOid());
-        stopWatch.stop();
+        SijoitteluAjo viimeisinSijoitteluajo = sijoitteluajoResourcesLoader.readSijoitteluFromValintarekisteri(haku, ajonKuvaus, stopWatch);
 
         stopWatch.start("Haetaan erillissijoittelun hakukohde");
         Hakukohde hakukohdeValintalaskennassa = getErillissijoittelunHakukohde(haku);

@@ -83,7 +83,7 @@ public class SijoitteluBusinessServiceValintarekisteriTest {
             valintaTulosServiceResource,
             valintarekisteriService,
             new SijoitteluConfiguration(),
-            new SijoitteluajoResourcesLoader(tarjontaIntegrationService));
+            new SijoitteluajoResourcesLoader(tarjontaIntegrationService, valintarekisteriService));
 
         when(tarjontaIntegrationService.getHaunParametrit(hakuOid)).thenReturn(haunParametrit());
         when(tarjontaIntegrationService.getHakuByHakuOid(hakuOid)).thenReturn(tarjontaHaku());

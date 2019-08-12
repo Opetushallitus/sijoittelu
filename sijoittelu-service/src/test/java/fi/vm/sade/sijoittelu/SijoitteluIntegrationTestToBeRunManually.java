@@ -1,7 +1,11 @@
 package fi.vm.sade.sijoittelu;
 
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.not;
+import static org.junit.Assert.assertThat;
 import com.lordofthejars.nosqlunit.annotation.UsingDataSet;
 import com.mongodb.MongoClientURI;
+
 import fi.vm.sade.sijoittelu.batch.logic.impl.DomainConverter;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoitteluConfiguration;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoitteluajoWrapperFactory;
@@ -48,10 +52,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
-
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.not;
-import static org.junit.Assert.assertThat;
 
 /**
  * This test class can be used to run sijoittelu with a data read from a server.
@@ -160,7 +160,7 @@ public class SijoitteluIntegrationTestToBeRunManually {
                 valintaTulosServiceResource,
                 valintarekisteriService,
                 new SijoitteluConfiguration(),
-                new SijoitteluajoResourcesLoader(tarjontaIntegrationService));
+                new SijoitteluajoResourcesLoader(tarjontaIntegrationService, valintarekisteriService));
         }
 
         /**

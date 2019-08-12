@@ -96,7 +96,7 @@ public class SijoitteluBusinessTest {
         valintatulosWithVastaanotto = mock(ValintatulosWithVastaanotto.class);
         valintarekisteriService = mock(ValintarekisteriService.class);
         tarjontaIntegrationService = mock(TarjontaIntegrationService.class);
-        SijoitteluajoResourcesLoader sijoitteluajoResourcesLoader = new SijoitteluajoResourcesLoader(tarjontaIntegrationService);
+        SijoitteluajoResourcesLoader sijoitteluajoResourcesLoader = new SijoitteluajoResourcesLoader(tarjontaIntegrationService, valintarekisteriService);
 
         ReflectionTestUtils.setField(sijoitteluService,
                 "sijoitteluajoResourcesLoader",
