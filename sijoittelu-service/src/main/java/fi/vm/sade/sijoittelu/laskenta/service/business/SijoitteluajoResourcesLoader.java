@@ -120,6 +120,7 @@ public class SijoitteluajoResourcesLoader {
                 new IllegalStateException("tarjonnasta ei saatu haun kohdejoukkoa"));
         boolean isKKHaku = kohdejoukko.equals(KK_KOHDEJOUKKO);
         sijoitteluAjo.setKKHaku(isKKHaku);
+        sijoitteluAjo.setHakutoiveidenPriorisointi(hakuDto.isUsePriority());
 
         Optional<String> kohdejoukonTarkenne = HakuUtil.gethaunKohdejoukonTarkenne(hakuDto);
         sijoitteluAjo.setAmkopeHaku(isKKHaku && kohdejoukonTarkenne.map(SijoitteluajoResourcesLoader::isAmmatillinenOpettajakoulutus).orElse(false));
