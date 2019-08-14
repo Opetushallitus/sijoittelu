@@ -52,7 +52,7 @@ public class SijoitteluajoResourcesLoader {
 
     public void asetaSijoittelunParametrit(String hakuOid, SijoitteluajoWrapper sijoitteluAjo, SijoittelunParametrit sijoittelunParametrit) {
         try {
-            setHakuAttributes(hakuOid, sijoitteluAjo);
+            populateHakuAttributesFromTarjonta(hakuOid, sijoitteluAjo);
             setParametersFromTarjonta(sijoitteluAjo, sijoittelunParametrit);
             sijoitteluAjo.setLisapaikkaTapa(LisapaikkaTapa.TAPA1);
             LOG.info("Sijoittelun ohjausparametrit asetettu haulle {}. onko korkeakouluhaku: {}, " +
@@ -108,7 +108,7 @@ public class SijoitteluajoResourcesLoader {
         return viimeisinSijoitteluajo;
     }
 
-    private void setHakuAttributes(String hakuOid, SijoitteluajoWrapper sijoitteluAjo) {
+    private void populateHakuAttributesFromTarjonta(String hakuOid, SijoitteluajoWrapper sijoitteluAjo) {
         fi.vm.sade.sijoittelu.laskenta.external.resource.dto.HakuDTO hakuDto;
         try {
             hakuDto = tarjontaIntegrationService.getHakuByHakuOid(hakuOid);
