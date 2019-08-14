@@ -214,6 +214,41 @@ public class SijoitteluBusinessTest {
         assertEquals(HakemuksenTila.PERUUNTUNUT, hakija1Results.get(2).getTila());
     }
 
+    @Test
+    @UsingDataSet(locations = "peruuta_alemmat.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
+    public void testAlempiaHakutoiveitaEiPeruunnutetaJosHakutoiveidenPriorisointiEiOleKaytossa() {
+        fi.vm.sade.sijoittelu.laskenta.external.resource.dto.HakuDTO hakuDto = new fi.vm.sade.sijoittelu.laskenta.external.resource.dto.HakuDTO();
+        hakuDto.setKohdejoukkoUri("haunkohdejoukko_11#1");
+        hakuDto.setUsePriority(false);
+        when(tarjontaIntegrationService.getHakuByHakuOid("haku1")).thenReturn(hakuDto);
+
+        HakuDTO haku = valintatietoService.haeValintatiedot("haku1");
+
+        sijoitteluService.sijoittele(haku, newHashSet("jono1", "jono2", "jono3"), newHashSet("jono1", "jono2", "jono3"), System.currentTimeMillis());
+
+        verify(valintarekisteriService, times(1)).tallennaSijoittelu(
+                sijoitteluAjoArgumentCaptor.capture(),
+                hakukohdeArgumentCaptor.capture(),
+                valintatulosArgumentCaptor.capture());
+
+        List<Hakukohde> hakukohteet1 = hakukohdeArgumentCaptor.getValue();
+        assertEquals(3, hakukohteet1.size());
+        assertEquals(Arrays.asList("jono1", "jono2", "jono3"), hakukohteet1.stream()
+            .map(Hakukohde::getValintatapajonot)
+            .flatMap(List::stream)
+            .map(Valintatapajono::getOid)
+            .collect(Collectors.toList()));
+
+        List<Hakemus> hakija1Results = hakukohteet1.stream()
+            .flatMap(hk -> hk.getValintatapajonot().stream()
+            .flatMap(v -> v.getHakemukset().stream()))
+            .filter(h -> "hakija1".equals(h.getHakemusOid()))
+            .collect(Collectors.toList());
+        assertEquals(HakemuksenTila.HYVAKSYTTY, hakija1Results.get(0).getTila());
+        assertEquals(HakemuksenTila.HYVAKSYTTY, hakija1Results.get(1).getTila());
+        assertEquals(HakemuksenTila.HYVAKSYTTY, hakija1Results.get(2).getTila());
+    }
+
     private void printHakukohteet(List<Hakukohde> hakukohteet){
         hakukohteet.stream().forEach(hakukohde -> {
             System.out.println("HAKUKOHDE: " + hakukohde.getOid());

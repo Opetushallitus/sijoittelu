@@ -58,6 +58,8 @@ public class SijoitteluajoWrapper {
 
     private LisapaikkaTapa lisapaikkaTapa = LisapaikkaTapa.EI_KAYTOSSA;
 
+    private boolean hakutoiveidenPriorisointi = true;
+
     public SijoitteluajoWrapper(SijoitteluConfiguration sijoitteluConfiguration, final SijoitteluAjo sijoitteluAjo) {
         this.sijoitteluConfiguration = sijoitteluConfiguration;
         this.sijoitteluajo = sijoitteluAjo;
@@ -245,7 +247,7 @@ public class SijoitteluajoWrapper {
         this.edellisenSijoittelunHakukohteet = Optional.of(edellisenSijoittelunHakukohteet);
     }
     private Optional<LocalDateTime> asInstant(Date d) {
-        return Optional.ofNullable(d).map(i -> LocalDateTime.ofInstant(i.toInstant(), ZoneId.systemDefault()));
+        return ofNullable(d).map(i -> LocalDateTime.ofInstant(i.toInstant(), ZoneId.systemDefault()));
     }
 
     public void setLisapaikkaTapa(LisapaikkaTapa tapa) {
@@ -256,4 +258,11 @@ public class SijoitteluajoWrapper {
         return this.lisapaikkaTapa;
     }
 
+    public void setHakutoiveidenPriorisointi(boolean hakutoiveidenPriorisointi) {
+        this.hakutoiveidenPriorisointi = hakutoiveidenPriorisointi;
+    }
+
+    public boolean getHakutoiveidenPriorisointi() {
+        return hakutoiveidenPriorisointi;
+    }
 }

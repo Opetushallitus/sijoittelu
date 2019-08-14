@@ -153,7 +153,30 @@ public class SijoitteluBusinessService {
         if(!sijoitteluajoWrapper.getLisapaikkaTapa().equals(LisapaikkaTapa.EI_KAYTOSSA)) {
             LOG.warn("HRS HUOM: Sijoitteluajossa {} käytetään lisäpaikkoja hakijaryhmäylitäyttötilanteissa (OK-223). Lisäpaikkojen laskentatapa: {}", sijoitteluajoWrapper.getSijoitteluajo(), sijoitteluajoWrapper.getLisapaikkaTapa());
         }
-        suoritaSijoittelu(startTime, stopWatch, hakuOid, uusiSijoitteluajo, sijoitteluajoWrapper);
+
+        if (sijoitteluajoWrapper.getHakutoiveidenPriorisointi()) {
+            LOG.info(String.format("%s : käytetään hakutoiveiden priorisointia.", ajonTunniste));
+            suoritaSijoittelu(startTime, stopWatch, hakuOid, uusiSijoitteluajo, sijoitteluajoWrapper);
+        } else {
+            LOG.info(String.format("%s : ei käytetä hakutoiveiden priorisointia. Sijoitellaan kukin hakukohde (%d kpl) erikseen.", ajonTunniste, kaikkiHakukohteet.size()));
+            List<Valintatulos> kaikkiMuuttuneetValintatulokset = new LinkedList<>();
+
+            for (Hakukohde hakukohde : kaikkiHakukohteet) {
+                stopWatch.start(String.format("Sijoitellaan hakukohde %s ilman priorisointia", hakukohde.getOid()));
+                final SijoitteluajoWrapper yhdenHakukohteenSijoitteluajoWrapper = SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(
+                    sijoitteluConfiguration, uusiSijoitteluajo, Collections.singletonList(hakukohde), valintatulokset, kaudenAiemmatVastaanotot);
+                sijoitteluajoResourcesLoader.asetaSijoittelunParametrit(hakuOid, yhdenHakukohteenSijoitteluajoWrapper, sijoittelunParametrit);
+                yhdenHakukohteenSijoitteluajoWrapper.setEdellisenSijoittelunHakukohteet(edellisenSijoitteluajonTulokset.stream().filter(h -> h.getOid().equals(hakukohde.getOid())).collect(Collectors.toList()));
+                StopWatch hakukohteenStopWatch = new StopWatch(String.format("Haun %s hakukohteen %s sijoittelu ilman hakutoiveiden priorisointia", hakuOid, hakukohde.getOid()));;
+                suoritaSijoittelu(startTime, hakukohteenStopWatch, hakuOid, uusiSijoitteluajo, yhdenHakukohteenSijoitteluajoWrapper);
+                kaikkiMuuttuneetValintatulokset.addAll(yhdenHakukohteenSijoitteluajoWrapper.getMuuttuneetValintatulokset());
+                LOG.info(hakukohteenStopWatch.prettyPrint());
+                stopWatch.stop();
+            }
+
+            sijoitteluajoWrapper.setMuuttuneetValintatulokset(kaikkiMuuttuneetValintatulokset);
+        }
+
         stopWatch.start("Kopioidaan edellisen sijoitteluajon tietoja");
         kopioiHakukohteenTiedotVanhaltaSijoitteluajolta(edellisenSijoitteluajonTulokset, kaikkiHakukohteet);
         stopWatch.stop();
