@@ -203,6 +203,15 @@ public class SijoitteluBusinessTest {
         ));
 
         printHakukohteet(hakukohteet3);
+
+        List<Hakemus> hakija1Results = hakukohteet3.stream()
+            .flatMap(hk -> hk.getValintatapajonot().stream()
+            .flatMap(v -> v.getHakemukset().stream()))
+            .filter(h -> "hakija1".equals(h.getHakemusOid()))
+            .collect(Collectors.toList());
+        assertEquals(HakemuksenTila.HYVAKSYTTY, hakija1Results.get(0).getTila());
+        assertEquals(HakemuksenTila.PERUUNTUNUT, hakija1Results.get(1).getTila());
+        assertEquals(HakemuksenTila.PERUUNTUNUT, hakija1Results.get(2).getTila());
     }
 
     private void printHakukohteet(List<Hakukohde> hakukohteet){
