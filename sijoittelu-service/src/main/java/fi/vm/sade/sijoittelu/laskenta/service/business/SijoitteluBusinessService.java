@@ -515,6 +515,13 @@ public class SijoitteluBusinessService {
     }
 
     private Pair<List<Hakukohde>, Set<Pair<String, String>>> merge(SijoitteluAjo uusiSijoitteluajo, List<Hakukohde> olemassaolevatHakukohteet, List<Hakukohde> uudetHakukohteet) {
+        if (olemassaolevatHakukohteet.stream().anyMatch(olemassaoleva -> uudetHakukohteet.stream().noneMatch(uusi -> uusi.getOid().equals(olemassaoleva.getOid())))) {
+            throw new IllegalStateException(String.format("Uusissta hakukohteista ei löydy kaikkia olemassaolevia! " +
+                "Vanhat: %s - Uudet: %s",
+                olemassaolevatHakukohteet.stream().map(Hakukohde::getOid).collect(Collectors.joining(",")),
+                uudetHakukohteet.stream().map(Hakukohde::getOid).collect(Collectors.joining(","))));
+        }
+
         Set<Pair<String, String>> poistettavatValinnantulokset = new HashSet<>();
         Map<String, Hakukohde> sijoiteltavatHakukohteet = uudetHakukohteet.stream().collect(Collectors.toMap(Hakukohde::getOid, h -> h));
         olemassaolevatHakukohteet.forEach(vanhaHakukohde -> {
