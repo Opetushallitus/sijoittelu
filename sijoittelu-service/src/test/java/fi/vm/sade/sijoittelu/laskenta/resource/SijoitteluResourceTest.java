@@ -72,8 +72,8 @@ public class SijoitteluResourceTest {
     public void testaaSijoittelunLuonti() {
         String haku1 = "1.2.3.4444";
 
-        Long id = sijoitteluResource.sijoittele(haku1, true);
-        Long id2 = sijoitteluResource.sijoittele(haku1, true);
+        Long id = sijoitteluResource.sijoittele(haku1);
+        Long id2 = sijoitteluResource.sijoittele(haku1);
 
         String tila = sijoitteluResource.sijoittelunTila(id);
         String tila2 = sijoitteluResource.sijoittelunTila(id2);
@@ -113,7 +113,7 @@ public class SijoitteluResourceTest {
                 final HashMap<String, List<ValintatapajonoDTO>> vpMap = new HashMap<>();
                 vpMap.put(hakukohdeOid, Arrays.asList(valintaperusteista));
                 when(valintalaskentakoostepalveluResource.haeValintatapajonotSijoittelulle(anyList())).thenReturn(vpMap);
-                sijoitteluResource.toteutaSijoittelu(EMPTY, 12345L, true);
+                sijoitteluResource.toteutaSijoittelu(EMPTY, 12345L);
             }
             verify(valintalaskentakoostepalveluResource, times(1)).readByHakukohdeOids(asList(hakukohdeOid));
             verify(valintalaskentakoostepalveluResource, times(1)).readByValintatapajonoOids(asList(valintatapajonoOid));
@@ -222,7 +222,7 @@ public class SijoitteluResourceTest {
             thrown.expectMessage("Haun hakuOid sijoittelu : " +
                 "Laskennan tuloksista löytyvien jonojen tietoja on kadonnut valintaperusteista: " +
                 "[Hakukohde hakukohdeOid , jono \"Varsinainen testivalinta\" (valintatapaJonoOid , prio 0)]");
-            sijoitteluResource.toteutaSijoittelu(hakuOid, 12345L, true);
+            sijoitteluResource.toteutaSijoittelu(hakuOid, 12345L);
         } finally{
             reset(sijoitteluBusinessService, valintatietoService, valintalaskentakoostepalveluResource);
         }
