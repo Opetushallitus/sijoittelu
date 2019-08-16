@@ -1,6 +1,5 @@
 package fi.vm.sade.sijoittelu.laskenta.resource;
 
-import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.unmodifiableSet;
@@ -33,7 +32,6 @@ import org.springframework.stereotype.Controller;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
-import javax.ws.rs.QueryParam;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -79,7 +77,7 @@ public class SijoitteluResource {
     @GET
     @Path("/{hakuOid}")
     @ApiOperation(value = "Käynnistä uusi sijoittelu haulle", response = Long.class)
-    public Long sijoittele(@PathParam("hakuOid") String hakuOid, @QueryParam("priorisointi") Boolean priorisointi) {
+    public Long sijoittele(@PathParam("hakuOid") String hakuOid) {
 
         Long sijoitteluAjonTunniste = System.currentTimeMillis();
         if (!sijoitteluBookkeeperService.luoUusiSijoitteluAjo(hakuOid, sijoitteluAjonTunniste)) {
@@ -88,7 +86,7 @@ public class SijoitteluResource {
         } else {
             LOGGER.info("Luodaan ja käynnistetään uusi sijoittelu haulle {}", hakuOid);
             try {
-                Runnable kaynnistaSijoittelu = () -> toteutaSijoittelu(hakuOid, sijoitteluAjonTunniste, !FALSE.equals(priorisointi));
+                Runnable kaynnistaSijoittelu = () -> toteutaSijoittelu(hakuOid, sijoitteluAjonTunniste);
                 Thread sijoittelu = new Thread(kaynnistaSijoittelu);
                 sijoittelu.start();
                 return sijoitteluAjonTunniste;
@@ -255,12 +253,9 @@ public class SijoitteluResource {
                 .collect(Collectors.toMap(ValintatapajonoDTO::getOid, v0 -> v0))));
     }
 
-    public void toteutaSijoittelu(String hakuOid, Long sijoitteluAjonTunniste, boolean priorisointi) {
+    public void toteutaSijoittelu(String hakuOid, Long sijoitteluAjonTunniste) {
 
         try {
-            if (!priorisointi) {
-                LOGGER.info("Ajetaan sijoittelu ilman priorisointia haulle {}", hakuOid);
-            }
             LOGGER.info("Valintatietoja valmistetaan haulle {}!", hakuOid);
             HakuDTO haku = valintatietoService.haeValintatiedot(hakuOid);
             LOGGER.info("Valintatiedot haettu serviceltä {}!", hakuOid);
@@ -288,17 +283,10 @@ public class SijoitteluResource {
             });
             LOGGER.info("Valintaperusteet asetettu {}!", hakuOid);
 
-            if (priorisointi) {
-                sijoitteluBusinessService.sijoittele(haku,
-                    flatMapJonoOids(hakukohdeMapToValintatapajonoByOid),
-                    laskennanTuloksistaJaValintaperusteistaLoytyvatJonot,
-                    sijoitteluAjonTunniste);
-            } else {
-                sijoitteluBusinessService.sijoitteleIlmanPriorisointia(haku,
-                    flatMapJonoOids(hakukohdeMapToValintatapajonoByOid),
-                    laskennanTuloksistaJaValintaperusteistaLoytyvatJonot,
-                    sijoitteluAjonTunniste);
-            }
+            sijoitteluBusinessService.sijoittele(haku,
+                flatMapJonoOids(hakukohdeMapToValintatapajonoByOid),
+                laskennanTuloksistaJaValintaperusteistaLoytyvatJonot,
+                sijoitteluAjonTunniste);
             LOGGER.info("Sijoitteluajo {} suoritettu onnistuneesti haulle {}", sijoitteluAjonTunniste, hakuOid);
             sijoitteluBookkeeperService.merkitseSijoitteluAjonTila(hakuOid,
                 sijoitteluAjonTunniste,

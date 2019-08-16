@@ -90,18 +90,24 @@ public class SijoitteluBusinessServiceValintarekisteriTest {
     }
 
     private void setUpMocks1() {
-        when(valintarekisteriService.getLatestSijoitteluajo(hakuOid)).thenReturn(valintarekisteriSijoitteluajo1());
-        when(valintarekisteriService.getSijoitteluajonHakukohteet(sijoitteluajoId)).thenReturn(valintarekisteriHakukohteet1());
-        when(valintarekisteriService.getValintatulokset(hakuOid)).thenReturn(valintarekisteriValintatulokset1());
+        setupMocks(hakuOid, valintarekisteriSijoitteluajo1(), valintarekisteriHakukohteet1(), valintarekisteriValintatulokset1());
     }
 
     private void setUpMocks2() {
-        when(valintarekisteriService.getLatestSijoitteluajo(hakuOid)).thenReturn(valintarekisteriSijoitteluajo2());
-        when(valintarekisteriService.getSijoitteluajonHakukohteet(sijoitteluajoId)).thenReturn(valintarekisteriHakukohteet2());
-        when(valintarekisteriService.getValintatulokset(hakuOid)).thenReturn(valintarekisteriValintatulokset2());
+        setupMocks(hakuOid, valintarekisteriSijoitteluajo2(), valintarekisteriHakukohteet2(), valintarekisteriValintatulokset2());
+    }
+
+    private void setupMocks(String hakuOid, SijoitteluAjo sijoitteluAjo, List<Hakukohde> hakukohdes, List<Valintatulos> valintatulos) {
+        when(valintarekisteriService.getLatestSijoitteluajo(hakuOid)).thenReturn(sijoitteluAjo);
+        when(valintarekisteriService.getSijoitteluajonHakukohteet(sijoitteluajoId)).thenReturn(hakukohdes);
+        when(valintarekisteriService.getValintatulokset(hakuOid)).thenReturn(valintatulos);
     }
 
     private void verifyAndCaptureAndAssert(Function3<SijoitteluAjo, List<Hakukohde>, List<Valintatulos>, Boolean> assertFunction) {
+        verifyAndCaptureAndAssert(assertFunction, hakuOid);
+    }
+
+    private void verifyAndCaptureAndAssert(Function3<SijoitteluAjo, List<Hakukohde>, List<Valintatulos>, Boolean> assertFunction, String hakuOid) {
         verify(valintarekisteriService).getLatestSijoitteluajo(hakuOid);
         verify(valintarekisteriService).getSijoitteluajonHakukohteet(sijoitteluajoId);
         verify(valintarekisteriService).getValintatulokset(hakuOid);
@@ -304,9 +310,7 @@ public class SijoitteluBusinessServiceValintarekisteriTest {
 
     private ValintatietoValintatapajonoDTO sijoitteleYhteenJonoonYksiHyvaksyttyKaksiVaralleSamalleJonosijalle
         (fi.vm.sade.valintalaskenta.domain.dto.valintakoe.Tasasijasaanto tasasijasaanto) {
-        when(valintarekisteriService.getLatestSijoitteluajo(hakuOid)).thenReturn(null);
-        when(valintarekisteriService.getSijoitteluajonHakukohteet(sijoitteluajoId)).thenReturn(Collections.emptyList());
-        when(valintarekisteriService.getValintatulokset(hakuOid)).thenReturn(Collections.emptyList());
+        setupMocks(hakuOid, null, Collections.emptyList(), Collections.emptyList());
 
         String jonoOid = uusiHakukohdeOid + ".111111";
         ValintatietoValintatapajonoDTO jonoDto = jonoDTO(jonoOid);
@@ -336,9 +340,17 @@ public class SijoitteluBusinessServiceValintarekisteriTest {
 
     @Test
     public void testSijoitteleIlmanPriorisointia() {
-        setUpMocks2();
+        setupMocks("priorisoimatonHaku", valintarekisteriSijoitteluajo2(), valintarekisteriHakukohteet2(), valintarekisteriValintatulokset2());
 
-        service.sijoitteleIlmanPriorisointia(hakuDTO2(true), Collections.emptySet(), Sets.newHashSet(
+        HakuDTO hakuDTO = hakuDTO2(true);
+        hakuDTO.setHakuOid("priorisoimatonHaku");
+        fi.vm.sade.sijoittelu.laskenta.external.resource.dto.HakuDTO tarjontaHaku = tarjontaHaku();
+        tarjontaHaku.setUsePriority(false);
+        when(tarjontaIntegrationService.getHakuByHakuOid("priorisoimatonHaku")).thenReturn(tarjontaHaku);
+        when(tarjontaIntegrationService.getHaunParametrit("priorisoimatonHaku")).thenReturn(haunParametrit());
+
+
+        service.sijoittele(hakuDTO, Collections.emptySet(), Sets.newHashSet(
             "112233.111111", "112244.111111", "112255.111111", "112233.222222", "112244.222222", "112255.222222"), (long)123456789);
 
         Function3<SijoitteluAjo, List<Hakukohde>, List<Valintatulos>, Boolean> assertFunction = (sijoitteluajo, hakukohteet, valintatulokset) -> {
@@ -352,7 +364,7 @@ public class SijoitteluBusinessServiceValintarekisteriTest {
             return true;
         };
 
-        verifyAndCaptureAndAssert(assertFunction);
+        verifyAndCaptureAndAssert(assertFunction, "priorisoimatonHaku");
     }
 
     private void assertYksiHyvaksyttyKaksiVarallaSamallaVarasijalla(ValintatietoValintatapajonoDTO jonoDto) {
