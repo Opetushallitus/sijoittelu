@@ -367,6 +367,20 @@ public class SijoitteluBusinessServiceValintarekisteriTest {
         verifyAndCaptureAndAssert(assertFunction, "priorisoimatonHaku");
     }
 
+    @Test(expected = IllegalStateException.class)
+    public void sijoitteluHeittaaPoikkeuksenJosEdellisenSijoittelunHakukohteissaOnHakukohteitaJotkaPuuttuvatUudesta() {
+        setUpMocks1();
+
+        HakuDTO haku = new HakuDTO();
+        assertEquals(2, valintarekisteriHakukohdeOidit.size()); // varmistetaan, että näitä on enemmän kuin 1
+        HakukohdeDTO hakukohde = new HakukohdeDTO();
+        hakukohde.setOid(valintarekisteriHakukohdeOidit.get(0));
+        haku.setHakukohteet(Collections.singletonList(hakukohde));
+        haku.setHakuOid(hakuOid);
+
+        service.sijoittele(haku, Collections.emptySet(), Sets.newHashSet("112233.111111", "112244.111111", "112255.111111"), System.currentTimeMillis());
+    }
+
     private void assertYksiHyvaksyttyKaksiVarallaSamallaVarasijalla(ValintatietoValintatapajonoDTO jonoDto) {
         ArgumentCaptor<SijoitteluAjo> sijoitteluajoCaptor = ArgumentCaptor.forClass(SijoitteluAjo.class);
         ArgumentCaptor<List<Hakukohde>> hakukohteetCaptor = ArgumentCaptor.forClass((Class)List.class);
