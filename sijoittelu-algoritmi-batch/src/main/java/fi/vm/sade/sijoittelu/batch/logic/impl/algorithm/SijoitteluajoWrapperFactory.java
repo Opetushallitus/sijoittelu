@@ -122,6 +122,14 @@ public class SijoitteluajoWrapperFactory {
                                                          Valintatulos valintatulos,
                                                          Optional<VastaanottoDTO> aiempiVastaanottoSamalleKaudelle) {
         Hakemus hakemus = hakemusWrapper.getHakemus();
+        LOG.debug("setHakemuksenValintatuloksenTila alkaa: Hakukohde: {}, valintatapajono: {}, hakemus: {}, hakemuksen tila: {}, hakemuksen edellinen tila: {}, vastaanoton tila: {}, aiempi vo: {}",
+                hakemusWrapper.getValintatapajono().getHakukohdeWrapper().getHakukohde().getOid(),
+                hakemusWrapper.getValintatapajono().getValintatapajono().getOid(),
+                hakemus.getHakemusOid(),
+                hakemus.getTila(),
+                hakemus.getEdellinenTila(),
+                valintatulos != null ? valintatulos.getTila() : "(null valintatulos)",
+                aiempiVastaanottoSamalleKaudelle);
         if (estaaVastaanotonYhdenPaikanSaannoksenTakia(aiempiVastaanottoSamalleKaudelle, hakemusWrapper)) {
             if (valintatulos != null && valintatulos.getTila() == ValintatuloksenTila.PERUNUT) {
                 TilojenMuokkaus.asetaTilaksiPerunut(hakemusWrapper);
