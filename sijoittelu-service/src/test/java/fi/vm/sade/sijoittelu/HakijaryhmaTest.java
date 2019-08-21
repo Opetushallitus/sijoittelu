@@ -209,11 +209,11 @@ public class HakijaryhmaTest {
         final SijoitteluajoWrapper sijoitteluAjo = SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(new SijoitteluConfiguration(), new SijoitteluAjo(), hakukohteet, Collections.emptyList(), Collections.emptyMap());
         sijoitteluAjo.setKaikkiKohteetSijoittelussa(LocalDateTime.now().plusDays(10));
 
-        /**
-         * Luodaan alkutilanne:
-         *
-         * valintatapajono1: A (HYVÄKSYTTY), B (VARALLA)
-         * valintatapajono2: C (HYVÄKSYTTY), D (VARALLA)
+        /*
+          Luodaan alkutilanne:
+
+          valintatapajono1: A (HYVÄKSYTTY), B (VARALLA)
+          valintatapajono2: C (HYVÄKSYTTY), D (VARALLA)
          */
         SijoittelunTila s = SijoitteluAlgorithmUtil.sijoittele(sijoitteluAjo);
         System.out.println(tulostaSijoittelu(s));
@@ -221,10 +221,10 @@ public class HakijaryhmaTest {
         assertoiAinoastaanValittu(hakukohteet.get(0).getValintatapajonot().get(0), "A");
         assertoiAinoastaanValittu(hakukohteet.get(0).getValintatapajonot().get(1), "C");
 
-        /**
-         * Muokataan kiintiöitä, että B ja D uudelleen sijoitellaan. Lisäksi
-         * lisätään ensimmäiselle valintatapajonolle varasijatäyttö päättyneeksi,
-         * joten D tulisi ainoastaan hyväksyä tässä sijoittelussa.
+        /*
+          Muokataan kiintiöitä, että B ja D uudelleen sijoitellaan. Lisäksi
+          lisätään ensimmäiselle valintatapajonolle varasijatäyttö päättyneeksi,
+          joten D tulisi ainoastaan hyväksyä tässä sijoittelussa.
          */
         s.sijoitteluAjo.getHakukohteet().stream()
                 .flatMap(hk -> hk.getHakijaryhmaWrappers().stream())
