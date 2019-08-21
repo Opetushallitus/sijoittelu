@@ -31,7 +31,7 @@ public class SijoitteluajoWrapperFactory {
             sijoitteluAjo.getHakuOid(), sijoitteluConfiguration));
         final Map<String, Map<String, Map<String, Valintatulos>>> indeksoidutTulokset = indexValintatulokset(valintatulokset);
         SijoitteluajoWrapper sijoitteluajoWrapper = new SijoitteluajoWrapper(sijoitteluConfiguration, sijoitteluAjo);
-        Map<String, HenkiloWrapper> hakemusOidMap = new HashMap<String, HenkiloWrapper>();
+        Map<String, HenkiloWrapper> hakemusOidMap = new HashMap<>();
         hakukohteet.forEach(hakukohde -> {
             HakukohdeWrapper hakukohdeWrapper = new HakukohdeWrapper();
             hakukohdeWrapper.setHakukohde(hakukohde);
