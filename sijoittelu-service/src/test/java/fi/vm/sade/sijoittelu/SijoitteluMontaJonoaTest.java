@@ -590,10 +590,10 @@ public class SijoitteluMontaJonoaTest {
 
         sijoitteleAndPrintResult(hakukohteet, valintatulokset, isKorkeakoulu);
 
-        int koko = hakukohteet.get(0).getValintatapajonot().get(0)
+        int koko = (int) hakukohteet.get(0).getValintatapajonot().get(0)
                 .getHakemukset().stream()
                 .filter(hak->hak.getTila() == HakemuksenTila.HYVAKSYTTY || hak.getTila() == HakemuksenTila.VARASIJALTA_HYVAKSYTTY)
-                .collect(Collectors.toList()).size();
+                .count();
 
         Assert.assertEquals(expectedHyvaksyttyCount, koko);
     }
@@ -674,10 +674,10 @@ public class SijoitteluMontaJonoaTest {
 
         System.out.println(PrintHelper.tulostaSijoittelu(s));
 
-        int koko = hakukohteet.get(0).getValintatapajonot().get(0)
+        int koko = (int) hakukohteet.get(0).getValintatapajonot().get(0)
                 .getHakemukset().stream()
                 .filter(hak->hak.getTila() == HakemuksenTila.HYVAKSYTTY || hak.getTila() == HakemuksenTila.VARASIJALTA_HYVAKSYTTY)
-                .collect(Collectors.toList()).size();
+                .count();
 
         Assert.assertEquals(4, koko);
 
@@ -706,18 +706,18 @@ public class SijoitteluMontaJonoaTest {
 
         Valintatulos tulos9 = createTulos("oid9", "hakukohde1", "jono1");
         Valintatulos tulos10 = createTulos("oid10", "hakukohde1", "jono1");
-        s = SijoitteluAlgorithmUtil.sijoittele(hakukohteet, Arrays.asList(tulos1, tulos2, tulos3, tulos4, tulos6, tulos7, tulos8, tulos9, tulos10), Collections.emptyMap());
+        SijoitteluAlgorithmUtil.sijoittele(hakukohteet, Arrays.asList(tulos1, tulos2, tulos3, tulos4, tulos6, tulos7, tulos8, tulos9, tulos10), Collections.emptyMap());
         final SijoitteluajoWrapper sijoitteluAjo = SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(new SijoitteluConfiguration(), new SijoitteluAjo(), hakukohteet, Arrays.asList(tulos1, tulos2, tulos3, tulos4, tulos6, tulos7, tulos8, tulos9, tulos10), Collections.emptyMap());
         sijoitteluAjo.getHakukohteet().get(0).getValintatapajonot().get(0).getHakemukset().stream().filter(hak->hak.getHakemus().getHakemusOid().equals("oid1") || hak.getHakemus().getHakemusOid().equals("oid2")).forEach(hak -> {
             hak.setTilaVoidaanVaihtaa(false);
             hak.getHakemus().setTila(HakemuksenTila.PERUUNTUNUT);
         });
-        s = SijoitteluAlgorithmUtil.sijoittele(sijoitteluAjo);
+        SijoitteluAlgorithmUtil.sijoittele(sijoitteluAjo);
 
-        int koko = hakukohteet.get(0).getValintatapajonot().get(0)
+        int koko = (int) hakukohteet.get(0).getValintatapajonot().get(0)
                 .getHakemukset().stream()
                 .filter(hak->hak.getTila() == HakemuksenTila.HYVAKSYTTY || hak.getTila() == HakemuksenTila.VARASIJALTA_HYVAKSYTTY)
-                .collect(Collectors.toList()).size();
+                .count();
 
         Assert.assertEquals(koko, 4);
 
@@ -737,9 +737,9 @@ public class SijoitteluMontaJonoaTest {
         return tulos;
     }
 
-    public final static void assertoiAinoastaanValittu(Valintatapajono h, String... oids) {
+    public static void assertoiAinoastaanValittu(Valintatapajono h, String... oids) {
         List<String> wanted = Arrays.asList(oids);
-        List<String> actual = new ArrayList<String>();
+        List<String> actual = new ArrayList<>();
         for (Hakemus hakemus : h.getHakemukset()) {
             if (hakemus.getTila() == HakemuksenTila.HYVAKSYTTY || hakemus.getTila() == HakemuksenTila.VARASIJALTA_HYVAKSYTTY) {
                 actual.add(hakemus.getHakemusOid());
@@ -750,13 +750,11 @@ public class SijoitteluMontaJonoaTest {
     }
 
     private List<Hakukohde> tallennaEdellisetTilat(List<Hakukohde> hakukohteet) {
-        hakukohteet.stream().forEach(hk -> {
-            hk.getValintatapajonot().stream().forEach(jono -> {
-                jono.getHakemukset().stream().forEach(h -> {
-                    h.setEdellinenTila(h.getTila());
-                });
-            });
-        });
+        hakukohteet.forEach(hk ->
+            hk.getValintatapajonot().forEach(jono -> {
+                jono.getHakemukset().forEach(h ->
+                    h.setEdellinenTila(h.getTila()));
+            }));
         return hakukohteet;
     }
 
