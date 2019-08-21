@@ -33,7 +33,6 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
@@ -59,7 +58,7 @@ public class HakijaryhmaTest {
 
 	@Test
     @UsingDataSet(locations = "vaasan_yliopisto_valinnan_vaiheet.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
-	public void testSijoitteluOneHakijaryhma() throws IOException {
+	public void testSijoitteluOneHakijaryhma() {
 
         HakuDTO haku = valintatietoService.haeValintatiedot("1.2.246.562.29.173465377510");
 
@@ -75,7 +74,7 @@ public class HakijaryhmaTest {
 
     @Test
     @UsingDataSet(locations = "vaasan_yliopisto_valinnan_vaiheet_kaksi_hakijaryhmaa.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
-    public void testSijoitteluTwoHakijaryhma() throws IOException {
+    public void testSijoitteluTwoHakijaryhma() {
 
         HakuDTO haku = valintatietoService.haeValintatiedot("1.2.246.562.29.173465377510");
 
@@ -91,7 +90,7 @@ public class HakijaryhmaTest {
 
     @Test
     @UsingDataSet(locations = "vaasan_yliopisto_valinnan_vaiheet_kaksi_hakijaryhmaa_toinen_eri_jonossa.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
-    public void testSijoitteluTwoHakijaryhmaToisessaEriJono() throws IOException {
+    public void testSijoitteluTwoHakijaryhmaToisessaEriJono() {
 
         HakuDTO haku = valintatietoService.haeValintatiedot("1.2.246.562.29.173465377510");
 
@@ -105,7 +104,7 @@ public class HakijaryhmaTest {
 
     @Test
     @UsingDataSet(locations = "vaasan_yliopisto_valinnan_vaiheet_ei_hakijaryhmaa.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
-    public void testSijoitteluEiHakijaryhma() throws IOException {
+    public void testSijoitteluEiHakijaryhma() {
 
         HakuDTO haku = valintatietoService.haeValintatiedot("1.2.246.562.29.173465377510");
 
@@ -122,7 +121,7 @@ public class HakijaryhmaTest {
     @Ignore
     @UsingDataSet(locations = "alitaytto_simple_case.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
     // Korjaa tämä kun ikiluuppi on korjattu
-    public void testAlitayttoRekursio() throws IOException {
+    public void testAlitayttoRekursio() {
 
         HakuDTO haku = valintatietoService.haeValintatiedot("1.2.246.562.29.173465377510");
 
@@ -138,7 +137,7 @@ public class HakijaryhmaTest {
 
     @Test
     @UsingDataSet(locations = "ylitaytto_simple_case.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
-    public void testYlitayttoRekursio() throws IOException {
+    public void testYlitayttoRekursio() {
 
         HakuDTO haku = valintatietoService.haeValintatiedot("1.2.246.562.29.173465377510");
 
@@ -157,7 +156,7 @@ public class HakijaryhmaTest {
     @Ignore
     @Test
     @UsingDataSet(locations = "ylitaytto_vaihe.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
-    public void testYlitaytto() throws IOException {
+    public void testYlitaytto() {
 
         HakuDTO haku = valintatietoService.haeValintatiedot("1.2.246.562.29.173465377510");
 
@@ -174,7 +173,7 @@ public class HakijaryhmaTest {
 
     @Test
     @UsingDataSet(locations = "vain_ryhmaan_kuuluvat_hyvaksytaan.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
-    public void testSijoitteluVainHakijaryhmaanKuuluvatVoivatTullaHyvaksytyksi() throws IOException {
+    public void testSijoitteluVainHakijaryhmaanKuuluvatVoivatTullaHyvaksytyksi() {
 
         HakuDTO haku = valintatietoService.haeValintatiedot("haku1");
 
@@ -191,7 +190,7 @@ public class HakijaryhmaTest {
 
     @Test(expected = IllegalStateException.class)
     @UsingDataSet(locations = "toisensa_pois_sulkevat_hakijaryhmat.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
-    public void testSijoitteluToisensaPoisSulkevatRyhmat() throws IOException {
+    public void testSijoitteluToisensaPoisSulkevatRyhmat() {
 
         HakuDTO haku = valintatietoService.haeValintatiedot("haku1");
 
@@ -202,7 +201,7 @@ public class HakijaryhmaTest {
 
     @Test
     @UsingDataSet(locations = "hakijaryhma_varasijasaannot_paattyneet.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
-    public void testSijoitteluVarasijaSaannotPaattyneet() throws IOException {
+    public void testSijoitteluVarasijaSaannotPaattyneet() {
 
         HakuDTO haku = valintatietoService.haeValintatiedot("1.2.246.562.29.173465377510");
         List<Hakukohde> hakukohteet = haku.getHakukohteet().parallelStream().map(DomainConverter::convertToHakukohde).collect(Collectors.toList());
