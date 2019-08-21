@@ -246,9 +246,9 @@ public class HakijaryhmaTest {
         assertoiAinoastaanValittu(hakukohteet.get(0).getValintatapajonot().get(1), "C", "D");
     }
 
-    public final static void assertoiAinoastaanValittu(Valintatapajono h, String... oids) {
+    public static void assertoiAinoastaanValittu(Valintatapajono h, String... oids) {
         List<String> wanted = Arrays.asList(oids);
-        List<String> actual = new ArrayList<String>();
+        List<String> actual = new ArrayList<>();
         for (Hakemus hakemus : h.getHakemukset()) {
             if (hakemus.getTila() == HakemuksenTila.HYVAKSYTTY) {
                 actual.add(hakemus.getHakemusOid());
