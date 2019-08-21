@@ -73,7 +73,7 @@ public class SijoitteleHakijaryhmaTest {
         dummyRyhmaWrapper.setHakijaryhma(hakijaryhma);
         dummyRyhmaWrapper.setHakukohdeWrapper(dummyKohdeWrapper);
 
-        ajoWrapper = SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(new SijoitteluConfiguration(), ajo, Collections.singletonList(hakukohde), Collections.emptyList(), Collections.emptyMap());
+        ajoWrapper = createSijoitteluajoWrapper(ajo, hakukohde, Collections.emptyList());
         hakukohdeWrapper = ajoWrapper.getHakukohteet().get(0);
         hakijaryhmaWrapper = hakukohdeWrapper.getHakijaryhmaWrappers().get(0);
     }
@@ -141,13 +141,7 @@ public class SijoitteleHakijaryhmaTest {
         hakukohde.setValintatapajonot(Collections.singletonList(valintatapajono));
         hakukohde.setHakijaryhmat(Collections.singletonList(hakijaryhma));
 
-        SijoitteluajoWrapper ajoWrapper =
-                SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(
-                    new SijoitteluConfiguration(), new SijoitteluAjo(),
-                        Collections.singletonList(hakukohde),
-                        Collections.emptyList(),
-                        Collections.emptyMap()
-                );
+        SijoitteluajoWrapper ajoWrapper = createSijoitteluajoWrapper(new SijoitteluAjo(), hakukohde, Collections.emptyList());
         HakukohdeWrapper hakukohdeWrapper = ajoWrapper.getHakukohteet().get(0);
 
         hakukohdeWrapper.getValintatapajonot().get(0).getHakemukset().get(1).getHakemus().setJonosija(1);
@@ -183,13 +177,7 @@ public class SijoitteleHakijaryhmaTest {
         hakukohde.setValintatapajonot(Collections.singletonList(valintatapajono));
         hakukohde.setHakijaryhmat(Collections.singletonList(hakijaryhma));
 
-        SijoitteluajoWrapper ajoWrapper =
-                SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(
-                    new SijoitteluConfiguration(), new SijoitteluAjo(),
-                        Collections.singletonList(hakukohde),
-                        Collections.emptyList(),
-                        Collections.emptyMap()
-                );
+        SijoitteluajoWrapper ajoWrapper = createSijoitteluajoWrapper(new SijoitteluAjo(), hakukohde, Collections.emptyList());
         HakukohdeWrapper hakukohdeWrapper = ajoWrapper.getHakukohteet().get(0);
 
         SijoitteleHakukohde.sijoitteleHakukohde(ajoWrapper, hakukohdeWrapper);
@@ -220,13 +208,7 @@ public class SijoitteleHakijaryhmaTest {
         hakukohde.setValintatapajonot(Collections.singletonList(valintatapajono));
         hakukohde.setHakijaryhmat(Collections.singletonList(hakijaryhma));
 
-        SijoitteluajoWrapper ajoWrapper =
-                SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(
-                    new SijoitteluConfiguration(), new SijoitteluAjo(),
-                        Collections.singletonList(hakukohde),
-                        Collections.emptyList(),
-                        Collections.emptyMap()
-                );
+        SijoitteluajoWrapper ajoWrapper = createSijoitteluajoWrapper(new SijoitteluAjo(), hakukohde, Collections.emptyList());
         HakukohdeWrapper hakukohdeWrapper = ajoWrapper.getHakukohteet().get(0);
 
         hakukohdeWrapper.getValintatapajonot().get(0).getHakemukset().get(1).getHakemus().setJonosija(1);
@@ -262,13 +244,7 @@ public class SijoitteleHakijaryhmaTest {
         hakukohde.setValintatapajonot(Collections.singletonList(valintatapajono));
         hakukohde.setHakijaryhmat(Collections.singletonList(hakijaryhma));
 
-        SijoitteluajoWrapper ajoWrapper =
-                SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(
-                    new SijoitteluConfiguration(), new SijoitteluAjo(),
-                        Collections.singletonList(hakukohde),
-                        Collections.emptyList(),
-                        Collections.emptyMap()
-                );
+        SijoitteluajoWrapper ajoWrapper = createSijoitteluajoWrapper(new SijoitteluAjo(), hakukohde, Collections.emptyList());
         HakukohdeWrapper hakukohdeWrapper = ajoWrapper.getHakukohteet().get(0);
 
         hakukohdeWrapper.getValintatapajonot().get(0).getHakemukset().get(1).getHakemus().setJonosija(1);
@@ -304,13 +280,7 @@ public class SijoitteleHakijaryhmaTest {
         hakukohde.setValintatapajonot(Collections.singletonList(valintatapajono));
         hakukohde.setHakijaryhmat(Collections.singletonList(hakijaryhma));
 
-        SijoitteluajoWrapper ajoWrapper =
-                SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(
-                    new SijoitteluConfiguration(), new SijoitteluAjo(),
-                        Collections.singletonList(hakukohde),
-                        Collections.emptyList(),
-                        Collections.emptyMap()
-                );
+        SijoitteluajoWrapper ajoWrapper = createSijoitteluajoWrapper(new SijoitteluAjo(), hakukohde, Collections.emptyList());
         HakukohdeWrapper hakukohdeWrapper = ajoWrapper.getHakukohteet().get(0);
 
         hakukohdeWrapper.getValintatapajonot().get(0).getHakemukset().get(1).getHakemus().setJonosija(1);
@@ -363,13 +333,7 @@ public class SijoitteleHakijaryhmaTest {
         hakukohde.getValintatapajonot().add(valintatapajono2);
         hakukohde.setHakijaryhmat(Collections.singletonList(hakijaryhma));
 
-        SijoitteluajoWrapper ajoWrapper =
-                SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(
-                    new SijoitteluConfiguration(), new SijoitteluAjo(),
-                        Collections.singletonList(hakukohde),
-                        Collections.emptyList(),
-                        Collections.emptyMap()
-                );
+        SijoitteluajoWrapper ajoWrapper = createSijoitteluajoWrapper(new SijoitteluAjo(), hakukohde, Collections.emptyList());
         HakukohdeWrapper hakukohdeWrapper = ajoWrapper.getHakukohteet().get(0);
 
         SijoitteleHakukohde.sijoitteleHakukohde(ajoWrapper, hakukohdeWrapper);
@@ -426,13 +390,7 @@ public class SijoitteleHakijaryhmaTest {
         hakukohde.getValintatapajonot().add(valintatapajono2);
         hakukohde.setHakijaryhmat(Collections.singletonList(hakijaryhma));
 
-        SijoitteluajoWrapper ajoWrapper =
-                SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(
-                    new SijoitteluConfiguration(), new SijoitteluAjo(),
-                        Collections.singletonList(hakukohde),
-                        Collections.emptyList(),
-                        Collections.emptyMap()
-                );
+        SijoitteluajoWrapper ajoWrapper = createSijoitteluajoWrapper(new SijoitteluAjo(), hakukohde, Collections.emptyList());
         HakukohdeWrapper hakukohdeWrapper = ajoWrapper.getHakukohteet().get(0);
 
         SijoitteleHakukohde.sijoitteleHakukohde(ajoWrapper, hakukohdeWrapper);
@@ -488,13 +446,7 @@ public class SijoitteleHakijaryhmaTest {
         hakukohde.getValintatapajonot().add(valintatapajono2);
         hakukohde.setHakijaryhmat(Collections.singletonList(hakijaryhma));
 
-        SijoitteluajoWrapper ajoWrapper =
-                SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(
-                    new SijoitteluConfiguration(), new SijoitteluAjo(),
-                        Collections.singletonList(hakukohde),
-                        Collections.emptyList(),
-                        Collections.emptyMap()
-                );
+        SijoitteluajoWrapper ajoWrapper = createSijoitteluajoWrapper(new SijoitteluAjo(), hakukohde, Collections.emptyList());
         HakukohdeWrapper hakukohdeWrapper = ajoWrapper.getHakukohteet().get(0);
 
         SijoitteleHakukohde.sijoitteleHakukohde(ajoWrapper, hakukohdeWrapper);
@@ -560,13 +512,7 @@ public class SijoitteleHakijaryhmaTest {
         hakukohde.getValintatapajonot().add(valintatapajono2);
         hakukohde.setHakijaryhmat(Collections.singletonList(hakijaryhma));
 
-        SijoitteluajoWrapper ajoWrapper =
-                SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(
-                    new SijoitteluConfiguration(), new SijoitteluAjo(),
-                        Collections.singletonList(hakukohde),
-                        Collections.singletonList(peruuntuneenaHyvaksytynValintatulos),
-                        Collections.emptyMap()
-                );
+        SijoitteluajoWrapper ajoWrapper = createSijoitteluajoWrapper(new SijoitteluAjo(), hakukohde, Collections.singletonList(peruuntuneenaHyvaksytynValintatulos));
         HakukohdeWrapper hakukohdeWrapper = ajoWrapper.getHakukohteet().get(0);
 
         SijoitteleHakukohde.sijoitteleHakukohde(ajoWrapper, hakukohdeWrapper);
@@ -628,13 +574,7 @@ public class SijoitteleHakijaryhmaTest {
         hakukohde.getValintatapajonot().add(valintatapajono3);
         hakukohde.setHakijaryhmat(Collections.singletonList(hakijaryhma));
 
-        SijoitteluajoWrapper ajoWrapper =
-                SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(
-                    new SijoitteluConfiguration(), new SijoitteluAjo(),
-                        Collections.singletonList(hakukohde),
-                        Collections.emptyList(),
-                        Collections.emptyMap()
-                );
+        SijoitteluajoWrapper ajoWrapper = createSijoitteluajoWrapper(new SijoitteluAjo(), hakukohde, Collections.emptyList());
         HakukohdeWrapper hakukohdeWrapper = ajoWrapper.getHakukohteet().get(0);
 
         SijoitteleHakukohde.sijoitteleHakukohde(ajoWrapper, hakukohdeWrapper);
@@ -868,7 +808,7 @@ public class SijoitteleHakijaryhmaTest {
         }
         hakukohde.getValintatapajonot().add(valintatapajono);
 
-        ajoWrapper = SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(new SijoitteluConfiguration(), ajo, Collections.singletonList(hakukohde), Collections.emptyList(), Collections.emptyMap());
+        ajoWrapper = createSijoitteluajoWrapper(ajo, hakukohde, Collections.emptyList());
         hakukohdeWrapper = ajoWrapper.getHakukohteet().get(0);
         hakijaryhmaWrapper = hakukohdeWrapper.getHakijaryhmaWrappers().get(0);
 
@@ -964,5 +904,15 @@ public class SijoitteleHakijaryhmaTest {
         Assert.assertEquals(hakemus7jono1.getHyvaksyttyHakijaryhmista(), Sets.newHashSet(hakijaryhmaOid));
 
         Assert.assertEquals(HakemuksenTila.VARALLA, hakemus8jono1.getTila());
+    }
+
+    private SijoitteluajoWrapper createSijoitteluajoWrapper(SijoitteluAjo sijoitteluAjo, Hakukohde hakukohde, List<Valintatulos> valintatulosList) {
+        return SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(
+            new SijoitteluConfiguration(),
+            sijoitteluAjo,
+            Collections.singletonList(hakukohde),
+            valintatulosList,
+            Collections.emptyMap()
+        );
     }
 }
