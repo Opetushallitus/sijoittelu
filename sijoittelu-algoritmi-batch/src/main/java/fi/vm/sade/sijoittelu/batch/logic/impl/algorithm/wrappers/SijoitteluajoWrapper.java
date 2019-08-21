@@ -35,6 +35,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -282,7 +283,8 @@ public class SijoitteluajoWrapper {
         return hakutoiveidenPriorisointi;
     }
 
-    public void paivitaVastaanottojenVaikutusHakemustenTiloihin(Map<String, VastaanottoDTO> aiemmanVastaanotonHakukohdePerHakija, Map<String, Map<String, Map<String, Valintatulos>>> indeksoidutTulokset) {
+    public void paivitaVastaanottojenVaikutusHakemustenTiloihin(List<Valintatulos> valintatulokset, Map<String, VastaanottoDTO> aiemmanVastaanotonHakukohdePerHakija) {
+        final Map<String, Map<String, Map<String, Valintatulos>>> indeksoidutTulokset = indexValintatulokset(valintatulokset);
         getHakukohteet().forEach(hakukohdeWrapper -> {
             Map<String, Map<String, Valintatulos>> jonoIndex = indeksoidutTulokset.getOrDefault(hakukohdeWrapper.getHakukohde().getOid(), emptyMap());
             hakukohdeWrapper.getValintatapajonot().forEach(valintatapajonoWrapper -> {
@@ -483,7 +485,24 @@ public class SijoitteluajoWrapper {
                 .max(Comparator.comparingLong(pair -> pair.getRight().getTime())).orElse(Pair.of("", null)).getLeft();
 
         return viimeisinHyvaksyttyJonoOid.equals(hakemusWrapper.getValintatapajono().getValintatapajono().getOid());
+    }
 
+    // hakukohde : valintatapajonot : hakemukset
+    private static Map<String, Map<String, Map<String, Valintatulos>>> indexValintatulokset(List<Valintatulos> valintatulokset) {
+        Map<String, Map<String, Map<String, Valintatulos>>> hakukohdeIndex = new HashMap<>();
 
+        valintatulokset.stream().filter(vt -> !(vt.getHakemusOid() == null || vt.getHakemusOid().isEmpty())).forEach(vt -> {
+            final String hakukohdeOid = vt.getHakukohdeOid();
+            final String valintatapajonoOid = vt.getValintatapajonoOid();
+            final String hakemusOid = vt.getHakemusOid();
+
+            Map<String, Map<String, Valintatulos>> jonoIndex = hakukohdeIndex.getOrDefault(hakukohdeOid, new HashMap<>());
+            Map<String, Valintatulos> hakemusIndex = jonoIndex.getOrDefault(valintatapajonoOid, new HashMap<>());
+            hakemusIndex.put(hakemusOid, vt);
+            jonoIndex.put(valintatapajonoOid, hakemusIndex);
+            hakukohdeIndex.put(hakukohdeOid, jonoIndex);
+        });
+
+        return hakukohdeIndex;
     }
 }

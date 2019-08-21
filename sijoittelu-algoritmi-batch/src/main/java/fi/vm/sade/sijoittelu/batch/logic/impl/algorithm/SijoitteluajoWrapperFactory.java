@@ -29,7 +29,6 @@ public class SijoitteluajoWrapperFactory {
                                                                   Map<String, VastaanottoDTO> aiemmanVastaanotonHakukohdePerHakija) {
         LOG.info(String.format("Luodaan SijoitteluAjoWrapper haulle %s konfiguraatiolla %s",
             sijoitteluAjo.getHakuOid(), sijoitteluConfiguration));
-        final Map<String, Map<String, Map<String, Valintatulos>>> indeksoidutTulokset = indexValintatulokset(valintatulokset);
         SijoitteluajoWrapper sijoitteluajoWrapper = new SijoitteluajoWrapper(sijoitteluConfiguration, sijoitteluAjo);
         Map<String, HenkiloWrapper> hakemusOidMap = new HashMap<>();
         hakukohteet.forEach(hakukohde -> {
@@ -54,29 +53,11 @@ public class SijoitteluajoWrapperFactory {
             });
             addHakijaRyhmatToHakijaRyhmaWrapper(hakemusOidMap, hakukohde, hakukohdeWrapper);
         });
-        sijoitteluajoWrapper.paivitaVastaanottojenVaikutusHakemustenTiloihin(aiemmanVastaanotonHakukohdePerHakija, indeksoidutTulokset);
+        sijoitteluajoWrapper.paivitaVastaanottojenVaikutusHakemustenTiloihin(valintatulokset, aiemmanVastaanotonHakukohdePerHakija);
         LOG.info("SijoitteluAjoWrapper luotu haulle {}", sijoitteluAjo.getHakuOid());
         return sijoitteluajoWrapper;
     }
 
-    // hakukohde : valintatapajonot : hakemukset
-    private static Map<String, Map<String, Map<String, Valintatulos>>> indexValintatulokset(List<Valintatulos> valintatulokset) {
-        Map<String, Map<String, Map<String, Valintatulos>>> hakukohdeIndex = new HashMap<>();
-
-        valintatulokset.stream().filter(vt -> !(vt.getHakemusOid() == null || vt.getHakemusOid().isEmpty())).forEach(vt -> {
-            final String hakukohdeOid = vt.getHakukohdeOid();
-            final String valintatapajonoOid = vt.getValintatapajonoOid();
-            final String hakemusOid = vt.getHakemusOid();
-
-            Map<String, Map<String, Valintatulos>> jonoIndex = hakukohdeIndex.getOrDefault(hakukohdeOid, new HashMap<>());
-            Map<String, Valintatulos> hakemusIndex = jonoIndex.getOrDefault(valintatapajonoOid, new HashMap<>());
-            hakemusIndex.put(hakemusOid, vt);
-            jonoIndex.put(valintatapajonoOid, hakemusIndex);
-            hakukohdeIndex.put(hakukohdeOid, jonoIndex);
-        });
-
-        return hakukohdeIndex;
-    }
     private static void addHakijaRyhmatToHakijaRyhmaWrapper(Map<String, HenkiloWrapper> hakemusOidMap, Hakukohde hakukohde, HakukohdeWrapper hakukohdeWrapper) {
         for (Hakijaryhma hakijaryhma : hakukohde.getHakijaryhmat()) {
             HakijaryhmaWrapper hakijaryhmaWrapper = new HakijaryhmaWrapper();
