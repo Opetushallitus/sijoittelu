@@ -31,7 +31,6 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -335,13 +334,10 @@ public class VastaanottoTest {
     }
 
     private List<Hakukohde> tallennaEdellisetTilat(List<Hakukohde> hakukohteet) {
-        hakukohteet.stream().forEach(hk -> {
-            hk.getValintatapajonot().stream().forEach(jono -> {
-                jono.getHakemukset().stream().forEach(h -> {
-                    h.setEdellinenTila(h.getTila());
-                });
-            });
-        });
+        hakukohteet.forEach(hk ->
+            hk.getValintatapajonot().forEach(jono -> {
+                jono.getHakemukset().forEach(h -> h.setEdellinenTila(h.getTila()));
+            }));
         return hakukohteet;
     }
 
