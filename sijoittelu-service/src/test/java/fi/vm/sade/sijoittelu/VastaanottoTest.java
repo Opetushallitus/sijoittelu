@@ -53,7 +53,7 @@ public class VastaanottoTest {
 
 	@Test
     @UsingDataSet(locations = "vastaanotot.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
-	public void testVastaanotot() throws IOException {
+	public void testVastaanotot() {
 
         HakuDTO haku = valintatietoService.haeValintatiedot("1.2.246.562.29.173465377510");
 
@@ -173,7 +173,7 @@ public class VastaanottoTest {
 
     @Test
     @UsingDataSet(locations = "vastaanotot_perunut_kaikille_jonoille.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
-    public void testPeruutettuVastaanottoKaikilleJonoille() throws IOException {
+    public void testPeruutettuVastaanottoKaikilleJonoille() {
 
         HakuDTO haku = valintatietoService.haeValintatiedot("1.2.246.562.29.173465377510");
         List<Hakukohde> hakukohteet = haku.getHakukohteet().parallelStream().map(DomainConverter::convertToHakukohde).collect(Collectors.toList());
@@ -222,7 +222,7 @@ public class VastaanottoTest {
 
     @Test
     @UsingDataSet(locations = "vastaanotot_perunut_kaikille_jonoille.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
-    public void testEiVastaanottanutMaaraaikanaVastaanottoKaikilleJonoille() throws IOException {
+    public void testEiVastaanottanutMaaraaikanaVastaanottoKaikilleJonoille() {
 
         HakuDTO haku = valintatietoService.haeValintatiedot("1.2.246.562.29.173465377510");
         List<Hakukohde> hakukohteet = haku.getHakukohteet().parallelStream().map(DomainConverter::convertToHakukohde).collect(Collectors.toList());
@@ -272,7 +272,7 @@ public class VastaanottoTest {
 
     @Test
     @UsingDataSet(locations = "vastaanotot_perunut_kaikille_jonoille.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
-    public void testPerunutVastaanottoKaikilleJonoille() throws IOException {
+    public void testPerunutVastaanottoKaikilleJonoille() {
 
         HakuDTO haku = valintatietoService.haeValintatiedot("1.2.246.562.29.173465377510");
         List<Hakukohde> hakukohteet = haku.getHakukohteet().parallelStream().map(DomainConverter::convertToHakukohde).collect(Collectors.toList());
