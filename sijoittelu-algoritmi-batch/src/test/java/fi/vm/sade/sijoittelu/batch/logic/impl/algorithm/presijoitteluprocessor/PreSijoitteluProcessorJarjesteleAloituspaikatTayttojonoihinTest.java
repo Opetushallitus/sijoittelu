@@ -281,6 +281,7 @@ public class PreSijoitteluProcessorJarjesteleAloituspaikatTayttojonoihinTest ext
                 .build());
         final SijoitteluajoWrapper sijoitteluAjo = SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(
             new SijoitteluConfiguration(), new SijoitteluAjo(), hakukohteet, new ArrayList<>(), Collections.emptyMap());
+        sijoitteluAjo.paivitaVastaanottojenVaikutusHakemustenTiloihin(Collections.emptyList(), Collections.emptyMap());
 
         p.process(sijoitteluAjo);
 
@@ -303,6 +304,7 @@ public class PreSijoitteluProcessorJarjesteleAloituspaikatTayttojonoihinTest ext
         SijoitteluajoWrapperBuilder(List<Hakukohde> hakukohteet) {
             this.wrapper = SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(
                 new SijoitteluConfiguration(), new SijoitteluAjo(), hakukohteet, new ArrayList<>(), Collections.emptyMap());
+            this.wrapper.paivitaVastaanottojenVaikutusHakemustenTiloihin(Collections.emptyList(), Collections.emptyMap());
         }
 
         SijoitteluajoWrapperBuilder withVarasijaSaannotAstuvatVoimaan(LocalDateTime varasijaSaannotAstuvatVoimaan) {

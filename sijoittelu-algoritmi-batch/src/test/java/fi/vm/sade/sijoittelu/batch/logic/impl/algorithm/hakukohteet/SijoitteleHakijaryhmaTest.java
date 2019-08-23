@@ -907,12 +907,14 @@ public class SijoitteleHakijaryhmaTest {
     }
 
     private SijoitteluajoWrapper createSijoitteluajoWrapper(SijoitteluAjo sijoitteluAjo, Hakukohde hakukohde, List<Valintatulos> valintatulosList) {
-        return SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(
+        SijoitteluajoWrapper sijoitteluajoWrapper = SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(
             new SijoitteluConfiguration(),
             sijoitteluAjo,
             Collections.singletonList(hakukohde),
             valintatulosList,
             Collections.emptyMap()
         );
+        sijoitteluajoWrapper.paivitaVastaanottojenVaikutusHakemustenTiloihin(valintatulosList, Collections.emptyMap());
+        return sijoitteluajoWrapper;
     }
 }

@@ -109,7 +109,9 @@ class SijoitusAjoBuilder {
         }
 
 
-        return SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(new SijoitteluConfiguration(), sijoitteluAjo, Arrays.asList(hakukohde), valintatulokset, aiemmatVastaanotot);
+        SijoitteluajoWrapper sijoitteluajoWrapper = SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(new SijoitteluConfiguration(), sijoitteluAjo, Arrays.asList(hakukohde), valintatulokset, aiemmatVastaanotot);
+        sijoitteluajoWrapper.paivitaVastaanottojenVaikutusHakemustenTiloihin(valintatulokset, aiemmatVastaanotot);
+        return sijoitteluajoWrapper;
     }
 
     private VastaanottoDTO createVastaanottoDto(String hakija, String hakukohdeOid) {

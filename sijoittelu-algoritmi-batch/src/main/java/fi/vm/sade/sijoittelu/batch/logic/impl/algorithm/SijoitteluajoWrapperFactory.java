@@ -53,7 +53,6 @@ public class SijoitteluajoWrapperFactory {
             });
             addHakijaRyhmatToHakijaRyhmaWrapper(hakemusOidMap, hakukohde, hakukohdeWrapper);
         });
-        sijoitteluajoWrapper.paivitaVastaanottojenVaikutusHakemustenTiloihin(valintatulokset, aiemmanVastaanotonHakukohdePerHakija);
         LOG.info("SijoitteluAjoWrapper luotu haulle {}", sijoitteluAjo.getHakuOid());
         return sijoitteluajoWrapper;
     }

@@ -103,7 +103,7 @@ public class SijoitteleHakukohdeLisapaikatTest {
                         Collections.singletonList(hakukohde),
                         Collections.emptyList(),
                         Collections.emptyMap());
-
+        ajoWrapper.paivitaVastaanottojenVaikutusHakemustenTiloihin(Collections.emptyList(), Collections.emptyMap());
         heikompiHakemus1EiHakijarymaa = SijoitteluAlgorithmUtil.generateHakemus(8, 5, null);
         heikompiHakemus2EiHakijarymaa = SijoitteluAlgorithmUtil.generateHakemus(9, 6, null);
 
@@ -164,6 +164,7 @@ public class SijoitteleHakukohdeLisapaikatTest {
                 Collections.singletonList(hakukohde),
                 Collections.emptyList(),
                 Collections.emptyMap());
+        aw.paivitaVastaanottojenVaikutusHakemustenTiloihin(Collections.emptyList(), Collections.emptyMap());
 
         HakukohdeWrapper hakukohdeWrapper = aw.getHakukohteet().get(0);
         aw.setLisapaikkaTapa(LisapaikkaTapa.TAPA1);

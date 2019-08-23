@@ -27,6 +27,7 @@ public class HakuBuilder {
             sa.setHakuOid(hakuOid);
             this.wrapper = SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(
                 new SijoitteluConfiguration(), sa, hakukohteet, new ArrayList<>(), Collections.emptyMap());
+            this.wrapper.paivitaVastaanottojenVaikutusHakemustenTiloihin(Collections.emptyList(), Collections.emptyMap());
         }
 
         public SijoitteluajoWrapperBuilder withVarasijaSaannotAstuvatVoimaan(LocalDateTime varasijaSaannotAstuvatVoimaan) {
