@@ -1,25 +1,17 @@
 package fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.presijoitteluprocessor;
 
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.HakemusWrapper;
-import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.HenkiloWrapper;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.SijoitteluajoWrapper;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 public class PreSijoitteluProcessorTarkistaHakutoiveidenPrioriteettienEheys implements PreSijoitteluProcessor {
     @Override
     public void process(SijoitteluajoWrapper sijoitteluajoWrapper) {
-        Set<HenkiloWrapper> kaikkiHakijat = sijoitteluajoWrapper.getHakukohteet().stream()
-            .flatMap(hk -> hk.getValintatapajonot().stream()
-                .flatMap(j -> j.getHakemukset().stream()
-                    .map(HakemusWrapper::getHenkilo)))
-            .collect(Collectors.toSet());
-
-        kaikkiHakijat.forEach(henkiloWrapper -> {
+        sijoitteluajoWrapper.kaikkiHakijat().forEach(henkiloWrapper -> {
             Map<String, List<HakemusWrapper>> hakemuksenTuloksetByHakukohdeOid = henkiloWrapper.getHakemukset().stream()
                 .collect(Collectors.groupingBy(HakemusWrapper::getHakukohdeOid));
             hakemuksenTuloksetByHakukohdeOid.forEach(this::tarkistaEttaTuloksissaOnSamaHakutoivePrioriteetti);
