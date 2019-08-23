@@ -306,18 +306,4 @@ public class Hakemus implements Serializable {
         }
         return TilankuvauksenTarkenne.EI_TILANKUVAUKSEN_TARKENNETTA;
     }
-
-
-    public boolean siivoaTilankuvaustenTarkenteet() {
-        if (tila == HakemuksenTila.VARASIJALTA_HYVAKSYTTY
-                && tilankuvauksenTarkenne != TilankuvauksenTarkenne.HYVAKSYTTY_VARASIJALTA) {
-            this.setTilankuvauksenTarkenne(TilankuvauksenTarkenne.HYVAKSYTTY_VARASIJALTA);
-            return true;
-        } else if ((tila == HakemuksenTila.HYVAKSYTTY || tila == HakemuksenTila.VARALLA)
-                && (tilankuvauksenTarkenne != TilankuvauksenTarkenne.EI_TILANKUVAUKSEN_TARKENNETTA || !tilanKuvaukset.equals(TilanKuvaukset.tyhja))) {
-            this.setTilankuvauksenTarkenne(TilankuvauksenTarkenne.EI_TILANKUVAUKSEN_TARKENNETTA);
-            return true;
-        }
-        return false;
-    }
 }

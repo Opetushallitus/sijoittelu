@@ -22,7 +22,8 @@ public interface PreSijoitteluProcessor extends Processor {
                 new PreSijoitteluProcessorHylkaaHakijaRyhmaanKuulumattomat(),
                 new PreSijoitteluProcessorJarjesteleAloituspaikatTayttojonoihin(),
                 new PrePostSijoitteluProcessorPeruunnaYlemmatHakutoiveet(),
-                new PreSijoitteluProcessorLahtotilanteenHash()
+                new PreSijoitteluProcessorLahtotilanteenHash(),
+                new PreSijoitteluProcessorEiTilanKuvauksiaJosVaralla()
         );
     }
 }
