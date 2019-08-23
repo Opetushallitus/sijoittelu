@@ -12,28 +12,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-
-
-/**
- *
- * @author Kari Kammonen
- *
- */
 public class BasicSijoitteluTest {
-
-    /**
-     * Testaa perustapaus
-     *
-     * @throws IOException
-     */
     @Test
     public void testSijoittelu() throws IOException {
-        // tee sijoittelu
         HakuDTO t = TestHelper.readHakuDTOFromJson("testdata/sijoittelu_basic_case.json");
 
 
-        List<Hakukohde> hakukohteet = new ArrayList<Hakukohde>() ;
-        for(HakukohdeDTO hkt :t.getHakukohteet()) {
+        List<Hakukohde> hakukohteet = new ArrayList<Hakukohde>();
+        for (HakukohdeDTO hkt : t.getHakukohteet()) {
             Hakukohde hakukohde = DomainConverter.convertToHakukohde(hkt);
             hakukohteet.add(hakukohde);
         }
@@ -42,16 +28,14 @@ public class BasicSijoitteluTest {
 
         PrintHelper.tallennaSijoitteluTiedostoon(s, "target/sijoittelu_basic_case.sijoitteluresult");
 
-        // assertoi
         TestHelper.assertoiAinoastaanValittu(hakukohteet.get(0).getValintatapajonot()
-                .get(0), "1.2.246.562.24.00000000004");
+            .get(0), "1.2.246.562.24.00000000004");
         TestHelper.assertoiAinoastaanValittu(hakukohteet.get(0).getValintatapajonot()
-                .get(1), "1.2.246.562.24.00000000003");
+            .get(1), "1.2.246.562.24.00000000003");
         TestHelper.assertoiAinoastaanValittu(hakukohteet.get(1).getValintatapajonot()
-                .get(0), "1.2.246.562.24.00000000002");
+            .get(0), "1.2.246.562.24.00000000002");
         TestHelper.assertoiAinoastaanValittu(hakukohteet.get(2).getValintatapajonot()
-                .get(0), "1.2.246.562.24.00000000005", "1.2.246.562.24.00000000006");
+            .get(0), "1.2.246.562.24.00000000005", "1.2.246.562.24.00000000006");
 
     }
-
 }
