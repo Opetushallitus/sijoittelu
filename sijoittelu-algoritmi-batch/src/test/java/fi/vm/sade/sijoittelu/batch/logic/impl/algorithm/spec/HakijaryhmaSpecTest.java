@@ -64,6 +64,7 @@ public class HakijaryhmaSpecTest extends SijoitteluTestSpec {
         ensimmainenHk.getValintatapajonot().iterator().next().getHakemukset().iterator().next().setEdellinenTila(HakemuksenTila.HYVAKSYTTY);
 
         final SijoitteluajoWrapper sijoitteluAjo = SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(new SijoitteluConfiguration(), new SijoitteluAjo(), hakukohteet, valintatulokset, Collections.emptyMap());
+        sijoitteluAjo.paivitaVastaanottojenVaikutusHakemustenTiloihin(valintatulokset, Collections.emptyMap());
         SijoittelunTila s = SijoitteluAlgorithmUtil.sijoittele(sijoitteluAjo);
 
         HakukohdeWrapper ekaHakukohde = s.sijoitteluAjo.getHakukohteet().stream().filter(h -> h.getHakukohde().getOid().equals("1.2.246.562.11.00000000001")).findAny().get();

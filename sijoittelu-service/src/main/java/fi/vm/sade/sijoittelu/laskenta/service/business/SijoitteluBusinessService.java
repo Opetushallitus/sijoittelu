@@ -143,6 +143,7 @@ public class SijoitteluBusinessService {
         stopWatch.start("Luodaan sijoitteluajoWrapper ja asetetaan parametrit");
         final SijoitteluajoWrapper sijoitteluajoWrapper = SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(
             sijoitteluConfiguration, uusiSijoitteluajo, kaikkiHakukohteet, valintatulokset, kaudenAiemmatVastaanotot);
+        sijoitteluajoWrapper.paivitaVastaanottojenVaikutusHakemustenTiloihin(valintatulokset, kaudenAiemmatVastaanotot);
         sijoitteluajoResourcesLoader.asetaSijoittelunParametrit(hakuOid, sijoitteluajoWrapper, sijoittelunParametrit);
         sijoitteluajoWrapper.setEdellisenSijoittelunHakukohteet(edellisenSijoitteluajonTulokset);
         stopWatch.stop();
@@ -319,6 +320,7 @@ public class SijoitteluBusinessService {
         SijoitteluajoWrapper sijoitteluajoWrapper =
             SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(sijoitteluConfiguration, uusiSijoitteluajo,
                 kaikkiHakukohteet, Collections.emptyList(), Collections.emptyMap());
+        sijoitteluajoWrapper.paivitaVastaanottojenVaikutusHakemustenTiloihin(Collections.emptyList(), Collections.emptyMap());
         stopWatch.stop();
 
         suoritaSijoittelu(startTime, stopWatch, hakuOid, uusiSijoitteluajo, sijoitteluajoWrapper);
@@ -388,6 +390,7 @@ public class SijoitteluBusinessService {
         final SijoitteluajoWrapper sijoitteluajoWrapper =
             SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(
                 sijoitteluConfiguration, uusiSijoitteluajo, hakukohdeTassaSijoittelussa, valintatulokset, kaudenAiemmatVastaanotot);
+        sijoitteluajoWrapper.paivitaVastaanottojenVaikutusHakemustenTiloihin(valintatulokset, kaudenAiemmatVastaanotot);
         sijoitteluajoResourcesLoader.asetaSijoittelunParametrit(hakuOid, sijoitteluajoWrapper, sijoittelunParametrit);
         stopWatch.stop();
 

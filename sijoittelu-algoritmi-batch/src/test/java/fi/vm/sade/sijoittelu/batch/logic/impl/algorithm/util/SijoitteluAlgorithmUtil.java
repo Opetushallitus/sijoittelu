@@ -36,6 +36,7 @@ public class SijoitteluAlgorithmUtil {
                                               Map<String, VastaanottoDTO> aiemmanVastaanotonHakukohdePerHakija) {
         SijoitteluajoWrapper wrapper = SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(new SijoitteluConfiguration(), sijoitteluAjo, hakukohteet,
                 valintatulokset, aiemmanVastaanotonHakukohdePerHakija);
+        wrapper.paivitaVastaanottojenVaikutusHakemustenTiloihin(valintatulokset, aiemmanVastaanotonHakukohdePerHakija);
         wrapper.setKKHaku(true);
         return SijoitteluAlgorithm.sijoittele(preProcessors, postProcessors, wrapper);
     }

@@ -704,7 +704,7 @@ public class SijoitteluMontaJonoaTest {
         Valintatulos tulos9 = createTulos("oid9", "hakukohde1", "jono1");
         Valintatulos tulos10 = createTulos("oid10", "hakukohde1", "jono1");
         SijoitteluAlgorithmUtil.sijoittele(hakukohteet, Arrays.asList(tulos1, tulos2, tulos3, tulos4, tulos6, tulos7, tulos8, tulos9, tulos10), Collections.emptyMap());
-        final SijoitteluajoWrapper sijoitteluAjo = SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(new SijoitteluConfiguration(), new SijoitteluAjo(), hakukohteet, Arrays.asList(tulos1, tulos2, tulos3, tulos4, tulos6, tulos7, tulos8, tulos9, tulos10), Collections.emptyMap());
+        final SijoitteluajoWrapper sijoitteluAjo = createSijoitteluAjoWrapper(hakukohteet, Arrays.asList(tulos1, tulos2, tulos3, tulos4, tulos6, tulos7, tulos8, tulos9, tulos10));
         sijoitteluAjo.getHakukohteet().get(0).getValintatapajonot().get(0).getHakemukset().stream().filter(hak->hak.getHakemus().getHakemusOid().equals("oid1") || hak.getHakemus().getHakemusOid().equals("oid2")).forEach(hak -> {
             hak.setTilaVoidaanVaihtaa(false);
             hak.getHakemus().setTila(HakemuksenTila.PERUUNTUNUT);
@@ -722,7 +722,9 @@ public class SijoitteluMontaJonoaTest {
     }
 
     private SijoitteluajoWrapper createSijoitteluAjoWrapper(List<Hakukohde> hakukohdes, List<Valintatulos> valintatulosList) {
-        return SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(new SijoitteluConfiguration(), new SijoitteluAjo(), hakukohdes, valintatulosList, Collections.emptyMap());
+        SijoitteluajoWrapper sijoitteluajoWrapper = SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(new SijoitteluConfiguration(), new SijoitteluAjo(), hakukohdes, valintatulosList, Collections.emptyMap());
+        sijoitteluajoWrapper.paivitaVastaanottojenVaikutusHakemustenTiloihin(valintatulosList, Collections.emptyMap());
+        return sijoitteluajoWrapper;
     }
 
     private Valintatulos createTulos(String hakemus, String hakukohde, String valintatapajono) {
