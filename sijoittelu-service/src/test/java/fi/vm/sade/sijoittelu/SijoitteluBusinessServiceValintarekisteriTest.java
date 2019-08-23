@@ -138,7 +138,7 @@ public class SijoitteluBusinessServiceValintarekisteriTest {
         assertFalse(hakukohteet.stream().anyMatch(hk -> hk.getSijoitteluajoId() != uusiSijoitteluajoId));
     }
 
-    private void assertHakemuksetKaksiJonoHyvaksyVarallaJaPeruAlempi(List<Hakukohde> hakukohteet) {
+    private void assertHakemuksetKaksiJonoHyvaksyVarallaJaPeruAlempi(List<Hakukohde> hakukohteet, HakemuksenTila odotettuHyvaksyttyTila) {
         List<Valintatapajono> valintatapajonot = hakukohteet.stream().filter(hk -> hk.getOid().equals(uusiHakukohdeOid)).findAny().get().getValintatapajonot();
 
         List<Hakemus> hakemuksetJono1 = valintatapajonot.stream().filter(jono -> "112233.111111".equals(jono.getOid())).findAny().get().getHakemukset();
@@ -147,14 +147,24 @@ public class SijoitteluBusinessServiceValintarekisteriTest {
         assertEquals(2, hakemuksetJono1.size());
         assertEquals(2, hakemuksetJono2.size());
 
-        assertFalse(hakemuksetJono1.stream().anyMatch(t -> t.getTila() != HakemuksenTila.VARASIJALTA_HYVAKSYTTY));
-        assertFalse(hakemuksetJono2.stream().anyMatch(t -> t.getTila() != HakemuksenTila.PERUUNTUNUT));
+        boolean jonossa1OnMuitaKuinOdotettujaHyvaksyttyja = hakemuksetJono1.stream().anyMatch(t -> t.getTila() != odotettuHyvaksyttyTila);
+        boolean jonossa2OnMuitaKuinPeruuntuneita = hakemuksetJono2.stream().anyMatch(t -> t.getTila() != HakemuksenTila.PERUUNTUNUT);
+
+        if (jonossa1OnMuitaKuinOdotettujaHyvaksyttyja || jonossa2OnMuitaKuinPeruuntuneita) {
+            System.err.println("Jono 1 ===");
+            hakemuksetJono1.forEach(System.err::println);
+            System.err.println("Jono 2 ===");
+            hakemuksetJono2.forEach(System.err::println);
+        }
+
+        assertFalse(jonossa1OnMuitaKuinOdotettujaHyvaksyttyja);
+        assertFalse(jonossa2OnMuitaKuinPeruuntuneita);
     }
 
     private void assertVastaanotetutValintatuloksetUudelleHakukohteelle(List<Valintatulos> valintatulokset) {
         assertFalse(valintatulokset.stream().anyMatch(v -> !v.getHakukohdeOid().equals(uusiHakukohdeOid)));
         assertFalse(valintatulokset.stream().anyMatch(v -> v.getTila() != ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI));
-        assertEquals(4, valintatulokset.size());
+        assertEquals(8, valintatulokset.size());
     }
 
     private void assertHakemukset(List<Hakukohde> hakukohteet,
@@ -237,7 +247,7 @@ public class SijoitteluBusinessServiceValintarekisteriTest {
         Function3<SijoitteluAjo, List<Hakukohde>, List<Valintatulos>, Boolean> assertFunction = (sijoitteluajo, hakukohteet, valintatulokset) -> {
             assertSijoitteluajo(sijoitteluajo);
             assertHakukohteet(sijoitteluajo.getSijoitteluajoId(), hakukohteet);
-            assertHakemuksetKaksiJonoHyvaksyVarallaJaPeruAlempi(hakukohteet);
+            assertHakemuksetKaksiJonoHyvaksyVarallaJaPeruAlempi(hakukohteet, HakemuksenTila.HYVAKSYTTY);
             assertVastaanotetutValintatuloksetUudelleHakukohteelle(valintatulokset);
             assertHyvaksyttyVaralla(hakukohteet, uusiHakukohdeOid, "112233.111111", 2, 0);
             assertHyvaksyttyVaralla(hakukohteet, uusiHakukohdeOid, "112233.222222", 0, 0);
@@ -257,7 +267,7 @@ public class SijoitteluBusinessServiceValintarekisteriTest {
         Function3<SijoitteluAjo, List<Hakukohde>, List<Valintatulos>, Boolean> assertFunction = (sijoitteluajo, hakukohteet, valintatulokset) -> {
             assertSijoitteluajo(sijoitteluajo);
             assertHakukohteet(sijoitteluajo.getSijoitteluajoId(), hakukohteet);
-            assertHakemuksetKaksiJonoHyvaksyVarallaJaPeruAlempi(hakukohteet);
+            assertHakemuksetKaksiJonoHyvaksyVarallaJaPeruAlempi(hakukohteet, HakemuksenTila.HYVAKSYTTY);
             assertVastaanotetutValintatuloksetUudelleHakukohteelle(valintatulokset);
             assertHyvaksyttyVaralla(hakukohteet, uusiHakukohdeOid, "112233.111111", 2, 0);
             assertHyvaksyttyVaralla(hakukohteet, uusiHakukohdeOid, "112233.222222", 0, 0);
@@ -357,7 +367,7 @@ public class SijoitteluBusinessServiceValintarekisteriTest {
         Function3<SijoitteluAjo, List<Hakukohde>, List<Valintatulos>, Boolean> assertFunction = (sijoitteluajo, hakukohteet, valintatulokset) -> {
             assertSijoitteluajo(sijoitteluajo);
             assertHakukohteet(sijoitteluajo.getSijoitteluajoId(), hakukohteet);
-            assertHakemuksetKaksiJonoHyvaksyVarallaJaPeruAlempi(hakukohteet);
+            assertHakemuksetKaksiJonoHyvaksyVarallaJaPeruAlempi(hakukohteet, HakemuksenTila.VARASIJALTA_HYVAKSYTTY);
             //assertVastaanotetutValintatuloksetUudelleHakukohteelle(valintatulokset);
             assertHyvaksyttyVaralla(hakukohteet, uusiHakukohdeOid, "112233.111111", 2, 0);
             assertHyvaksyttyVaralla(hakukohteet, uusiHakukohdeOid, "112233.222222", 0, 0);
@@ -491,7 +501,7 @@ public class SijoitteluBusinessServiceValintarekisteriTest {
     }
 
     private ValintatietoValintatapajonoDTO jonoDTO(String oid) {
-        int prioriteetti = Integer.parseInt("" + oid.charAt(oid.length()-1));
+        int jononPrioriteetti = Integer.parseInt("" + oid.charAt(oid.length()-1));
 
         ValintatietoValintatapajonoDTO jono1 = new ValintatietoValintatapajonoDTO();
         jono1.setOid(oid);
@@ -502,20 +512,20 @@ public class SijoitteluBusinessServiceValintarekisteriTest {
         jono1.setAloituspaikat(5);
         jono1.setValmisSijoiteltavaksi(true);
         jono1.setPoissaOlevaTaytto(true);
-        jono1.setPrioriteetti(prioriteetti);
+        jono1.setPrioriteetti(jononPrioriteetti);
 
         HakijaDTO hakija1 = new HakijaDTO();
         hakija1.setOid(uusiHakukohdeOid + ".111111.11");
         hakija1.setHakemusOid(uusiHakukohdeOid + ".111111.11");
         hakija1.setJonosija(1);
-        hakija1.setPrioriteetti(prioriteetti);
+        hakija1.setPrioriteetti(1);
         hakija1.setTila(JarjestyskriteerituloksenTilaDTO.HYVAKSYTTAVISSA);
 
         HakijaDTO hakija2 = new HakijaDTO();
         hakija2.setOid(uusiHakukohdeOid + ".111111.22");
         hakija2.setHakemusOid(uusiHakukohdeOid + ".111111.22");
         hakija2.setJonosija(2);
-        hakija2.setPrioriteetti(prioriteetti);
+        hakija2.setPrioriteetti(1);
         hakija2.setTila(JarjestyskriteerituloksenTilaDTO.HYVAKSYTTAVISSA);
 
         jono1.setHakija(Arrays.asList(hakija1, hakija2));
