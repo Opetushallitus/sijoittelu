@@ -51,6 +51,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -579,6 +580,7 @@ public class SijoitteluBusinessServiceValintarekisteriTest {
         jono.setPoissaOlevaTaytto(true);
         jono.setPrioriteetti(1);
         jono.setSijoiteltuIlmanVarasijasaantojaNiidenOllessaVoimassa(true);
+        jono.setSivssnovSijoittelunVarasijataytonRajoitus(Optional.of(new Valintatapajono.JonosijaTieto(3, 1, HakemuksenTila.VARALLA, Collections.emptyList())));
         jono.setTasasijasaanto(Tasasijasaanto.ARVONTA);
         jono.setHakemukset(
                 Stream.of(oid + ".111111.11", oid + ".111111.22").map(hakemusOid -> {
@@ -605,6 +607,7 @@ public class SijoitteluBusinessServiceValintarekisteriTest {
         jono.setVarasijojaTaytetaanAsti(new java.util.Date(System.currentTimeMillis() + 1000));
         jono.setPoissaOlevaTaytto(true);
         jono.setSijoiteltuIlmanVarasijasaantojaNiidenOllessaVoimassa(true);
+        jono.setSivssnovSijoittelunVarasijataytonRajoitus(Optional.of(new Valintatapajono.JonosijaTieto(3, 1, HakemuksenTila.VARALLA, Collections.emptyList())));
         jono.setTasasijasaanto(Tasasijasaanto.ARVONTA);
         jono.setPrioriteetti(2);
         jono.setHakemukset(
