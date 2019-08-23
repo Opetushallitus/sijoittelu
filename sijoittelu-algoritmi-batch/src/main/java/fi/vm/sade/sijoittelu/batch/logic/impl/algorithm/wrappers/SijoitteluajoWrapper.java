@@ -488,6 +488,21 @@ public class SijoitteluajoWrapper {
         return viimeisinHyvaksyttyJonoOid.equals(hakemusWrapper.getValintatapajono().getValintatapajono().getOid());
     }
 
+    public void tarkistaEttaOnVainYksiHakutoivePerHakija() {
+        kaikkiHakijat().forEach(this::tarkistaEttaTuloksissaOnSamaHakukohdeOid);
+    }
+
+    private void tarkistaEttaTuloksissaOnSamaHakukohdeOid(HenkiloWrapper henkiloWrapper) {
+        henkiloWrapper.getHakemukset().forEach(hakemusWrapper -> {
+            if (!Objects.equals(hakemusWrapper.getHakukohdeOid(), henkiloWrapper.getHakemukset().get(0).getHakukohdeOid())) {
+                List<String> hakukohdeOiditJaValintatapajonoOidit = henkiloWrapper.getHakemukset().stream()
+                    .map(hw -> hw.getHakukohdeOid() + " / " + hw.getValintatapajono().getValintatapajono().getOid()).collect(Collectors.toList());
+                throw new IllegalStateException(String.format("Hakemuksen %s tuloksissa on useamman hakutoiveen tuloksia! %s",
+                    henkiloWrapper.getHakemusOid(), hakukohdeOiditJaValintatapajonoOidit));
+            }
+        });
+    }
+
     // hakukohde : valintatapajonot : hakemukset
     private static Map<String, Map<String, Map<String, Valintatulos>>> indexValintatulokset(List<Valintatulos> valintatulokset) {
         Map<String, Map<String, Map<String, Valintatulos>>> hakukohdeIndex = new HashMap<>();

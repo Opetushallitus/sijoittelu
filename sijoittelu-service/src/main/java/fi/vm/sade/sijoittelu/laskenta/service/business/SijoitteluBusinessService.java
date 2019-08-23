@@ -165,6 +165,7 @@ public class SijoitteluBusinessService {
                     sijoitteluConfiguration, uusiSijoitteluajo, Collections.singletonList(hakukohde), valintatulokset, kaudenAiemmatVastaanotot);
                 sijoitteluajoResourcesLoader.asetaSijoittelunParametrit(hakuOid, yhdenHakukohteenSijoitteluajoWrapper, sijoittelunParametrit);
                 yhdenHakukohteenSijoitteluajoWrapper.setEdellisenSijoittelunHakukohteet(edellisenSijoitteluajonTulokset.stream().filter(h -> h.getOid().equals(hakukohde.getOid())).collect(Collectors.toList()));
+                yhdenHakukohteenSijoitteluajoWrapper.tarkistaEttaOnVainYksiHakutoivePerHakija();
                 StopWatch hakukohteenStopWatch = new StopWatch(String.format("Haun %s hakukohteen %s sijoittelu ilman hakutoiveiden priorisointia", hakuOid, hakukohde.getOid()));;
                 suoritaSijoittelu(startTime, hakukohteenStopWatch, hakuOid, uusiSijoitteluajo, yhdenHakukohteenSijoitteluajoWrapper);
                 kaikkiMuuttuneetValintatulokset.addAll(yhdenHakukohteenSijoitteluajoWrapper.getMuuttuneetValintatulokset());
