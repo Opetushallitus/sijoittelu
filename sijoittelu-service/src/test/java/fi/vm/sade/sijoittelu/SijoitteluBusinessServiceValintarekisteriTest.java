@@ -370,6 +370,71 @@ public class SijoitteluBusinessServiceValintarekisteriTest {
         verifyAndCaptureAndAssert(assertFunction, "priorisoimatonHaku");
     }
 
+    @Test
+    public void testPriorisoimattomassaSijoittelussaHakijaVoiTullaHyvaksytyksiKahteenEriHakutoiveeseensa() {
+        hakukohdeOidit = Arrays.asList(uusiHakukohdeOid, "toinenUusiHakukohde");
+        setupMocks("priorisoimatonHaku", valintarekisteriSijoitteluajo(hakukohdeOidit), Collections.emptyList(), Collections.emptyList());
+
+        HakuDTO hakuDto = new HakuDTO();
+        hakuDto.setHakuOid(hakuOid);
+
+        HakukohdeDTO kohde1 = new HakukohdeDTO();
+        kohde1.setOid(uusiHakukohdeOid);
+        ValintatietoValintatapajonoDTO kohde1jono = jonoDTO(uusiHakukohdeOid + ".111111");
+        ValintatietoValinnanvaiheDTO kohde1Vaihe = new ValintatietoValinnanvaiheDTO(
+            1, "1", hakuOid, "vaihe1", new java.util.Date(), Collections.singletonList(kohde1jono), Collections.emptyList());
+        kohde1.setValinnanvaihe(Collections.singletonList(kohde1Vaihe));
+        
+        HakukohdeDTO kohde2 = new HakukohdeDTO();
+        kohde2.setOid("toinenUusiHakukohde");
+        ValintatietoValintatapajonoDTO kohde2Jono = jonoDTO("toinenUusiHakukohde" + ".111111");
+        ValintatietoValinnanvaiheDTO kohde2Vaihe = new ValintatietoValinnanvaiheDTO(
+            1, "1", hakuOid, "vaihe1", new java.util.Date(), Collections.singletonList(kohde2Jono), Collections.emptyList());
+        kohde2.setValinnanvaihe(Collections.singletonList(kohde2Vaihe));
+        
+        hakuDto.setHakukohteet(Arrays.asList(kohde1, kohde2));
+        hakuDto.setHakuOid("priorisoimatonHaku");
+        fi.vm.sade.sijoittelu.laskenta.external.resource.dto.HakuDTO tarjontaHaku = tarjontaHaku();
+
+        tarjontaHaku.setUsePriority(false);
+        when(tarjontaIntegrationService.getHakuByHakuOid("priorisoimatonHaku")).thenReturn(tarjontaHaku);
+        when(tarjontaIntegrationService.getHaunParametrit("priorisoimatonHaku")).thenReturn(haunParametrit());
+
+        assertEquals(2, hakuDto.getHakukohteet().size());
+
+        HakijaDTO hyvaksyttavaKohteessa1 = new HakijaDTO();
+        hyvaksyttavaKohteessa1.setOid("hyvaksyttavaHakija");
+        hyvaksyttavaKohteessa1.setHakemusOid("hyvaksyttavaHakemus");
+        hyvaksyttavaKohteessa1.setJonosija(1);
+        hyvaksyttavaKohteessa1.setPrioriteetti(1);
+        hyvaksyttavaKohteessa1.setTila(JarjestyskriteerituloksenTilaDTO.HYVAKSYTTAVISSA);
+
+        HakijaDTO hyvaksyttavaKohteessa2 = new HakijaDTO();
+        hyvaksyttavaKohteessa2.setOid("hyvaksyttavaHakija");
+        hyvaksyttavaKohteessa2.setHakemusOid("hyvaksyttavaHakemus");
+        hyvaksyttavaKohteessa2.setJonosija(1);
+        hyvaksyttavaKohteessa2.setPrioriteetti(2);
+        hyvaksyttavaKohteessa2.setTila(JarjestyskriteerituloksenTilaDTO.HYVAKSYTTAVISSA);
+
+        hakuDto.getHakukohteet().get(0).getValinnanvaihe().get(0).getValintatapajonot().get(0).setHakija(Collections.singletonList(hyvaksyttavaKohteessa1));
+        hakuDto.getHakukohteet().get(1).getValinnanvaihe().get(0).getValintatapajonot().get(0).setHakija(Collections.singletonList(hyvaksyttavaKohteessa2));
+
+        service.sijoittele(hakuDto, Collections.emptySet(), Sets.newHashSet(
+            "112233.111111", "112244.111111", "112255.111111", "112233.222222", "112244.222222", "112255.222222"), (long) 123456789);
+
+        Function3<SijoitteluAjo, List<Hakukohde>, List<Valintatulos>, Boolean> assertFunction = (sijoitteluajo, hakukohteet, valintatulokset) -> {
+            assertSijoitteluajo(sijoitteluajo);
+            assertHakukohteet(sijoitteluajo.getSijoitteluajoId(), hakukohteet);
+            assertHyvaksyttyVaralla(hakukohteet, uusiHakukohdeOid, "112233.111111", 1, 0);
+            assertHyvaksyttyVaralla(hakukohteet, "toinenUusiHakukohde", "toinenUusiHakukohde.111111", 1, 0);
+
+            return true;
+        };
+
+        verifyAndCaptureAndAssert(assertFunction, "priorisoimatonHaku");
+    }
+
+
     @Test(expected = IllegalStateException.class)
     public void sijoitteluHeittaaPoikkeuksenJosEdellisenSijoittelunHakukohteissaOnHakukohteitaJotkaPuuttuvatUudesta() {
         setUpMocks1();
