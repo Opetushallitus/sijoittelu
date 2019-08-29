@@ -647,9 +647,14 @@ public class SijoitteluBusinessServiceValintarekisteriTest {
     }
 
     private HakuDTO luoPriorisoimatonHaku() {
+        return luoPriorisoimatonHaku(Arrays.asList(jonoDTO(uusiHakukohdeOid + ".111111"),
+            jonoDTO(uusiHakukohdeOid + ".222222")));
+    }
+
+    private HakuDTO luoPriorisoimatonHaku(List<ValintatietoValintatapajonoDTO> jonot) {
         setupMocks("priorisoimatonHaku", valintarekisteriSijoitteluajo2(), valintarekisteriHakukohteet2(), valintarekisteriValintatulokset2());
 
-        HakuDTO hakuDTO = hakuDTO2(true);
+        HakuDTO hakuDTO = hakuDTO(jonot, true);
         hakuDTO.setHakuOid("priorisoimatonHaku");
         fi.vm.sade.sijoittelu.laskenta.external.resource.dto.HakuDTO tarjontaHaku = tarjontaHaku();
         tarjontaHaku.setUsePriority(false);
