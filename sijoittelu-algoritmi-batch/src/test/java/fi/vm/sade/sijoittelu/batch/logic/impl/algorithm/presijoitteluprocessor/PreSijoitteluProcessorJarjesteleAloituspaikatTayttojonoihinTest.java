@@ -6,6 +6,7 @@ import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoitteluConfiguration;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoitteluSilmukkaException;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoitteluTestSpec;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoitteluajoWrapperFactory;
+import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.util.TilojenMuokkaus;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.SijoitteluajoWrapper;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.ValintatapajonoWrapper;
 import fi.vm.sade.sijoittelu.domain.*;
@@ -360,7 +361,7 @@ public class PreSijoitteluProcessorJarjesteleAloituspaikatTayttojonoihinTest ext
         ValintatapajonoBuilder withHakemus(HakemuksenTila a) {
             Hakemus h = new Hakemus();
             h.setHakemusOid("oid");
-            h.setTila(VARALLA);
+            TilojenMuokkaus.asetaTilaksiVaralla(h);
             h.setEdellinenTila(a);
             vtj.getHakemukset().add(h);
             return this;

@@ -3,6 +3,7 @@ package fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.helper;
 
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoitteluConfiguration;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoitteluajoWrapperFactory;
+import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.util.TilojenMuokkaus;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.SijoitteluajoWrapper;
 import fi.vm.sade.sijoittelu.domain.*;
 
@@ -102,7 +103,7 @@ public class HakuBuilder {
         public ValintatapajonoBuilder withHakemus(HakemuksenTila a) {
             Hakemus h = new Hakemus();
             h.setHakemusOid("oid");
-            h.setTila(VARALLA);
+            TilojenMuokkaus.asetaTilaksiVaralla(h);
             h.setEdellinenTila(a);
             vtj.getHakemukset().add(h);
             return this;

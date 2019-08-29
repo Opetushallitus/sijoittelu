@@ -3,6 +3,7 @@ package fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.presijoitteluprocessor;
 import static fi.vm.sade.sijoittelu.domain.TilanKuvaukset.hylattyHakijaryhmaanKuulumattomana;
 import static fi.vm.sade.sijoittelu.domain.HakemuksenTila.HYLATTY;
 
+import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.util.TilojenMuokkaus;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.HakijaryhmaWrapper;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.HakukohdeWrapper;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.SijoitteluajoWrapper;
@@ -46,9 +47,7 @@ public class PreSijoitteluProcessorHylkaaHakijaRyhmaanKuulumattomat implements P
     private void hylkaaRyhmaanKuulumattomat(HakijaryhmaWrapper ryhmaWrapper, ValintatapajonoWrapper jonoWrapper) {
         jonoWrapper.getHakemukset().forEach(hakemus -> {
             if (!ryhmaWrapper.getHenkiloWrappers().contains(hakemus.getHenkilo()) && hakemus.isTilaVoidaanVaihtaa()) {
-                hakemus.getHakemus().setTila(HYLATTY);
-                hakemus.getHakemus().setTilanKuvaukset(
-                    hylattyHakijaryhmaanKuulumattomana(ryhmaWrapper.getHakijaryhma().getNimi()));
+                TilojenMuokkaus.asetaTilaksiHylattyHakijaryhmaanKuulumattomana(hakemus, ryhmaWrapper.getHakijaryhma());
                 hakemus.setTilaVoidaanVaihtaa(false);
             }
         });

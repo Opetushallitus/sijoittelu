@@ -2,6 +2,7 @@ package fi.vm.sade.sijoittelu.batch.logic.impl.algorithm;
 
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.helper.HakuBuilder;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.util.SijoitteluAlgorithmUtil;
+import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.util.TilojenMuokkaus;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.SijoitteluajoWrapper;
 import fi.vm.sade.sijoittelu.domain.*;
 import org.junit.Test;
@@ -154,9 +155,9 @@ public class EhdollinenVastaanottoSitovaksiTest {
             HakemuksenTila tila = h.getTila();
             h.setEdellinenTila(tila);
             if (!HYLATTY.equals(tila)) {
-                h.setTila(VARALLA);
+                TilojenMuokkaus.asetaTilaksiVaralla(h);
             }
-            h.setTilanKuvaukset(Collections.emptyMap());
+            h.setTilanKuvaukset(TilanKuvaukset.tyhja);
         });
     }
 }

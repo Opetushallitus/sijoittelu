@@ -1,5 +1,6 @@
 package fi.vm.sade.sijoittelu.batch.logic.impl;
 
+import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.util.TilojenMuokkaus;
 import fi.vm.sade.sijoittelu.domain.*;
 import fi.vm.sade.valintalaskenta.domain.dto.*;
 import fi.vm.sade.valintalaskenta.domain.dto.valintatieto.ValintatietoValintatapajonoDTO;
@@ -111,16 +112,15 @@ public class DomainConverter {
         }
         applyPistetiedot(hakemus, hakijaTyyppi.getSyotettyArvo());
         if (hakijaTyyppi.getTila() == JarjestyskriteerituloksenTilaDTO.HYVAKSYTTY_HARKINNANVARAISESTI) {
-            hakemus.setTila(HakemuksenTila.VARALLA);
+            TilojenMuokkaus.asetaTilaksiVaralla(hakemus);
             hakemus.setHyvaksyttyHarkinnanvaraisesti(true);
         } else if (hakijaTyyppi.getTila() == JarjestyskriteerituloksenTilaDTO.HYVAKSYTTAVISSA) {
-            hakemus.setTila(HakemuksenTila.VARALLA);
+            TilojenMuokkaus.asetaTilaksiVaralla(hakemus);
         } else if (hakijaTyyppi.isHylattyValisijoittelussa()) {
-            hakemus.setTila(HakemuksenTila.VARALLA);
+            TilojenMuokkaus.asetaTilaksiVaralla(hakemus);
         } else {
             Map<String, String> tilanKuvaukset = hakijaTyyppi.getTilanKuvaus().parallelStream().collect(Collectors.toMap(AvainArvoDTO::getAvain, AvainArvoDTO::getArvo));
-            hakemus.setTilanKuvaukset(tilanKuvaukset);
-            hakemus.setTila(HakemuksenTila.HYLATTY);
+            TilojenMuokkaus.asetaTilaksiHylatty(hakemus, tilanKuvaukset);
         }
         valintatapajono.getHakemukset().add(hakemus);
     }

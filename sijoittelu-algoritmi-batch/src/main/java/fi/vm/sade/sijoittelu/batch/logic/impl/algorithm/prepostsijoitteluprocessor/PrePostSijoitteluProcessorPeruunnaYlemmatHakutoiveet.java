@@ -4,6 +4,7 @@ package fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.prepostsijoitteluproces
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.postsijoitteluprocessor.PostSijoitteluProcessor;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.presijoitteluprocessor.PreSijoitteluProcessor;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.util.TilaTaulukot;
+import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.util.TilojenMuokkaus;
 import fi.vm.sade.sijoittelu.domain.TilanKuvaukset;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.util.Timer;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.HakemusWrapper;
@@ -41,8 +42,7 @@ public class PrePostSijoitteluProcessorPeruunnaYlemmatHakutoiveet implements Pre
                         .collect(Collectors.toList());
 
                 peruunnutettavatHakemukset.forEach(h -> {
-                    h.getHakemus().setTilanKuvaukset(TilanKuvaukset.peruuntunutHyvaksyttyAlemmallaHakutoiveella());
-                    h.getHakemus().setTila(HakemuksenTila.PERUUNTUNUT);
+                    TilojenMuokkaus.asetaTilaksiPeruuntunutAlempiToive(h);
                     h.setTilaVoidaanVaihtaa(false);
                     peruunnutetutHakemukset.incrementAndGet();
                 });
