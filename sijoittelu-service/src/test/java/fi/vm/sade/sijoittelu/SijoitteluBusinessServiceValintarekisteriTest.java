@@ -351,15 +351,7 @@ public class SijoitteluBusinessServiceValintarekisteriTest {
 
     @Test
     public void testSijoitteleIlmanPriorisointia() {
-        setupMocks("priorisoimatonHaku", valintarekisteriSijoitteluajo2(), valintarekisteriHakukohteet2(), valintarekisteriValintatulokset2());
-
-        HakuDTO hakuDTO = hakuDTO2(true);
-        hakuDTO.setHakuOid("priorisoimatonHaku");
-        fi.vm.sade.sijoittelu.laskenta.external.resource.dto.HakuDTO tarjontaHaku = tarjontaHaku();
-        tarjontaHaku.setUsePriority(false);
-        when(tarjontaIntegrationService.getHakuByHakuOid("priorisoimatonHaku")).thenReturn(tarjontaHaku);
-        when(tarjontaIntegrationService.getHaunParametrit("priorisoimatonHaku")).thenReturn(haunParametrit());
-
+        HakuDTO hakuDTO = luoPriorisoimatonHaku();
 
         service.sijoittele(hakuDTO, Collections.emptySet(), Sets.newHashSet(
             "112233.111111", "112244.111111", "112255.111111", "112233.222222", "112244.222222", "112255.222222"), (long)123456789);
@@ -652,5 +644,17 @@ public class SijoitteluBusinessServiceValintarekisteriTest {
             hakukohde.setValintatapajonot(Arrays.asList(jono1(oid), jono2(oid)));
             return hakukohde;
         }).collect(Collectors.toList());
+    }
+
+    private HakuDTO luoPriorisoimatonHaku() {
+        setupMocks("priorisoimatonHaku", valintarekisteriSijoitteluajo2(), valintarekisteriHakukohteet2(), valintarekisteriValintatulokset2());
+
+        HakuDTO hakuDTO = hakuDTO2(true);
+        hakuDTO.setHakuOid("priorisoimatonHaku");
+        fi.vm.sade.sijoittelu.laskenta.external.resource.dto.HakuDTO tarjontaHaku = tarjontaHaku();
+        tarjontaHaku.setUsePriority(false);
+        when(tarjontaIntegrationService.getHakuByHakuOid("priorisoimatonHaku")).thenReturn(tarjontaHaku);
+        when(tarjontaIntegrationService.getHaunParametrit("priorisoimatonHaku")).thenReturn(haunParametrit());
+        return hakuDTO;
     }
 }
