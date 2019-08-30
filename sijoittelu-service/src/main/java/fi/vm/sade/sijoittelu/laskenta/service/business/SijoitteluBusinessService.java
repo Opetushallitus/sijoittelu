@@ -143,7 +143,6 @@ public class SijoitteluBusinessService {
         stopWatch.start("Luodaan sijoitteluajoWrapper ja asetetaan parametrit");
         final SijoitteluajoWrapper sijoitteluajoWrapper = SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(
             sijoitteluConfiguration, uusiSijoitteluajo, kaikkiHakukohteet, valintatulokset, kaudenAiemmatVastaanotot);
-        sijoitteluajoWrapper.paivitaVastaanottojenVaikutusHakemustenTiloihin(valintatulokset, kaudenAiemmatVastaanotot);
         sijoitteluajoResourcesLoader.asetaSijoittelunParametrit(hakuOid, sijoitteluajoWrapper, sijoittelunParametrit);
         sijoitteluajoWrapper.setEdellisenSijoittelunHakukohteet(edellisenSijoitteluajonTulokset);
         stopWatch.stop();
@@ -154,6 +153,7 @@ public class SijoitteluBusinessService {
 
         if (sijoitteluajoWrapper.getHakutoiveidenPriorisointi()) {
             LOG.info(String.format("%s : käytetään hakutoiveiden priorisointia.", ajonTunniste));
+            sijoitteluajoWrapper.paivitaVastaanottojenVaikutusHakemustenTiloihin(valintatulokset, kaudenAiemmatVastaanotot);
             suoritaSijoittelu(startTime, stopWatch, hakuOid, uusiSijoitteluajo, sijoitteluajoWrapper);
         } else {
             LOG.info(String.format("%s : ei käytetä hakutoiveiden priorisointia. Sijoitellaan kukin hakukohde (%d kpl) erikseen.", ajonTunniste, kaikkiHakukohteet.size()));
@@ -163,6 +163,7 @@ public class SijoitteluBusinessService {
                 stopWatch.start(String.format("Sijoitellaan hakukohde %s ilman priorisointia", hakukohde.getOid()));
                 final SijoitteluajoWrapper yhdenHakukohteenSijoitteluajoWrapper = SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(
                     sijoitteluConfiguration, uusiSijoitteluajo, Collections.singletonList(hakukohde), valintatulokset, kaudenAiemmatVastaanotot);
+                yhdenHakukohteenSijoitteluajoWrapper.paivitaVastaanottojenVaikutusHakemustenTiloihin(valintatulokset, kaudenAiemmatVastaanotot);
                 sijoitteluajoResourcesLoader.asetaSijoittelunParametrit(hakuOid, yhdenHakukohteenSijoitteluajoWrapper, sijoittelunParametrit);
                 yhdenHakukohteenSijoitteluajoWrapper.setEdellisenSijoittelunHakukohteet(edellisenSijoitteluajonTulokset.stream().filter(h -> h.getOid().equals(hakukohde.getOid())).collect(Collectors.toList()));
                 yhdenHakukohteenSijoitteluajoWrapper.tarkistaEttaOnVainYksiHakutoivePerHakija();
