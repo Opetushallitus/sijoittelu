@@ -1,5 +1,8 @@
 package fi.vm.sade.sijoittelu;
 
+import static fi.vm.sade.sijoittelu.domain.HakemuksenTila.HYVAKSYTTY;
+import static fi.vm.sade.sijoittelu.domain.Tasasijasaanto.YLITAYTTO;
+import static fi.vm.sade.sijoittelu.domain.ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI;
 import static fi.vm.sade.valintalaskenta.domain.dto.valintakoe.Tasasijasaanto.ALITAYTTO;
 import static fi.vm.sade.valintalaskenta.domain.dto.valintakoe.Tasasijasaanto.ARVONTA;
 import static fi.vm.sade.valintalaskenta.domain.dto.valintakoe.Tasasijasaanto.YLITAYTTO;
@@ -163,7 +166,7 @@ public class SijoitteluBusinessServiceValintarekisteriTest {
 
     private void assertVastaanotetutValintatuloksetUudelleHakukohteelle(List<Valintatulos> valintatulokset) {
         assertFalse(valintatulokset.stream().anyMatch(v -> !v.getHakukohdeOid().equals(uusiHakukohdeOid)));
-        assertFalse(valintatulokset.stream().anyMatch(v -> v.getTila() != ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI));
+        assertFalse(valintatulokset.stream().anyMatch(v -> v.getTila() != VASTAANOTTANUT_SITOVASTI));
         assertEquals(8, valintatulokset.size());
     }
 
@@ -206,7 +209,7 @@ public class SijoitteluBusinessServiceValintarekisteriTest {
         Function3<SijoitteluAjo, List<Hakukohde>, List<Valintatulos>, Boolean> assertFunction = (sijoitteluajo, hakukohteet, valintatulokset) -> {
             assertSijoitteluajo(sijoitteluajo);
             assertHakukohteet(sijoitteluajo.getSijoitteluajoId(), hakukohteet);
-            assertHakemukset(hakukohteet, HakemuksenTila.HYVAKSYTTY, HakemuksenTila.VARASIJALTA_HYVAKSYTTY, 0);
+            assertHakemukset(hakukohteet, HYVAKSYTTY, HakemuksenTila.VARASIJALTA_HYVAKSYTTY, 0);
             assertHyvaksyttyVaralla(hakukohteet, uusiHakukohdeOid, "112233.111111", 2, 0);
 
             assertEquals(0, valintatulokset.size());
@@ -226,7 +229,7 @@ public class SijoitteluBusinessServiceValintarekisteriTest {
             (sijoitteluajo, hakukohteet, valintatulokset) -> {
                 assertSijoitteluajo(sijoitteluajo);
                 assertHakukohteet(sijoitteluajo.getSijoitteluajoId(), hakukohteet);
-                assertHakemukset(hakukohteet, HakemuksenTila.HYVAKSYTTY, HakemuksenTila.VARALLA, 4);
+                assertHakemukset(hakukohteet, HYVAKSYTTY, HakemuksenTila.VARALLA, 4);
                 assertHyvaksyttyVaralla(hakukohteet, uusiHakukohdeOid, "112233.111111", 2, 0);
                 //assertHyvaksyttyVaralla(hakukohteet, "112244", "112244.111111", 0, 2);
 
@@ -247,7 +250,7 @@ public class SijoitteluBusinessServiceValintarekisteriTest {
         Function3<SijoitteluAjo, List<Hakukohde>, List<Valintatulos>, Boolean> assertFunction = (sijoitteluajo, hakukohteet, valintatulokset) -> {
             assertSijoitteluajo(sijoitteluajo);
             assertHakukohteet(sijoitteluajo.getSijoitteluajoId(), hakukohteet);
-            assertHakemuksetKaksiJonoHyvaksyVarallaJaPeruAlempi(hakukohteet, HakemuksenTila.HYVAKSYTTY);
+            assertHakemuksetKaksiJonoHyvaksyVarallaJaPeruAlempi(hakukohteet, HYVAKSYTTY);
             assertVastaanotetutValintatuloksetUudelleHakukohteelle(valintatulokset);
             assertHyvaksyttyVaralla(hakukohteet, uusiHakukohdeOid, "112233.111111", 2, 0);
             assertHyvaksyttyVaralla(hakukohteet, uusiHakukohdeOid, "112233.222222", 0, 0);
@@ -267,7 +270,7 @@ public class SijoitteluBusinessServiceValintarekisteriTest {
         Function3<SijoitteluAjo, List<Hakukohde>, List<Valintatulos>, Boolean> assertFunction = (sijoitteluajo, hakukohteet, valintatulokset) -> {
             assertSijoitteluajo(sijoitteluajo);
             assertHakukohteet(sijoitteluajo.getSijoitteluajoId(), hakukohteet);
-            assertHakemuksetKaksiJonoHyvaksyVarallaJaPeruAlempi(hakukohteet, HakemuksenTila.HYVAKSYTTY);
+            assertHakemuksetKaksiJonoHyvaksyVarallaJaPeruAlempi(hakukohteet, HYVAKSYTTY);
             assertVastaanotetutValintatuloksetUudelleHakukohteelle(valintatulokset);
             assertHyvaksyttyVaralla(hakukohteet, uusiHakukohdeOid, "112233.111111", 2, 0);
             assertHyvaksyttyVaralla(hakukohteet, uusiHakukohdeOid, "112233.222222", 0, 0);
@@ -280,7 +283,7 @@ public class SijoitteluBusinessServiceValintarekisteriTest {
 
     @Test
     public void yliTayttoJonossaSamallaJonosijallaVarallaOlevatHakijatSaavatSamanVarasijanumeron() {
-        ValintatietoValintatapajonoDTO jonoDto = sijoitteleYhteenJonoonYksiHyvaksyttyKaksiVaralleSamalleJonosijalle(YLITAYTTO);
+        ValintatietoValintatapajonoDTO jonoDto = sijoitteleYhteenJonoonYksiHyvaksyttyKaksiVaralleSamalleJonosijalle(fi.vm.sade.valintalaskenta.domain.dto.valintakoe.Tasasijasaanto.YLITAYTTO);
         assertYksiHyvaksyttyKaksiVarallaSamallaVarasijalla(jonoDto);
     }
 
@@ -681,7 +684,7 @@ public class SijoitteluBusinessServiceValintarekisteriTest {
                 Stream.of(oid + ".111111.11", oid + ".111111.22").map(hakemusOid -> {
                     Hakemus hakemus = new Hakemus();
                     hakemus.setHakemusOid(hakemusOid);
-                    hakemus.setTila(HakemuksenTila.HYVAKSYTTY);
+                    hakemus.setTila(HYVAKSYTTY);
                     hakemus.setHakijaOid(hakemusOid);
                     hakemus.setJonosija(Integer.parseInt("" + hakemusOid.charAt(hakemusOid.length()-1)));
                     hakemus.setPrioriteetti(2);
