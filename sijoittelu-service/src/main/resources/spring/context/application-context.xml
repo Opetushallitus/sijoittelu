@@ -45,10 +45,17 @@
         <context:property-placeholder system-properties-mode="OVERRIDE"/>
     </beans>
     <beans>
+        <bean id="ophRequestHeaders" class="fi.vm.sade.javautils.cxf.OphRequestHeadersCxfInterceptor">
+            <constructor-arg index="0"  name="callerId" value="1.2.246.562.10.00000000001.sijoittelu.sijoittelu-service"/>
+        </bean>
+
         <jaxrs-client:client id="ValintaperusteetLaskentaRestClient"
                            address="${valintalaskentakoostepalvelu.valintaperusteet.rest.url}"
                            serviceClass="fi.vm.sade.service.valintaperusteet.resource.ValintaperusteetResource"
                            inheritHeaders="true">
+        <jaxrs-client:outInterceptors>
+            <ref bean="ophRequestHeaders"/>
+        </jaxrs-client:outInterceptors>
         <jaxrs-client:providers>
             <bean class="com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider"/>
             <bean class="fi.vm.sade.sijoittelu.tulos.resource.ObjectMapperProvider" />
@@ -59,16 +66,22 @@
                              address="${valintalaskentakoostepalvelu.valintaperusteet.rest.url}"
                              serviceClass="fi.vm.sade.service.valintaperusteet.resource.ValintaperusteetResourceV2"
                              inheritHeaders="true">
-            <jaxrs-client:providers>
-                <bean class="com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider"/>
-                <bean class="fi.vm.sade.sijoittelu.tulos.resource.ObjectMapperProvider" />
-            </jaxrs-client:providers>
+        <jaxrs-client:outInterceptors>
+            <ref bean="ophRequestHeaders"/>
+        </jaxrs-client:outInterceptors>
+        <jaxrs-client:providers>
+            <bean class="com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider"/>
+            <bean class="fi.vm.sade.sijoittelu.tulos.resource.ObjectMapperProvider" />
+        </jaxrs-client:providers>
         </jaxrs-client:client>
 
         <jaxrs-client:client id="ValintaperusteetKoostepalveluRestClient"
                            address="${host.alb}/valintaperusteet-service/resources"
                            serviceClass="fi.vm.sade.service.valintaperusteet.resource.ValintalaskentakoostepalveluResource"
                            inheritHeaders="true">
+        <jaxrs-client:outInterceptors>
+            <ref bean="ophRequestHeaders"/>
+        </jaxrs-client:outInterceptors>
         <jaxrs-client:providers>
             <bean class="com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider"/>
             <bean class="fi.vm.sade.sijoittelu.tulos.resource.ObjectMapperProvider" />
@@ -79,46 +92,65 @@
                            address="${valintalaskentakoostepalvelu.parametriservice.rest.url}"
                            serviceClass="fi.vm.sade.sijoittelu.laskenta.external.resource.OhjausparametriResource"
                            inheritHeaders="true">
+        <jaxrs-client:outInterceptors>
+            <ref bean="ophRequestHeaders"/>
+        </jaxrs-client:outInterceptors>
         <jaxrs-client:providers>
             <bean class="com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider"/>
             <bean class="fi.vm.sade.sijoittelu.tulos.resource.ObjectMapperProvider" />
         </jaxrs-client:providers>
         </jaxrs-client:client>
+
         <jaxrs-client:client id="TarjontaHakuResourceRestClient"
                            address="${valintalaskentakoostepalvelu.tarjonta.rest.url}"
                            serviceClass="fi.vm.sade.sijoittelu.laskenta.external.resource.HakuV1Resource"
                            inheritHeaders="true">
+        <jaxrs-client:outInterceptors>
+            <ref bean="ophRequestHeaders"/>
+        </jaxrs-client:outInterceptors>
         <jaxrs-client:providers>
           <bean class="com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider"/>
           <bean class="fi.vm.sade.sijoittelu.tulos.resource.ObjectMapperProvider" />
         </jaxrs-client:providers>
         </jaxrs-client:client>
+
         <jaxrs-client:client id="TarjontaHakukohdeResourceRestClient"
                            address="${valintalaskentakoostepalvelu.tarjonta.rest.url}"
                            serviceClass="fi.vm.sade.sijoittelu.laskenta.external.resource.HakukohdeV1Resource"
                            inheritHeaders="true">
+        <jaxrs-client:outInterceptors>
+            <ref bean="ophRequestHeaders"/>
+        </jaxrs-client:outInterceptors>
         <jaxrs-client:providers>
           <bean class="com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider"/>
           <bean class="fi.vm.sade.sijoittelu.tulos.resource.ObjectMapperProvider" />
         </jaxrs-client:providers>
         </jaxrs-client:client>
+
         <jaxrs-client:client id="VirkailijaValintaTulosServiceRestClient"
                              address="${valintalaskentakoostepalvelu.valintatulosservice.rest.url}"
                              serviceClass="fi.vm.sade.sijoittelu.laskenta.external.resource.VirkailijaValintaTulosServiceResource"
                              inheritHeaders="true">
-            <jaxrs-client:providers>
-                <bean class="com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider"/>
-                <bean class="fi.vm.sade.sijoittelu.tulos.resource.ObjectMapperProvider"/>
-            </jaxrs-client:providers>
+        <jaxrs-client:outInterceptors>
+            <ref bean="ophRequestHeaders"/>
+        </jaxrs-client:outInterceptors>
+        <jaxrs-client:providers>
+            <bean class="com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider"/>
+            <bean class="fi.vm.sade.sijoittelu.tulos.resource.ObjectMapperProvider"/>
+        </jaxrs-client:providers>
         </jaxrs-client:client>
+
         <jaxrs-client:client id="SijoitteluValintaTulosServiceRestClient"
                              address="${valintalaskentakoostepalvelu.valintatulosservice.rest.url}"
                              serviceClass="fi.vm.sade.sijoittelu.laskenta.external.resource.SijoitteluValintaTulosServiceResource"
                              inheritHeaders="true">
-            <jaxrs-client:providers>
-                <bean class="com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider"/>
-                <bean class="fi.vm.sade.sijoittelu.tulos.resource.ObjectMapperProvider"/>
-            </jaxrs-client:providers>
+        <jaxrs-client:outInterceptors>
+            <ref bean="ophRequestHeaders"/>
+        </jaxrs-client:outInterceptors>
+        <jaxrs-client:providers>
+            <bean class="com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider"/>
+            <bean class="fi.vm.sade.sijoittelu.tulos.resource.ObjectMapperProvider"/>
+        </jaxrs-client:providers>
         </jaxrs-client:client>
 
         <context:component-scan base-package="fi.vm.sade.sijoittelu.laskenta"/>

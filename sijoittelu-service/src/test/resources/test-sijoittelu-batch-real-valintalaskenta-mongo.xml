@@ -19,7 +19,7 @@
                 class="fi.vm.sade.sijoittelu.laskenta.external.resource.VirkailijaValintaTulosServiceResource"/>
   <mockito:mock id="valintarekisteriService"
                   class="fi.vm.sade.sijoittelu.laskenta.service.business.ValintarekisteriService"/>
-  <mockito:mock id="authorizer" class="fi.vm.sade.authentication.business.service.Authorizer"/>
+  <mockito:mock id="authorizer" class="fi.vm.sade.javautils.opintopolku_spring_security.Authorizer"/>
   <mockito:mock id="valintaperusteetResource"
                 class="fi.vm.sade.service.valintaperusteet.resource.ValintaperusteetResource"/>
   <mockito:mock id="valintaperusteetResourceV2"

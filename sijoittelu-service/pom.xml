@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>fi.vm.sade.sijoittelu</groupId>
 		<artifactId>sijoittelu</artifactId>
-		<version>7.3.0-SNAPSHOT</version>
+		<version>7.4.0-SNAPSHOT</version>
 	</parent>
 
 	<artifactId>sijoittelu-service</artifactId>
@@ -25,7 +25,7 @@
 	        </dependency>
 		<dependency>
 			<groupId>fi.vm.sade.java-utils</groupId>
-			<artifactId>java-auth</artifactId>
+			<artifactId>java-cxf</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.jasig.cas.client</groupId>
@@ -133,7 +133,7 @@
 		<dependency>
 			<groupId>fi.vm.sade.valintaperusteet</groupId>
 			<artifactId>valintalaskenta-tulos-service</artifactId>
-			<version>5.3-SNAPSHOT</version>
+			<version>${valintalaskenta.version}</version>
 			<exclusions>
 				<exclusion>
 					<groupId>org.codehaus.jackson</groupId>
@@ -168,7 +168,7 @@
 		<dependency>
 			<groupId>fi.vm.sade.valintaperusteet</groupId>
 			<artifactId>valintaperusteet-api</artifactId>
-			<version>5.3-SNAPSHOT</version>
+			<version>${valintaperusteet-api.version}</version>
 		</dependency>
 
 		<dependency>
