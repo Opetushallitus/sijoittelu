@@ -50,6 +50,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -570,7 +571,9 @@ public class SijoitteluBusinessService {
             uusiSijoitteluajo.getHakukohteet().add(hki);
             hakukohde.setSijoitteluajoId(uusiSijoitteluajo.getSijoitteluajoId());
         });
-        return Pair.of(new ArrayList<>(sijoiteltavatHakukohteet.values()), poistettavatValinnantulokset);
+        ArrayList<Hakukohde> hakukohteet = new ArrayList<>(sijoiteltavatHakukohteet.values());
+        hakukohteet.sort(Comparator.comparing(Hakukohde::getOid));
+        return Pair.of(hakukohteet, poistettavatValinnantulokset);
     }
 
     private SijoitteluAjo createSijoitteluAjo(String hakuOid) {
