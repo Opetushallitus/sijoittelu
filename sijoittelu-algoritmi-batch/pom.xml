@@ -10,7 +10,7 @@
     <artifactId>sijoittelu-algoritmi-batch</artifactId>
     <name>Sijoittelu :: Algoritmi :: Batch</name>
     <packaging>jar</packaging>
-    <version>7.4.0-SNAPSHOT</version>
+    <version>7.5.0-SNAPSHOT</version>
 
     <dependencies>
 
