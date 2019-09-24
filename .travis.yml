@@ -32,7 +32,7 @@ install:
 - export ARTIFACT_NAME="sijoittelu-service"
 
 script:
-- mvn clean verify -B -Dbranch=${TRAVIS_BRANCH} -Drevision=${TRAVIS_COMMIT} -DbuildNumber=${TRAVIS_BUILD_NUMBER} -Pit -Dit.usePhantomJs=true
+- mvn clean verify -B -U -Dbranch=${TRAVIS_BRANCH} -Drevision=${TRAVIS_COMMIT} -DbuildNumber=${TRAVIS_BUILD_NUMBER} -Pit -Dit.usePhantomJs=true
 
 - mv sijoittelu-service/target/sijoittelu-service-*allinone.jar $DOCKER_BUILD_DIR/artifact/${ARTIFACT_NAME}.jar
 - cp -vr src/main/resources/oph-configuration $DOCKER_BUILD_DIR/config/
