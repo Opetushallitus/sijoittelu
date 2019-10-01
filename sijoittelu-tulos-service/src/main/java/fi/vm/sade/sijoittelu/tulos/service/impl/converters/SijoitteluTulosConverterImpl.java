@@ -120,7 +120,6 @@ public class SijoitteluTulosConverterImpl implements SijoitteluTulosConverter {
             dto.setValintatapajonoOid(valintatapajono.getOid());
         }
         dto.setVarasijanNumero(ha.getVarasijanNumero());
-        applyPistetiedot(dto, ha.getPistetiedot());
         dto.setHyvaksyttyHakijaryhmista(ha.getHyvaksyttyHakijaryhmista());
         return dto;
     }
@@ -148,19 +147,6 @@ public class SijoitteluTulosConverterImpl implements SijoitteluTulosConverter {
             thDTO.setLuotu(tilaHistoria.getLuotu());
             thDTO.setTila(tilaHistoria.getTila().name());
             dto.getTilaHistoria().add(thDTO);
-        }
-    }
-
-    private void applyPistetiedot(HakemusDTO dto, List<Pistetieto> pistetiedot) {
-        for (Pistetieto pistetieto : pistetiedot) {
-            PistetietoDTO pistetietoDTO = new PistetietoDTO();
-            pistetietoDTO.setArvo(pistetieto.getArvo());
-            pistetietoDTO.setLaskennallinenArvo(pistetieto.getLaskennallinenArvo());
-            pistetietoDTO.setOsallistuminen(pistetieto.getOsallistuminen());
-            pistetietoDTO.setTunniste(pistetieto.getTunniste());
-            pistetietoDTO.setTyypinKoodiUri(pistetieto.getTyypinKoodiUri());
-            pistetietoDTO.setTilastoidaan(pistetieto.isTilastoidaan());
-            dto.getPistetiedot().add(pistetietoDTO);
         }
     }
 
