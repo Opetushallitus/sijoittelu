@@ -61,8 +61,8 @@ sijoittelu-service.swagger.basepath=/sijoittelu-service/resources/
 sijoittelu.kayta.vtku31.saantoa.rajatussa.varasijataytossa={{ sijoittelu_kayta_vtku31_saantoa_rajatussa_varasijataytossa | default('true') }}
 
 #VALINTAREKISTERI
-valintarekisteri.db.user={{host_postgresql_valintarekisteri_user}}
-valintarekisteri.db.password={{host_postgresql_valintarekisteri_password}}
+valintarekisteri.db.user={{postgres_app_user}}
+valintarekisteri.db.password={{host_postgresql_valintarekisteri_app_password}}
 valintarekisteri.db.url=jdbc:postgresql://{{host_postgresql_valintarekisteri}}/valintarekisteri
 valintarekisteri.tarjonta-service.url=https://{{host_virkailija}}/tarjonta-service
 valintarekisteri.organisaatio-service.url=https://{{host_virkailija}}/organisaatio-service
