@@ -1,7 +1,11 @@
 package fi.vm.sade.sijoittelu;
 
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.not;
+import static org.junit.Assert.assertThat;
 import com.lordofthejars.nosqlunit.annotation.UsingDataSet;
 import com.mongodb.MongoClientURI;
+
 import fi.vm.sade.sijoittelu.batch.logic.impl.DomainConverter;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoitteluConfiguration;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoitteluajoWrapperFactory;
@@ -15,6 +19,7 @@ import fi.vm.sade.sijoittelu.domain.SijoitteluAjo;
 import fi.vm.sade.sijoittelu.laskenta.external.resource.VirkailijaValintaTulosServiceResource;
 import fi.vm.sade.sijoittelu.laskenta.resource.SijoitteluResource;
 import fi.vm.sade.sijoittelu.laskenta.service.business.SijoitteluBusinessService;
+import fi.vm.sade.sijoittelu.laskenta.service.business.SijoitteluajoResourcesLoader;
 import fi.vm.sade.sijoittelu.laskenta.service.business.ValintarekisteriService;
 import fi.vm.sade.sijoittelu.laskenta.service.it.TarjontaIntegrationService;
 import fi.vm.sade.sijoittelu.tulos.dto.HakukohdeDTO;
@@ -47,10 +52,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
-
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.not;
-import static org.junit.Assert.assertThat;
 
 /**
  * This test class can be used to run sijoittelu with a data read from a server.
@@ -155,7 +156,11 @@ public class SijoitteluIntegrationTestToBeRunManually {
 
         @Autowired
         public LightWeightSijoitteluBusinessServiceForTesting(SijoitteluTulosConverter sijoitteluTulosConverter, TarjontaIntegrationService tarjontaIntegrationService, VirkailijaValintaTulosServiceResource valintaTulosServiceResource, ValintarekisteriService valintarekisteriService) {
-            super(sijoitteluTulosConverter, tarjontaIntegrationService, valintaTulosServiceResource, valintarekisteriService, new SijoitteluConfiguration());
+            super(sijoitteluTulosConverter,
+                valintaTulosServiceResource,
+                valintarekisteriService,
+                new SijoitteluConfiguration(),
+                new SijoitteluajoResourcesLoader(tarjontaIntegrationService, valintarekisteriService));
         }
 
         /**
@@ -179,7 +184,8 @@ public class SijoitteluIntegrationTestToBeRunManually {
             LOG.info(nameOfThisFakeSijoitteluRun + " sijoittelun koko: 0 olemassaolevaa, {} uutta, 0 valintatulosta", uudetHakukohteet.size());
             stopWatch.start("Luodaan sijoitteluajoWrapper ja asetetaan parametrit");
             final SijoitteluajoWrapper sijoitteluajoWrapper = SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(new SijoitteluConfiguration(), sijoitteluAjo, uudetHakukohteet, Collections.emptyList(), Collections.emptyMap());
-            asetaSijoittelunParametrit(hakuOid, sijoitteluajoWrapper, findParametersFromTarjontaAndPerformInitialValidation(hakuOid));
+            sijoitteluajoWrapper.paivitaVastaanottojenVaikutusHakemustenTiloihin(Collections.emptyList(), Collections.emptyMap());
+            sijoitteluajoResourcesLoader.asetaSijoittelunParametrit(hakuOid, sijoitteluajoWrapper, sijoitteluajoResourcesLoader.findParametersFromTarjontaAndPerformInitialValidation(hakuOid));
             stopWatch.stop();
 
             LOG.info("Suoritetaan " + nameOfThisFakeSijoitteluRun);

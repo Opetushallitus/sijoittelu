@@ -69,6 +69,7 @@ public class PostSijoitteluProcessorPeruuntuneetHakemuksenVastaanotonMuokkausTes
     private SijoitteluajoWrapper luoSijoitteluAjonTulokset(List<Hakukohde> hakukohdeList, List<Valintatulos> valintatulosList) {
         hakukohdeList.forEach(h -> h.getValintatapajonot().forEach(v -> v.setSijoiteltuIlmanVarasijasaantojaNiidenOllessaVoimassa(true)));
         final SijoitteluajoWrapper sijoitteluajoWrapper = SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(new SijoitteluConfiguration(), new SijoitteluAjo(), hakukohdeList, valintatulosList, Collections.emptyMap());
+        sijoitteluajoWrapper.paivitaVastaanottojenVaikutusHakemustenTiloihin(valintatulosList, Collections.emptyMap());
         sijoitteluajoWrapper.setKKHaku(true);
         SijoittelunTila tila = SijoitteluAlgorithmUtil.sijoittele(sijoitteluajoWrapper);
         System.out.println(PrintHelper.tulostaSijoittelu(tila));

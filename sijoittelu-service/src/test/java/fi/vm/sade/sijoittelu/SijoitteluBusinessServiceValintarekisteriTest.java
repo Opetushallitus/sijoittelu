@@ -1,8 +1,9 @@
 package fi.vm.sade.sijoittelu;
 
+import static fi.vm.sade.sijoittelu.domain.HakemuksenTila.HYVAKSYTTY;
+import static fi.vm.sade.sijoittelu.domain.ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI;
 import static fi.vm.sade.valintalaskenta.domain.dto.valintakoe.Tasasijasaanto.ALITAYTTO;
 import static fi.vm.sade.valintalaskenta.domain.dto.valintakoe.Tasasijasaanto.ARVONTA;
-import static fi.vm.sade.valintalaskenta.domain.dto.valintakoe.Tasasijasaanto.YLITAYTTO;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -15,6 +16,7 @@ import static org.mockito.Mockito.when;
 import com.google.common.collect.Sets;
 
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoitteluConfiguration;
+import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.helper.HakuBuilder;
 import fi.vm.sade.sijoittelu.domain.HakemuksenTila;
 import fi.vm.sade.sijoittelu.domain.Hakemus;
 import fi.vm.sade.sijoittelu.domain.Hakukohde;
@@ -25,10 +27,12 @@ import fi.vm.sade.sijoittelu.domain.Tasasijasaanto;
 import fi.vm.sade.sijoittelu.domain.Valintatapajono;
 import fi.vm.sade.sijoittelu.domain.ValintatuloksenTila;
 import fi.vm.sade.sijoittelu.domain.Valintatulos;
+import fi.vm.sade.sijoittelu.domain.dto.VastaanottoDTO;
 import fi.vm.sade.sijoittelu.laskenta.external.resource.VirkailijaValintaTulosServiceResource;
 import fi.vm.sade.sijoittelu.laskenta.external.resource.dto.ParametriArvoDTO;
 import fi.vm.sade.sijoittelu.laskenta.external.resource.dto.ParametriDTO;
 import fi.vm.sade.sijoittelu.laskenta.service.business.SijoitteluBusinessService;
+import fi.vm.sade.sijoittelu.laskenta.service.business.SijoitteluajoResourcesLoader;
 import fi.vm.sade.sijoittelu.laskenta.service.business.ValintarekisteriService;
 import fi.vm.sade.sijoittelu.laskenta.service.it.TarjontaIntegrationService;
 import fi.vm.sade.sijoittelu.tulos.service.impl.converters.SijoitteluTulosConverter;
@@ -50,11 +54,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class SijoitteluBusinessServiceValintarekisteriTest {
 
+    private final String hyvaksyttavanHakijanOid = "hyvaksyttavaHakija";
+    private final String hyvaksyttavanHakemuksenOid = "hyvaksyttavaHakemus";
     private String hakuOid = "12345";
     private long sijoitteluajoId = 12345l;
     private String uusiHakukohdeOid = "112233";
@@ -77,25 +84,36 @@ public class SijoitteluBusinessServiceValintarekisteriTest {
         valintaTulosServiceResource = mock(VirkailijaValintaTulosServiceResource.class);
         valintarekisteriService = mock(ValintarekisteriService.class);
 
-        service = new SijoitteluBusinessService(sijoitteluTulosConverter, tarjontaIntegrationService, valintaTulosServiceResource, valintarekisteriService, new SijoitteluConfiguration());
+        service = new SijoitteluBusinessService(
+            sijoitteluTulosConverter,
+            valintaTulosServiceResource,
+            valintarekisteriService,
+            new SijoitteluConfiguration(),
+            new SijoitteluajoResourcesLoader(tarjontaIntegrationService, valintarekisteriService));
 
         when(tarjontaIntegrationService.getHaunParametrit(hakuOid)).thenReturn(haunParametrit());
         when(tarjontaIntegrationService.getHakuByHakuOid(hakuOid)).thenReturn(tarjontaHaku());
     }
 
     private void setUpMocks1() {
-        when(valintarekisteriService.getLatestSijoitteluajo(hakuOid)).thenReturn(valintarekisteriSijoitteluajo1());
-        when(valintarekisteriService.getSijoitteluajonHakukohteet(sijoitteluajoId)).thenReturn(valintarekisteriHakukohteet1());
-        when(valintarekisteriService.getValintatulokset(hakuOid)).thenReturn(valintarekisteriValintatulokset1());
+        setupMocks(hakuOid, valintarekisteriSijoitteluajo1(), valintarekisteriHakukohteet1(), valintarekisteriValintatulokset1());
     }
 
     private void setUpMocks2() {
-        when(valintarekisteriService.getLatestSijoitteluajo(hakuOid)).thenReturn(valintarekisteriSijoitteluajo2());
-        when(valintarekisteriService.getSijoitteluajonHakukohteet(sijoitteluajoId)).thenReturn(valintarekisteriHakukohteet2());
-        when(valintarekisteriService.getValintatulokset(hakuOid)).thenReturn(valintarekisteriValintatulokset2());
+        setupMocks(hakuOid, valintarekisteriSijoitteluajo2(), valintarekisteriHakukohteet2(), valintarekisteriValintatulokset2());
+    }
+
+    private void setupMocks(String hakuOid, SijoitteluAjo sijoitteluAjo, List<Hakukohde> hakukohdes, List<Valintatulos> valintatulos) {
+        when(valintarekisteriService.getLatestSijoitteluajo(hakuOid)).thenReturn(sijoitteluAjo);
+        when(valintarekisteriService.getSijoitteluajonHakukohteet(sijoitteluajoId)).thenReturn(hakukohdes);
+        when(valintarekisteriService.getValintatulokset(hakuOid)).thenReturn(valintatulos);
     }
 
     private void verifyAndCaptureAndAssert(Function3<SijoitteluAjo, List<Hakukohde>, List<Valintatulos>, Boolean> assertFunction) {
+        verifyAndCaptureAndAssert(assertFunction, hakuOid);
+    }
+
+    private void verifyAndCaptureAndAssert(Function3<SijoitteluAjo, List<Hakukohde>, List<Valintatulos>, Boolean> assertFunction, String hakuOid) {
         verify(valintarekisteriService).getLatestSijoitteluajo(hakuOid);
         verify(valintarekisteriService).getSijoitteluajonHakukohteet(sijoitteluajoId);
         verify(valintarekisteriService).getValintatulokset(hakuOid);
@@ -125,7 +143,7 @@ public class SijoitteluBusinessServiceValintarekisteriTest {
         assertFalse(hakukohteet.stream().anyMatch(hk -> hk.getSijoitteluajoId() != uusiSijoitteluajoId));
     }
 
-    private void assertHakemuksetKaksiJonoHyvaksyVarallaJaPeruAlempi(List<Hakukohde> hakukohteet) {
+    private void assertHakemuksetKaksiJonoHyvaksyVarallaJaPeruAlempi(List<Hakukohde> hakukohteet, HakemuksenTila odotettuHyvaksyttyTila) {
         List<Valintatapajono> valintatapajonot = hakukohteet.stream().filter(hk -> hk.getOid().equals(uusiHakukohdeOid)).findAny().get().getValintatapajonot();
 
         List<Hakemus> hakemuksetJono1 = valintatapajonot.stream().filter(jono -> "112233.111111".equals(jono.getOid())).findAny().get().getHakemukset();
@@ -134,14 +152,24 @@ public class SijoitteluBusinessServiceValintarekisteriTest {
         assertEquals(2, hakemuksetJono1.size());
         assertEquals(2, hakemuksetJono2.size());
 
-        assertFalse(hakemuksetJono1.stream().anyMatch(t -> t.getTila() != HakemuksenTila.VARASIJALTA_HYVAKSYTTY));
-        assertFalse(hakemuksetJono2.stream().anyMatch(t -> t.getTila() != HakemuksenTila.PERUUNTUNUT));
+        boolean jonossa1OnMuitaKuinOdotettujaHyvaksyttyja = hakemuksetJono1.stream().anyMatch(t -> t.getTila() != odotettuHyvaksyttyTila);
+        boolean jonossa2OnMuitaKuinPeruuntuneita = hakemuksetJono2.stream().anyMatch(t -> t.getTila() != HakemuksenTila.PERUUNTUNUT);
+
+        if (jonossa1OnMuitaKuinOdotettujaHyvaksyttyja || jonossa2OnMuitaKuinPeruuntuneita) {
+            System.err.println("Jono 1 ===");
+            hakemuksetJono1.forEach(System.err::println);
+            System.err.println("Jono 2 ===");
+            hakemuksetJono2.forEach(System.err::println);
+        }
+
+        assertFalse(jonossa1OnMuitaKuinOdotettujaHyvaksyttyja);
+        assertFalse(jonossa2OnMuitaKuinPeruuntuneita);
     }
 
     private void assertVastaanotetutValintatuloksetUudelleHakukohteelle(List<Valintatulos> valintatulokset) {
         assertFalse(valintatulokset.stream().anyMatch(v -> !v.getHakukohdeOid().equals(uusiHakukohdeOid)));
-        assertFalse(valintatulokset.stream().anyMatch(v -> v.getTila() != ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI));
-        assertEquals(4, valintatulokset.size());
+        assertFalse(valintatulokset.stream().anyMatch(v -> v.getTila() != VASTAANOTTANUT_SITOVASTI));
+        assertEquals(8, valintatulokset.size());
     }
 
     private void assertHakemukset(List<Hakukohde> hakukohteet,
@@ -183,7 +211,7 @@ public class SijoitteluBusinessServiceValintarekisteriTest {
         Function3<SijoitteluAjo, List<Hakukohde>, List<Valintatulos>, Boolean> assertFunction = (sijoitteluajo, hakukohteet, valintatulokset) -> {
             assertSijoitteluajo(sijoitteluajo);
             assertHakukohteet(sijoitteluajo.getSijoitteluajoId(), hakukohteet);
-            assertHakemukset(hakukohteet, HakemuksenTila.HYVAKSYTTY, HakemuksenTila.VARASIJALTA_HYVAKSYTTY, 0);
+            assertHakemukset(hakukohteet, HYVAKSYTTY, HakemuksenTila.VARASIJALTA_HYVAKSYTTY, 0);
             assertHyvaksyttyVaralla(hakukohteet, uusiHakukohdeOid, "112233.111111", 2, 0);
 
             assertEquals(0, valintatulokset.size());
@@ -203,7 +231,7 @@ public class SijoitteluBusinessServiceValintarekisteriTest {
             (sijoitteluajo, hakukohteet, valintatulokset) -> {
                 assertSijoitteluajo(sijoitteluajo);
                 assertHakukohteet(sijoitteluajo.getSijoitteluajoId(), hakukohteet);
-                assertHakemukset(hakukohteet, HakemuksenTila.HYVAKSYTTY, HakemuksenTila.VARALLA, 4);
+                assertHakemukset(hakukohteet, HYVAKSYTTY, HakemuksenTila.VARALLA, 4);
                 assertHyvaksyttyVaralla(hakukohteet, uusiHakukohdeOid, "112233.111111", 2, 0);
                 //assertHyvaksyttyVaralla(hakukohteet, "112244", "112244.111111", 0, 2);
 
@@ -224,7 +252,7 @@ public class SijoitteluBusinessServiceValintarekisteriTest {
         Function3<SijoitteluAjo, List<Hakukohde>, List<Valintatulos>, Boolean> assertFunction = (sijoitteluajo, hakukohteet, valintatulokset) -> {
             assertSijoitteluajo(sijoitteluajo);
             assertHakukohteet(sijoitteluajo.getSijoitteluajoId(), hakukohteet);
-            assertHakemuksetKaksiJonoHyvaksyVarallaJaPeruAlempi(hakukohteet);
+            assertHakemuksetKaksiJonoHyvaksyVarallaJaPeruAlempi(hakukohteet, HYVAKSYTTY);
             assertVastaanotetutValintatuloksetUudelleHakukohteelle(valintatulokset);
             assertHyvaksyttyVaralla(hakukohteet, uusiHakukohdeOid, "112233.111111", 2, 0);
             assertHyvaksyttyVaralla(hakukohteet, uusiHakukohdeOid, "112233.222222", 0, 0);
@@ -244,7 +272,7 @@ public class SijoitteluBusinessServiceValintarekisteriTest {
         Function3<SijoitteluAjo, List<Hakukohde>, List<Valintatulos>, Boolean> assertFunction = (sijoitteluajo, hakukohteet, valintatulokset) -> {
             assertSijoitteluajo(sijoitteluajo);
             assertHakukohteet(sijoitteluajo.getSijoitteluajoId(), hakukohteet);
-            assertHakemuksetKaksiJonoHyvaksyVarallaJaPeruAlempi(hakukohteet);
+            assertHakemuksetKaksiJonoHyvaksyVarallaJaPeruAlempi(hakukohteet, HYVAKSYTTY);
             assertVastaanotetutValintatuloksetUudelleHakukohteelle(valintatulokset);
             assertHyvaksyttyVaralla(hakukohteet, uusiHakukohdeOid, "112233.111111", 2, 0);
             assertHyvaksyttyVaralla(hakukohteet, uusiHakukohdeOid, "112233.222222", 0, 0);
@@ -257,7 +285,7 @@ public class SijoitteluBusinessServiceValintarekisteriTest {
 
     @Test
     public void yliTayttoJonossaSamallaJonosijallaVarallaOlevatHakijatSaavatSamanVarasijanumeron() {
-        ValintatietoValintatapajonoDTO jonoDto = sijoitteleYhteenJonoonYksiHyvaksyttyKaksiVaralleSamalleJonosijalle(YLITAYTTO);
+        ValintatietoValintatapajonoDTO jonoDto = sijoitteleYhteenJonoonYksiHyvaksyttyKaksiVaralleSamalleJonosijalle(fi.vm.sade.valintalaskenta.domain.dto.valintakoe.Tasasijasaanto.YLITAYTTO);
         assertYksiHyvaksyttyKaksiVarallaSamallaVarasijalla(jonoDto);
     }
 
@@ -298,9 +326,7 @@ public class SijoitteluBusinessServiceValintarekisteriTest {
 
     private ValintatietoValintatapajonoDTO sijoitteleYhteenJonoonYksiHyvaksyttyKaksiVaralleSamalleJonosijalle
         (fi.vm.sade.valintalaskenta.domain.dto.valintakoe.Tasasijasaanto tasasijasaanto) {
-        when(valintarekisteriService.getLatestSijoitteluajo(hakuOid)).thenReturn(null);
-        when(valintarekisteriService.getSijoitteluajonHakukohteet(sijoitteluajoId)).thenReturn(Collections.emptyList());
-        when(valintarekisteriService.getValintatulokset(hakuOid)).thenReturn(Collections.emptyList());
+        setupMocks(hakuOid, null, Collections.emptyList(), Collections.emptyList());
 
         String jonoOid = uusiHakukohdeOid + ".111111";
         ValintatietoValintatapajonoDTO jonoDto = jonoDTO(jonoOid);
@@ -326,6 +352,131 @@ public class SijoitteluBusinessServiceValintarekisteriTest {
 
         verify(valintarekisteriService).getLatestSijoitteluajo(hakuOid);
         return jonoDto;
+    }
+
+    @Test
+    public void testSijoitteleIlmanPriorisointia() {
+        HakuDTO hakuDTO = luoPriorisoimatonHaku();
+
+        service.sijoittele(hakuDTO, Collections.emptySet(), Sets.newHashSet(
+            "112233.111111", "112244.111111", "112255.111111", "112233.222222", "112244.222222", "112255.222222"), (long)123456789);
+
+        Function3<SijoitteluAjo, List<Hakukohde>, List<Valintatulos>, Boolean> assertFunction = (sijoitteluajo, hakukohteet, valintatulokset) -> {
+            assertSijoitteluajo(sijoitteluajo);
+            assertHakukohteet(sijoitteluajo.getSijoitteluajoId(), hakukohteet);
+            assertHyvaksyttyVaralla(hakukohteet, uusiHakukohdeOid, "112233.111111", 2, 0);
+            assertHyvaksyttyVaralla(hakukohteet, uusiHakukohdeOid, "112233.222222", 0, 0);
+
+            return true;
+        };
+
+        verifyAndCaptureAndAssert(assertFunction, hakuOid);
+    }
+
+    @Test
+    public void testPriorisoimattomassaSijoittelussaHakijaVoiTullaHyvaksytyksiKahteenEriHakutoiveeseensa() {
+        HakuDTO hakuDto = luoPriorisoimatonHakuJossaHakijaOnHakenutKahteenKohteeseen(Collections.emptyList(), valintarekisteriSijoitteluajo(hakukohdeOidit), Collections.emptyList());
+
+        service.sijoittele(hakuDto, Collections.emptySet(), Sets.newHashSet(
+            "112233.111111", "112244.111111", "112255.111111", "112233.222222", "112244.222222", "112255.222222"), (long) 123456789);
+
+        Function3<SijoitteluAjo, List<Hakukohde>, List<Valintatulos>, Boolean> assertFunction = (sijoitteluajo, hakukohteet, valintatulokset) -> {
+            assertSijoitteluajo(sijoitteluajo);
+            assertHakukohteet(sijoitteluajo.getSijoitteluajoId(), hakukohteet);
+            assertHyvaksyttyVaralla(hakukohteet, uusiHakukohdeOid, "112233.111111", 1, 0);
+            assertHyvaksyttyVaralla(hakukohteet, "toinenUusiHakukohde", "toinenUusiHakukohde.111111", 1, 0);
+
+            return true;
+        };
+
+        verifyAndCaptureAndAssert(assertFunction, hakuOid);
+    }
+
+    @Test
+    public void testPriorisoimattomassaHaussaVastaanottoPeruunnuttaaHakutoiveen() {
+        //hakuOid = "priorisoimatonHaku";
+
+        Valintatulos ykkospaikanTulos = new Valintatulos();
+        ykkospaikanTulos.setTila(VASTAANOTTANUT_SITOVASTI, "");
+        ykkospaikanTulos.setHakemusOid(hyvaksyttavanHakemuksenOid, "");
+        ykkospaikanTulos.setHakijaOid(hyvaksyttavanHakijanOid, "");
+        ykkospaikanTulos.setHakukohdeOid(uusiHakukohdeOid, "");
+        ykkospaikanTulos.setValintatapajonoOid(uusiHakukohdeOid + ".111111", "");
+
+        Valintatulos kakkospaikanTulos = new Valintatulos();
+        kakkospaikanTulos.setTila(VASTAANOTTANUT_SITOVASTI, "");
+        kakkospaikanTulos.setHakemusOid(hyvaksyttavanHakemuksenOid, "");
+        kakkospaikanTulos.setHakijaOid(hyvaksyttavanHakijanOid, "");
+        kakkospaikanTulos.setHakukohdeOid("toinenUusiHakukohde", "");
+        kakkospaikanTulos.setValintatapajonoOid("toinenUusiHakukohde.111111", "");
+
+        VastaanottoDTO vastaanottoEriHausta = new VastaanottoDTO();
+        vastaanottoEriHausta.setHenkiloOid(hyvaksyttavanHakijanOid);
+        vastaanottoEriHausta.setAction(VASTAANOTTANUT_SITOVASTI);
+        vastaanottoEriHausta.setHakukohdeOid("eriHaunHakukohdeOid");
+        when(valintaTulosServiceResource.haunKoulutuksenAlkamiskaudenVastaanototYhdenPaikanSaadoksenPiirissa(hakuOid))
+            .thenReturn(Collections.singletonList(vastaanottoEriHausta));
+
+        SijoitteluAjo edellinenAjo = new SijoitteluAjo();
+        edellinenAjo.setHakuOid(hakuOid);
+        edellinenAjo.setSijoitteluajoId(sijoitteluajoId);
+        List<Hakukohde> edellisenSijoitteluajonTulokset = Arrays.asList(
+            new HakuBuilder.HakukohdeBuilder("toinenUusiHakukohde")
+                .withValintatapajono(new HakuBuilder.ValintatapajonoBuilder()
+                    .withOid("toinenUusiHakukohde.111111")
+                    .withPrioriteetti(1)
+                    .withTasasijasaanto(Tasasijasaanto.YLITAYTTO)
+                    .withAloituspaikat(2)
+                    .withHakemus(new HakuBuilder.HakemusBuilder()
+                        .withOid(hyvaksyttavanHakemuksenOid)
+                        .withTila(HYVAKSYTTY)
+                        .withHakijaOid(hyvaksyttavanHakijanOid)
+                        .build())
+                    .build())
+                .build(),
+            new HakuBuilder.HakukohdeBuilder(uusiHakukohdeOid)
+                .withValintatapajono(new HakuBuilder.ValintatapajonoBuilder()
+                    .withOid(uusiHakukohdeOid + ".111111")
+                    .withPrioriteetti(1)
+                    .withTasasijasaanto(Tasasijasaanto.YLITAYTTO)
+                    .withAloituspaikat(2)
+                    .withHakemus(new HakuBuilder.HakemusBuilder()
+                        .withOid(hyvaksyttavanHakemuksenOid)
+                        .withTila(HYVAKSYTTY)
+                        .withHakijaOid(hyvaksyttavanHakijanOid)
+                        .build())
+                    .build())
+                .build());
+
+        HakuDTO hakuDto = luoPriorisoimatonHakuJossaHakijaOnHakenutKahteenKohteeseen(Arrays.asList(ykkospaikanTulos, kakkospaikanTulos), edellinenAjo, edellisenSijoitteluajonTulokset);
+
+        service.sijoittele(hakuDto, Collections.emptySet(), Sets.newHashSet(
+            "112233.111111", "112244.111111", "112255.111111", "112233.222222", "112244.222222", "112255.222222", "toinenUusiHakukohde.111111"), (long)123456789);
+
+        Function3<SijoitteluAjo, List<Hakukohde>, List<Valintatulos>, Boolean> assertFunction = (sijoitteluajo, hakukohteet, valintatulokset) -> {
+            assertSijoitteluajo(sijoitteluajo);
+            assertHakukohteet(sijoitteluajo.getSijoitteluajoId(), hakukohteet);
+            assertHyvaksyttyVaralla(hakukohteet, uusiHakukohdeOid, "112233.111111", 0, 0);
+            assertHyvaksyttyVaralla(hakukohteet, "toinenUusiHakukohde", "toinenUusiHakukohde.111111", 0, 0);
+
+            return true;
+        };
+
+        verifyAndCaptureAndAssert(assertFunction, hakuOid);
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void sijoitteluHeittaaPoikkeuksenJosEdellisenSijoittelunHakukohteissaOnHakukohteitaJotkaPuuttuvatUudesta() {
+        setUpMocks1();
+
+        HakuDTO haku = new HakuDTO();
+        assertEquals(2, valintarekisteriHakukohdeOidit.size()); // varmistetaan, että näitä on enemmän kuin 1
+        HakukohdeDTO hakukohde = new HakukohdeDTO();
+        hakukohde.setOid(valintarekisteriHakukohdeOidit.get(0));
+        haku.setHakukohteet(Collections.singletonList(hakukohde));
+        haku.setHakuOid(hakuOid);
+
+        service.sijoittele(haku, Collections.emptySet(), Sets.newHashSet("112233.111111", "112244.111111", "112255.111111"), System.currentTimeMillis());
     }
 
     private void assertYksiHyvaksyttyKaksiVarallaSamallaVarasijalla(ValintatietoValintatapajonoDTO jonoDto) {
@@ -377,6 +528,7 @@ public class SijoitteluBusinessServiceValintarekisteriTest {
 
     private SijoitteluAjo valintarekisteriSijoitteluajo(List<String> hakukohteet) {
         SijoitteluAjo ajo = new SijoitteluAjo();
+        ajo.setHakuOid(hakuOid);
         ajo.setSijoitteluajoId(sijoitteluajoId);
         ajo.setStartMils(System.currentTimeMillis());
         ajo.setEndMils(System.currentTimeMillis());
@@ -437,7 +589,7 @@ public class SijoitteluBusinessServiceValintarekisteriTest {
     }
 
     private ValintatietoValintatapajonoDTO jonoDTO(String oid) {
-        int prioriteetti = Integer.parseInt("" + oid.charAt(oid.length()-1));
+        int jononPrioriteetti = Integer.parseInt("" + oid.charAt(oid.length()-1));
 
         ValintatietoValintatapajonoDTO jono1 = new ValintatietoValintatapajonoDTO();
         jono1.setOid(oid);
@@ -448,20 +600,20 @@ public class SijoitteluBusinessServiceValintarekisteriTest {
         jono1.setAloituspaikat(5);
         jono1.setValmisSijoiteltavaksi(true);
         jono1.setPoissaOlevaTaytto(true);
-        jono1.setPrioriteetti(prioriteetti);
+        jono1.setPrioriteetti(jononPrioriteetti);
 
         HakijaDTO hakija1 = new HakijaDTO();
         hakija1.setOid(uusiHakukohdeOid + ".111111.11");
         hakija1.setHakemusOid(uusiHakukohdeOid + ".111111.11");
         hakija1.setJonosija(1);
-        hakija1.setPrioriteetti(prioriteetti);
+        hakija1.setPrioriteetti(1);
         hakija1.setTila(JarjestyskriteerituloksenTilaDTO.HYVAKSYTTAVISSA);
 
         HakijaDTO hakija2 = new HakijaDTO();
         hakija2.setOid(uusiHakukohdeOid + ".111111.22");
         hakija2.setHakemusOid(uusiHakukohdeOid + ".111111.22");
         hakija2.setJonosija(2);
-        hakija2.setPrioriteetti(prioriteetti);
+        hakija2.setPrioriteetti(1);
         hakija2.setTila(JarjestyskriteerituloksenTilaDTO.HYVAKSYTTAVISSA);
 
         jono1.setHakija(Arrays.asList(hakija1, hakija2));
@@ -526,6 +678,7 @@ public class SijoitteluBusinessServiceValintarekisteriTest {
         jono.setPoissaOlevaTaytto(true);
         jono.setPrioriteetti(1);
         jono.setSijoiteltuIlmanVarasijasaantojaNiidenOllessaVoimassa(true);
+        jono.setSivssnovSijoittelunVarasijataytonRajoitus(Optional.of(new Valintatapajono.JonosijaTieto(3, 1, HakemuksenTila.VARALLA, Collections.emptyList())));
         jono.setTasasijasaanto(Tasasijasaanto.ARVONTA);
         jono.setHakemukset(
                 Stream.of(oid + ".111111.11", oid + ".111111.22").map(hakemusOid -> {
@@ -552,13 +705,14 @@ public class SijoitteluBusinessServiceValintarekisteriTest {
         jono.setVarasijojaTaytetaanAsti(new java.util.Date(System.currentTimeMillis() + 1000));
         jono.setPoissaOlevaTaytto(true);
         jono.setSijoiteltuIlmanVarasijasaantojaNiidenOllessaVoimassa(true);
+        jono.setSivssnovSijoittelunVarasijataytonRajoitus(Optional.of(new Valintatapajono.JonosijaTieto(3, 1, HakemuksenTila.VARALLA, Collections.emptyList())));
         jono.setTasasijasaanto(Tasasijasaanto.ARVONTA);
         jono.setPrioriteetti(2);
         jono.setHakemukset(
                 Stream.of(oid + ".111111.11", oid + ".111111.22").map(hakemusOid -> {
                     Hakemus hakemus = new Hakemus();
                     hakemus.setHakemusOid(hakemusOid);
-                    hakemus.setTila(HakemuksenTila.HYVAKSYTTY);
+                    hakemus.setTila(HYVAKSYTTY);
                     hakemus.setHakijaOid(hakemusOid);
                     hakemus.setJonosija(Integer.parseInt("" + hakemusOid.charAt(hakemusOid.length()-1)));
                     hakemus.setPrioriteetti(2);
@@ -586,5 +740,74 @@ public class SijoitteluBusinessServiceValintarekisteriTest {
             hakukohde.setValintatapajonot(Arrays.asList(jono1(oid), jono2(oid)));
             return hakukohde;
         }).collect(Collectors.toList());
+    }
+
+    private HakuDTO luoPriorisoimatonHaku() {
+        return luoPriorisoimatonHaku(Arrays.asList(jonoDTO(uusiHakukohdeOid + ".111111"),
+            jonoDTO(uusiHakukohdeOid + ".222222")));
+    }
+
+    private HakuDTO luoPriorisoimatonHaku(List<ValintatietoValintatapajonoDTO> jonot) {
+        setupMocks(hakuOid, valintarekisteriSijoitteluajo2(), valintarekisteriHakukohteet2(), valintarekisteriValintatulokset2());
+
+        HakuDTO hakuDTO = hakuDTO(jonot, true);
+        hakuDTO.setHakuOid(hakuOid);
+        fi.vm.sade.sijoittelu.laskenta.external.resource.dto.HakuDTO tarjontaHaku = tarjontaHaku();
+        tarjontaHaku.setUsePriority(false);
+        when(tarjontaIntegrationService.getHakuByHakuOid(hakuOid)).thenReturn(tarjontaHaku);
+        when(tarjontaIntegrationService.getHaunParametrit(hakuOid)).thenReturn(haunParametrit());
+        return hakuDTO;
+    }
+
+    private HakuDTO luoPriorisoimatonHakuJossaHakijaOnHakenutKahteenKohteeseen(List<Valintatulos> valintatulokset,
+                                                                               SijoitteluAjo edellinenSijoitteluajo,
+                                                                               List<Hakukohde> edellisenSijoitteluajonTulokset) {
+        hakukohdeOidit = Arrays.asList(uusiHakukohdeOid, "toinenUusiHakukohde");
+        setupMocks(hakuOid, edellinenSijoitteluajo, edellisenSijoitteluajonTulokset, valintatulokset);
+
+        HakuDTO hakuDto = new HakuDTO();
+        hakuDto.setHakuOid(hakuOid);
+
+        HakukohdeDTO kohde1 = new HakukohdeDTO();
+        kohde1.setOid(uusiHakukohdeOid);
+        ValintatietoValintatapajonoDTO kohde1jono = jonoDTO(uusiHakukohdeOid + ".111111");
+        ValintatietoValinnanvaiheDTO kohde1Vaihe = new ValintatietoValinnanvaiheDTO(
+            1, "1", hakuOid, "vaihe1", new java.util.Date(), Collections.singletonList(kohde1jono), Collections.emptyList());
+        kohde1.setValinnanvaihe(Collections.singletonList(kohde1Vaihe));
+
+        HakukohdeDTO kohde2 = new HakukohdeDTO();
+        kohde2.setOid("toinenUusiHakukohde");
+        ValintatietoValintatapajonoDTO kohde2Jono = jonoDTO("toinenUusiHakukohde" + ".111111");
+        ValintatietoValinnanvaiheDTO kohde2Vaihe = new ValintatietoValinnanvaiheDTO(
+            1, "1", hakuOid, "vaihe1", new java.util.Date(), Collections.singletonList(kohde2Jono), Collections.emptyList());
+        kohde2.setValinnanvaihe(Collections.singletonList(kohde2Vaihe));
+
+        hakuDto.setHakukohteet(Arrays.asList(kohde1, kohde2));
+        hakuDto.setHakuOid(hakuOid);
+        fi.vm.sade.sijoittelu.laskenta.external.resource.dto.HakuDTO tarjontaHaku = tarjontaHaku();
+
+        tarjontaHaku.setUsePriority(false);
+        when(tarjontaIntegrationService.getHakuByHakuOid(hakuOid)).thenReturn(tarjontaHaku);
+        when(tarjontaIntegrationService.getHaunParametrit(hakuOid)).thenReturn(haunParametrit());
+
+        assertEquals(2, hakuDto.getHakukohteet().size());
+
+        HakijaDTO hyvaksyttavaKohteessa1 = new HakijaDTO();
+        hyvaksyttavaKohteessa1.setOid(hyvaksyttavanHakijanOid);
+        hyvaksyttavaKohteessa1.setHakemusOid(hyvaksyttavanHakemuksenOid);
+        hyvaksyttavaKohteessa1.setJonosija(1);
+        hyvaksyttavaKohteessa1.setPrioriteetti(1);
+        hyvaksyttavaKohteessa1.setTila(JarjestyskriteerituloksenTilaDTO.HYVAKSYTTAVISSA);
+
+        HakijaDTO hyvaksyttavaKohteessa2 = new HakijaDTO();
+        hyvaksyttavaKohteessa2.setOid(hyvaksyttavanHakijanOid);
+        hyvaksyttavaKohteessa2.setHakemusOid(hyvaksyttavanHakemuksenOid);
+        hyvaksyttavaKohteessa2.setJonosija(1);
+        hyvaksyttavaKohteessa2.setPrioriteetti(2);
+        hyvaksyttavaKohteessa2.setTila(JarjestyskriteerituloksenTilaDTO.HYVAKSYTTAVISSA);
+
+        hakuDto.getHakukohteet().get(0).getValinnanvaihe().get(0).getValintatapajonot().get(0).setHakija(Collections.singletonList(hyvaksyttavaKohteessa1));
+        hakuDto.getHakukohteet().get(1).getValinnanvaihe().get(0).getValintatapajonot().get(0).setHakija(Collections.singletonList(hyvaksyttavaKohteessa2));
+        return hakuDto;
     }
 }

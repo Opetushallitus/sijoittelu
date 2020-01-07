@@ -1,5 +1,6 @@
 package fi.vm.sade.sijoittelu;
 
+import static com.lordofthejars.nosqlunit.mongodb.MongoDbRule.MongoDbRuleBuilder.newMongoDbRule;
 import com.lordofthejars.nosqlunit.annotation.UsingDataSet;
 import com.lordofthejars.nosqlunit.core.LoadStrategyEnum;
 import com.lordofthejars.nosqlunit.mongodb.MongoDbRule;
@@ -11,7 +12,14 @@ import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoitteluajoWrapperFact
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoittelunTila;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.util.SijoitteluAlgorithmUtil;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.SijoitteluajoWrapper;
-import fi.vm.sade.sijoittelu.domain.*;
+import fi.vm.sade.sijoittelu.domain.HakemuksenTila;
+import fi.vm.sade.sijoittelu.domain.Hakemus;
+import fi.vm.sade.sijoittelu.domain.Hakukohde;
+import fi.vm.sade.sijoittelu.domain.IlmoittautumisTila;
+import fi.vm.sade.sijoittelu.domain.SijoitteluAjo;
+import fi.vm.sade.sijoittelu.domain.Valintatapajono;
+import fi.vm.sade.sijoittelu.domain.ValintatuloksenTila;
+import fi.vm.sade.sijoittelu.domain.Valintatulos;
 import fi.vm.sade.valintalaskenta.domain.dto.valintatieto.HakuDTO;
 import fi.vm.sade.valintalaskenta.tulos.service.impl.ValintatietoService;
 import org.junit.Assert;
@@ -23,13 +31,10 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
-
-import static com.lordofthejars.nosqlunit.mongodb.MongoDbRule.MongoDbRuleBuilder.newMongoDbRule;
 
 @ContextConfiguration(locations = "classpath:test-sijoittelu-batch-mongo.xml")
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -47,7 +52,7 @@ public class VastaanottoTest {
 
 	@Test
     @UsingDataSet(locations = "vastaanotot.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
-	public void testVastaanotot() throws IOException {
+	public void testVastaanotot() {
 
         HakuDTO haku = valintatietoService.haeValintatiedot("1.2.246.562.29.173465377510");
 
@@ -114,10 +119,11 @@ public class VastaanottoTest {
         ehdollinenPoistettava.setTila(ValintatuloksenTila.EHDOLLISESTI_VASTAANOTTANUT, "");
         ehdollinenPoistettava.setValintatapajonoOid("jono2", "");
 
-        System.out.println(PrintHelper.tulostaSijoittelu(SijoitteluAlgorithmUtil.sijoittele(SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(new SijoitteluConfiguration(), new SijoitteluAjo(), tallennaEdellisetTilat(hakukohteet), Arrays.asList(), Collections.emptyMap()))));
+        System.out.println(PrintHelper.tulostaSijoittelu(SijoitteluAlgorithmUtil.sijoittele(createSijoitteluajoWrapper(hakukohteet, Collections.emptyList()))));
 
         hakukohteet.stream().flatMap(hk -> hk.getValintatapajonot().stream()).forEach(jono -> jono.setAloituspaikat(3));
-        final SijoitteluajoWrapper sijoitteluAjo = SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(new SijoitteluConfiguration(), new SijoitteluAjo(), tallennaEdellisetTilat(hakukohteet), Arrays.asList(sitova, ehdollinen, perunut, ehdollinenPidettava, ehdollinenPoistettava) , Collections.emptyMap());
+        List<Valintatulos> valintatulokset = Arrays.asList(sitova, ehdollinen, perunut, ehdollinenPidettava, ehdollinenPoistettava);
+        final SijoitteluajoWrapper sijoitteluAjo = createSijoitteluajoWrapper(hakukohteet, valintatulokset);
 
         SijoittelunTila s = SijoitteluAlgorithmUtil.sijoittele(sijoitteluAjo);
 
@@ -166,12 +172,12 @@ public class VastaanottoTest {
 
     @Test
     @UsingDataSet(locations = "vastaanotot_perunut_kaikille_jonoille.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
-    public void testPeruutettuVastaanottoKaikilleJonoille() throws IOException {
+    public void testPeruutettuVastaanottoKaikilleJonoille() {
 
         HakuDTO haku = valintatietoService.haeValintatiedot("1.2.246.562.29.173465377510");
         List<Hakukohde> hakukohteet = haku.getHakukohteet().parallelStream().map(DomainConverter::convertToHakukohde).collect(Collectors.toList());
 
-        SijoitteluajoWrapper sijoitteluAjo = SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(new SijoitteluConfiguration(), new SijoitteluAjo(), tallennaEdellisetTilat(hakukohteet), Arrays.asList(), Collections.emptyMap());
+        SijoitteluajoWrapper sijoitteluAjo = createSijoitteluajoWrapper(hakukohteet, Collections.emptyList());
         SijoittelunTila s = SijoitteluAlgorithmUtil.sijoittele(sijoitteluAjo);
         System.out.println(PrintHelper.tulostaSijoittelu(s));
 
@@ -200,7 +206,7 @@ public class VastaanottoTest {
         jono1Tulos.setTila(ValintatuloksenTila.PERUUTETTU, "");
         jono1Tulos.setValintatapajonoOid("jono2", "");
 
-        sijoitteluAjo = SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(new SijoitteluConfiguration(), new SijoitteluAjo(), tallennaEdellisetTilat(hakukohteet), Arrays.asList(jono1Tulos, jono2Tulos), Collections.emptyMap());
+        sijoitteluAjo = createSijoitteluajoWrapper(hakukohteet, Arrays.asList(jono1Tulos, jono2Tulos));
 
         s = SijoitteluAlgorithmUtil.sijoittele(sijoitteluAjo);
 
@@ -215,12 +221,12 @@ public class VastaanottoTest {
 
     @Test
     @UsingDataSet(locations = "vastaanotot_perunut_kaikille_jonoille.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
-    public void testEiVastaanottanutMaaraaikanaVastaanottoKaikilleJonoille() throws IOException {
+    public void testEiVastaanottanutMaaraaikanaVastaanottoKaikilleJonoille() {
 
         HakuDTO haku = valintatietoService.haeValintatiedot("1.2.246.562.29.173465377510");
         List<Hakukohde> hakukohteet = haku.getHakukohteet().parallelStream().map(DomainConverter::convertToHakukohde).collect(Collectors.toList());
 
-        SijoitteluajoWrapper sijoitteluAjo = SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(new SijoitteluConfiguration(), new SijoitteluAjo(), tallennaEdellisetTilat(hakukohteet), Arrays.asList(), Collections.emptyMap());
+        SijoitteluajoWrapper sijoitteluAjo = createSijoitteluajoWrapper(hakukohteet, Collections.emptyList());
 
         SijoittelunTila s = SijoitteluAlgorithmUtil.sijoittele(sijoitteluAjo);
 
@@ -250,7 +256,7 @@ public class VastaanottoTest {
         jono1Tulos.setTila(ValintatuloksenTila.EI_VASTAANOTETTU_MAARA_AIKANA, "");
         jono1Tulos.setValintatapajonoOid("jono1", "");
 
-        sijoitteluAjo = SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(new SijoitteluConfiguration(), new SijoitteluAjo(), tallennaEdellisetTilat(hakukohteet), Arrays.asList(jono1Tulos, jono2Tulos), Collections.emptyMap());
+        sijoitteluAjo = createSijoitteluajoWrapper(hakukohteet, Arrays.asList(jono1Tulos, jono2Tulos));
 
         s = SijoitteluAlgorithmUtil.sijoittele(sijoitteluAjo);
 
@@ -265,12 +271,12 @@ public class VastaanottoTest {
 
     @Test
     @UsingDataSet(locations = "vastaanotot_perunut_kaikille_jonoille.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
-    public void testPerunutVastaanottoKaikilleJonoille() throws IOException {
+    public void testPerunutVastaanottoKaikilleJonoille() {
 
         HakuDTO haku = valintatietoService.haeValintatiedot("1.2.246.562.29.173465377510");
         List<Hakukohde> hakukohteet = haku.getHakukohteet().parallelStream().map(DomainConverter::convertToHakukohde).collect(Collectors.toList());
 
-        SijoitteluajoWrapper sijoitteluAjo = SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(new SijoitteluConfiguration(), new SijoitteluAjo(), tallennaEdellisetTilat(hakukohteet), Arrays.asList(), Collections.emptyMap());
+        SijoitteluajoWrapper sijoitteluAjo = createSijoitteluajoWrapper(hakukohteet, Collections.emptyList());
 
         SijoittelunTila s = SijoitteluAlgorithmUtil.sijoittele(sijoitteluAjo);
 
@@ -300,7 +306,7 @@ public class VastaanottoTest {
         jono1Tulos.setTila(ValintatuloksenTila.PERUNUT, "");
         jono1Tulos.setValintatapajonoOid("jono1", "");
 
-        sijoitteluAjo = SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(new SijoitteluConfiguration(), new SijoitteluAjo(), tallennaEdellisetTilat(hakukohteet), Arrays.asList(jono1Tulos, jono2Tulos), Collections.emptyMap());
+        sijoitteluAjo = createSijoitteluajoWrapper(hakukohteet, Arrays.asList(jono1Tulos, jono2Tulos));
 
         s = SijoitteluAlgorithmUtil.sijoittele(sijoitteluAjo);
 
@@ -311,6 +317,12 @@ public class VastaanottoTest {
         assertoi(hakukohteet.get(0).getValintatapajonot()
                 .get(1), "1.2.246.562.11.00001090792", HakemuksenTila.PERUNUT);
 
+    }
+
+    private SijoitteluajoWrapper createSijoitteluajoWrapper(List<Hakukohde> hakukohteet, List<Valintatulos> valintatulokset) {
+        SijoitteluajoWrapper sijoitteluajoWrapper = SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(new SijoitteluConfiguration(), new SijoitteluAjo(), tallennaEdellisetTilat(hakukohteet), valintatulokset, Collections.emptyMap());
+        sijoitteluajoWrapper.paivitaVastaanottojenVaikutusHakemustenTiloihin(valintatulokset, Collections.emptyMap());
+        return sijoitteluajoWrapper;
     }
 
     private static void assertoi(Valintatapajono valintatapajono, String oid, HakemuksenTila tila) {
@@ -324,13 +336,10 @@ public class VastaanottoTest {
     }
 
     private List<Hakukohde> tallennaEdellisetTilat(List<Hakukohde> hakukohteet) {
-        hakukohteet.stream().forEach(hk -> {
-            hk.getValintatapajonot().stream().forEach(jono -> {
-                jono.getHakemukset().stream().forEach(h -> {
-                    h.setEdellinenTila(h.getTila());
-                });
-            });
-        });
+        hakukohteet.forEach(hk ->
+            hk.getValintatapajonot().forEach(jono -> {
+                jono.getHakemukset().forEach(h -> h.setEdellinenTila(h.getTila()));
+            }));
         return hakukohteet;
     }
 

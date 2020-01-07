@@ -43,6 +43,7 @@ public class SijoitteluAlgorithmEhdollisenVastaanotonMuuttuminenSitovaksiTest {
 
     private SijoitteluajoWrapper luoSijoitteluAjonTulokset() {
         final SijoitteluajoWrapper sijoitteluajoWrapper = SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(new SijoitteluConfiguration(), new SijoitteluAjo(), hakukohdeList, valintatulosList, Collections.emptyMap());
+        sijoitteluajoWrapper.paivitaVastaanottojenVaikutusHakemustenTiloihin(valintatulosList, Collections.emptyMap());
         sijoitteluajoWrapper.setKKHaku(true);
         sijoitteluajoWrapper.valintatapajonotStream().forEach(v -> v.setSijoiteltuIlmanVarasijasaantojaNiidenOllessaVoimassa(true));
         SijoittelunTila algorithm = SijoitteluAlgorithmUtil.sijoittele(sijoitteluajoWrapper);

@@ -1,9 +1,11 @@
 package fi.vm.sade.sijoittelu;
 
+import static com.lordofthejars.nosqlunit.mongodb.MongoDbRule.MongoDbRuleBuilder.newMongoDbRule;
+import static fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.PrintHelper.tulostaSijoittelu;
 import com.lordofthejars.nosqlunit.annotation.UsingDataSet;
 import com.lordofthejars.nosqlunit.core.LoadStrategyEnum;
 import com.lordofthejars.nosqlunit.mongodb.MongoDbRule;
-import de.flapdoodle.embed.process.collections.Collections;
+
 import fi.vm.sade.sijoittelu.batch.logic.impl.DomainConverter;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoitteluConfiguration;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoitteluajoWrapperFactory;
@@ -12,7 +14,11 @@ import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.util.SijoitteluAlgorithm
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.HakijaryhmaWrapper;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.SijoitteluajoWrapper;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.ValintatapajonoWrapper;
-import fi.vm.sade.sijoittelu.domain.*;
+import fi.vm.sade.sijoittelu.domain.HakemuksenTila;
+import fi.vm.sade.sijoittelu.domain.Hakemus;
+import fi.vm.sade.sijoittelu.domain.Hakukohde;
+import fi.vm.sade.sijoittelu.domain.SijoitteluAjo;
+import fi.vm.sade.sijoittelu.domain.Valintatapajono;
 import fi.vm.sade.valintalaskenta.domain.dto.valintatieto.HakuDTO;
 import fi.vm.sade.valintalaskenta.tulos.service.impl.ValintatietoService;
 import org.junit.Assert;
@@ -27,17 +33,14 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
-
-import static com.lordofthejars.nosqlunit.mongodb.MongoDbRule.MongoDbRuleBuilder.newMongoDbRule;
-import static fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.PrintHelper.tulostaSijoittelu;
 
 @ContextConfiguration(locations = "classpath:test-sijoittelu-batch-mongo.xml")
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -55,12 +58,12 @@ public class HakijaryhmaTest {
 
 	@Test
     @UsingDataSet(locations = "vaasan_yliopisto_valinnan_vaiheet.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
-	public void testSijoitteluOneHakijaryhma() throws IOException {
+	public void testSijoitteluOneHakijaryhma() {
 
         HakuDTO haku = valintatietoService.haeValintatiedot("1.2.246.562.29.173465377510");
 
         List<Hakukohde> hakukohteet = haku.getHakukohteet().parallelStream().map(DomainConverter::convertToHakukohde).collect(Collectors.toList());
-        SijoittelunTila s = SijoitteluAlgorithmUtil.sijoittele(hakukohteet, new ArrayList(), java.util.Collections.emptyMap());
+        SijoittelunTila s = SijoitteluAlgorithmUtil.sijoittele(hakukohteet, Collections.emptyList(), Collections.emptyMap());
 
         System.out.println(tulostaSijoittelu(s));
 
@@ -71,12 +74,12 @@ public class HakijaryhmaTest {
 
     @Test
     @UsingDataSet(locations = "vaasan_yliopisto_valinnan_vaiheet_kaksi_hakijaryhmaa.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
-    public void testSijoitteluTwoHakijaryhma() throws IOException {
+    public void testSijoitteluTwoHakijaryhma() {
 
         HakuDTO haku = valintatietoService.haeValintatiedot("1.2.246.562.29.173465377510");
 
         List<Hakukohde> hakukohteet = haku.getHakukohteet().parallelStream().map(DomainConverter::convertToHakukohde).collect(Collectors.toList());
-        SijoittelunTila s = SijoitteluAlgorithmUtil.sijoittele(hakukohteet, new ArrayList(), java.util.Collections.emptyMap());
+        SijoittelunTila s = SijoitteluAlgorithmUtil.sijoittele(hakukohteet, Collections.emptyList(), Collections.emptyMap());
 
         System.out.println(tulostaSijoittelu(s));
 
@@ -87,12 +90,12 @@ public class HakijaryhmaTest {
 
     @Test
     @UsingDataSet(locations = "vaasan_yliopisto_valinnan_vaiheet_kaksi_hakijaryhmaa_toinen_eri_jonossa.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
-    public void testSijoitteluTwoHakijaryhmaToisessaEriJono() throws IOException {
+    public void testSijoitteluTwoHakijaryhmaToisessaEriJono() {
 
         HakuDTO haku = valintatietoService.haeValintatiedot("1.2.246.562.29.173465377510");
 
         List<Hakukohde> hakukohteet = haku.getHakukohteet().parallelStream().map(DomainConverter::convertToHakukohde).collect(Collectors.toList());
-        SijoittelunTila s = SijoitteluAlgorithmUtil.sijoittele(hakukohteet, new ArrayList(), java.util.Collections.emptyMap());
+        SijoittelunTila s = SijoitteluAlgorithmUtil.sijoittele(hakukohteet, Collections.emptyList(), Collections.emptyMap());
 
         System.out.println(tulostaSijoittelu(s));
         Assert.assertEquals(2, hakukohteet.get(0).getHakijaryhmat().size());
@@ -101,12 +104,12 @@ public class HakijaryhmaTest {
 
     @Test
     @UsingDataSet(locations = "vaasan_yliopisto_valinnan_vaiheet_ei_hakijaryhmaa.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
-    public void testSijoitteluEiHakijaryhma() throws IOException {
+    public void testSijoitteluEiHakijaryhma() {
 
         HakuDTO haku = valintatietoService.haeValintatiedot("1.2.246.562.29.173465377510");
 
         List<Hakukohde> hakukohteet = haku.getHakukohteet().parallelStream().map(DomainConverter::convertToHakukohde).collect(Collectors.toList());
-        SijoittelunTila s = SijoitteluAlgorithmUtil.sijoittele(hakukohteet, new ArrayList(), java.util.Collections.emptyMap());
+        SijoittelunTila s = SijoitteluAlgorithmUtil.sijoittele(hakukohteet, Collections.emptyList(), Collections.emptyMap());
 
         System.out.println(tulostaSijoittelu(s));
 
@@ -118,12 +121,12 @@ public class HakijaryhmaTest {
     @Ignore
     @UsingDataSet(locations = "alitaytto_simple_case.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
     // Korjaa tämä kun ikiluuppi on korjattu
-    public void testAlitayttoRekursio() throws IOException {
+    public void testAlitayttoRekursio() {
 
         HakuDTO haku = valintatietoService.haeValintatiedot("1.2.246.562.29.173465377510");
 
         List<Hakukohde> hakukohteet = haku.getHakukohteet().parallelStream().map(DomainConverter::convertToHakukohde).collect(Collectors.toList());
-        final SijoitteluajoWrapper sijoitteluAjo = SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(new SijoitteluConfiguration(), new SijoitteluAjo(), hakukohteet, Collections.<Valintatulos>newArrayList(), java.util.Collections.emptyMap());
+        final SijoitteluajoWrapper sijoitteluAjo = createSijoitteluajoWrapper(hakukohteet);
         SijoittelunTila s = SijoitteluAlgorithmUtil.sijoittele(sijoitteluAjo);
         sijoitteluAjo.setKaikkiKohteetSijoittelussa(LocalDateTime.now().plusDays(10));
 
@@ -134,13 +137,13 @@ public class HakijaryhmaTest {
 
     @Test
     @UsingDataSet(locations = "ylitaytto_simple_case.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
-    public void testYlitayttoRekursio() throws IOException {
+    public void testYlitayttoRekursio() {
 
         HakuDTO haku = valintatietoService.haeValintatiedot("1.2.246.562.29.173465377510");
 
         List<Hakukohde> hakukohteet = haku.getHakukohteet().parallelStream().map(DomainConverter::convertToHakukohde).collect(Collectors.toList());
 
-        final SijoitteluajoWrapper sijoitteluAjo = SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(new SijoitteluConfiguration(), new SijoitteluAjo(), hakukohteet, Collections.<Valintatulos>newArrayList(), java.util.Collections.emptyMap());
+        final SijoitteluajoWrapper sijoitteluAjo = createSijoitteluajoWrapper(hakukohteet);
         sijoitteluAjo.setKaikkiKohteetSijoittelussa(LocalDateTime.now().plusDays(10));
         SijoittelunTila s = SijoitteluAlgorithmUtil.sijoittele(sijoitteluAjo);
 
@@ -153,12 +156,12 @@ public class HakijaryhmaTest {
     @Ignore
     @Test
     @UsingDataSet(locations = "ylitaytto_vaihe.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
-    public void testYlitaytto() throws IOException {
+    public void testYlitaytto() {
 
         HakuDTO haku = valintatietoService.haeValintatiedot("1.2.246.562.29.173465377510");
 
         List<Hakukohde> hakukohteet = haku.getHakukohteet().parallelStream().map(DomainConverter::convertToHakukohde).collect(Collectors.toList());
-        final SijoitteluajoWrapper sijoitteluAjo = SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(new SijoitteluConfiguration(), new SijoitteluAjo(), hakukohteet, Collections.<Valintatulos>newArrayList(), java.util.Collections.emptyMap());
+        final SijoitteluajoWrapper sijoitteluAjo = createSijoitteluajoWrapper(hakukohteet);
         sijoitteluAjo.setKaikkiKohteetSijoittelussa(LocalDateTime.now().plusDays(10));
         SijoittelunTila s = SijoitteluAlgorithmUtil.sijoittele(sijoitteluAjo);
 
@@ -170,12 +173,12 @@ public class HakijaryhmaTest {
 
     @Test
     @UsingDataSet(locations = "vain_ryhmaan_kuuluvat_hyvaksytaan.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
-    public void testSijoitteluVainHakijaryhmaanKuuluvatVoivatTullaHyvaksytyksi() throws IOException {
+    public void testSijoitteluVainHakijaryhmaanKuuluvatVoivatTullaHyvaksytyksi() {
 
         HakuDTO haku = valintatietoService.haeValintatiedot("haku1");
 
         List<Hakukohde> hakukohteet = haku.getHakukohteet().parallelStream().map(DomainConverter::convertToHakukohde).collect(Collectors.toList());
-        SijoittelunTila s = SijoitteluAlgorithmUtil.sijoittele(hakukohteet, new ArrayList(), java.util.Collections.emptyMap());
+        SijoittelunTila s = SijoitteluAlgorithmUtil.sijoittele(hakukohteet, Collections.emptyList(), Collections.emptyMap());
 
         System.out.println(tulostaSijoittelu(s));
 
@@ -187,30 +190,30 @@ public class HakijaryhmaTest {
 
     @Test(expected = IllegalStateException.class)
     @UsingDataSet(locations = "toisensa_pois_sulkevat_hakijaryhmat.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
-    public void testSijoitteluToisensaPoisSulkevatRyhmat() throws IOException {
+    public void testSijoitteluToisensaPoisSulkevatRyhmat() {
 
         HakuDTO haku = valintatietoService.haeValintatiedot("haku1");
 
         List<Hakukohde> hakukohteet = haku.getHakukohteet().parallelStream().map(DomainConverter::convertToHakukohde).collect(Collectors.toList());
-        SijoitteluAlgorithmUtil.sijoittele(hakukohteet, new ArrayList(), java.util.Collections.emptyMap());
+        SijoitteluAlgorithmUtil.sijoittele(hakukohteet, Collections.emptyList(), Collections.emptyMap());
 
     }
 
     @Test
     @UsingDataSet(locations = "hakijaryhma_varasijasaannot_paattyneet.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
-    public void testSijoitteluVarasijaSaannotPaattyneet() throws IOException {
+    public void testSijoitteluVarasijaSaannotPaattyneet() {
 
         HakuDTO haku = valintatietoService.haeValintatiedot("1.2.246.562.29.173465377510");
         List<Hakukohde> hakukohteet = haku.getHakukohteet().parallelStream().map(DomainConverter::convertToHakukohde).collect(Collectors.toList());
 
-        final SijoitteluajoWrapper sijoitteluAjo = SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(new SijoitteluConfiguration(), new SijoitteluAjo(), hakukohteet, Collections.newArrayList(), java.util.Collections.emptyMap());
+        final SijoitteluajoWrapper sijoitteluAjo = createSijoitteluajoWrapper(hakukohteet);
         sijoitteluAjo.setKaikkiKohteetSijoittelussa(LocalDateTime.now().plusDays(10));
 
-        /**
-         * Luodaan alkutilanne:
-         *
-         * valintatapajono1: A (HYVÄKSYTTY), B (VARALLA)
-         * valintatapajono2: C (HYVÄKSYTTY), D (VARALLA)
+        /*
+          Luodaan alkutilanne:
+
+          valintatapajono1: A (HYVÄKSYTTY), B (VARALLA)
+          valintatapajono2: C (HYVÄKSYTTY), D (VARALLA)
          */
         SijoittelunTila s = SijoitteluAlgorithmUtil.sijoittele(sijoitteluAjo);
         System.out.println(tulostaSijoittelu(s));
@@ -218,10 +221,10 @@ public class HakijaryhmaTest {
         assertoiAinoastaanValittu(hakukohteet.get(0).getValintatapajonot().get(0), "A");
         assertoiAinoastaanValittu(hakukohteet.get(0).getValintatapajonot().get(1), "C");
 
-        /**
-         * Muokataan kiintiöitä, että B ja D uudelleen sijoitellaan. Lisäksi
-         * lisätään ensimmäiselle valintatapajonolle varasijatäyttö päättyneeksi,
-         * joten D tulisi ainoastaan hyväksyä tässä sijoittelussa.
+        /*
+          Muokataan kiintiöitä, että B ja D uudelleen sijoitellaan. Lisäksi
+          lisätään ensimmäiselle valintatapajonolle varasijatäyttö päättyneeksi,
+          joten D tulisi ainoastaan hyväksyä tässä sijoittelussa.
          */
         s.sijoitteluAjo.getHakukohteet().stream()
                 .flatMap(hk -> hk.getHakijaryhmaWrappers().stream())
@@ -243,9 +246,9 @@ public class HakijaryhmaTest {
         assertoiAinoastaanValittu(hakukohteet.get(0).getValintatapajonot().get(1), "C", "D");
     }
 
-    public final static void assertoiAinoastaanValittu(Valintatapajono h, String... oids) {
+    public static void assertoiAinoastaanValittu(Valintatapajono h, String... oids) {
         List<String> wanted = Arrays.asList(oids);
-        List<String> actual = new ArrayList<String>();
+        List<String> actual = new ArrayList<>();
         for (Hakemus hakemus : h.getHakemukset()) {
             if (hakemus.getTila() == HakemuksenTila.HYVAKSYTTY) {
                 actual.add(hakemus.getHakemusOid());
@@ -255,4 +258,9 @@ public class HakijaryhmaTest {
         Assert.assertTrue("Wanted result contains more approved OIDs than actual", wanted.containsAll(actual));
     }
 
+    private SijoitteluajoWrapper createSijoitteluajoWrapper(List<Hakukohde> hakukohteet) {
+        SijoitteluajoWrapper sijoitteluajoWrapper = SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(new SijoitteluConfiguration(), new SijoitteluAjo(), hakukohteet, Collections.emptyList(), Collections.emptyMap());
+        sijoitteluajoWrapper.paivitaVastaanottojenVaikutusHakemustenTiloihin(Collections.emptyList(), Collections.emptyMap());
+        return sijoitteluajoWrapper;
+    }
 }

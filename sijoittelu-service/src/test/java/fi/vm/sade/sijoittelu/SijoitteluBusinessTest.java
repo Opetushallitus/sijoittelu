@@ -32,6 +32,7 @@ import fi.vm.sade.sijoittelu.domain.ValintatuloksenTila;
 import fi.vm.sade.sijoittelu.domain.Valintatulos;
 import fi.vm.sade.sijoittelu.laskenta.external.resource.dto.ParametriDTO;
 import fi.vm.sade.sijoittelu.laskenta.service.business.SijoitteluBusinessService;
+import fi.vm.sade.sijoittelu.laskenta.service.business.SijoitteluajoResourcesLoader;
 import fi.vm.sade.sijoittelu.laskenta.service.business.ValintarekisteriService;
 import fi.vm.sade.sijoittelu.laskenta.service.business.ValintatulosWithVastaanotto;
 import fi.vm.sade.sijoittelu.laskenta.service.it.TarjontaIntegrationService;
@@ -92,13 +93,14 @@ public class SijoitteluBusinessTest {
 
     @Before
     public void setup() {
-        tarjontaIntegrationService = mock(TarjontaIntegrationService.class);
         valintatulosWithVastaanotto = mock(ValintatulosWithVastaanotto.class);
         valintarekisteriService = mock(ValintarekisteriService.class);
+        tarjontaIntegrationService = mock(TarjontaIntegrationService.class);
+        SijoitteluajoResourcesLoader sijoitteluajoResourcesLoader = new SijoitteluajoResourcesLoader(tarjontaIntegrationService, valintarekisteriService);
 
         ReflectionTestUtils.setField(sijoitteluService,
-                "tarjontaIntegrationService",
-                tarjontaIntegrationService);
+                "sijoitteluajoResourcesLoader",
+                sijoitteluajoResourcesLoader);
         ReflectionTestUtils.setField(sijoitteluService,
                 "valintatulosWithVastaanotto",
                 valintatulosWithVastaanotto);
@@ -201,6 +203,50 @@ public class SijoitteluBusinessTest {
         ));
 
         printHakukohteet(hakukohteet3);
+
+        List<Hakemus> hakija1Results = hakukohteet3.stream()
+            .flatMap(hk -> hk.getValintatapajonot().stream()
+            .flatMap(v -> v.getHakemukset().stream()))
+            .filter(h -> "hakija1".equals(h.getHakemusOid()))
+            .collect(Collectors.toList());
+        assertEquals(HakemuksenTila.HYVAKSYTTY, hakija1Results.get(0).getTila());
+        assertEquals(HakemuksenTila.PERUUNTUNUT, hakija1Results.get(1).getTila());
+        assertEquals(HakemuksenTila.PERUUNTUNUT, hakija1Results.get(2).getTila());
+    }
+
+    @Test
+    @UsingDataSet(locations = "peruuta_alemmat.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
+    public void testAlempiaHakutoiveitaEiPeruunnutetaJosHakutoiveidenPriorisointiEiOleKaytossa() {
+        fi.vm.sade.sijoittelu.laskenta.external.resource.dto.HakuDTO hakuDto = new fi.vm.sade.sijoittelu.laskenta.external.resource.dto.HakuDTO();
+        hakuDto.setKohdejoukkoUri("haunkohdejoukko_11#1");
+        hakuDto.setUsePriority(false);
+        when(tarjontaIntegrationService.getHakuByHakuOid("haku1")).thenReturn(hakuDto);
+
+        HakuDTO haku = valintatietoService.haeValintatiedot("haku1");
+
+        sijoitteluService.sijoittele(haku, newHashSet("jono1", "jono2", "jono3"), newHashSet("jono1", "jono2", "jono3"), System.currentTimeMillis());
+
+        verify(valintarekisteriService, times(1)).tallennaSijoittelu(
+                sijoitteluAjoArgumentCaptor.capture(),
+                hakukohdeArgumentCaptor.capture(),
+                valintatulosArgumentCaptor.capture());
+
+        List<Hakukohde> hakukohteet1 = hakukohdeArgumentCaptor.getValue();
+        assertEquals(3, hakukohteet1.size());
+        assertEquals(Arrays.asList("jono1", "jono2", "jono3"), hakukohteet1.stream()
+            .map(Hakukohde::getValintatapajonot)
+            .flatMap(List::stream)
+            .map(Valintatapajono::getOid)
+            .collect(Collectors.toList()));
+
+        List<Hakemus> hakija1Results = hakukohteet1.stream()
+            .flatMap(hk -> hk.getValintatapajonot().stream()
+            .flatMap(v -> v.getHakemukset().stream()))
+            .filter(h -> "hakija1".equals(h.getHakemusOid()))
+            .collect(Collectors.toList());
+        assertEquals(HakemuksenTila.HYVAKSYTTY, hakija1Results.get(0).getTila());
+        assertEquals(HakemuksenTila.HYVAKSYTTY, hakija1Results.get(1).getTila());
+        assertEquals(HakemuksenTila.HYVAKSYTTY, hakija1Results.get(2).getTila());
     }
 
     private void printHakukohteet(List<Hakukohde> hakukohteet){
