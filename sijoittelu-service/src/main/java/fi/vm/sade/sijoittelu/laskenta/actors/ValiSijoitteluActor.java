@@ -31,6 +31,13 @@ public class ValiSijoitteluActor extends AbstractActor {
             try {
                 log.info("Välisijoittelukutsu haulle {} saapunut actorille!", haku.getHakuOid());
                 List<HakukohdeDTO> tulokset = sijoitteluBusinessService.valisijoittele(haku);
+                tulokset.forEach(hk -> {
+                    hk.getValintatapajonot().forEach(j -> {
+                        j.getHakemukset().forEach(h -> {
+                            log.info("Hakukohteen {} valintatapajonon {} hakemuksen {} sijoittelun tulos: {}", hk.getOid(), j.getOid(), h.getHakemusOid(), h.getTila());
+                        });
+                    });
+                });
                 log.info("Välisijoittelu haulle {} suoritettu onnistuneesti!", haku.getHakuOid());
                 sender().tell(tulokset, self());
             } catch (Exception e) {

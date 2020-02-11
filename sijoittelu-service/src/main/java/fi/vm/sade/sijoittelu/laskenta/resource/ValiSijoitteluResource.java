@@ -78,6 +78,7 @@ public class ValiSijoitteluResource {
     @Produces("application/json")
     @ApiOperation(value = "Välisijoittelun suorittaminen")
     public List<HakukohdeDTO> sijoittele(@PathParam("hakuOid") String hakuOid, ValisijoitteluDTO hakukohteet) {
+        LOGGER.info("Välisijoiteltavat hakukohteet ja valintatapajonot haulle {}: {}", hakuOid, hakukohteet);
         LOGGER.info("Valintatietoja valmistetaan valisijottelulle haussa {}", hakuOid);
         HakuDTO haku = valintatietoService.haeValintatiedotJonoille(hakuOid, hakukohteet.getHakukohteet(), Optional.empty());
 
@@ -89,6 +90,9 @@ public class ValiSijoitteluResource {
                     jono.setAktiivinen(true);
                     jono.setSiirretaanSijoitteluun(true);
                     jono.setValmisSijoiteltavaksi(true);
+                    jono.getHakija().forEach(h -> {
+                        LOGGER.info("Hakukohteen {} valintatapajonon {} hakemuksen {} valintalaskennan tulos: {}", hakukohde.getOid(), jono.getOid(), h.getHakemusOid(), h.getTila());
+                    });
                 });
             });
         });

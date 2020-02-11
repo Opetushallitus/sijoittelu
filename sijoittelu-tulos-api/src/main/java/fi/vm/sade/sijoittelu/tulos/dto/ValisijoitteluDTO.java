@@ -15,4 +15,11 @@ public class ValisijoitteluDTO {
     public void setHakukohteet(Map<String, List<String>> hakukohteet) {
         this.hakukohteet = hakukohteet;
     }
+
+    @Override
+    public String toString() {
+        return "ValisijoitteluDTO{" +
+                "hakukohteet=" + hakukohteet +
+                '}';
+    }
 }
