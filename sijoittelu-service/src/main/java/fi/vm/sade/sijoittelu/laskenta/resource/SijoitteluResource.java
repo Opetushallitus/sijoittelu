@@ -257,7 +257,7 @@ public class SijoitteluResource {
 
         try {
             LOGGER.info("Valintatietoja valmistetaan haulle {}!", hakuOid);
-            HakuDTO haku = valintatietoService.haeValintatiedot(hakuOid);
+            HakuDTO haku = valintatietoService.haeValintatiedotPalasissa(hakuOid);
             LOGGER.info("Valintatiedot haettu serviceltä {}!", hakuOid);
             LOGGER.info("Asetetaan valintaperusteet {}!", hakuOid);
 
