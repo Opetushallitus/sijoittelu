@@ -44,8 +44,8 @@
     <surefire.plugin.version>2.12</surefire.plugin.version>
     <swagger.version>1.5.16</swagger.version>
     <jetty.version>9.4.15.v20190215</jetty.version>
-    <valintalaskenta.version>5.14-hakukohteet-sijoittelulle-palasissa-SNAPSHOT</valintalaskenta.version>
-    <valintaperusteet-api.version>5.15-SNAPSHOT</valintaperusteet-api.version>
+    <valintalaskenta.version>5.6-SNAPSHOT</valintalaskenta.version>
+    <valintaperusteet-api.version>5.6-SNAPSHOT</valintaperusteet-api.version>
 </properties>
 
     <dependencyManagement>
