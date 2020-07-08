@@ -34,22 +34,32 @@
     </distributionManagement>
 
 <properties>
-    <cxf.version>3.3.2</cxf.version>
-    <fasterxml.jackson.version>2.9.5</fasterxml.jackson.version>
+    <cxf.version>3.3.7</cxf.version>
+    <fasterxml.jackson.version>2.11.1</fasterxml.jackson.version>
     <flapdoodle.embed.mongo.version>2.2.0</flapdoodle.embed.mongo.version>
     <jackson.version>1.9.13</jackson.version>
-    <slf4j.version>1.7.5</slf4j.version>
-    <spring.version>5.1.5.RELEASE</spring.version>
-    <spring.security.version>4.2.11.RELEASE</spring.security.version>
-    <surefire.plugin.version>2.12</surefire.plugin.version>
+    <slf4j.version>1.7.30</slf4j.version>
+    <spring.version>5.1.16.RELEASE</spring.version>
+    <spring.security.version>4.2.17.RELEASE</spring.security.version>
+    <surefire.plugin.version>2.22.2</surefire.plugin.version>
     <swagger.version>1.5.16</swagger.version>
-    <jetty.version>9.4.15.v20190215</jetty.version>
+    <jetty.version>9.4.30.v20200611</jetty.version>
     <valintalaskenta.version>5.15-SNAPSHOT</valintalaskenta.version>
     <valintaperusteet-api.version>5.15-SNAPSHOT</valintaperusteet-api.version>
 </properties>
 
     <dependencyManagement>
     <dependencies>
+      <dependency>
+        <groupId>fi.vm.sade.sijoittelu</groupId>
+        <artifactId>sijoittelu-algoritmi-domain</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>fi.vm.sade.sijoittelu</groupId>
+        <artifactId>sijoittelu-tulos-api</artifactId>
+        <version>${project.version}</version>
+      </dependency>
       <dependency>
         <groupId>org.json4s</groupId>
         <artifactId>json4s-jackson_2.11</artifactId>
