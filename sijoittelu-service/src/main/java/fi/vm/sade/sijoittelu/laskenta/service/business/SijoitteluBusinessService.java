@@ -219,6 +219,7 @@ public class SijoitteluBusinessService {
         Consumer<String> handleError = (msg) -> {
             LOG.error(msg);
             stopWatch.stop();
+            LOG.info(stopWatch.toString());
             LOG.info(stopWatch.prettyPrint());
             throw new RuntimeException(msg);
         };

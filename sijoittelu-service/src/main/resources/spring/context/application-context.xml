@@ -186,6 +186,8 @@
         <constructor-arg type="java.lang.String" value="${valintalaskenta-laskenta-service.mongodb.dbname}" />
         </bean>
 
+        <bean id="laskentaAuditLog" class="fi.vm.sade.valintalaskenta.tulos.logging.LaskentaAuditLogImpl"/>
+
         <bean id="modelMapper" class="fi.vm.sade.valintalaskenta.tulos.mapping.ValintalaskentaModelMapper"/>
 
         <bean id="sijoitteluModelMapper" class="fi.vm.sade.sijoittelu.laskenta.mapping.SijoitteluModelMapper"/>
