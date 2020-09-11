@@ -1,5 +1,6 @@
 package fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.presijoitteluprocessor;
 
+import static fi.vm.sade.sijoittelu.domain.HakemuksenTila.HYLATTY;
 import static fi.vm.sade.sijoittelu.domain.HakemuksenTila.PERUUNTUNUT;
 
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.HakemusWrapper;
@@ -14,7 +15,10 @@ import java.util.function.Consumer;
 public class PreSijoitteluProcessorPidaPeruuntuneinaSivssnovHakemuksetRajatunVarasijataytonJonoissa implements PreSijoitteluProcessor {
     private static final Consumer<HakemusWrapper> lukitseEdellinenPeruuntunutTila = hakemusWrapper -> {
         Hakemus hakemus = hakemusWrapper.getHakemus();
-        if (PERUUNTUNUT.equals(hakemus.getEdellinenTila()) && !hakemusWrapper.getHyvaksyPeruuntunut()) {
+        if (PERUUNTUNUT.equals(hakemus.getEdellinenTila())
+                && !hakemusWrapper.getHyvaksyPeruuntunut()
+                && !HYLATTY.equals(hakemus.getTila())
+        ) {
             hakemus.setTila(HakemuksenTila.PERUUNTUNUT);
             hakemusWrapper.setTilaVoidaanVaihtaa(false);
         }

@@ -100,6 +100,22 @@ public class RajattuVarasijatayttoTest {
 
         assertHakemustenTilat(PERUUNTUNUT, PERUUNTUNUT, HYVAKSYTTY, PERUUNTUNUT);
     }
+    @Test
+    public void hylattyaHakemustaEiPeruta() {
+        jono.setAloituspaikat(2);
+        jono.setEiVarasijatayttoa(true);
+
+        sijoittele(kkHakuVarasijasaannotVoimassa, hakukohdeJossaVarasijojaRajoitetaan, toinenHakukohdeJohonHakemus1Hyvaksytaan);
+
+        assertHakemustenTilat(PERUUNTUNUT, HYVAKSYTTY, HYVAKSYTTY, PERUUNTUNUT);
+
+        korjaaTilaJaEdellinenTilaSijoittelunJalkeen();
+        TilojenMuokkaus.asetaTilaksiHylatty(hakemus1, TilanKuvaukset.hyvaksyttyTayttojonoSaannolla("Käsin hylätty hakemus!"));
+
+        sijoittele(kkHakuVarasijasaannotVoimassa, hakukohdeJossaVarasijojaRajoitetaan, toinenHakukohdeJohonHakemus1Hyvaksytaan, toinenHakukohdeJohonHakemus2Hyvaksytaan);
+
+        assertHakemustenTilat(HYLATTY, PERUUNTUNUT, HYVAKSYTTY, PERUUNTUNUT);
+    }
 
     @Test
     public void toisellaAsteellaEiPeruunnutetaEikaHyvaksytaVarasijoilleJaaneitaHakijoitaKunEiVarasijatayttoa() {
