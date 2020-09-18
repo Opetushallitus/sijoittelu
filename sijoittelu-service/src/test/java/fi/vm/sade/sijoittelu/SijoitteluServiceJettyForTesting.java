@@ -100,6 +100,9 @@ public class SijoitteluServiceJettyForTesting {
         System.setProperty("valintarekisteri.db.url", "jdbc:postgresql://localhost:37242/valintarekisteri");
         System.setProperty("valintarekisteri.tarjonta-service.url", "https://itest-virkailija.oph.ware.fi/tarjonta-service");
         System.setProperty("valintarekisteri.parseleniently.tarjonta", "true");
+        System.setProperty("valintarekisteri.kohdejoukot.korkeakoulu", "haunkohdejoukko_12");
+        System.setProperty("valintarekisteri.kohdejoukot.toinen-aste", "haunkohdejoukko_11,haunkohdejoukko_17,haunkohdejoukko_20,haunkohdejoukko_23,haunkohdejoukko_24");
+        System.setProperty("valintarekisteri.kohdejoukon-tarkenteet.amkope", "haunkohdejoukontarkenne_2,haunkohdejoukontarkenne_4,haunkohdejoukontarkenne_5,haunkohdejoukontarkenne_6");
         System.setProperty("valintarekisteri.koodisto-service.url", "https://itest-virkailija.oph.ware.fi/koodisto-service/");
 
         System.setProperty("valintalaskentakoostepalvelu.valinta-tulos-service.rest.url", "http://localhost:8097/valinta-tulos-service");

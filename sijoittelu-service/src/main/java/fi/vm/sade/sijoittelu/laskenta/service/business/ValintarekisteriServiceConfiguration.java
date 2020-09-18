@@ -16,6 +16,9 @@ public class ValintarekisteriServiceConfiguration {
                                                 @Value("${valintarekisteri.tarjonta-service.url}") String tarjontaUrl,
                                                 @Value("${valintarekisteri.organisaatio-service.url") String organisaatioUrl,
                                                 @Value("${valintarekisteri.parseleniently.tarjonta}") String tarjontaParseLeniently,
+                                                @Value("${valintarekisteri.kohdejoukot.korkeakoulu}") String kohdejoukotKorkeakoulu,
+                                                @Value("${valintarekisteri.kohdejoukot.toinen-aste}") String kohdejoukotToinenAste,
+                                                @Value("${valintarekisteri.kohdejoukon-tarkenteet.amkope}") String kohdejoukonTarkenteetAmkOpe,
                                                 @Value("${valintarekisteri.koodisto-service.url}") String koodistoUrl,
                                                 @Value("${valintarekisteri.cas.username}") String casUsername,
                                                 @Value("${valintarekisteri.cas.password}") String casPassword,
@@ -29,6 +32,9 @@ public class ValintarekisteriServiceConfiguration {
         this.properties.setProperty("tarjonta-service.url", tarjontaUrl);
         this.properties.setProperty("organisaatio-service.url", organisaatioUrl);
         this.properties.setProperty("valinta-tulos-service.parseleniently.tarjonta", tarjontaParseLeniently);
+        this.properties.setProperty("valinta-tulos-service.kohdejoukot.korkeakoulu", kohdejoukotKorkeakoulu);
+        this.properties.setProperty("valinta-tulos-service.kohdejoukot.toinen-aste", kohdejoukotToinenAste);
+        this.properties.setProperty("valinta-tulos-service.kohdejoukon-tarkenteet.amkope", kohdejoukonTarkenteetAmkOpe);
         this.properties.setProperty("koodisto-service.rest.url", koodistoUrl);
         this.properties.setProperty("valinta-tulos-service.cas.username", casUsername);
         this.properties.setProperty("valinta-tulos-service.cas.password", casPassword);

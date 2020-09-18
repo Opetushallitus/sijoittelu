@@ -73,3 +73,6 @@ valintarekisteri.cas.password={{omatsivut_haku_app_password}}
 valintarekisteri.blaze.response-header-timeout={{ valintatulosservice_blaze_response_header_timeout | default('10') }}
 valintarekisteri.blaze.idle-timeout={{ valintatulosservice_blaze_idle_timeout | default('60') }}
 valintarekisteri.blaze.request-timeout={{ valintatulosservice_blaze_request_timeout | default('3600') }}
+valintarekisteri.kohdejoukot.korkeakoulu={{valintatulosservice_kohdejoukot_korkeakoulu | default('haunkohdejoukko_12')}}
+valintarekisteri.kohdejoukot.toinen-aste={{valintatulosservice_kohdejoukot_toinenaste | default('haunkohdejoukko_11,haunkohdejoukko_17,haunkohdejoukko_20,haunkohdejoukko_23,haunkohdejoukko_24')}}
+valintarekisteri.kohdejoukon-tarkenteet.amkope={{valintatulosservice_kohdejoukontarkenteet_amkope | default('haunkohdejoukontarkenne_2,haunkohdejoukontarkenne_4,haunkohdejoukontarkenne_5,haunkohdejoukontarkenne_6')}}
