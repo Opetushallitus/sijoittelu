@@ -2,7 +2,6 @@ package fi.vm.sade.sijoittelu.laskenta.service.it.impl;
 
 import com.google.gson.GsonBuilder;
 import fi.vm.sade.sijoittelu.laskenta.external.resource.HakuV1Resource;
-import fi.vm.sade.sijoittelu.laskenta.external.resource.HakukohdeV1Resource;
 import fi.vm.sade.sijoittelu.laskenta.external.resource.OhjausparametriResource;
 import fi.vm.sade.sijoittelu.laskenta.external.resource.dto.*;
 import fi.vm.sade.sijoittelu.laskenta.service.it.TarjontaIntegrationService;
@@ -20,9 +19,6 @@ public class TarjontaIntegrationServiceImpl implements TarjontaIntegrationServic
 
     @Autowired
     HakuV1Resource hakuV1Resource;
-
-    @Autowired
-    HakukohdeV1Resource hakukohdeV1Resource;
 
     @Autowired
     OhjausparametriResource ohjausparametriResource;
