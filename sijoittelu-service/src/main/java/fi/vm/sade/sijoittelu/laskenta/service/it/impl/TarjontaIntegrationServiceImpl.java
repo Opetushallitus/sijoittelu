@@ -1,41 +1,42 @@
 package fi.vm.sade.sijoittelu.laskenta.service.it.impl;
 
+import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import fi.vm.sade.sijoittelu.laskenta.external.resource.HakuV1Resource;
 import fi.vm.sade.sijoittelu.laskenta.external.resource.OhjausparametriResource;
 import fi.vm.sade.sijoittelu.laskenta.external.resource.dto.*;
+import fi.vm.sade.sijoittelu.laskenta.service.it.Haku;
 import fi.vm.sade.sijoittelu.laskenta.service.it.TarjontaIntegrationService;
-import fi.vm.sade.sijoittelu.laskenta.util.HakuUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
-
 @Service
 public class TarjontaIntegrationServiceImpl implements TarjontaIntegrationService{
-    private static final Logger LOG = LoggerFactory.getLogger(TarjontaIntegrationServiceImpl.class);
+    private HakuV1Resource hakuV1Resource;
+    private OhjausparametriResource ohjausparametriResource;
+    private Gson gson;
 
     @Autowired
-    HakuV1Resource hakuV1Resource;
-
-    @Autowired
-    OhjausparametriResource ohjausparametriResource;
-
-    @Override
-    public HakuDTO getHakuByHakuOid(String hakuOid) {
-        try {
-            return hakuV1Resource.findByOid(hakuOid).getResult();
-        } catch (Exception e) {
-            final String message = "Hakua " + hakuOid + " ei löytynyt";
-            LOG.error(message, e);
-            throw new RuntimeException(message);
-        }
+    public TarjontaIntegrationServiceImpl(HakuV1Resource hakuV1Resource, OhjausparametriResource ohjausparametriResource) {
+        this.hakuV1Resource = hakuV1Resource;
+        this.ohjausparametriResource = ohjausparametriResource;
+        this.gson = new GsonBuilder().create();
     }
 
     @Override
-    public ParametriDTO getHaunParametrit(String hakuOid) {
-        return new GsonBuilder().create().fromJson(ohjausparametriResource.haePaivamaara(hakuOid), ParametriDTO.class);
+    public Haku getHaku(String hakuOid) {
+        HakuDTO tarjontaHaku;
+        ParametriDTO ohjausparametrit;
+        try {
+            tarjontaHaku = hakuV1Resource.findByOid(hakuOid).getResult();
+        } catch (Exception e) {
+            throw new RuntimeException(String.format("Haun %s haku epäonnistui", hakuOid));
+        }
+        try {
+            ohjausparametrit = this.gson.fromJson(ohjausparametriResource.haePaivamaara(hakuOid), ParametriDTO.class);
+        } catch (Exception e) {
+            throw new RuntimeException(String.format("Haun %s ohjausparametrien haku epäonnistui", hakuOid));
+        }
+        return new Haku(tarjontaHaku, ohjausparametrit);
     }
 }

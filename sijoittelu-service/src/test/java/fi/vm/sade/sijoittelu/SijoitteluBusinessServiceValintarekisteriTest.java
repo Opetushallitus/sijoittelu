@@ -34,6 +34,7 @@ import fi.vm.sade.sijoittelu.laskenta.external.resource.dto.ParametriDTO;
 import fi.vm.sade.sijoittelu.laskenta.service.business.SijoitteluBusinessService;
 import fi.vm.sade.sijoittelu.laskenta.service.business.SijoitteluajoResourcesLoader;
 import fi.vm.sade.sijoittelu.laskenta.service.business.ValintarekisteriService;
+import fi.vm.sade.sijoittelu.laskenta.service.it.Haku;
 import fi.vm.sade.sijoittelu.laskenta.service.it.TarjontaIntegrationService;
 import fi.vm.sade.sijoittelu.tulos.service.impl.converters.SijoitteluTulosConverter;
 import fi.vm.sade.sijoittelu.tulos.service.impl.converters.SijoitteluTulosConverterImpl;
@@ -50,6 +51,8 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.mockito.ArgumentCaptor;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -91,8 +94,16 @@ public class SijoitteluBusinessServiceValintarekisteriTest {
             new SijoitteluConfiguration(),
             new SijoitteluajoResourcesLoader(tarjontaIntegrationService, valintarekisteriService));
 
-        when(tarjontaIntegrationService.getHaunParametrit(hakuOid)).thenReturn(haunParametrit());
-        when(tarjontaIntegrationService.getHakuByHakuOid(hakuOid)).thenReturn(tarjontaHaku());
+        Instant now = Instant.now();
+        when(tarjontaIntegrationService.getHaku(hakuOid)).thenReturn(new Haku(
+                "haunkohdejoukko_12#1",
+                null,
+                true,
+                now,
+                now.minus(Duration.ofDays(1)),
+                now.plus(Duration.ofDays(1)),
+                now.plus(Duration.ofDays(1))
+        ));
     }
 
     private void setUpMocks1() {
@@ -542,21 +553,6 @@ public class SijoitteluBusinessServiceValintarekisteriTest {
         return item;
     }
 
-    private fi.vm.sade.sijoittelu.laskenta.external.resource.dto.HakuDTO tarjontaHaku() {
-        fi.vm.sade.sijoittelu.laskenta.external.resource.dto.HakuDTO haku = new fi.vm.sade.sijoittelu.laskenta.external.resource.dto.HakuDTO();
-        haku.setKohdejoukkoUri("haunkohdejoukko_12#1");
-        return haku;
-    }
-
-    private ParametriDTO haunParametrit() {
-        ParametriDTO parametrit = new ParametriDTO();
-        parametrit.setPH_HKP(new ParametriArvoDTO(System.currentTimeMillis() + 2000000));
-        parametrit.setPH_VTSSV(new ParametriArvoDTO(System.currentTimeMillis() + 1000000));
-        parametrit.setPH_VSTP(new ParametriArvoDTO(System.currentTimeMillis() + 1000000));
-        parametrit.setPH_VSSAV(new ParametriArvoDTO(System.currentTimeMillis() - 1000000));
-        return parametrit;
-    }
-
     private HakuDTO hakuDTO1(boolean lisaaValintarekisterinHakukohteet) {
         return hakuDTO(Collections.singletonList(jonoDTO(uusiHakukohdeOid + ".111111")), lisaaValintarekisterinHakukohteet);
     }
@@ -752,10 +748,16 @@ public class SijoitteluBusinessServiceValintarekisteriTest {
 
         HakuDTO hakuDTO = hakuDTO(jonot, true);
         hakuDTO.setHakuOid(hakuOid);
-        fi.vm.sade.sijoittelu.laskenta.external.resource.dto.HakuDTO tarjontaHaku = tarjontaHaku();
-        tarjontaHaku.setUsePriority(false);
-        when(tarjontaIntegrationService.getHakuByHakuOid(hakuOid)).thenReturn(tarjontaHaku);
-        when(tarjontaIntegrationService.getHaunParametrit(hakuOid)).thenReturn(haunParametrit());
+        Instant now = Instant.now();
+        when(tarjontaIntegrationService.getHaku(hakuOid)).thenReturn(new Haku(
+                "haunkohdejoukko_12#1",
+                null,
+                false,
+                now,
+                now.minus(Duration.ofDays(1)),
+                now.plus(Duration.ofDays(1)),
+                now.plus(Duration.ofDays(1))
+        ));
         return hakuDTO;
     }
 
@@ -784,11 +786,17 @@ public class SijoitteluBusinessServiceValintarekisteriTest {
 
         hakuDto.setHakukohteet(Arrays.asList(kohde1, kohde2));
         hakuDto.setHakuOid(hakuOid);
-        fi.vm.sade.sijoittelu.laskenta.external.resource.dto.HakuDTO tarjontaHaku = tarjontaHaku();
 
-        tarjontaHaku.setUsePriority(false);
-        when(tarjontaIntegrationService.getHakuByHakuOid(hakuOid)).thenReturn(tarjontaHaku);
-        when(tarjontaIntegrationService.getHaunParametrit(hakuOid)).thenReturn(haunParametrit());
+        Instant now = Instant.now();
+        when(tarjontaIntegrationService.getHaku(hakuOid)).thenReturn(new Haku(
+                "haunkohdejoukko_12#1",
+                null,
+                false,
+                now,
+                now.minus(Duration.ofDays(1)),
+                now.plus(Duration.ofDays(1)),
+                now.plus(Duration.ofDays(1))
+        ));
 
         assertEquals(2, hakuDto.getHakukohteet().size());
 
