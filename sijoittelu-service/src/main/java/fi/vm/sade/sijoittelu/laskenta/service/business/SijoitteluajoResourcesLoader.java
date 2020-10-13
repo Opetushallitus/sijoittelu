@@ -60,9 +60,9 @@ public class SijoitteluajoResourcesLoader {
                     "varasijasäännöt voimassa: {}, sijoiteltu ilman varasijasääntöjä niiden ollessa voimassa: {}, käytettävä lisäpaikkatapa: {}",
                 hakuOid,
                 sijoitteluAjo.isKKHaku(),
-                sijoitteluAjo.getKaikkiKohteetSijoittelussa(),
-                sijoitteluAjo.getHakuKierrosPaattyy(),
-                sijoitteluAjo.getVarasijaSaannotAstuvatVoimaan(),
+                sijoittelunParametrit.kaikkiKohteetSijoittelussa,
+                sijoittelunParametrit.hakukierrosPaattyy,
+                sijoittelunParametrit.varasijasaannotAstuvatVoimaan,
                 sijoitteluAjo.varasijaSaannotVoimassa(),
                 sijoitteluAjo.onkoKaikkiJonotSijoiteltuIlmanVarasijasaantojaNiidenOllessaVoimassa(),
                 sijoitteluAjo.getLisapaikkaTapa());
