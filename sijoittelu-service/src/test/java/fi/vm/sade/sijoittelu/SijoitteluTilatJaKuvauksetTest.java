@@ -78,6 +78,7 @@ public class SijoitteluTilatJaKuvauksetTest {
 
         Instant now = Instant.now();
         when(tarjontaIntegrationService.getHaku(hakuOid)).thenReturn(new Haku(
+                "hakuOid",
                 "haunkohdejoukko_12#1",
                 null,
                 true,
