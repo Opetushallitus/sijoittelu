@@ -5,10 +5,20 @@ import fi.vm.sade.sijoittelu.laskenta.external.resource.dto.ParametriArvoDTO;
 import fi.vm.sade.sijoittelu.laskenta.external.resource.dto.ParametriDTO;
 
 import java.time.Instant;
+import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Function;
 
 public class Haku {
+    private static final String KK_HAUN_KOHDEJOUKKO = "haunkohdejoukko_12";
+    private static final Set<String> AMKOPE_HAUN_KOHDEJOUKON_TARKENTEET = new HashSet<>();
+    static {
+        AMKOPE_HAUN_KOHDEJOUKON_TARKENTEET.add("haunkohdejoukontarkenne_2");
+        AMKOPE_HAUN_KOHDEJOUKON_TARKENTEET.add("haunkohdejoukontarkenne_4");
+        AMKOPE_HAUN_KOHDEJOUKON_TARKENTEET.add("haunkohdejoukontarkenne_5");
+    };
+
     public final String oid;
     public final String haunkohdejoukkoUri;
     public final String haunkohdejoukontarkenneUri;
@@ -32,7 +42,7 @@ public class Haku {
         if (hakukierrosPaattyy == null) {
             throw new IllegalStateException(String.format("Haun %s ohjausparametria PH_HKP (hakukierros päättyy) ei ole asetettu", oid));
         }
-        if (haunkohdejoukkoUri.startsWith("haunkohdejoukko_12#")) {
+        if (haunkohdejoukkoUri.startsWith(KK_HAUN_KOHDEJOUKKO + "#")) {
             if (valintatuloksetSiirrettavaSijoitteluunViimeistaan == null) {
                 throw new IllegalStateException(String.format("Haku %s on korkeakouluhaku ja ohjausparametria PH_VTSSV (kaikki kohteet sijoittelussa) ei ole asetettu", oid));
             }
@@ -78,5 +88,13 @@ public class Haku {
                 getDate(ohjausparametrit, ParametriDTO::getPH_VSTP),
                 getDate(ohjausparametrit, ParametriDTO::getPH_HKP)
         );
+    }
+
+    public boolean isKk() {
+        return this.haunkohdejoukkoUri.startsWith(KK_HAUN_KOHDEJOUKKO + "#");
+    }
+
+    public boolean isAmkOpe() {
+        return this.isKk() && this.haunkohdejoukontarkenneUri != null && AMKOPE_HAUN_KOHDEJOUKON_TARKENTEET.stream().anyMatch(s -> this.haunkohdejoukontarkenneUri.startsWith(s + "#"));
     }
 }
