@@ -14,8 +14,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import com.google.gson.GsonBuilder;
-import com.google.gson.reflect.TypeToken;
+
 import com.lordofthejars.nosqlunit.annotation.UsingDataSet;
 import com.lordofthejars.nosqlunit.core.LoadStrategyEnum;
 import com.lordofthejars.nosqlunit.mongodb.MongoDbRule;
@@ -30,17 +29,12 @@ import fi.vm.sade.sijoittelu.domain.Valintatapajono;
 import fi.vm.sade.sijoittelu.domain.Valintatapajono.JonosijaTieto;
 import fi.vm.sade.sijoittelu.domain.ValintatuloksenTila;
 import fi.vm.sade.sijoittelu.domain.Valintatulos;
-import fi.vm.sade.sijoittelu.laskenta.external.resource.HakuV1Resource;
-import fi.vm.sade.sijoittelu.laskenta.external.resource.OhjausparametriResource;
-import fi.vm.sade.sijoittelu.laskenta.external.resource.dto.ParametriDTO;
-import fi.vm.sade.sijoittelu.laskenta.external.resource.dto.ResultHakuDTO;
 import fi.vm.sade.sijoittelu.laskenta.service.business.SijoitteluBusinessService;
 import fi.vm.sade.sijoittelu.laskenta.service.business.SijoitteluajoResourcesLoader;
 import fi.vm.sade.sijoittelu.laskenta.service.business.ValintarekisteriService;
 import fi.vm.sade.sijoittelu.laskenta.service.business.ValintatulosWithVastaanotto;
 import fi.vm.sade.sijoittelu.laskenta.service.it.Haku;
 import fi.vm.sade.sijoittelu.laskenta.service.it.TarjontaIntegrationService;
-import fi.vm.sade.sijoittelu.laskenta.service.it.impl.TarjontaIntegrationServiceImpl;
 import fi.vm.sade.valintalaskenta.domain.dto.ValintatapajonoDTO;
 import fi.vm.sade.valintalaskenta.domain.dto.valintatieto.HakuDTO;
 import fi.vm.sade.valintalaskenta.tulos.service.impl.ValintatietoService;
@@ -57,7 +51,6 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -115,6 +108,7 @@ public class SijoitteluBusinessTest {
                 valintarekisteriService);
 
         when(tarjontaIntegrationService.getHaku(anyString())).thenReturn(new Haku(
+                "hakuOid",
                 "haunkohdejoukko_11#1",
                 null,
                 true,
@@ -223,6 +217,7 @@ public class SijoitteluBusinessTest {
     @UsingDataSet(locations = "peruuta_alemmat.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
     public void testAlempiaHakutoiveitaEiPeruunnutetaJosHakutoiveidenPriorisointiEiOleKaytossa() {
         when(tarjontaIntegrationService.getHaku(anyString())).thenReturn(new Haku(
+                "hakuOid",
                 "haunkohdejoukko_11#1",
                 null,
                 false,
@@ -499,6 +494,7 @@ public class SijoitteluBusinessTest {
     @UsingDataSet(locations = "peruuta_alemmat.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
     public void testPeruunnaHyvaksyttyaYlemmatHakutoiveetKunAMKOPEHaku() {
         when(tarjontaIntegrationService.getHaku(anyString())).thenReturn(new Haku(
+                "hakuOid",
                 "haunkohdejoukko_12#1",
                 "haunkohdejoukontarkenne_2#1",
                 true,
