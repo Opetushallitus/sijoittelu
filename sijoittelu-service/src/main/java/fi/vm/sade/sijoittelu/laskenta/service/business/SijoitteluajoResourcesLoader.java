@@ -30,17 +30,30 @@ public class SijoitteluajoResourcesLoader {
         this.valintarekisteriService = valintarekisteriService;
     }
 
-    Haku findParametersFromTarjontaAndPerformInitialValidation(String hakuOid, StopWatch stopWatch, String ajonKuvaus) {
+    public Haku findParametersFromTarjontaAndPerformInitialValidation(String hakuOid, StopWatch stopWatch, String ajonKuvaus) {
         LOG.info(String.format("%s alkaa. Luetaan parametrit tarjonnasta ja esivalidoidaan ne", ajonKuvaus));
         stopWatch.start("Luetaan parametrit tarjonnasta ja esivalidoidaan ne");
-        Haku sijoittelunParametrit = findParametersFromTarjontaAndPerformInitialValidation(hakuOid);
+        Haku sijoittelunParametrit = tarjontaIntegrationService.getHaku(hakuOid);
         stopWatch.stop();
         return sijoittelunParametrit;
     }
 
     public void asetaSijoittelunParametrit(String hakuOid, SijoitteluajoWrapper sijoitteluAjo, Haku sijoittelunParametrit) {
-        populateHakuAttributesFromTarjonta(sijoitteluAjo, sijoittelunParametrit);
-        setParametersFromTarjonta(sijoitteluAjo, sijoittelunParametrit);
+        sijoitteluAjo.setKKHaku(sijoittelunParametrit.isKk());
+        sijoitteluAjo.setHakutoiveidenPriorisointi(sijoittelunParametrit.jarjestetytHakutoiveet);
+        sijoitteluAjo.setAmkopeHaku(sijoittelunParametrit.isAmkOpe());
+        if (sijoittelunParametrit.hakukierrosPaattyy != null) {
+            sijoitteluAjo.setHakuKierrosPaattyy(LocalDateTime.ofInstant(sijoittelunParametrit.hakukierrosPaattyy, ZoneId.of("Europe/Helsinki")));
+        }
+        if (sijoittelunParametrit.valintatuloksetSiirrettavaSijoitteluunViimeistaan != null) {
+            sijoitteluAjo.setKaikkiKohteetSijoittelussa(LocalDateTime.ofInstant(sijoittelunParametrit.valintatuloksetSiirrettavaSijoitteluunViimeistaan, ZoneId.of("Europe/Helsinki")));
+        }
+        if (sijoittelunParametrit.varasijasaannotAstuvatVoimaan != null) {
+            sijoitteluAjo.setVarasijaSaannotAstuvatVoimaan(LocalDateTime.ofInstant(sijoittelunParametrit.varasijasaannotAstuvatVoimaan, ZoneId.of("Europe/Helsinki")));
+        }
+        if (sijoittelunParametrit.varasijatayttoPaattyy != null) {
+            sijoitteluAjo.setVarasijaTayttoPaattyy(LocalDateTime.ofInstant(sijoittelunParametrit.varasijatayttoPaattyy, ZoneId.of("Europe/Helsinki")));
+        }
         sijoitteluAjo.setLisapaikkaTapa(LisapaikkaTapa.TAPA1);
         LOG.info("Sijoittelun ohjausparametrit asetettu haulle {}. onko korkeakouluhaku: {}, " +
                         "kaikki kohteet sijoittelussa: {}, hakukierros päätty: {}, varasijasäännöt astuvat voimaan: {}, " +
@@ -55,10 +68,6 @@ public class SijoitteluajoResourcesLoader {
                 sijoitteluAjo.getLisapaikkaTapa());
     }
 
-    public Haku findParametersFromTarjontaAndPerformInitialValidation(String hakuOid) {
-        return tarjontaIntegrationService.getHaku(hakuOid);
-    }
-
     SijoitteluAjo readSijoitteluFromValintarekisteri(HakuDTO haku, String ajonKuvaus, StopWatch stopWatch) {
         LOG.info(String.format("%s : luetaan sijoittelu valintarekisteristä!", ajonKuvaus));
         stopWatch.start(String.format("%s : luetaan sijoittelu valintarekisteristä", ajonKuvaus));
@@ -67,27 +76,6 @@ public class SijoitteluajoResourcesLoader {
         return viimeisinSijoitteluajo;
     }
 
-    private static void populateHakuAttributesFromTarjonta(SijoitteluajoWrapper sijoitteluAjo, Haku haku) {
-        sijoitteluAjo.setKKHaku(haku.isKk());
-        sijoitteluAjo.setHakutoiveidenPriorisointi(haku.jarjestetytHakutoiveet);
-        sijoitteluAjo.setAmkopeHaku(haku.isAmkOpe());
-    }
-
-
-    private static void setParametersFromTarjonta(SijoitteluajoWrapper sijoitteluAjo, Haku haku) {
-        if (haku.hakukierrosPaattyy != null) {
-            sijoitteluAjo.setHakuKierrosPaattyy(LocalDateTime.ofInstant(haku.hakukierrosPaattyy, ZoneId.of("Europe/Helsinki")));
-        }
-        if (haku.valintatuloksetSiirrettavaSijoitteluunViimeistaan != null) {
-            sijoitteluAjo.setKaikkiKohteetSijoittelussa(LocalDateTime.ofInstant(haku.valintatuloksetSiirrettavaSijoitteluunViimeistaan, ZoneId.of("Europe/Helsinki")));
-        }
-        if (haku.varasijasaannotAstuvatVoimaan != null) {
-            sijoitteluAjo.setVarasijaSaannotAstuvatVoimaan(LocalDateTime.ofInstant(haku.varasijasaannotAstuvatVoimaan, ZoneId.of("Europe/Helsinki")));
-        }
-        if (haku.varasijatayttoPaattyy != null) {
-            sijoitteluAjo.setVarasijaTayttoPaattyy(LocalDateTime.ofInstant(haku.varasijatayttoPaattyy, ZoneId.of("Europe/Helsinki")));
-        }
-    }
 
     private SijoitteluAjo readSijoitteluajoFromValintarekisteri(String hakuOid) {
         try {

@@ -185,7 +185,7 @@ public class SijoitteluIntegrationTestToBeRunManually {
             stopWatch.start("Luodaan sijoitteluajoWrapper ja asetetaan parametrit");
             final SijoitteluajoWrapper sijoitteluajoWrapper = SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(new SijoitteluConfiguration(), sijoitteluAjo, uudetHakukohteet, Collections.emptyList(), Collections.emptyMap());
             sijoitteluajoWrapper.paivitaVastaanottojenVaikutusHakemustenTiloihin(Collections.emptyList(), Collections.emptyMap());
-            sijoitteluajoResourcesLoader.asetaSijoittelunParametrit(hakuOid, sijoitteluajoWrapper, sijoitteluajoResourcesLoader.findParametersFromTarjontaAndPerformInitialValidation(hakuOid));
+            sijoitteluajoResourcesLoader.asetaSijoittelunParametrit(hakuOid, sijoitteluajoWrapper, sijoitteluajoResourcesLoader.findParametersFromTarjontaAndPerformInitialValidation(hakuOid, new StopWatch(""), ""));
             stopWatch.stop();
 
             LOG.info("Suoritetaan " + nameOfThisFakeSijoitteluRun);
