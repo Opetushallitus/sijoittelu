@@ -5,7 +5,6 @@ import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.SijoitteluajoWr
 import fi.vm.sade.sijoittelu.domain.SijoitteluAjo;
 import fi.vm.sade.sijoittelu.laskenta.service.it.Haku;
 import fi.vm.sade.sijoittelu.laskenta.service.it.TarjontaIntegrationService;
-import fi.vm.sade.sijoittelu.laskenta.util.HakuUtil;
 import fi.vm.sade.valintalaskenta.domain.dto.valintatieto.HakuDTO;
 import fi.vm.sade.valintatulosservice.valintarekisteri.domain.NotFoundException;
 import org.slf4j.Logger;
@@ -16,20 +15,10 @@ import org.springframework.util.StopWatch;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
 
 @Service
 public class SijoitteluajoResourcesLoader {
     private static final Logger LOG = LoggerFactory.getLogger(SijoitteluajoResourcesLoader.class);
-
-    private static final String KK_KOHDEJOUKKO = "haunkohdejoukko_12";
-    private static final Set<String> amkopeKohdejoukonTarkenteet = new HashSet<>() {{
-        add("haunkohdejoukontarkenne_2");
-        add("haunkohdejoukontarkenne_4");
-        add("haunkohdejoukontarkenne_5");
-    }};
 
     private final TarjontaIntegrationService tarjontaIntegrationService;
     private final ValintarekisteriService valintarekisteriService;
@@ -79,12 +68,9 @@ public class SijoitteluajoResourcesLoader {
     }
 
     private static void populateHakuAttributesFromTarjonta(SijoitteluajoWrapper sijoitteluAjo, Haku haku) {
-        boolean isKKHaku = haku.haunkohdejoukkoUri.startsWith(KK_KOHDEJOUKKO + "#");
-        sijoitteluAjo.setKKHaku(isKKHaku);
+        sijoitteluAjo.setKKHaku(haku.isKk());
         sijoitteluAjo.setHakutoiveidenPriorisointi(haku.jarjestetytHakutoiveet);
-
-        Optional<String> kohdejoukonTarkenne = HakuUtil.gethaunKohdejoukonTarkenne(haku);
-        sijoitteluAjo.setAmkopeHaku(isKKHaku && kohdejoukonTarkenne.map(SijoitteluajoResourcesLoader::isAmmatillinenOpettajakoulutus).orElse(false));
+        sijoitteluAjo.setAmkopeHaku(haku.isAmkOpe());
     }
 
 
@@ -112,9 +98,5 @@ public class SijoitteluajoResourcesLoader {
             LOG.warn(iae.getMessage());
             return null;
         }
-    }
-
-    private static boolean isAmmatillinenOpettajakoulutus(String haunKohdeJoukonTarkenne) {
-        return amkopeKohdejoukonTarkenteet.contains(haunKohdeJoukonTarkenne);
     }
 }
