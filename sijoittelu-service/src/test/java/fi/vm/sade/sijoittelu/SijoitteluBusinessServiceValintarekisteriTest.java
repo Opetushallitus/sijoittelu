@@ -29,8 +29,6 @@ import fi.vm.sade.sijoittelu.domain.ValintatuloksenTila;
 import fi.vm.sade.sijoittelu.domain.Valintatulos;
 import fi.vm.sade.sijoittelu.domain.dto.VastaanottoDTO;
 import fi.vm.sade.sijoittelu.laskenta.external.resource.VirkailijaValintaTulosServiceResource;
-import fi.vm.sade.sijoittelu.laskenta.external.resource.dto.ParametriArvoDTO;
-import fi.vm.sade.sijoittelu.laskenta.external.resource.dto.ParametriDTO;
 import fi.vm.sade.sijoittelu.laskenta.service.business.SijoitteluBusinessService;
 import fi.vm.sade.sijoittelu.laskenta.service.business.SijoitteluajoResourcesLoader;
 import fi.vm.sade.sijoittelu.laskenta.service.business.ValintarekisteriService;
@@ -96,6 +94,7 @@ public class SijoitteluBusinessServiceValintarekisteriTest {
 
         Instant now = Instant.now();
         when(tarjontaIntegrationService.getHaku(hakuOid)).thenReturn(new Haku(
+                hakuOid,
                 "haunkohdejoukko_12#1",
                 null,
                 true,
@@ -750,6 +749,7 @@ public class SijoitteluBusinessServiceValintarekisteriTest {
         hakuDTO.setHakuOid(hakuOid);
         Instant now = Instant.now();
         when(tarjontaIntegrationService.getHaku(hakuOid)).thenReturn(new Haku(
+                hakuOid,
                 "haunkohdejoukko_12#1",
                 null,
                 false,
@@ -789,6 +789,7 @@ public class SijoitteluBusinessServiceValintarekisteriTest {
 
         Instant now = Instant.now();
         when(tarjontaIntegrationService.getHaku(hakuOid)).thenReturn(new Haku(
+                hakuOid,
                 "haunkohdejoukko_12#1",
                 null,
                 false,

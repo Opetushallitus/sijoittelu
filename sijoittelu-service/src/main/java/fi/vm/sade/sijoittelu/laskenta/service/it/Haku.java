@@ -9,6 +9,7 @@ import java.util.Optional;
 import java.util.function.Function;
 
 public class Haku {
+    public final String oid;
     public final String haunkohdejoukkoUri;
     public final String haunkohdejoukontarkenneUri;
     public final boolean jarjestetytHakutoiveet;
@@ -17,13 +18,38 @@ public class Haku {
     public final Instant varasijatayttoPaattyy;
     public final Instant hakukierrosPaattyy;
 
-    public Haku(String haunkohdejoukkoUri,
+    public Haku(String oid,
+                String haunkohdejoukkoUri,
                 String haunkohdejoukontarkenneUri,
                 boolean jarjestetytHakutoiveet,
                 Instant valintatuloksetSiirrettavaSijoitteluunViimeistaan,
                 Instant varasijasaannotAstuvatVoimaan,
                 Instant varasijatayttoPaattyy,
                 Instant hakukierrosPaattyy) {
+        if (haunkohdejoukkoUri == null) {
+            throw new IllegalStateException(String.format("Haulla %s ei ole haun kohdejoukkoa", oid));
+        }
+        if (hakukierrosPaattyy == null) {
+            throw new IllegalStateException(String.format("Haun %s ohjausparametria PH_HKP (hakukierros päättyy) ei ole asetettu", oid));
+        }
+        if (haunkohdejoukkoUri.startsWith("haunkohdejoukko_12#")) {
+            if (valintatuloksetSiirrettavaSijoitteluunViimeistaan == null) {
+                throw new IllegalStateException(String.format("Haku %s on korkeakouluhaku ja ohjausparametria PH_VTSSV (kaikki kohteet sijoittelussa) ei ole asetettu", oid));
+            }
+            if (varasijasaannotAstuvatVoimaan == null) {
+                throw new IllegalStateException(String.format("Haku %s on korkeakouluhaku ja ohjausparametria PH_VSSAV (varasijasäännöt astuvat voimaan) ei ole asetettu", oid));
+            }
+        }
+        if (hakukierrosPaattyy.isBefore(Instant.now())) {
+            throw new IllegalStateException(String.format("Haun %s hakukierros on päättynyt %s", oid, hakukierrosPaattyy));
+        }
+        if (valintatuloksetSiirrettavaSijoitteluunViimeistaan != null && hakukierrosPaattyy.isBefore(valintatuloksetSiirrettavaSijoitteluunViimeistaan)) {
+            throw new IllegalStateException(String.format("Haun %s hakukierros on asetettu päättymään %s ennen kuin kaikkien kohteiden tulee olla sijoittelussa %s", oid, hakukierrosPaattyy, valintatuloksetSiirrettavaSijoitteluunViimeistaan));
+        }
+        if (varasijasaannotAstuvatVoimaan != null && hakukierrosPaattyy.isBefore(varasijasaannotAstuvatVoimaan)) {
+            throw new IllegalStateException(String.format("Haun %s hakukierros on asetettu päättymään %s ennen kuin varasija säännöt astuvat voimaan %s", oid, hakukierrosPaattyy, varasijasaannotAstuvatVoimaan));
+        }
+        this.oid = oid;
         this.haunkohdejoukkoUri = haunkohdejoukkoUri;
         this.haunkohdejoukontarkenneUri = haunkohdejoukontarkenneUri;
         this.jarjestetytHakutoiveet = jarjestetytHakutoiveet;
@@ -33,7 +59,7 @@ public class Haku {
         this.hakukierrosPaattyy = hakukierrosPaattyy;
     }
 
-    private Instant getDate(ParametriDTO ohjausparametrit, Function<ParametriDTO, ParametriArvoDTO> f) {
+    private static Instant getDate(ParametriDTO ohjausparametrit, Function<ParametriDTO, ParametriArvoDTO> f) {
         return Optional.ofNullable(ohjausparametrit)
                 .flatMap(o -> Optional.ofNullable(f.apply(o)))
                 .flatMap(p -> Optional.ofNullable(p.getDate()))
@@ -42,16 +68,15 @@ public class Haku {
     }
 
     public Haku(HakuDTO tarjontaHaku, ParametriDTO ohjausparametrit) {
-        this.haunkohdejoukkoUri = tarjontaHaku.getKohdejoukkoUri();
-        this.haunkohdejoukontarkenneUri = tarjontaHaku.getKohdejoukonTarkenne();
-        this.jarjestetytHakutoiveet = tarjontaHaku.isUsePriority();
-        this.valintatuloksetSiirrettavaSijoitteluunViimeistaan =
-                this.getDate(ohjausparametrit, ParametriDTO::getPH_VTSSV);
-        this.varasijasaannotAstuvatVoimaan =
-                this.getDate(ohjausparametrit, ParametriDTO::getPH_VSSAV);
-        this.varasijatayttoPaattyy =
-                this.getDate(ohjausparametrit, ParametriDTO::getPH_VSTP);
-        this.hakukierrosPaattyy =
-                this.getDate(ohjausparametrit, ParametriDTO::getPH_HKP);
+        this(
+                tarjontaHaku.getOid(),
+                tarjontaHaku.getKohdejoukkoUri(),
+                tarjontaHaku.getKohdejoukonTarkenne(),
+                tarjontaHaku.isUsePriority(),
+                getDate(ohjausparametrit, ParametriDTO::getPH_VTSSV),
+                getDate(ohjausparametrit, ParametriDTO::getPH_VSSAV),
+                getDate(ohjausparametrit, ParametriDTO::getPH_VSTP),
+                getDate(ohjausparametrit, ParametriDTO::getPH_HKP)
+        );
     }
 }
