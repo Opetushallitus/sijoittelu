@@ -3,7 +3,6 @@ package fi.vm.sade.sijoittelu.laskenta.service.business;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.hakukohteet.LisapaikkaTapa;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.SijoitteluajoWrapper;
 import fi.vm.sade.sijoittelu.domain.SijoitteluAjo;
-import fi.vm.sade.sijoittelu.laskenta.external.resource.dto.ParametriDTO;
 import fi.vm.sade.sijoittelu.laskenta.service.it.Haku;
 import fi.vm.sade.sijoittelu.laskenta.service.it.TarjontaIntegrationService;
 import fi.vm.sade.sijoittelu.laskenta.util.HakuUtil;
@@ -15,10 +14,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StopWatch;
 
-import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
@@ -53,13 +50,12 @@ public class SijoitteluajoResourcesLoader {
     }
 
     public void asetaSijoittelunParametrit(String hakuOid, SijoitteluajoWrapper sijoitteluAjo, Haku sijoittelunParametrit) {
-        try {
-            populateHakuAttributesFromTarjonta(sijoitteluAjo, sijoittelunParametrit);
-            setParametersFromTarjonta(sijoitteluAjo, sijoittelunParametrit);
-            sijoitteluAjo.setLisapaikkaTapa(LisapaikkaTapa.TAPA1);
-            LOG.info("Sijoittelun ohjausparametrit asetettu haulle {}. onko korkeakouluhaku: {}, " +
-                    "kaikki kohteet sijoittelussa: {}, hakukierros päätty: {}, varasijasäännöt astuvat voimaan: {}, " +
-                    "varasijasäännöt voimassa: {}, sijoiteltu ilman varasijasääntöjä niiden ollessa voimassa: {}, käytettävä lisäpaikkatapa: {}",
+        populateHakuAttributesFromTarjonta(sijoitteluAjo, sijoittelunParametrit);
+        setParametersFromTarjonta(sijoitteluAjo, sijoittelunParametrit);
+        sijoitteluAjo.setLisapaikkaTapa(LisapaikkaTapa.TAPA1);
+        LOG.info("Sijoittelun ohjausparametrit asetettu haulle {}. onko korkeakouluhaku: {}, " +
+                        "kaikki kohteet sijoittelussa: {}, hakukierros päätty: {}, varasijasäännöt astuvat voimaan: {}, " +
+                        "varasijasäännöt voimassa: {}, sijoiteltu ilman varasijasääntöjä niiden ollessa voimassa: {}, käytettävä lisäpaikkatapa: {}",
                 hakuOid,
                 sijoitteluAjo.isKKHaku(),
                 sijoittelunParametrit.valintatuloksetSiirrettavaSijoitteluunViimeistaan,
@@ -68,23 +64,10 @@ public class SijoitteluajoResourcesLoader {
                 sijoitteluAjo.varasijaSaannotVoimassa(),
                 sijoitteluAjo.onkoKaikkiJonotSijoiteltuIlmanVarasijasaantojaNiidenOllessaVoimassa(),
                 sijoitteluAjo.getLisapaikkaTapa());
-        } catch (IllegalStateException e) {
-            throw new RuntimeException(String.format("Sijoittelua haulle %s ei voida suorittaa", hakuOid), e);
-        }
     }
 
     public Haku findParametersFromTarjontaAndPerformInitialValidation(String hakuOid) {
-        Haku haku = tarjontaIntegrationService.getHaku(hakuOid);
-        if (haku.hakukierrosPaattyy == null) {
-            throw new IllegalStateException(String.format("Haun %s ohjausparametria PH_HKP (hakukierros päättyy) ei ole asetettu", hakuOid));
-        }
-        if (haku.hakukierrosPaattyy.isBefore(Instant.now())) {
-            throw new IllegalStateException(String.format("Haun %s hakukierros on päättynyt %s", hakuOid, haku.hakukierrosPaattyy));
-        }
-        if (haku.valintatuloksetSiirrettavaSijoitteluunViimeistaan != null && haku.hakukierrosPaattyy.isBefore(haku.valintatuloksetSiirrettavaSijoitteluunViimeistaan)) {
-            throw new IllegalStateException(String.format("Haun %s hakukierros on asetettu päättymään %s ennen kuin kaikkien kohteiden tulee olla sijoittelussa %s", hakuOid, haku.hakukierrosPaattyy, haku.valintatuloksetSiirrettavaSijoitteluunViimeistaan));
-        }
-        return haku;
+        return tarjontaIntegrationService.getHaku(hakuOid);
     }
 
     SijoitteluAjo readSijoitteluFromValintarekisteri(HakuDTO haku, String ajonKuvaus, StopWatch stopWatch) {
@@ -96,9 +79,7 @@ public class SijoitteluajoResourcesLoader {
     }
 
     private static void populateHakuAttributesFromTarjonta(SijoitteluajoWrapper sijoitteluAjo, Haku haku) {
-        String kohdejoukko = HakuUtil.getHaunKohdejoukko(haku).orElseThrow(() ->
-                new IllegalStateException("tarjonnasta ei saatu haun kohdejoukkoa"));
-        boolean isKKHaku = kohdejoukko.equals(KK_KOHDEJOUKKO);
+        boolean isKKHaku = haku.haunkohdejoukkoUri.startsWith(KK_KOHDEJOUKKO + "#");
         sijoitteluAjo.setKKHaku(isKKHaku);
         sijoitteluAjo.setHakutoiveidenPriorisointi(haku.jarjestetytHakutoiveet);
 
@@ -108,18 +89,6 @@ public class SijoitteluajoResourcesLoader {
 
 
     private static void setParametersFromTarjonta(SijoitteluajoWrapper sijoitteluAjo, Haku haku) {
-        if (sijoitteluAjo.isKKHaku()) {
-            if (haku.valintatuloksetSiirrettavaSijoitteluunViimeistaan == null) {
-                throw new IllegalStateException("kyseessä korkeakouluhaku ja ohjausparametria PH_VTSSV (kaikki kohteet sijoittelussa) ei ole asetettu");
-            }
-            if (haku.varasijasaannotAstuvatVoimaan == null) {
-                throw new IllegalStateException("kyseessä korkeakouluhaku ja ohjausparametria PH_VSSAV (varasijasäännöt astuvat voimaan) ei ole asetettu");
-            }
-            if (haku.hakukierrosPaattyy.isBefore(haku.varasijasaannotAstuvatVoimaan)) {
-                throw new IllegalStateException("hakukierros on asetettu päättymään ennen kuin varasija säännöt astuvat voimaan");
-            }
-        }
-
         if (haku.hakukierrosPaattyy != null) {
             sijoitteluAjo.setHakuKierrosPaattyy(LocalDateTime.ofInstant(haku.hakukierrosPaattyy, ZoneId.of("Europe/Helsinki")));
         }
