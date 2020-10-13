@@ -103,14 +103,6 @@ public class SijoitteluajoWrapper {
         this.muuttuneetValintatulokset = muuttuneetValintatulokset;
     }
 
-    public LocalDateTime getToday() {
-        return today;
-    }
-
-    public LocalDateTime getKaikkiKohteetSijoittelussa() {
-        return kaikkiKohteetSijoittelussa;
-    }
-
     public void setKaikkiKohteetSijoittelussa(LocalDateTime kaikkiKohteetSijoittelussa) {
         this.kaikkiKohteetSijoittelussa = kaikkiKohteetSijoittelussa;
     }
@@ -143,24 +135,12 @@ public class SijoitteluajoWrapper {
         this.isAmkopeHaku = isAmkopeHaku;
     }
 
-    public LocalDateTime getVarasijaSaannotAstuvatVoimaan() {
-        return varasijaSaannotAstuvatVoimaan;
-    }
-
     public void setVarasijaSaannotAstuvatVoimaan(LocalDateTime varasijaSaannotAstuvatVoimaan) {
         this.varasijaSaannotAstuvatVoimaan = varasijaSaannotAstuvatVoimaan;
     }
 
-    public LocalDateTime getVarasijaTayttoPaattyy() {
-        return varasijaTayttoPaattyy;
-    }
-
     public void setVarasijaTayttoPaattyy(LocalDateTime varasijaTayttoPaattyy) {
         this.varasijaTayttoPaattyy = varasijaTayttoPaattyy;
-    }
-
-    public LocalDateTime getHakuKierrosPaattyy() {
-        return hakuKierrosPaattyy;
     }
 
     public void setHakuKierrosPaattyy(LocalDateTime hakuKierrosPaattyy) {
@@ -250,7 +230,7 @@ public class SijoitteluajoWrapper {
                 asInstant(valintatapajono.getValintatapajono().getVarasijojaTaytetaanAsti())
                 .filter(d -> d.isBefore(varasijaTayttoPaattyy))
                 .orElse(varasijaTayttoPaattyy);
-        return getToday().isAfter(varasijojaTaytetaanAsti);
+        return this.today.isAfter(varasijojaTaytetaanAsti);
     }
 
     public void addMuuttuneetValintatulokset(Valintatulos... valintatulokset) {
