@@ -1,6 +1,7 @@
 package fi.vm.sade.sijoittelu.laskenta.service.it;
 
 import fi.vm.sade.sijoittelu.laskenta.external.resource.dto.HakuDTO;
+import fi.vm.sade.sijoittelu.laskenta.external.resource.dto.KoutaHaku;
 import fi.vm.sade.sijoittelu.laskenta.external.resource.dto.ParametriArvoDTO;
 import fi.vm.sade.sijoittelu.laskenta.external.resource.dto.ParametriDTO;
 
@@ -31,11 +32,14 @@ public class Haku {
     public Haku(String oid,
                 String haunkohdejoukkoUri,
                 String haunkohdejoukontarkenneUri,
-                boolean jarjestetytHakutoiveet,
+                Boolean jarjestetytHakutoiveet,
                 Instant valintatuloksetSiirrettavaSijoitteluunViimeistaan,
                 Instant varasijasaannotAstuvatVoimaan,
                 Instant varasijatayttoPaattyy,
                 Instant hakukierrosPaattyy) {
+        if (jarjestetytHakutoiveet == null) {
+            throw new IllegalStateException(String.format("Haun %s ohjausparametria jarjestetytHakutoiveet ei ole asetettu", oid));
+        }
         if (haunkohdejoukkoUri == null) {
             throw new IllegalStateException(String.format("Haulla %s ei ole haun kohdejoukkoa", oid));
         }
@@ -83,6 +87,21 @@ public class Haku {
                 tarjontaHaku.getKohdejoukkoUri(),
                 tarjontaHaku.getKohdejoukonTarkenne(),
                 tarjontaHaku.isUsePriority(),
+                getDate(ohjausparametrit, ParametriDTO::getPH_VTSSV),
+                getDate(ohjausparametrit, ParametriDTO::getPH_VSSAV),
+                getDate(ohjausparametrit, ParametriDTO::getPH_VSTP),
+                getDate(ohjausparametrit, ParametriDTO::getPH_HKP)
+        );
+    }
+
+    public Haku(KoutaHaku koutaHaku, ParametriDTO ohjausparametrit) {
+        this(
+                koutaHaku.oid,
+                koutaHaku.kohdejoukkoKoodiUri,
+                koutaHaku.kohdejoukonTarkenneKoodiUri,
+                Optional.ofNullable(ohjausparametrit)
+                        .flatMap(o -> Optional.ofNullable(o.jarjestetytHakutoiveet))
+                        .orElse(null),
                 getDate(ohjausparametrit, ParametriDTO::getPH_VTSSV),
                 getDate(ohjausparametrit, ParametriDTO::getPH_VSSAV),
                 getDate(ohjausparametrit, ParametriDTO::getPH_VSTP),
