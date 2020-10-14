@@ -11,6 +11,7 @@
     <mockito:mock id="valintaperusteetResourceV2" class="fi.vm.sade.service.valintaperusteet.resource.ValintaperusteetResourceV2" />
     <mockito:mock id="ohjausparametriResource" class="fi.vm.sade.sijoittelu.laskenta.external.resource.OhjausparametriResource" />
     <mockito:mock id="hakuV1Resource" class="fi.vm.sade.sijoittelu.laskenta.external.resource.HakuV1Resource" />
+    <mockito:mock id="KoutaInternalHttpClient" class="fi.vm.sade.sijoittelu.laskenta.external.resource.CasAuthenticatingHttpClient" />
     <mockito:mock id="valintalaskentakoostepalvelu" class="fi.vm.sade.service.valintaperusteet.resource.ValintalaskentakoostepalveluResource" />
     <mockito:mock id="virkailijaValintaTulosServiceResource" class="fi.vm.sade.sijoittelu.laskenta.external.resource.VirkailijaValintaTulosServiceResource" />
     <mockito:mock id="sijoitteluValintaTulosServiceResource" class="fi.vm.sade.sijoittelu.laskenta.external.resource.SijoitteluValintaTulosServiceResource" />
