@@ -11,7 +11,11 @@ public class ParametriDTO {
 
     private ParametriArvoDTO PH_VSTP; // Varasijatäyttö päättyy
 
-    public ParametriDTO() {}
+    public final Boolean jarjestetytHakutoiveet;
+
+    private ParametriDTO() {
+        this.jarjestetytHakutoiveet = null;
+    }
 
     public ParametriArvoDTO getPH_VTSSV() {
         return PH_VTSSV;
