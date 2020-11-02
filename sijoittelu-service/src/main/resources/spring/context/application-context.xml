@@ -49,16 +49,18 @@
             <constructor-arg index="0"  name="callerId" value="1.2.246.562.10.00000000001.sijoittelu.sijoittelu-service"/>
         </bean>
 
+        <context:component-scan base-package="fi.vm.sade.sijoittelu.cas"/>
+
         <jaxrs-client:client id="ValintaperusteetLaskentaRestClient"
                            address="${valintalaskentakoostepalvelu.valintaperusteet.rest.url}"
                            serviceClass="fi.vm.sade.service.valintaperusteet.resource.ValintaperusteetResource"
                            inheritHeaders="true">
         <jaxrs-client:outInterceptors>
             <ref bean="ophRequestHeaders"/>
-            <ref bean="sijoitteluCasInterceptor"/>
+            <ref bean="SijoitteluCasInterceptor"/>
         </jaxrs-client:outInterceptors>
         <jaxrs-client:inInterceptors>
-            <ref bean="sijoitteluCasInterceptor"/>
+            <ref bean="SijoitteluCasInterceptor"/>
         </jaxrs-client:inInterceptors>
         <jaxrs-client:providers>
             <bean class="com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider"/>
@@ -85,10 +87,10 @@
                            inheritHeaders="true">
         <jaxrs-client:outInterceptors>
             <ref bean="ophRequestHeaders"/>
-            <ref bean="sijoitteluCasInterceptor"/>
+            <ref bean="SijoitteluCasInterceptor"/>
         </jaxrs-client:outInterceptors>
         <jaxrs-client:inInterceptors>
-            <ref bean="sijoitteluCasInterceptor"/>
+            <ref bean="SijoitteluCasInterceptor"/>
         </jaxrs-client:inInterceptors>
             <jaxrs-client:providers>
             <bean class="com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider"/>
@@ -166,7 +168,6 @@
         <context:component-scan base-package="fi.vm.sade.valintalaskenta.tulos.dao"/>
         <context:component-scan base-package="fi.vm.sade.valintalaskenta.tulos.service.impl"/>
         <context:component-scan base-package="fi.vm.sade.valintalaskenta.tulos.service.impl.converters"/>
-        <context:component-scan base-package="fi.vm.sade.sijoittelu.cas"/>
 
         <!-- CXF Swagger2Feature -->
         <bean id="swagger2Feature" class="org.apache.cxf.jaxrs.swagger.Swagger2Feature">

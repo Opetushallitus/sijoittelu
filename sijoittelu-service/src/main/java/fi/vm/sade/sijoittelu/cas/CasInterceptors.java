@@ -19,7 +19,7 @@ import java.time.Duration;
 
 @Configuration
 public class CasInterceptors {
-    private static final String CALLER_ID = "1.2.246.562.10.00000000001.valintalaskentakoostepalvelu";
+    private static final String CALLER_ID = "1.2.246.562.10.00000000001.sijoittelu-service";
     private static final Logger LOG = LoggerFactory.getLogger(CasInterceptors.class);
 
     @Bean(name = "CasHttpClient")
@@ -38,7 +38,7 @@ public class CasInterceptors {
                     String appClientUsername,
             @Value("${sijoittelu-service.password.to.valintaperusteet}")
                     String appClientPassword,
-            @Value("${cas.tickets}")
+            @Value("${cas.tickets.url}")
                     String ticketUrl) {
         return getCasInterceptor(
                 casHttpClient, cookieManager, targetService, appClientUsername, appClientPassword, ticketUrl);
@@ -68,7 +68,7 @@ public class CasInterceptors {
         LOG.info("Creating casInterceptor for service {} with username {} and ticketsUrl {}", service, username, ticketsUrl);
         return new SijoitteluCasInterceptor(
                 new ApplicationSession(
-                        defaultHttpClientBuilder(new CookieManager()).build(),
+                        defaultHttpClientBuilder(cookieManager).build(),
                         cookieManager,
                         CALLER_ID,
                         Duration.ofSeconds(10),

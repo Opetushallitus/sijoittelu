@@ -23,7 +23,6 @@ import org.springframework.context.annotation.Profile;
 import static fi.vm.sade.valinta.sharedutils.http.HttpExceptionWithResponse.CAS_302_REDIRECT_MARKER;
 
 public class SijoitteluCasInterceptor extends AbstractPhaseInterceptor<Message> {
-
     private static final Logger LOGGER = LoggerFactory.getLogger(SijoitteluCasInterceptor.class);
 
     private static final String CSRF_VALUE = "CSRF";
@@ -56,6 +55,12 @@ public class SijoitteluCasInterceptor extends AbstractPhaseInterceptor<Message> 
             this.applicationSession.invalidateSession(session);
             OphCxfMessageUtil.addHeader(
                     message, CAS_302_REDIRECT_MARKER.getKey(), CAS_302_REDIRECT_MARKER.getValue());
+        } else {
+            try {
+                LOGGER.info("Inbound message ok, headers: {}", message.get(Message.PROTOCOL_HEADERS));
+            } catch (Exception e) {
+                LOGGER.warn("Something went wrong: ", e);
+            }
         }
     }
 
@@ -63,7 +68,7 @@ public class SijoitteluCasInterceptor extends AbstractPhaseInterceptor<Message> 
             throws ExecutionException, InterruptedException, TimeoutException {
         SessionToken session = this.applicationSession.getSessionToken().get(20, TimeUnit.SECONDS);
         message.getExchange().put(EXCHANGE_SESSION_TOKEN, session);
-        LOGGER.debug(String.format("Using session %s", session));
+        LOGGER.info(String.format("Using session %s", session));
         OphCxfMessageUtil.addHeader(message, "CSRF", CSRF_VALUE);
         OphCxfMessageUtil.appendToHeader(message, "Cookie", "CSRF=" + CSRF_VALUE, ";");
         OphCxfMessageUtil.appendToHeader(
