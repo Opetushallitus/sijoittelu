@@ -17,7 +17,7 @@
     <import resource="classpath:META-INF/cxf/cxf.xml" />
     <import resource="classpath:META-INF/cxf/cxf-servlet.xml" />
 
-    <beans  profile="default">
+    <beans profile="default">
         <context:property-placeholder
         location="classpath:sijoittelu-service.properties, file:///${user.home:''}/oph-configuration/common.properties, file:///${user.home:''}/oph-configuration/valinta.properties, file:///${user.home:''}/oph-configuration/sijoittelu-service.properties,  file:///${user.home:''}/oph-configuration/override.properties"
         ignore-resource-not-found="true"
@@ -55,7 +55,11 @@
                            inheritHeaders="true">
         <jaxrs-client:outInterceptors>
             <ref bean="ophRequestHeaders"/>
+            <ref bean="sijoitteluCasInterceptor"/>
         </jaxrs-client:outInterceptors>
+        <jaxrs-client:inInterceptors>
+            <ref bean="sijoitteluCasInterceptor"/>
+        </jaxrs-client:inInterceptors>
         <jaxrs-client:providers>
             <bean class="com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider"/>
             <bean class="fi.vm.sade.sijoittelu.tulos.resource.ObjectMapperProvider" />
@@ -81,8 +85,12 @@
                            inheritHeaders="true">
         <jaxrs-client:outInterceptors>
             <ref bean="ophRequestHeaders"/>
+            <ref bean="sijoitteluCasInterceptor"/>
         </jaxrs-client:outInterceptors>
-        <jaxrs-client:providers>
+        <jaxrs-client:inInterceptors>
+            <ref bean="sijoitteluCasInterceptor"/>
+        </jaxrs-client:inInterceptors>
+            <jaxrs-client:providers>
             <bean class="com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider"/>
             <bean class="fi.vm.sade.sijoittelu.tulos.resource.ObjectMapperProvider" />
         </jaxrs-client:providers>
@@ -158,6 +166,7 @@
         <context:component-scan base-package="fi.vm.sade.valintalaskenta.tulos.dao"/>
         <context:component-scan base-package="fi.vm.sade.valintalaskenta.tulos.service.impl"/>
         <context:component-scan base-package="fi.vm.sade.valintalaskenta.tulos.service.impl.converters"/>
+        <context:component-scan base-package="fi.vm.sade.sijoittelu.cas"/>
 
         <!-- CXF Swagger2Feature -->
         <bean id="swagger2Feature" class="org.apache.cxf.jaxrs.swagger.Swagger2Feature">
