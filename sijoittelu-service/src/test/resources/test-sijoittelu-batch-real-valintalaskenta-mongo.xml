@@ -62,15 +62,6 @@
       <bean class="fi.vm.sade.sijoittelu.tulos.resource.ObjectMapperProvider"/>
     </jaxrs-client:providers>
   </jaxrs-client:client>
-  <jaxrs-client:client id="TarjontaHakukohdeResourceRestClient"
-                       address="#{pipedHostVirkailija + '/tarjonta-service/rest'}"
-                       serviceClass="fi.vm.sade.sijoittelu.laskenta.external.resource.HakukohdeV1Resource"
-                       inheritHeaders="true">
-    <jaxrs-client:providers>
-      <bean class="com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider"/>
-      <bean class="fi.vm.sade.sijoittelu.tulos.resource.ObjectMapperProvider"/>
-    </jaxrs-client:providers>
-  </jaxrs-client:client>
 
   <bean id="mongoUri2" class="com.mongodb.MongoClientURI">
     <constructor-arg type="java.lang.String"
