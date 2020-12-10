@@ -17,7 +17,7 @@
     <import resource="classpath:META-INF/cxf/cxf.xml" />
     <import resource="classpath:META-INF/cxf/cxf-servlet.xml" />
 
-    <beans  profile="default">
+    <beans profile="default">
         <context:property-placeholder
         location="classpath:sijoittelu-service.properties, file:///${user.home:''}/oph-configuration/common.properties, file:///${user.home:''}/oph-configuration/valinta.properties, file:///${user.home:''}/oph-configuration/sijoittelu-service.properties,  file:///${user.home:''}/oph-configuration/override.properties"
         ignore-resource-not-found="true"
@@ -49,13 +49,19 @@
             <constructor-arg index="0"  name="callerId" value="1.2.246.562.10.00000000001.sijoittelu.sijoittelu-service"/>
         </bean>
 
+        <context:component-scan base-package="fi.vm.sade.sijoittelu.cas"/>
+
         <jaxrs-client:client id="ValintaperusteetLaskentaRestClient"
                            address="${valintalaskentakoostepalvelu.valintaperusteet.rest.url}"
                            serviceClass="fi.vm.sade.service.valintaperusteet.resource.ValintaperusteetResource"
                            inheritHeaders="true">
         <jaxrs-client:outInterceptors>
             <ref bean="ophRequestHeaders"/>
+            <ref bean="SijoitteluCasInterceptor"/>
         </jaxrs-client:outInterceptors>
+        <jaxrs-client:inInterceptors>
+            <ref bean="SijoitteluCasInterceptor"/>
+        </jaxrs-client:inInterceptors>
         <jaxrs-client:providers>
             <bean class="com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider"/>
             <bean class="fi.vm.sade.sijoittelu.tulos.resource.ObjectMapperProvider" />
@@ -81,8 +87,12 @@
                            inheritHeaders="true">
         <jaxrs-client:outInterceptors>
             <ref bean="ophRequestHeaders"/>
+            <ref bean="SijoitteluCasInterceptor"/>
         </jaxrs-client:outInterceptors>
-        <jaxrs-client:providers>
+        <jaxrs-client:inInterceptors>
+            <ref bean="SijoitteluCasInterceptor"/>
+        </jaxrs-client:inInterceptors>
+            <jaxrs-client:providers>
             <bean class="com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider"/>
             <bean class="fi.vm.sade.sijoittelu.tulos.resource.ObjectMapperProvider" />
         </jaxrs-client:providers>
