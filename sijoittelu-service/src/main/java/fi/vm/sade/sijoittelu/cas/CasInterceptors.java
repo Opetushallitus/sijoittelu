@@ -1,7 +1,6 @@
 package fi.vm.sade.sijoittelu.cas;
 
-import fi.vm.sade.javautils.cas.ApplicationSession;
-import fi.vm.sade.javautils.cas.CasSession;
+import fi.vm.sade.javautils.nio.cas.ApplicationSession;
 import org.apache.cxf.message.Message;
 import org.apache.cxf.phase.AbstractPhaseInterceptor;
 import org.slf4j.Logger;
@@ -13,9 +12,11 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import java.net.CookieManager;
-import java.net.URI;
 import java.net.http.HttpClient;
 import java.time.Duration;
+
+import static fi.vm.sade.javautils.nio.cas.CasConfig.SpringSessionCasConfig;
+import static fi.vm.sade.valinta.sharedutils.http.HttpResource.CSRF_VALUE;
 
 @Configuration
 public class CasInterceptors {
@@ -41,7 +42,7 @@ public class CasInterceptors {
             @Value("${cas.tickets.url}")
                     String ticketUrl) {
         return getCasInterceptor(
-                casHttpClient, cookieManager, targetService, appClientUsername, appClientPassword, ticketUrl);
+                targetService, appClientUsername, appClientPassword, ticketUrl);
     }
 
     @Bean
@@ -59,28 +60,13 @@ public class CasInterceptors {
     }
 
     private AbstractPhaseInterceptor<Message> getCasInterceptor(
-            HttpClient casHttpClient,
-            CookieManager cookieManager,
             String service,
             String username,
             String password,
             String ticketsUrl) {
         LOG.info("Creating casInterceptor for service {} with username {} and ticketsUrl {}", service, username, ticketsUrl);
         return new SijoitteluCasInterceptor(
-                new ApplicationSession(
-                        defaultHttpClientBuilder(cookieManager).build(),
-                        cookieManager,
-                        CALLER_ID,
-                        Duration.ofSeconds(10),
-                        new CasSession(
-                                casHttpClient,
-                                Duration.ofSeconds(10),
-                                CALLER_ID,
-                                URI.create(ticketsUrl),
-                                username,
-                                password),
-                        service,
-                        "JSESSIONID"));
+                new ApplicationSession(SpringSessionCasConfig(username, password, ticketsUrl, service, CSRF_VALUE, CALLER_ID))
+        );
     }
-
 }
