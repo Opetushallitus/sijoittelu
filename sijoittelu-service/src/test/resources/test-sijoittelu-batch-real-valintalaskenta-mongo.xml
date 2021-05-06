@@ -34,15 +34,15 @@
                      value="#{systemProperties['PIPED_HOST_VIRKAILIJA'] ?: 'Please set PIPED_HOST_VIRKAILIJA system property!' }"/>
   </bean>
 
-  <jaxrs-client:client id="ValintaperusteetKoostepalveluRestClient"
-                       address="#{pipedHostVirkailija + '/valintaperusteet-service/resources'}"
-                       serviceClass="fi.vm.sade.service.valintaperusteet.resource.ValintalaskentakoostepalveluResource"
-                       inheritHeaders="true">
-    <jaxrs-client:providers>
-      <bean class="com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider"/>
-      <bean class="fi.vm.sade.sijoittelu.tulos.resource.ObjectMapperProvider"/>
-    </jaxrs-client:providers>
-  </jaxrs-client:client>
+<!--  <jaxrs-client:client id="ValintaperusteetKoostepalveluRestClient"-->
+<!--                       address="#{pipedHostVirkailija + '/valintaperusteet-service/resources'}"-->
+<!--                       serviceClass="fi.vm.sade.service.valintaperusteet.resource.ValintalaskentakoostepalveluResource"-->
+<!--                       inheritHeaders="true">-->
+<!--    <jaxrs-client:providers>-->
+<!--      <bean class="com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider"/>-->
+<!--      <bean class="fi.vm.sade.sijoittelu.tulos.resource.ObjectMapperProvider"/>-->
+<!--    </jaxrs-client:providers>-->
+<!--  </jaxrs-client:client>-->
 
   <jaxrs-client:client id="ParametriServiceRestClient"
                        address="#{pipedHostVirkailija + '/ohjausparametrit-service/api'}"

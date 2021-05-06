@@ -1,28 +1,19 @@
 package fi.vm.sade.sijoittelu.laskenta.resource;
 
-import static java.util.Arrays.asList;
-import static org.apache.commons.lang.StringUtils.EMPTY;
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.anyList;
-import static org.mockito.Mockito.anyString;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.reset;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 import com.google.common.collect.Sets;
-
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import fi.vm.sade.javautils.nio.cas.CasClient;
+import fi.vm.sade.javautils.nio.cas.CasConfig;
 import fi.vm.sade.service.valintaperusteet.dto.HakijaryhmaValintatapajonoDTO;
 import fi.vm.sade.service.valintaperusteet.dto.KoodiDTO;
 import fi.vm.sade.service.valintaperusteet.dto.ValintatapajonoDTO;
 import fi.vm.sade.service.valintaperusteet.dto.model.Tasapistesaanto;
-import fi.vm.sade.service.valintaperusteet.resource.ValintalaskentakoostepalveluResource;
 import fi.vm.sade.sijoittelu.domain.SijoitteluajonTila;
 import fi.vm.sade.sijoittelu.laskenta.service.business.SijoitteluBusinessService;
 import fi.vm.sade.sijoittelu.laskenta.util.EnumConverter;
+import fi.vm.sade.sijoittelu.laskenta.util.UrlProperties;
+import fi.vm.sade.util.TestUrlProperties;
 import fi.vm.sade.valintalaskenta.domain.dto.HakijaryhmaDTO;
 import fi.vm.sade.valintalaskenta.domain.dto.HakukohdeDTO;
 import fi.vm.sade.valintalaskenta.domain.dto.valintakoe.Tasasijasaanto;
@@ -30,18 +21,24 @@ import fi.vm.sade.valintalaskenta.domain.dto.valintatieto.HakuDTO;
 import fi.vm.sade.valintalaskenta.domain.dto.valintatieto.ValintatietoValinnanvaiheDTO;
 import fi.vm.sade.valintalaskenta.domain.dto.valintatieto.ValintatietoValintatapajonoDTO;
 import fi.vm.sade.valintalaskenta.tulos.service.impl.ValintatietoService;
+import okhttp3.mockwebserver.MockResponse;
+import okhttp3.mockwebserver.MockWebServer;
 import org.hamcrest.Matchers;
+import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.UUID;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.util.*;
+import java.util.concurrent.ExecutionException;
+
+import static java.util.Arrays.asList;
+import static org.apache.commons.lang.StringUtils.EMPTY;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
 
 /**
  * @author Jussi Jartamo
@@ -51,21 +48,48 @@ public class SijoitteluResourceTest {
     private final SijoitteluResource sijoitteluResource;
     private final SijoitteluBusinessService sijoitteluBusinessService;
     private final ValintatietoService valintatietoService;
-    private final ValintalaskentakoostepalveluResource valintalaskentakoostepalveluResource;
     private final SijoitteluBookkeeperService sijoitteluBookkeeperService = new SijoitteluBookkeeperService();
+    private final CasClient sijoitteluCasClient;
+    private UrlProperties urlProperties;
+    private final MockWebServer mockWebServer;
+    private final Gson gson;
+
+    private static final String COOKIENAME = "JSESSIONID";
+    private static final String VALID_TICKET = "it-ankan-tiketti";
 
     @Rule
     public ExpectedException thrown = ExpectedException.none();
 
-    public SijoitteluResourceTest() {
+
+
+    public SijoitteluResourceTest() throws MalformedURLException {
+        mockWebServer = new MockWebServer();
         sijoitteluBusinessService = mock(SijoitteluBusinessService.class);
         valintatietoService = mock(ValintatietoService.class);
-        valintalaskentakoostepalveluResource = mock(ValintalaskentakoostepalveluResource.class);
+        sijoitteluCasClient = new CasClient(CasConfig.CasConfig("it-ankka",
+                "neverstopthemadness",
+                mockWebServer.url("/cas").toString(),
+                mockWebServer.url("/") + "test-service",
+                "CSRF",
+                "Caller-Id",
+                COOKIENAME,
+                "/j_spring_cas_security_check"));
+
+        urlProperties = new TestUrlProperties(mockWebServer.url("/").toString().substring(7, mockWebServer.url("/").toString().length() - 1));
+        gson = new GsonBuilder().create();
+
         sijoitteluResource = new SijoitteluResource(
             sijoitteluBusinessService,
             valintatietoService,
-            valintalaskentakoostepalveluResource,
-            sijoitteluBookkeeperService);
+            sijoitteluBookkeeperService,
+            sijoitteluCasClient,
+            urlProperties
+        );
+    }
+
+    @After
+    public void shutDown() throws IOException {
+        this.mockWebServer.shutdown();
     }
 
     @Test
@@ -106,18 +130,35 @@ public class SijoitteluResourceTest {
                 laskennasta);
             {
                 when(valintatietoService.haeValintatiedot(anyString())).thenReturn(haku);
-                when(valintalaskentakoostepalveluResource.readByHakukohdeOids(anyList()))
-                    .thenReturn(asList(hakijaryhmavalintaperusteista));
-                when(valintalaskentakoostepalveluResource.readByValintatapajonoOids(anyList()))
-                    .thenReturn(asList(valintatapajononHakijaryhmavalintaperusteista));
+                mockWebServer.enqueue(new MockResponse()
+                        .addHeader("Location", mockWebServer.url("/") + "cas/tickets")
+                        .setResponseCode(201));
+                mockWebServer.enqueue(new MockResponse()
+                        .setBody(VALID_TICKET)
+                        .setResponseCode(200));
+                mockWebServer.enqueue(new MockResponse()
+                        .addHeader("Content-Type", "application/x-www-form-urlencoded")
+                        .addHeader("Set-Cookie: " + String.format("JSESSIONID" + "=%s; Path=/test-service", "123456789"))
+                        .setResponseCode(200));
+                mockWebServer.enqueue(new MockResponse()
+                        .setBody(this.gson.toJson(asList(hakijaryhmavalintaperusteista)))
+                        .setResponseCode(200));
+                mockWebServer.enqueue(new MockResponse()
+                        .setBody(this.gson.toJson(asList(valintatapajononHakijaryhmavalintaperusteista)))
+                        .setResponseCode(200));
+
                 final HashMap<String, List<ValintatapajonoDTO>> vpMap = new HashMap<>();
                 vpMap.put(hakukohdeOid, Arrays.asList(valintaperusteista));
-                when(valintalaskentakoostepalveluResource.haeValintatapajonotSijoittelulle(anyList())).thenReturn(vpMap);
-                sijoitteluResource.toteutaSijoittelu(EMPTY, 12345L);
+
+                mockWebServer.enqueue(new MockResponse().setBody(this.gson.toJson(vpMap)));
+
+                try {
+                    sijoitteluResource.toteutaSijoittelu(EMPTY, 12345L);
+                } catch (ExecutionException e) {
+                    e.printStackTrace();
+                }
             }
-            verify(valintalaskentakoostepalveluResource, times(1)).readByHakukohdeOids(asList(hakukohdeOid));
-            verify(valintalaskentakoostepalveluResource, times(1)).readByValintatapajonoOids(asList(valintatapajonoOid));
-            verify(valintalaskentakoostepalveluResource, times(1)).haeValintatapajonotSijoittelulle(asList(hakukohdeOid));
+
             verify(sijoitteluBusinessService, times(1)).sijoittele(haku, new HashSet<>(), Sets.newHashSet(valintatapajonoOid), 12345L);
 
             HakukohdeDTO hakukohde = haku.getHakukohteet().iterator().next();
@@ -180,7 +221,7 @@ public class SijoitteluResourceTest {
                 assertThat(hakijaryhma.getHakijaryhmatyyppikoodiUri(), is(hakijaryhmavalintaperusteista.getHakijaryhmatyyppikoodi().getUri()));
             }
         } finally {
-            reset(sijoitteluBusinessService, valintatietoService, valintalaskentakoostepalveluResource);
+            reset(sijoitteluBusinessService, valintatietoService);
         }
     }
 
@@ -209,22 +250,41 @@ public class SijoitteluResourceTest {
                 createHakijaryhmaDTO(valintatapajononHakijaryhmaOid),
                 laskennasta);
             when(valintatietoService.haeValintatiedot(hakuOid)).thenReturn(haku);
-            when(valintalaskentakoostepalveluResource.readByHakukohdeOids(Collections.singletonList(hakukohdeOid)))
-                .thenReturn(Collections.singletonList(hakijaryhmavalintaperusteista));
-            when(valintalaskentakoostepalveluResource.readByValintatapajonoOids(Collections.singletonList(valintatapajonoOid))).
-                thenReturn(Collections.singletonList(valintatapajononHakijaryhmavalintaperusteista));
+            mockWebServer.enqueue(new MockResponse()
+                    .addHeader("Location", mockWebServer.url("/") + "cas/tickets")
+                    .setResponseCode(201));
+            mockWebServer.enqueue(new MockResponse()
+                    .setBody(VALID_TICKET)
+                    .setResponseCode(200));
+            mockWebServer.enqueue(new MockResponse()
+                    .addHeader("Content-Type", "application/x-www-form-urlencoded")
+                    .addHeader("Set-Cookie: " + String.format("JSESSIONID" + "=%s; Path=/test-service", "123456789"))
+                    .setResponseCode(200));
+
+            mockWebServer.enqueue(new MockResponse()
+                    .setBody(this.gson.toJson(Collections.singletonList(hakijaryhmavalintaperusteista)))
+                    .setResponseCode(200));
+            mockWebServer.enqueue(new MockResponse()
+                    .setBody(this.gson.toJson(Collections.singletonList(valintatapajononHakijaryhmavalintaperusteista)))
+                    .setResponseCode(200));
+
             final HashMap<String, List<ValintatapajonoDTO>> vpMap = new HashMap<>();
             vpMap.put(hakukohdeOid, Collections.singletonList(valintaperusteista));
-            when(valintalaskentakoostepalveluResource.haeValintatapajonotSijoittelulle(Collections.singletonList(hakukohdeOid)))
-                .thenReturn(vpMap);
 
+            mockWebServer.enqueue(new MockResponse()
+                    .setBody(this.gson.toJson(vpMap))
+                    .setResponseCode(200));
             thrown.expect(IllegalStateException.class);
             thrown.expectMessage("Haun hakuOid sijoittelu : " +
                 "Laskennan tuloksista löytyvien jonojen tietoja on kadonnut valintaperusteista: " +
                 "[Hakukohde hakukohdeOid , jono \"Varsinainen testivalinta\" (valintatapaJonoOid , prio 0)]");
-            sijoitteluResource.toteutaSijoittelu(hakuOid, 12345L);
+            try {
+                sijoitteluResource.toteutaSijoittelu(hakuOid, 12345L);
+            } catch (ExecutionException e) {
+                e.printStackTrace();
+            }
         } finally{
-            reset(sijoitteluBusinessService, valintatietoService, valintalaskentakoostepalveluResource);
+            reset(sijoitteluBusinessService, valintatietoService);
         }
     }
 

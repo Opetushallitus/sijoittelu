@@ -1,6 +1,8 @@
 package fi.vm.sade.sijoittelu.cas;
 
 import fi.vm.sade.javautils.cxf.OphCxfMessageUtil;
+import fi.vm.sade.javautils.nio.cas.ApplicationSession;
+import fi.vm.sade.javautils.nio.cas.CasSession;
 import org.apache.cxf.interceptor.Fault;
 import org.apache.cxf.message.Message;
 import org.apache.cxf.phase.AbstractPhaseInterceptor;
@@ -11,16 +13,7 @@ import org.slf4j.LoggerFactory;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-import fi.vm.sade.javautils.cas.ApplicationSession;
-import fi.vm.sade.javautils.cas.SessionToken;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Profile;
-
-import static fi.vm.sade.valinta.sharedutils.http.HttpExceptionWithResponse.CAS_302_REDIRECT_MARKER;
 
 public class SijoitteluCasInterceptor extends AbstractPhaseInterceptor<Message> {
     private static final Logger LOGGER = LoggerFactory.getLogger(SijoitteluCasInterceptor.class);
@@ -49,12 +42,17 @@ public class SijoitteluCasInterceptor extends AbstractPhaseInterceptor<Message> 
     }
 
     private void handleInboundMessage(Message message) {
+
         if (isUnauthorized(message) || isRedirectToCas(message)) {
-            SessionToken session = (SessionToken) message.getExchange().get(EXCHANGE_SESSION_TOKEN);
+            //SessionToken session = (SessionToken) message.getExchange().get(EXCHANGE_SESSION_TOKEN);
+            LOGGER.info("Getting session from CAS, inbound message.");
+            CasSession session = this.applicationSession.getSessionBlocking();
             LOGGER.info(String.format("Authentication failed using session %s", session));
-            this.applicationSession.invalidateSession(session);
-            OphCxfMessageUtil.addHeader(
-                    message, CAS_302_REDIRECT_MARKER.getKey(), CAS_302_REDIRECT_MARKER.getValue());
+            OphCxfMessageUtil.appendToHeader(
+                    message, "Cookie", session.getSessionCookieName() + "=" + session.getSessionCookie(), ";");
+            //this.applicationSession.invalidateSession(session);
+            //OphCxfMessageUtil.addHeader(
+            //        message, CAS_302_REDIRECT_MARKER.getKey(), CAS_302_REDIRECT_MARKER.getValue());
         } else {
             try {
                 LOGGER.info("Inbound message ok, headers: {}", message.get(Message.PROTOCOL_HEADERS));
@@ -66,13 +64,14 @@ public class SijoitteluCasInterceptor extends AbstractPhaseInterceptor<Message> 
 
     private void handleOutboundMessage(Message message)
             throws ExecutionException, InterruptedException, TimeoutException {
-        SessionToken session = this.applicationSession.getSessionToken().get(20, TimeUnit.SECONDS);
+        LOGGER.info("Getting session from CAS, outbound message.");
+        CasSession session = this.applicationSession.getSessionBlocking();
         message.getExchange().put(EXCHANGE_SESSION_TOKEN, session);
-        LOGGER.info(String.format("Using session %s", session));
+        LOGGER.info(String.format("Using session %s: %s", session.getSessionCookieName(), session.getSessionCookie()));
         OphCxfMessageUtil.addHeader(message, "CSRF", CSRF_VALUE);
         OphCxfMessageUtil.appendToHeader(message, "Cookie", "CSRF=" + CSRF_VALUE, ";");
         OphCxfMessageUtil.appendToHeader(
-                message, "Cookie", session.cookie.getName() + "=" + session.cookie.getValue(), ";");
+                message, "Cookie", session.getSessionCookieName() + "=" + session.getSessionCookie(), ";");
     }
 
     private boolean isRedirectToCas(Message message) {
