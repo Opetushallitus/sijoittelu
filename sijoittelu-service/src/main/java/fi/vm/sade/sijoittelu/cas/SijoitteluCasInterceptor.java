@@ -14,7 +14,6 @@ import org.slf4j.LoggerFactory;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import static fi.vm.sade.valinta.sharedutils.http.HttpExceptionWithResponse.CAS_302_REDIRECT_MARKER;
@@ -63,9 +62,10 @@ public class SijoitteluCasInterceptor extends AbstractPhaseInterceptor<Message> 
 
     private void handleOutboundMessage(Message message)
             throws ExecutionException, InterruptedException, TimeoutException {
-        CasSession session = this.applicationSession.getSession().get(20, TimeUnit.SECONDS);
+        LOGGER.info("Getting session from CAS.");
+        CasSession session = this.applicationSession.getSessionBlocking();
         message.getExchange().put(EXCHANGE_SESSION_TOKEN, session);
-        LOGGER.info(String.format("Using session %s", session));
+        LOGGER.info(String.format("Using session %s", session.getSessionCookie()));
         OphCxfMessageUtil.addHeader(message, "CSRF", CSRF_VALUE);
         OphCxfMessageUtil.appendToHeader(message, "Cookie", "CSRF=" + CSRF_VALUE, ";");
         OphCxfMessageUtil.appendToHeader(
