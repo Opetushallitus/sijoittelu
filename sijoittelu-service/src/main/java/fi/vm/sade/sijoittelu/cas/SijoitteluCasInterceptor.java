@@ -1,6 +1,5 @@
 package fi.vm.sade.sijoittelu.cas;
 
-import fi.vm.sade.javautils.cas.SessionToken;
 import fi.vm.sade.javautils.cxf.OphCxfMessageUtil;
 import fi.vm.sade.javautils.nio.cas.ApplicationSession;
 import fi.vm.sade.javautils.nio.cas.CasSession;
@@ -15,8 +14,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
-
-import static fi.vm.sade.valinta.sharedutils.http.HttpExceptionWithResponse.CAS_302_REDIRECT_MARKER;
 
 public class SijoitteluCasInterceptor extends AbstractPhaseInterceptor<Message> {
     private static final Logger LOGGER = LoggerFactory.getLogger(SijoitteluCasInterceptor.class);
@@ -46,11 +43,15 @@ public class SijoitteluCasInterceptor extends AbstractPhaseInterceptor<Message> 
 
     private void handleInboundMessage(Message message) {
         if (isUnauthorized(message) || isRedirectToCas(message)) {
-            SessionToken session = (SessionToken) message.getExchange().get(EXCHANGE_SESSION_TOKEN);
+            //SessionToken session = (SessionToken) message.getExchange().get(EXCHANGE_SESSION_TOKEN);
+            LOGGER.info("Getting session from CAS, inbound message.");
+            CasSession session = this.applicationSession.getSessionBlocking();
             LOGGER.info(String.format("Authentication failed using session %s", session));
+            OphCxfMessageUtil.appendToHeader(
+                    message, "Cookie", session.getSessionCookieName() + "=" + session.getSessionCookie(), ";");
             //this.applicationSession.invalidateSession(session);
-            OphCxfMessageUtil.addHeader(
-                    message, CAS_302_REDIRECT_MARKER.getKey(), CAS_302_REDIRECT_MARKER.getValue());
+            //OphCxfMessageUtil.addHeader(
+            //        message, CAS_302_REDIRECT_MARKER.getKey(), CAS_302_REDIRECT_MARKER.getValue());
         } else {
             try {
                 LOGGER.info("Inbound message ok, headers: {}", message.get(Message.PROTOCOL_HEADERS));
@@ -62,7 +63,7 @@ public class SijoitteluCasInterceptor extends AbstractPhaseInterceptor<Message> 
 
     private void handleOutboundMessage(Message message)
             throws ExecutionException, InterruptedException, TimeoutException {
-        LOGGER.info("Getting session from CAS.");
+        LOGGER.info("Getting session from CAS, outbound message.");
         CasSession session = this.applicationSession.getSessionBlocking();
         message.getExchange().put(EXCHANGE_SESSION_TOKEN, session);
         LOGGER.info(String.format("Using session %s", session.getSessionCookie()));
