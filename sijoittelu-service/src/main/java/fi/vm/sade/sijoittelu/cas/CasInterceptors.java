@@ -1,6 +1,7 @@
 package fi.vm.sade.sijoittelu.cas;
 
 import fi.vm.sade.javautils.nio.cas.ApplicationSession;
+import fi.vm.sade.javautils.nio.cas.CasConfig;
 import org.apache.cxf.message.Message;
 import org.apache.cxf.phase.AbstractPhaseInterceptor;
 import org.slf4j.Logger;
@@ -15,7 +16,6 @@ import java.net.CookieManager;
 import java.net.http.HttpClient;
 import java.time.Duration;
 
-import static fi.vm.sade.javautils.nio.cas.CasConfig.SpringSessionCasConfig;
 import static fi.vm.sade.valinta.sharedutils.http.HttpResource.CSRF_VALUE;
 
 @Configuration
@@ -35,6 +35,7 @@ public class CasInterceptors {
             @Qualifier("CasHttpClient") HttpClient casHttpClient,
             CookieManager cookieManager,
             @Value("${cas.service.valintaperusteet}") String targetService,
+            @Value("${cas.session.valintaperusteet}") String sessionUrl,
             @Value("${sijoittelu-service.username.to.valintaperusteet}")
                     String appClientUsername,
             @Value("${sijoittelu-service.password.to.valintaperusteet}")
@@ -42,7 +43,7 @@ public class CasInterceptors {
             @Value("${cas.tickets.url}")
                     String ticketUrl) {
         return getCasInterceptor(
-                targetService, appClientUsername, appClientPassword, ticketUrl);
+                targetService, appClientUsername, appClientPassword, ticketUrl, sessionUrl);
     }
 
     @Bean
@@ -63,10 +64,20 @@ public class CasInterceptors {
             String service,
             String username,
             String password,
-            String ticketsUrl) {
+            String ticketsUrl,
+            String sessionUrl) {
         LOG.info("Creating casInterceptor for service {} with username {} and ticketsUrl {}", service, username, ticketsUrl);
         return new SijoitteluCasInterceptor(
-                new ApplicationSession(SpringSessionCasConfig(username, password, ticketsUrl, service, CSRF_VALUE, CALLER_ID))
+                new ApplicationSession(new CasConfig(
+                        username,
+                        password,
+                        ticketsUrl,
+                        service,
+                        CSRF_VALUE,
+                        CALLER_ID,
+                        "JSESSIONID",
+                        "/j_spring_cas_security_check",
+                        sessionUrl))
         );
     }
 }
