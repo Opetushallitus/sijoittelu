@@ -13,7 +13,6 @@
     <mockito:mock id="hakuV1Resource" class="fi.vm.sade.sijoittelu.laskenta.external.resource.HakuV1Resource" />
     <mockito:mock id="KoutaInternaCasClient" class="fi.vm.sade.javautils.nio.cas.CasClient" />
     <mockito:mock id="SijoitteluCasClient" class="fi.vm.sade.javautils.nio.cas.CasClient" />
-<!--    <mockito:mock id="valintalaskentakoostepalvelu" class="fi.vm.sade.service.valintaperusteet.resource.ValintalaskentakoostepalveluResource" />-->
     <mockito:mock id="virkailijaValintaTulosServiceResource" class="fi.vm.sade.sijoittelu.laskenta.external.resource.VirkailijaValintaTulosServiceResource" />
     <mockito:mock id="sijoitteluValintaTulosServiceResource" class="fi.vm.sade.sijoittelu.laskenta.external.resource.SijoitteluValintaTulosServiceResource" />
     <mockito:mock id="authorizer" class="fi.vm.sade.javautils.opintopolku_spring_security.Authorizer" />
