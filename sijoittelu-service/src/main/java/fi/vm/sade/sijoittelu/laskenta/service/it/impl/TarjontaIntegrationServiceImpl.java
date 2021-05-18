@@ -42,31 +42,33 @@ public class TarjontaIntegrationServiceImpl implements TarjontaIntegrationServic
 
     @Override
     public Haku getHaku(String hakuOid) {
-        try {
             ParametriDTO ohjausparametrit = this.gson.fromJson(ohjausparametriResource.haePaivamaara(hakuOid), ParametriDTO.class);
 
-            Request request = new RequestBuilder()
-                    .setUrl(urlProperties.url("kouta-internal.haku", hakuOid))
-                    .setMethod("GET")
-                    .addHeader("Accept", "application/json")
-                    .addHeader("Caller-Id", HttpClients.CALLER_ID)
-                    .setRequestTimeout(10000)
-                    .build();
-            try {
-                return new Haku(hakuV1Resource.findByOid(hakuOid).getResult(), ohjausparametrit);
-            } catch (Exception tarjontaException) {
-                Response koutaResponse = koutaInternalCasClient.executeBlocking(request);
-                //TODO fix this!
-                if (koutaResponse.getStatusCode() == 200) {
-                    return new Haku(this.gson.fromJson(koutaResponse.getResponseBody(StandardCharsets.UTF_8), KoutaHaku.class), ohjausparametrit);
+            if (hakuOid.length() > 30 && hakuOid.startsWith("1.2.246.562.29")) {
+                try {
+                Request request = new RequestBuilder()
+                        .setUrl(urlProperties.url("kouta-internal.haku", hakuOid))
+                        .setMethod("GET")
+                        .addHeader("Accept", "application/json")
+                        .addHeader("Caller-Id", HttpClients.CALLER_ID)
+                        .setRequestTimeout(10000)
+                        .build();
+
+                    Response koutaResponse = koutaInternalCasClient.executeBlocking(request);
+                    if (koutaResponse.getStatusCode() == 200) {
+                        return new Haku(this.gson.fromJson(koutaResponse.getResponseBody(StandardCharsets.UTF_8), KoutaHaku.class), ohjausparametrit);
+                    } else {
+                        throw new RuntimeException(String.format("Haun %s haku koutasta epäonnistui: %s", hakuOid, koutaResponse.getResponseBody()));
+                    }
+                } catch (Exception e) {
+                    throw new RuntimeException(String.format("Haun %s haku koutasta epäonnistui: %s", hakuOid, e));
                 }
-                if (koutaResponse.getStatusCode() == 404) {
-                    throw tarjontaException;
+            } else {
+                try {
+                    return new Haku(hakuV1Resource.findByOid(hakuOid).getResult(), ohjausparametrit);
+                } catch (Exception e) {
+                    throw new RuntimeException(String.format("Haun %s haku tarjonnasta epäonnistui", hakuOid), e);
                 }
-                throw new RuntimeException(String.format("Haun %s haku epäonnistui: %s", hakuOid, koutaResponse.getResponseBody()));
             }
-        } catch (Exception e) {
-            throw new RuntimeException(String.format("Haun %s haku epäonnistui", hakuOid), e);
-        }
     }
 }
