@@ -72,7 +72,22 @@ public class SijoitteluResource {
         this.sijoitteluCasClient = sijoitteluCasClient;
         this.sijoitteluBookkeeperService = sijoitteluBookkeeperService;
         this.urlProperties = urlProperties;
-        this.gson = new GsonBuilder().create();
+
+        GsonBuilder builder = new GsonBuilder();
+
+//        builder.registerTypeAdapter(Date.class, new JsonDeserializer<Date>() {
+//
+//            public Date deserialize(JsonElement json) throws JsonParseException {
+//                try {
+//                    return new Date(json.getAsJsonPrimitive().getAsLong());
+//                } catch (JsonParseException e) {
+//                    throw new JsonParseException(e);
+//                }
+//            }
+//        });
+
+        this.gson = builder.create();
+
     }
 
     @GET
@@ -191,7 +206,8 @@ public class SijoitteluResource {
                         .addHeader("Caller-Id", HttpClients.CALLER_ID)
                         .setRequestTimeout(10000)
                         .build();
-                Response hakuResponse = sijoitteluCasClient.executeBlocking(hakuRequest);
+                LOGGER.info("Calling cas...");
+                Response hakuResponse = sijoitteluCasClient.executeWithServiceTicketBlocking(hakuRequest);
 
                 if (hakuResponse.getStatusCode() == 200) {
                     try {
@@ -222,7 +238,7 @@ public class SijoitteluResource {
                             .addHeader("Caller-Id", HttpClients.CALLER_ID)
                             .setRequestTimeout(10000)
                             .build();
-                    Response hakijaryhmaResponse = sijoitteluCasClient.executeBlocking(hakijaryhmaRequest);
+                    Response hakijaryhmaResponse = sijoitteluCasClient.executeWithServiceTicketBlocking(hakijaryhmaRequest);
 
                     if (hakijaryhmaResponse.getStatusCode() == 200) {
                         try {
@@ -275,7 +291,7 @@ public class SijoitteluResource {
                                 .addHeader("Caller-Id", HttpClients.CALLER_ID)
                                 .setRequestTimeout(10000)
                                 .build();
-                        Response valintatapajonoResponse = sijoitteluCasClient.executeBlocking(valintatapajonoRequest);
+                        Response valintatapajonoResponse = sijoitteluCasClient.executeWithServiceTicketBlocking(valintatapajonoRequest);
 
                         if (valintatapajonoResponse.getStatusCode() == 200) {
                             try {
@@ -345,7 +361,6 @@ public class SijoitteluResource {
         }
 
         public void toteutaSijoittelu (String hakuOid, Long sijoitteluAjonTunniste) throws ExecutionException {
-
             try {
                 LOGGER.info("Valintatietoja valmistetaan haulle {}!", hakuOid);
                 HakuDTO haku = valintatietoService.haeValintatiedot(hakuOid);

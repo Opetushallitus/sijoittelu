@@ -1,8 +1,8 @@
 package fi.vm.sade.sijoittelu.laskenta.resource;
 
 import com.google.common.collect.Sets;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import com.google.common.reflect.TypeToken;
+import com.google.gson.*;
 import fi.vm.sade.javautils.nio.cas.CasClient;
 import fi.vm.sade.javautils.nio.cas.CasConfig;
 import fi.vm.sade.service.valintaperusteet.dto.HakijaryhmaValintatapajonoDTO;
@@ -25,11 +25,13 @@ import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import org.hamcrest.Matchers;
 import org.junit.After;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.net.MalformedURLException;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
@@ -76,7 +78,17 @@ public class SijoitteluResourceTest {
                 "/j_spring_cas_security_check"));
 
         urlProperties = new TestUrlProperties(mockWebServer.url("/").toString().substring(7, mockWebServer.url("/").toString().length() - 1));
-        gson = new GsonBuilder().create();
+
+
+        GsonBuilder builder = new GsonBuilder();
+
+        builder.registerTypeAdapter(Date.class, new JsonDeserializer<Date>() {
+            public Date deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+                return new Date(json.getAsJsonPrimitive().getAsLong());
+            }
+        });
+
+        gson = builder.create();
 
         sijoitteluResource = new SijoitteluResource(
             sijoitteluBusinessService,
@@ -91,6 +103,104 @@ public class SijoitteluResourceTest {
     public void shutDown() throws IOException {
         this.mockWebServer.shutdown();
     }
+
+
+@Ignore
+    @Test
+    public void testing() {
+            String responseBody = "{\n" +
+                    "    \"1.2.246.562.20.85076696401\": [\n" +
+                    "        {\n" +
+                    "            \"aloituspaikat\": 29,\n" +
+                    "            \"nimi\": \"Todistusvalinta (YO)\",\n" +
+                    "            \"kuvaus\": null,\n" +
+                    "            \"tyyppi\": \"valintatapajono_tv\",\n" +
+                    "            \"siirretaanSijoitteluun\": true,\n" +
+                    "            \"tasapistesaanto\": \"YLITAYTTO\",\n" +
+                    "            \"aktiivinen\": true,\n" +
+                    "            \"valisijoittelu\": false,\n" +
+                    "            \"automaattinenSijoitteluunSiirto\": true,\n" +
+                    "            \"eiVarasijatayttoa\": false,\n" +
+                    "            \"kaikkiEhdonTayttavatHyvaksytaan\": false,\n" +
+                    "            \"varasijat\": 0,\n" +
+                    "            \"varasijaTayttoPaivat\": 0,\n" +
+                    "            \"poissaOlevaTaytto\": true,\n" +
+                    "            \"poistetaankoHylatyt\": false,\n" +
+                    "            \"varasijojaKaytetaanAlkaen\": null,\n" +
+                    "            \"varasijojaTaytetaanAsti\": null,\n" +
+                    "            \"eiLasketaPaivamaaranJalkeen\": 1603141200000,\n" +
+                    "            \"kaytetaanValintalaskentaa\": true,\n" +
+                    "            \"tayttojono\": \"16000630989123225075305367726935\",\n" +
+                    "            \"oid\": \"16000630989123993019540197112205\",\n" +
+                    "            \"inheritance\": true,\n" +
+                    "            \"prioriteetti\": 0\n" +
+                    "        },\n" +
+                    "        {\n" +
+                    "            \"aloituspaikat\": 15,\n" +
+                    "            \"nimi\": \"Todistusvalinta (AMM)\",\n" +
+                    "            \"kuvaus\": null,\n" +
+                    "            \"tyyppi\": \"valintatapajono_tv\",\n" +
+                    "            \"siirretaanSijoitteluun\": true,\n" +
+                    "            \"tasapistesaanto\": \"YLITAYTTO\",\n" +
+                    "            \"aktiivinen\": true,\n" +
+                    "            \"valisijoittelu\": false,\n" +
+                    "            \"automaattinenSijoitteluunSiirto\": true,\n" +
+                    "            \"eiVarasijatayttoa\": false,\n" +
+                    "            \"kaikkiEhdonTayttavatHyvaksytaan\": false,\n" +
+                    "            \"varasijat\": 0,\n" +
+                    "            \"varasijaTayttoPaivat\": 0,\n" +
+                    "            \"poissaOlevaTaytto\": true,\n" +
+                    "            \"poistetaankoHylatyt\": false,\n" +
+                    "            \"varasijojaKaytetaanAlkaen\": null,\n" +
+                    "            \"varasijojaTaytetaanAsti\": null,\n" +
+                    "            \"eiLasketaPaivamaaranJalkeen\": 1603141200000,\n" +
+                    "            \"kaytetaanValintalaskentaa\": true,\n" +
+                    "            \"tayttojono\": \"16000630989123225075305367726935\",\n" +
+                    "            \"oid\": \"16000630989122580573570181467271\",\n" +
+                    "            \"inheritance\": true,\n" +
+                    "            \"prioriteetti\": 1\n" +
+                    "        },\n" +
+                    "        {\n" +
+                    "            \"aloituspaikat\": 30,\n" +
+                    "            \"nimi\": \"Valintakoevalinta\",\n" +
+                    "            \"kuvaus\": null,\n" +
+                    "            \"tyyppi\": \"valintatapajono_kp\",\n" +
+                    "            \"siirretaanSijoitteluun\": true,\n" +
+                    "            \"tasapistesaanto\": \"YLITAYTTO\",\n" +
+                    "            \"aktiivinen\": true,\n" +
+                    "            \"valisijoittelu\": false,\n" +
+                    "            \"automaattinenSijoitteluunSiirto\": true,\n" +
+                    "            \"eiVarasijatayttoa\": false,\n" +
+                    "            \"kaikkiEhdonTayttavatHyvaksytaan\": false,\n" +
+                    "            \"varasijat\": 0,\n" +
+                    "            \"varasijaTayttoPaivat\": 0,\n" +
+                    "            \"poissaOlevaTaytto\": true,\n" +
+                    "            \"poistetaankoHylatyt\": false,\n" +
+                    "            \"varasijojaKaytetaanAlkaen\": null,\n" +
+                    "            \"varasijojaTaytetaanAsti\": null,\n" +
+                    "            \"eiLasketaPaivamaaranJalkeen\": null,\n" +
+                    "            \"kaytetaanValintalaskentaa\": true,\n" +
+                    "            \"tayttojono\": null,\n" +
+                    "            \"oid\": \"16000630989123225075305367726935\",\n" +
+                    "            \"inheritance\": true,\n" +
+                    "            \"prioriteetti\": 2\n" +
+                    "        }\n" +
+                    "    ]\n" +
+                    "}";
+
+
+            Type token = new TypeToken<Map<String, List<ValintatapajonoDTO>>>(){}.getType();
+            Map<String, List<ValintatapajonoDTO>> valintaperusteet = new HashMap<String, List<ValintatapajonoDTO>>();
+            try {
+                valintaperusteet = this.gson.fromJson(responseBody, token);
+            } catch (JsonSyntaxException e) {
+                System.out.println("FAILED");
+                e.printStackTrace();
+            }
+
+            System.out.println(valintaperusteet);
+
+        }
 
     @Test
     public void testaaSijoittelunLuonti() {
@@ -137,11 +247,13 @@ public class SijoitteluResourceTest {
                         .setBody(VALID_TICKET)
                         .setResponseCode(200));
                 mockWebServer.enqueue(new MockResponse()
-                        .addHeader("Content-Type", "application/x-www-form-urlencoded")
-                        .addHeader("Set-Cookie: " + String.format("JSESSIONID" + "=%s; Path=/test-service", "123456789"))
+                        .setBody(this.gson.toJson(asList(hakijaryhmavalintaperusteista)))
                         .setResponseCode(200));
                 mockWebServer.enqueue(new MockResponse()
-                        .setBody(this.gson.toJson(asList(hakijaryhmavalintaperusteista)))
+                        .addHeader("Location", mockWebServer.url("/") + "cas/tickets")
+                        .setResponseCode(201));
+                mockWebServer.enqueue(new MockResponse()
+                        .setBody(VALID_TICKET)
                         .setResponseCode(200));
                 mockWebServer.enqueue(new MockResponse()
                         .setBody(this.gson.toJson(asList(valintatapajononHakijaryhmavalintaperusteista)))
@@ -150,6 +262,12 @@ public class SijoitteluResourceTest {
                 final HashMap<String, List<ValintatapajonoDTO>> vpMap = new HashMap<>();
                 vpMap.put(hakukohdeOid, Arrays.asList(valintaperusteista));
 
+                mockWebServer.enqueue(new MockResponse()
+                        .addHeader("Location", mockWebServer.url("/") + "cas/tickets")
+                        .setResponseCode(201));
+                mockWebServer.enqueue(new MockResponse()
+                        .setBody(VALID_TICKET)
+                        .setResponseCode(200));
                 mockWebServer.enqueue(new MockResponse().setBody(this.gson.toJson(vpMap)));
 
                 try {
@@ -257,12 +375,13 @@ public class SijoitteluResourceTest {
                     .setBody(VALID_TICKET)
                     .setResponseCode(200));
             mockWebServer.enqueue(new MockResponse()
-                    .addHeader("Content-Type", "application/x-www-form-urlencoded")
-                    .addHeader("Set-Cookie: " + String.format("JSESSIONID" + "=%s; Path=/test-service", "123456789"))
-                    .setResponseCode(200));
-
-            mockWebServer.enqueue(new MockResponse()
                     .setBody(this.gson.toJson(Collections.singletonList(hakijaryhmavalintaperusteista)))
+                    .setResponseCode(200));
+            mockWebServer.enqueue(new MockResponse()
+                    .addHeader("Location", mockWebServer.url("/") + "cas/tickets")
+                    .setResponseCode(201));
+            mockWebServer.enqueue(new MockResponse()
+                    .setBody(VALID_TICKET)
                     .setResponseCode(200));
             mockWebServer.enqueue(new MockResponse()
                     .setBody(this.gson.toJson(Collections.singletonList(valintatapajononHakijaryhmavalintaperusteista)))
@@ -271,6 +390,12 @@ public class SijoitteluResourceTest {
             final HashMap<String, List<ValintatapajonoDTO>> vpMap = new HashMap<>();
             vpMap.put(hakukohdeOid, Collections.singletonList(valintaperusteista));
 
+            mockWebServer.enqueue(new MockResponse()
+                    .addHeader("Location", mockWebServer.url("/") + "cas/tickets")
+                    .setResponseCode(201));
+            mockWebServer.enqueue(new MockResponse()
+                    .setBody(VALID_TICKET)
+                    .setResponseCode(200));
             mockWebServer.enqueue(new MockResponse()
                     .setBody(this.gson.toJson(vpMap))
                     .setResponseCode(200));
