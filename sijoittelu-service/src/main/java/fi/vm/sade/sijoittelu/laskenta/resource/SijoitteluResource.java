@@ -6,6 +6,7 @@ import com.google.common.collect.Sets;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonSyntaxException;
 import fi.vm.sade.javautils.nio.cas.CasClient;
 import fi.vm.sade.service.valintaperusteet.dto.HakijaryhmaValintatapajonoDTO;
@@ -73,18 +74,8 @@ public class SijoitteluResource {
         this.sijoitteluBookkeeperService = sijoitteluBookkeeperService;
         this.urlProperties = urlProperties;
 
-        GsonBuilder builder = new GsonBuilder();
-
-//        builder.registerTypeAdapter(Date.class, new JsonDeserializer<Date>() {
-//
-//            public Date deserialize(JsonElement json) throws JsonParseException {
-//                try {
-//                    return new Date(json.getAsJsonPrimitive().getAsLong());
-//                } catch (JsonParseException e) {
-//                    throw new JsonParseException(e);
-//                }
-//            }
-//        });
+        GsonBuilder builder = new GsonBuilder()
+                .registerTypeAdapter(Date.class, (JsonDeserializer<Date>) (json, typeOfT, context) -> new Date(json.getAsJsonPrimitive().getAsLong()));
 
         this.gson = builder.create();
 
@@ -220,7 +211,7 @@ public class SijoitteluResource {
                                 .filter(v -> TRUE.equals(v.getAktiivinen()))
                                 .collect(Collectors.toMap(v -> v.getOid(), v -> v));
                     } catch (JsonSyntaxException e) {
-                        throw new RuntimeException(String.format("Failed to parse response from JSON %s", hakuResponse.getResponseBody()));
+                        throw new RuntimeException(String.format("Failed to parse response from JSON %s", hakuResponse.getResponseBody()), e);
                     }
                 } else {
                     throw new RuntimeException(String.format("Failed to fetch haku %s from %s. Response status: %s", hakukohdeOidsWithHakijaryhma, hakuResponse.getUri().toString(), hakuResponse.getStatusCode()));
