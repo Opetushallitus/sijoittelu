@@ -60,10 +60,20 @@ public class ErillisSijoitteluResource {
     @Qualifier("SijoitteluCasClient") CasClient sijoitteluCasClient;
 
     private UrlProperties urlProperties;
-    private final Gson gson = new GsonBuilder().create();;
+    private Gson gson;
 
     public ErillisSijoitteluResource(UrlProperties urlProperties) {
         this.urlProperties = urlProperties;
+
+        GsonBuilder builder = new GsonBuilder();
+
+//        builder.registerTypeAdapter(Date.class, new JsonDeserializer<Date>() {
+//            public Date deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+//                return new Date(json.getAsJsonPrimitive().getAsLong());
+//            }
+//        });
+
+        this.gson = builder.create();
     }
 
     @POST
@@ -109,7 +119,7 @@ public class ErillisSijoitteluResource {
         TypeToken<Map<String, List<ValintatapajonoDTO>>> token = new TypeToken<Map<String, List<ValintatapajonoDTO>>>() {};
 
         try {
-            Response valintatapajonoResponse = sijoitteluCasClient.executeBlocking(valintatapajonoRequest);
+            Response valintatapajonoResponse = sijoitteluCasClient.executeWithServiceTicketBlocking(valintatapajonoRequest);
             if (valintatapajonoResponse.getStatusCode() == 200) {
                 try {
                     valintaperusteet = gson.fromJson(valintatapajonoResponse.getResponseBody(), token.getType());
