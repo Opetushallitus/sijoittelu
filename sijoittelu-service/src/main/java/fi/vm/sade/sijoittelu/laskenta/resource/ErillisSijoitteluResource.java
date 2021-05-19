@@ -5,6 +5,7 @@ import akka.util.Timeout;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonSyntaxException;
 import fi.vm.sade.javautils.nio.cas.CasClient;
 import fi.vm.sade.service.valintaperusteet.dto.ValintatapajonoDTO;
@@ -33,10 +34,7 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.ExecutionException;
 
 import static fi.vm.sade.valintalaskenta.tulos.roles.ValintojenToteuttaminenRole.CRUD;
@@ -65,13 +63,8 @@ public class ErillisSijoitteluResource {
     public ErillisSijoitteluResource(UrlProperties urlProperties) {
         this.urlProperties = urlProperties;
 
-        GsonBuilder builder = new GsonBuilder();
-
-//        builder.registerTypeAdapter(Date.class, new JsonDeserializer<Date>() {
-//            public Date deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
-//                return new Date(json.getAsJsonPrimitive().getAsLong());
-//            }
-//        });
+        GsonBuilder builder = new GsonBuilder()
+                .registerTypeAdapter(Date.class, (JsonDeserializer<Date>) (json, typeOfT, context) -> new Date(json.getAsJsonPrimitive().getAsLong()));
 
         this.gson = builder.create();
     }
