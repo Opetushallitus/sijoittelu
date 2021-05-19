@@ -39,7 +39,6 @@ import java.util.concurrent.ExecutionException;
 
 import static fi.vm.sade.valintalaskenta.tulos.roles.ValintojenToteuttaminenRole.CRUD;
 
-
 @Path("erillissijoittele")
 @Controller
 @PreAuthorize("isAuthenticated()")
@@ -49,8 +48,6 @@ public class ErillisSijoitteluResource {
 
     @Autowired
     private ValintatietoService valintatietoService;
-
-
 
     @Autowired
     private ActorService actorService;
@@ -62,11 +59,10 @@ public class ErillisSijoitteluResource {
 
     public ErillisSijoitteluResource(UrlProperties urlProperties) {
         this.urlProperties = urlProperties;
-
-        GsonBuilder builder = new GsonBuilder()
-                .registerTypeAdapter(Date.class, (JsonDeserializer<Date>) (json, typeOfT, context) -> new Date(json.getAsJsonPrimitive().getAsLong()));
-
-        this.gson = builder.create();
+        this.gson = new GsonBuilder()
+                .registerTypeAdapter(Date.class, (JsonDeserializer<Date>) (json, typeOfT, context) ->
+                        new Date(json.getAsJsonPrimitive().getAsLong()))
+                .create();
     }
 
     @POST
@@ -105,8 +101,6 @@ public class ErillisSijoitteluResource {
                 .addHeader("Caller-Id", HttpClients.CALLER_ID)
                 .setRequestTimeout(10000)
                 .build();
-
-
 
         Map<String, List<ValintatapajonoDTO>> valintaperusteet = null;
         TypeToken<Map<String, List<ValintatapajonoDTO>>> token = new TypeToken<Map<String, List<ValintatapajonoDTO>>>() {};

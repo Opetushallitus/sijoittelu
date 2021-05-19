@@ -74,11 +74,10 @@ public class SijoitteluResource {
         this.sijoitteluBookkeeperService = sijoitteluBookkeeperService;
         this.urlProperties = urlProperties;
 
-        GsonBuilder builder = new GsonBuilder()
-                .registerTypeAdapter(Date.class, (JsonDeserializer<Date>) (json, typeOfT, context) -> new Date(json.getAsJsonPrimitive().getAsLong()));
-
-        this.gson = builder.create();
-
+        this.gson = new GsonBuilder()
+                .registerTypeAdapter(Date.class, (JsonDeserializer<Date>) (json, typeOfT, context) ->
+                        new Date(json.getAsJsonPrimitive().getAsLong()))
+                .create();
     }
 
     @GET
@@ -185,78 +184,69 @@ public class SijoitteluResource {
         TypeToken<List<HakijaryhmaValintatapajonoDTO>> token = new TypeToken<List<HakijaryhmaValintatapajonoDTO>>() {};
         if (!hakukohdeOidsWithHakijaryhma.isEmpty()) {
             LOGGER.info("Haetaan hakijaryhmät sijoittelua varten");
+            LOGGER.info("Haetaan hakukohdekohtaiset hakijaryhmät sijoittelua");
+            Request hakuRequest = new RequestBuilder()
+                    .setUrl(urlProperties.url("valintaperusteet.haku.rest.url"))
+                    .setMethod("POST")
+                    .setBody(this.gson.toJson(Lists.newArrayList(hakukohdeOidsWithHakijaryhma)))
+                    .addHeader("Accept", "application/json")
+                    .addHeader("Content-type", "application/json")
+                    .addHeader("Caller-Id", HttpClients.CALLER_ID)
+                    .setRequestTimeout(10000)
+                    .build();
+            Response hakuResponse = sijoitteluCasClient.executeWithServiceTicketBlocking(hakuRequest);
 
-                LOGGER.info("Haetaan hakukohdekohtaiset hakijaryhmät sijoittelua");
+            if (hakuResponse.getStatusCode() == 200) {
+                try {
+                    List<HakijaryhmaValintatapajonoDTO> hakijaryhmaByOids = gson.fromJson(hakuResponse.getResponseBody(), token.getType());
+                    hakijaryhmaByOid = hakijaryhmaByOids
+                            .stream()
+                            // Valintaperusteet pitaisi palauttaa vain aktiivisia mutta filtteroidaan varmuuden vuoksi
+                            .filter(v -> TRUE.equals(v.getAktiivinen()))
+                            .collect(Collectors.toMap(v -> v.getOid(), v -> v));
+                } catch (JsonSyntaxException e) {
+                    throw new RuntimeException(String.format("Failed to parse response from JSON %s", hakuResponse.getResponseBody()), e);
+                }
+            } else {
+                throw new RuntimeException(String.format("Failed to fetch haku %s from %s. Response status: %s", hakukohdeOidsWithHakijaryhma, hakuResponse.getUri().toString(), hakuResponse.getStatusCode()));
+            }
 
-                Request hakuRequest = new RequestBuilder()
-                        .setUrl(urlProperties.url("valintaperusteet.haku.rest.url"))
+            try {
+                LOGGER.info("Haetaan valintatapajonokohtaiset hakijaryhmät sijoittelua varten");
+                Request hakijaryhmaRequest = new RequestBuilder()
+                        .setUrl(urlProperties.url("valintaperusteet.hakijaryhmat.rest.url"))
                         .setMethod("POST")
-                        .setBody(this.gson.toJson(Lists.newArrayList(hakukohdeOidsWithHakijaryhma)))
+                        .setBody(this.gson.toJson(Lists.newArrayList(valintatapajonoOidsWithHakijaryhma)))
                         .addHeader("Accept", "application/json")
                         .addHeader("Content-type", "application/json")
                         .addHeader("Caller-Id", HttpClients.CALLER_ID)
                         .setRequestTimeout(10000)
                         .build();
-                LOGGER.info("Calling cas...");
-                Response hakuResponse = sijoitteluCasClient.executeWithServiceTicketBlocking(hakuRequest);
-
-                if (hakuResponse.getStatusCode() == 200) {
+                Response hakijaryhmaResponse = sijoitteluCasClient.executeWithServiceTicketBlocking(hakijaryhmaRequest);
+                if (hakijaryhmaResponse.getStatusCode() == 200) {
                     try {
+                        List<HakijaryhmaValintatapajonoDTO> valintatapajonojenHakijaryhmaByOids = gson.fromJson(hakijaryhmaResponse.getResponseBody(), token.getType());
 
-                        List<HakijaryhmaValintatapajonoDTO> hakijaryhmaByOids = gson.fromJson(hakuResponse.getResponseBody(), token.getType());
+                        Map<String, HakijaryhmaValintatapajonoDTO> valintatapajonojenHakijaryhmaByOid =
+                                valintatapajonojenHakijaryhmaByOids
+                                        .stream()
+                                        // Valintaperusteet pitaisi palauttaa vain aktiivisia mutta filtteroidaan varmuuden vuoksi
+                                        .filter(v -> TRUE.equals(v.getAktiivinen()))
+                                        .collect(Collectors.toMap(v -> v.getOid(), v -> v));
 
-                        hakijaryhmaByOid = hakijaryhmaByOids
-                                .stream()
-                                // Valintaperusteet pitaisi palauttaa vain aktiivisia mutta filtteroidaan varmuuden vuoksi
-                                .filter(v -> TRUE.equals(v.getAktiivinen()))
-                                .collect(Collectors.toMap(v -> v.getOid(), v -> v));
+                        hakijaryhmaByOid.putAll(valintatapajonojenHakijaryhmaByOid);
                     } catch (JsonSyntaxException e) {
-                        throw new RuntimeException(String.format("Failed to parse response from JSON %s", hakuResponse.getResponseBody()), e);
+                        throw new RuntimeException(String.format("Failed to parse response from JSON %s", hakijaryhmaResponse.getResponseBody()));
                     }
                 } else {
-                    throw new RuntimeException(String.format("Failed to fetch haku %s from %s. Response status: %s", hakukohdeOidsWithHakijaryhma, hakuResponse.getUri().toString(), hakuResponse.getStatusCode()));
+                    throw new RuntimeException(String.format("Failed to fetch hakijaryhmät %s from %s. Response status: %s", hakukohdeOidsWithHakijaryhma, hakijaryhmaResponse.getUri().toString(), hakijaryhmaResponse.getStatusCode()));
                 }
-
-                try {
-                    LOGGER.info("Haetaan valintatapajonokohtaiset hakijaryhmät sijoittelua varten");
-
-                    Request hakijaryhmaRequest = new RequestBuilder()
-                            .setUrl(urlProperties.url("valintaperusteet.hakijaryhmat.rest.url"))
-                            .setMethod("POST")
-                            .setBody(this.gson.toJson(Lists.newArrayList(valintatapajonoOidsWithHakijaryhma)))
-                            .addHeader("Accept", "application/json")
-                            .addHeader("Content-type", "application/json")
-                            .addHeader("Caller-Id", HttpClients.CALLER_ID)
-                            .setRequestTimeout(10000)
-                            .build();
-                    Response hakijaryhmaResponse = sijoitteluCasClient.executeWithServiceTicketBlocking(hakijaryhmaRequest);
-
-                    if (hakijaryhmaResponse.getStatusCode() == 200) {
-                        try {
-                            List<HakijaryhmaValintatapajonoDTO> valintatapajonojenHakijaryhmaByOids = gson.fromJson(hakijaryhmaResponse.getResponseBody(), token.getType());
-
-                            Map<String, HakijaryhmaValintatapajonoDTO> valintatapajonojenHakijaryhmaByOid =
-                                    valintatapajonojenHakijaryhmaByOids
-                                            .stream()
-                                            // Valintaperusteet pitaisi palauttaa vain aktiivisia mutta filtteroidaan varmuuden vuoksi
-                                            .filter(v -> TRUE.equals(v.getAktiivinen()))
-                                            .collect(Collectors.toMap(v -> v.getOid(), v -> v));
-
-                            hakijaryhmaByOid.putAll(valintatapajonojenHakijaryhmaByOid);
-                        } catch (JsonSyntaxException e) {
-                            throw new RuntimeException(String.format("Failed to parse response from JSON %s", hakijaryhmaResponse.getResponseBody()));
-                        }
-                    } else {
-                        throw new RuntimeException(String.format("Failed to fetch hakijaryhmät %s from %s. Response status: %s", hakukohdeOidsWithHakijaryhma, hakijaryhmaResponse.getUri().toString(), hakijaryhmaResponse.getStatusCode()));
-                    }
-                } catch (ExecutionException e) {
-                    LOGGER.error("Hakijaryhmien hakeminen epäonnistui virheeseen!", e);
-                    throw e;
-                }
-                LOGGER.info("Saatiin haun {} {}:lle hakukohteelle yhteensä {} aktiivista hakijaryhmää",
-                        haku.getHakuOid(), haku.getHakukohteet().size(), hakijaryhmaByOid.size());
-
-
+            } catch (ExecutionException e) {
+                LOGGER.error("Hakijaryhmien hakeminen epäonnistui virheeseen!", e);
+                throw e;
+            }
+            LOGGER.info("Saatiin haun {} {}:lle hakukohteelle yhteensä {} aktiivista hakijaryhmää",
+                    haku.getHakuOid(), haku.getHakukohteet().size(), hakijaryhmaByOid.size());
         }
         return hakijaryhmaByOid;
     }
@@ -272,7 +262,6 @@ public class SijoitteluResource {
                     TypeToken<Map<String, List<ValintatapajonoDTO>>> token = new TypeToken<Map<String, List<ValintatapajonoDTO>>>() {};
                     try {
                         LOGGER.info("Haetaan valintatapajonokohtaiset hakijaryhmät sijoittelua varten");
-
                         Request valintatapajonoRequest = new RequestBuilder()
                                 .setUrl(urlProperties.url("valintaperusteet.valintatapajono.rest.url"))
                                 .setMethod("POST")
