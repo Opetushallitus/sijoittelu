@@ -141,9 +141,6 @@ public class SijoitteluResourceTest {
                         .setBody(this.gson.toJson(asList(hakijaryhmavalintaperusteista)))
                         .setResponseCode(200));
                 mockWebServer.enqueue(new MockResponse()
-                        .addHeader("Location", mockWebServer.url("/") + "cas/tickets")
-                        .setResponseCode(201));
-                mockWebServer.enqueue(new MockResponse()
                         .setBody(VALID_TICKET)
                         .setResponseCode(200));
                 mockWebServer.enqueue(new MockResponse()
@@ -153,9 +150,6 @@ public class SijoitteluResourceTest {
                 final HashMap<String, List<ValintatapajonoDTO>> vpMap = new HashMap<>();
                 vpMap.put(hakukohdeOid, Arrays.asList(valintaperusteista));
 
-                mockWebServer.enqueue(new MockResponse()
-                        .addHeader("Location", mockWebServer.url("/") + "cas/tickets")
-                        .setResponseCode(201));
                 mockWebServer.enqueue(new MockResponse()
                         .setBody(VALID_TICKET)
                         .setResponseCode(200));
@@ -269,9 +263,6 @@ public class SijoitteluResourceTest {
                     .setBody(this.gson.toJson(Collections.singletonList(hakijaryhmavalintaperusteista)))
                     .setResponseCode(200));
             mockWebServer.enqueue(new MockResponse()
-                    .addHeader("Location", mockWebServer.url("/") + "cas/tickets")
-                    .setResponseCode(201));
-            mockWebServer.enqueue(new MockResponse()
                     .setBody(VALID_TICKET)
                     .setResponseCode(200));
             mockWebServer.enqueue(new MockResponse()
@@ -281,9 +272,6 @@ public class SijoitteluResourceTest {
             final HashMap<String, List<ValintatapajonoDTO>> vpMap = new HashMap<>();
             vpMap.put(hakukohdeOid, Collections.singletonList(valintaperusteista));
 
-            mockWebServer.enqueue(new MockResponse()
-                    .addHeader("Location", mockWebServer.url("/") + "cas/tickets")
-                    .setResponseCode(201));
             mockWebServer.enqueue(new MockResponse()
                     .setBody(VALID_TICKET)
                     .setResponseCode(200));
