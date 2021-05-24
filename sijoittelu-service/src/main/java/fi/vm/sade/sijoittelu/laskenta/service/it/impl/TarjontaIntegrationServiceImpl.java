@@ -54,7 +54,7 @@ public class TarjontaIntegrationServiceImpl implements TarjontaIntegrationServic
                         .setRequestTimeout(10000)
                         .build();
 
-                    Response koutaResponse = koutaInternalCasClient.executeWithServiceTicketBlocking(request);
+                    Response koutaResponse = koutaInternalCasClient.executeBlocking(request);
                     if (koutaResponse.getStatusCode() == 200) {
                         return new Haku(this.gson.fromJson(koutaResponse.getResponseBody(StandardCharsets.UTF_8), KoutaHaku.class), ohjausparametrit);
                     } else {
