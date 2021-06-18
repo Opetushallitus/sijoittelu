@@ -184,7 +184,7 @@ public class SijoitteluResource {
         TypeToken<List<HakijaryhmaValintatapajonoDTO>> token = new TypeToken<List<HakijaryhmaValintatapajonoDTO>>() {};
         if (!hakukohdeOidsWithHakijaryhma.isEmpty()) {
             LOGGER.info("Haetaan hakijaryhmät sijoittelua varten");
-            LOGGER.info("Haetaan hakukohdekohtaiset hakijaryhmät sijoittelua");
+            LOGGER.info("Haetaan hakukohdekohtaiset hakijaryhmät sijoittelua varten");
             Request hakuRequest = new RequestBuilder()
                     .setUrl(urlProperties.url("valintaperusteet.haku.rest.url"))
                     .setMethod("POST")
@@ -192,7 +192,8 @@ public class SijoitteluResource {
                     .addHeader("Accept", "application/json")
                     .addHeader("Content-type", "application/json")
                     .addHeader("Caller-Id", HttpClients.CALLER_ID)
-                    .setRequestTimeout(10000)
+                    .setRequestTimeout(120000)
+                    .setReadTimeout(120000)
                     .build();
             Response hakuResponse = sijoitteluCasClient.executeBlocking(hakuRequest);
 
@@ -220,7 +221,8 @@ public class SijoitteluResource {
                         .addHeader("Accept", "application/json")
                         .addHeader("Content-type", "application/json")
                         .addHeader("Caller-Id", HttpClients.CALLER_ID)
-                        .setRequestTimeout(10000)
+                        .setRequestTimeout(120000)
+                        .setReadTimeout(120000)
                         .build();
                 Response hakijaryhmaResponse = sijoitteluCasClient.executeBlocking(hakijaryhmaRequest);
                 if (hakijaryhmaResponse.getStatusCode() == 200) {
@@ -269,7 +271,8 @@ public class SijoitteluResource {
                                 .addHeader("Accept", "application/json")
                                 .addHeader("Content-type", "application/json")
                                 .addHeader("Caller-Id", HttpClients.CALLER_ID)
-                                .setRequestTimeout(10000)
+                                .setRequestTimeout(120000)
+                                .setReadTimeout(120000)
                                 .build();
                         Response valintatapajonoResponse = sijoitteluCasClient.executeBlocking(valintatapajonoRequest);
 

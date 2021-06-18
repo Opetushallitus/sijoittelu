@@ -145,14 +145,6 @@ public class SijoitteluResourceTest {
                 mockWebServer.enqueue(new MockResponse()
                         .setBody(this.gson.toJson(asList(hakijaryhmavalintaperusteista)))
                         .setResponseCode(200));
-//                mockWebServer.enqueue(new MockResponse()
-//                        .setBody(VALID_TICKET)
-//                        .setResponseCode(200));
-//                mockWebServer.enqueue(new MockResponse()
-//                        .addHeader("Content-Type", "application/x-www-form-urlencoded")
-//                        .addHeader("Set-Cookie: " + String.format(COOKIENAME + "=%s; Path=/test-service/", "123456789"))
-//                        .addHeader("Set-Cookie: " + String.format("TEST-COOKIE=%s; Path=/test-service/", "WHUTEVAMAN"))
-//                        .setResponseCode(200));
                 mockWebServer.enqueue(new MockResponse()
                         .setBody(this.gson.toJson(asList(valintatapajononHakijaryhmavalintaperusteista)))
                         .setResponseCode(200));
@@ -160,14 +152,6 @@ public class SijoitteluResourceTest {
                 final HashMap<String, List<ValintatapajonoDTO>> vpMap = new HashMap<>();
                 vpMap.put(hakukohdeOid, Arrays.asList(valintaperusteista));
 
-//                mockWebServer.enqueue(new MockResponse()
-//                        .setBody(VALID_TICKET)
-//                        .setResponseCode(200));
-//                mockWebServer.enqueue(new MockResponse()
-//                        .addHeader("Content-Type", "application/x-www-form-urlencoded")
-//                        .addHeader("Set-Cookie: " + String.format(COOKIENAME + "=%s; Path=/test-service/", "123456789"))
-//                        .addHeader("Set-Cookie: " + String.format("TEST-COOKIE=%s; Path=/test-service/", "WHUTEVAMAN"))
-//                        .setResponseCode(200));
                 mockWebServer.enqueue(new MockResponse().setBody(this.gson.toJson(vpMap)));
 
                 try {
@@ -282,9 +266,6 @@ public class SijoitteluResourceTest {
             mockWebServer.enqueue(new MockResponse()
                     .setBody(this.gson.toJson(Collections.singletonList(hakijaryhmavalintaperusteista)))
                     .setResponseCode(200));
-//            mockWebServer.enqueue(new MockResponse()
-//                    .setBody(VALID_TICKET)
-//                    .setResponseCode(200));
             mockWebServer.enqueue(new MockResponse()
                     .setBody(this.gson.toJson(Collections.singletonList(valintatapajononHakijaryhmavalintaperusteista)))
                     .setResponseCode(200));
@@ -292,9 +273,6 @@ public class SijoitteluResourceTest {
             final HashMap<String, List<ValintatapajonoDTO>> vpMap = new HashMap<>();
             vpMap.put(hakukohdeOid, Collections.singletonList(valintaperusteista));
 
-//            mockWebServer.enqueue(new MockResponse()
-//                    .setBody(VALID_TICKET)
-//                    .setResponseCode(200));
             mockWebServer.enqueue(new MockResponse()
                     .setBody(this.gson.toJson(vpMap))
                     .setResponseCode(200));

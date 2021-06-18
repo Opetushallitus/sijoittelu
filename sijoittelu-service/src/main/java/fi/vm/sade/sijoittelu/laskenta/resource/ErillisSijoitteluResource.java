@@ -99,7 +99,8 @@ public class ErillisSijoitteluResource {
                 .addHeader("Accept", "application/json")
                 .addHeader("Content-type", "application/json")
                 .addHeader("Caller-Id", HttpClients.CALLER_ID)
-                .setRequestTimeout(10000)
+                .setRequestTimeout(120000)
+                .setReadTimeout(120000)
                 .build();
 
         Map<String, List<ValintatapajonoDTO>> valintaperusteet = null;
@@ -120,7 +121,6 @@ public class ErillisSijoitteluResource {
         } catch (ExecutionException e) {
             LOGGER.error("Valintatietojen haku erillissijoittelun haulle epäonnistui");
         }
-
 
         HakuDTO haku = valintatietoService.haeValintatiedotJonoille(hakuOid, hakukohteet.getHakukohteet(), Optional.of(valintaperusteet));
         LOGGER.info("Valintatiedot haettu serviceltä haulle {}!", hakuOid);

@@ -51,7 +51,8 @@ public class TarjontaIntegrationServiceImpl implements TarjontaIntegrationServic
                         .setMethod("GET")
                         .addHeader("Accept", "application/json")
                         .addHeader("Caller-Id", HttpClients.CALLER_ID)
-                        .setRequestTimeout(10000)
+                        .setRequestTimeout(120000)
+                        .setReadTimeout(120000)
                         .build();
 
                     Response koutaResponse = koutaInternalCasClient.executeBlocking(request);
