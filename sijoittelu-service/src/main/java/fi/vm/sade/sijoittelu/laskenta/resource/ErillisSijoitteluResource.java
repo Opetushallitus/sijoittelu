@@ -52,12 +52,12 @@ public class ErillisSijoitteluResource {
     @Autowired
     private ActorService actorService;
 
-    @Qualifier("SijoitteluCasClient") CasClient sijoitteluCasClient;
-
+    private final CasClient sijoitteluCasClient;
     private UrlProperties urlProperties;
     private Gson gson;
 
-    public ErillisSijoitteluResource(UrlProperties urlProperties) {
+    public ErillisSijoitteluResource(@Qualifier("SijoitteluCasClient") CasClient sijoitteluCasClient, UrlProperties urlProperties) {
+        this.sijoitteluCasClient = sijoitteluCasClient;
         this.urlProperties = urlProperties;
         this.gson = new GsonBuilder()
                 .registerTypeAdapter(Date.class, (JsonDeserializer<Date>) (json, typeOfT, context) ->
