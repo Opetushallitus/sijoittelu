@@ -44,7 +44,7 @@ public class HttpClients {
             @Value("${cas.session.valintaperusteet}") String sessionUrl) {
         String ticketsUrl = urlProperties.url("cas.tickets.url");
         String service = urlProperties.url("cas.service.valintaperusteet");
-        return new CasClient(new CasConfig(
+        return new CasClient(CasConfig.CustomServiceTicketHeaderCasConfig(
                 username,
                 password,
                 ticketsUrl,
@@ -53,7 +53,7 @@ public class HttpClients {
                 CALLER_ID,
                 "JSESSIONID",
                 "/j_spring_cas_security_check",
-                sessionUrl
+                "CasSecurityTicket"
         )
         );
     }

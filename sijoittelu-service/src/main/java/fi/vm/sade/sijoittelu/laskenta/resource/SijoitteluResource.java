@@ -195,7 +195,7 @@ public class SijoitteluResource {
                     .setRequestTimeout(120000)
                     .setReadTimeout(120000)
                     .build();
-            Response hakuResponse = sijoitteluCasClient.executeBlocking(hakuRequest);
+            Response hakuResponse = sijoitteluCasClient.executeWithServiceTicketBlocking(hakuRequest);
 
             if (hakuResponse.getStatusCode() == 200) {
                 try {
@@ -224,7 +224,7 @@ public class SijoitteluResource {
                         .setRequestTimeout(120000)
                         .setReadTimeout(120000)
                         .build();
-                Response hakijaryhmaResponse = sijoitteluCasClient.executeBlocking(hakijaryhmaRequest);
+                Response hakijaryhmaResponse = sijoitteluCasClient.executeWithServiceTicketBlocking(hakijaryhmaRequest);
                 if (hakijaryhmaResponse.getStatusCode() == 200) {
                     try {
                         List<HakijaryhmaValintatapajonoDTO> valintatapajonojenHakijaryhmaByOids = gson.fromJson(hakijaryhmaResponse.getResponseBody(), token.getType());
@@ -274,7 +274,7 @@ public class SijoitteluResource {
                                 .setRequestTimeout(120000)
                                 .setReadTimeout(120000)
                                 .build();
-                        Response valintatapajonoResponse = sijoitteluCasClient.executeBlocking(valintatapajonoRequest);
+                        Response valintatapajonoResponse = sijoitteluCasClient.executeWithServiceTicketBlocking(valintatapajonoRequest);
 
                         if (valintatapajonoResponse.getStatusCode() == 200) {
                             try {

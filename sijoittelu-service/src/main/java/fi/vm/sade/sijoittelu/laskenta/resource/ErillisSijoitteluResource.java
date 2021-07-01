@@ -107,7 +107,7 @@ public class ErillisSijoitteluResource {
         TypeToken<Map<String, List<ValintatapajonoDTO>>> token = new TypeToken<Map<String, List<ValintatapajonoDTO>>>() {};
 
         try {
-            Response valintatapajonoResponse = sijoitteluCasClient.executeBlocking(valintatapajonoRequest);
+            Response valintatapajonoResponse = sijoitteluCasClient.executeWithServiceTicketBlocking(valintatapajonoRequest);
             if (valintatapajonoResponse.getStatusCode() == 200) {
                 try {
                     valintaperusteet = gson.fromJson(valintatapajonoResponse.getResponseBody(), token.getType());
