@@ -139,7 +139,18 @@ public class SijoitteluBusinessService {
         Map<String, VastaanottoDTO> kaudenAiemmatVastaanotot = aiemmanVastaanotonHakukohdePerHakija(hakuOid);
         stopWatch.stop();
         LOG.info("Haun {} sijoittelun koko: {} olemassaolevaa, {} uutta, {} valintatulosta",
-            hakuOid, edellisenSijoitteluajonTulokset.size(), uudenSijoitteluajonHakukohteet.size(), valintatulokset.size());
+                hakuOid,
+                edellisenSijoitteluajonTulokset
+                        .stream()
+                        .filter(hk -> hk.getValintatapajonot() != null && hk.getValintatapajonot().size() > 0)
+                        .collect(Collectors.toList())
+                        .size(),
+                uudenSijoitteluajonHakukohteet
+                        .stream()
+                        .filter(hk -> hk.getValintatapajonot() != null && hk.getValintatapajonot().size() > 0)
+                        .collect(Collectors.toList())
+                        .size(),
+                valintatulokset.size());
 
         stopWatch.start("Luodaan sijoitteluajoWrapper ja asetetaan parametrit");
         final SijoitteluajoWrapper sijoitteluajoWrapper = SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(
@@ -226,7 +237,16 @@ public class SijoitteluBusinessService {
 
         LOG.info(String.format("Valintalaskennasta on löytynyt laskennan tuloksia %d hakukohteelle, " +
                 "edellisestä sijoitteluajosta löytyy sijoittelun tuloksia %d hakukohteelle.",
-            uudenSijoitteluajonHakukohteet.size(), edellisenSijoitteluajonTulokset.size()));
+                uudenSijoitteluajonHakukohteet
+                        .stream()
+                        .filter(hk -> hk.getValintatapajonot() != null && hk.getValintatapajonot().size() > 0)
+                        .collect(Collectors.toList())
+                        .size(),
+                edellisenSijoitteluajonTulokset
+                        .stream()
+                        .filter(hk -> hk.getValintatapajonot() != null && hk.getValintatapajonot().size() > 0)
+                        .collect(Collectors.toList())
+                        .size()));
 
         Set<String> joSijoitellutJonot = hakukohteidenJonoOidit(edellisenSijoitteluajonTulokset);
         Set<String> uudenSijoitteluajonJonoOidit = hakukohteidenJonoOidit(uudenSijoitteluajonHakukohteet);
