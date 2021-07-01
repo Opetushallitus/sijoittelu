@@ -92,21 +92,16 @@ public class SijoitteleHakijaryhmaTest {
     }
     @Test
     public void sijoitteluVarallaOlijoitaEiHyvaksytaKunSaannotEiVoimassa() {
-        final LocalDateTime today = ajoWrapper.getToday();
-        try {
-            ajoWrapper.setVarasijaTayttoPaattyy(ajoWrapper.getToday().minusDays(1));
-            Set<HakukohdeWrapper> muuttuneetHakukohteet = SijoitteleHakijaryhma.sijoitteleHakijaryhma(ajoWrapper, hakijaryhmaWrapper);
-            Assert.assertThat(muuttuneetHakukohteet, Matchers.hasSize(0));
+        ajoWrapper.setVarasijaTayttoPaattyy(LocalDateTime.now().minusDays(1));
+        Set<HakukohdeWrapper> muuttuneetHakukohteet = SijoitteleHakijaryhma.sijoitteleHakijaryhma(ajoWrapper, hakijaryhmaWrapper);
+        Assert.assertThat(muuttuneetHakukohteet, Matchers.hasSize(0));
 
-            List<HakemusWrapper> allHakemusWrappers = hakijaryhmaWrapper.getHenkiloWrappers().stream().flatMap(h -> h.getHakemukset().stream()).collect(Collectors.toList());
-            List<HakemusWrapper> hyvaksytytHakemukset = allHakemusWrappers.stream().filter(h -> h.getHakemus().getTila().equals(HakemuksenTila.HYVAKSYTTY)).collect(Collectors.toList());
-            List<HakemusWrapper> varallaolevatHakemukset = allHakemusWrappers.stream().filter(h -> h.getHakemus().getTila().equals(HakemuksenTila.VARALLA)).collect(Collectors.toList());
+        List<HakemusWrapper> allHakemusWrappers = hakijaryhmaWrapper.getHenkiloWrappers().stream().flatMap(h -> h.getHakemukset().stream()).collect(Collectors.toList());
+        List<HakemusWrapper> hyvaksytytHakemukset = allHakemusWrappers.stream().filter(h -> h.getHakemus().getTila().equals(HakemuksenTila.HYVAKSYTTY)).collect(Collectors.toList());
+        List<HakemusWrapper> varallaolevatHakemukset = allHakemusWrappers.stream().filter(h -> h.getHakemus().getTila().equals(HakemuksenTila.VARALLA)).collect(Collectors.toList());
 
-            Assert.assertThat(hyvaksytytHakemukset, Matchers.hasSize(0));
-            Assert.assertThat(varallaolevatHakemukset, Matchers.hasSize(N_OF_HAKEMUKSET_TO_GENERATE));
-        } finally {
-            ajoWrapper.setVarasijaTayttoPaattyy(today);
-        }
+        Assert.assertThat(hyvaksytytHakemukset, Matchers.hasSize(0));
+        Assert.assertThat(varallaolevatHakemukset, Matchers.hasSize(N_OF_HAKEMUKSET_TO_GENERATE));
     }
 
     @Test(expected = IllegalStateException.class)

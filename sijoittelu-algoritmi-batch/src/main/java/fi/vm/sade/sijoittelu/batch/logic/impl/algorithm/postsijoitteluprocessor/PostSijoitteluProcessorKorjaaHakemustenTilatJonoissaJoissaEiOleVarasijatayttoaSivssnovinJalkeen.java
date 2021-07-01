@@ -34,7 +34,7 @@ public class PostSijoitteluProcessorKorjaaHakemustenTilatJonoissaJoissaEiOleVara
 
     @Override
     public void process(SijoitteluajoWrapper ajoWrapper) {
-        if (!SivssnovUtil.varasijaSaannotVoimassa(ajoWrapper)) {
+        if (!ajoWrapper.varasijaSaannotVoimassa()) {
             return;
         }
         ajoWrapper.getHakukohteet().forEach(h -> h.getValintatapajonot().forEach(this::process));

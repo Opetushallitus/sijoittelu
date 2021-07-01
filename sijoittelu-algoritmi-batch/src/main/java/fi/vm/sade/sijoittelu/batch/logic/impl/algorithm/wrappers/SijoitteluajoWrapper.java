@@ -62,13 +62,13 @@ public class SijoitteluajoWrapper {
 
     private final LocalDateTime today = LocalDateTime.now();
 
-    private LocalDateTime kaikkiKohteetSijoittelussa = LocalDateTime.now().minusDays(1);
+    private LocalDateTime kaikkiKohteetSijoittelussa;
 
-    private LocalDateTime varasijaSaannotAstuvatVoimaan = LocalDateTime.now().minusDays(1);
+    private LocalDateTime varasijaSaannotAstuvatVoimaan;
 
-    private LocalDateTime varasijaTayttoPaattyy = LocalDateTime.now().plusYears(100);
+    private LocalDateTime varasijaTayttoPaattyy;
 
-    private LocalDateTime hakuKierrosPaattyy = LocalDateTime.now().plusYears(100);
+    private LocalDateTime hakuKierrosPaattyy;
 
     private boolean isKKHaku = false;
 
@@ -103,28 +103,20 @@ public class SijoitteluajoWrapper {
         this.muuttuneetValintatulokset = muuttuneetValintatulokset;
     }
 
-    public LocalDateTime getToday() {
-        return today;
-    }
-
-    public LocalDateTime getKaikkiKohteetSijoittelussa() {
-        return kaikkiKohteetSijoittelussa;
-    }
-
     public void setKaikkiKohteetSijoittelussa(LocalDateTime kaikkiKohteetSijoittelussa) {
         this.kaikkiKohteetSijoittelussa = kaikkiKohteetSijoittelussa;
     }
 
     public boolean paivamaaraOhitettu() {
-        return today.isAfter(kaikkiKohteetSijoittelussa);
+        return this.kaikkiKohteetSijoittelussa == null || today.isAfter(this.kaikkiKohteetSijoittelussa);
     }
 
     public boolean varasijaSaannotVoimassa() {
-        return today.isAfter(varasijaSaannotAstuvatVoimaan);
+        return this.varasijaSaannotAstuvatVoimaan == null || today.isAfter(this.varasijaSaannotAstuvatVoimaan);
     }
 
     public boolean hakukierrosOnPaattynyt() {
-        return today.isAfter(hakuKierrosPaattyy);
+        return this.hakuKierrosPaattyy != null && today.isAfter(this.hakuKierrosPaattyy);
     }
 
     public boolean isKKHaku() {
@@ -143,24 +135,12 @@ public class SijoitteluajoWrapper {
         this.isAmkopeHaku = isAmkopeHaku;
     }
 
-    public LocalDateTime getVarasijaSaannotAstuvatVoimaan() {
-        return varasijaSaannotAstuvatVoimaan;
-    }
-
     public void setVarasijaSaannotAstuvatVoimaan(LocalDateTime varasijaSaannotAstuvatVoimaan) {
         this.varasijaSaannotAstuvatVoimaan = varasijaSaannotAstuvatVoimaan;
     }
 
-    public LocalDateTime getVarasijaTayttoPaattyy() {
-        return varasijaTayttoPaattyy;
-    }
-
     public void setVarasijaTayttoPaattyy(LocalDateTime varasijaTayttoPaattyy) {
         this.varasijaTayttoPaattyy = varasijaTayttoPaattyy;
-    }
-
-    public LocalDateTime getHakuKierrosPaattyy() {
-        return hakuKierrosPaattyy;
     }
 
     public void setHakuKierrosPaattyy(LocalDateTime hakuKierrosPaattyy) {
@@ -246,11 +226,12 @@ public class SijoitteluajoWrapper {
     }
 
     private boolean onkoVarasijaTayttoPaattynyt(ValintatapajonoWrapper valintatapajono) {
-        LocalDateTime varasijojaTaytetaanAsti =
-                asInstant(valintatapajono.getValintatapajono().getVarasijojaTaytetaanAsti())
-                .filter(d -> d.isBefore(varasijaTayttoPaattyy))
-                .orElse(varasijaTayttoPaattyy);
-        return getToday().isAfter(varasijojaTaytetaanAsti);
+        LocalDateTime valintatapajononVarasijatayttoPaattyy =
+                ofNullable(valintatapajono.getValintatapajono().getVarasijojaTaytetaanAsti())
+                        .map(d -> LocalDateTime.ofInstant(d.toInstant(), ZoneId.systemDefault()))
+                        .filter(d -> this.varasijaTayttoPaattyy == null || d.isBefore(this.varasijaTayttoPaattyy))
+                        .orElse(this.varasijaTayttoPaattyy);
+        return valintatapajononVarasijatayttoPaattyy != null && this.today.isAfter(valintatapajononVarasijatayttoPaattyy);
     }
 
     public void addMuuttuneetValintatulokset(Valintatulos... valintatulokset) {
@@ -263,9 +244,6 @@ public class SijoitteluajoWrapper {
 
     public void setEdellisenSijoittelunHakukohteet(List<Hakukohde> edellisenSijoittelunHakukohteet) {
         this.edellisenSijoittelunHakukohteet = Optional.of(edellisenSijoittelunHakukohteet);
-    }
-    private Optional<LocalDateTime> asInstant(Date d) {
-        return ofNullable(d).map(i -> LocalDateTime.ofInstant(i.toInstant(), ZoneId.systemDefault()));
     }
 
     public void setLisapaikkaTapa(LisapaikkaTapa tapa) {

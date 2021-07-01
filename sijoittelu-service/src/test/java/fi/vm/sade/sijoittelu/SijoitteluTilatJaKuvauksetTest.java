@@ -24,6 +24,7 @@ import fi.vm.sade.sijoittelu.laskenta.service.business.ActorService;
 import fi.vm.sade.sijoittelu.laskenta.service.business.SijoitteluBusinessService;
 import fi.vm.sade.sijoittelu.laskenta.service.business.SijoitteluajoResourcesLoader;
 import fi.vm.sade.sijoittelu.laskenta.service.business.ValintarekisteriService;
+import fi.vm.sade.sijoittelu.laskenta.service.it.Haku;
 import fi.vm.sade.sijoittelu.laskenta.service.it.TarjontaIntegrationService;
 import fi.vm.sade.sijoittelu.tulos.service.impl.converters.SijoitteluTulosConverter;
 import fi.vm.sade.sijoittelu.tulos.service.impl.converters.SijoitteluTulosConverterImpl;
@@ -40,6 +41,7 @@ import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 
 import java.time.Duration;
+import java.time.Instant;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -74,23 +76,17 @@ public class SijoitteluTilatJaKuvauksetTest {
             new SijoitteluConfiguration(),
             new SijoitteluajoResourcesLoader(tarjontaIntegrationService, valintarekisteriService));
 
-        when(tarjontaIntegrationService.getHaunParametrit(hakuOid)).thenReturn(haunParametrit());
-        when(tarjontaIntegrationService.getHakuByHakuOid(hakuOid)).thenReturn(tarjontaHaku());
-    }
-
-    private fi.vm.sade.sijoittelu.laskenta.external.resource.dto.HakuDTO tarjontaHaku() {
-        fi.vm.sade.sijoittelu.laskenta.external.resource.dto.HakuDTO haku = new fi.vm.sade.sijoittelu.laskenta.external.resource.dto.HakuDTO();
-        haku.setKohdejoukkoUri("haunkohdejoukko_12#1");
-        return haku;
-    }
-
-    private fi.vm.sade.sijoittelu.laskenta.external.resource.dto.ParametriDTO haunParametrit() {
-        fi.vm.sade.sijoittelu.laskenta.external.resource.dto.ParametriDTO parametrit = new fi.vm.sade.sijoittelu.laskenta.external.resource.dto.ParametriDTO();
-        parametrit.setPH_HKP(new fi.vm.sade.sijoittelu.laskenta.external.resource.dto.ParametriArvoDTO(System.currentTimeMillis() + ONE_DAY.toMillis()));
-        parametrit.setPH_VTSSV(new fi.vm.sade.sijoittelu.laskenta.external.resource.dto.ParametriArvoDTO(System.currentTimeMillis()));
-        parametrit.setPH_VSTP(new fi.vm.sade.sijoittelu.laskenta.external.resource.dto.ParametriArvoDTO(System.currentTimeMillis() + ONE_DAY.toMillis()));
-        parametrit.setPH_VSSAV(new fi.vm.sade.sijoittelu.laskenta.external.resource.dto.ParametriArvoDTO(System.currentTimeMillis() - ONE_DAY.toMillis()));
-        return parametrit;
+        Instant now = Instant.now();
+        when(tarjontaIntegrationService.getHaku(hakuOid)).thenReturn(new Haku(
+                "hakuOid",
+                "haunkohdejoukko_12#1",
+                null,
+                true,
+                now,
+                now.minus(Duration.ofDays(1)),
+                now.plus(Duration.ofDays(1)),
+                now.plus(Duration.ofDays(1))
+        ));
     }
 
     @Test

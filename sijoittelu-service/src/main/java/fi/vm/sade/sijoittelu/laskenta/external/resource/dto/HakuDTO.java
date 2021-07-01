@@ -1,11 +1,20 @@
 package fi.vm.sade.sijoittelu.laskenta.external.resource.dto;
 
 public class HakuDTO {
+    private String oid;
     private String kohdejoukkoUri;
     private String kohdejoukonTarkenne;
     private boolean usePriority = true;
 
     public HakuDTO(){}
+
+    public void setOid(String oid) {
+        this.oid = oid;
+    }
+
+    public String getOid() {
+        return oid;
+    }
 
     public String getKohdejoukkoUri() {
         return kohdejoukkoUri;

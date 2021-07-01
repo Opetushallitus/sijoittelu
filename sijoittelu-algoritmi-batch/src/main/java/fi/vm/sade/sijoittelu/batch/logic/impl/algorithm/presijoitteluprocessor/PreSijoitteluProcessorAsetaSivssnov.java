@@ -17,8 +17,7 @@ public class PreSijoitteluProcessorAsetaSivssnov implements PreSijoitteluProcess
 
     @Override
     public void process(SijoitteluajoWrapper sijoitteluajoWrapper) {
-        if (!sijoitteluajoWrapper.varasijaSaannotVoimassa() &&
-            LocalDateTime.now().isBefore(sijoitteluajoWrapper.getVarasijaSaannotAstuvatVoimaan())) {
+        if (!sijoitteluajoWrapper.varasijaSaannotVoimassa()) {
             List<Valintatapajono> sivssnovJonot = sijoitteluajoWrapper.getHakukohteet().stream()
                 .flatMap(hkv -> hkv.getValintatapajonot().stream())
                 .map(ValintatapajonoWrapper::getValintatapajono)

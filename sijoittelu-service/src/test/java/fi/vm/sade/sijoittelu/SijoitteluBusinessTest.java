@@ -14,8 +14,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import com.google.gson.GsonBuilder;
-import com.google.gson.reflect.TypeToken;
+
 import com.lordofthejars.nosqlunit.annotation.UsingDataSet;
 import com.lordofthejars.nosqlunit.core.LoadStrategyEnum;
 import com.lordofthejars.nosqlunit.mongodb.MongoDbRule;
@@ -30,11 +29,11 @@ import fi.vm.sade.sijoittelu.domain.Valintatapajono;
 import fi.vm.sade.sijoittelu.domain.Valintatapajono.JonosijaTieto;
 import fi.vm.sade.sijoittelu.domain.ValintatuloksenTila;
 import fi.vm.sade.sijoittelu.domain.Valintatulos;
-import fi.vm.sade.sijoittelu.laskenta.external.resource.dto.ParametriDTO;
 import fi.vm.sade.sijoittelu.laskenta.service.business.SijoitteluBusinessService;
 import fi.vm.sade.sijoittelu.laskenta.service.business.SijoitteluajoResourcesLoader;
 import fi.vm.sade.sijoittelu.laskenta.service.business.ValintarekisteriService;
 import fi.vm.sade.sijoittelu.laskenta.service.business.ValintatulosWithVastaanotto;
+import fi.vm.sade.sijoittelu.laskenta.service.it.Haku;
 import fi.vm.sade.sijoittelu.laskenta.service.it.TarjontaIntegrationService;
 import fi.vm.sade.valintalaskenta.domain.dto.ValintatapajonoDTO;
 import fi.vm.sade.valintalaskenta.domain.dto.valintatieto.HakuDTO;
@@ -52,6 +51,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -70,10 +70,9 @@ public class SijoitteluBusinessTest {
     @Autowired
     private SijoitteluBusinessService sijoitteluService;
 
-    @Autowired
-    private TarjontaIntegrationService tarjontaIntegrationService;
-
     private ValintatulosWithVastaanotto valintatulosWithVastaanotto;
+
+    private TarjontaIntegrationService tarjontaIntegrationService;
 
     @Autowired
     private ValintatietoService valintatietoService;
@@ -108,16 +107,16 @@ public class SijoitteluBusinessTest {
                 "valintarekisteriService",
                 valintarekisteriService);
 
-        fi.vm.sade.sijoittelu.laskenta.external.resource.dto.HakuDTO hakuDto = new fi.vm.sade.sijoittelu.laskenta.external.resource.dto.HakuDTO();
-        hakuDto.setKohdejoukkoUri("haunkohdejoukko_11#1");
-
-        when(tarjontaIntegrationService.getHakuByHakuOid(anyString())).thenReturn(hakuDto);
-
-        String json = "{ \"target\": \"1.2.246.562.29.173465377510\", \"__modified__\": 1416309364472, \"__modifiedBy__\": \"1.2.246.562.24.47840234552\", \"PH_TJT\": {\"date\": null}, \"PH_HKLPT\": {\"date\": null}, \"PH_HKMT\": {\"date\": null}, \"PH_KKM\": { \"dateStart\": null, \"dateEnd\": null }, \"PH_HVVPTP\": {\"date\": null}, \"PH_KTT\": { \"dateStart\": null, \"dateEnd\": null }, \"PH_OLVVPKE\": { \"dateStart\": null, \"dateEnd\": null }, \"PH_VLS\": { \"dateStart\": null, \"dateEnd\": null }, \"PH_SS\": { \"dateStart\": null, \"dateEnd\": null }, \"PH_JKLIP\": {\"date\": null}, \"PH_HKP\": {\"date\": 14168663953898}, \"PH_VTSSV\": {\"date\": 1416866395389}, \"PH_VSSAV\": {\"date\": 1416866458888}, \"PH_VTJH\": { \"dateStart\": null, \"dateEnd\": null }, \"PH_EVR\": {\"date\": null}, \"PH_OPVP\": {\"date\": null}, \"PH_HPVOA\": {\"date\": null}, \"PH_IP\": {\"date\": null} }";
-
-        ParametriDTO dto = new GsonBuilder().create().fromJson(json, new TypeToken<ParametriDTO>() {}.getType());
-
-        when(tarjontaIntegrationService.getHaunParametrit(anyString())).thenReturn(dto);
+        when(tarjontaIntegrationService.getHaku(anyString())).thenReturn(new Haku(
+                "hakuOid",
+                "haunkohdejoukko_11#1",
+                null,
+                true,
+                Instant.ofEpochMilli(1416866395389L),
+                Instant.ofEpochMilli(1416866458888L),
+                null,
+                Instant.ofEpochMilli(14168663953898L)
+        ));
 
         sijoitteluAjoArgumentCaptor = ArgumentCaptor.forClass(SijoitteluAjo.class);
         hakukohdeArgumentCaptor = ArgumentCaptor.forClass(List.class);
@@ -217,10 +216,16 @@ public class SijoitteluBusinessTest {
     @Test
     @UsingDataSet(locations = "peruuta_alemmat.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
     public void testAlempiaHakutoiveitaEiPeruunnutetaJosHakutoiveidenPriorisointiEiOleKaytossa() {
-        fi.vm.sade.sijoittelu.laskenta.external.resource.dto.HakuDTO hakuDto = new fi.vm.sade.sijoittelu.laskenta.external.resource.dto.HakuDTO();
-        hakuDto.setKohdejoukkoUri("haunkohdejoukko_11#1");
-        hakuDto.setUsePriority(false);
-        when(tarjontaIntegrationService.getHakuByHakuOid("haku1")).thenReturn(hakuDto);
+        when(tarjontaIntegrationService.getHaku(anyString())).thenReturn(new Haku(
+                "hakuOid",
+                "haunkohdejoukko_11#1",
+                null,
+                false,
+                Instant.ofEpochMilli(1416866395389L),
+                Instant.ofEpochMilli(1416866458888L),
+                null,
+                Instant.ofEpochMilli(14168663953898L)
+        ));
 
         HakuDTO haku = valintatietoService.haeValintatiedot("haku1");
 
@@ -488,10 +493,17 @@ public class SijoitteluBusinessTest {
     @Test()
     @UsingDataSet(locations = "peruuta_alemmat.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
     public void testPeruunnaHyvaksyttyaYlemmatHakutoiveetKunAMKOPEHaku() {
-        fi.vm.sade.sijoittelu.laskenta.external.resource.dto.HakuDTO tarjontaHaku = new fi.vm.sade.sijoittelu.laskenta.external.resource.dto.HakuDTO();
-        tarjontaHaku.setKohdejoukkoUri("haunkohdejoukko_12" + "#1");
-        tarjontaHaku.setKohdejoukonTarkenne("haunkohdejoukontarkenne_2#1");
-        when(tarjontaIntegrationService.getHakuByHakuOid(anyString())).thenReturn(tarjontaHaku);
+        when(tarjontaIntegrationService.getHaku(anyString())).thenReturn(new Haku(
+                "hakuOid",
+                "haunkohdejoukko_12#1",
+                "haunkohdejoukontarkenne_2#1",
+                true,
+                Instant.ofEpochMilli(1416866395389L),
+                Instant.ofEpochMilli(1416866458888L),
+                null,
+                Instant.ofEpochMilli(14168663953898L)
+        ));
+
         HakuDTO haku = valintatietoService.haeValintatiedot("haku1");
         sijoitteluService.sijoittele(haku, newHashSet("jono1", "jono2", "jono3"), newHashSet("jono1", "jono2", "jono3"), System.currentTimeMillis());
 

@@ -34,16 +34,6 @@
                      value="#{systemProperties['PIPED_HOST_VIRKAILIJA'] ?: 'Please set PIPED_HOST_VIRKAILIJA system property!' }"/>
   </bean>
 
-  <jaxrs-client:client id="ValintaperusteetKoostepalveluRestClient"
-                       address="#{pipedHostVirkailija + '/valintaperusteet-service/resources'}"
-                       serviceClass="fi.vm.sade.service.valintaperusteet.resource.ValintalaskentakoostepalveluResource"
-                       inheritHeaders="true">
-    <jaxrs-client:providers>
-      <bean class="com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider"/>
-      <bean class="fi.vm.sade.sijoittelu.tulos.resource.ObjectMapperProvider"/>
-    </jaxrs-client:providers>
-  </jaxrs-client:client>
-
   <jaxrs-client:client id="ParametriServiceRestClient"
                        address="#{pipedHostVirkailija + '/ohjausparametrit-service/api'}"
                        serviceClass="fi.vm.sade.sijoittelu.laskenta.external.resource.OhjausparametriResource"
@@ -56,15 +46,6 @@
   <jaxrs-client:client id="TarjontaHakuResourceRestClient"
                        address="#{pipedHostVirkailija + '/tarjonta-service/rest'}"
                        serviceClass="fi.vm.sade.sijoittelu.laskenta.external.resource.HakuV1Resource"
-                       inheritHeaders="true">
-    <jaxrs-client:providers>
-      <bean class="com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider"/>
-      <bean class="fi.vm.sade.sijoittelu.tulos.resource.ObjectMapperProvider"/>
-    </jaxrs-client:providers>
-  </jaxrs-client:client>
-  <jaxrs-client:client id="TarjontaHakukohdeResourceRestClient"
-                       address="#{pipedHostVirkailija + '/tarjonta-service/rest'}"
-                       serviceClass="fi.vm.sade.sijoittelu.laskenta.external.resource.HakukohdeV1Resource"
                        inheritHeaders="true">
     <jaxrs-client:providers>
       <bean class="com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider"/>
@@ -107,7 +88,6 @@
   <bean id="sijoitteluResource" class="fi.vm.sade.sijoittelu.laskenta.resource.SijoitteluResource">
     <constructor-arg index="0" ref="fakeSijoitteluBusinessService"/>
     <constructor-arg index="1" ref="valintatietoService"/>
-    <constructor-arg index="2" ref="ValintaperusteetKoostepalveluRestClient"/>
   </bean>
 
 </beans>
