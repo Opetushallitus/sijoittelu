@@ -115,7 +115,9 @@ public class SijoitteluBusinessTest {
                 Instant.ofEpochMilli(1416866395389L),
                 Instant.ofEpochMilli(1416866458888L),
                 null,
-                Instant.ofEpochMilli(14168663953898L)
+                Instant.ofEpochMilli(14168663953898L),
+                "",
+                true
         ));
 
         sijoitteluAjoArgumentCaptor = ArgumentCaptor.forClass(SijoitteluAjo.class);
@@ -224,7 +226,9 @@ public class SijoitteluBusinessTest {
                 Instant.ofEpochMilli(1416866395389L),
                 Instant.ofEpochMilli(1416866458888L),
                 null,
-                Instant.ofEpochMilli(14168663953898L)
+                Instant.ofEpochMilli(14168663953898L),
+                "",
+                true
         ));
 
         HakuDTO haku = valintatietoService.haeValintatiedot("haku1");
@@ -501,7 +505,9 @@ public class SijoitteluBusinessTest {
                 Instant.ofEpochMilli(1416866395389L),
                 Instant.ofEpochMilli(1416866458888L),
                 null,
-                Instant.ofEpochMilli(14168663953898L)
+                Instant.ofEpochMilli(14168663953898L),
+                "",
+                true
         ));
 
         HakuDTO haku = valintatietoService.haeValintatiedot("haku1");
