@@ -57,7 +57,7 @@ public class TarjontaIntegrationServiceImpl implements TarjontaIntegrationServic
 
                     Response koutaResponse = koutaInternalCasClient.executeBlocking(request);
                     if (koutaResponse.getStatusCode() == 200) {
-                        return new Haku(this.gson.fromJson(koutaResponse.getResponseBody(StandardCharsets.UTF_8), KoutaHaku.class), ohjausparametrit);
+                        return new Haku(this.gson.fromJson(koutaResponse.getResponseBody(StandardCharsets.UTF_8), KoutaHaku.class), ohjausparametrit, true);
                     } else {
                         throw new RuntimeException(String.format("Haun %s haku koutasta epäonnistui: %s", hakuOid, koutaResponse.getResponseBody()));
                     }
@@ -66,10 +66,44 @@ public class TarjontaIntegrationServiceImpl implements TarjontaIntegrationServic
                 }
             } else {
                 try {
-                    return new Haku(hakuV1Resource.findByOid(hakuOid).getResult(), ohjausparametrit);
+                    return new Haku(hakuV1Resource.findByOid(hakuOid).getResult(), ohjausparametrit, true);
                 } catch (Exception e) {
                     throw new RuntimeException(String.format("Haun %s haku tarjonnasta epäonnistui", hakuOid), e);
                 }
             }
     }
+
+    @Override
+    public Haku getHaku(String hakuOid, boolean validate) {
+        ParametriDTO ohjausparametrit = this.gson.fromJson(ohjausparametriResource.haePaivamaara(hakuOid), ParametriDTO.class);
+
+        if (hakuOid.length() > 30 && hakuOid.startsWith("1.2.246.562.29")) {
+            try {
+                Request request = new RequestBuilder()
+                        .setUrl(urlProperties.url("kouta-internal.haku", hakuOid))
+                        .setMethod("GET")
+                        .addHeader("Accept", "application/json")
+                        .addHeader("Caller-Id", HttpClients.CALLER_ID)
+                        .setRequestTimeout(120000)
+                        .setReadTimeout(120000)
+                        .build();
+
+                Response koutaResponse = koutaInternalCasClient.executeBlocking(request);
+                if (koutaResponse.getStatusCode() == 200) {
+                    return new Haku(this.gson.fromJson(koutaResponse.getResponseBody(StandardCharsets.UTF_8), KoutaHaku.class), ohjausparametrit, validate);
+                } else {
+                    throw new RuntimeException(String.format("Haun %s haku koutasta epäonnistui: %s", hakuOid, koutaResponse.getResponseBody()));
+                }
+            } catch (Exception e) {
+                throw new RuntimeException(String.format("Haun %s haku koutasta epäonnistui: %s", hakuOid, e));
+            }
+        } else {
+            try {
+                return new Haku(hakuV1Resource.findByOid(hakuOid).getResult(), ohjausparametrit, validate);
+            } catch (Exception e) {
+                throw new RuntimeException(String.format("Haun %s haku tarjonnasta epäonnistui", hakuOid), e);
+            }
+        }
+    }
+
 }

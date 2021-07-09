@@ -9,7 +9,9 @@ import fi.vm.sade.service.valintaperusteet.dto.KoodiDTO;
 import fi.vm.sade.service.valintaperusteet.dto.ValintatapajonoDTO;
 import fi.vm.sade.service.valintaperusteet.dto.model.Tasapistesaanto;
 import fi.vm.sade.sijoittelu.domain.SijoitteluajonTila;
+import fi.vm.sade.sijoittelu.laskenta.email.EmailService;
 import fi.vm.sade.sijoittelu.laskenta.service.business.SijoitteluBusinessService;
+import fi.vm.sade.sijoittelu.laskenta.service.it.TarjontaIntegrationService;
 import fi.vm.sade.sijoittelu.laskenta.util.EnumConverter;
 import fi.vm.sade.sijoittelu.laskenta.util.UrlProperties;
 import fi.vm.sade.util.TestUrlProperties;
@@ -72,6 +74,7 @@ public class SijoitteluResourceTest {
                 COOKIENAME,
                 "/j_spring_cas_security_check"));
 
+
         urlProperties = new TestUrlProperties(mockWebServer.url("/").toString().substring(7, mockWebServer.url("/").toString().length() - 1));
         this.gson = new GsonBuilder()
                 .registerTypeAdapter(Date.class, (JsonDeserializer<Date>) (json, typeOfT, context) ->
@@ -84,7 +87,9 @@ public class SijoitteluResourceTest {
             valintatietoService,
             sijoitteluBookkeeperService,
             sijoitteluCasClient,
-            urlProperties
+            urlProperties,
+            mock(TarjontaIntegrationService.class),
+            mock(EmailService.class)
         );
     }
 
