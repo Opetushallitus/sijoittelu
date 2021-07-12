@@ -13,8 +13,11 @@ import fi.vm.sade.service.valintaperusteet.dto.HakijaryhmaValintatapajonoDTO;
 import fi.vm.sade.service.valintaperusteet.dto.ValintatapajonoCreateDTO;
 import fi.vm.sade.service.valintaperusteet.dto.ValintatapajonoDTO;
 import fi.vm.sade.sijoittelu.domain.SijoitteluajonTila;
+import fi.vm.sade.sijoittelu.laskenta.email.EmailService;
 import fi.vm.sade.sijoittelu.laskenta.external.resource.HttpClients;
 import fi.vm.sade.sijoittelu.laskenta.service.business.SijoitteluBusinessService;
+import fi.vm.sade.sijoittelu.laskenta.service.it.Haku;
+import fi.vm.sade.sijoittelu.laskenta.service.it.TarjontaIntegrationService;
 import fi.vm.sade.sijoittelu.laskenta.util.EnumConverter;
 import fi.vm.sade.sijoittelu.laskenta.util.UrlProperties;
 import fi.vm.sade.valintalaskenta.domain.dto.HakukohdeDTO;
@@ -60,6 +63,8 @@ public class SijoitteluResource {
     private final SijoitteluBookkeeperService sijoitteluBookkeeperService;
     private final CasClient sijoitteluCasClient;
     private final UrlProperties urlProperties;
+    private final TarjontaIntegrationService tarjontaIntegrationService;
+    private final EmailService emailService;
     private final Gson gson;
 
     @Autowired
@@ -67,12 +72,16 @@ public class SijoitteluResource {
                               ValintatietoService valintatietoService,
                               SijoitteluBookkeeperService sijoitteluBookkeeperService,
                               @Qualifier("SijoitteluCasClient") CasClient sijoitteluCasClient,
-                              UrlProperties urlProperties) {
+                              UrlProperties urlProperties,
+                              TarjontaIntegrationService tarjontaIntegrationService,
+                              EmailService emailService) {
         this.sijoitteluBusinessService = sijoitteluBusinessService;
         this.valintatietoService = valintatietoService;
         this.sijoitteluCasClient = sijoitteluCasClient;
         this.sijoitteluBookkeeperService = sijoitteluBookkeeperService;
         this.urlProperties = urlProperties;
+        this.tarjontaIntegrationService = tarjontaIntegrationService;
+        this.emailService = emailService;
 
         this.gson = new GsonBuilder()
                 .registerTypeAdapter(Date.class, (JsonDeserializer<Date>) (json, typeOfT, context) ->
@@ -383,6 +392,20 @@ public class SijoitteluResource {
             } catch (Throwable t) {
                 LOGGER.error(String.format("Sijoitteluajo (tunniste %d) epäonnistui haulle %s : %s",
                         sijoitteluAjonTunniste, hakuOid, t.getMessage()), t);
+                try {
+                    Haku haku = tarjontaIntegrationService.getHaku(hakuOid, false);
+                    if(haku != null && haku.isYhteishaku()) {
+                        if(haku.isKk()) {
+                            LOGGER.error("Korkeakoulujen yhteishaun sijoitteluajo epäonnistui: {}", hakuOid);
+                            emailService.sendKkErrorEmail(haku, t);
+                        } else {
+                            LOGGER.error("2. asteen yhteishaun sijoitteluajo epäonnistui: {}", hakuOid);
+                            emailService.sendToinenAsteErrorEmail(haku, t);
+                        }
+                    }
+                } catch (Throwable t1) {
+                    LOGGER.error("Sijoitteluajon virhesähköpostin lähettäminen epäonnistui", t1);
+                }
                 sijoitteluBookkeeperService.merkitseSijoitteluAjonTila(hakuOid,
                         sijoitteluAjonTunniste,
                         SijoitteluajonTila.VIRHE);

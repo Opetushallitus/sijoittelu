@@ -85,7 +85,9 @@ public class SijoitteluTilatJaKuvauksetTest {
                 now,
                 now.minus(Duration.ofDays(1)),
                 now.plus(Duration.ofDays(1)),
-                now.plus(Duration.ofDays(1))
+                now.plus(Duration.ofDays(1)),
+                "",
+                true
         ));
     }
 
