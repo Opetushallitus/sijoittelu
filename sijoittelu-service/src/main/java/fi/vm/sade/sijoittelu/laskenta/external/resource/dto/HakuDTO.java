@@ -4,6 +4,7 @@ public class HakuDTO {
     private String oid;
     private String kohdejoukkoUri;
     private String kohdejoukonTarkenne;
+    private String hakutapaUri;
     private boolean usePriority = true;
 
     public HakuDTO(){}
@@ -38,5 +39,13 @@ public class HakuDTO {
 
     public void setUsePriority(boolean usePriority) {
         this.usePriority = usePriority;
+    }
+
+    public String getHakutapaUri() {
+        return hakutapaUri;
+    }
+
+    public void setHakutapaUri(String hakutapaUri) {
+        this.hakutapaUri = hakutapaUri;
     }
 }

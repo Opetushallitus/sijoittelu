@@ -85,3 +85,13 @@ sijoittelu-service.password.to.valintaperusteet={{omatsivut_haku_app_password}}
 valintaperusteet.valintatapajono.rest.url=https://${host.virkailija}/valintaperusteet-service/resources/valintalaskentakoostepalvelu/valintatapajono
 valintaperusteet.haku.rest.url=https://${host.virkailija}/valintaperusteet-service/resources/valintalaskentakoostepalvelu/haku
 valintaperusteet.hakijaryhmat.rest.url=https://${host.virkailija}/valintaperusteet-service/resources/valintalaskentakoostepalvelu/haku/valintatapajono/hakijaryhmat
+
+sijoittelu.email.enabled={{ sijoittelu_email_enabled | default('false') }}
+sijoittelu.email.smtp.host={{ sijoittelu_email_smtp_host | default('invalid.domain') }}
+sijoittelu.email.smtp.port={{ sijoittelu_email_smtp_port | default('25') }}
+sijoittelu.email.smtp.username={{ sijoittelu_email_smtp_username | default('') }}
+sijoittelu.email.smtp.password={{ sijoittelu_email_smtp_password | default('') }}
+sijoittelu.email.smtp.use_tls={{ sijoittelu_email_smtp_use_tls | default('false') }}
+sijoittelu.email.smtp.toinen_aste_emails={{ sijoittelu_email_smtp_toinen_aste_emails | default('') }}
+sijoittelu.email.smtp.kk_emails={{ sijoittelu_email_smtp_kk_emails | default('') }}
+sijoittelu.email.smtp.use_authentication={{ sijoittelu_email_smtp_use_authentication | default('false') }}

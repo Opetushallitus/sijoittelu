@@ -101,7 +101,9 @@ public class SijoitteluBusinessServiceValintarekisteriTest {
                 now,
                 now.minus(Duration.ofDays(1)),
                 now.plus(Duration.ofDays(1)),
-                now.plus(Duration.ofDays(1))
+                now.plus(Duration.ofDays(1)),
+                "",
+                true
         ));
     }
 
@@ -756,7 +758,9 @@ public class SijoitteluBusinessServiceValintarekisteriTest {
                 now,
                 now.minus(Duration.ofDays(1)),
                 now.plus(Duration.ofDays(1)),
-                now.plus(Duration.ofDays(1))
+                now.plus(Duration.ofDays(1)),
+                "",
+                true
         ));
         return hakuDTO;
     }
@@ -796,7 +800,9 @@ public class SijoitteluBusinessServiceValintarekisteriTest {
                 now,
                 now.minus(Duration.ofDays(1)),
                 now.plus(Duration.ofDays(1)),
-                now.plus(Duration.ofDays(1))
+                now.plus(Duration.ofDays(1)),
+                "",
+                true
         ));
 
         assertEquals(2, hakuDto.getHakukohteet().size());
