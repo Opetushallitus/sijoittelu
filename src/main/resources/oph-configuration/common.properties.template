@@ -59,6 +59,8 @@ sijoittelu-service.global.http.connectionTimeoutMillis={{sijoitteluservice_globa
 sijoittelu-service.global.http.receiveTimeoutMillis={{sijoitteluservice_global_http_receivetimeoutmillis}}
 sijoittelu-service.swagger.basepath=/sijoittelu-service/resources/
 sijoittelu.kayta.vtku31.saantoa.rajatussa.varasijataytossa={{ sijoittelu_kayta_vtku31_saantoa_rajatussa_varasijataytossa | default('true') }}
+sijoittelu-service.kouta-internal.username={{omatsivut_haku_app_username}}
+sijoittelu-service.kouta-internal.password={{omatsivut_haku_app_password}}
 
 #VALINTAREKISTERI
 valintarekisteri.db.user={{postgres_app_user}}
@@ -75,7 +77,11 @@ valintarekisteri.blaze.idle-timeout={{ valintatulosservice_blaze_idle_timeout | 
 valintarekisteri.blaze.request-timeout={{ valintatulosservice_blaze_request_timeout | default('3600') }}
 
 #VALINTAPERUSTEET
-cas.service.valintaperusteet=https://${host.virkailija}/valintaperusteet-service/j_spring_cas_security_check
+cas.service.valintaperusteet=https://${host.virkailija}/valintaperusteet-service
+cas.session.valintaperusteet=https://${host.virkailija}/valintaperusteet-service/buildversion.txt?auth
+cas.tickets.url=https://${host.virkailija}/cas
 sijoittelu-service.username.to.valintaperusteet={{omatsivut_haku_app_username}}
 sijoittelu-service.password.to.valintaperusteet={{omatsivut_haku_app_password}}
-cas.tickets.url=https://${host.virkailija}/cas/v1/tickets
+valintaperusteet.valintatapajono.rest.url=https://${host.virkailija}/valintaperusteet-service/resources/valintalaskentakoostepalvelu/valintatapajono
+valintaperusteet.haku.rest.url=https://${host.virkailija}/valintaperusteet-service/resources/valintalaskentakoostepalvelu/haku
+valintaperusteet.hakijaryhmat.rest.url=https://${host.virkailija}/valintaperusteet-service/resources/valintalaskentakoostepalvelu/haku/valintatapajono/hakijaryhmat

@@ -33,7 +33,7 @@ import fi.vm.sade.sijoittelu.domain.Valintatulos;
 import fi.vm.sade.sijoittelu.domain.comparator.HakemusComparator;
 import fi.vm.sade.sijoittelu.domain.dto.VastaanottoDTO;
 import fi.vm.sade.sijoittelu.laskenta.external.resource.VirkailijaValintaTulosServiceResource;
-import fi.vm.sade.sijoittelu.laskenta.service.business.SijoitteluajoResourcesLoader.SijoittelunParametrit;
+import fi.vm.sade.sijoittelu.laskenta.service.it.Haku;
 import fi.vm.sade.sijoittelu.tulos.dto.HakukohdeDTO;
 import fi.vm.sade.sijoittelu.tulos.service.impl.converters.SijoitteluTulosConverter;
 import fi.vm.sade.valintalaskenta.domain.dto.valintatieto.HakuDTO;
@@ -104,7 +104,7 @@ public class SijoitteluBusinessService {
         String ajonTunniste = String.format("Haun %s sijoittelu", hakuOid);
         StopWatch stopWatch = new StopWatch(ajonTunniste);
 
-        SijoittelunParametrit sijoittelunParametrit = sijoitteluajoResourcesLoader.findParametersFromTarjontaAndPerformInitialValidation(hakuOid, stopWatch, ajonTunniste);
+        Haku sijoittelunParametrit = sijoitteluajoResourcesLoader.findParametersFromTarjontaAndPerformInitialValidation(hakuOid, stopWatch, ajonTunniste);
 
         SijoitteluAjo viimeisinSijoitteluajo = sijoitteluajoResourcesLoader.readSijoitteluFromValintarekisteri(haku, ajonTunniste, stopWatch);
 
@@ -374,7 +374,7 @@ public class SijoitteluBusinessService {
 
         StopWatch stopWatch = new StopWatch(ajonKuvaus);
 
-        SijoittelunParametrit sijoittelunParametrit = sijoitteluajoResourcesLoader.findParametersFromTarjontaAndPerformInitialValidation(hakuOid, stopWatch, ajonKuvaus);
+        Haku sijoittelunParametrit = sijoitteluajoResourcesLoader.findParametersFromTarjontaAndPerformInitialValidation(hakuOid, stopWatch, ajonKuvaus);
 
         SijoitteluAjo viimeisinSijoitteluajo = sijoitteluajoResourcesLoader.readSijoitteluFromValintarekisteri(haku, ajonKuvaus, stopWatch);
 
