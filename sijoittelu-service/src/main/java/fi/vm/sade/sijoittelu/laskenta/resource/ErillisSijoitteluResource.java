@@ -37,7 +37,7 @@ import javax.ws.rs.PathParam;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
 
-import static fi.vm.sade.valintalaskenta.tulos.roles.ValintojenToteuttaminenRole.CRUD;
+import static fi.vm.sade.valintalaskenta.tulos.roles.ValintojenToteuttaminenRole.OPH_CRUD;
 
 @Path("erillissijoittele")
 @Controller
@@ -68,7 +68,7 @@ public class ErillisSijoitteluResource {
     @POST
     @Path("/{hakuOid}")
     @Consumes("application/json")
-    @PreAuthorize(CRUD)
+    @PreAuthorize(OPH_CRUD)
     @ApiOperation(consumes = "application/json", value = "Suorita erillissijoittelu", response = Long.class)
     public Long sijoittele(@PathParam("hakuOid") String hakuOid, ValisijoitteluDTO hakukohteet) {
         long id = ErillisSijoitteluQueue.getInstance().queueNewErillissijoittelu(hakuOid);
