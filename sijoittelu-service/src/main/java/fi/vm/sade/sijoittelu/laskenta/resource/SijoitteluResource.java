@@ -35,6 +35,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 
 import javax.ws.rs.GET;
@@ -51,9 +52,11 @@ import static java.util.Collections.unmodifiableSet;
 import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toSet;
 
+import static fi.vm.sade.valintalaskenta.tulos.roles.ValintojenToteuttaminenRole.OPH_CRUD;
+
 @Path("sijoittele")
 @Controller
-// @PreAuthorize("isAuthenticated()")
+@PreAuthorize("isAuthenticated()")
 @Api(value = "sijoittele", description = "Resurssi sijoitteluun")
 public class SijoitteluResource {
     private final static Logger LOGGER = LoggerFactory.getLogger(SijoitteluResource.class);
@@ -91,6 +94,7 @@ public class SijoitteluResource {
 
     @GET
     @Path("/ajontila/{sijoitteluId}")
+    @PreAuthorize(OPH_CRUD)
     @ApiOperation(value = "Sijoitteluajon tila", response = String.class)
     public String sijoittelunTila(@PathParam("sijoitteluId") Long id) {
         String tila = sijoitteluBookkeeperService.getSijoitteluAjonTila(id);
@@ -100,6 +104,7 @@ public class SijoitteluResource {
 
     @GET
     @Path("/{hakuOid}")
+    @PreAuthorize(OPH_CRUD)
     @ApiOperation(value = "Käynnistä uusi sijoittelu haulle", response = Long.class)
     public Long sijoittele(@PathParam("hakuOid") String hakuOid) {
 

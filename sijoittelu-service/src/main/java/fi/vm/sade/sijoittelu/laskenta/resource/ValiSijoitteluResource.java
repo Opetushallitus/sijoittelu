@@ -33,10 +33,11 @@ import java.util.List;
 import java.util.Optional;
 
 import static fi.vm.sade.sijoittelu.laskenta.actors.creators.SpringExtension.SpringExtProvider;
-import static fi.vm.sade.valintalaskenta.tulos.roles.ValintojenToteuttaminenRole.CRUD;
+import static fi.vm.sade.valintalaskenta.tulos.roles.ValintojenToteuttaminenRole.OPH_CRUD;
 
 @Path("valisijoittele")
 @Controller
+@PreAuthorize("isAuthenticated()")
 @Api(value = "valisijoittele", description = "Resurssi sijoitteluun")
 public class ValiSijoitteluResource {
     private final static Logger LOGGER = LoggerFactory.getLogger(ValiSijoitteluResource.class);
@@ -74,6 +75,7 @@ public class ValiSijoitteluResource {
 
     @POST
     @Path("/{hakuOid}")
+    @PreAuthorize(OPH_CRUD)
     @Consumes("application/json")
     @Produces("application/json")
     @ApiOperation(value = "Välisijoittelun suorittaminen")
