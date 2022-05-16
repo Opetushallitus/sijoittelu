@@ -21,7 +21,10 @@ public class ValintarekisteriServiceConfiguration {
                                                 @Value("${valintarekisteri.cas.password}") String casPassword,
                                                 @Value("${valintarekisteri.blaze.response-header-timeout}") String blazeResponseHeaderTimeout,
                                                 @Value("${valintarekisteri.blaze.idle-timeout}") String blazeIdleTimeout,
-                                                @Value("${valintarekisteri.blaze.request-timeout}") String blazeRequestTimeout) {
+                                                @Value("${valintarekisteri.blaze.request-timeout}") String blazeRequestTimeout,
+                                                @Value("${valintarekisteri.kohdejoukot.korkeakoulu}") String kohdejoukotKorkeakoulu,
+                                                @Value("${valintarekisteri.kohdejoukot.toinen-aste}") String kohdejoukotToinenAste,
+                                                @Value("${valintarekisteri.kohdejoukon-tarkenteet.amkope}") String KohdenjoukonTarkenteetAmkope) {
         this.properties = new Properties();
         this.properties.setProperty("valinta-tulos-service.valintarekisteri.db.user", valintarekisteriDbUser);
         this.properties.setProperty("valinta-tulos-service.valintarekisteri.db.password", valintarekisteriDbPassword);
@@ -35,6 +38,9 @@ public class ValintarekisteriServiceConfiguration {
         this.properties.setProperty("valinta-tulos-service.blaze.response-header-timeout", blazeResponseHeaderTimeout);
         this.properties.setProperty("valinta-tulos-service.blaze.idle-timeout", blazeIdleTimeout);
         this.properties.setProperty("valinta-tulos-service.blaze.request-timeout", blazeRequestTimeout);
+        this.properties.setProperty("valinta-tulos-service.kohdejoukot.korkeakoulu", kohdejoukotKorkeakoulu);
+        this.properties.setProperty("valinta-tulos-service.kohdejoukot.toinen-aste", kohdejoukotToinenAste);
+        this.properties.setProperty("valinta-tulos-service.kohdejoukon-tarkenteet.amkope", KohdenjoukonTarkenteetAmkope);
     }
 
     public Properties getProperties() {
