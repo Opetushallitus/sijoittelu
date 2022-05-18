@@ -130,15 +130,15 @@ public class Haku {
     }
 
     public boolean isKk() {
-        return this.haunkohdejoukkoUri.startsWith(KK_HAUN_KOHDEJOUKKO + "#");
+        return this.haunkohdejoukkoUri.startsWith(KK_HAUN_KOHDEJOUKKO);
     }
 
     public boolean isAmkOpe() {
-        return this.isKk() && this.haunkohdejoukontarkenneUri != null && AMKOPE_HAUN_KOHDEJOUKON_TARKENTEET.stream().anyMatch(s -> this.haunkohdejoukontarkenneUri.startsWith(s + "#"));
+        return this.isKk() && this.haunkohdejoukontarkenneUri != null && AMKOPE_HAUN_KOHDEJOUKON_TARKENTEET.stream().anyMatch(s -> this.haunkohdejoukontarkenneUri.startsWith(s));
     }
 
     public boolean isYhteishaku() {
         LOGGER.info("Haun {} hakutapa on {}", oid, hakutapaUri);
-        return this.hakutapaUri.startsWith(HAKUTAPA_YHTEISHAKU + "#");
+        return this.hakutapaUri.startsWith(HAKUTAPA_YHTEISHAKU);
     }
 }
