@@ -39,7 +39,7 @@
     <flapdoodle.embed.mongo.version>2.2.0</flapdoodle.embed.mongo.version>
     <jackson.version>1.9.13</jackson.version>
     <slf4j.version>1.7.30</slf4j.version>
-    <spring.version>5.1.16.RELEASE</spring.version>
+    <spring.version>5.2.21.RELEASE</spring.version>
     <spring.security.version>4.2.17.RELEASE</spring.security.version>
     <surefire.plugin.version>2.22.2</surefire.plugin.version>
     <swagger.version>1.5.16</swagger.version>
