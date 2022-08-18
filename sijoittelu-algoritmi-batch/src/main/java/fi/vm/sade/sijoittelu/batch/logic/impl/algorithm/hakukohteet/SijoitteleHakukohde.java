@@ -37,6 +37,7 @@ import java.util.*;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class SijoitteleHakukohde {
     private static final Logger LOG = LoggerFactory.getLogger(SijoitteleHakukohde.class);
@@ -79,6 +80,25 @@ public class SijoitteleHakukohde {
     }
 
     private static Set<HakukohdeWrapper> sijoitteleValintatapajono(SijoitteluajoWrapper sijoitteluAjo, ValintatapajonoWrapper valintatapajono) {
+
+        List<HakemusWrapper> hakemuksetVarallaJaTilaaEiVoidaVaihtaa = valintatapajono.getHakemukset().stream()
+                .filter(hw -> hw.isVaralla() && !hw.isTilaVoidaanVaihtaa())
+                .collect(Collectors.toList());
+        if(!hakemuksetVarallaJaTilaaEiVoidaVaihtaa.isEmpty()) {
+            hakemuksetVarallaJaTilaaEiVoidaVaihtaa.forEach(hw -> {
+                LOG.error("Haun {} Hakukohteen {} valintatapajonon {} hakemus {} on varalla mutta sen tilaa ei voida vaihtaa.",
+                        sijoitteluAjo.getSijoitteluajo().getHakuOid(),
+                        valintatapajono.getHakukohdeWrapper().getHakukohde().getOid(),
+                        valintatapajono.getValintatapajono().getOid(),
+                        hw.getHakemus().getHakemusOid());
+            });
+            String message = String.format("Haun %s sijoittelussa löytyi %s kpl hakemuksia jotka ovat varalla mutta niiden tilaa ei voida vaihtaa. Keskeytetään sijoitteluajo!",
+                    sijoitteluAjo.getSijoitteluajo().getHakuOid(),
+                    hakemuksetVarallaJaTilaaEiVoidaVaihtaa.size());
+            LOG.error(message);
+            throw new RuntimeException(message);
+        }
+
         Set<HakukohdeWrapper> muuttuneetHakukohteet = new HashSet<>();
         if (valintatapajono.isAlitayttoLukko()) {
             // Hakijaryhmäkäsittelyssä alitäyttösääntö käytetty
