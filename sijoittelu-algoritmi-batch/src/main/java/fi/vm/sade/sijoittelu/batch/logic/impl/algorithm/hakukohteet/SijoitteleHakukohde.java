@@ -79,9 +79,8 @@ public class SijoitteleHakukohde {
 
     }
 
-    private static Set<HakukohdeWrapper> sijoitteleValintatapajono(SijoitteluajoWrapper sijoitteluAjo, ValintatapajonoWrapper valintatapajono) {
-
-        List<HakemusWrapper> hakemuksetVarallaJaTilaaEiVoidaVaihtaa = valintatapajono.getHakemukset().stream()
+    private static void assertOnkoVarallaOleviaJoidenTilaaEiVoidaMuuttaa(SijoitteluajoWrapper sijoitteluAjo, ValintatapajonoWrapper valintatapajono, List<HakemusWrapper> hakemusWrapperit) {
+        List<HakemusWrapper> hakemuksetVarallaJaTilaaEiVoidaVaihtaa = hakemusWrapperit.stream()
                 .filter(hw -> hw.isVaralla() && !hw.isTilaVoidaanVaihtaa())
                 .collect(Collectors.toList());
         if(!hakemuksetVarallaJaTilaaEiVoidaVaihtaa.isEmpty()) {
@@ -98,6 +97,9 @@ public class SijoitteleHakukohde {
             LOG.error(message);
             throw new RuntimeException(message);
         }
+    }
+
+    private static Set<HakukohdeWrapper> sijoitteleValintatapajono(SijoitteluajoWrapper sijoitteluAjo, ValintatapajonoWrapper valintatapajono) {
 
         Set<HakukohdeWrapper> muuttuneetHakukohteet = new HashSet<>();
         if (valintatapajono.isAlitayttoLukko()) {
@@ -112,6 +114,8 @@ public class SijoitteleHakukohde {
                         .filter(h -> !kuuluuHyvaksyttyihinTiloihin(hakemuksenTila(h)))
                         .filter(h -> hakijaHaluaa(h) && saannotSallii(h, sijoitteluAjo))
                         .collect(Collectors.toList());
+
+        assertOnkoVarallaOleviaJoidenTilaaEiVoidaMuuttaa(sijoitteluAjo, valintatapajono, valituksiHaluavatHakemukset);
 
         // Ei ketään valituksi haluavaa
         if (valituksiHaluavatHakemukset.isEmpty()) {
