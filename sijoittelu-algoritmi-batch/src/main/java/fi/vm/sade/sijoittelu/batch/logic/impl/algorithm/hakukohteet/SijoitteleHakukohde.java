@@ -37,6 +37,7 @@ import java.util.*;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class SijoitteleHakukohde {
     private static final Logger LOG = LoggerFactory.getLogger(SijoitteleHakukohde.class);
@@ -78,7 +79,28 @@ public class SijoitteleHakukohde {
 
     }
 
+    private static void assertOnkoVarallaOleviaJoidenTilaaEiVoidaMuuttaa(SijoitteluajoWrapper sijoitteluAjo, ValintatapajonoWrapper valintatapajono, List<HakemusWrapper> hakemusWrapperit) {
+        List<HakemusWrapper> hakemuksetVarallaJaTilaaEiVoidaVaihtaa = hakemusWrapperit.stream()
+                .filter(hw -> hw.isVaralla() && !hw.isTilaVoidaanVaihtaa())
+                .collect(Collectors.toList());
+        if(!hakemuksetVarallaJaTilaaEiVoidaVaihtaa.isEmpty()) {
+            hakemuksetVarallaJaTilaaEiVoidaVaihtaa.forEach(hw -> {
+                LOG.error("Haun {} Hakukohteen {} valintatapajonon {} hakemus {} on varalla mutta sen tilaa ei voida vaihtaa.",
+                        sijoitteluAjo.getSijoitteluajo().getHakuOid(),
+                        valintatapajono.getHakukohdeWrapper().getHakukohde().getOid(),
+                        valintatapajono.getValintatapajono().getOid(),
+                        hw.getHakemus().getHakemusOid());
+            });
+            String message = String.format("Haun %s sijoittelussa löytyi %s kpl hakemuksia jotka ovat varalla mutta niiden tilaa ei voida vaihtaa. Keskeytetään sijoitteluajo!",
+                    sijoitteluAjo.getSijoitteluajo().getHakuOid(),
+                    hakemuksetVarallaJaTilaaEiVoidaVaihtaa.size());
+            LOG.error(message);
+            throw new RuntimeException(message);
+        }
+    }
+
     private static Set<HakukohdeWrapper> sijoitteleValintatapajono(SijoitteluajoWrapper sijoitteluAjo, ValintatapajonoWrapper valintatapajono) {
+
         Set<HakukohdeWrapper> muuttuneetHakukohteet = new HashSet<>();
         if (valintatapajono.isAlitayttoLukko()) {
             // Hakijaryhmäkäsittelyssä alitäyttösääntö käytetty
@@ -92,6 +114,8 @@ public class SijoitteleHakukohde {
                         .filter(h -> !kuuluuHyvaksyttyihinTiloihin(hakemuksenTila(h)))
                         .filter(h -> hakijaHaluaa(h) && saannotSallii(h, sijoitteluAjo))
                         .collect(Collectors.toList());
+
+        assertOnkoVarallaOleviaJoidenTilaaEiVoidaMuuttaa(sijoitteluAjo, valintatapajono, valituksiHaluavatHakemukset);
 
         // Ei ketään valituksi haluavaa
         if (valituksiHaluavatHakemukset.isEmpty()) {

@@ -450,7 +450,8 @@ public class SijoitteluajoWrapper {
         if(TilaTaulukot.kuuluuHyvaksyttyihinTiloihin(hakemusWrapper.getHakemus().getEdellinenTila())) return true;
 
         final String viimeisinHyvaksyttyJonoOid = hakemusWrapper.getHenkilo().getHakemukset().stream()
-                .filter(hw -> hw.getHakemus().getTilaHistoria().stream().anyMatch(th -> TilaTaulukot.kuuluuHyvaksyttyihinTiloihin(th.getTila())) == true)
+                .filter(hw -> hw.getHakukohdeOid().equals(hakemusWrapper.getHakukohdeOid()))
+                .filter(hw -> hw.getHakemus().getTilaHistoria().stream().anyMatch(th -> TilaTaulukot.kuuluuHyvaksyttyihinTiloihin(th.getTila())))
                 .map(hw -> {
                     final TilaHistoria tilaHistoria = hw.getHakemus().getTilaHistoria().stream()
                             .filter(th -> TilaTaulukot.kuuluuHyvaksyttyihinTiloihin(th.getTila()))
