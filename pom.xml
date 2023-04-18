@@ -43,7 +43,7 @@
     <spring.security.version>4.2.17.RELEASE</spring.security.version>
     <surefire.plugin.version>2.22.2</surefire.plugin.version>
     <swagger.version>1.5.16</swagger.version>
-    <jetty.version>9.4.30.v20200611</jetty.version>
+    <jetty.version>10.0.14</jetty.version>
     <valintalaskenta.version>5.16-SNAPSHOT</valintalaskenta.version>
     <valintaperusteet-api.version>5.17-SNAPSHOT</valintaperusteet-api.version>
 </properties>
