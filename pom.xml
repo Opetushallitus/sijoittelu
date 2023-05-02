@@ -45,7 +45,7 @@
     <swagger.version>1.5.16</swagger.version>
     <jetty.version>9.4.30.v20200611</jetty.version>
     <valintalaskenta.version>5.16-SNAPSHOT</valintalaskenta.version>
-    <valintaperusteet-api.version>5.17-SNAPSHOT</valintaperusteet-api.version>
+    <valintaperusteet-api.version>5.18-SNAPSHOT</valintaperusteet-api.version>
 </properties>
 
     <dependencyManagement>

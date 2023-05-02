@@ -41,6 +41,8 @@ public class Valintatapajono implements Serializable {
 
     private Boolean kaikkiEhdonTayttavatHyvaksytaan;
 
+    private Boolean merkitseMyohAuto;
+
     private Boolean poissaOlevaTaytto;
 
     private Integer varasijat = 0;
@@ -160,6 +162,14 @@ public class Valintatapajono implements Serializable {
 
     public void setKaikkiEhdonTayttavatHyvaksytaan(Boolean kaikkiEhdonTayttavatHyvaksytaan) {
         this.kaikkiEhdonTayttavatHyvaksytaan = kaikkiEhdonTayttavatHyvaksytaan;
+    }
+
+    public Boolean getMerkitseMyohAuto() {
+        return merkitseMyohAuto;
+    }
+
+    public void setMerkitseMyohAuto(Boolean merkitseMyohAuto) {
+        this.merkitseMyohAuto = merkitseMyohAuto;
     }
 
     public Boolean getPoissaOlevaTaytto() {

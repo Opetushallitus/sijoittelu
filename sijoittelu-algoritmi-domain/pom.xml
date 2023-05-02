@@ -23,6 +23,11 @@
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
         </dependency>
+        <dependency>
+            <groupId>fi.vm.sade.valintaperusteet</groupId>
+            <artifactId>valintalaskenta-laskenta-api</artifactId>
+            <version>${valintalaskenta.version}</version>
+        </dependency>
 
         <!-- Jackson -->
         <dependency>

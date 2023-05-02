@@ -32,6 +32,11 @@
             <groupId>fi.vm.sade.valintaperusteet</groupId>
             <artifactId>valintalaskenta-laskenta-api</artifactId>
         </dependency>
+        <dependency>
+            <groupId>fi.vm.sade.valintaperusteet</groupId>
+            <artifactId>valintaperusteet-api</artifactId>
+            <version>${valintaperusteet-api.version}</version>
+        </dependency>
         <!-- Spring -->
         <dependency>
             <groupId>org.springframework</groupId>
