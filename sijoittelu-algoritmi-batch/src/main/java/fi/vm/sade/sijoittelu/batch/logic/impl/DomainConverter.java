@@ -2,6 +2,7 @@ package fi.vm.sade.sijoittelu.batch.logic.impl;
 
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.util.TilojenMuokkaus;
 import fi.vm.sade.sijoittelu.domain.*;
+import fi.vm.sade.sijoittelu.domain.dto.ValintatietoValintatapaJonoRikastettuDTO;
 import fi.vm.sade.valintalaskenta.domain.dto.*;
 import fi.vm.sade.valintalaskenta.domain.dto.valintatieto.ValintatietoValintatapajonoDTO;
 import fi.vm.sade.valintalaskenta.domain.valinta.JarjestyskriteerituloksenTila;
@@ -57,6 +58,9 @@ public class DomainConverter {
             } else {
                 valintatapajono.setKaikkiEhdonTayttavatHyvaksytaan(false);
             }
+
+            valintatapajono.setMerkitseMyohAuto(((ValintatietoValintatapaJonoRikastettuDTO) valintatapajonoTyyppi).getMerkitseMyohAuto());
+
             if (valintatapajonoTyyppi.getPoissaOlevaTaytto() != null && valintatapajonoTyyppi.getPoissaOlevaTaytto()) {
                 valintatapajono.setPoissaOlevaTaytto(true);
             } else {
