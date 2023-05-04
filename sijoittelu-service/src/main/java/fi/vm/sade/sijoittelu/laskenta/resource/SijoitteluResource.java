@@ -146,7 +146,7 @@ public class SijoitteluResource {
             if (valintatapajonoByOid.containsKey(jono.getOid())
                     && jono.getValmisSijoiteltavaksi()
                     && jono.getAktiivinen()) {
-                ValintatietoValintatapaJonoRikastettuDTO rikastettuJono = (ValintatietoValintatapaJonoRikastettuDTO) jono;
+                ValintatietoValintatapaJonoRikastettuDTO rikastettuJono = ValintatietoValintatapaJonoRikastettuDTO.convert(jono);
                 ValintatapajonoDTO perusteJono = valintatapajonoByOid.get(rikastettuJono.getOid());
                 rikastettuJono.setAloituspaikat(perusteJono.getAloituspaikat());
                 rikastettuJono.setEiVarasijatayttoa(perusteJono.getEiVarasijatayttoa());
