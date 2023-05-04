@@ -59,7 +59,9 @@ public class DomainConverter {
                 valintatapajono.setKaikkiEhdonTayttavatHyvaksytaan(false);
             }
 
-            valintatapajono.setMerkitseMyohAuto(((ValintatietoValintatapaJonoRikastettuDTO) valintatapajonoTyyppi).getMerkitseMyohAuto());
+            if (valintatapajonoTyyppi instanceof  ValintatietoValintatapaJonoRikastettuDTO) {
+                valintatapajono.setMerkitseMyohAuto(((ValintatietoValintatapaJonoRikastettuDTO) valintatapajonoTyyppi).getMerkitseMyohAuto());
+            }
 
             if (valintatapajonoTyyppi.getPoissaOlevaTaytto() != null && valintatapajonoTyyppi.getPoissaOlevaTaytto()) {
                 valintatapajono.setPoissaOlevaTaytto(true);

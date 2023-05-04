@@ -41,7 +41,7 @@ public class Valintatapajono implements Serializable {
 
     private Boolean kaikkiEhdonTayttavatHyvaksytaan;
 
-    private Boolean merkitseMyohAuto;
+    private Boolean merkitseMyohAuto = false;
 
     private Boolean poissaOlevaTaytto;
 

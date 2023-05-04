@@ -6,7 +6,7 @@
     <groupId>fi.vm.sade.sijoittelu</groupId>
     <artifactId>sijoittelu</artifactId>
     <packaging>pom</packaging>
-    <version>7.6.0-SNAPSHOT</version>
+    <version>7.7.0-SNAPSHOT</version>
     <name>Sijoittelu</name>
 
     <modules>
@@ -94,6 +94,12 @@
         <groupId>fi.vm.sade.valintaperusteet</groupId>
         <artifactId>valintalaskenta-laskenta-api</artifactId>
         <version>${valintalaskenta.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>fi.vm.sade.valintaperusteet</groupId>
+            <artifactId>valintaperusteet-api</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>fi.vm.sade.java-utils</groupId>
