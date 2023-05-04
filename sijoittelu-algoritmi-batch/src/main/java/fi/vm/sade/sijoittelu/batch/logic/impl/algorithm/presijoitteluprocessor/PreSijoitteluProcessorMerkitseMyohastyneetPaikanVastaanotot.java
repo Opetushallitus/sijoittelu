@@ -9,7 +9,7 @@ public class PreSijoitteluProcessorMerkitseMyohastyneetPaikanVastaanotot impleme
     public void process(SijoitteluajoWrapper sijoitteluajoWrapper) {
         sijoitteluajoWrapper.getHakukohteet().forEach(hk -> {
             hk.getValintatapajonot().forEach(jono -> {
-                if (jono.getValintatapajono().getMerkitseMyohAuto() && sijoitteluajoWrapper.onkoVarasijaSaannotVoimassaJaVarasijaTayttoPaattynyt(jono)) {
+                if (jono.getMerkitseMyohAuto() && sijoitteluajoWrapper.onkoVarasijaSaannotVoimassaJaVarasijaTayttoPaattynyt(jono)) {
                     jono.getHakemukset().forEach(hakemusWrapper -> {
                         hakemusWrapper.getValintatulos().map(vt -> { //tarviitko tehdä instanssi valintatuloksesta?
                             vt.setTila(ValintatuloksenTila.EI_VASTAANOTETTU_MAARA_AIKANA, "Ei vastaan otettu määräaikana");

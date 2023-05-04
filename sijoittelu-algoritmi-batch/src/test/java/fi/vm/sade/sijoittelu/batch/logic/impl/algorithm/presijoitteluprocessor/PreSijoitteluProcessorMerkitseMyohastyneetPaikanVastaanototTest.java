@@ -49,7 +49,7 @@ public class PreSijoitteluProcessorMerkitseMyohastyneetPaikanVastaanototTest {
         Valintatapajono valintatapajono1 = new Valintatapajono();
         valintatapajono1.setOid("123");
         valintatapajono1.setPrioriteetti(0);
-        valintatapajono1.setMerkitseMyohAuto(merkitseMyohAuto);
+        valintatapajono.setMerkitseMyohAuto(merkitseMyohAuto);
         valintatapajono.setValintatapajono(valintatapajono1);
 
         List<HakemusWrapper> hakemukset = generateHakemusWrapper(valintatapajono);

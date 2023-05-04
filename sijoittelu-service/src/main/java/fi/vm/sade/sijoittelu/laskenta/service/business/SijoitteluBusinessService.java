@@ -12,6 +12,7 @@ import static java.util.Collections.unmodifiableSet;
 import static java.util.stream.Collectors.toSet;
 import com.google.common.collect.Sets.SetView;
 
+import fi.vm.sade.service.valintaperusteet.dto.ValintatapajonoDTO;
 import fi.vm.sade.sijoittelu.batch.logic.impl.DomainConverter;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoitteluAlgorithm;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoitteluConfiguration;
@@ -98,7 +99,8 @@ public class SijoitteluBusinessService {
     public void sijoittele(HakuDTO haku,
                            Set<String> eiSijoitteluunMenevatJonot,
                            Set<String> laskennanTuloksistaJaValintaperusteistaLoytyvatJonot,
-                           Long sijoittelunTunniste) {
+                           Long sijoittelunTunniste,
+                           Map<String, Map<String, ValintatapajonoDTO>> hakukohdeMapToValintatapajonoByOid) {
         long startTime = sijoittelunTunniste;
         String hakuOid = haku.getHakuOid();
         String ajonTunniste = String.format("Haun %s sijoittelu", hakuOid);
@@ -154,7 +156,7 @@ public class SijoitteluBusinessService {
 
         stopWatch.start("Luodaan sijoitteluajoWrapper ja asetetaan parametrit");
         final SijoitteluajoWrapper sijoitteluajoWrapper = SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(
-            sijoitteluConfiguration, uusiSijoitteluajo, kaikkiHakukohteet, valintatulokset, kaudenAiemmatVastaanotot);
+            sijoitteluConfiguration, uusiSijoitteluajo, kaikkiHakukohteet, hakukohdeMapToValintatapajonoByOid);
         sijoitteluajoResourcesLoader.asetaSijoittelunParametrit(hakuOid, sijoitteluajoWrapper, sijoittelunParametrit);
         sijoitteluajoWrapper.setEdellisenSijoittelunHakukohteet(edellisenSijoitteluajonTulokset);
         stopWatch.stop();
@@ -174,7 +176,7 @@ public class SijoitteluBusinessService {
             for (Hakukohde hakukohde : kaikkiHakukohteet) {
                 stopWatch.start(String.format("Sijoitellaan hakukohde %s ilman priorisointia", hakukohde.getOid()));
                 final SijoitteluajoWrapper yhdenHakukohteenSijoitteluajoWrapper = SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(
-                    sijoitteluConfiguration, uusiSijoitteluajo, Collections.singletonList(hakukohde), valintatulokset, kaudenAiemmatVastaanotot);
+                    sijoitteluConfiguration, uusiSijoitteluajo, Collections.singletonList(hakukohde), hakukohdeMapToValintatapajonoByOid);
                 yhdenHakukohteenSijoitteluajoWrapper.paivitaVastaanottojenVaikutusHakemustenTiloihin(valintatulokset, kaudenAiemmatVastaanotot);
                 sijoitteluajoResourcesLoader.asetaSijoittelunParametrit(hakuOid, yhdenHakukohteenSijoitteluajoWrapper, sijoittelunParametrit);
                 yhdenHakukohteenSijoitteluajoWrapper.setEdellisenSijoittelunHakukohteet(edellisenSijoitteluajonTulokset.stream().filter(h -> h.getOid().equals(hakukohde.getOid())).collect(Collectors.toList()));
@@ -343,7 +345,7 @@ public class SijoitteluBusinessService {
         List<Hakukohde> kaikkiHakukohteet = merge(uusiSijoitteluajo, olemassaolevatHakukohteet, uudetHakukohteet).getLeft();
         SijoitteluajoWrapper sijoitteluajoWrapper =
             SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(sijoitteluConfiguration, uusiSijoitteluajo,
-                kaikkiHakukohteet, Collections.emptyList(), Collections.emptyMap());
+                kaikkiHakukohteet, Collections.emptyMap());
         sijoitteluajoWrapper.paivitaVastaanottojenVaikutusHakemustenTiloihin(Collections.emptyList(), Collections.emptyMap());
         stopWatch.stop();
 
@@ -413,7 +415,7 @@ public class SijoitteluBusinessService {
         stopWatch.start("Luodaan sijoitteluajoWrapper");
         final SijoitteluajoWrapper sijoitteluajoWrapper =
             SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(
-                sijoitteluConfiguration, uusiSijoitteluajo, hakukohdeTassaSijoittelussa, valintatulokset, kaudenAiemmatVastaanotot);
+                sijoitteluConfiguration, uusiSijoitteluajo, hakukohdeTassaSijoittelussa, Collections.emptyMap());
         sijoitteluajoWrapper.paivitaVastaanottojenVaikutusHakemustenTiloihin(valintatulokset, kaudenAiemmatVastaanotot);
         sijoitteluajoResourcesLoader.asetaSijoittelunParametrit(hakuOid, sijoitteluajoWrapper, sijoittelunParametrit);
         stopWatch.stop();

@@ -101,7 +101,6 @@ public class SijoitteleHakukohdeLisapaikatTest {
         ajoWrapper = SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(
             new SijoitteluConfiguration(), new SijoitteluAjo(),
                         Collections.singletonList(hakukohde),
-                        Collections.emptyList(),
                         Collections.emptyMap());
         ajoWrapper.paivitaVastaanottojenVaikutusHakemustenTiloihin(Collections.emptyList(), Collections.emptyMap());
         heikompiHakemus1EiHakijarymaa = SijoitteluAlgorithmUtil.generateHakemus(8, 5, null);
@@ -162,7 +161,6 @@ public class SijoitteleHakukohdeLisapaikatTest {
         SijoitteluajoWrapper aw = SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(
             new SijoitteluConfiguration(), new SijoitteluAjo(),
                 Collections.singletonList(hakukohde),
-                Collections.emptyList(),
                 Collections.emptyMap());
         aw.paivitaVastaanottojenVaikutusHakemustenTiloihin(Collections.emptyList(), Collections.emptyMap());
 

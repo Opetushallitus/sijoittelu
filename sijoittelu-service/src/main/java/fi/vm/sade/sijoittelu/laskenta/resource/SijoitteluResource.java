@@ -13,7 +13,6 @@ import fi.vm.sade.service.valintaperusteet.dto.HakijaryhmaValintatapajonoDTO;
 import fi.vm.sade.service.valintaperusteet.dto.ValintatapajonoCreateDTO;
 import fi.vm.sade.service.valintaperusteet.dto.ValintatapajonoDTO;
 import fi.vm.sade.sijoittelu.domain.SijoitteluajonTila;
-import fi.vm.sade.sijoittelu.domain.dto.ValintatietoValintatapaJonoRikastettuDTO;
 import fi.vm.sade.sijoittelu.laskenta.email.EmailService;
 import fi.vm.sade.sijoittelu.laskenta.external.resource.HttpClients;
 import fi.vm.sade.sijoittelu.laskenta.service.business.SijoitteluBusinessService;
@@ -146,24 +145,22 @@ public class SijoitteluResource {
             if (valintatapajonoByOid.containsKey(jono.getOid())
                     && jono.getValmisSijoiteltavaksi()
                     && jono.getAktiivinen()) {
-                ValintatietoValintatapaJonoRikastettuDTO rikastettuJono = ValintatietoValintatapaJonoRikastettuDTO.convert(jono);
-                ValintatapajonoDTO perusteJono = valintatapajonoByOid.get(rikastettuJono.getOid());
-                rikastettuJono.setAloituspaikat(perusteJono.getAloituspaikat());
-                rikastettuJono.setEiVarasijatayttoa(perusteJono.getEiVarasijatayttoa());
-                rikastettuJono.setMerkitseMyohAuto(perusteJono.getMerkitseMyohAuto());
-                rikastettuJono.setPoissaOlevaTaytto(perusteJono.getPoissaOlevaTaytto());
-                rikastettuJono.setTasasijasaanto(EnumConverter.convert(Tasasijasaanto.class, perusteJono.getTasapistesaanto()));
-                rikastettuJono.setTayttojono(perusteJono.getTayttojono());
-                rikastettuJono.setVarasijat(perusteJono.getVarasijat());
-                rikastettuJono.setVarasijaTayttoPaivat(perusteJono.getVarasijaTayttoPaivat());
-                rikastettuJono.setVarasijojaKaytetaanAlkaen(perusteJono.getVarasijojaKaytetaanAlkaen());
-                rikastettuJono.setVarasijojaTaytetaanAsti(perusteJono.getVarasijojaTaytetaanAsti());
-                rikastettuJono.setAktiivinen(perusteJono.getAktiivinen());
-                rikastettuJono.setKaikkiEhdonTayttavatHyvaksytaan(perusteJono.getKaikkiEhdonTayttavatHyvaksytaan());
-                rikastettuJono.setNimi(perusteJono.getNimi());
-                rikastettuJono.setPrioriteetti(perusteJono.getPrioriteetti());
-                konvertoidut.add(rikastettuJono);
-                valintatapajonoByOid.remove(rikastettuJono.getOid());
+                ValintatapajonoDTO perusteJono = valintatapajonoByOid.get(jono.getOid());
+                jono.setAloituspaikat(perusteJono.getAloituspaikat());
+                jono.setEiVarasijatayttoa(perusteJono.getEiVarasijatayttoa());
+                jono.setPoissaOlevaTaytto(perusteJono.getPoissaOlevaTaytto());
+                jono.setTasasijasaanto(EnumConverter.convert(Tasasijasaanto.class, perusteJono.getTasapistesaanto()));
+                jono.setTayttojono(perusteJono.getTayttojono());
+                jono.setVarasijat(perusteJono.getVarasijat());
+                jono.setVarasijaTayttoPaivat(perusteJono.getVarasijaTayttoPaivat());
+                jono.setVarasijojaKaytetaanAlkaen(perusteJono.getVarasijojaKaytetaanAlkaen());
+                jono.setVarasijojaTaytetaanAsti(perusteJono.getVarasijojaTaytetaanAsti());
+                jono.setAktiivinen(perusteJono.getAktiivinen());
+                jono.setKaikkiEhdonTayttavatHyvaksytaan(perusteJono.getKaikkiEhdonTayttavatHyvaksytaan());
+                jono.setNimi(perusteJono.getNimi());
+                jono.setPrioriteetti(perusteJono.getPrioriteetti());
+                konvertoidut.add(jono);
+                valintatapajonoByOid.remove(jono.getOid());
             }
         });
         vaihe.setValintatapajonot(konvertoidut);
@@ -391,7 +388,8 @@ public class SijoitteluResource {
                 sijoitteluBusinessService.sijoittele(haku,
                         flatMapJonoOids(hakukohdeMapToValintatapajonoByOid),
                         laskennanTuloksistaJaValintaperusteistaLoytyvatJonot,
-                        sijoitteluAjonTunniste);
+                        sijoitteluAjonTunniste,
+                        hakukohdeMapToValintatapajonoByOid);
                 LOGGER.info("Sijoitteluajo {} suoritettu onnistuneesti haulle {}", sijoitteluAjonTunniste, hakuOid);
                 sijoitteluBookkeeperService.merkitseSijoitteluAjonTila(hakuOid,
                         sijoitteluAjonTunniste,

@@ -906,7 +906,6 @@ public class SijoitteleHakijaryhmaTest {
             new SijoitteluConfiguration(),
             sijoitteluAjo,
             Collections.singletonList(hakukohde),
-            valintatulosList,
             Collections.emptyMap()
         );
         sijoitteluajoWrapper.paivitaVastaanottojenVaikutusHakemustenTiloihin(valintatulosList, Collections.emptyMap());

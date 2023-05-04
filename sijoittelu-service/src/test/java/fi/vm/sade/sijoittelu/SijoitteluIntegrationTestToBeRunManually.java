@@ -6,6 +6,7 @@ import static org.junit.Assert.assertThat;
 import com.lordofthejars.nosqlunit.annotation.UsingDataSet;
 import com.mongodb.MongoClientURI;
 
+import fi.vm.sade.service.valintaperusteet.dto.ValintatapajonoDTO;
 import fi.vm.sade.sijoittelu.batch.logic.impl.DomainConverter;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoitteluConfiguration;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoitteluajoWrapperFactory;
@@ -46,11 +47,7 @@ import javax.inject.Named;
 import java.io.IOException;
 import java.net.URI;
 import java.time.Duration;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -71,7 +68,7 @@ import java.util.stream.Collectors;
  *   ** add an ssh pipe to QA (or other similar environment) to access the /valintalaskentakoostepalvelu
  *      endpoint of valintaperusteet on the ALB, e.g. <code>ssh -L 1234:alb.testiopintopolku.fi:80 bastion.testiopintopolku.fi</code>
  *
- * @see SijoitteluBusinessService#sijoittele(HakuDTO, Set, Set, Long)
+ * @see SijoitteluBusinessService#sijoittele(HakuDTO, Set, Set, Long, Map)
  * @see HakijaryhmaTest
  * @see fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.hakukohteet.SijoitteleHakijaryhmaTest
  */
@@ -169,7 +166,7 @@ public class SijoitteluIntegrationTestToBeRunManually {
          * The results might or might not make sense depending on your use case.
          */
         @Override
-        public void sijoittele(HakuDTO haku, Set<String> eiSijoitteluunMenevatJonot, Set<String> laskennanTuloksistaJaValintaperusteistaLoytyvatJonot, Long sijoittelunTunniste) {
+        public void sijoittele(HakuDTO haku, Set<String> eiSijoitteluunMenevatJonot, Set<String> laskennanTuloksistaJaValintaperusteistaLoytyvatJonot, Long sijoittelunTunniste, Map<String, Map<String, ValintatapajonoDTO>> hakukohdeMapToValintatapajonoByOid) {
             String hakuOid = haku.getHakuOid();
             String nameOfThisFakeSijoitteluRun = "Haun " + hakuOid + " " + LightWeightSijoitteluBusinessServiceForTesting.class.getSimpleName() + " -sijoittelu";
             StopWatch stopWatch = new StopWatch(nameOfThisFakeSijoitteluRun);
@@ -183,7 +180,7 @@ public class SijoitteluIntegrationTestToBeRunManually {
             sijoitteluAjo.setHakuOid(hakuOid);
             LOG.info(nameOfThisFakeSijoitteluRun + " sijoittelun koko: 0 olemassaolevaa, {} uutta, 0 valintatulosta", uudetHakukohteet.size());
             stopWatch.start("Luodaan sijoitteluajoWrapper ja asetetaan parametrit");
-            final SijoitteluajoWrapper sijoitteluajoWrapper = SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(new SijoitteluConfiguration(), sijoitteluAjo, uudetHakukohteet, Collections.emptyList(), Collections.emptyMap());
+            final SijoitteluajoWrapper sijoitteluajoWrapper = SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(new SijoitteluConfiguration(), sijoitteluAjo, uudetHakukohteet, Collections.emptyMap());
             sijoitteluajoWrapper.paivitaVastaanottojenVaikutusHakemustenTiloihin(Collections.emptyList(), Collections.emptyMap());
             sijoitteluajoResourcesLoader.asetaSijoittelunParametrit(hakuOid, sijoitteluajoWrapper, sijoitteluajoResourcesLoader.findParametersFromTarjontaAndPerformInitialValidation(hakuOid, new StopWatch(""), ""));
             stopWatch.stop();

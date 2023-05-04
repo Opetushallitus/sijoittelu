@@ -95,7 +95,7 @@ public class SijoitteluTilatJaKuvauksetTest {
     public void testSijoitteleHakemuksenTilallaPeruuntunut() throws Exception {
         setupMocksHakemuksenTilaPeruuntunut();
 
-        service.sijoittele(hakuDTO(), Collections.emptySet(), Sets.newHashSet("112233.000000"), 1234567890L);
+        service.sijoittele(hakuDTO(), Collections.emptySet(), Sets.newHashSet("112233.000000"), 1234567890L, Collections.emptyMap());
 
         Function3<SijoitteluAjo, List<Hakukohde>, List<Valintatulos>, Boolean> assertFunction = (sijoitteluajo, hakukohteet, valintatulokset) -> {
             Hakemus hakemus = hakukohteet.get(0).getValintatapajonot().get(0).getHakemukset().get(0);
@@ -112,7 +112,7 @@ public class SijoitteluTilatJaKuvauksetTest {
     public void testSijoitteleValintatuloksenTilallaPerunut() throws Exception {
         setupMocksValintatuloksenTilaPerunut();
 
-        service.sijoittele(hakuDTO(), Collections.emptySet(), Sets.newHashSet("112233.000000"), 1234567890L);
+        service.sijoittele(hakuDTO(), Collections.emptySet(), Sets.newHashSet("112233.000000"), 1234567890L, Collections.emptyMap());
 
         Function3<SijoitteluAjo, List<Hakukohde>, List<Valintatulos>, Boolean> assertFunction = (sijoitteluajo, hakukohteet, valintatulokset) -> {
             Hakemus hakemus = hakukohteet.get(0).getValintatapajonot().get(0).getHakemukset().get(0);
@@ -135,7 +135,7 @@ public class SijoitteluTilatJaKuvauksetTest {
             new AvainArvoDTO("FI", "Ei hakukelpoinen"),
             new AvainArvoDTO("SV", "Inte ansökningsbehörig"),
             new AvainArvoDTO("EN", "Not eligible")));
-        service.sijoittele(hakuDTO, Collections.emptySet(), Sets.newHashSet("112233.000000"), 1234567890L);
+        service.sijoittele(hakuDTO, Collections.emptySet(), Sets.newHashSet("112233.000000"), 1234567890L, Collections.emptyMap());
 
         Function3<SijoitteluAjo, List<Hakukohde>, List<Valintatulos>, Boolean> assertFunction = (sijoitteluajo, hakukohteet, valintatulokset) -> {
             Hakemus hakemus = hakukohteet.get(0).getValintatapajonot().get(0).getHakemukset().get(0);

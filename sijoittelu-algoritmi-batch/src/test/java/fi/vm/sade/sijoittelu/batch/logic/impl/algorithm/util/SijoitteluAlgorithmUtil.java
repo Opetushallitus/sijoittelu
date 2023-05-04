@@ -11,10 +11,7 @@ import fi.vm.sade.sijoittelu.domain.*;
 import fi.vm.sade.sijoittelu.domain.dto.VastaanottoDTO;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class SijoitteluAlgorithmUtil {
     public static SijoittelunTila sijoittele(List<Hakukohde> hakukohteet,
@@ -35,7 +32,7 @@ public class SijoitteluAlgorithmUtil {
                                               List<Valintatulos> valintatulokset,
                                               Map<String, VastaanottoDTO> aiemmanVastaanotonHakukohdePerHakija) {
         SijoitteluajoWrapper wrapper = SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(new SijoitteluConfiguration(), sijoitteluAjo, hakukohteet,
-                valintatulokset, aiemmanVastaanotonHakukohdePerHakija);
+                Collections.emptyMap());
         wrapper.paivitaVastaanottojenVaikutusHakemustenTiloihin(valintatulokset, aiemmanVastaanotonHakukohdePerHakija);
         wrapper.setKKHaku(true);
         return SijoitteluAlgorithm.sijoittele(preProcessors, postProcessors, wrapper);
