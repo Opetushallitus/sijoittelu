@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 public class PreSijoitteluProcessorMerkitseMyohastyneetPaikanVastaanototTest {
 
@@ -22,6 +22,7 @@ public class PreSijoitteluProcessorMerkitseMyohastyneetPaikanVastaanototTest {
         HakemusWrapper hw = wrapper.getHakukohteet().get(0).getValintatapajonot().get(0).getHakemukset().get(0);
         assertEquals(HakemuksenTila.PERUNUT, hw.getHakemus().getTila());
         assertEquals(ValintatuloksenTila.EI_VASTAANOTETTU_MAARA_AIKANA, hw.getValintatulos().orElse(new Valintatulos()).getTila());
+        assertFalse(hw.isTilaVoidaanVaihtaa());
     }
 
      @Test
@@ -31,6 +32,7 @@ public class PreSijoitteluProcessorMerkitseMyohastyneetPaikanVastaanototTest {
          HakemusWrapper hw = wrapper.getHakukohteet().get(0).getValintatapajonot().get(0).getHakemukset().get(0);
          assertEquals(HakemuksenTila.VARALLA, hw.getHakemus().getTila());
          assertEquals(ValintatuloksenTila.KESKEN, hw.getValintatulos().orElse(new Valintatulos()).getTila());
+         assertTrue(hw.isTilaVoidaanVaihtaa());
      }
 
      @Test
@@ -40,6 +42,7 @@ public class PreSijoitteluProcessorMerkitseMyohastyneetPaikanVastaanototTest {
          HakemusWrapper hw = wrapper.getHakukohteet().get(0).getValintatapajonot().get(0).getHakemukset().get(0);
          assertEquals(HakemuksenTila.VARALLA, hw.getHakemus().getTila());
          assertEquals(ValintatuloksenTila.KESKEN, hw.getValintatulos().orElse(new Valintatulos()).getTila());
+         assertTrue(hw.isTilaVoidaanVaihtaa());
      }
 
     private List<ValintatapajonoWrapper> generateValintatapajonoWrapper(boolean merkitseMyohAuto) {
