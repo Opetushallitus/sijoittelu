@@ -52,6 +52,8 @@ public class Hakemus implements Serializable {
 
     private boolean siirtynytToisestaValintatapajonosta = false;
 
+    private boolean vastaanottoMyohassa = false;
+
     public Set<String> getHyvaksyttyHakijaryhmista() {
         return this.hyvaksyttyHakijaryhmista;
     }
@@ -140,6 +142,7 @@ public class Hakemus implements Serializable {
                 ", varasijanNumero=" + varasijanNumero +
                 ", hyvaksyttyHakijaryhmista=" + hyvaksyttyHakijaryhmista +
                 ", siirtynytToisestaValintatapajonosta=" + siirtynytToisestaValintatapajonosta +
+                ", vastaanottoMyohassa=" + vastaanottoMyohassa +
                 '}';
     }
 
@@ -229,6 +232,14 @@ public class Hakemus implements Serializable {
 
     public boolean getSiirtynytToisestaValintatapajonosta() {
         return this.siirtynytToisestaValintatapajonosta;
+    }
+
+    public void setVastaanottoMyohassa(boolean vastaanottoMyohassa) {
+        this.vastaanottoMyohassa = vastaanottoMyohassa;
+    }
+
+    public boolean isVastaanottoMyohassa() {
+        return vastaanottoMyohassa;
     }
 
     public TilankuvauksenTarkenne getTilankuvauksenTarkenne() {
