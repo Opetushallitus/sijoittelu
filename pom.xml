@@ -41,7 +41,7 @@
     <slf4j.version>1.7.30</slf4j.version>
     <spring.version>5.1.16.RELEASE</spring.version>
     <spring.security.version>4.2.17.RELEASE</spring.security.version>
-    <surefire.plugin.version>2.22.2</surefire.plugin.version>
+    <surefire.plugin.version>3.1.2</surefire.plugin.version>
     <swagger.version>1.5.16</swagger.version>
     <jetty.version>9.4.30.v20200611</jetty.version>
     <valintalaskenta.version>5.16-SNAPSHOT</valintalaskenta.version>
@@ -631,7 +631,7 @@
     <plugins>
         <plugin>
             <artifactId>maven-antrun-plugin</artifactId>
-            <version>1.7</version>
+            <version>3.1.0</version>
             <executions>
                 <execution>
                     <id>write buildversion.txt</id>
@@ -662,7 +662,7 @@ buildTtime=${maven.build.timestamp}
         </plugin>
         <plugin>
             <artifactId>maven-compiler-plugin</artifactId>
-            <version>3.8.0</version>
+            <version>3.11.0</version>
             <inherited>true</inherited>
             <configuration>
               <release>11</release>
@@ -670,20 +670,8 @@ buildTtime=${maven.build.timestamp}
             </configuration>
         </plugin>
         <plugin>
-            <artifactId>maven-war-plugin</artifactId>
-            <version>3.2.3</version>
-            <configuration>
-              <webResources>
-                <resource>
-                  <directory>src/main/resources</directory>
-                  <targetPath>WEB-INF/classes</targetPath>
-                </resource>
-              </webResources>
-            </configuration>
-        </plugin>
-        <plugin>
             <artifactId>maven-enforcer-plugin</artifactId>
-            <version>3.0.0-M2</version>
+            <version>3.3.0</version>
             <executions>
               <execution>
                 <id>enforce-versions</id>
@@ -705,7 +693,7 @@ buildTtime=${maven.build.timestamp}
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-source-plugin</artifactId>
-          <version>3.0.1</version>
+          <version>3.3.0</version>
           <executions>
             <execution>
               <id>attach-sources</id>
