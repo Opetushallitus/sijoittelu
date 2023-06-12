@@ -71,26 +71,6 @@
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.json4s</groupId>
-        <artifactId>json4s-jackson_2.11</artifactId>
-        <version>3.5.3</version>
-      </dependency>
-      <dependency>
-        <groupId>org.json4s</groupId>
-        <artifactId>json4s-ast_2.11</artifactId>
-        <version>3.5.3</version>
-      </dependency>
-      <dependency>
-        <groupId>org.scalaz</groupId>
-        <artifactId>scalaz-core_2.11</artifactId>
-        <version>7.2.17</version>
-      </dependency>
-      <dependency>
-        <groupId>com.flipkart.zjsonpatch</groupId>
-        <artifactId>zjsonpatch</artifactId>
-        <version>0.3.6</version>
-      </dependency>
-      <dependency>
         <groupId>fi.vm.sade.valintaperusteet</groupId>
         <artifactId>valintalaskenta-laskenta-api</artifactId>
         <version>${valintalaskenta.version}</version>
@@ -105,11 +85,6 @@
         <groupId>fi.vm.sade.java-utils</groupId>
         <artifactId>opintopolku-cas-servlet-filter</artifactId>
         <version>0.1.2-SNAPSHOT</version>
-      </dependency>
-      <dependency>
-        <groupId>fi.vm.sade.java-utils</groupId>
-        <artifactId>java-http</artifactId>
-        <version>0.5.0-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>fi.vm.sade.java-utils</groupId>
@@ -242,18 +217,8 @@
       </dependency>
       <dependency>
         <groupId>fi.vm.sade.java-utils</groupId>
-        <artifactId>httpclient</artifactId>
-        <version>0.3.0-SNAPSHOT</version>
-      </dependency>
-      <dependency>
-        <groupId>fi.vm.sade.java-utils</groupId>
         <artifactId>java-cxf</artifactId>
         <version>0.4.0-SNAPSHOT</version>
-      </dependency>
-      <dependency>
-        <groupId>org.ow2.asm</groupId>
-        <artifactId>asm</artifactId>
-        <version>7.0</version>
       </dependency>
       <dependency>
         <groupId>fi.vm.sade.valinta</groupId>
@@ -321,16 +286,6 @@
         <version>${cxf.version}</version>
       </dependency>
       <dependency>
-        <groupId>javax.xml.soap</groupId>
-        <artifactId>javax.xml.soap-api</artifactId>
-        <version>1.4.0</version>
-      </dependency>
-      <dependency>
-        <groupId>org.jvnet.staxex</groupId>
-        <artifactId>stax-ex</artifactId>
-        <version>1.8.1</version>
-      </dependency>
-      <dependency>
         <groupId>io.swagger</groupId>
         <artifactId>swagger-jaxrs</artifactId>
         <version>1.5.16</version>
@@ -380,36 +335,10 @@
         <scope>test</scope>
       </dependency>
       <dependency>
-        <groupId>co.unruly</groupId>
-        <artifactId>java-8-matchers</artifactId>
-        <version>1.5</version>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
         <groupId>org.mockito</groupId>
         <artifactId>mockito-core</artifactId>
         <version>1.10.19</version>
         <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.aspectj</groupId>
-        <artifactId>aspectjrt</artifactId>
-        <version>1.6.3</version>
-      </dependency>
-      <dependency>
-        <groupId>org.aspectj</groupId>
-        <artifactId>aspectjweaver</artifactId>
-        <version>1.6.3</version>
-      </dependency>
-      <dependency>
-        <groupId>org.aspectj</groupId>
-        <artifactId>aspectjtools</artifactId>
-        <version>1.6.3</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.camel</groupId>
-        <artifactId>camel-core</artifactId>
-        <version>2.12.1</version>
       </dependency>
       <dependency>
         <groupId>org.mongodb.morphia</groupId>
@@ -420,17 +349,6 @@
         <groupId>org.mongodb</groupId>
         <artifactId>mongo-java-driver</artifactId>
         <version>3.4.2</version>
-      </dependency>
-      <dependency>
-        <groupId>cglib</groupId>
-        <artifactId>cglib-nodep</artifactId>
-        <version>2.2.2</version>
-      </dependency>
-      <dependency>
-        <groupId>org.hsqldb</groupId>
-        <artifactId>hsqldb</artifactId>
-        <version>2.3.4</version>
-        <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>de.flapdoodle.embed</groupId>
@@ -466,19 +384,9 @@
         <version>18.0</version>
       </dependency>
       <dependency>
-        <groupId>commons-lang</groupId>
-        <artifactId>commons-lang</artifactId>
-        <version>2.6</version>
-      </dependency>
-      <dependency>
         <groupId>org.apache.commons</groupId>
         <artifactId>commons-lang3</artifactId>
         <version>3.4</version>
-      </dependency>
-      <dependency>
-        <groupId>commons-codec</groupId>
-        <artifactId>commons-codec</artifactId>
-        <version>1.6</version>
       </dependency>
       <dependency>
         <groupId>commons-io</groupId>
@@ -489,37 +397,6 @@
         <groupId>log4j</groupId>
         <artifactId>log4j</artifactId>
         <version>1.2.17</version>
-      </dependency>
-      <dependency>
-        <groupId>javax</groupId>
-        <artifactId>javaee-web-api</artifactId>
-        <version>7.0</version>
-        <scope>provided</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.glassfish.hk2</groupId>
-        <artifactId>hk2-core</artifactId>
-        <version>2.5.0-b05</version>
-      </dependency>
-      <dependency>
-        <groupId>org.glassfish.hk2</groupId>
-        <artifactId>hk2-api</artifactId>
-        <version>2.5.0-b05</version>
-      </dependency>
-      <dependency>
-        <groupId>org.glassfish.hk2</groupId>
-        <artifactId>hk2-locator</artifactId>
-        <version>2.5.0-b05</version>
-      </dependency>
-      <dependency>
-        <groupId>org.glassfish.hk2</groupId>
-        <artifactId>hk2-utils</artifactId>
-        <version>2.5.0-b05</version>
-      </dependency>
-      <dependency>
-        <groupId>org.glassfish.hk2.external</groupId>
-        <artifactId>javax.inject</artifactId>
-        <version>2.5.0-b05</version>
       </dependency>
       <dependency>
         <groupId>org.codehaus.jackson</groupId>
@@ -612,31 +489,6 @@
         </exclusions>
       </dependency>
       <dependency>
-        <groupId>org.jboss.spec.javax.transaction</groupId>
-        <artifactId>jboss-transaction-api_1.1_spec</artifactId>
-        <version>1.0.1.Final</version>
-      </dependency>
-      <dependency>
-        <groupId>org.jboss.spec.javax.interceptor</groupId>
-        <artifactId>jboss-interceptors-api_1.1_spec</artifactId>
-        <version>1.0.0.Final</version>
-      </dependency>
-      <dependency>
-        <groupId>org.jboss.logging</groupId>
-        <artifactId>jboss-logging</artifactId>
-        <version>3.1.3.GA</version>
-      </dependency>
-      <dependency>
-        <groupId>commons-logging</groupId>
-        <artifactId>commons-logging</artifactId>
-        <version>1.1.3</version>
-      </dependency>
-      <dependency>
-        <groupId>org.javassist</groupId>
-        <artifactId>javassist</artifactId>
-        <version>3.18.1-GA</version>
-      </dependency>
-      <dependency>
         <groupId>org.eclipse.jetty</groupId>
         <artifactId>jetty-server</artifactId>
         <version>${jetty.version}</version>
@@ -672,110 +524,14 @@
         <version>1.0.6</version>
       </dependency>
       <dependency>
-        <groupId>joda-time</groupId>
-        <artifactId>joda-time</artifactId>
-        <version>2.9.4</version>
-      </dependency>
-      <dependency>
-        <groupId>org.joda</groupId>
-        <artifactId>joda-convert</artifactId>
-        <version>1.8.1</version>
-      </dependency>
-      <dependency>
-          <groupId>javax.xml.bind</groupId>
-          <artifactId>jaxb-api</artifactId>
-          <version>2.3.1</version>
-      </dependency>
-      <dependency>
-          <groupId>com.sun.xml.bind</groupId>
-          <artifactId>jaxb-core</artifactId>
-          <version>2.2.11</version>
-      </dependency>
-      <dependency>
-          <groupId>com.sun.xml.bind</groupId>
-          <artifactId>jaxb-impl</artifactId>
-          <version>2.2.11</version>
-      </dependency>
-      <dependency>
-          <groupId>javax.xml.ws</groupId>
-          <artifactId>jaxws-api</artifactId>
-          <version>2.3.1</version>
-      </dependency>
-      <dependency>
           <groupId>javax.annotation</groupId>
           <artifactId>javax.annotation-api</artifactId>
           <version>1.3.2</version>
       </dependency>
       <dependency>
-          <groupId>javax.validation</groupId>
-          <artifactId>validation-api</artifactId>
-          <version>1.1.0.Final</version>
-      </dependency>
-      <dependency>
-          <groupId>org.reflections</groupId>
-          <artifactId>reflections</artifactId>
-          <version>0.9.10</version>
-      </dependency>
-      <dependency>
         <groupId>com.google.code.gson</groupId>
         <artifactId>gson</artifactId>
         <version>2.7</version>
-      </dependency>
-      <dependency>
-        <groupId>org.objenesis</groupId>
-        <artifactId>objenesis</artifactId>
-        <version>1.2</version>
-      </dependency>
-      <dependency>
-        <groupId>net.java.dev.jna</groupId>
-        <artifactId>jna</artifactId>
-        <version>4.1.0</version>
-      </dependency>
-      <dependency>
-        <groupId>org.codehaus.woodstox</groupId>
-        <artifactId>stax2-api</artifactId>
-        <version>3.1.4</version>
-      </dependency>
-      <dependency>
-        <groupId>javax.ws.rs</groupId>
-        <artifactId>javax.ws.rs-api</artifactId>
-        <version>2.1</version>
-      </dependency>
-      <dependency>
-        <groupId>com.google.code.findbugs</groupId>
-        <artifactId>jsr305</artifactId>
-        <version>3.0.1</version>
-      </dependency>
-      <dependency>
-        <groupId>com.google.code.findbugs</groupId>
-        <artifactId>annotations</artifactId>
-        <version>3.0.1</version>
-      </dependency>
-      <dependency>
-        <groupId>org.reactivestreams</groupId>
-        <artifactId>reactive-streams</artifactId>
-        <version>1.0.2</version>
-      </dependency>
-      <dependency>
-        <groupId>org.http4s</groupId>
-        <artifactId>blaze-http_2.11</artifactId>
-        <version>0.12.11</version>
-      </dependency>
-      <!-- +-org.spire-math:jawn-parser_2.11:0.10.4  -->
-      <dependency>
-        <groupId>org.spire-math</groupId>
-        <artifactId>jawn-parser_2.11</artifactId>
-        <version>0.10.4</version>
-      </dependency>
-      <dependency>
-        <groupId>org.json4s</groupId>
-        <artifactId>json4s-core_2.11</artifactId>
-        <version>3.5.3</version>
-      </dependency>
-      <dependency>
-        <groupId>org.json4s</groupId>
-        <artifactId>json4s-native_2.11</artifactId>
-        <version>3.5.3</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
