@@ -12,11 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import javax.inject.Named;
-import java.util.Arrays;
-
-@Named("ErillisSijoitteluActor")
-@Component
+@Component("ErillisSijoitteluActor")
 @Scope(value = "prototype")
 public class ErillisSijoitteluActor extends AbstractActor {
     LoggingAdapter log = Logging.getLogger(getContext().system(), this);

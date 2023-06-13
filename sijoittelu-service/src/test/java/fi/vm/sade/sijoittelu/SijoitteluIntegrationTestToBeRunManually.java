@@ -39,11 +39,11 @@ import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.util.StopWatch;
 
-import javax.inject.Named;
 import java.io.IOException;
 import java.net.URI;
 import java.time.Duration;
@@ -93,10 +93,12 @@ public class SijoitteluIntegrationTestToBeRunManually {
     @Autowired
     private LightWeightSijoitteluBusinessServiceForTesting lightWeightSijoitteluBusinessServiceForTesting;
 
-    @Autowired @Named("pipedHostVirkailija")
+    @Autowired
+    @Qualifier("pipedHostVirkailija")
     private String pipedHostVirkailija;
 
-    @Autowired @Named("mongoUri2")
+    @Autowired
+    @Qualifier("mongoUri2")
     private MongoClientURI mongoClientURI;
 
 	@Test

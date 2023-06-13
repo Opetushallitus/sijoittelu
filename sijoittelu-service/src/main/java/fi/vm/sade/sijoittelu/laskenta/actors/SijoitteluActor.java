@@ -12,12 +12,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import javax.inject.Named;
 import java.util.Collections;
 import java.util.HashSet;
 
-@Named("SijoitteluActor")
-@Component
+@Component("SijoitteluActor")
 @Scope(value = "prototype")
 public class SijoitteluActor extends AbstractActor {
     LoggingAdapter log = Logging.getLogger(getContext().system(), this);

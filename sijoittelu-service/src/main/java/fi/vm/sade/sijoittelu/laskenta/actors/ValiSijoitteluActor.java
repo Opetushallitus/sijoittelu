@@ -13,12 +13,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import javax.inject.Named;
-import java.util.Arrays;
 import java.util.List;
 
-@Named("ValiSijoitteluActor")
-@Component
+@Component("ValiSijoitteluActor")
 @Scope(value = "prototype")
 public class ValiSijoitteluActor extends AbstractActor {
     LoggingAdapter log = Logging.getLogger(getContext().system(), this);
