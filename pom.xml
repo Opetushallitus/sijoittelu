@@ -45,6 +45,7 @@
     <jetty.version>9.4.30.v20200611</jetty.version>
     <valintalaskenta.version>5.16-SNAPSHOT</valintalaskenta.version>
     <valintaperusteet-api.version>5.18-SNAPSHOT</valintaperusteet-api.version>
+    <cas-client.version>3.6.4</cas-client.version>
 </properties>
 
     <dependencyManagement>
@@ -407,20 +408,16 @@
       <dependency>
         <groupId>org.jasig.cas.client</groupId>
         <artifactId>cas-client-core</artifactId>
-        <version>3.4.1</version>
+        <version>${cas-client.version}</version>
       </dependency>
       <dependency>
         <groupId>org.jasig.cas.client</groupId>
         <artifactId>cas-client-support-distributed-ehcache</artifactId>
-        <version>3.4.1</version>
+        <version>${cas-client.version}</version>
         <exclusions>
           <exclusion>
             <artifactId>ehcache</artifactId>
             <groupId>net.sf.ehcache</groupId>
-          </exclusion>
-          <exclusion>
-            <artifactId>commons-logging</artifactId>
-            <groupId>commons-logging</groupId>
           </exclusion>
         </exclusions>
       </dependency>
