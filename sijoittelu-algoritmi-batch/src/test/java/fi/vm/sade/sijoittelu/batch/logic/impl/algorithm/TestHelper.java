@@ -54,7 +54,7 @@ public final class TestHelper {
         ObjectMapper xmlMapper = new ObjectMapper();
         xmlMapper.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
         xmlMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        return xmlMapper.readValue(Thread.currentThread().getContextClassLoader().getResourceAsStream(filename), valueTypeRef);
+        return (T)xmlMapper.readValue(Thread.currentThread().getContextClassLoader().getResourceAsStream(filename), valueTypeRef);
     }
 
     private static Hakukohde hakukohde(String endsWith, SijoitteluajoWrapper ajo) {

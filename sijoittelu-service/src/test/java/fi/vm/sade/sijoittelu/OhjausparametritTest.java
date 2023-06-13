@@ -2,13 +2,8 @@ package fi.vm.sade.sijoittelu;
 
 import com.google.gson.GsonBuilder;
 import fi.vm.sade.sijoittelu.laskenta.external.resource.dto.ParametriDTO;
-import org.codehaus.jackson.map.DeserializationConfig;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.map.SerializationConfig;
 import org.junit.Test;
-import org.springframework.core.io.ClassPathResource;
 
-import java.io.File;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
