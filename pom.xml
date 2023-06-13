@@ -45,6 +45,7 @@
     <jetty.version>9.4.30.v20200611</jetty.version>
     <valintalaskenta.version>5.16-SNAPSHOT</valintalaskenta.version>
     <valintaperusteet-api.version>5.18-SNAPSHOT</valintaperusteet-api.version>
+    <hibernate.version>6.2.4.Final</hibernate.version>
     <cas-client.version>3.6.4</cas-client.version>
 </properties>
 
@@ -226,29 +227,24 @@
         <version>5.6-SNAPSHOT</version>
       </dependency>
       <dependency>
-        <groupId>org.hibernate</groupId>
+        <groupId>org.hibernate.orm</groupId>
         <artifactId>hibernate-core</artifactId>
-        <version>4.2.7.Final</version>
+        <version>${hibernate.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.hibernate</groupId>
+        <groupId>org.hibernate.validator</groupId>
         <artifactId>hibernate-validator</artifactId>
-        <version>4.1.0.Final</version>
+        <version>${hibernate.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.hibernate</groupId>
+        <groupId>org.hibernate.orm</groupId>
         <artifactId>hibernate-entitymanager</artifactId>
-        <version>4.2.7.Final</version>
+        <version>${hibernate.version}</version>
       </dependency>
       <dependency>
         <groupId>org.hibernate</groupId>
         <artifactId>hibernate-ehcache</artifactId>
-        <version>4.2.7.Final</version>
-      </dependency>
-      <dependency>
-        <groupId>org.hibernate.javax.persistence</groupId>
-        <artifactId>hibernate-jpa-2.0-api</artifactId>
-        <version>1.0.1.Final</version>
+        <version>${hibernate.version}</version>
       </dependency>
       <dependency>
         <groupId>net.sf.ehcache</groupId>
