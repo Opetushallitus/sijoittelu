@@ -152,13 +152,13 @@ public class SijoitteluTilatJaKuvauksetTest {
 
     private void setupMocksHakemuksenTilaPeruuntunut() {
         when(valintarekisteriService.getLatestSijoitteluajo(hakuOid)).thenReturn(valintarekisteriSijoitteluajo());
-        when(valintarekisteriService.getSijoitteluajonHakukohteet(sijoitteluajoId)).thenReturn(valintarekisteriHakukohteetHakemuksenTilalla(HakemuksenTila.PERUUNTUNUT));
+        when(valintarekisteriService.getSijoitteluajonHakukohteet(sijoitteluajoId, hakuOid)).thenReturn(valintarekisteriHakukohteetHakemuksenTilalla(HakemuksenTila.PERUUNTUNUT));
         when(valintaTulosServiceResource.haunKoulutuksenAlkamiskaudenVastaanototYhdenPaikanSaadoksenPiirissa(hakuOid)).thenReturn(vastaanototToisessaHakukohteessa());
     }
 
     private void setupMocksValintatuloksenTilaPerunut() {
         when(valintarekisteriService.getLatestSijoitteluajo(hakuOid)).thenReturn(valintarekisteriSijoitteluajo());
-        when(valintarekisteriService.getSijoitteluajonHakukohteet(sijoitteluajoId)).thenReturn(valintarekisteriHakukohteetHakemuksenTilalla(HakemuksenTila.HYVAKSYTTY));
+        when(valintarekisteriService.getSijoitteluajonHakukohteet(sijoitteluajoId, hakuOid)).thenReturn(valintarekisteriHakukohteetHakemuksenTilalla(HakemuksenTila.HYVAKSYTTY));
         when(valintaTulosServiceResource.haunKoulutuksenAlkamiskaudenVastaanototYhdenPaikanSaadoksenPiirissa(hakuOid)).thenReturn(vastaanototToisessaHakukohteessa());
 
         Valintatulos valintatulos = new Valintatulos(jonoOid, hakijaOid, hakukohdeOid, hakijaOid, hakuOid, 0);
@@ -169,7 +169,7 @@ public class SijoitteluTilatJaKuvauksetTest {
 
     private void setupMocksHakemuksenTilaHylatty() {
         when(valintarekisteriService.getLatestSijoitteluajo(hakuOid)).thenReturn(valintarekisteriSijoitteluajo());
-        when(valintarekisteriService.getSijoitteluajonHakukohteet(sijoitteluajoId)).thenReturn(valintarekisteriHakukohteetHakemuksenTilalla(HakemuksenTila.HYLATTY));
+        when(valintarekisteriService.getSijoitteluajonHakukohteet(sijoitteluajoId, hakuOid)).thenReturn(valintarekisteriHakukohteetHakemuksenTilalla(HakemuksenTila.HYLATTY));
         when(valintaTulosServiceResource.haunKoulutuksenAlkamiskaudenVastaanototYhdenPaikanSaadoksenPiirissa(hakuOid)).thenReturn(Collections.emptyList());
     }
 
@@ -274,7 +274,7 @@ public class SijoitteluTilatJaKuvauksetTest {
 
     private void verifyAndCaptureAndAssert(Function3<SijoitteluAjo, List<Hakukohde>, List<Valintatulos>, Boolean> assertFunction) throws Exception {
         verify(valintarekisteriService).getLatestSijoitteluajo(hakuOid);
-        verify(valintarekisteriService).getSijoitteluajonHakukohteet(sijoitteluajoId);
+        verify(valintarekisteriService).getSijoitteluajonHakukohteet(sijoitteluajoId, hakuOid);
         verify(valintarekisteriService).getValintatulokset(hakuOid);
 
         ArgumentCaptor<SijoitteluAjo> sijoitteluajoCaptor = ArgumentCaptor.forClass(SijoitteluAjo.class);

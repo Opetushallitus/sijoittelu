@@ -117,7 +117,7 @@ public class SijoitteluBusinessServiceValintarekisteriTest {
 
     private void setupMocks(String hakuOid, SijoitteluAjo sijoitteluAjo, List<Hakukohde> hakukohdes, List<Valintatulos> valintatulos) {
         when(valintarekisteriService.getLatestSijoitteluajo(hakuOid)).thenReturn(sijoitteluAjo);
-        when(valintarekisteriService.getSijoitteluajonHakukohteet(sijoitteluajoId)).thenReturn(hakukohdes);
+        when(valintarekisteriService.getSijoitteluajonHakukohteet(sijoitteluajoId, hakuOid)).thenReturn(hakukohdes);
         when(valintarekisteriService.getValintatulokset(hakuOid)).thenReturn(valintatulos);
     }
 
@@ -127,7 +127,7 @@ public class SijoitteluBusinessServiceValintarekisteriTest {
 
     private void verifyAndCaptureAndAssert(Function3<SijoitteluAjo, List<Hakukohde>, List<Valintatulos>, Boolean> assertFunction, String hakuOid) {
         verify(valintarekisteriService).getLatestSijoitteluajo(hakuOid);
-        verify(valintarekisteriService).getSijoitteluajonHakukohteet(sijoitteluajoId);
+        verify(valintarekisteriService).getSijoitteluajonHakukohteet(sijoitteluajoId, hakuOid);
         verify(valintarekisteriService).getValintatulokset(hakuOid);
 
         ArgumentCaptor<SijoitteluAjo> sijoitteluajoCaptor = ArgumentCaptor.forClass(SijoitteluAjo.class);
