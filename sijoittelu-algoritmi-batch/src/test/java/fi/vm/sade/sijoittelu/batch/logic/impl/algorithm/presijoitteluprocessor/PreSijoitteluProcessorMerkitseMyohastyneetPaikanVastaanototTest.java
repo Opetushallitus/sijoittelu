@@ -5,7 +5,6 @@ import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.*;
 import fi.vm.sade.sijoittelu.domain.*;
 import org.junit.Test;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,8 +15,8 @@ public class PreSijoitteluProcessorMerkitseMyohastyneetPaikanVastaanototTest {
     private final PreSijoitteluProcessorMerkitseMyohastyneetPaikanVastaanotot processor = new PreSijoitteluProcessorMerkitseMyohastyneetPaikanVastaanotot();
 
     @Test
-    public void marksLateApplicationsAutomatically() {
-        SijoitteluajoWrapper wrapper = generateSijoitteluajoWrapper(true, LocalDateTime.now().minusDays(2));
+    public void marksLateApplicationsAutomaticallyCancelled() {
+        SijoitteluajoWrapper wrapper = generateSijoitteluajoWrapper(true, true);
         processor.process(wrapper);
         HakemusWrapper hw = wrapper.getHakukohteet().get(0).getValintatapajonot().get(0).getHakemukset().get(0);
         assertEquals(HakemuksenTila.PERUNUT, hw.getHakemus().getTila());
@@ -25,9 +24,25 @@ public class PreSijoitteluProcessorMerkitseMyohastyneetPaikanVastaanototTest {
         assertFalse(hw.isTilaVoidaanVaihtaa());
     }
 
+    @Test
+    public void marksLateApplicationsAutomaticallyCancelledAndLeavesNotMarkedLateAsTheyAre() {
+        SijoitteluajoWrapper wrapper = generateSijoitteluajoWrapper(true, false, true, false);
+        processor.process(wrapper);
+        List<HakemusWrapper> hw = wrapper.getHakukohteet().get(0).getValintatapajonot().get(0).getHakemukset();
+        assertEquals(HakemuksenTila.VARALLA, hw.get(0).getHakemus().getTila());
+        assertEquals(ValintatuloksenTila.KESKEN, hw.get(0).getValintatulos().orElse(new Valintatulos()).getTila());
+        assertTrue(hw.get(0).isTilaVoidaanVaihtaa());
+        assertEquals(HakemuksenTila.PERUNUT, hw.get(1).getHakemus().getTila());
+        assertEquals(ValintatuloksenTila.EI_VASTAANOTETTU_MAARA_AIKANA, hw.get(1).getValintatulos().orElse(new Valintatulos()).getTila());
+        assertFalse(hw.get(1).isTilaVoidaanVaihtaa());
+        assertEquals(HakemuksenTila.VARALLA, hw.get(2).getHakemus().getTila());
+        assertEquals(ValintatuloksenTila.KESKEN, hw.get(2).getValintatulos().orElse(new Valintatulos()).getTila());
+        assertTrue(hw.get(2).isTilaVoidaanVaihtaa());
+    }
+
      @Test
-     public void doesNotMarkApplicationLateIfMerkitseMyohAutoFlagIsNotSet() {
-         SijoitteluajoWrapper wrapper = generateSijoitteluajoWrapper(false, LocalDateTime.now().minusDays(2));
+     public void doesNotMarkApplicationCancelledIfMerkitseMyohAutoFlagIsNotSet() {
+         SijoitteluajoWrapper wrapper = generateSijoitteluajoWrapper(false, true);
          processor.process(wrapper);
          HakemusWrapper hw = wrapper.getHakukohteet().get(0).getValintatapajonot().get(0).getHakemukset().get(0);
          assertEquals(HakemuksenTila.VARALLA, hw.getHakemus().getTila());
@@ -36,8 +51,8 @@ public class PreSijoitteluProcessorMerkitseMyohastyneetPaikanVastaanototTest {
      }
 
      @Test
-     public void doesNotMarkApplicationLateIfReserveFillIsNotOver() {
-         SijoitteluajoWrapper wrapper = generateSijoitteluajoWrapper(false, LocalDateTime.now().plusDays(2));
+     public void doesNotMarkApplicationCancelledIfApplicationIsNotLate() {
+         SijoitteluajoWrapper wrapper = generateSijoitteluajoWrapper(true, false);
          processor.process(wrapper);
          HakemusWrapper hw = wrapper.getHakukohteet().get(0).getValintatapajonot().get(0).getHakemukset().get(0);
          assertEquals(HakemuksenTila.VARALLA, hw.getHakemus().getTila());
@@ -45,7 +60,7 @@ public class PreSijoitteluProcessorMerkitseMyohastyneetPaikanVastaanototTest {
          assertTrue(hw.isTilaVoidaanVaihtaa());
      }
 
-    private List<ValintatapajonoWrapper> generateValintatapajonoWrapper(boolean merkitseMyohAuto) {
+    private List<ValintatapajonoWrapper> generateValintatapajonoWrapper(boolean merkitseMyohAuto, boolean ... hakemusMyohassa) {
         List<ValintatapajonoWrapper> valintatapajonot = new ArrayList<>();
 
         ValintatapajonoWrapper valintatapajono = new ValintatapajonoWrapper();
@@ -55,7 +70,7 @@ public class PreSijoitteluProcessorMerkitseMyohastyneetPaikanVastaanototTest {
         valintatapajono.setMerkitseMyohAuto(merkitseMyohAuto);
         valintatapajono.setValintatapajono(valintatapajono1);
 
-        List<HakemusWrapper> hakemukset = generateHakemusWrapper(valintatapajono);
+        List<HakemusWrapper> hakemukset = generateHakemusWrapper(valintatapajono, hakemusMyohassa);
         valintatapajono.setHakemukset(hakemukset);
 
         valintatapajonot.add(valintatapajono);
@@ -63,36 +78,38 @@ public class PreSijoitteluProcessorMerkitseMyohastyneetPaikanVastaanototTest {
         return valintatapajonot;
     }
 
-    private List<HakemusWrapper> generateHakemusWrapper(ValintatapajonoWrapper jono) {
+    private List<HakemusWrapper> generateHakemusWrapper(ValintatapajonoWrapper jono, boolean ... hakemusMyohassa) {
         List<HakemusWrapper> hakemukset = new ArrayList<>();
-        HakemusWrapper wrapper = new HakemusWrapper();
-        Hakemus hakemus = new Hakemus();
-        hakemus.setHakemusOid("1.2.3");
-        hakemus.setTila(HakemuksenTila.VARALLA);
-        wrapper.setHakemus(hakemus);
-        wrapper.setHenkilo(generateHenkiloWrapper("1.2.3", jono.getValintatapajono().getOid()));
-        wrapper.setValintatapajono(jono);
-        hakemukset.add(wrapper);
+        for (int i = 0; i < hakemusMyohassa.length; i++) {
+            HakemusWrapper wrapper = new HakemusWrapper();
+            Hakemus hakemus = new Hakemus();
+            hakemus.setHakemusOid("1.2.3." + i);
+            hakemus.setTila(HakemuksenTila.VARALLA);
+            hakemus.setVastaanottoMyohassa(hakemusMyohassa[i]);
+            wrapper.setHakemus(hakemus);
+            wrapper.setHenkilo(generateHenkiloWrapper("1.2.3." + i, jono.getValintatapajono().getOid()));
+            wrapper.setValintatapajono(jono);
+            hakemukset.add(wrapper);
+        }
         return hakemukset;
     }
 
-    private List<HakukohdeWrapper> generateHakukohdeWrapper(boolean merkitseMyohAuto) {
+    private List<HakukohdeWrapper> generateHakukohdeWrapper(boolean merkitseMyohAuto, boolean ... hakemusMyohassa) {
         List<HakukohdeWrapper> hakukohteet = new ArrayList<>();
 
         HakukohdeWrapper hakukohde1 = new HakukohdeWrapper();
         Hakukohde hakukohde = new Hakukohde();
         hakukohde.setOid("123");
         hakukohde1.setHakukohde(hakukohde);
-        hakukohde1.setValintatapajonot(generateValintatapajonoWrapper(merkitseMyohAuto));
+        hakukohde1.setValintatapajonot(generateValintatapajonoWrapper(merkitseMyohAuto, hakemusMyohassa));
         hakukohteet.add(hakukohde1);
 
         return hakukohteet;
     }
 
-    private SijoitteluajoWrapper generateSijoitteluajoWrapper(boolean merkitseMyohAuto, LocalDateTime dateToUseForChecking) {
+    private SijoitteluajoWrapper generateSijoitteluajoWrapper(boolean merkitseMyohAuto, boolean ... hakemusMyohassa) {
         SijoitteluajoWrapper sijoitteluajo = new SijoitteluajoWrapper(new SijoitteluConfiguration(), new SijoitteluAjo());
-        sijoitteluajo.setVarasijaTayttoPaattyy(dateToUseForChecking);
-        List<HakukohdeWrapper> hakukohdeWrapper = generateHakukohdeWrapper(merkitseMyohAuto);
+        List<HakukohdeWrapper> hakukohdeWrapper = generateHakukohdeWrapper(merkitseMyohAuto, hakemusMyohassa);
         sijoitteluajo.setHakukohteet(hakukohdeWrapper);
         return sijoitteluajo;
     }

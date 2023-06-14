@@ -115,7 +115,7 @@ public class SijoitteluBusinessService {
         List<Hakukohde> edellisenSijoitteluajonTulokset = Collections.emptyList();
         if (viimeisinSijoitteluajo != null) {
             edellisenSijoitteluajonTulokset =
-                valintarekisteriService.getSijoitteluajonHakukohteet(viimeisinSijoitteluajo.getSijoitteluajoId());
+                valintarekisteriService.getSijoitteluajonHakukohteet(viimeisinSijoitteluajo.getSijoitteluajoId(), hakuOid);
             validateSijoittelunJonot(uudenSijoitteluajonHakukohteet,
                 edellisenSijoitteluajonTulokset,
                 eiSijoitteluunMenevatJonot,
@@ -388,7 +388,7 @@ public class SijoitteluBusinessService {
         List<Hakukohde> hakukohdeViimeisimmassaSijoitteluajossa = Collections.emptyList();
 
         if (null != viimeisinSijoitteluajo) {
-            viimeisimmanSijoitteluajonHakukohteet = valintarekisteriService.getSijoitteluajonHakukohteet(viimeisinSijoitteluajo.getSijoitteluajoId());
+            viimeisimmanSijoitteluajonHakukohteet = valintarekisteriService.getSijoitteluajonHakukohteet(viimeisinSijoitteluajo.getSijoitteluajoId(), hakuOid);
             hakukohdeViimeisimmassaSijoitteluajossa = viimeisimmanSijoitteluajonHakukohteet.stream()
                 .filter(hk -> hk.getOid().equals(sijoiteltavanHakukohteenOid))
                 .findFirst()
