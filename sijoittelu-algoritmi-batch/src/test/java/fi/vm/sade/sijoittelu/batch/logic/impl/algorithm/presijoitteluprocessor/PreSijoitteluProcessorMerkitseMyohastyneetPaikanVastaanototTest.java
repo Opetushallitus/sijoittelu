@@ -25,17 +25,28 @@ public class PreSijoitteluProcessorMerkitseMyohastyneetPaikanVastaanototTest {
     }
 
     @Test
+    public void doesNotMarkLateApplicationsThatAreNotAcceptedCancelled() {
+        SijoitteluajoWrapper wrapper = generateSijoitteluajoWrapper(true, true);
+        wrapper.getHakukohteet().stream().flatMap(h -> h.hakukohteenHakemukset()).forEach(hakemus -> hakemus.getHakemus().setTila(HakemuksenTila.VARALLA));
+        processor.process(wrapper);
+        HakemusWrapper hw = wrapper.getHakukohteet().get(0).getValintatapajonot().get(0).getHakemukset().get(0);
+        assertEquals(HakemuksenTila.VARALLA, hw.getHakemus().getTila());
+        assertEquals(ValintatuloksenTila.KESKEN, hw.getValintatulos().orElse(new Valintatulos()).getTila());
+        assertTrue(hw.isTilaVoidaanVaihtaa());
+    }
+
+    @Test
     public void marksLateApplicationsAutomaticallyCancelledAndLeavesNotMarkedLateAsTheyAre() {
         SijoitteluajoWrapper wrapper = generateSijoitteluajoWrapper(true, false, true, false);
         processor.process(wrapper);
         List<HakemusWrapper> hw = wrapper.getHakukohteet().get(0).getValintatapajonot().get(0).getHakemukset();
-        assertEquals(HakemuksenTila.VARALLA, hw.get(0).getHakemus().getTila());
+        assertEquals(HakemuksenTila.HYVAKSYTTY, hw.get(0).getHakemus().getTila());
         assertEquals(ValintatuloksenTila.KESKEN, hw.get(0).getValintatulos().orElse(new Valintatulos()).getTila());
         assertTrue(hw.get(0).isTilaVoidaanVaihtaa());
         assertEquals(HakemuksenTila.PERUNUT, hw.get(1).getHakemus().getTila());
         assertEquals(ValintatuloksenTila.EI_VASTAANOTETTU_MAARA_AIKANA, hw.get(1).getValintatulos().orElse(new Valintatulos()).getTila());
         assertFalse(hw.get(1).isTilaVoidaanVaihtaa());
-        assertEquals(HakemuksenTila.VARALLA, hw.get(2).getHakemus().getTila());
+        assertEquals(HakemuksenTila.HYVAKSYTTY, hw.get(2).getHakemus().getTila());
         assertEquals(ValintatuloksenTila.KESKEN, hw.get(2).getValintatulos().orElse(new Valintatulos()).getTila());
         assertTrue(hw.get(2).isTilaVoidaanVaihtaa());
     }
@@ -45,7 +56,7 @@ public class PreSijoitteluProcessorMerkitseMyohastyneetPaikanVastaanototTest {
          SijoitteluajoWrapper wrapper = generateSijoitteluajoWrapper(false, true);
          processor.process(wrapper);
          HakemusWrapper hw = wrapper.getHakukohteet().get(0).getValintatapajonot().get(0).getHakemukset().get(0);
-         assertEquals(HakemuksenTila.VARALLA, hw.getHakemus().getTila());
+         assertEquals(HakemuksenTila.HYVAKSYTTY, hw.getHakemus().getTila());
          assertEquals(ValintatuloksenTila.KESKEN, hw.getValintatulos().orElse(new Valintatulos()).getTila());
          assertTrue(hw.isTilaVoidaanVaihtaa());
      }
@@ -55,7 +66,7 @@ public class PreSijoitteluProcessorMerkitseMyohastyneetPaikanVastaanototTest {
          SijoitteluajoWrapper wrapper = generateSijoitteluajoWrapper(true, false);
          processor.process(wrapper);
          HakemusWrapper hw = wrapper.getHakukohteet().get(0).getValintatapajonot().get(0).getHakemukset().get(0);
-         assertEquals(HakemuksenTila.VARALLA, hw.getHakemus().getTila());
+         assertEquals(HakemuksenTila.HYVAKSYTTY, hw.getHakemus().getTila());
          assertEquals(ValintatuloksenTila.KESKEN, hw.getValintatulos().orElse(new Valintatulos()).getTila());
          assertTrue(hw.isTilaVoidaanVaihtaa());
      }
@@ -84,7 +95,7 @@ public class PreSijoitteluProcessorMerkitseMyohastyneetPaikanVastaanototTest {
             HakemusWrapper wrapper = new HakemusWrapper();
             Hakemus hakemus = new Hakemus();
             hakemus.setHakemusOid("1.2.3." + i);
-            hakemus.setTila(HakemuksenTila.VARALLA);
+            hakemus.setTila(HakemuksenTila.HYVAKSYTTY);
             hakemus.setVastaanottoMyohassa(hakemusMyohassa[i]);
             wrapper.setHakemus(hakemus);
             wrapper.setHenkilo(generateHenkiloWrapper("1.2.3." + i, jono.getValintatapajono().getOid()));
