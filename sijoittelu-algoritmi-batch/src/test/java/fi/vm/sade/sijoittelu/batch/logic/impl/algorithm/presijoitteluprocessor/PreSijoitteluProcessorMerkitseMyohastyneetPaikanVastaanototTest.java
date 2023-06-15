@@ -27,11 +27,24 @@ public class PreSijoitteluProcessorMerkitseMyohastyneetPaikanVastaanototTest {
     @Test
     public void doesNotMarkLateApplicationsThatAreNotAcceptedCancelled() {
         SijoitteluajoWrapper wrapper = generateSijoitteluajoWrapper(true, true);
-        wrapper.getHakukohteet().stream().flatMap(h -> h.hakukohteenHakemukset()).forEach(hakemus -> hakemus.getHakemus().setTila(HakemuksenTila.VARALLA));
+        wrapper.getHakukohteet().stream().flatMap(HakukohdeWrapper::hakukohteenHakemukset)
+                .forEach(hakemus -> hakemus.getHakemus().setTila(HakemuksenTila.VARALLA));
         processor.process(wrapper);
         HakemusWrapper hw = wrapper.getHakukohteet().get(0).getValintatapajonot().get(0).getHakemukset().get(0);
         assertEquals(HakemuksenTila.VARALLA, hw.getHakemus().getTila());
         assertEquals(ValintatuloksenTila.KESKEN, hw.getValintatulos().orElse(new Valintatulos()).getTila());
+        assertTrue(hw.isTilaVoidaanVaihtaa());
+    }
+
+    @Test
+    public void doesNotMarkLateApplicationsThatAreNotInProcessCancelled() {
+        SijoitteluajoWrapper wrapper = generateSijoitteluajoWrapper(true, true);
+        wrapper.getHakukohteet().stream().flatMap(HakukohdeWrapper::hakukohteenHakemukset)
+                .forEach(hakemus -> hakemus.getValintatulos().orElse(new Valintatulos()).setTila(ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI, ""));
+        processor.process(wrapper);
+        HakemusWrapper hw = wrapper.getHakukohteet().get(0).getValintatapajonot().get(0).getHakemukset().get(0);
+        assertEquals(HakemuksenTila.HYVAKSYTTY, hw.getHakemus().getTila());
+        assertEquals(ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI, hw.getValintatulos().orElse(new Valintatulos()).getTila());
         assertTrue(hw.isTilaVoidaanVaihtaa());
     }
 
