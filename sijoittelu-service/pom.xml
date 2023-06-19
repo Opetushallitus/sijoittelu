@@ -113,6 +113,10 @@
 					<groupId>com.wordnik</groupId>
 					<artifactId>swagger-jersey-jaxrs_2.11</artifactId>
 				</exclusion>
+				<exclusion>
+					<groupId>fi.vm.sade.valintaperusteet</groupId>
+					<artifactId>valintaperusteet-api</artifactId>
+				</exclusion>
 			</exclusions>
 		</dependency>
 		<dependency>
