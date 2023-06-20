@@ -36,12 +36,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Predicate;
@@ -55,8 +56,8 @@ import static java.util.stream.Collectors.toSet;
 
 import static fi.vm.sade.valintalaskenta.tulos.roles.ValintojenToteuttaminenRole.OPH_CRUD;
 
-@Path("sijoittele")
-@Controller
+@RequestMapping(value = "/resources/sijoittele")
+@RestController
 @PreAuthorize("isAuthenticated()")
 @Api(value = "sijoittele", description = "Resurssi sijoitteluun")
 public class SijoitteluResource {
@@ -93,21 +94,19 @@ public class SijoitteluResource {
                 .create();
     }
 
-    @GET
-    @Path("/ajontila/{sijoitteluId}")
+    @GetMapping(value = "/ajontila/{sijoitteluId}", produces = MediaType.TEXT_PLAIN_VALUE)
     @PreAuthorize(OPH_CRUD)
     @ApiOperation(value = "Sijoitteluajon tila", response = String.class)
-    public String sijoittelunTila(@PathParam("sijoitteluId") Long id) {
+    public String sijoittelunTila(@PathVariable("sijoitteluId") Long id) {
         String tila = sijoitteluBookkeeperService.getSijoitteluAjonTila(id);
         LOGGER.info("/ajontila/sijoitteluId: Palautetaan sijoitteluajolle {} tila {}", id, tila);
         return tila;
     }
 
-    @GET
-    @Path("/{hakuOid}")
+    @GetMapping(value = "/{hakuOid}", produces = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize(OPH_CRUD)
     @ApiOperation(value = "Käynnistä uusi sijoittelu haulle", response = Long.class)
-    public Long sijoittele(@PathParam("hakuOid") String hakuOid) {
+    public Long sijoittele(@PathVariable("hakuOid") String hakuOid) {
 
         Long sijoitteluAjonTunniste = System.currentTimeMillis();
         if (!sijoitteluBookkeeperService.luoUusiSijoitteluAjo(hakuOid, sijoitteluAjonTunniste)) {

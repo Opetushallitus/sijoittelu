@@ -18,16 +18,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.*;
 import scala.concurrent.Await;
 import scala.concurrent.Future;
 import scala.concurrent.duration.Duration;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
-import javax.ws.rs.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -35,8 +34,8 @@ import java.util.Optional;
 import static fi.vm.sade.sijoittelu.laskenta.actors.creators.SpringExtension.SpringExtProvider;
 import static fi.vm.sade.valintalaskenta.tulos.roles.ValintojenToteuttaminenRole.OPH_CRUD;
 
-@Path("valisijoittele")
-@Controller
+@RequestMapping(value = "/resources/valisijoittele")
+@RestController
 @PreAuthorize("isAuthenticated()")
 @Api(value = "valisijoittele", description = "Resurssi sijoitteluun")
 public class ValiSijoitteluResource {
@@ -73,13 +72,10 @@ public class ValiSijoitteluResource {
         actorSystem.awaitTermination();
     }
 
-    @POST
-    @Path("/{hakuOid}")
     @PreAuthorize(OPH_CRUD)
-    @Consumes("application/json")
-    @Produces("application/json")
+    @PostMapping(value = "/{hakuOid}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "Välisijoittelun suorittaminen")
-    public List<HakukohdeDTO> sijoittele(@PathParam("hakuOid") String hakuOid, ValisijoitteluDTO hakukohteet) {
+    public List<HakukohdeDTO> sijoittele(@PathVariable("hakuOid") String hakuOid, @RequestBody ValisijoitteluDTO hakukohteet) {
         LOGGER.info("Valintatietoja valmistetaan valisijottelulle haussa {}", hakuOid);
         HakuDTO haku = valintatietoService.haeValintatiedotJonoille(hakuOid, hakukohteet.getHakukohteet(), Optional.empty());
 

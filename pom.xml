@@ -3,6 +3,12 @@
 
     <modelVersion>4.0.0</modelVersion>
 
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>2.7.14</version>
+    </parent>
+
     <groupId>fi.vm.sade.sijoittelu</groupId>
     <artifactId>sijoittelu</artifactId>
     <packaging>pom</packaging>
@@ -42,11 +48,11 @@
     <spring.security.version>5.7.10</spring.security.version>
     <surefire.plugin.version>3.1.2</surefire.plugin.version>
     <swagger.version>1.5.16</swagger.version>
-    <jetty.version>9.4.30.v20200611</jetty.version>
     <valintalaskenta.version>5.17.2-SNAPSHOT</valintalaskenta.version>
     <valintaperusteet-api.version>5.18-SNAPSHOT</valintaperusteet-api.version>
     <hibernate.version>6.2.4.Final</hibernate.version>
     <cas-client.version>3.6.4</cas-client.version>
+    <spring.boot.version>2.7.14</spring.boot.version>
 </properties>
 
     <dependencyManagement>
@@ -103,45 +109,9 @@
         <version>9.2.1-SNAPSHOT</version>
       </dependency>
       <dependency>
-        <groupId>jakarta.servlet</groupId>
-        <artifactId>jakarta.servlet-api</artifactId>
-        <version>6.0.0</version>
-        <scope>provided</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.springframework</groupId>
-        <artifactId>spring-core</artifactId>
-        <version>${spring.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.springframework</groupId>
-        <artifactId>spring-jdbc</artifactId>
-        <version>${spring.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.springframework</groupId>
-        <artifactId>spring-web</artifactId>
-        <version>${spring.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.springframework</groupId>
-        <artifactId>spring-webmvc</artifactId>
-        <version>${spring.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.springframework</groupId>
-        <artifactId>spring-webmvc-portlet</artifactId>
-        <version>${spring.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.springframework</groupId>
-        <artifactId>spring-context</artifactId>
-        <version>${spring.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.springframework</groupId>
-        <artifactId>spring-context-support</artifactId>
-        <version>${spring.version}</version>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-web</artifactId>
+        <version>${spring.boot.version}</version>
       </dependency>
       <dependency>
         <groupId>org.springframework</groupId>
@@ -166,31 +136,6 @@
                   <artifactId>mockito-all</artifactId>
               </exclusion>
           </exclusions>
-      </dependency>
-      <dependency>
-        <groupId>org.springframework</groupId>
-        <artifactId>spring-aop</artifactId>
-        <version>${spring.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.springframework</groupId>
-        <artifactId>spring-beans</artifactId>
-        <version>${spring.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.springframework</groupId>
-        <artifactId>spring-tx</artifactId>
-        <version>${spring.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.springframework</groupId>
-        <artifactId>spring-orm</artifactId>
-        <version>${spring.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.springframework</groupId>
-        <artifactId>spring-expression</artifactId>
-        <version>${spring.version}</version>
       </dependency>
       <dependency>
         <groupId>org.springframework.security</groupId>
@@ -226,6 +171,16 @@
         <groupId>fi.vm.sade.java-utils</groupId>
         <artifactId>java-cxf</artifactId>
         <version>0.4.0-SNAPSHOT</version>
+        <exclusions>
+          <exclusion>
+            <groupId>org.apache.cxf</groupId>
+            <artifactId>cxf-rt-rs-client</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.apache.cxf</groupId>
+            <artifactId>cxf-core</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>fi.vm.sade.valinta</groupId>
@@ -259,19 +214,10 @@
       </dependency>
       <dependency>
         <groupId>org.apache.cxf</groupId>
-        <artifactId>cxf-rt-rs-client</artifactId>
-        <version>${cxf.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.cxf</groupId>
         <artifactId>cxf-rt-frontend-jaxws</artifactId>
         <version>${cxf.version}</version>
       </dependency>
-      <dependency>
-        <groupId>org.apache.cxf</groupId>
-        <artifactId>cxf-rt-frontend-jaxrs</artifactId>
-        <version>${cxf.version}</version>
-      </dependency>
+      <!-- vain sijoittelu-tulos-servicen tarvitsema -->
       <dependency>
         <groupId>org.apache.cxf</groupId>
         <artifactId>cxf-rt-transports-http</artifactId>
@@ -279,8 +225,13 @@
       </dependency>
       <dependency>
         <groupId>org.apache.cxf</groupId>
-        <artifactId>cxf-core</artifactId>
+        <artifactId>cxf-spring-boot-starter-jaxrs</artifactId>
         <version>${cxf.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-validation</artifactId>
+        <version>3.1.0</version>
       </dependency>
       <dependency>
         <groupId>org.apache.cxf</groupId>
@@ -424,21 +375,6 @@
         </exclusions>
       </dependency>
       <dependency>
-        <groupId>org.eclipse.jetty</groupId>
-        <artifactId>jetty-server</artifactId>
-        <version>${jetty.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.eclipse.jetty</groupId>
-        <artifactId>jetty-webapp</artifactId>
-        <version>${jetty.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.eclipse.jetty</groupId>
-        <artifactId>jetty-maven-plugin</artifactId>
-        <version>${jetty.version}</version>
-      </dependency>
-      <dependency>
         <groupId>com.zaxxer</groupId>
         <artifactId>HikariCP</artifactId>
         <version>5.0.1</version>
@@ -457,6 +393,11 @@
         <groupId>com.squareup.okhttp3</groupId>
         <artifactId>mockwebserver</artifactId>
         <version>4.11.0</version>
+      </dependency>
+      <dependency>
+        <groupId>com.sun.mail</groupId>
+        <artifactId>jakarta.mail</artifactId>
+        <version>2.0.1</version>
       </dependency>
 
       <!-- Lukitaan transitiivisten riippuvuuksien versioita jotta enforcer-plugin ei valita -->
@@ -709,8 +650,8 @@
                     </goals>
                     <configuration>
                         <target>
-                            <echo message="writing ${project.build.outputDirectory}/webapp/buildversion.txt"/>
-                            <echo file="${project.build.outputDirectory}/webapp/buildversion.txt">
+                            <echo message="writing ${project.build.outputDirectory}/static/buildversion.txt"/>
+                            <echo file="${project.build.outputDirectory}/static/buildversion.txt">
                                 <![CDATA[artifactId=${project.artifactId}
 version=${project.version}
 buildNumber=${project.build}
@@ -720,7 +661,7 @@ buildTtime=${maven.build.timestamp}
 ]]>
                             </echo>
                             <loadfile property="buildversiontxt"
-                                      srcFile="${project.build.outputDirectory}/webapp/buildversion.txt"/>
+                                      srcFile="${project.build.outputDirectory}/static/buildversion.txt"/>
                             <echo message="${buildversiontxt}"/>
                             <echo file="target/mavenversion.txt">${project.version}</echo>
                         </target>

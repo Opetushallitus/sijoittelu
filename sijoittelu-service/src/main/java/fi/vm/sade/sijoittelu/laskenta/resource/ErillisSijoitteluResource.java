@@ -24,23 +24,20 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.*;
 import scala.concurrent.Await;
 import scala.concurrent.Future;
 import scala.concurrent.duration.Duration;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
 
 import static fi.vm.sade.valintalaskenta.tulos.roles.ValintojenToteuttaminenRole.OPH_CRUD;
 
-@Path("erillissijoittele")
-@Controller
+@RequestMapping(value = "/resources/erillissijoittele")
+@RestController
 @PreAuthorize("isAuthenticated()")
 @Api(value = "erillissijoittele", description = "Resurssi sijoitteluun")
 public class ErillisSijoitteluResource {
@@ -65,12 +62,10 @@ public class ErillisSijoitteluResource {
                 .create();
     }
 
-    @POST
-    @Path("/{hakuOid}")
-    @Consumes("application/json")
+    @PostMapping(value = "/{hakuOid}", consumes = "application/json", produces = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize(OPH_CRUD)
     @ApiOperation(consumes = "application/json", value = "Suorita erillissijoittelu", response = Long.class)
-    public Long sijoittele(@PathParam("hakuOid") String hakuOid, ValisijoitteluDTO hakukohteet) {
+    public Long sijoittele(@PathVariable("hakuOid") String hakuOid, @RequestBody ValisijoitteluDTO hakukohteet) {
         long id = ErillisSijoitteluQueue.getInstance().queueNewErillissijoittelu(hakuOid);
 
         try {
