@@ -38,7 +38,9 @@ public class SijoitteluajoWrapperFactory {
             hakukohde.getValintatapajonot().forEach(valintatapajono -> {
                 ValintatapajonoWrapper valintatapajonoWrapper = new ValintatapajonoWrapper();
                 valintatapajonoWrapper.setValintatapajono(valintatapajono);
-                if (!hakukohdeMapToValintatapajonoByOid.isEmpty() && !hakukohdeMapToValintatapajonoByOid.get(hakukohde.getOid()).isEmpty()) {
+                if (!hakukohdeMapToValintatapajonoByOid.isEmpty()
+                        && !hakukohdeMapToValintatapajonoByOid.get(hakukohde.getOid()).isEmpty()
+                        && hakukohdeMapToValintatapajonoByOid.get(hakukohde.getOid()).get(valintatapajono.getOid()) != null) {
                     valintatapajonoWrapper.setMerkitseMyohAuto(hakukohdeMapToValintatapajonoByOid
                             .get(hakukohde.getOid())
                             .get(valintatapajono.getOid())
