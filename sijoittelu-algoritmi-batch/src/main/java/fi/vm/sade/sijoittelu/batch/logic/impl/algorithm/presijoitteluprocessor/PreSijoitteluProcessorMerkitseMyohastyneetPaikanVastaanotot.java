@@ -17,8 +17,10 @@ public class PreSijoitteluProcessorMerkitseMyohastyneetPaikanVastaanotot impleme
 
     @Override
     public void process(SijoitteluajoWrapper sijoitteluajoWrapper) {
+        LOG.info("Aloitetaan merkitse myohastyneet automaattisesti preprosessointi");
         sijoitteluajoWrapper.getHakukohteet().forEach(hk -> {
             hk.getValintatapajonot().forEach(jono -> {
+                LOG.info("Valintatapajono {} aseta myöhästyneet automaattisesti: {}", jono.getValintatapajono().getOid(), jono.getMerkitseMyohAuto());
                 if (jono.getMerkitseMyohAuto()) {
                     jono.getHakemukset().stream().filter(this::isHakemusMyohassa).forEach(this::setHakemusToStatusPerunut);
                 }
@@ -41,8 +43,10 @@ public class PreSijoitteluProcessorMerkitseMyohastyneetPaikanVastaanotot impleme
     private boolean isHakemusMyohassa(HakemusWrapper hakemusWrapper) {
         Hakemus hakemus = hakemusWrapper.getHakemus();
         HakemuksenTila tila = hakemus.getTila();
-        return List.of(HakemuksenTila.HYVAKSYTTY, HakemuksenTila.VARASIJALTA_HYVAKSYTTY).contains(tila)
+        boolean myohassa = List.of(HakemuksenTila.HYVAKSYTTY, HakemuksenTila.VARASIJALTA_HYVAKSYTTY).contains(tila)
                 && hakemusWrapper.getValintatulos().map(vt -> vt.getTila() == ValintatuloksenTila.KESKEN).orElse(false)
                 && hakemus.isVastaanottoMyohassa() == Boolean.TRUE;
+        LOG.info("Hakemus {} myohassa:", hakemus.getHakemusOid(), myohassa);
+        return myohassa;
     }
 }
