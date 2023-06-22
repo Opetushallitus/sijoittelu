@@ -3,6 +3,7 @@ package fi.vm.sade.sijoittelu.laskenta.service.it.impl;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import fi.vm.sade.javautils.nio.cas.CasClient;
+import fi.vm.sade.sijoittelu.laskenta.configuration.SijoitteluServiceConfiguration;
 import fi.vm.sade.sijoittelu.laskenta.external.resource.HakuV1Resource;
 import fi.vm.sade.sijoittelu.laskenta.external.resource.HttpClients;
 import fi.vm.sade.sijoittelu.laskenta.external.resource.OhjausparametriResource;
@@ -50,7 +51,7 @@ public class TarjontaIntegrationServiceImpl implements TarjontaIntegrationServic
                         .setUrl(urlProperties.url("kouta-internal.haku", hakuOid))
                         .setMethod("GET")
                         .addHeader("Accept", "application/json")
-                        .addHeader("Caller-Id", HttpClients.CALLER_ID)
+                        .addHeader("Caller-Id", SijoitteluServiceConfiguration.CALLER_ID)
                         .setRequestTimeout(120000)
                         .setReadTimeout(120000)
                         .build();
@@ -83,7 +84,7 @@ public class TarjontaIntegrationServiceImpl implements TarjontaIntegrationServic
                         .setUrl(urlProperties.url("kouta-internal.haku", hakuOid))
                         .setMethod("GET")
                         .addHeader("Accept", "application/json")
-                        .addHeader("Caller-Id", HttpClients.CALLER_ID)
+                        .addHeader("Caller-Id", SijoitteluServiceConfiguration.CALLER_ID)
                         .setRequestTimeout(120000)
                         .setReadTimeout(120000)
                         .build();

@@ -14,6 +14,7 @@ import fi.vm.sade.service.valintaperusteet.dto.HakijaryhmaValintatapajonoDTO;
 import fi.vm.sade.service.valintaperusteet.dto.ValintatapajonoCreateDTO;
 import fi.vm.sade.service.valintaperusteet.dto.ValintatapajonoDTO;
 import fi.vm.sade.sijoittelu.domain.SijoitteluajonTila;
+import fi.vm.sade.sijoittelu.laskenta.configuration.SijoitteluServiceConfiguration;
 import fi.vm.sade.sijoittelu.laskenta.email.EmailService;
 import fi.vm.sade.sijoittelu.laskenta.external.resource.HttpClients;
 import fi.vm.sade.sijoittelu.laskenta.service.business.SijoitteluBusinessService;
@@ -204,7 +205,7 @@ public class SijoitteluResource {
                     .setBody(this.gson.toJson(Lists.newArrayList(hakukohdeOidsWithHakijaryhma)))
                     .addHeader("Accept", "application/json")
                     .addHeader("Content-type", "application/json")
-                    .addHeader("Caller-Id", HttpClients.CALLER_ID)
+                    .addHeader("Caller-Id", SijoitteluServiceConfiguration.CALLER_ID)
                     .setRequestTimeout(120000)
                     .setReadTimeout(120000)
                     .build();
@@ -233,7 +234,7 @@ public class SijoitteluResource {
                         .setBody(this.gson.toJson(Lists.newArrayList(valintatapajonoOidsWithHakijaryhma)))
                         .addHeader("Accept", "application/json")
                         .addHeader("Content-type", "application/json")
-                        .addHeader("Caller-Id", HttpClients.CALLER_ID)
+                        .addHeader("Caller-Id", SijoitteluServiceConfiguration.CALLER_ID)
                         .setRequestTimeout(120000)
                         .setReadTimeout(120000)
                         .build();
@@ -283,7 +284,7 @@ public class SijoitteluResource {
                                 .setBody(this.gson.toJson(new ArrayList<>(aktiivisiaJonojaSisaltavienKohteidenOidit)))
                                 .addHeader("Accept", "application/json")
                                 .addHeader("Content-type", "application/json")
-                                .addHeader("Caller-Id", HttpClients.CALLER_ID)
+                                .addHeader("Caller-Id", SijoitteluServiceConfiguration.CALLER_ID)
                                 .setRequestTimeout(120000)
                                 .setReadTimeout(120000)
                                 .build();

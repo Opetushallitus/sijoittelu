@@ -9,6 +9,7 @@ import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonSyntaxException;
 import fi.vm.sade.javautils.nio.cas.CasClient;
 import fi.vm.sade.service.valintaperusteet.dto.ValintatapajonoDTO;
+import fi.vm.sade.sijoittelu.laskenta.configuration.SijoitteluServiceConfiguration;
 import fi.vm.sade.sijoittelu.laskenta.external.resource.HttpClients;
 import fi.vm.sade.sijoittelu.laskenta.service.business.ActorService;
 import fi.vm.sade.sijoittelu.laskenta.util.UrlProperties;
@@ -93,7 +94,7 @@ public class ErillisSijoitteluResource {
                 .setBody(this.gson.toJson(new ArrayList<>(hakukohteet.getHakukohteet().keySet())))
                 .addHeader("Accept", "application/json")
                 .addHeader("Content-type", "application/json")
-                .addHeader("Caller-Id", HttpClients.CALLER_ID)
+                .addHeader("Caller-Id", SijoitteluServiceConfiguration.CALLER_ID)
                 .setRequestTimeout(120000)
                 .setReadTimeout(120000)
                 .build();

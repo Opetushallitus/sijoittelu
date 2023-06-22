@@ -8,12 +8,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import static fi.vm.sade.sijoittelu.laskenta.configuration.SijoitteluServiceConfiguration.CALLER_ID;
 import static fi.vm.sade.valinta.sharedutils.http.HttpResource.CSRF_VALUE;
 
 @Configuration
 public class HttpClients {
-    public static final String CALLER_ID = "1.2.246.562.10.00000000001.sijoittelu.sijoittelu-service";
-
     @Bean(name = "KoutaInternaCasClient")
     @Autowired
     public CasClient getKoutaInternalCasClient(

@@ -1,7 +1,11 @@
-package fi.vm.sade.sijoittelu.laskenta.external.resource;
+package fi.vm.sade.sijoittelu.laskenta.configuration;
 
 import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 import fi.vm.sade.javautils.cxf.OphRequestHeadersCxfInterceptor;
+import fi.vm.sade.sijoittelu.laskenta.external.resource.HakuV1Resource;
+import fi.vm.sade.sijoittelu.laskenta.external.resource.OhjausparametriResource;
+import fi.vm.sade.sijoittelu.laskenta.external.resource.SijoitteluValintaTulosServiceResource;
+import fi.vm.sade.sijoittelu.laskenta.external.resource.VirkailijaValintaTulosServiceResource;
 import fi.vm.sade.sijoittelu.tulos.resource.ObjectMapperProvider;
 import org.apache.cxf.jaxrs.client.JAXRSClientFactoryBean;
 import org.apache.cxf.message.Message;
