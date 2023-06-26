@@ -40,11 +40,11 @@ public class SijoitteluajoWrapperFactory {
                 valintatapajonoWrapper.setValintatapajono(valintatapajono);
                 LOG.info("Luodataan valintatapajonoWrapper valintatapajonosta {} hakukohteelle {}", valintatapajono.getOid(), hakukohde.getOid());
                 if (!hakukohdeMapToValintatapajonoByOid.isEmpty()) {
-                    LOG.info("Hakukohteen jonot koko {}, sisältö {}", hakukohdeMapToValintatapajonoByOid.get(hakukohde.getOid()).size(), hakukohdeMapToValintatapajonoByOid.get(hakukohde.getOid()));
+                    LOG.info("Hakukohteen {} jonot koko {}, sisältö {}", hakukohde.getOid(), hakukohdeMapToValintatapajonoByOid.get(hakukohde.getOid()).size(), hakukohdeMapToValintatapajonoByOid.get(hakukohde.getOid()));
                     if (!hakukohdeMapToValintatapajonoByOid.get(hakukohde.getOid()).isEmpty()) {
-                        LOG.info("Löytyykö valintatapajono hakukohteelle: {}", hakukohdeMapToValintatapajonoByOid.get(hakukohde.getOid()).get(valintatapajono.getOid()) != null);
+                        LOG.info("Löytyykö valintatapajono {} hakukohteelle {}: {}", valintatapajono.getOid(), hakukohde.getOid(), hakukohdeMapToValintatapajonoByOid.get(hakukohde.getOid()).get(valintatapajono.getOid()) != null);
                         if (hakukohdeMapToValintatapajonoByOid.get(hakukohde.getOid()).get(valintatapajono.getOid()) != null) {
-                            LOG.info("Merkitse myöh auto {}", hakukohdeMapToValintatapajonoByOid
+                            LOG.info("Valintatapajono {}, hakukohde {}, Merkitse myöh auto {}", valintatapajono.getOid(), hakukohde.getOid(), hakukohdeMapToValintatapajonoByOid
                                     .get(hakukohde.getOid())
                                     .get(valintatapajono.getOid())
                                     .getMerkitseMyohAuto());
