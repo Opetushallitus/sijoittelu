@@ -51,6 +51,7 @@ public class SijoitteluServiceConfiguration {
     }
 
     @Bean(name="datastore2")
+    @Profile("!dev")
     public Datastore datastore(@Value("${valintalaskenta-laskenta-service.mongodb.uri}") String mongoUri, @Value("${valintalaskenta-laskenta-service.mongodb.dbname}") String dbName) {
         return new Morphia().createDatastore(new MongoClient(new MongoClientURI(mongoUri)), dbName);
     }

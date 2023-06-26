@@ -14,7 +14,6 @@
     <packaging>pom</packaging>
     <version>7.7.1-SNAPSHOT</version>
     <name>Sijoittelu</name>
-
     <modules>
         <module>sijoittelu-tulos-api</module>
 
@@ -51,7 +50,6 @@
     <valintalaskenta.version>5.17.2-SNAPSHOT</valintalaskenta.version>
     <valintaperusteet-api.version>5.18-SNAPSHOT</valintaperusteet-api.version>
     <hibernate.version>6.2.4.Final</hibernate.version>
-    <cas-client.version>3.6.4</cas-client.version>
     <spring.boot.version>2.7.14</spring.boot.version>
 </properties>
 
@@ -114,6 +112,11 @@
         <version>${spring.boot.version}</version>
       </dependency>
       <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-security</artifactId>
+        <version>${spring.boot.version}</version>
+      </dependency>
+      <dependency>
         <groupId>org.springframework</groupId>
         <artifactId>spring-test</artifactId>
         <version>${spring.version}</version>
@@ -136,26 +139,6 @@
                   <artifactId>mockito-all</artifactId>
               </exclusion>
           </exclusions>
-      </dependency>
-      <dependency>
-        <groupId>org.springframework.security</groupId>
-        <artifactId>spring-security-core</artifactId>
-        <version>${spring.security.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.springframework.security</groupId>
-        <artifactId>spring-security-aspects</artifactId>
-        <version>${spring.security.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.springframework.security</groupId>
-        <artifactId>spring-security-config</artifactId>
-        <version>${spring.security.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.springframework.security</groupId>
-        <artifactId>spring-security-web</artifactId>
-        <version>${spring.security.version}</version>
       </dependency>
       <dependency>
         <groupId>org.springframework.security</groupId>
@@ -206,11 +189,6 @@
         <groupId>org.hibernate</groupId>
         <artifactId>hibernate-ehcache</artifactId>
         <version>${hibernate.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>net.sf.ehcache</groupId>
-        <artifactId>ehcache</artifactId>
-        <version>2.10.9.2</version>
       </dependency>
       <dependency>
         <groupId>org.apache.cxf</groupId>
@@ -357,22 +335,6 @@
         <groupId>com.fasterxml.jackson.dataformat</groupId>
         <artifactId>jackson-dataformat-yaml</artifactId>
         <version>${jackson.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.jasig.cas.client</groupId>
-        <artifactId>cas-client-core</artifactId>
-        <version>${cas-client.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.jasig.cas.client</groupId>
-        <artifactId>cas-client-support-distributed-ehcache</artifactId>
-        <version>${cas-client.version}</version>
-        <exclusions>
-          <exclusion>
-            <artifactId>ehcache</artifactId>
-            <groupId>net.sf.ehcache</groupId>
-          </exclusion>
-        </exclusions>
       </dependency>
       <dependency>
         <groupId>com.zaxxer</groupId>
