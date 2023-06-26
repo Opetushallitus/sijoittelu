@@ -6,6 +6,7 @@ import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.SijoitteluajoWr
 import fi.vm.sade.sijoittelu.domain.HakemuksenTila;
 import fi.vm.sade.sijoittelu.domain.Hakemus;
 import fi.vm.sade.sijoittelu.domain.ValintatuloksenTila;
+import fi.vm.sade.sijoittelu.domain.Valintatulos;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,7 +47,8 @@ public class PreSijoitteluProcessorMerkitseMyohastyneetPaikanVastaanotot impleme
         boolean myohassa = List.of(HakemuksenTila.HYVAKSYTTY, HakemuksenTila.VARASIJALTA_HYVAKSYTTY).contains(tila)
                 && hakemusWrapper.getValintatulos().map(vt -> vt.getTila() == ValintatuloksenTila.KESKEN).orElse(false)
                 && hakemus.isVastaanottoMyohassa() == Boolean.TRUE;
-        LOG.info("Hakemus {} myohassa:", hakemus.getHakemusOid(), myohassa);
+        LOG.info("Hakemus {}, tila: {}, isVastaanottoMyohassa: {}, valintatuloksenTila: {}, myohassa: {}", hakemus.getHakemusOid(),
+                tila, hakemus.isVastaanottoMyohassa(), hakemusWrapper.getValintatulos().map(Valintatulos::getTila).map(Object::toString).orElse(""), myohassa);
         return myohassa;
     }
 }
