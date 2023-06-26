@@ -1,5 +1,6 @@
 package fi.vm.sade.sijoittelu.laskenta.resource;
 
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -138,8 +139,8 @@ public class SijoitteluResource {
                 .collect(toSet()));
     }
 
-    private void updateValintatapajonotAndRemoveUsed(Map<String, ValintatapajonoDTO> valintatapajonoByOid,
-                                                     ValintatietoValinnanvaiheDTO vaihe) {
+    private Set<String> updateValintatapajonotAndReturnAmountUsed(Map<String, ValintatapajonoDTO> valintatapajonoByOid,
+                                                          ValintatietoValinnanvaiheDTO vaihe) {
         List<ValintatietoValintatapajonoDTO> konvertoidut = new ArrayList<>();
         vaihe.getValintatapajonot().forEach(jono -> {
             if (valintatapajonoByOid.containsKey(jono.getOid())
@@ -160,10 +161,10 @@ public class SijoitteluResource {
                 jono.setNimi(perusteJono.getNimi());
                 jono.setPrioriteetti(perusteJono.getPrioriteetti());
                 konvertoidut.add(jono);
-                valintatapajonoByOid.remove(jono.getOid());
             }
         });
         vaihe.setValintatapajonot(konvertoidut);
+        return konvertoidut.stream().map(ValintatietoValintatapajonoDTO::getOid).collect(toSet());
     }
 
     private void updateHakijaRyhmat(Map<String, HakijaryhmaValintatapajonoDTO> hakijaryhmaByOid, HakukohdeDTO hakukohde) {
@@ -377,9 +378,11 @@ public class SijoitteluResource {
                     updateHakijaRyhmat(hakijaryhmaByOid, hakukohde);
                     Map<String, ValintatapajonoDTO> valintatapajonoByOid =
                             hakukohdeMapToValintatapajonoByOid.getOrDefault(hakukohde.getOid(), new HashMap<>());
+                    Set<String> usedOids = new HashSet<>();
                     hakukohde.getValinnanvaihe().forEach(vaihe ->
-                            updateValintatapajonotAndRemoveUsed(valintatapajonoByOid, vaihe));
-                    if (!valintatapajonoByOid.isEmpty()) {
+                        usedOids.addAll(updateValintatapajonotAndReturnAmountUsed(valintatapajonoByOid, vaihe)));
+                    if (!usedOids.containsAll(valintatapajonoByOid.keySet())
+                            || usedOids.size() != valintatapajonoByOid.size() ) {
                         LOGGER.warn("Kaikkia jonoja ei ole sijoiteltu {} hakukohteessa {}: {}",
                                 hakuOid, hakukohde.getOid(), valintatapajonoByOid.keySet());
                         hakukohde.setKaikkiJonotSijoiteltu(false);
