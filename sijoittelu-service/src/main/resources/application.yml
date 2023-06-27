@@ -1,4 +1,0 @@
-cxf:
-  path: /resources
-  jaxrs:
-    component-scan: true

@@ -69,9 +69,9 @@ public class ValintatulosWithVastaanotto {
 
         try {
             valintaTulosServiceResource.valintatuloksetValinnantilalla(vs);
-        } catch (WebApplicationException e) {
+        } catch (Exception e) {
             LOG.error("Virhe lähetettäessä valintaTulosServiceResource.valintatuloksetValinnantilalla() -kutsulle " +
-                vs.size() + " tulosta ; response: " + e.getResponse().readEntity(String.class), e);
+                vs.size() + " tulosta ; response: " + e.getMessage(), e);
             throw e;
         }
     }

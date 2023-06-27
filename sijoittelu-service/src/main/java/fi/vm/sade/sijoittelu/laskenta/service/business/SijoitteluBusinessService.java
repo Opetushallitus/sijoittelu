@@ -627,8 +627,8 @@ public class SijoitteluBusinessService {
         try {
             return valintaTulosServiceResource.haunKoulutuksenAlkamiskaudenVastaanototYhdenPaikanSaadoksenPiirissa(hakuOid)
                     .stream().collect(Collectors.toMap(VastaanottoDTO::getHenkiloOid, Function.identity()));
-        } catch (WebApplicationException e) {
-            String responseContent = e.getResponse().readEntity(String.class);
+        } catch (Exception e) {
+            String responseContent = e.getMessage();
             LOG.error("Virhe haettassa haunKoulutuksenAlkamiskaudenVastaanototYhdenPaikanSaadoksenPiirissa(" +
                 hakuOid + ") ; response: " + responseContent, e);
             throw e;

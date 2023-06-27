@@ -57,9 +57,6 @@ public class TestConfiguration {
     public VirkailijaValintaTulosServiceResource virkailijaValintaTulosServiceResource() { return Mockito.mock(VirkailijaValintaTulosServiceResource.class); }
 
     @Bean
-    public SijoitteluValintaTulosServiceResource sijoitteluValintaTulosServiceResource() { return Mockito.mock(SijoitteluValintaTulosServiceResource.class); }
-
-    @Bean
     public Authorizer authorizer() { return Mockito.mock(Authorizer.class); }
 
     @Bean

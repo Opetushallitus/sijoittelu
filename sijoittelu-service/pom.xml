@@ -23,19 +23,6 @@
 			<artifactId>opintopolku-cas-servlet-filter</artifactId>
 		</dependency>
 		<dependency>
-		<groupId>fi.vm.sade.java-utils</groupId>
-			<artifactId>java-cxf</artifactId>
-		</dependency>
-		<!-- CXF -->
-		<dependency>
-			<groupId>org.apache.cxf</groupId>
-			<artifactId>cxf-rt-frontend-jaxws</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.cxf</groupId>
-			<artifactId>cxf-spring-boot-starter-jaxrs</artifactId>
-	    </dependency>
-	    <dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-validation</artifactId>
 	    </dependency>
@@ -44,19 +31,8 @@
 			<artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.apache.cxf</groupId>
-			<artifactId>cxf-rt-rs-security-cors</artifactId>
-			<version>${cxf.version}</version>
-			<exclusions>
-				<exclusion>
-					<artifactId>spring-web</artifactId>
-					<groupId>org.springframework</groupId>
-				</exclusion>
-				<exclusion>
-					<artifactId>spring-beans</artifactId>
-					<groupId>org.springframework</groupId>
-				</exclusion>
-			</exclusions>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-webflux</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -86,22 +62,6 @@
 			<version>${valintalaskenta.version}</version>
 			<exclusions>
 				<exclusion>
-					<groupId>org.apache.cxf</groupId>
-					<artifactId>cxf-core</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.apache.cxf</groupId>
-					<artifactId>cxf-rt-transports-http</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.apache.cxf</groupId>
-					<artifactId>cxf-rt-frontend-jaxrs</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.apache.cxf</groupId>
-					<artifactId>cxf-rt-rs-client</artifactId>
-				</exclusion>
-				<exclusion>
 					<groupId>com.wordnik</groupId>
 					<artifactId>swagger-jersey-jaxrs_2.11</artifactId>
 				</exclusion>
@@ -130,10 +90,6 @@
 			<artifactId>sijoittelu-tulos-service</artifactId>
 			<version>${project.version}</version>
 			<exclusions>
-				<exclusion>
-					<groupId>org.apache.cxf</groupId>
-					<artifactId>cxf-rt-transports-http</artifactId>
-				</exclusion>
 				<exclusion>
 					<artifactId>slf4j-simple</artifactId>
 					<groupId>org.slf4j</groupId>
