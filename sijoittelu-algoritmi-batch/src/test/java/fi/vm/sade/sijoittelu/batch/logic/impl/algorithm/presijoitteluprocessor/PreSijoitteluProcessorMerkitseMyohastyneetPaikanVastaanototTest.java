@@ -22,6 +22,7 @@ public class PreSijoitteluProcessorMerkitseMyohastyneetPaikanVastaanototTest {
         assertEquals(HakemuksenTila.PERUNUT, hw.getHakemus().getTila());
         assertEquals(ValintatuloksenTila.EI_VASTAANOTETTU_MAARA_AIKANA, hw.getValintatulos().orElse(new Valintatulos()).getTila());
         assertFalse(hw.isTilaVoidaanVaihtaa());
+        assertEquals(1, wrapper.getMuuttuneetValintatulokset().size());
     }
 
     @Test
@@ -34,6 +35,7 @@ public class PreSijoitteluProcessorMerkitseMyohastyneetPaikanVastaanototTest {
         assertEquals(HakemuksenTila.VARALLA, hw.getHakemus().getTila());
         assertEquals(ValintatuloksenTila.KESKEN, hw.getValintatulos().orElse(new Valintatulos()).getTila());
         assertTrue(hw.isTilaVoidaanVaihtaa());
+        assertTrue(wrapper.getMuuttuneetValintatulokset().isEmpty());
     }
 
     @Test
@@ -46,6 +48,7 @@ public class PreSijoitteluProcessorMerkitseMyohastyneetPaikanVastaanototTest {
         assertEquals(HakemuksenTila.HYVAKSYTTY, hw.getHakemus().getTila());
         assertEquals(ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI, hw.getValintatulos().orElse(new Valintatulos()).getTila());
         assertTrue(hw.isTilaVoidaanVaihtaa());
+        assertTrue(wrapper.getMuuttuneetValintatulokset().isEmpty());
     }
 
     @Test
@@ -62,6 +65,7 @@ public class PreSijoitteluProcessorMerkitseMyohastyneetPaikanVastaanototTest {
         assertEquals(HakemuksenTila.HYVAKSYTTY, hw.get(2).getHakemus().getTila());
         assertEquals(ValintatuloksenTila.KESKEN, hw.get(2).getValintatulos().orElse(new Valintatulos()).getTila());
         assertTrue(hw.get(2).isTilaVoidaanVaihtaa());
+        assertEquals(1, wrapper.getMuuttuneetValintatulokset().size());
     }
 
      @Test
@@ -72,6 +76,7 @@ public class PreSijoitteluProcessorMerkitseMyohastyneetPaikanVastaanototTest {
          assertEquals(HakemuksenTila.HYVAKSYTTY, hw.getHakemus().getTila());
          assertEquals(ValintatuloksenTila.KESKEN, hw.getValintatulos().orElse(new Valintatulos()).getTila());
          assertTrue(hw.isTilaVoidaanVaihtaa());
+         assertTrue(wrapper.getMuuttuneetValintatulokset().isEmpty());
      }
 
      @Test
@@ -82,6 +87,7 @@ public class PreSijoitteluProcessorMerkitseMyohastyneetPaikanVastaanototTest {
          assertEquals(HakemuksenTila.HYVAKSYTTY, hw.getHakemus().getTila());
          assertEquals(ValintatuloksenTila.KESKEN, hw.getValintatulos().orElse(new Valintatulos()).getTila());
          assertTrue(hw.isTilaVoidaanVaihtaa());
+         assertTrue(wrapper.getMuuttuneetValintatulokset().isEmpty());
      }
 
     private List<ValintatapajonoWrapper> generateValintatapajonoWrapper(boolean merkitseMyohAuto, boolean ... hakemusMyohassa) {

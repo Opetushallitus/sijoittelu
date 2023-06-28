@@ -23,19 +23,21 @@ public class PreSijoitteluProcessorMerkitseMyohastyneetPaikanVastaanotot impleme
             hk.getValintatapajonot().forEach(jono -> {
                 LOG.info("Valintatapajono {} aseta myöhästyneet automaattisesti: {}", jono.getValintatapajono().getOid(), jono.getMerkitseMyohAuto());
                 if (jono.getMerkitseMyohAuto()) {
-                    jono.getHakemukset().stream().filter(this::isHakemusMyohassa).forEach(this::setHakemusToStatusPerunut);
+                    jono.getHakemukset().stream().filter(this::isHakemusMyohassa).forEach(hakemusWrapper -> setHakemusToStatusPerunut(hakemusWrapper, sijoitteluajoWrapper));
                 }
             });
         });
     }
 
-    private void setHakemusToStatusPerunut(HakemusWrapper hakemusWrapper) {
+    private void setHakemusToStatusPerunut(HakemusWrapper hakemusWrapper, SijoitteluajoWrapper sijoitteluajoWrapper) {
         LOG.info("Merkitään vastaanotto myöhästyneeksi hakemukselle {}, deadline: {}",
                 hakemusWrapper.getHakemus().getHakemusOid(),
                 hakemusWrapper.getHakemus().getVastaanottoDeadline());
-        hakemusWrapper.getValintatulos().map(vt -> {
+        hakemusWrapper.getValintatulos().ifPresent(vt -> {
             vt.setTila(ValintatuloksenTila.EI_VASTAANOTETTU_MAARA_AIKANA, "Ei vastaan otettu määräaikana");
-            return vt;
+            if (!sijoitteluajoWrapper.getMuuttuneetValintatulokset().contains(vt)) {
+                sijoitteluajoWrapper.addMuuttuneetValintatulokset(vt);
+            }
         });
         TilojenMuokkaus.asetaTilaksiPerunutEiVastaanottanutMaaraaikana(hakemusWrapper);
         hakemusWrapper.setTilaVoidaanVaihtaa(false);
