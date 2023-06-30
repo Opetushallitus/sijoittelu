@@ -8,8 +8,15 @@ import org.springframework.boot.web.server.WebServerFactoryCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+
 @Configuration
 public class AccessLogConfiguration {
+
+  private static final String CONFIG_FILE = "logback-access.xml";
 
   @Bean
   @ConditionalOnProperty(name = "logback.access")
@@ -17,8 +24,15 @@ public class AccessLogConfiguration {
     return container -> {
       if (container instanceof TomcatServletWebServerFactory) {
         ((TomcatServletWebServerFactory)container).addContextCustomizers(context -> {
+          try {
+            // LogbackValve suostuu lukemaan konfiguraation vain classpathilta tai tomcat.base/tomcat.home -hakemistoista, joten kopioidaan
+            Files.copy(Paths.get(path), Paths.get(context.getCatalinaBase() + "/" + CONFIG_FILE), StandardCopyOption.REPLACE_EXISTING);
+          } catch(IOException e) {
+            throw new RuntimeException(e);
+          }
+
           LogbackValve logbackValve = new LogbackValve();
-          logbackValve.setFilename(path);
+          logbackValve.setFilename(CONFIG_FILE);
           context.getPipeline().addValve(logbackValve);
         });
       }
