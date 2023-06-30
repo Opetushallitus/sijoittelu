@@ -26,6 +26,14 @@
             <artifactId>valintalaskenta-laskenta-api</artifactId>
             <version>${valintalaskenta.version}</version>
         </dependency>
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+        </dependency>
 
         <!-- Jackson -->
         <dependency>

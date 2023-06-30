@@ -18,7 +18,6 @@ import fi.vm.sade.sijoittelu.domain.ValintatuloksenTila;
 import fi.vm.sade.sijoittelu.domain.Valintatulos;
 import fi.vm.sade.sijoittelu.domain.dto.VastaanottoDTO;
 import fi.vm.sade.sijoittelu.laskenta.external.resource.VirkailijaValintaTulosServiceResource;
-import fi.vm.sade.sijoittelu.laskenta.service.business.ActorService;
 import fi.vm.sade.sijoittelu.laskenta.service.business.SijoitteluBusinessService;
 import fi.vm.sade.sijoittelu.laskenta.service.business.SijoitteluajoResourcesLoader;
 import fi.vm.sade.sijoittelu.laskenta.service.business.ValintarekisteriService;
@@ -54,7 +53,6 @@ public class SijoitteluTilatJaKuvauksetTest {
 
     private SijoitteluBusinessService service;
     private SijoitteluTulosConverter sijoitteluTulosConverter;
-    private ActorService actorService;
     private TarjontaIntegrationService tarjontaIntegrationService;
     private VirkailijaValintaTulosServiceResource valintaTulosServiceResource;
     private ValintarekisteriService valintarekisteriService;
@@ -62,7 +60,6 @@ public class SijoitteluTilatJaKuvauksetTest {
     @BeforeEach
     public void setUp() {
         sijoitteluTulosConverter = new SijoitteluTulosConverterImpl();
-        actorService = mock(ActorService.class);
         tarjontaIntegrationService = mock(TarjontaIntegrationService.class);
         valintaTulosServiceResource = mock(VirkailijaValintaTulosServiceResource.class);
         valintarekisteriService = mock(ValintarekisteriService.class);

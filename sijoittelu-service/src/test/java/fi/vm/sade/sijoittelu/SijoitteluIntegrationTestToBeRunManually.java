@@ -46,7 +46,12 @@ import org.springframework.util.StopWatch;
 import java.io.IOException;
 import java.net.URI;
 import java.time.Duration;
-import java.util.*;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 
 /**
@@ -195,12 +200,12 @@ public class SijoitteluIntegrationTestToBeRunManually {
         }
 
         @Override
-        public List<HakukohdeDTO> valisijoittele(HakuDTO sijoitteluTyyppi) {
+        public Future<List<HakukohdeDTO>> valisijoittele(HakuDTO sijoitteluTyyppi) {
             throw new UnsupportedOperationException();
         }
 
         @Override
-        public long erillissijoittele(HakuDTO haku) {
+        public Future<Long> erillissijoittele(HakuDTO haku) {
             throw new UnsupportedOperationException();
         }
     }

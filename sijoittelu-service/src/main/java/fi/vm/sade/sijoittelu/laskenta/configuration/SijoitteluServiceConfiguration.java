@@ -11,8 +11,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.*;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import org.springframework.scheduling.annotation.EnableAsync;
 
 @Configuration
+@EnableAsync
 @ComponentScan(basePackages = {
     "fi.vm.sade.valintalaskenta.tulos.dao",
     "fi.vm.sade.valintalaskenta.tulos.service.impl",

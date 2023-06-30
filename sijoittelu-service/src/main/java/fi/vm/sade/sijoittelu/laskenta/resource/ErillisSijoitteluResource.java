@@ -1,7 +1,5 @@
 package fi.vm.sade.sijoittelu.laskenta.resource;
 
-import akka.pattern.Patterns;
-import akka.util.Timeout;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -11,7 +9,7 @@ import fi.vm.sade.javautils.nio.cas.CasClient;
 import fi.vm.sade.service.valintaperusteet.dto.ValintatapajonoDTO;
 import fi.vm.sade.sijoittelu.laskenta.configuration.SijoitteluServiceConfiguration;
 import fi.vm.sade.sijoittelu.laskenta.external.resource.HttpClients;
-import fi.vm.sade.sijoittelu.laskenta.service.business.ActorService;
+import fi.vm.sade.sijoittelu.laskenta.service.business.SijoitteluBusinessService;
 import fi.vm.sade.sijoittelu.laskenta.util.UrlProperties;
 import fi.vm.sade.sijoittelu.tulos.dto.ValisijoitteluDTO;
 import fi.vm.sade.valintalaskenta.domain.dto.valintatieto.HakuDTO;
@@ -31,12 +29,11 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import scala.concurrent.Await;
-import scala.concurrent.Future;
-import scala.concurrent.duration.Duration;
 
 import java.util.*;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 import static fi.vm.sade.valintalaskenta.tulos.roles.ValintojenToteuttaminenRole.OPH_CRUD;
 
@@ -51,7 +48,7 @@ public class ErillisSijoitteluResource {
     private ValintatietoService valintatietoService;
 
     @Autowired
-    private ActorService actorService;
+    private SijoitteluBusinessService sijoitteluBusinessService;
 
     private final CasClient sijoitteluCasClient;
     private UrlProperties urlProperties;
@@ -123,11 +120,10 @@ public class ErillisSijoitteluResource {
 
         HakuDTO haku = valintatietoService.haeValintatiedotJonoille(hakuOid, hakukohteet.getHakukohteet(), Optional.of(valintaperusteet));
         LOGGER.info("Valintatiedot haettu serviceltä haulle {}!", hakuOid);
-        Timeout timeout = new Timeout(Duration.create(60, "minutes"));
-        Future<Object> future = Patterns.ask(actorService.getErillisSijoitteluActor(), haku, timeout);
+        Future<Long> future = sijoitteluBusinessService.erillissijoittele(haku);
         try {
             LOGGER.info("############### Odotellaan erillissijoittelun valmistumista haulle {} ###############", hakuOid);
-            long onnistui = (long) Await.result(future, timeout.duration());
+            long onnistui = future.get(60, TimeUnit.MINUTES);
             LOGGER.info("############### Erillissijoittelu valmis haulle {} ###############", hakuOid);
             return onnistui;
         } catch (Exception e) {
