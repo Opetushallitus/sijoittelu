@@ -4,9 +4,9 @@ import com.lordofthejars.nosqlunit.annotation.UsingDataSet;
 import com.lordofthejars.nosqlunit.core.LoadStrategyEnum;
 import com.lordofthejars.nosqlunit.mongodb.MongoDbRule;
 
+import fi.vm.sade.configuration.TestConfiguration;
 import fi.vm.sade.sijoittelu.batch.logic.impl.DomainConverter;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.PrintHelper;
-import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoitteluAlgorithm;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoittelunTila;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.util.SijoitteluAlgorithmUtil;
 import fi.vm.sade.sijoittelu.domain.*;
@@ -30,7 +30,7 @@ import java.util.stream.Collectors;
 
 import static com.lordofthejars.nosqlunit.mongodb.MongoDbRule.MongoDbRuleBuilder.newMongoDbRule;
 
-@ContextConfiguration(locations = "classpath:test-sijoittelu-batch-mongo.xml")
+@ContextConfiguration(classes = {TestConfiguration.class})
 @RunWith(SpringJUnit4ClassRunner.class)
 @UsingDataSet
 public class KaikkiEhdonTayttavatHyvaksytaanTest {

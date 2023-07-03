@@ -46,6 +46,7 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
+            <scope>test</scope>
         </dependency>
 
         <dependency>
@@ -69,13 +70,6 @@
             <groupId>org.hibernate.validator</groupId>
             <artifactId>hibernate-validator</artifactId>
         </dependency>
-
-        <!-- Test deps -->
-        <dependency>
-            <groupId>org.kubek2k.mockito.spring</groupId>
-            <artifactId>springockito</artifactId>
-        </dependency>
-
     </dependencies>
     <build>
         <finalName>${project.artifactId}</finalName>

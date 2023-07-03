@@ -1,4 +1,4 @@
-package fi.vm.sade.mongo;
+package fi.vm.sade.configuration;
 
 import com.mongodb.MongoClient;
 import de.flapdoodle.embed.mongo.distribution.Version;
@@ -10,7 +10,10 @@ import org.mongodb.morphia.Datastore;
 import org.mongodb.morphia.Morphia;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.ImportResource;
 
+@Configuration
 public class MongoConfiguration {
 
     public static final String DATABASE_TEST_NAME = "test";

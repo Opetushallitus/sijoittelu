@@ -6,6 +6,7 @@ import com.lordofthejars.nosqlunit.annotation.UsingDataSet;
 import com.lordofthejars.nosqlunit.core.LoadStrategyEnum;
 import com.lordofthejars.nosqlunit.mongodb.MongoDbRule;
 
+import fi.vm.sade.configuration.TestConfiguration;
 import fi.vm.sade.sijoittelu.batch.logic.impl.DomainConverter;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoitteluConfiguration;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoitteluajoWrapperFactory;
@@ -42,7 +43,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@ContextConfiguration(locations = "classpath:test-sijoittelu-batch-mongo.xml")
+@ContextConfiguration(classes = {TestConfiguration.class})
 @RunWith(SpringJUnit4ClassRunner.class)
 @UsingDataSet
 public class HakijaryhmaTest {

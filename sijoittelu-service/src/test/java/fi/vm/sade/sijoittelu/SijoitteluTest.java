@@ -2,6 +2,7 @@ package fi.vm.sade.sijoittelu;
 
 import com.google.common.collect.ImmutableList;
 
+import fi.vm.sade.configuration.TestConfiguration;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.TestHelper;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.util.SijoitteluAlgorithmUtil;
 import fi.vm.sade.sijoittelu.domain.HakemuksenTila;
@@ -23,7 +24,7 @@ import java.util.List;
 import java.util.Map;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = { "classpath:test-sijoittelu-batch-mongo.xml" })
+@ContextConfiguration(classes = {TestConfiguration.class})
 public class SijoitteluTest {
 
     private static final Logger LOG = LoggerFactory.getLogger(SijoitteluTest.class);
