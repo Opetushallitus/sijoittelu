@@ -1,12 +1,5 @@
 package fi.vm.sade.sijoittelu.laskenta.resource;
 
-import akka.actor.ActorRef;
-import akka.actor.ActorSystem;
-import akka.pattern.Patterns;
-import akka.routing.RoundRobinRouter;
-import akka.util.Timeout;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
 import fi.vm.sade.sijoittelu.laskenta.service.business.SijoitteluBusinessService;
 import fi.vm.sade.sijoittelu.tulos.dto.HakukohdeDTO;
 import fi.vm.sade.sijoittelu.tulos.dto.ValisijoitteluDTO;
@@ -14,6 +7,8 @@ import fi.vm.sade.valintalaskenta.domain.dto.valintakoe.Tasasijasaanto;
 import fi.vm.sade.valintalaskenta.domain.dto.valintatieto.HakuDTO;
 import fi.vm.sade.valintalaskenta.tulos.service.ValintalaskentaTulosService;
 import fi.vm.sade.valintalaskenta.tulos.service.impl.ValintatietoService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,7 +32,7 @@ import static fi.vm.sade.valintalaskenta.tulos.roles.ValintojenToteuttaminenRole
 @RequestMapping(value = "/resources/valisijoittele")
 @RestController
 @PreAuthorize("isAuthenticated()")
-@Api(value = "valisijoittele", description = "Resurssi sijoitteluun")
+@Tag(name = "valisijoittele", description = "Resurssi sijoitteluun")
 public class ValiSijoitteluResource {
     private final static Logger LOGGER = LoggerFactory.getLogger(ValiSijoitteluResource.class);
 
@@ -74,7 +69,7 @@ public class ValiSijoitteluResource {
 
     @PreAuthorize(OPH_CRUD)
     @PostMapping(value = "/{hakuOid}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    @ApiOperation(value = "Välisijoittelun suorittaminen")
+    @Operation(summary = "Välisijoittelun suorittaminen")
     public List<HakukohdeDTO> sijoittele(@PathVariable("hakuOid") String hakuOid, @RequestBody ValisijoitteluDTO hakukohteet) {
         LOGGER.info("Valintatietoja valmistetaan valisijottelulle haussa {}", hakuOid);
         HakuDTO haku = valintatietoService.haeValintatiedotJonoille(hakuOid, hakukohteet.getHakukohteet(), Optional.empty());

@@ -16,8 +16,11 @@ import fi.vm.sade.sijoittelu.laskenta.util.UrlProperties;
 import fi.vm.sade.sijoittelu.tulos.dto.ValisijoitteluDTO;
 import fi.vm.sade.valintalaskenta.domain.dto.valintatieto.HakuDTO;
 import fi.vm.sade.valintalaskenta.tulos.service.impl.ValintatietoService;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.asynchttpclient.Request;
 import org.asynchttpclient.RequestBuilder;
 import org.asynchttpclient.Response;
@@ -40,7 +43,7 @@ import static fi.vm.sade.valintalaskenta.tulos.roles.ValintojenToteuttaminenRole
 @RequestMapping(value = "/resources/erillissijoittele")
 @RestController
 @PreAuthorize("isAuthenticated()")
-@Api(value = "erillissijoittele", description = "Resurssi sijoitteluun")
+@Tag(name = "erillissijoittele", description = "Resurssi sijoitteluun")
 public class ErillisSijoitteluResource {
     private final static Logger LOGGER = LoggerFactory.getLogger(ErillisSijoitteluResource.class);
 
@@ -65,7 +68,7 @@ public class ErillisSijoitteluResource {
 
     @PostMapping(value = "/{hakuOid}", consumes = "application/json", produces = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize(OPH_CRUD)
-    @ApiOperation(consumes = "application/json", value = "Suorita erillissijoittelu", response = Long.class)
+    @Operation(summary = "Suorita erillissijoittelu", requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(content = @Content(mediaType = "application/json")), responses = { @ApiResponse(responseCode = "OK", content = @Content(schema = @Schema(implementation = Long.class)))})
     public Long sijoittele(@PathVariable("hakuOid") String hakuOid, @RequestBody ValisijoitteluDTO hakukohteet) {
         long id = ErillisSijoitteluQueue.getInstance().queueNewErillissijoittelu(hakuOid);
 

@@ -28,8 +28,11 @@ import fi.vm.sade.valintalaskenta.domain.dto.valintatieto.HakuDTO;
 import fi.vm.sade.valintalaskenta.domain.dto.valintatieto.ValintatietoValinnanvaiheDTO;
 import fi.vm.sade.valintalaskenta.domain.dto.valintatieto.ValintatietoValintatapajonoDTO;
 import fi.vm.sade.valintalaskenta.tulos.service.impl.ValintatietoService;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.asynchttpclient.Request;
 import org.asynchttpclient.RequestBuilder;
 import org.asynchttpclient.Response;
@@ -60,7 +63,7 @@ import static fi.vm.sade.valintalaskenta.tulos.roles.ValintojenToteuttaminenRole
 @RequestMapping(value = "/resources/sijoittele")
 @RestController
 @PreAuthorize("isAuthenticated()")
-@Api(value = "sijoittele", description = "Resurssi sijoitteluun")
+@Tag(name = "sijoittele", description = "Resurssi sijoitteluun")
 public class SijoitteluResource {
     private final static Logger LOGGER = LoggerFactory.getLogger(SijoitteluResource.class);
 
@@ -97,7 +100,7 @@ public class SijoitteluResource {
 
     @GetMapping(value = "/ajontila/{sijoitteluId}", produces = MediaType.TEXT_PLAIN_VALUE)
     @PreAuthorize(OPH_CRUD)
-    @ApiOperation(value = "Sijoitteluajon tila", response = String.class)
+    @Operation(summary = "Sijoitteluajon tila", responses = { @ApiResponse(responseCode = "OK", content = @Content(schema = @Schema(implementation = String.class)))})
     public String sijoittelunTila(@PathVariable("sijoitteluId") Long id) {
         String tila = sijoitteluBookkeeperService.getSijoitteluAjonTila(id);
         LOGGER.info("/ajontila/sijoitteluId: Palautetaan sijoitteluajolle {} tila {}", id, tila);
@@ -106,7 +109,7 @@ public class SijoitteluResource {
 
     @GetMapping(value = "/{hakuOid}", produces = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize(OPH_CRUD)
-    @ApiOperation(value = "Käynnistä uusi sijoittelu haulle", response = Long.class)
+    @Operation(summary = "Käynnistä uusi sijoittelu haulle", responses = { @ApiResponse(responseCode = "OK", content = @Content(schema = @Schema(implementation = Long.class)))})
     public Long sijoittele(@PathVariable("hakuOid") String hakuOid) {
 
         Long sijoitteluAjonTunniste = System.currentTimeMillis();
