@@ -642,7 +642,7 @@ buildTtime=${maven.build.timestamp}
             <version>3.11.0</version>
             <inherited>true</inherited>
             <configuration>
-              <release>11</release>
+              <release>17</release>
               <debug>false</debug>
             </configuration>
         </plugin>
@@ -659,7 +659,7 @@ buildTtime=${maven.build.timestamp}
                 <configuration>
                   <rules>
                     <requireJavaVersion>
-                      <version>11</version>
+                      <version>17</version>
                     </requireJavaVersion>
                     <dependencyConvergence />
                   </rules>
@@ -684,6 +684,10 @@ buildTtime=${maven.build.timestamp}
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-surefire-plugin</artifactId>
           <version>3.1.2</version>
+          <configuration>
+            <!-- Käytössä on vielä vanhoja kirjastoja jotka käyttävät reflektiota JDK-luokkien käpistelyyn -->
+            <argLine>--add-opens=java.base/java.lang=ALL-UNNAMED --add-opens java.base/java.math=ALL-UNNAMED --add-opens java.base/java.util=ALL-UNNAMED</argLine>
+          </configuration>
         </plugin>
       </plugins>
   </build>

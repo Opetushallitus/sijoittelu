@@ -63,15 +63,6 @@
                 </execution>
               </executions>
             </plugin>
-            <plugin>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.11.0</version>
-                <inherited>true</inherited>
-                <configuration>
-                    <release>8</release>
-                    <debug>false</debug>
-                </configuration>
-            </plugin>
         </plugins>
     </build>
 </project>
