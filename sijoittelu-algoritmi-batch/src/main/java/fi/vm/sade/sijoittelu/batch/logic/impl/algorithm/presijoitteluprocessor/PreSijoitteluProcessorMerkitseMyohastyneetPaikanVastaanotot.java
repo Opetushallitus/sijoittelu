@@ -30,9 +30,13 @@ public class PreSijoitteluProcessorMerkitseMyohastyneetPaikanVastaanotot impleme
     }
 
     private void setHakemusToStatusPerunut(HakemusWrapper hakemusWrapper, SijoitteluajoWrapper sijoitteluajoWrapper) {
-        LOG.info("Merkitään vastaanotto myöhästyneeksi hakemukselle {}, deadline: {}",
-                hakemusWrapper.getHakemus().getHakemusOid(),
-                hakemusWrapper.getHakemus().getVastaanottoDeadline());
+        Hakemus hakemus = hakemusWrapper.getHakemus();
+        LOG.info("Merkitään vastaanotto myöhästyneeksi hakemukselle {}, deadline: {}, tila: {}, isVastaanottoMyohassa: {}, valintatuloksenTila: {}",
+                hakemus.getHakemusOid(),
+                hakemus.getVastaanottoDeadline(),
+                hakemus.getTila(),
+                hakemus.isVastaanottoMyohassa(),
+                hakemusWrapper.getValintatulos().map(Valintatulos::getTila).map(Object::toString).orElse(""));
         hakemusWrapper.getValintatulos().ifPresent(vt -> {
             vt.setTila(ValintatuloksenTila.EI_VASTAANOTETTU_MAARA_AIKANA, "Ei vastaan otettu määräaikana");
             if (!sijoitteluajoWrapper.getMuuttuneetValintatulokset().contains(vt)) {
@@ -46,11 +50,8 @@ public class PreSijoitteluProcessorMerkitseMyohastyneetPaikanVastaanotot impleme
     private boolean isHakemusMyohassa(HakemusWrapper hakemusWrapper) {
         Hakemus hakemus = hakemusWrapper.getHakemus();
         HakemuksenTila tila = hakemus.getTila();
-        boolean myohassa = List.of(HakemuksenTila.HYVAKSYTTY, HakemuksenTila.VARASIJALTA_HYVAKSYTTY).contains(tila)
+        return List.of(HakemuksenTila.HYVAKSYTTY, HakemuksenTila.VARASIJALTA_HYVAKSYTTY).contains(tila)
                 && hakemusWrapper.getValintatulos().map(vt -> vt.getTila() == ValintatuloksenTila.KESKEN).orElse(false)
                 && hakemus.isVastaanottoMyohassa() == Boolean.TRUE;
-        LOG.info("Hakemus {}, tila: {}, isVastaanottoMyohassa: {}, valintatuloksenTila: {}, myohassa: {}", hakemus.getHakemusOid(),
-                tila, hakemus.isVastaanottoMyohassa(), hakemusWrapper.getValintatulos().map(Valintatulos::getTila).map(Object::toString).orElse(""), myohassa);
-        return myohassa;
     }
 }

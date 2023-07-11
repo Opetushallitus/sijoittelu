@@ -274,7 +274,6 @@ public class SijoitteluResource {
                 LOGGER.info(String.format("Haetaan valintaperusteista valintatapajonoja sijoittelua varten haun " +
                                 "%s %s:lle hakukohteelle, jotka löytyvät laskennan tuloksista",
                         haku.getHakuOid(), aktiivisiaJonojaSisaltavienKohteidenOidit.size()));
-                LOGGER.info("Aktiivisia jonoja sisältävät hakukohteet {}", aktiivisiaJonojaSisaltavienKohteidenOidit);
                 try {
                     TypeToken<Map<String, List<ValintatapajonoDTO>>> token = new TypeToken<Map<String, List<ValintatapajonoDTO>>>() {};
                     try {
@@ -367,7 +366,6 @@ public class SijoitteluResource {
 
                 final Map<String, HakijaryhmaValintatapajonoDTO> hakijaryhmaByOid = haeMahdollisestiMuuttuneetHakijaryhmat(haku);
                 final Map<String, List<ValintatapajonoDTO>> jonotSijoittelulleHakukohdeOideittain = haeValintatapajonotSijoittelulle(haku);
-                LOGGER.info("Jonot hakukohteelle 1.2.246.562.20.00000000000000016822: {}", jonotSijoittelulleHakukohdeOideittain.get("1.2.246.562.20.00000000000000016822"));
                 final Map<String, Map<String, ValintatapajonoDTO>> hakukohdeMapToValintatapajonoByOid = Maps.newHashMap(filtteroiAktiivisetJonotMappiinOideittain(jonotSijoittelulleHakukohdeOideittain));
                 final Set<String> laskennanTuloksistaJaValintaperusteistaLoytyvatJonot = jonotSijoittelulleHakukohdeOideittain.values().stream()
                         .flatMap(Collection::stream)

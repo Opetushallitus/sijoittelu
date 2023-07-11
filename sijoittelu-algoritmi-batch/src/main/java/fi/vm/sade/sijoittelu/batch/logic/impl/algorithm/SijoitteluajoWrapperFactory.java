@@ -38,22 +38,13 @@ public class SijoitteluajoWrapperFactory {
             hakukohde.getValintatapajonot().forEach(valintatapajono -> {
                 ValintatapajonoWrapper valintatapajonoWrapper = new ValintatapajonoWrapper();
                 valintatapajonoWrapper.setValintatapajono(valintatapajono);
-                LOG.info("Luodataan valintatapajonoWrapper valintatapajonosta {} hakukohteelle {}", valintatapajono.getOid(), hakukohde.getOid());
-                if (!hakukohdeMapToValintatapajonoByOid.isEmpty()) {
-                    LOG.info("Hakukohteen {} jonot koko {}, sisältö {}", hakukohde.getOid(), hakukohdeMapToValintatapajonoByOid.get(hakukohde.getOid()).size(), hakukohdeMapToValintatapajonoByOid.get(hakukohde.getOid()));
-                    if (!hakukohdeMapToValintatapajonoByOid.get(hakukohde.getOid()).isEmpty()) {
-                        LOG.info("Löytyykö valintatapajono {} hakukohteelle {}: {}", valintatapajono.getOid(), hakukohde.getOid(), hakukohdeMapToValintatapajonoByOid.get(hakukohde.getOid()).get(valintatapajono.getOid()) != null);
-                        if (hakukohdeMapToValintatapajonoByOid.get(hakukohde.getOid()).get(valintatapajono.getOid()) != null) {
-                            LOG.info("Valintatapajono {}, hakukohde {}, Merkitse myöh auto {}", valintatapajono.getOid(), hakukohde.getOid(), hakukohdeMapToValintatapajonoByOid
-                                    .get(hakukohde.getOid())
-                                    .get(valintatapajono.getOid())
-                                    .getMerkitseMyohAuto());
-                        }
-                    }
-                }
                 if (!hakukohdeMapToValintatapajonoByOid.isEmpty()
                         && !hakukohdeMapToValintatapajonoByOid.get(hakukohde.getOid()).isEmpty()
                         && hakukohdeMapToValintatapajonoByOid.get(hakukohde.getOid()).get(valintatapajono.getOid()) != null) {
+                    LOG.info("Valintatapajono {}, hakukohde {}, Merkitse myöh auto {}", valintatapajono.getOid(), hakukohde.getOid(), hakukohdeMapToValintatapajonoByOid
+                            .get(hakukohde.getOid())
+                            .get(valintatapajono.getOid())
+                            .getMerkitseMyohAuto());
                     valintatapajonoWrapper.setMerkitseMyohAuto(hakukohdeMapToValintatapajonoByOid
                             .get(hakukohde.getOid())
                             .get(valintatapajono.getOid())
