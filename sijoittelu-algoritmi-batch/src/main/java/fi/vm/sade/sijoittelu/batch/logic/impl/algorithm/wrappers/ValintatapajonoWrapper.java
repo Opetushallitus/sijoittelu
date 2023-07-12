@@ -20,6 +20,8 @@ public class ValintatapajonoWrapper {
 
     private List<HakemusWrapper> hakemukset = new ArrayList<>();
 
+    private Boolean merkitseMyohAuto = false;
+
     public void setHakemukset(List<HakemusWrapper> hakemukset) {
         this.hakemukset = hakemukset;
     }
@@ -64,5 +66,13 @@ public class ValintatapajonoWrapper {
 
     public SijoitteluConfiguration getSijoitteluConfiguration() {
         return getHakukohdeWrapper().getSijoitteluajoWrapper().sijoitteluConfiguration;
+    }
+
+    public Boolean getMerkitseMyohAuto() {
+        return merkitseMyohAuto;
+    }
+
+    public void setMerkitseMyohAuto(Boolean merkitseMyohAuto) {
+        this.merkitseMyohAuto = merkitseMyohAuto;
     }
 }

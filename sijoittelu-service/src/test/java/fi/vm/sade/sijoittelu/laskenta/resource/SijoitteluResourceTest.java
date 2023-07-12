@@ -167,7 +167,7 @@ public class SijoitteluResourceTest {
                 }
             }
 
-            verify(sijoitteluBusinessService, times(1)).sijoittele(haku, new HashSet<>(), Sets.newHashSet(valintatapajonoOid), 12345L);
+            verify(sijoitteluBusinessService, times(1)).sijoittele(eq(haku), any(), eq(Sets.newHashSet(valintatapajonoOid)), eq(12345L), any());
 
             HakukohdeDTO hakukohde = haku.getHakukohteet().iterator().next();
             /// ASSERTOIDAAN ETTA JONON TIEDOT PAIVITTYY

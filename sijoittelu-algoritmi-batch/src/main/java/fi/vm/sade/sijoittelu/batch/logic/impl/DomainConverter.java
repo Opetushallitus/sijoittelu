@@ -57,6 +57,7 @@ public class DomainConverter {
             } else {
                 valintatapajono.setKaikkiEhdonTayttavatHyvaksytaan(false);
             }
+
             if (valintatapajonoTyyppi.getPoissaOlevaTaytto() != null && valintatapajonoTyyppi.getPoissaOlevaTaytto()) {
                 valintatapajono.setPoissaOlevaTaytto(true);
             } else {

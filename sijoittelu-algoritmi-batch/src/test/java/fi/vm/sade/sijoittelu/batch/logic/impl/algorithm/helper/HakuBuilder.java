@@ -26,7 +26,7 @@ public class HakuBuilder {
             SijoitteluAjo sa = new SijoitteluAjo();
             sa.setHakuOid(hakuOid);
             this.wrapper = SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(
-                new SijoitteluConfiguration(), sa, hakukohteet, new ArrayList<>(), Collections.emptyMap());
+                new SijoitteluConfiguration(), sa, hakukohteet, Collections.emptyMap());
             this.wrapper.paivitaVastaanottojenVaikutusHakemustenTiloihin(Collections.emptyList(), Collections.emptyMap());
         }
 

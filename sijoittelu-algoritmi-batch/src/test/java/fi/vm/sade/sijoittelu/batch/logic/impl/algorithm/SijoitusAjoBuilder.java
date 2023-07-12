@@ -109,7 +109,7 @@ class SijoitusAjoBuilder {
         }
 
 
-        SijoitteluajoWrapper sijoitteluajoWrapper = SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(new SijoitteluConfiguration(), sijoitteluAjo, Arrays.asList(hakukohde), valintatulokset, aiemmatVastaanotot);
+        SijoitteluajoWrapper sijoitteluajoWrapper = SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(new SijoitteluConfiguration(), sijoitteluAjo, Arrays.asList(hakukohde), Collections.emptyMap());
         sijoitteluajoWrapper.paivitaVastaanottojenVaikutusHakemustenTiloihin(valintatulokset, aiemmatVastaanotot);
         return sijoitteluajoWrapper;
     }

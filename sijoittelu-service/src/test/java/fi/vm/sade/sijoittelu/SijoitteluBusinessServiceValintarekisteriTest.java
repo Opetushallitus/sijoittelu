@@ -117,7 +117,7 @@ public class SijoitteluBusinessServiceValintarekisteriTest {
 
     private void setupMocks(String hakuOid, SijoitteluAjo sijoitteluAjo, List<Hakukohde> hakukohdes, List<Valintatulos> valintatulos) {
         when(valintarekisteriService.getLatestSijoitteluajo(hakuOid)).thenReturn(sijoitteluAjo);
-        when(valintarekisteriService.getSijoitteluajonHakukohteet(sijoitteluajoId)).thenReturn(hakukohdes);
+        when(valintarekisteriService.getSijoitteluajonHakukohteet(sijoitteluajoId, hakuOid)).thenReturn(hakukohdes);
         when(valintarekisteriService.getValintatulokset(hakuOid)).thenReturn(valintatulos);
     }
 
@@ -127,7 +127,7 @@ public class SijoitteluBusinessServiceValintarekisteriTest {
 
     private void verifyAndCaptureAndAssert(Function3<SijoitteluAjo, List<Hakukohde>, List<Valintatulos>, Boolean> assertFunction, String hakuOid) {
         verify(valintarekisteriService).getLatestSijoitteluajo(hakuOid);
-        verify(valintarekisteriService).getSijoitteluajonHakukohteet(sijoitteluajoId);
+        verify(valintarekisteriService).getSijoitteluajonHakukohteet(sijoitteluajoId, hakuOid);
         verify(valintarekisteriService).getValintatulokset(hakuOid);
 
         ArgumentCaptor<SijoitteluAjo> sijoitteluajoCaptor = ArgumentCaptor.forClass(SijoitteluAjo.class);
@@ -218,7 +218,7 @@ public class SijoitteluBusinessServiceValintarekisteriTest {
     public void testSijoitteleEiMuuttuneitaValinnantuloksia() {
         setUpMocks1();
 
-        service.sijoittele(hakuDTO1(true), Collections.emptySet(), Sets.newHashSet("112233.111111", "112244.111111", "112255.111111"), System.currentTimeMillis());
+        service.sijoittele(hakuDTO1(true), Collections.emptySet(), Sets.newHashSet("112233.111111", "112244.111111", "112255.111111"), System.currentTimeMillis(), Collections.emptyMap());
 
         Function3<SijoitteluAjo, List<Hakukohde>, List<Valintatulos>, Boolean> assertFunction = (sijoitteluajo, hakukohteet, valintatulokset) -> {
             assertSijoitteluajo(sijoitteluajo);
@@ -259,7 +259,7 @@ public class SijoitteluBusinessServiceValintarekisteriTest {
         setUpMocks2();
 
         service.sijoittele(hakuDTO2(true), Collections.emptySet(), Sets.newHashSet(
-            "112233.111111", "112244.111111", "112255.111111", "112233.222222", "112244.222222", "112255.222222"), (long)123456789);
+            "112233.111111", "112244.111111", "112255.111111", "112233.222222", "112244.222222", "112255.222222"), (long)123456789, Collections.emptyMap());
 
         Function3<SijoitteluAjo, List<Hakukohde>, List<Valintatulos>, Boolean> assertFunction = (sijoitteluajo, hakukohteet, valintatulokset) -> {
             assertSijoitteluajo(sijoitteluajo);
@@ -360,7 +360,7 @@ public class SijoitteluBusinessServiceValintarekisteriTest {
         service.sijoittele(hakuDTO(Collections.singletonList(jonoDto), false),
             Collections.emptySet(),
             Sets.newHashSet(jonoOid),
-            -1L);
+            -1L, Collections.emptyMap());
 
         verify(valintarekisteriService).getLatestSijoitteluajo(hakuOid);
         return jonoDto;
@@ -371,7 +371,7 @@ public class SijoitteluBusinessServiceValintarekisteriTest {
         HakuDTO hakuDTO = luoPriorisoimatonHaku();
 
         service.sijoittele(hakuDTO, Collections.emptySet(), Sets.newHashSet(
-            "112233.111111", "112244.111111", "112255.111111", "112233.222222", "112244.222222", "112255.222222"), (long)123456789);
+            "112233.111111", "112244.111111", "112255.111111", "112233.222222", "112244.222222", "112255.222222"), (long)123456789, Collections.emptyMap());
 
         Function3<SijoitteluAjo, List<Hakukohde>, List<Valintatulos>, Boolean> assertFunction = (sijoitteluajo, hakukohteet, valintatulokset) -> {
             assertSijoitteluajo(sijoitteluajo);
@@ -390,7 +390,7 @@ public class SijoitteluBusinessServiceValintarekisteriTest {
         HakuDTO hakuDto = luoPriorisoimatonHakuJossaHakijaOnHakenutKahteenKohteeseen(Collections.emptyList(), valintarekisteriSijoitteluajo(hakukohdeOidit), Collections.emptyList());
 
         service.sijoittele(hakuDto, Collections.emptySet(), Sets.newHashSet(
-            "112233.111111", "112244.111111", "112255.111111", "112233.222222", "112244.222222", "112255.222222"), (long) 123456789);
+            "112233.111111", "112244.111111", "112255.111111", "112233.222222", "112244.222222", "112255.222222"), (long) 123456789, Collections.emptyMap());
 
         Function3<SijoitteluAjo, List<Hakukohde>, List<Valintatulos>, Boolean> assertFunction = (sijoitteluajo, hakukohteet, valintatulokset) -> {
             assertSijoitteluajo(sijoitteluajo);
@@ -463,7 +463,7 @@ public class SijoitteluBusinessServiceValintarekisteriTest {
         HakuDTO hakuDto = luoPriorisoimatonHakuJossaHakijaOnHakenutKahteenKohteeseen(Arrays.asList(ykkospaikanTulos, kakkospaikanTulos), edellinenAjo, edellisenSijoitteluajonTulokset);
 
         service.sijoittele(hakuDto, Collections.emptySet(), Sets.newHashSet(
-            "112233.111111", "112244.111111", "112255.111111", "112233.222222", "112244.222222", "112255.222222", "toinenUusiHakukohde.111111"), (long)123456789);
+            "112233.111111", "112244.111111", "112255.111111", "112233.222222", "112244.222222", "112255.222222", "toinenUusiHakukohde.111111"), (long)123456789, Collections.emptyMap());
 
         Function3<SijoitteluAjo, List<Hakukohde>, List<Valintatulos>, Boolean> assertFunction = (sijoitteluajo, hakukohteet, valintatulokset) -> {
             assertSijoitteluajo(sijoitteluajo);
@@ -488,7 +488,7 @@ public class SijoitteluBusinessServiceValintarekisteriTest {
         haku.setHakukohteet(Collections.singletonList(hakukohde));
         haku.setHakuOid(hakuOid);
 
-        service.sijoittele(haku, Collections.emptySet(), Sets.newHashSet("112233.111111", "112244.111111", "112255.111111"), System.currentTimeMillis());
+        service.sijoittele(haku, Collections.emptySet(), Sets.newHashSet("112233.111111", "112244.111111", "112255.111111"), System.currentTimeMillis(), Collections.emptyMap());
     }
 
     private void assertYksiHyvaksyttyKaksiVarallaSamallaVarasijalla(ValintatietoValintatapajonoDTO jonoDto) {

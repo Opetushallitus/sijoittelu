@@ -1,5 +1,6 @@
 package fi.vm.sade.sijoittelu.batch.logic.impl.algorithm;
 
+import fi.vm.sade.service.valintaperusteet.dto.ValintatapajonoDTO;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.HakemusWrapper;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.HakijaryhmaWrapper;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.HakukohdeWrapper;
@@ -10,8 +11,6 @@ import fi.vm.sade.sijoittelu.domain.Hakemus;
 import fi.vm.sade.sijoittelu.domain.Hakijaryhma;
 import fi.vm.sade.sijoittelu.domain.Hakukohde;
 import fi.vm.sade.sijoittelu.domain.SijoitteluAjo;
-import fi.vm.sade.sijoittelu.domain.Valintatulos;
-import fi.vm.sade.sijoittelu.domain.dto.VastaanottoDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,10 +22,10 @@ public class SijoitteluajoWrapperFactory {
 
     private static final Logger LOG = LoggerFactory.getLogger(SijoitteluajoWrapperFactory.class);
 
-    public static SijoitteluajoWrapper createSijoitteluAjoWrapper(SijoitteluConfiguration sijoitteluConfiguration, SijoitteluAjo sijoitteluAjo,
+    public static SijoitteluajoWrapper createSijoitteluAjoWrapper(SijoitteluConfiguration sijoitteluConfiguration,
+                                                                  SijoitteluAjo sijoitteluAjo,
                                                                   List<Hakukohde> hakukohteet,
-                                                                  List<Valintatulos> valintatulokset,
-                                                                  Map<String, VastaanottoDTO> aiemmanVastaanotonHakukohdePerHakija) {
+                                                                  Map<String, Map<String, ValintatapajonoDTO>> hakukohdeMapToValintatapajonoByOid) {
         LOG.info(String.format("Luodaan SijoitteluAjoWrapper haulle %s konfiguraatiolla %s",
             sijoitteluAjo.getHakuOid(), sijoitteluConfiguration));
         SijoitteluajoWrapper sijoitteluajoWrapper = new SijoitteluajoWrapper(sijoitteluConfiguration, sijoitteluAjo);
@@ -39,6 +38,18 @@ public class SijoitteluajoWrapperFactory {
             hakukohde.getValintatapajonot().forEach(valintatapajono -> {
                 ValintatapajonoWrapper valintatapajonoWrapper = new ValintatapajonoWrapper();
                 valintatapajonoWrapper.setValintatapajono(valintatapajono);
+                if (!hakukohdeMapToValintatapajonoByOid.isEmpty()
+                        && !hakukohdeMapToValintatapajonoByOid.get(hakukohde.getOid()).isEmpty()
+                        && hakukohdeMapToValintatapajonoByOid.get(hakukohde.getOid()).get(valintatapajono.getOid()) != null) {
+                    LOG.info("Valintatapajono {}, hakukohde {}, Merkitse myöh auto {}", valintatapajono.getOid(), hakukohde.getOid(), hakukohdeMapToValintatapajonoByOid
+                            .get(hakukohde.getOid())
+                            .get(valintatapajono.getOid())
+                            .getMerkitseMyohAuto());
+                    valintatapajonoWrapper.setMerkitseMyohAuto(hakukohdeMapToValintatapajonoByOid
+                            .get(hakukohde.getOid())
+                            .get(valintatapajono.getOid())
+                            .getMerkitseMyohAuto());
+                }
                 hakukohdeWrapper.getValintatapajonot().add(valintatapajonoWrapper);
                 valintatapajonoWrapper.setHakukohdeWrapper(hakukohdeWrapper);
                 valintatapajono.getHakemukset().forEach(hakemus -> {

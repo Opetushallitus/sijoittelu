@@ -35,9 +35,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.*;
 import java.util.function.Predicate;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class SijoitteleHakukohde {
     private static final Logger LOG = LoggerFactory.getLogger(SijoitteleHakukohde.class);
@@ -316,7 +314,7 @@ public class SijoitteleHakukohde {
         boolean eiVarasijatayttoa = sijoitteluajo.varasijaSaannotVoimassa() &&
             Boolean.TRUE.equals(jononEiVarasijatayttoa(hakemusWrapper)) &&
             !jononKaikkiEhdonTayttavatHyvaksytaan(hakemusWrapper);
-        return eiVarasijatayttoa && !hakijaAloistuspaikkojenSisalla(hakemusWrapper);
+        return eiVarasijatayttoa && !hakijaAloituspaikkojenSisalla(hakemusWrapper);
     }
 
     //Asetetaan kaikki syötteenä saadut hakemukset tilaan PERUUNTUNUT, paitsi jos hakemus oli edellisessä sijoitteluajossa HYVAKSYTTY tai VARASIJALTA_HYVAKSYTTY
@@ -464,10 +462,11 @@ public class SijoitteleHakukohde {
         return valintatapajono.getValintatapajono().getPoissaOlevaTaytto() != null && valintatapajono.getValintatapajono().getPoissaOlevaTaytto();
     }
 
-    private static boolean hakijaAloistuspaikkojenSisalla(HakemusWrapper hakemusWrapper) {
+    private static boolean hakijaAloituspaikkojenSisalla(HakemusWrapper hakemusWrapper) {
         ValintatapajonoWrapper valintatapajono = hakemusWrapper.getValintatapajono();
         int aloituspaikat = jononAloituspaikat(valintatapajono);
-        LOG.info("Aloituspaikat: " + aloituspaikat );
+        LOG.info("Aloituspaikat: {}, valintatapajono: {}, hakukohde: {}",
+                aloituspaikat, valintatapajono.getValintatapajono().getOid(), hakemusWrapper.getHakukohdeOid());
         return onkoPaikkojenSisalla(hakemusWrapper, aloituspaikat, valintatapajono.getHakemukset());
     }
 

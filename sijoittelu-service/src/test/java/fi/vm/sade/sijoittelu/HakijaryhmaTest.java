@@ -259,7 +259,7 @@ public class HakijaryhmaTest {
     }
 
     private SijoitteluajoWrapper createSijoitteluajoWrapper(List<Hakukohde> hakukohteet) {
-        SijoitteluajoWrapper sijoitteluajoWrapper = SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(new SijoitteluConfiguration(), new SijoitteluAjo(), hakukohteet, Collections.emptyList(), Collections.emptyMap());
+        SijoitteluajoWrapper sijoitteluajoWrapper = SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(new SijoitteluConfiguration(), new SijoitteluAjo(), hakukohteet, Collections.emptyMap());
         sijoitteluajoWrapper.paivitaVastaanottojenVaikutusHakemustenTiloihin(Collections.emptyList(), Collections.emptyMap());
         return sijoitteluajoWrapper;
     }

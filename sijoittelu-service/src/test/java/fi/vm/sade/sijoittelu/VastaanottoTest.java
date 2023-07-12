@@ -320,7 +320,7 @@ public class VastaanottoTest {
     }
 
     private SijoitteluajoWrapper createSijoitteluajoWrapper(List<Hakukohde> hakukohteet, List<Valintatulos> valintatulokset) {
-        SijoitteluajoWrapper sijoitteluajoWrapper = SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(new SijoitteluConfiguration(), new SijoitteluAjo(), tallennaEdellisetTilat(hakukohteet), valintatulokset, Collections.emptyMap());
+        SijoitteluajoWrapper sijoitteluajoWrapper = SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(new SijoitteluConfiguration(), new SijoitteluAjo(), tallennaEdellisetTilat(hakukohteet), Collections.emptyMap());
         sijoitteluajoWrapper.paivitaVastaanottojenVaikutusHakemustenTiloihin(valintatulokset, Collections.emptyMap());
         return sijoitteluajoWrapper;
     }

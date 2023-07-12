@@ -722,7 +722,7 @@ public class SijoitteluMontaJonoaTest {
     }
 
     private SijoitteluajoWrapper createSijoitteluAjoWrapper(List<Hakukohde> hakukohdes, List<Valintatulos> valintatulosList) {
-        SijoitteluajoWrapper sijoitteluajoWrapper = SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(new SijoitteluConfiguration(), new SijoitteluAjo(), hakukohdes, valintatulosList, Collections.emptyMap());
+        SijoitteluajoWrapper sijoitteluajoWrapper = SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(new SijoitteluConfiguration(), new SijoitteluAjo(), hakukohdes, Collections.emptyMap());
         sijoitteluajoWrapper.paivitaVastaanottojenVaikutusHakemustenTiloihin(valintatulosList, Collections.emptyMap());
         return sijoitteluajoWrapper;
     }

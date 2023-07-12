@@ -2,11 +2,7 @@ package fi.vm.sade.sijoittelu.domain;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class Hakemus implements Serializable {
     private String hakijaOid;
@@ -51,6 +47,10 @@ public class Hakemus implements Serializable {
     private Set<String> hyvaksyttyHakijaryhmista = new HashSet<>();
 
     private boolean siirtynytToisestaValintatapajonosta = false;
+
+    private Boolean vastaanottoMyohassa = null;
+
+    private Date vastaanottoDeadline = null;
 
     public Set<String> getHyvaksyttyHakijaryhmista() {
         return this.hyvaksyttyHakijaryhmista;
@@ -140,6 +140,8 @@ public class Hakemus implements Serializable {
                 ", varasijanNumero=" + varasijanNumero +
                 ", hyvaksyttyHakijaryhmista=" + hyvaksyttyHakijaryhmista +
                 ", siirtynytToisestaValintatapajonosta=" + siirtynytToisestaValintatapajonosta +
+                ", vastaanottoMyohassa=" + vastaanottoMyohassa +
+                ", vastaanottoDeadline=" + vastaanottoDeadline +
                 '}';
     }
 
@@ -229,6 +231,22 @@ public class Hakemus implements Serializable {
 
     public boolean getSiirtynytToisestaValintatapajonosta() {
         return this.siirtynytToisestaValintatapajonosta;
+    }
+
+    public void setVastaanottoMyohassa(Boolean vastaanottoMyohassa) {
+        this.vastaanottoMyohassa = vastaanottoMyohassa;
+    }
+
+    public Boolean isVastaanottoMyohassa() {
+        return vastaanottoMyohassa;
+    }
+
+    public void setVastaanottoDeadline(Date vastaanottoDeadline) {
+        this.vastaanottoDeadline = vastaanottoDeadline;
+    }
+
+    public Date getVastaanottoDeadline() {
+        return vastaanottoDeadline;
     }
 
     public TilankuvauksenTarkenne getTilankuvauksenTarkenne() {

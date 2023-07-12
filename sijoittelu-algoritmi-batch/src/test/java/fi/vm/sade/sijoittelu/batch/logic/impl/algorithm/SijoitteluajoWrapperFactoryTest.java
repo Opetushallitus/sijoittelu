@@ -6,9 +6,11 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import com.google.common.collect.Lists;
 
+import fi.vm.sade.service.valintaperusteet.dto.ValintatapajonoDTO;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.util.TilojenMuokkaus;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.HakemusWrapper;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.SijoitteluajoWrapper;
+import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.ValintatapajonoWrapper;
 import fi.vm.sade.sijoittelu.domain.HakemuksenTila;
 import fi.vm.sade.sijoittelu.domain.Hakemus;
 import fi.vm.sade.sijoittelu.domain.Hakukohde;
@@ -193,6 +195,22 @@ public class SijoitteluajoWrapperFactoryTest {
             assertEquals(TilanKuvaukset.varasijaltaHyvaksytty, hakemusWrapper.getHakemus().getTilanKuvaukset());
             assertFalse(hakemusWrapper.isTilaVoidaanVaihtaa());
         }
+
+        @Test
+        public void setsMerkitseMyohAuto() {
+            Hakemus hakemus = new Hakemus();
+            hakemus.setHakemusOid("123");
+            List<Valintatapajono> valintatapajonot = generateValintatapajono(new List[]{List.of(hakemus)});
+            List<Hakukohde> hakukohteet = generateHakukohteet(valintatapajonot);
+            ValintatapajonoDTO jono = new ValintatapajonoDTO();
+            jono.setMerkitseMyohAuto(true);
+            SijoitteluajoWrapper sijoitteluajoWrapper = SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(new SijoitteluConfiguration(), new SijoitteluAjo(),
+                    hakukohteet, Collections.singletonMap(hakukohteet.get(0).getOid(), Collections.singletonMap(valintatapajonot.get(0).getOid(), jono)));
+            assertEquals(1, sijoitteluajoWrapper.getHakukohteet().size());
+            assertEquals(1, sijoitteluajoWrapper.getHakukohteet().get(0).getValintatapajonot().size());
+            ValintatapajonoWrapper jonoWrapper = sijoitteluajoWrapper.getHakukohteet().get(0).getValintatapajonot().get(0);
+            assertTrue(jonoWrapper.getMerkitseMyohAuto());
+        }
     }
 
     public static class EdellinenTilaHyvaksytty {
@@ -241,7 +259,7 @@ public class SijoitteluajoWrapperFactoryTest {
     private static SijoitteluajoWrapper sijoitteluAjo(List<Valintatulos> valintatulokset, List<Hakemus>... hakemukset) {
         List<Valintatapajono> valintatapajonot = generateValintatapajono(hakemukset);
         final List<Hakukohde> hakukohteet = generateHakukohteet(valintatapajonot);
-        SijoitteluajoWrapper sijoitteluajoWrapper = SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(new SijoitteluConfiguration(), new SijoitteluAjo(), hakukohteet, valintatulokset, Collections.emptyMap());
+        SijoitteluajoWrapper sijoitteluajoWrapper = SijoitteluajoWrapperFactory.createSijoitteluAjoWrapper(new SijoitteluConfiguration(), new SijoitteluAjo(), hakukohteet, Collections.emptyMap());
         sijoitteluajoWrapper.paivitaVastaanottojenVaikutusHakemustenTiloihin(valintatulokset, Collections.emptyMap());
         return sijoitteluajoWrapper;
     }

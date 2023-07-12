@@ -130,7 +130,7 @@ public class SijoitteluBusinessTest {
     public void testPeruutaAlemmat() {
         HakuDTO haku = valintatietoService.haeValintatiedot("haku1");
 
-        sijoitteluService.sijoittele(haku, newHashSet("jono1", "jono2", "jono3"), newHashSet("jono1", "jono2", "jono3"), System.currentTimeMillis());
+        sijoitteluService.sijoittele(haku, newHashSet("jono1", "jono2", "jono3"), newHashSet("jono1", "jono2", "jono3"), System.currentTimeMillis(), Collections.emptyMap());
 
         verify(valintarekisteriService, times(1)).tallennaSijoittelu(
                 sijoitteluAjoArgumentCaptor.capture(),
@@ -153,11 +153,11 @@ public class SijoitteluBusinessTest {
         printHakukohteet(hakukohteet1);
 
         when(valintarekisteriService.getLatestSijoitteluajo("haku1")).thenReturn(sijoitteluAjo1);
-        when(valintarekisteriService.getSijoitteluajonHakukohteet(anyLong())).thenReturn(hakukohteet1);
+        when(valintarekisteriService.getSijoitteluajonHakukohteet(anyLong(), anyString())).thenReturn(hakukohteet1);
 
         removeJono(haku, "jono1");
 
-        sijoitteluService.sijoittele(haku, newHashSet("jono2", "jono3"), newHashSet("jono1", "jono2", "jono3"), System.currentTimeMillis());
+        sijoitteluService.sijoittele(haku, newHashSet("jono2", "jono3"), newHashSet("jono1", "jono2", "jono3"), System.currentTimeMillis(), Collections.emptyMap());
         verify(valintarekisteriService, times(2)).tallennaSijoittelu(
                 sijoitteluAjoArgumentCaptor.capture(),
                 hakukohdeArgumentCaptor.capture(),
@@ -179,11 +179,11 @@ public class SijoitteluBusinessTest {
         printHakukohteet(hakukohteet2);
 
         when(valintarekisteriService.getLatestSijoitteluajo("haku1")).thenReturn(sijoitteluAjo2);
-        when(valintarekisteriService.getSijoitteluajonHakukohteet(sijoitteluAjo2.getSijoitteluajoId())).thenReturn(hakukohteet2);
+        when(valintarekisteriService.getSijoitteluajonHakukohteet(sijoitteluAjo2.getSijoitteluajoId(), "haku1")).thenReturn(hakukohteet2);
 
         haku = valintatietoService.haeValintatiedot("haku1");
 
-        sijoitteluService.sijoittele(haku, newHashSet("jono1", "jono2", "jono3"), newHashSet("jono1", "jono2", "jono3"), System.currentTimeMillis());
+        sijoitteluService.sijoittele(haku, newHashSet("jono1", "jono2", "jono3"), newHashSet("jono1", "jono2", "jono3"), System.currentTimeMillis(), Collections.emptyMap());
 
         verify(valintarekisteriService, times(3)).tallennaSijoittelu(
                 sijoitteluAjoArgumentCaptor.capture(),
@@ -233,7 +233,7 @@ public class SijoitteluBusinessTest {
 
         HakuDTO haku = valintatietoService.haeValintatiedot("haku1");
 
-        sijoitteluService.sijoittele(haku, newHashSet("jono1", "jono2", "jono3"), newHashSet("jono1", "jono2", "jono3"), System.currentTimeMillis());
+        sijoitteluService.sijoittele(haku, newHashSet("jono1", "jono2", "jono3"), newHashSet("jono1", "jono2", "jono3"), System.currentTimeMillis(), Collections.emptyMap());
 
         verify(valintarekisteriService, times(1)).tallennaSijoittelu(
                 sijoitteluAjoArgumentCaptor.capture(),
@@ -279,7 +279,7 @@ public class SijoitteluBusinessTest {
 
         Set<String> valintaperusteenJonot = newHashSet("jono2");
 
-        sijoitteluService.sijoittele(haku, valintaperusteenJonot, newHashSet("jono1", "jono2", "jono3"), System.currentTimeMillis());
+        sijoitteluService.sijoittele(haku, valintaperusteenJonot, newHashSet("jono1", "jono2", "jono3"), System.currentTimeMillis(), Collections.emptyMap());
 
         long sijoitteluajoId = captureSijoitteluajoForNextSijoittelu();
 
@@ -287,7 +287,7 @@ public class SijoitteluBusinessTest {
 
         assertEquals(getValintatapaJonoOids(haku), newHashSet("jono2", "jono3"));
 
-        sijoitteluService.sijoittele(haku, valintaperusteenJonot, newHashSet("jono1", "jono2", "jono3"), System.currentTimeMillis());
+        sijoitteluService.sijoittele(haku, valintaperusteenJonot, newHashSet("jono1", "jono2", "jono3"), System.currentTimeMillis(), Collections.emptyMap());
 
         assertSijoitteluUsedSijoitteluajo(sijoitteluajoId);
     }
@@ -299,7 +299,7 @@ public class SijoitteluBusinessTest {
 
         Set<String> valintaperusteenJonot = newHashSet("jono1", "jono2", "jono3");
 
-        sijoitteluService.sijoittele(haku, valintaperusteenJonot, newHashSet("jono1", "jono2", "jono3"), System.currentTimeMillis());
+        sijoitteluService.sijoittele(haku, valintaperusteenJonot, newHashSet("jono1", "jono2", "jono3"), System.currentTimeMillis(), Collections.emptyMap());
 
         long sijoitteluajoId = captureSijoitteluajoForNextSijoittelu();
 
@@ -309,7 +309,7 @@ public class SijoitteluBusinessTest {
         thrown.expectMessage("Edellisessä sijoittelussa olleet jonot puuttuvat sijoittelusta, vaikka ne ovat " +
             "valintaperusteissa yhä aktiivisina: [Hakukohde hakukohde1 , jono \"Jono1\" (jono1 , prio 0)]");
 
-        sijoitteluService.sijoittele(haku, valintaperusteenJonot, newHashSet("jono1", "jono2", "jono3"), System.currentTimeMillis());
+        sijoitteluService.sijoittele(haku, valintaperusteenJonot, newHashSet("jono1", "jono2", "jono3"), System.currentTimeMillis(), Collections.emptyMap());
 
         assertSijoitteluUsedSijoitteluajo(sijoitteluajoId);
     }
@@ -319,7 +319,7 @@ public class SijoitteluBusinessTest {
     public void testPuuttuvaJonoKunKadonnutLaskennanTuloksista() {
         HakuDTO haku = valintatietoService.haeValintatiedot("haku1");
 
-        sijoitteluService.sijoittele(haku, newHashSet("jono1", "jono2", "jono3"), newHashSet("jono1", "jono2", "jono3"), System.currentTimeMillis());
+        sijoitteluService.sijoittele(haku, newHashSet("jono1", "jono2", "jono3"), newHashSet("jono1", "jono2", "jono3"), System.currentTimeMillis(), Collections.emptyMap());
 
         long sijoitteluajoId = captureSijoitteluajoForNextSijoittelu();
 
@@ -328,7 +328,7 @@ public class SijoitteluBusinessTest {
         thrown.expect(RuntimeException.class);
         thrown.expectMessage("Edellisessä sijoittelussa olleet jonot puuttuvat laskennan tuloksista: [Hakukohde hakukohde1 , jono \"Jono1\" (jono1 , prio 0)]");
 
-        sijoitteluService.sijoittele(haku, Collections.emptySet(), newHashSet("jono2", "jono3"), System.currentTimeMillis());
+        sijoitteluService.sijoittele(haku, Collections.emptySet(), newHashSet("jono2", "jono3"), System.currentTimeMillis(), Collections.emptyMap());
 
         assertSijoitteluUsedSijoitteluajo(sijoitteluajoId);
     }
@@ -338,7 +338,7 @@ public class SijoitteluBusinessTest {
     public void testPuuttuvaJonoKunKadonnutValintaperusteista() {
         HakuDTO haku = valintatietoService.haeValintatiedot("haku1");
 
-        sijoitteluService.sijoittele(haku, newHashSet("jono1", "jono2", "jono3"), newHashSet("jono2", "jono3"), System.currentTimeMillis());
+        sijoitteluService.sijoittele(haku, newHashSet("jono1", "jono2", "jono3"), newHashSet("jono2", "jono3"), System.currentTimeMillis(), Collections.emptyMap());
 
         long sijoitteluajoId = captureSijoitteluajoForNextSijoittelu();
 
@@ -351,7 +351,7 @@ public class SijoitteluBusinessTest {
             "Vaikuttaa siis bugilta: " +
             "[Hakukohde hakukohde1 , jono \"Jono1\" (jono1 , prio 0)]");
 
-        sijoitteluService.sijoittele(haku, Collections.emptySet(), newHashSet("jono2", "jono3"), System.currentTimeMillis());
+        sijoitteluService.sijoittele(haku, Collections.emptySet(), newHashSet("jono2", "jono3"), System.currentTimeMillis(), Collections.emptyMap());
 
         assertSijoitteluUsedSijoitteluajo(sijoitteluajoId);
     }
@@ -361,13 +361,13 @@ public class SijoitteluBusinessTest {
     public void testPuuttuvaJonoKunPassivoituValintaperusteista() {
         HakuDTO haku = valintatietoService.haeValintatiedot("haku1");
 
-        sijoitteluService.sijoittele(haku, newHashSet("jono1", "jono2", "jono3"), newHashSet("jono1", "jono2", "jono3"), System.currentTimeMillis());
+        sijoitteluService.sijoittele(haku, newHashSet("jono1", "jono2", "jono3"), newHashSet("jono1", "jono2", "jono3"), System.currentTimeMillis(), Collections.emptyMap());
 
         long sijoitteluajoId = captureSijoitteluajoForNextSijoittelu();
 
         removeJono(haku, "jono1");
 
-        sijoitteluService.sijoittele(haku, newHashSet("jono2", "jono3"), newHashSet("jono1", "jono2", "jono3"), System.currentTimeMillis());
+        sijoitteluService.sijoittele(haku, newHashSet("jono2", "jono3"), newHashSet("jono1", "jono2", "jono3"), System.currentTimeMillis(), Collections.emptyMap());
 
         assertSijoitteluUsedSijoitteluajo(sijoitteluajoId);
     }
@@ -379,7 +379,7 @@ public class SijoitteluBusinessTest {
 
         assertEquals(getValintatapaJonoOids(haku), newHashSet("jono1", "jono2", "jono3"));
 
-        sijoitteluService.sijoittele(haku, newHashSet("jono1", "jono2", "jono3"), newHashSet("jono1", "jono2", "jono3"), System.currentTimeMillis() );
+        sijoitteluService.sijoittele(haku, newHashSet("jono1", "jono2", "jono3"), newHashSet("jono1", "jono2", "jono3"), System.currentTimeMillis(), Collections.emptyMap());
 
         long sijoitteluajoId = captureSijoitteluajoForNextSijoittelu();
 
@@ -391,7 +391,7 @@ public class SijoitteluBusinessTest {
         thrown.expectMessage("Edellisessä sijoittelussa olleet jonot puuttuvat sijoittelusta, vaikka ne ovat " +
             "valintaperusteissa yhä aktiivisina: [Hakukohde hakukohde1 , jono \"Jono1\" (jono1 , prio 0)]");
 
-        sijoitteluService.sijoittele(haku, newHashSet("jono1", "jono2", "jono3"), newHashSet("jono1", "jono2", "jono3"), System.currentTimeMillis());
+        sijoitteluService.sijoittele(haku, newHashSet("jono1", "jono2", "jono3"), newHashSet("jono1", "jono2", "jono3"), System.currentTimeMillis(), Collections.emptyMap());
 
         assertSijoitteluUsedSijoitteluajo(sijoitteluajoId);
     }
@@ -427,9 +427,9 @@ public class SijoitteluBusinessTest {
         previousJono.setVarasijat(4);
         previousJono.setSivssnovSijoittelunVarasijataytonRajoitus(jonosijaTieto);
         previousHakukohde.setValintatapajonot(Collections.singletonList(previousJono));
-        when(valintarekisteriService.getSijoitteluajonHakukohteet(previousAjo.getSijoitteluajoId())).thenReturn(Collections.singletonList(previousHakukohde));
+        when(valintarekisteriService.getSijoitteluajonHakukohteet(previousAjo.getSijoitteluajoId(), "haku1")).thenReturn(Collections.singletonList(previousHakukohde));
 
-        sijoitteluService.sijoittele(haku, newHashSet("jono2", "jono3"), newHashSet("jono1"), System.currentTimeMillis());
+        sijoitteluService.sijoittele(haku, newHashSet("jono2", "jono3"), newHashSet("jono1"), System.currentTimeMillis(), Collections.emptyMap());
 
         verify(valintarekisteriService, times(1)).tallennaSijoittelu(
                 sijoitteluAjoArgumentCaptor.capture(),
@@ -459,7 +459,7 @@ public class SijoitteluBusinessTest {
         List<Valintatulos> valintatulokset = createValintatuloksetFromHakukohteet(hakukohteet);
 
         when(valintarekisteriService.getLatestSijoitteluajo("haku1")).thenReturn(sijoitteluAjo);
-        when(valintarekisteriService.getSijoitteluajonHakukohteet(sijoitteluAjo.getSijoitteluajoId())).thenReturn(hakukohteet);
+        when(valintarekisteriService.getSijoitteluajonHakukohteet(sijoitteluAjo.getSijoitteluajoId(), "haku1")).thenReturn(hakukohteet);
         when(valintarekisteriService.getValintatulokset("haku1")).thenReturn(valintatulokset);
 
         return sijoitteluAjo.getSijoitteluajoId();
@@ -490,7 +490,7 @@ public class SijoitteluBusinessTest {
 
     private void assertSijoitteluUsedSijoitteluajo(long sijoitteluajoId) {
         verify(valintarekisteriService, times(2)).getLatestSijoitteluajo("haku1");
-        verify(valintarekisteriService).getSijoitteluajonHakukohteet(sijoitteluajoId);
+        verify(valintarekisteriService).getSijoitteluajonHakukohteet(sijoitteluajoId, "haku1");
         verify(valintarekisteriService, times(2)).getValintatulokset("haku1");
     }
 
@@ -511,7 +511,7 @@ public class SijoitteluBusinessTest {
         ));
 
         HakuDTO haku = valintatietoService.haeValintatiedot("haku1");
-        sijoitteluService.sijoittele(haku, newHashSet("jono1", "jono2", "jono3"), newHashSet("jono1", "jono2", "jono3"), System.currentTimeMillis());
+        sijoitteluService.sijoittele(haku, newHashSet("jono1", "jono2", "jono3"), newHashSet("jono1", "jono2", "jono3"), System.currentTimeMillis(), Collections.emptyMap());
 
         verify(valintarekisteriService, times(1)).tallennaSijoittelu(
                 sijoitteluAjoArgumentCaptor.capture(),
@@ -556,10 +556,10 @@ public class SijoitteluBusinessTest {
         });
 
         when(valintarekisteriService.getLatestSijoitteluajo("haku1")).thenReturn(sijoitteluAjo);
-        when(valintarekisteriService.getSijoitteluajonHakukohteet(sijoitteluAjo.getSijoitteluajoId())).thenReturn(hakukohteet);
+        when(valintarekisteriService.getSijoitteluajonHakukohteet(sijoitteluAjo.getSijoitteluajoId(), "haku1")).thenReturn(hakukohteet);
         when(valintarekisteriService.getValintatulokset("haku1")).thenReturn(valintatulokset);
 
-        sijoitteluService.sijoittele(haku, newHashSet("jono1", "jono2", "jono3"), newHashSet("jono1", "jono2", "jono3"), System.currentTimeMillis());
+        sijoitteluService.sijoittele(haku, newHashSet("jono1", "jono2", "jono3"), newHashSet("jono1", "jono2", "jono3"), System.currentTimeMillis(), Collections.emptyMap());
 
         verify(valintarekisteriService, times(2)).tallennaSijoittelu(
                 sijoitteluAjoArgumentCaptor.capture(),

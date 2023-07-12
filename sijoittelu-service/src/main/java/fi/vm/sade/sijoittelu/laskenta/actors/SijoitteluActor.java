@@ -13,7 +13,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Named;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 
 @Named("SijoitteluActor")
@@ -29,7 +29,7 @@ public class SijoitteluActor extends AbstractActor {
         receive(ReceiveBuilder.match(HakuDTO.class, haku -> {
             try {
                 log.info("Sijoittelukutsu haulle {} saapunut actorille!", haku.getHakuOid());
-                sijoitteluBusinessService.sijoittele(haku, new HashSet<>(), new HashSet<>(), System.currentTimeMillis());
+                sijoitteluBusinessService.sijoittele(haku, new HashSet<>(), new HashSet<>(), System.currentTimeMillis(), Collections.emptyMap());
                 log.info("Sijoittelu haulle {} suoritettu onnistuneesti!", haku.getHakuOid());
                 sender().tell(true, self());
             } catch (Exception e) {
