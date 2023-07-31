@@ -35,7 +35,6 @@ import fi.vm.sade.valintalaskenta.domain.dto.JarjestyskriteerituloksenTilaDTO;
 import fi.vm.sade.valintalaskenta.domain.dto.valintatieto.HakuDTO;
 import fi.vm.sade.valintalaskenta.domain.dto.valintatieto.ValintatietoValinnanvaiheDTO;
 import fi.vm.sade.valintalaskenta.domain.dto.valintatieto.ValintatietoValintatapajonoDTO;
-import io.reactivex.functions.Function3;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -97,7 +96,7 @@ public class SijoitteluTilatJaKuvauksetTest {
 
         service.sijoittele(hakuDTO(), Collections.emptySet(), Sets.newHashSet("112233.000000"), 1234567890L, Collections.emptyMap());
 
-        Function3<SijoitteluAjo, List<Hakukohde>, List<Valintatulos>, Boolean> assertFunction = (sijoitteluajo, hakukohteet, valintatulokset) -> {
+        AssertFunction assertFunction = (sijoitteluajo, hakukohteet, valintatulokset) -> {
             Hakemus hakemus = hakukohteet.get(0).getValintatapajonot().get(0).getHakemukset().get(0);
             assertEquals("peruuntunuthakija", hakemus.getHakijaOid());
             assertEquals(HakemuksenTila.PERUUNTUNUT, hakemus.getTila());
@@ -114,7 +113,7 @@ public class SijoitteluTilatJaKuvauksetTest {
 
         service.sijoittele(hakuDTO(), Collections.emptySet(), Sets.newHashSet("112233.000000"), 1234567890L, Collections.emptyMap());
 
-        Function3<SijoitteluAjo, List<Hakukohde>, List<Valintatulos>, Boolean> assertFunction = (sijoitteluajo, hakukohteet, valintatulokset) -> {
+        AssertFunction assertFunction = (sijoitteluajo, hakukohteet, valintatulokset) -> {
             Hakemus hakemus = hakukohteet.get(0).getValintatapajonot().get(0).getHakemukset().get(0);
             assertEquals("peruuntunuthakija", hakemus.getHakijaOid());
             assertEquals(HakemuksenTila.PERUNUT, hakemus.getTila());
@@ -137,7 +136,7 @@ public class SijoitteluTilatJaKuvauksetTest {
             new AvainArvoDTO("EN", "Not eligible")));
         service.sijoittele(hakuDTO, Collections.emptySet(), Sets.newHashSet("112233.000000"), 1234567890L, Collections.emptyMap());
 
-        Function3<SijoitteluAjo, List<Hakukohde>, List<Valintatulos>, Boolean> assertFunction = (sijoitteluajo, hakukohteet, valintatulokset) -> {
+        AssertFunction assertFunction = (sijoitteluajo, hakukohteet, valintatulokset) -> {
             Hakemus hakemus = hakukohteet.get(0).getValintatapajonot().get(0).getHakemukset().get(0);
             assertEquals("peruuntunuthakija", hakemus.getHakijaOid());
             assertEquals(HakemuksenTila.HYLATTY, hakemus.getTila());
@@ -272,7 +271,11 @@ public class SijoitteluTilatJaKuvauksetTest {
         return Arrays.asList(dto);
     }
 
-    private void verifyAndCaptureAndAssert(Function3<SijoitteluAjo, List<Hakukohde>, List<Valintatulos>, Boolean> assertFunction) throws Exception {
+    public interface AssertFunction {
+        Boolean apply(SijoitteluAjo sijoitteluAjo, List<Hakukohde> hakukohde, List<Valintatulos> valintatulos) throws Exception;
+    }
+
+    private void verifyAndCaptureAndAssert(AssertFunction assertFunction) throws Exception {
         verify(valintarekisteriService).getLatestSijoitteluajo(hakuOid);
         verify(valintarekisteriService).getSijoitteluajonHakukohteet(sijoitteluajoId, hakuOid);
         verify(valintarekisteriService).getValintatulokset(hakuOid);
