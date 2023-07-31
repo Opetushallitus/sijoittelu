@@ -1,9 +1,5 @@
 package fi.vm.sade.sijoittelu.batch.logic.impl.algorithm;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
 import com.google.common.collect.Lists;
 
 import fi.vm.sade.service.valintaperusteet.dto.ValintatapajonoDTO;
@@ -21,17 +17,19 @@ import fi.vm.sade.sijoittelu.domain.TilankuvauksenTarkenne;
 import fi.vm.sade.sijoittelu.domain.Valintatapajono;
 import fi.vm.sade.sijoittelu.domain.ValintatuloksenTila;
 import fi.vm.sade.sijoittelu.domain.Valintatulos;
-import org.junit.Test;
-import org.junit.experimental.runners.Enclosed;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-@RunWith(Enclosed.class)
+import static org.junit.jupiter.api.Assertions.*;
+
 public class SijoitteluajoWrapperFactoryTest {
-    public static class Valintatuloksen_tilan_vaikutus_hakemukseen {
+
+    @Nested
+    public class Valintatuloksen_tilan_vaikutus_hakemukseen {
         @Test
         public void PERUNUT_peruu_hakemuksen() {
             SijoitteluajoWrapper sijoitteluAjo = sijoitteluAjo(valintatulosWithTila(ValintatuloksenTila.PERUNUT));
@@ -213,7 +211,8 @@ public class SijoitteluajoWrapperFactoryTest {
         }
     }
 
-    public static class EdellinenTilaHyvaksytty {
+    @Nested
+    public class EdellinenTilaHyvaksytty {
         @Test
         public void ei_voi_vaihtua_HYLATTY_tilaan() {
             Valintatulos valintatulos = valintatulosWithTila(ValintatuloksenTila.KESKEN);

@@ -24,11 +24,11 @@ import fi.vm.sade.valintalaskenta.domain.dto.valintatieto.ValintatietoValintatap
 import fi.vm.sade.valintalaskenta.tulos.service.impl.ValintatietoService;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
+import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
-import org.junit.After;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -38,7 +38,6 @@ import java.util.concurrent.ExecutionException;
 import static java.util.Arrays.asList;
 import static org.apache.commons.lang.StringUtils.EMPTY;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 /**
@@ -57,9 +56,6 @@ public class SijoitteluResourceTest {
 
     private static final String COOKIENAME = "JSESSIONID";
     private static final String VALID_TICKET = "it-ankan-tiketti";
-
-    @Rule
-    public ExpectedException thrown = ExpectedException.none();
 
     public SijoitteluResourceTest() throws MalformedURLException {
         mockWebServer = new MockWebServer();
@@ -93,7 +89,7 @@ public class SijoitteluResourceTest {
         );
     }
 
-    @After
+    @AfterEach
     public void shutDown() throws IOException {
         this.mockWebServer.shutdown();
     }
@@ -108,10 +104,10 @@ public class SijoitteluResourceTest {
         String tila = sijoitteluResource.sijoittelunTila(id);
         String tila2 = sijoitteluResource.sijoittelunTila(id2);
 
-        assertEquals(Long.valueOf(-1), id2);
-        assertThat(id, Matchers.greaterThan(0L));
-        assertEquals(SijoitteluajonTila.KESKEN.toString(), tila);
-        assertEquals(SijoitteluajonTila.EI_LOYTYNYT.toString(), tila2);
+        Assertions.assertEquals(Long.valueOf(-1), id2);
+        MatcherAssert.assertThat(id, Matchers.greaterThan(0L));
+        Assertions.assertEquals(SijoitteluajonTila.KESKEN.toString(), tila);
+        Assertions.assertEquals(SijoitteluajonTila.EI_LOYTYNYT.toString(), tila2);
     }
 
     @Test
@@ -174,59 +170,59 @@ public class SijoitteluResourceTest {
             {
                 ValintatietoValintatapajonoDTO jono = hakukohde.getValinnanvaihe().iterator().next().getValintatapajonot().iterator().next();
                 ValintatietoValintatapajonoDTO alkuperainen = createValintatietoValinnanvaiheDTO().getValintatapajonot().iterator().next();
-                assertThat(jono.getAloituspaikat(), is(valintaperusteista.getAloituspaikat()));
-                assertNotSame(jono.getAloituspaikat(), alkuperainen.getAloituspaikat());
+                MatcherAssert.assertThat(jono.getAloituspaikat(), is(valintaperusteista.getAloituspaikat()));
+                Assertions.assertNotSame(jono.getAloituspaikat(), alkuperainen.getAloituspaikat());
 
-                assertThat(jono.getEiVarasijatayttoa(), is(valintaperusteista.getEiVarasijatayttoa()));
-                assertNotSame(jono.getEiVarasijatayttoa(), alkuperainen.getEiVarasijatayttoa());
+                MatcherAssert.assertThat(jono.getEiVarasijatayttoa(), is(valintaperusteista.getEiVarasijatayttoa()));
+                Assertions.assertNotSame(jono.getEiVarasijatayttoa(), alkuperainen.getEiVarasijatayttoa());
 
-                assertThat(jono.getNimi(), is(valintaperusteista.getNimi()));
-                assertNotSame(jono.getNimi(), alkuperainen.getNimi());
+                MatcherAssert.assertThat(jono.getNimi(), is(valintaperusteista.getNimi()));
+                Assertions.assertNotSame(jono.getNimi(), alkuperainen.getNimi());
 
-                assertThat(jono.getTasasijasaanto(), is(EnumConverter
+                MatcherAssert.assertThat(jono.getTasasijasaanto(), is(EnumConverter
                     .convert(
                         Tasasijasaanto.class, valintaperusteista.getTasapistesaanto())));
-                assertNotSame(jono.getTasasijasaanto(), alkuperainen.getTasasijasaanto());
+                Assertions.assertNotSame(jono.getTasasijasaanto(), alkuperainen.getTasasijasaanto());
             }
             /// ASSERTOIDAAN ETTA HAKIJARYHMAN TIEDOT PAIVITTYY
             {
                 HakijaryhmaDTO hakijaryhma = hakukohde.getHakijaryhma().iterator().next();
                 HakijaryhmaDTO alkuperainen = createHakijaryhmaDTO(hakijaryhmaOid);
 
-                assertNotSame(hakijaryhma.isKaytaKaikki(), alkuperainen.isKaytaKaikki());
-                assertNotSame(hakijaryhma.isKaytetaanRyhmaanKuuluvia(), alkuperainen.isKaytetaanRyhmaanKuuluvia());
-                assertNotSame(hakijaryhma.getKiintio(), alkuperainen.getKiintio());
-                assertNotSame(hakijaryhma.getKuvaus(), alkuperainen.getKuvaus());
-                assertNotSame(hakijaryhma.getNimi(), alkuperainen.getNimi());
-                assertNotSame(hakijaryhma.isTarkkaKiintio(), alkuperainen.isTarkkaKiintio());
-                assertNotSame(hakijaryhma.getHakijaryhmatyyppikoodiUri(), alkuperainen.getHakijaryhmatyyppikoodiUri());
+                Assertions.assertNotSame(hakijaryhma.isKaytaKaikki(), alkuperainen.isKaytaKaikki());
+                Assertions.assertNotSame(hakijaryhma.isKaytetaanRyhmaanKuuluvia(), alkuperainen.isKaytetaanRyhmaanKuuluvia());
+                Assertions.assertNotSame(hakijaryhma.getKiintio(), alkuperainen.getKiintio());
+                Assertions.assertNotSame(hakijaryhma.getKuvaus(), alkuperainen.getKuvaus());
+                Assertions.assertNotSame(hakijaryhma.getNimi(), alkuperainen.getNimi());
+                Assertions.assertNotSame(hakijaryhma.isTarkkaKiintio(), alkuperainen.isTarkkaKiintio());
+                Assertions.assertNotSame(hakijaryhma.getHakijaryhmatyyppikoodiUri(), alkuperainen.getHakijaryhmatyyppikoodiUri());
 
-                assertThat(hakijaryhma.isKaytaKaikki(), is(hakijaryhmavalintaperusteista.isKaytaKaikki()));
-                assertThat(hakijaryhma.isKaytetaanRyhmaanKuuluvia(), is(hakijaryhmavalintaperusteista.isKaytetaanRyhmaanKuuluvia()));
-                assertThat(hakijaryhma.getKiintio(), is(hakijaryhmavalintaperusteista.getKiintio()));
-                assertThat(hakijaryhma.getKuvaus(), is(hakijaryhmavalintaperusteista.getKuvaus()));
-                assertThat(hakijaryhma.getNimi(), is(hakijaryhmavalintaperusteista.getNimi()));
-                assertThat(hakijaryhma.isTarkkaKiintio(), is(hakijaryhmavalintaperusteista.isTarkkaKiintio()));
-                assertThat(hakijaryhma.getHakijaryhmatyyppikoodiUri(), is(hakijaryhmavalintaperusteista.getHakijaryhmatyyppikoodi().getUri()));
+                MatcherAssert.assertThat(hakijaryhma.isKaytaKaikki(), is(hakijaryhmavalintaperusteista.isKaytaKaikki()));
+                MatcherAssert.assertThat(hakijaryhma.isKaytetaanRyhmaanKuuluvia(), is(hakijaryhmavalintaperusteista.isKaytetaanRyhmaanKuuluvia()));
+                MatcherAssert.assertThat(hakijaryhma.getKiintio(), is(hakijaryhmavalintaperusteista.getKiintio()));
+                MatcherAssert.assertThat(hakijaryhma.getKuvaus(), is(hakijaryhmavalintaperusteista.getKuvaus()));
+                MatcherAssert.assertThat(hakijaryhma.getNimi(), is(hakijaryhmavalintaperusteista.getNimi()));
+                MatcherAssert.assertThat(hakijaryhma.isTarkkaKiintio(), is(hakijaryhmavalintaperusteista.isTarkkaKiintio()));
+                MatcherAssert.assertThat(hakijaryhma.getHakijaryhmatyyppikoodiUri(), is(hakijaryhmavalintaperusteista.getHakijaryhmatyyppikoodi().getUri()));
 
                 hakijaryhma = hakukohde.getHakijaryhma().iterator().next();
                 alkuperainen = createHakijaryhmaDTO(valintatapajononHakijaryhmaOid);
 
-                assertNotSame(hakijaryhma.isKaytaKaikki(), alkuperainen.isKaytaKaikki());
-                assertNotSame(hakijaryhma.isKaytetaanRyhmaanKuuluvia(), alkuperainen.isKaytetaanRyhmaanKuuluvia());
-                assertNotSame(hakijaryhma.getKiintio(), alkuperainen.getKiintio());
-                assertNotSame(hakijaryhma.getKuvaus(), alkuperainen.getKuvaus());
-                assertNotSame(hakijaryhma.getNimi(), alkuperainen.getNimi());
-                assertNotSame(hakijaryhma.isTarkkaKiintio(), alkuperainen.isTarkkaKiintio());
-                assertNotSame(hakijaryhma.getHakijaryhmatyyppikoodiUri(), alkuperainen.getHakijaryhmatyyppikoodiUri());
+                Assertions.assertNotSame(hakijaryhma.isKaytaKaikki(), alkuperainen.isKaytaKaikki());
+                Assertions.assertNotSame(hakijaryhma.isKaytetaanRyhmaanKuuluvia(), alkuperainen.isKaytetaanRyhmaanKuuluvia());
+                Assertions.assertNotSame(hakijaryhma.getKiintio(), alkuperainen.getKiintio());
+                Assertions.assertNotSame(hakijaryhma.getKuvaus(), alkuperainen.getKuvaus());
+                Assertions.assertNotSame(hakijaryhma.getNimi(), alkuperainen.getNimi());
+                Assertions.assertNotSame(hakijaryhma.isTarkkaKiintio(), alkuperainen.isTarkkaKiintio());
+                Assertions.assertNotSame(hakijaryhma.getHakijaryhmatyyppikoodiUri(), alkuperainen.getHakijaryhmatyyppikoodiUri());
 
-                assertThat(hakijaryhma.isKaytaKaikki(), is(hakijaryhmavalintaperusteista.isKaytaKaikki()));
-                assertThat(hakijaryhma.isKaytetaanRyhmaanKuuluvia(), is(hakijaryhmavalintaperusteista.isKaytetaanRyhmaanKuuluvia()));
-                assertThat(hakijaryhma.getKiintio(), is(hakijaryhmavalintaperusteista.getKiintio()));
-                assertThat(hakijaryhma.getKuvaus(), is(hakijaryhmavalintaperusteista.getKuvaus()));
-                assertThat(hakijaryhma.getNimi(), is(hakijaryhmavalintaperusteista.getNimi()));
-                assertThat(hakijaryhma.isTarkkaKiintio(), is(hakijaryhmavalintaperusteista.isTarkkaKiintio()));
-                assertThat(hakijaryhma.getHakijaryhmatyyppikoodiUri(), is(hakijaryhmavalintaperusteista.getHakijaryhmatyyppikoodi().getUri()));
+                MatcherAssert.assertThat(hakijaryhma.isKaytaKaikki(), is(hakijaryhmavalintaperusteista.isKaytaKaikki()));
+                MatcherAssert.assertThat(hakijaryhma.isKaytetaanRyhmaanKuuluvia(), is(hakijaryhmavalintaperusteista.isKaytetaanRyhmaanKuuluvia()));
+                MatcherAssert.assertThat(hakijaryhma.getKiintio(), is(hakijaryhmavalintaperusteista.getKiintio()));
+                MatcherAssert.assertThat(hakijaryhma.getKuvaus(), is(hakijaryhmavalintaperusteista.getKuvaus()));
+                MatcherAssert.assertThat(hakijaryhma.getNimi(), is(hakijaryhmavalintaperusteista.getNimi()));
+                MatcherAssert.assertThat(hakijaryhma.isTarkkaKiintio(), is(hakijaryhmavalintaperusteista.isTarkkaKiintio()));
+                MatcherAssert.assertThat(hakijaryhma.getHakijaryhmatyyppikoodiUri(), is(hakijaryhmavalintaperusteista.getHakijaryhmatyyppikoodi().getUri()));
             }
         } finally {
             reset(sijoitteluBusinessService, valintatietoService);
@@ -283,15 +279,11 @@ public class SijoitteluResourceTest {
             mockWebServer.enqueue(new MockResponse()
                     .setBody(this.gson.toJson(vpMap))
                     .setResponseCode(200));
-            thrown.expect(IllegalStateException.class);
-            thrown.expectMessage("Haun hakuOid sijoittelu : " +
-                "Laskennan tuloksista löytyvien jonojen tietoja on kadonnut valintaperusteista: " +
-                "[Hakukohde hakukohdeOid , jono \"Varsinainen testivalinta\" (valintatapaJonoOid , prio 0)]");
-            try {
-                sijoitteluResource.toteutaSijoittelu(hakuOid, 12345L);
-            } catch (ExecutionException e) {
-                e.printStackTrace();
-            }
+
+            Exception exception = Assertions.assertThrows(IllegalStateException.class, () -> sijoitteluResource.toteutaSijoittelu(hakuOid, 12345L));
+            Assertions.assertEquals("Haun hakuOid sijoittelu : " +
+                    "Laskennan tuloksista löytyvien jonojen tietoja on kadonnut valintaperusteista: " +
+                    "[Hakukohde hakukohdeOid , jono \"Varsinainen testivalinta\" (valintatapaJonoOid , prio 0)]", exception.getMessage());
         } finally{
             reset(sijoitteluBusinessService, valintatietoService);
         }

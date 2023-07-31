@@ -1,10 +1,8 @@
 package fi.vm.sade.sijoittelu;
 
-import static com.lordofthejars.nosqlunit.mongodb.MongoDbRule.MongoDbRuleBuilder.newMongoDbRule;
 import com.google.common.collect.Lists;
 import com.lordofthejars.nosqlunit.annotation.UsingDataSet;
 import com.lordofthejars.nosqlunit.core.LoadStrategyEnum;
-import com.lordofthejars.nosqlunit.mongodb.MongoDbRule;
 
 import fi.vm.sade.configuration.TestConfiguration;
 import fi.vm.sade.sijoittelu.batch.logic.impl.DomainConverter;
@@ -24,18 +22,18 @@ import fi.vm.sade.sijoittelu.domain.TilanKuvaukset;
 import fi.vm.sade.sijoittelu.domain.Valintatapajono;
 import fi.vm.sade.sijoittelu.domain.ValintatuloksenTila;
 import fi.vm.sade.sijoittelu.domain.Valintatulos;
+import fi.vm.sade.util.NoSqlUnitInterceptor;
 import fi.vm.sade.valintalaskenta.domain.dto.valintatieto.HakuDTO;
 import fi.vm.sade.valintalaskenta.tulos.service.impl.ValintatietoService;
 import org.apache.commons.lang3.time.DateUtils;
-import org.junit.Assert;
-import org.junit.Ignore;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.time.LocalDateTime;
 import java.time.Period;
@@ -47,8 +45,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @ContextConfiguration(classes = {TestConfiguration.class})
-@RunWith(SpringJUnit4ClassRunner.class)
-@UsingDataSet
+@ExtendWith(SpringExtension.class)
+@ExtendWith(NoSqlUnitInterceptor.class)
 public class SijoitteluMontaJonoaTest {
 
     @Autowired
@@ -56,9 +54,6 @@ public class SijoitteluMontaJonoaTest {
 
     @Autowired
     private ApplicationContext applicationContext;
-
-    @Rule
-    public MongoDbRule mongoDbRule = newMongoDbRule().defaultSpringMongoDb("test");
 
 	@Test
     @UsingDataSet(locations = "monta_jonoa.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
@@ -91,26 +86,26 @@ public class SijoitteluMontaJonoaTest {
 
         hakukohteet.get(0).getValintatapajonot().get(0).getHakemukset().forEach(hak -> {
             if(hak.getHakemusOid().equals("1.2.246.562.11.00001090792")) {
-                Assert.assertEquals(hak.getTila(), HakemuksenTila.VARALLA);
+                Assertions.assertEquals(hak.getTila(), HakemuksenTila.VARALLA);
             }
         });
 
         hakukohteet.get(0).getValintatapajonot().get(1).getHakemukset().forEach(hak -> {
             if(hak.getHakemusOid().equals("1.2.246.562.11.00001068863")) {
-                Assert.assertEquals(hak.getTila(), HakemuksenTila.PERUUNTUNUT);
+                Assertions.assertEquals(hak.getTila(), HakemuksenTila.PERUUNTUNUT);
             }
         });
         System.out.println(PrintHelper.tulostaSijoittelu(s));
         List<Valintatulos> list = sijoitteluAjo.getMuuttuneetValintatulokset();
-        Assert.assertEquals(2, list.size());
+        Assertions.assertEquals(2, list.size());
         list.forEach(v -> {
             if(v.getValintatapajonoOid().equals("oid1")) {
-                Assert.assertEquals(ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI, v.getTila());
-                Assert.assertEquals(IlmoittautumisTila.LASNA_KOKO_LUKUVUOSI, v.getIlmoittautumisTila());
+                Assertions.assertEquals(ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI, v.getTila());
+                Assertions.assertEquals(IlmoittautumisTila.LASNA_KOKO_LUKUVUOSI, v.getIlmoittautumisTila());
             }
             if(v.getValintatapajonoOid().equals("oid2")) {
-                Assert.assertEquals(ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI, v.getTila());
-                Assert.assertEquals(IlmoittautumisTila.LASNA_KOKO_LUKUVUOSI, v.getIlmoittautumisTila());
+                Assertions.assertEquals(ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI, v.getTila());
+                Assertions.assertEquals(IlmoittautumisTila.LASNA_KOKO_LUKUVUOSI, v.getIlmoittautumisTila());
             }
         });
 
@@ -133,13 +128,13 @@ public class SijoitteluMontaJonoaTest {
 
         hakukohteet.get(0).getValintatapajonot().get(0).getHakemukset().forEach(hak -> {
             if(hak.getHakemusOid().equals("1.2.246.562.11.00001090792")) {
-                Assert.assertEquals(hak.getTila(), HakemuksenTila.VARALLA);
+                Assertions.assertEquals(hak.getTila(), HakemuksenTila.VARALLA);
             }
         });
 
         hakukohteet.get(0).getValintatapajonot().get(1).getHakemukset().forEach(hak -> {
             if(hak.getHakemusOid().equals("1.2.246.562.11.00001068863")) {
-                Assert.assertEquals(hak.getTila(), HakemuksenTila.PERUUNTUNUT);
+                Assertions.assertEquals(hak.getTila(), HakemuksenTila.PERUUNTUNUT);
             }
         });
 
@@ -202,7 +197,7 @@ public class SijoitteluMontaJonoaTest {
 
         hakukohteet.get(0).getValintatapajonot().get(0).getHakemukset().forEach(hak -> {
             if(hak.getHakemusOid().equals("1.2.246.562.11.00001068863")) {
-                Assert.assertEquals(hak.getTila(), HakemuksenTila.PERUNUT);
+                Assertions.assertEquals(hak.getTila(), HakemuksenTila.PERUNUT);
                 TilaHistoria th = new TilaHistoria(HakemuksenTila.HYVAKSYTTY);
                 Date date = DateUtils.addDays(new Date(), -2);
                 th.setLuotu(date);
@@ -212,7 +207,7 @@ public class SijoitteluMontaJonoaTest {
 
         hakukohteet.get(0).getValintatapajonot().get(1).getHakemukset().forEach(hak -> {
             if(hak.getHakemusOid().equals("1.2.246.562.11.00001068863")) {
-                Assert.assertEquals(hak.getTila(), HakemuksenTila.PERUNUT);
+                Assertions.assertEquals(hak.getTila(), HakemuksenTila.PERUNUT);
                 TilaHistoria th = new TilaHistoria(HakemuksenTila.HYVAKSYTTY);
                 Date date = DateUtils.addDays(new Date(), -4);
                 th.setLuotu(date);
@@ -244,13 +239,13 @@ public class SijoitteluMontaJonoaTest {
 
         hakukohteet.get(0).getValintatapajonot().get(0).getHakemukset().forEach(hak -> {
             if(hak.getHakemusOid().equals("1.2.246.562.11.00001068863")) {
-                Assert.assertEquals(hak.getTila(), HakemuksenTila.HYVAKSYTTY);
+                Assertions.assertEquals(hak.getTila(), HakemuksenTila.HYVAKSYTTY);
             }
         });
 
         hakukohteet.get(0).getValintatapajonot().get(1).getHakemukset().forEach(hak -> {
             if(hak.getHakemusOid().equals("1.2.246.562.11.00001068863")) {
-                Assert.assertEquals(hak.getTila(), HakemuksenTila.PERUUNTUNUT);
+                Assertions.assertEquals(hak.getTila(), HakemuksenTila.PERUUNTUNUT);
             }
         });
 
@@ -272,25 +267,25 @@ public class SijoitteluMontaJonoaTest {
 
         hakukohteet.get(0).getValintatapajonot().get(0).getHakemukset().forEach(hak -> {
             if(hak.getHakemusOid().equals("1.2.246.562.11.00001068863")) {
-                Assert.assertEquals(hak.getTila(), HakemuksenTila.HYVAKSYTTY);
+                Assertions.assertEquals(hak.getTila(), HakemuksenTila.HYVAKSYTTY);
             }
         });
 
         hakukohteet.get(0).getValintatapajonot().get(0).getHakemukset().forEach(hak -> {
             if(hak.getHakemusOid().equals("1.2.246.562.11.00001090792")) {
-                Assert.assertEquals(hak.getTila(), HakemuksenTila.VARALLA);
+                Assertions.assertEquals(hak.getTila(), HakemuksenTila.VARALLA);
             }
         });
 
         hakukohteet.get(0).getValintatapajonot().get(0).getHakemukset().forEach(hak -> {
             if(hak.getHakemusOid().equals("1.2.246.562.11.00001067411")) {
-                Assert.assertEquals(hak.getTila(), HakemuksenTila.VARALLA);
+                Assertions.assertEquals(hak.getTila(), HakemuksenTila.VARALLA);
             }
         });
 
         hakukohteet.get(0).getValintatapajonot().get(0).getHakemukset().forEach(hak -> {
             if(hak.getHakemusOid().equals("hylatty")) {
-                Assert.assertEquals(hak.getTila(), HakemuksenTila.HYLATTY);
+                Assertions.assertEquals(hak.getTila(), HakemuksenTila.HYLATTY);
             }
         });
 
@@ -322,25 +317,25 @@ public class SijoitteluMontaJonoaTest {
 
         hakukohteet.get(0).getValintatapajonot().get(0).getHakemukset().forEach(hak -> {
             if(hak.getHakemusOid().equals("1.2.246.562.11.00001068863")) {
-                Assert.assertEquals(hak.getTila(), HakemuksenTila.PERUNUT);
+                Assertions.assertEquals(hak.getTila(), HakemuksenTila.PERUNUT);
             }
         });
 
         hakukohteet.get(0).getValintatapajonot().get(0).getHakemukset().forEach(hak -> {
             if(hak.getHakemusOid().equals("1.2.246.562.11.00001090792")) {
-                Assert.assertEquals(hak.getTila(), HakemuksenTila.HYVAKSYTTY);
+                Assertions.assertEquals(hak.getTila(), HakemuksenTila.HYVAKSYTTY);
             }
         });
 
         hakukohteet.get(0).getValintatapajonot().get(0).getHakemukset().forEach(hak -> {
             if(hak.getHakemusOid().equals("1.2.246.562.11.00001067411")) {
-                Assert.assertEquals(hak.getTila(), HakemuksenTila.VARALLA);
+                Assertions.assertEquals(hak.getTila(), HakemuksenTila.VARALLA);
             }
         });
 
         hakukohteet.get(0).getValintatapajonot().get(0).getHakemukset().forEach(hak -> {
             if(hak.getHakemusOid().equals("hylatty")) {
-                Assert.assertEquals(hak.getTila(), HakemuksenTila.HYLATTY);
+                Assertions.assertEquals(hak.getTila(), HakemuksenTila.HYLATTY);
             }
         });
         s = SijoitteluAlgorithmUtil.sijoittele(tallennaEdellisetTilat(hakukohteet), Arrays.asList(tulos, tulos2), Collections.emptyMap());
@@ -349,25 +344,25 @@ public class SijoitteluMontaJonoaTest {
 
         hakukohteet.get(0).getValintatapajonot().get(0).getHakemukset().forEach(hak -> {
             if(hak.getHakemusOid().equals("1.2.246.562.11.00001068863")) {
-                Assert.assertEquals(hak.getTila(), HakemuksenTila.PERUNUT);
+                Assertions.assertEquals(hak.getTila(), HakemuksenTila.PERUNUT);
             }
         });
 
         hakukohteet.get(0).getValintatapajonot().get(0).getHakemukset().forEach(hak -> {
             if(hak.getHakemusOid().equals("1.2.246.562.11.00001090792")) {
-                Assert.assertEquals(hak.getTila(), HakemuksenTila.HYVAKSYTTY);
+                Assertions.assertEquals(hak.getTila(), HakemuksenTila.HYVAKSYTTY);
             }
         });
 
         hakukohteet.get(0).getValintatapajonot().get(0).getHakemukset().forEach(hak -> {
             if(hak.getHakemusOid().equals("1.2.246.562.11.00001067411")) {
-                Assert.assertEquals(hak.getTila(), HakemuksenTila.PERUUNTUNUT);
+                Assertions.assertEquals(hak.getTila(), HakemuksenTila.PERUUNTUNUT);
             }
         });
 
         hakukohteet.get(0).getValintatapajonot().get(0).getHakemukset().forEach(hak -> {
             if(hak.getHakemusOid().equals("hylatty")) {
-                Assert.assertEquals(hak.getTila(), HakemuksenTila.HYLATTY);
+                Assertions.assertEquals(hak.getTila(), HakemuksenTila.HYLATTY);
             }
         });
         sijoitteluajoWrapper = createSijoitteluAjoWrapper(tallennaEdellisetTilat(hakukohteet), Arrays.asList(tulos, tulos2));
@@ -378,26 +373,26 @@ public class SijoitteluMontaJonoaTest {
 
         hakukohteet.get(0).getValintatapajonot().get(0).getHakemukset().forEach(hak -> {
             if(hak.getHakemusOid().equals("1.2.246.562.11.00001068863")) {
-                Assert.assertEquals(hak.getTila(), HakemuksenTila.PERUNUT);
+                Assertions.assertEquals(hak.getTila(), HakemuksenTila.PERUNUT);
             }
         });
 
         hakukohteet.get(0).getValintatapajonot().get(0).getHakemukset().forEach(hak -> {
             if(hak.getHakemusOid().equals("1.2.246.562.11.00001090792")) {
-                Assert.assertEquals(hak.getTila(), HakemuksenTila.HYVAKSYTTY);
+                Assertions.assertEquals(hak.getTila(), HakemuksenTila.HYVAKSYTTY);
             }
         });
 
         hakukohteet.get(0).getValintatapajonot().get(0).getHakemukset().forEach(hak -> {
             if(hak.getHakemusOid().equals("1.2.246.562.11.00001067411")) {
-                Assert.assertEquals(hak.getTila(), HakemuksenTila.PERUUNTUNUT);
-                Assert.assertEquals(hak.getTilanKuvaukset().get("FI"), TilanKuvaukset.peruuntunutAloituspaikatTaynna.get("FI"));
+                Assertions.assertEquals(hak.getTila(), HakemuksenTila.PERUUNTUNUT);
+                Assertions.assertEquals(hak.getTilanKuvaukset().get("FI"), TilanKuvaukset.peruuntunutAloituspaikatTaynna.get("FI"));
             }
         });
 
         hakukohteet.get(0).getValintatapajonot().get(0).getHakemukset().forEach(hak -> {
             if(hak.getHakemusOid().equals("hylatty")) {
-                Assert.assertEquals(hak.getTila(), HakemuksenTila.HYLATTY);
+                Assertions.assertEquals(hak.getTila(), HakemuksenTila.HYLATTY);
             }
         });
 
@@ -418,20 +413,20 @@ public class SijoitteluMontaJonoaTest {
 
         hakukohteet.get(0).getValintatapajonot().get(0).getHakemukset().forEach(hak -> {
             if(hak.getHakemusOid().equals("1.2.246.562.11.00001068863")) {
-                Assert.assertEquals(hak.getTila(), HakemuksenTila.HYVAKSYTTY);
+                Assertions.assertEquals(hak.getTila(), HakemuksenTila.HYVAKSYTTY);
             }
         });
 
         hakukohteet.get(0).getValintatapajonot().get(0).getHakemukset().forEach(hak -> {
             if(hak.getHakemusOid().equals("1.2.246.562.11.00001090792")) {
-                Assert.assertEquals(hak.getTila(), HakemuksenTila.VARALLA);
+                Assertions.assertEquals(hak.getTila(), HakemuksenTila.VARALLA);
             }
         });
 
         hakukohteet.get(0).getValintatapajonot().get(0).getHakemukset().forEach(hak -> {
             if(hak.getHakemusOid().equals("1.2.246.562.11.00001067411")) {
-                Assert.assertEquals(hak.getTila(), HakemuksenTila.PERUUNTUNUT);
-                Assert.assertEquals(hak.getTilanKuvaukset().get("FI"), TilanKuvaukset.peruuntunutEiMahduKasiteltavienVarasijojenMaaraan.get("FI"));
+                Assertions.assertEquals(hak.getTila(), HakemuksenTila.PERUUNTUNUT);
+                Assertions.assertEquals(hak.getTilanKuvaukset().get("FI"), TilanKuvaukset.peruuntunutEiMahduKasiteltavienVarasijojenMaaraan.get("FI"));
             }
         });
 
@@ -468,14 +463,14 @@ public class SijoitteluMontaJonoaTest {
 
         System.out.println("muuttuneetValintatulokset: " + muuttuneetValintatulokset);
 
-        Assert.assertEquals(2, muuttuneetValintatulokset.size());
-        Assert.assertEquals(ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI, muuttuneetValintatulokset.get(0).getTila());
-        Assert.assertEquals(ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI, muuttuneetValintatulokset.get(1).getTila());
+        Assertions.assertEquals(2, muuttuneetValintatulokset.size());
+        Assertions.assertEquals(ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI, muuttuneetValintatulokset.get(0).getTila());
+        Assertions.assertEquals(ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI, muuttuneetValintatulokset.get(1).getTila());
 
     }
 
     // Täyttöjonosääntö vaatii speksausta
-    @Ignore
+    @Disabled
     @Test
     @UsingDataSet(locations = "tayttojono.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
     public void testTayttoJono() {
@@ -491,8 +486,8 @@ public class SijoitteluMontaJonoaTest {
 
         hakukohteet.get(0).getValintatapajonot().get(0).getHakemukset().forEach(hak -> {
             if(hak.getHakemusOid().equals("1.2.246.562.11.00001067411")) {
-                Assert.assertEquals(hak.getTila(), HakemuksenTila.HYVAKSYTTY);
-                Assert.assertEquals(hak.getTilanKuvaukset().get("FI"), TilanKuvaukset.hyvaksyttyTayttojonoSaannolla("Koe").get("FI"));
+                Assertions.assertEquals(hak.getTila(), HakemuksenTila.HYVAKSYTTY);
+                Assertions.assertEquals(hak.getTilanKuvaukset().get("FI"), TilanKuvaukset.hyvaksyttyTayttojonoSaannolla("Koe").get("FI"));
             }
         });
 
@@ -593,7 +588,7 @@ public class SijoitteluMontaJonoaTest {
                 .filter(hak->hak.getTila() == HakemuksenTila.HYVAKSYTTY || hak.getTila() == HakemuksenTila.VARASIJALTA_HYVAKSYTTY)
                 .count();
 
-        Assert.assertEquals(expectedHyvaksyttyCount, koko);
+        Assertions.assertEquals(expectedHyvaksyttyCount, koko);
     }
 
     private List<Valintatulos> getValintatulosForPoissaoloTest() {
@@ -677,7 +672,7 @@ public class SijoitteluMontaJonoaTest {
                 .filter(hak->hak.getTila() == HakemuksenTila.HYVAKSYTTY || hak.getTila() == HakemuksenTila.VARASIJALTA_HYVAKSYTTY)
                 .count();
 
-        Assert.assertEquals(4, koko);
+        Assertions.assertEquals(4, koko);
 
 
     }
@@ -717,7 +712,7 @@ public class SijoitteluMontaJonoaTest {
                 .filter(hak->hak.getTila() == HakemuksenTila.HYVAKSYTTY || hak.getTila() == HakemuksenTila.VARASIJALTA_HYVAKSYTTY)
                 .count();
 
-        Assert.assertEquals(koko, 4);
+        Assertions.assertEquals(koko, 4);
 
 
     }
@@ -749,8 +744,8 @@ public class SijoitteluMontaJonoaTest {
                 actual.add(hakemus.getHakemusOid());
             }
         }
-        Assert.assertTrue("Actual result does not contain all wanted approved OIDs", actual.containsAll(wanted));
-        Assert.assertTrue("Wanted result contains more approved OIDs than actual", wanted.containsAll(actual));
+        Assertions.assertTrue(actual.containsAll(wanted), "Actual result does not contain all wanted approved OIDs");
+        Assertions.assertTrue(wanted.containsAll(actual), "Wanted result contains more approved OIDs than actual");
     }
 
     private List<Hakukohde> tallennaEdellisetTilat(List<Hakukohde> hakukohteet) {

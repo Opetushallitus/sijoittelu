@@ -10,7 +10,7 @@ import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class SijoitusAjoBuilder {
     private List<Hakijaryhma> hakijaryhmat = new ArrayList<>();
@@ -125,7 +125,7 @@ class SijoitusAjoBuilder {
     private SijoitusAjoBuilder verify() {
         JonoBuilder firstJono = jonot.get(0);
         for (JonoBuilder jono : jonot) {
-            assertEquals("Hakija-jonoissa virhe", jono.getHakijaNames(), firstJono.getHakijaNames());
+            assertEquals(jono.getHakijaNames(), firstJono.getHakijaNames(), "Hakija-jonoissa virhe");
         }
         return this;
     }

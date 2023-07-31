@@ -1,10 +1,8 @@
 package fi.vm.sade.sijoittelu;
 
-import static com.lordofthejars.nosqlunit.mongodb.MongoDbRule.MongoDbRuleBuilder.newMongoDbRule;
 import static fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.PrintHelper.tulostaSijoittelu;
 import com.lordofthejars.nosqlunit.annotation.UsingDataSet;
 import com.lordofthejars.nosqlunit.core.LoadStrategyEnum;
-import com.lordofthejars.nosqlunit.mongodb.MongoDbRule;
 
 import fi.vm.sade.configuration.TestConfiguration;
 import fi.vm.sade.sijoittelu.batch.logic.impl.DomainConverter;
@@ -20,19 +18,19 @@ import fi.vm.sade.sijoittelu.domain.Hakemus;
 import fi.vm.sade.sijoittelu.domain.Hakukohde;
 import fi.vm.sade.sijoittelu.domain.SijoitteluAjo;
 import fi.vm.sade.sijoittelu.domain.Valintatapajono;
+import fi.vm.sade.util.NoSqlUnitInterceptor;
 import fi.vm.sade.valintalaskenta.domain.dto.valintatieto.HakuDTO;
 import fi.vm.sade.valintalaskenta.tulos.service.impl.ValintatietoService;
-import org.junit.Assert;
-import org.junit.Ignore;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -44,8 +42,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @ContextConfiguration(classes = {TestConfiguration.class})
-@RunWith(SpringJUnit4ClassRunner.class)
-@UsingDataSet
+@ExtendWith(SpringExtension.class)
+@ExtendWith(NoSqlUnitInterceptor.class)
 public class HakijaryhmaTest {
     private static final Logger LOG = LoggerFactory.getLogger(HakijaryhmaTest.class);
     @Autowired
@@ -53,9 +51,6 @@ public class HakijaryhmaTest {
 
     @Autowired
     private ApplicationContext applicationContext;
-
-    @Rule
-    public MongoDbRule mongoDbRule = newMongoDbRule().defaultSpringMongoDb("test");
 
 	@Test
     @UsingDataSet(locations = "vaasan_yliopisto_valinnan_vaiheet.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
@@ -99,7 +94,7 @@ public class HakijaryhmaTest {
         SijoittelunTila s = SijoitteluAlgorithmUtil.sijoittele(hakukohteet, Collections.emptyList(), Collections.emptyMap());
 
         System.out.println(tulostaSijoittelu(s));
-        Assert.assertEquals(2, hakukohteet.get(0).getHakijaryhmat().size());
+        Assertions.assertEquals(2, hakukohteet.get(0).getHakijaryhmat().size());
         assertoiAinoastaanValittu(hakukohteet.get(0).getValintatapajonot().get(0), "1.2.246.562.11.00001068863", "1.2.246.562.11.00001067411");
     }
 
@@ -114,12 +109,12 @@ public class HakijaryhmaTest {
 
         System.out.println(tulostaSijoittelu(s));
 
-        Assert.assertEquals(0, hakukohteet.get(0).getHakijaryhmat().size());
+        Assertions.assertEquals(0, hakukohteet.get(0).getHakijaryhmat().size());
         assertoiAinoastaanValittu(hakukohteet.get(0).getValintatapajonot().get(0), "1.2.246.562.11.00001068863", "1.2.246.562.11.00001090792", "1.2.246.562.11.00001067411");
     }
 
     @Test
-    @Ignore
+    @Disabled
     @UsingDataSet(locations = "alitaytto_simple_case.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
     // Korjaa tämä kun ikiluuppi on korjattu
     public void testAlitayttoRekursio() {
@@ -154,7 +149,7 @@ public class HakijaryhmaTest {
 
     }
 
-    @Ignore
+    @Disabled
     @Test
     @UsingDataSet(locations = "ylitaytto_vaihe.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
     public void testYlitaytto() {
@@ -189,15 +184,14 @@ public class HakijaryhmaTest {
 
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test
     @UsingDataSet(locations = "toisensa_pois_sulkevat_hakijaryhmat.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
     public void testSijoitteluToisensaPoisSulkevatRyhmat() {
 
         HakuDTO haku = valintatietoService.haeValintatiedot("haku1");
 
         List<Hakukohde> hakukohteet = haku.getHakukohteet().parallelStream().map(DomainConverter::convertToHakukohde).collect(Collectors.toList());
-        SijoitteluAlgorithmUtil.sijoittele(hakukohteet, Collections.emptyList(), Collections.emptyMap());
-
+        Assertions.assertThrows(IllegalStateException.class, () -> SijoitteluAlgorithmUtil.sijoittele(hakukohteet, Collections.emptyList(), Collections.emptyMap()));
     }
 
     @Test
@@ -255,8 +249,8 @@ public class HakijaryhmaTest {
                 actual.add(hakemus.getHakemusOid());
             }
         }
-        Assert.assertTrue("Actual result does not contain all wanted approved OIDs", actual.containsAll(wanted));
-        Assert.assertTrue("Wanted result contains more approved OIDs than actual", wanted.containsAll(actual));
+        Assertions.assertTrue(actual.containsAll(wanted), "Actual result does not contain all wanted approved OIDs");
+        Assertions.assertTrue(wanted.containsAll(actual), "Wanted result contains more approved OIDs than actual");
     }
 
     private SijoitteluajoWrapper createSijoitteluajoWrapper(List<Hakukohde> hakukohteet) {

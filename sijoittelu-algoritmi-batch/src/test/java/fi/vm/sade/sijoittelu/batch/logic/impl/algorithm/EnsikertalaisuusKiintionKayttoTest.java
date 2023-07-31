@@ -1,7 +1,7 @@
 package fi.vm.sade.sijoittelu.batch.logic.impl.algorithm;
 
 import fi.vm.sade.sijoittelu.domain.Tasasijasaanto;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoitusAjoBuilder.*;
 

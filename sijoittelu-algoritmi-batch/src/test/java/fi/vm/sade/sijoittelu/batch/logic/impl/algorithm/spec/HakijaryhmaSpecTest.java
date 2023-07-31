@@ -23,8 +23,8 @@ import fi.vm.sade.sijoittelu.domain.SijoitteluAjo;
 import fi.vm.sade.sijoittelu.domain.ValintatuloksenTila;
 import fi.vm.sade.sijoittelu.domain.Valintatulos;
 import fi.vm.sade.valintalaskenta.domain.dto.valintatieto.HakuDTO;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -73,12 +73,12 @@ public class HakijaryhmaSpecTest extends SijoitteluTestSpec {
         HakemusWrapper hakemusWrapperTokaHakukohde = tokaHakukohde.hakukohteenHakemukset().filter(h -> h.getHakemus().getHakemusOid().equals(HAKEMUS_OID)).findAny().get();
 
         // Ylemmässä hakukohteessa ei vastaanottoa hakemukselle ja hakemus varalla
-        Assert.assertEquals(HakemuksenTila.HYVAKSYTTY, hakemusWrapperEkaHakukohde.getHakemus().getTila());
-        Assert.assertEquals(ValintatuloksenTila.EHDOLLISESTI_VASTAANOTTANUT, valintatulos.getTila());
+        Assertions.assertEquals(HakemuksenTila.HYVAKSYTTY, hakemusWrapperEkaHakukohde.getHakemus().getTila());
+        Assertions.assertEquals(ValintatuloksenTila.EHDOLLISESTI_VASTAANOTTANUT, valintatulos.getTila());
 
         // Alemmassa hakukohteessa hyväksytty & ehdollisesti vastaanottanut
-        Assert.assertEquals(HakemuksenTila.VARALLA, hakemusWrapperTokaHakukohde.getHakemus().getTila());
-        Assert.assertEquals(ValintatuloksenTila.KESKEN, kesken.getTila());
+        Assertions.assertEquals(HakemuksenTila.VARALLA, hakemusWrapperTokaHakukohde.getHakemus().getTila());
+        Assertions.assertEquals(ValintatuloksenTila.KESKEN, kesken.getTila());
 
     }
 

@@ -66,12 +66,6 @@
 			<groupId>com.squareup.okhttp3</groupId>
 			<artifactId>mockwebserver</artifactId>
 			<scope>test</scope>
-			<exclusions>
-				<exclusion>
-					<groupId>junit</groupId>
-					<artifactId>junit</artifactId>
-				</exclusion>
-			</exclusions>
 		</dependency>
 		<!-- internal -->
 		<dependency>
@@ -102,6 +96,10 @@
 				<exclusion>
 					<groupId>org.jasig.cas.client</groupId>
 					<artifactId>cas-client-core</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>junit</groupId>
+					<artifactId>junit</artifactId>
 				</exclusion>
 				<exclusion>
 					<groupId>fi.vm.sade.valintaperusteet</groupId>
@@ -225,8 +223,8 @@
 
 		<!-- Tests -->
 		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
+			<groupId>org.junit.jupiter</groupId>
+			<artifactId>junit-jupiter-api</artifactId>
 			<scope>test</scope>
 		</dependency>
 		<dependency>

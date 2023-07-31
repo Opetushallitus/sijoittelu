@@ -10,8 +10,8 @@ import fi.vm.sade.sijoittelu.domain.Hakukohde;
 import fi.vm.sade.sijoittelu.domain.SijoitteluAjo;
 import fi.vm.sade.sijoittelu.domain.ValintatuloksenTila;
 import fi.vm.sade.sijoittelu.domain.Valintatulos;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -63,7 +63,7 @@ public class SijoitteluajoWrapperHashTest {
             valintatulos1.setTila(v0, "");
             hashes.add(ajo.asHash());
         }
-        Assert.assertFalse(hashes.contains(h0));
+        Assertions.assertFalse(hashes.contains(h0));
 
     }
 

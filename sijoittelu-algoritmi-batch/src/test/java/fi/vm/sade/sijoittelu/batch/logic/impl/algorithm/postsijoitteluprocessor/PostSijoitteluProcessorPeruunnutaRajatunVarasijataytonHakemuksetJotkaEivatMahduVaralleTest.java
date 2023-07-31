@@ -2,8 +2,6 @@ package fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.postsijoitteluprocessor
 
 import static fi.vm.sade.sijoittelu.domain.HakemuksenTila.*;
 import static fi.vm.sade.sijoittelu.domain.Tasasijasaanto.YLITAYTTO;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.helper.HakuBuilder.HakemusBuilder;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.helper.HakuBuilder.HakukohdeBuilder;
@@ -13,8 +11,9 @@ import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.SijoitteluajoWr
 import fi.vm.sade.sijoittelu.domain.Hakemus;
 import fi.vm.sade.sijoittelu.domain.Hakukohde;
 import fi.vm.sade.sijoittelu.domain.Valintatapajono;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
@@ -42,11 +41,11 @@ public class PostSijoitteluProcessorPeruunnutaRajatunVarasijataytonHakemuksetJot
 
     private SijoitteluajoWrapper sijoitteluajoWrapper;
 
-    @Before
+    @BeforeEach
     public void valmisteleSijoitteluajoWrapper() {
         Hakukohde hakukohde = new HakukohdeBuilder("hk1").withValintatapajono(jono).build();
         sijoitteluajoWrapper = new SijoitteluajoWrapperBuilder(Collections.singletonList(hakukohde)).build();
-        assertTrue(sijoitteluajoWrapper.varasijaSaannotVoimassa());
+        Assertions.assertTrue(sijoitteluajoWrapper.varasijaSaannotVoimassa());
     }
 
     @Test
@@ -56,24 +55,24 @@ public class PostSijoitteluProcessorPeruunnutaRajatunVarasijataytonHakemuksetJot
 
         p.process(sijoitteluajoWrapper);
 
-        assertEquals(HYVAKSYTTY, hakemus1.getTila());
-        assertEquals(VARALLA, hakemus2.getTila());
-        assertEquals(VARALLA, hakemus3.getTila());
-        assertEquals(PERUUNTUNUT, hakemus4.getTila());
+        Assertions.assertEquals(HYVAKSYTTY, hakemus1.getTila());
+        Assertions.assertEquals(VARALLA, hakemus2.getTila());
+        Assertions.assertEquals(VARALLA, hakemus3.getTila());
+        Assertions.assertEquals(PERUUNTUNUT, hakemus4.getTila());
     }
 
     @Test
     public void eiTehdaMitaanJonoilleJoillaOnVapaaVarasijataytto() {
         jono.setEiVarasijatayttoa(false);
         jono.setVarasijat(null);
-        assertTrue(jono.vapaaVarasijataytto());
+        Assertions.assertTrue(jono.vapaaVarasijataytto());
 
         p.process(sijoitteluajoWrapper);
 
-        assertEquals(HYVAKSYTTY, hakemus1.getTila());
-        assertEquals(VARALLA, hakemus2.getTila());
-        assertEquals(VARALLA, hakemus3.getTila());
-        assertEquals(VARALLA, hakemus4.getTila());
+        Assertions.assertEquals(HYVAKSYTTY, hakemus1.getTila());
+        Assertions.assertEquals(VARALLA, hakemus2.getTila());
+        Assertions.assertEquals(VARALLA, hakemus3.getTila());
+        Assertions.assertEquals(VARALLA, hakemus4.getTila());
     }
 
     @Test
@@ -84,10 +83,10 @@ public class PostSijoitteluProcessorPeruunnutaRajatunVarasijataytonHakemuksetJot
 
         p.process(sijoitteluajoWrapper);
 
-        assertEquals(HYVAKSYTTY, hakemus1.getTila());
-        assertEquals(VARALLA, hakemus2.getTila());
-        assertEquals(VARALLA, hakemus3.getTila());
-        assertEquals(VARALLA, hakemus4.getTila());
+        Assertions.assertEquals(HYVAKSYTTY, hakemus1.getTila());
+        Assertions.assertEquals(VARALLA, hakemus2.getTila());
+        Assertions.assertEquals(VARALLA, hakemus3.getTila());
+        Assertions.assertEquals(VARALLA, hakemus4.getTila());
     }
 
     @Test
@@ -99,10 +98,10 @@ public class PostSijoitteluProcessorPeruunnutaRajatunVarasijataytonHakemuksetJot
 
         p.process(sijoitteluajoWrapper);
 
-        assertEquals(HYVAKSYTTY, hakemus1.getTila());
-        assertEquals(VARALLA, hakemus2.getTila());
-        assertEquals(VARALLA, hakemus3.getTila());
-        assertEquals(VARALLA, hakemus4.getTila());
+        Assertions.assertEquals(HYVAKSYTTY, hakemus1.getTila());
+        Assertions.assertEquals(VARALLA, hakemus2.getTila());
+        Assertions.assertEquals(VARALLA, hakemus3.getTila());
+        Assertions.assertEquals(VARALLA, hakemus4.getTila());
     }
 
     @Test
@@ -118,9 +117,9 @@ public class PostSijoitteluProcessorPeruunnutaRajatunVarasijataytonHakemuksetJot
 
         p.process(sijoitteluajoWrapper);
 
-        assertEquals(HYVAKSYTTY, hakemus1.getTila());
-        assertEquals(VARALLA, hakemus2.getTila());
-        assertEquals(VARALLA, hakemus3.getTila());
-        assertEquals(PERUUNTUNUT, hakemus4.getTila());
+        Assertions.assertEquals(HYVAKSYTTY, hakemus1.getTila());
+        Assertions.assertEquals(VARALLA, hakemus2.getTila());
+        Assertions.assertEquals(VARALLA, hakemus3.getTila());
+        Assertions.assertEquals(PERUUNTUNUT, hakemus4.getTila());
     }
 }

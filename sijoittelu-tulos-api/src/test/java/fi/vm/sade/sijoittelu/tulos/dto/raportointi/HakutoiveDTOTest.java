@@ -1,13 +1,10 @@
 package fi.vm.sade.sijoittelu.tulos.dto.raportointi;
 
-import fi.vm.sade.sijoittelu.tulos.dto.raportointi.HakutoiveDTO;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.TreeSet;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 public class HakutoiveDTOTest {
 
@@ -19,14 +16,14 @@ public class HakutoiveDTOTest {
     }
 
     private void assertSameOrder(HakutoiveDTO o1, HakutoiveDTO o2) {
-        assertEquals(0, o1.compareTo(o2));
-        assertEquals(0, o2.compareTo(o1));
+        Assertions.assertEquals(0, o1.compareTo(o2));
+        Assertions.assertEquals(0, o2.compareTo(o1));
     }
 
     private void assertFirstIsBefore(HakutoiveDTO o1, HakutoiveDTO o2) {
         int diff = o1.compareTo(o2);
-        assertTrue("diff " + diff + " is not negative", diff < 0);
-        assertEquals(-diff, o2.compareTo(o1));
+        Assertions.assertTrue(diff < 0, "diff " + diff + " is not negative");
+        Assertions.assertEquals(-diff, o2.compareTo(o1));
     }
 
     @Test
@@ -87,6 +84,6 @@ public class HakutoiveDTOTest {
         HakutoiveDTO o5 = createHakutoive(1, "oid3");
         HakutoiveDTO o6 = createHakutoive(2, null);
         HakutoiveDTO o7 = createHakutoive(null, null);
-        assertEquals(new TreeSet(Arrays.asList(o2, o5, o6, o1, o4, o7)), new TreeSet(Arrays.asList(o1, o2, o3, o4, o5, o6, o7)));
+        Assertions.assertEquals(new TreeSet(Arrays.asList(o2, o5, o6, o1, o4, o7)), new TreeSet(Arrays.asList(o1, o2, o3, o4, o5, o6, o7)));
     }
 }

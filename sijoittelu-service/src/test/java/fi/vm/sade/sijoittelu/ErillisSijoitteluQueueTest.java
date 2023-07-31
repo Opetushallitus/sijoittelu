@@ -1,15 +1,9 @@
 package fi.vm.sade.sijoittelu;
 
 import fi.vm.sade.sijoittelu.laskenta.resource.ErillisSijoitteluQueue;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.JUnit4;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
-@RunWith(JUnit4.class)
 public class ErillisSijoitteluQueueTest {
 
     @Test
@@ -23,30 +17,30 @@ public class ErillisSijoitteluQueueTest {
         long id3 = queue.queueNewErillissijoittelu(haku1);
         long id4 = queue.queueNewErillissijoittelu(haku2);
 
-        assertTrue(queue.isOkToStartErillissijoittelu(haku1, id1));
-        assertFalse(queue.isOkToStartErillissijoittelu(haku1, id2));
-        assertFalse(queue.isOkToStartErillissijoittelu(haku1, id3));
+        Assertions.assertTrue(queue.isOkToStartErillissijoittelu(haku1, id1));
+        Assertions.assertFalse(queue.isOkToStartErillissijoittelu(haku1, id2));
+        Assertions.assertFalse(queue.isOkToStartErillissijoittelu(haku1, id3));
 
-        assertTrue(queue.isOkToStartErillissijoittelu(haku2, id4));
+        Assertions.assertTrue(queue.isOkToStartErillissijoittelu(haku2, id4));
 
-        assertTrue(queue.erillissijoitteluDone(haku1, id1));
+        Assertions.assertTrue(queue.erillissijoitteluDone(haku1, id1));
 
-        assertFalse(queue.isOkToStartErillissijoittelu(haku1, id3));
-        assertTrue(queue.isOkToStartErillissijoittelu(haku1, id2));
+        Assertions.assertFalse(queue.isOkToStartErillissijoittelu(haku1, id3));
+        Assertions.assertTrue(queue.isOkToStartErillissijoittelu(haku1, id2));
 
         long id5 = queue.queueNewErillissijoittelu(haku2);
-        assertFalse(queue.isOkToStartErillissijoittelu(haku2, id5));
+        Assertions.assertFalse(queue.isOkToStartErillissijoittelu(haku2, id5));
 
-        assertTrue(queue.erillissijoitteluDone(haku1, id2));
-        assertFalse(queue.erillissijoitteluDone(haku1, id2));
+        Assertions.assertTrue(queue.erillissijoitteluDone(haku1, id2));
+        Assertions.assertFalse(queue.erillissijoitteluDone(haku1, id2));
 
-        assertTrue(queue.isOkToStartErillissijoittelu(haku1, id3));
-        assertFalse(queue.isOkToStartErillissijoittelu(haku2, id5));
-        assertTrue(queue.erillissijoitteluDone(haku1, id3));
+        Assertions.assertTrue(queue.isOkToStartErillissijoittelu(haku1, id3));
+        Assertions.assertFalse(queue.isOkToStartErillissijoittelu(haku2, id5));
+        Assertions.assertTrue(queue.erillissijoitteluDone(haku1, id3));
 
         long id6 = queue.queueNewErillissijoittelu(haku1);
-        assertTrue(queue.isOkToStartErillissijoittelu(haku1, id6));
-        assertFalse(queue.isOkToStartErillissijoittelu(haku2, id6));
-        assertFalse(queue.isOkToStartErillissijoittelu(haku1, id1));
+        Assertions.assertTrue(queue.isOkToStartErillissijoittelu(haku1, id6));
+        Assertions.assertFalse(queue.isOkToStartErillissijoittelu(haku2, id6));
+        Assertions.assertFalse(queue.isOkToStartErillissijoittelu(haku1, id1));
     }
 }

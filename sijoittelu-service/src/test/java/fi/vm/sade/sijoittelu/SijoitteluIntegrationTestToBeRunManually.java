@@ -2,8 +2,6 @@ package fi.vm.sade.sijoittelu;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.not;
-import static org.junit.Assert.assertThat;
-import com.lordofthejars.nosqlunit.annotation.UsingDataSet;
 import com.mongodb.MongoClientURI;
 
 import fi.vm.sade.service.valintaperusteet.dto.ValintatapajonoDTO;
@@ -32,16 +30,17 @@ import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.HttpClientBuilder;
-import org.junit.Assert;
-import org.junit.Ignore;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.hamcrest.MatcherAssert;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.util.StopWatch;
 
 import java.io.IOException;
@@ -73,9 +72,8 @@ import java.util.stream.Collectors;
  * @see fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.hakukohteet.SijoitteleHakijaryhmaTest
  */
 @ContextConfiguration(locations = "classpath:test-sijoittelu-batch-real-valintalaskenta-mongo.xml")
-@RunWith(SpringJUnit4ClassRunner.class)
-@UsingDataSet
-@Ignore
+@ExtendWith(SpringExtension.class)
+@Disabled
 public class SijoitteluIntegrationTestToBeRunManually {
     private static final Duration SIJOITTELU_STATE_POLL_INTERVAL = Duration.ofSeconds(30);
 
@@ -107,9 +105,9 @@ public class SijoitteluIntegrationTestToBeRunManually {
         LOG.info("Käytetään valintalaskentadb:tä klusterista " + mongoClientURI.getHosts());
         startSijoitteluAndPollUntilFinished();
         SijoitteluajoWrapper sijoitteluajoWrapper = lightWeightSijoitteluBusinessServiceForTesting.ajettuSijoittelu;
-        assertThat(sijoitteluajoWrapper.getHakukohteet(), not(hasSize(0)));
-        assertThat(sijoitteluajoWrapper.getHakukohteet().get(0).getValintatapajonot(), not(hasSize(0)));
-        assertThat(sijoitteluajoWrapper.getHakukohteet().get(0).getValintatapajonot().get(0).getHakemukset(), not(hasSize(0)));
+        MatcherAssert.assertThat(sijoitteluajoWrapper.getHakukohteet(), not(hasSize(0)));
+        MatcherAssert.assertThat(sijoitteluajoWrapper.getHakukohteet().get(0).getValintatapajonot(), not(hasSize(0)));
+        MatcherAssert.assertThat(sijoitteluajoWrapper.getHakukohteet().get(0).getValintatapajonot().get(0).getHakemukset(), not(hasSize(0)));
 
         HakemusWrapper hakemusWrapper = findHakemusWrapper("1.2.246.562.20.33533744802", "1524747206010-8585833911442146692", "1.2.246.562.11.00012790612");
         System.out.println("hakemusWrapper = " + hakemusWrapper);
@@ -147,7 +145,7 @@ public class SijoitteluIntegrationTestToBeRunManually {
         int timeoutMillis = 1500;
         CloseableHttpResponse response = HttpClientBuilder.create().setDefaultRequestConfig(
             RequestConfig.custom().setRedirectsEnabled(false).setConnectionRequestTimeout(timeoutMillis).setConnectTimeout(timeoutMillis).build()).build().execute(request);
-        Assert.assertEquals(IOUtils.toString(response.getEntity().getContent(), "UTF-8"), HttpStatus.SC_OK, response.getStatusLine().getStatusCode());
+        Assertions.assertEquals(HttpStatus.SC_OK, response.getStatusLine().getStatusCode(), IOUtils.toString(response.getEntity().getContent(), "UTF-8"));
     }
 
     public static class LightWeightSijoitteluBusinessServiceForTesting extends SijoitteluBusinessService {

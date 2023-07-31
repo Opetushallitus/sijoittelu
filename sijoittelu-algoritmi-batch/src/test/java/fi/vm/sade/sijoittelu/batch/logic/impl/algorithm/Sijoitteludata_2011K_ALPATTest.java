@@ -4,8 +4,8 @@ import fi.vm.sade.sijoittelu.batch.logic.impl.DomainConverter;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.util.SijoitteluAlgorithmUtil;
 import fi.vm.sade.sijoittelu.domain.Hakukohde;
 import fi.vm.sade.valintalaskenta.domain.dto.valintatieto.HakuDTO;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -32,7 +32,7 @@ public class Sijoitteludata_2011K_ALPATTest {
 	 * @throws IOException
 	 * 
 	 * */
-	@Test     	@Ignore
+	@Test     	@Disabled
 	public void testSijoittele() throws IOException {
 		// tee sijoittelu
 		HakuDTO t = csvToDomain("testdata/sijoitteludata_2011K_ALPAT.csv");
@@ -100,7 +100,7 @@ public class Sijoitteludata_2011K_ALPATTest {
 	 * @throws IOException
 	 */
 	@Test
-    @Ignore
+    @Disabled
 	public void testToXml() throws IOException {
         HakuDTO st = this.csvToDomain("testdata/sijoitteludata_2011K_ALPAT.csv");
 		String s = TestHelper.objectsToXml(st);

@@ -4,10 +4,10 @@ import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.helper.HakuBuilder;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.SijoitteluajoWrapper;
 import fi.vm.sade.sijoittelu.domain.Hakemus;
 import fi.vm.sade.sijoittelu.domain.Hakukohde;
-import fi.vm.sade.sijoittelu.domain.Tasasijasaanto;
 import fi.vm.sade.sijoittelu.domain.Valintatapajono;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -17,7 +17,6 @@ import java.util.Date;
 import static fi.vm.sade.sijoittelu.domain.HakemuksenTila.*;
 import static fi.vm.sade.sijoittelu.domain.Tasasijasaanto.ARVONTA;
 import static fi.vm.sade.sijoittelu.domain.Tasasijasaanto.YLITAYTTO;
-import static org.junit.Assert.*;
 
 public class PostSijoitteluProcessorPeruunnutaYlijaaneetVarallaTilaisetJosVarasijatayttoOnPaattynytTest {
     private final PostSijoitteluProcessorPeruunnutaYlijaaneetVarallaTilaisetJosVarasijatayttoOnPaattynyt p = new PostSijoitteluProcessorPeruunnutaYlijaaneetVarallaTilaisetJosVarasijatayttoOnPaattynyt();
@@ -61,13 +60,13 @@ public class PostSijoitteluProcessorPeruunnutaYlijaaneetVarallaTilaisetJosVarasi
 
     private SijoitteluajoWrapper sijoitteluajoWrapper;
 
-    @Before
+    @BeforeEach
     public void valmisteleSijoitteluajoWrapper() {
         Hakukohde hakukohde = new HakuBuilder.HakukohdeBuilder("hk1").withValintatapajono(jono).withValintatapajono(jono2).build();
         sijoitteluajoWrapper = new HakuBuilder.SijoitteluajoWrapperBuilder(Collections.singletonList(hakukohde)).build();
         sijoitteluajoWrapper.getSijoitteluajo().setSijoitteluajoId(1234567L);
         sijoitteluajoWrapper.setVarasijaSaannotAstuvatVoimaan(LocalDateTime.now().minusDays(2));
-        assertTrue(sijoitteluajoWrapper.varasijaSaannotVoimassa());
+        Assertions.assertTrue(sijoitteluajoWrapper.varasijaSaannotVoimassa());
     }
 
     @Test
@@ -80,11 +79,11 @@ public class PostSijoitteluProcessorPeruunnutaYlijaaneetVarallaTilaisetJosVarasi
 
         p.process(sijoitteluajoWrapper);
 
-        assertTrue(PERUUNTUNUT.equals(hakemus3.getTila()));
-        assertTrue(PERUUNTUNUT.equals(hakemus4.getTila()));
+        Assertions.assertTrue(PERUUNTUNUT.equals(hakemus3.getTila()));
+        Assertions.assertTrue(PERUUNTUNUT.equals(hakemus4.getTila()));
 
-        assertTrue(VARALLA.equals(hakemus13.getTila()));
-        assertTrue(VARALLA.equals(hakemus14.getTila()));
+        Assertions.assertTrue(VARALLA.equals(hakemus13.getTila()));
+        Assertions.assertTrue(VARALLA.equals(hakemus14.getTila()));
     }
 
     @Test
@@ -94,10 +93,10 @@ public class PostSijoitteluProcessorPeruunnutaYlijaaneetVarallaTilaisetJosVarasi
 
         p.process(sijoitteluajoWrapper);
 
-        assertTrue(VARALLA.equals(hakemus3.getTila()));
-        assertTrue(VARALLA.equals(hakemus4.getTila()));
+        Assertions.assertTrue(VARALLA.equals(hakemus3.getTila()));
+        Assertions.assertTrue(VARALLA.equals(hakemus4.getTila()));
 
-        assertTrue(VARALLA.equals(hakemus13.getTila()));
-        assertTrue(VARALLA.equals(hakemus14.getTila()));
+        Assertions.assertTrue(VARALLA.equals(hakemus13.getTila()));
+        Assertions.assertTrue(VARALLA.equals(hakemus14.getTila()));
     }
 }

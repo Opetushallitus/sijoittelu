@@ -11,12 +11,11 @@ import fi.vm.sade.sijoittelu.domain.HakemuksenTila;
 import fi.vm.sade.sijoittelu.domain.Hakemus;
 import fi.vm.sade.sijoittelu.domain.Hakukohde;
 import fi.vm.sade.sijoittelu.domain.Valintatapajono;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
-
 
 public class PreSijoitteluProcessorPidaPeruuntuneinaSivssnovHakemuksetRajatunVarasijataytonJonoissaTest extends SijoitteluTestSpec {
     private final PreSijoitteluProcessorPidaPeruuntuneinaSivssnovHakemuksetRajatunVarasijataytonJonoissa p =
@@ -37,7 +36,7 @@ public class PreSijoitteluProcessorPidaPeruuntuneinaSivssnovHakemuksetRajatunVar
 
     private SijoitteluajoWrapper sijoitteluajoWrapper;
 
-    @Before
+    @BeforeEach
     public void valmisteleSijoitteluajoWrapper() {
         Hakukohde hakukohde = new HakukohdeBuilder("hk1").withValintatapajono(jono).build();
         sijoitteluajoWrapper = new SijoitteluajoWrapperBuilder(Collections.singletonList(hakukohde)).build();
@@ -47,53 +46,53 @@ public class PreSijoitteluProcessorPidaPeruuntuneinaSivssnovHakemuksetRajatunVar
     public void testEiKoskeValintatapajonoihinJoissaOnVapaaVarasijataytto()  {
         jono.setEiVarasijatayttoa(false);
         jono.setVarasijat(0);
-        Assert.assertTrue(jono.vapaaVarasijataytto());
+        Assertions.assertTrue(jono.vapaaVarasijataytto());
 
         p.process(sijoitteluajoWrapper);
-        Assert.assertEquals(HakemuksenTila.VARALLA, hakemusVaralla.getTila());
-        Assert.assertEquals(HakemuksenTila.VARALLA, peruuntunutHakemus.getTila());
+        Assertions.assertEquals(HakemuksenTila.VARALLA, hakemusVaralla.getTila());
+        Assertions.assertEquals(HakemuksenTila.VARALLA, peruuntunutHakemus.getTila());
     }
 
     @Test
     public void testEiKoskeJonoihinJoitaEiOleSijoiteltuIlmanVarasijasaantojaNiidenOllessaVoimassa() {
         jono.setEiVarasijatayttoa(true);
-        Assert.assertFalse(jono.vapaaVarasijataytto());
+        Assertions.assertFalse(jono.vapaaVarasijataytto());
         jono.setSijoiteltuIlmanVarasijasaantojaNiidenOllessaVoimassa(false);
 
         p.process(sijoitteluajoWrapper);
-        Assert.assertEquals(HakemuksenTila.VARALLA, hakemusVaralla.getTila());
-        Assert.assertEquals(HakemuksenTila.VARALLA, peruuntunutHakemus.getTila());
+        Assertions.assertEquals(HakemuksenTila.VARALLA, hakemusVaralla.getTila());
+        Assertions.assertEquals(HakemuksenTila.VARALLA, peruuntunutHakemus.getTila());
     }
 
     @Test
     public void sailyttaaPeruuntuneetHakemuksetPeruuntuneinaSivssnovJonoissaIlmanVarasijatayttoa() {
         jono.setEiVarasijatayttoa(true);
-        Assert.assertFalse(jono.vapaaVarasijataytto());
+        Assertions.assertFalse(jono.vapaaVarasijataytto());
 
         p.process(sijoitteluajoWrapper);
-        Assert.assertEquals(HakemuksenTila.VARALLA, hakemusVaralla.getTila());
-        Assert.assertEquals(HakemuksenTila.PERUUNTUNUT, peruuntunutHakemus.getTila());
+        Assertions.assertEquals(HakemuksenTila.VARALLA, hakemusVaralla.getTila());
+        Assertions.assertEquals(HakemuksenTila.PERUUNTUNUT, peruuntunutHakemus.getTila());
 
         HakemusWrapper peruuntuneenHakemuksenWrapper = sijoitteluajoWrapper.getHakukohteet().get(0)
             .getValintatapajonot().get(0).getHakemukset().stream().filter(h ->
                 h.getHakemus().getHakemusOid().equals(peruuntunutHakemus.getHakemusOid())).findFirst().get();
-        Assert.assertFalse(peruuntuneenHakemuksenWrapper.isTilaVoidaanVaihtaa());
+        Assertions.assertFalse(peruuntuneenHakemuksenWrapper.isTilaVoidaanVaihtaa());
     }
 
     @Test
     public void sailyttaaPeruuntuneetHakemuksetPeruuntuneinaSivssnovJonoissaJoissaVarasijatayttoOnRajattu() {
         jono.setEiVarasijatayttoa(false);
         jono.setVarasijat(7);
-        Assert.assertTrue(jono.rajoitettuVarasijaTaytto());
-        Assert.assertFalse(jono.vapaaVarasijataytto());
+        Assertions.assertTrue(jono.rajoitettuVarasijaTaytto());
+        Assertions.assertFalse(jono.vapaaVarasijataytto());
 
         p.process(sijoitteluajoWrapper);
-        Assert.assertEquals(HakemuksenTila.VARALLA, hakemusVaralla.getTila());
-        Assert.assertEquals(HakemuksenTila.PERUUNTUNUT, peruuntunutHakemus.getTila());
+        Assertions.assertEquals(HakemuksenTila.VARALLA, hakemusVaralla.getTila());
+        Assertions.assertEquals(HakemuksenTila.PERUUNTUNUT, peruuntunutHakemus.getTila());
 
         HakemusWrapper peruuntuneenHakemuksenWrapper = sijoitteluajoWrapper.getHakukohteet().get(0)
             .getValintatapajonot().get(0).getHakemukset().stream().filter(h ->
                 h.getHakemus().getHakemusOid().equals(peruuntunutHakemus.getHakemusOid())).findFirst().get();
-        Assert.assertFalse(peruuntuneenHakemuksenWrapper.isTilaVoidaanVaihtaa());
+        Assertions.assertFalse(peruuntuneenHakemuksenWrapper.isTilaVoidaanVaihtaa());
     }
 }

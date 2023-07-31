@@ -1,7 +1,5 @@
 package fi.vm.sade.sijoittelu;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -35,8 +33,9 @@ import fi.vm.sade.valintalaskenta.domain.dto.JarjestyskriteerituloksenTilaDTO;
 import fi.vm.sade.valintalaskenta.domain.dto.valintatieto.HakuDTO;
 import fi.vm.sade.valintalaskenta.domain.dto.valintatieto.ValintatietoValinnanvaiheDTO;
 import fi.vm.sade.valintalaskenta.domain.dto.valintatieto.ValintatietoValintatapajonoDTO;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 
 import java.time.Duration;
@@ -60,7 +59,7 @@ public class SijoitteluTilatJaKuvauksetTest {
     private VirkailijaValintaTulosServiceResource valintaTulosServiceResource;
     private ValintarekisteriService valintarekisteriService;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         sijoitteluTulosConverter = new SijoitteluTulosConverterImpl();
         actorService = mock(ActorService.class);
@@ -98,9 +97,9 @@ public class SijoitteluTilatJaKuvauksetTest {
 
         AssertFunction assertFunction = (sijoitteluajo, hakukohteet, valintatulokset) -> {
             Hakemus hakemus = hakukohteet.get(0).getValintatapajonot().get(0).getHakemukset().get(0);
-            assertEquals("peruuntunuthakija", hakemus.getHakijaOid());
-            assertEquals(HakemuksenTila.PERUUNTUNUT, hakemus.getTila());
-            assertEquals("Peruuntunut, pisteesi eivät riittäneet varasijaan", hakemus.getTilanKuvaukset().get("FI"));
+            Assertions.assertEquals("peruuntunuthakija", hakemus.getHakijaOid());
+            Assertions.assertEquals(HakemuksenTila.PERUUNTUNUT, hakemus.getTila());
+            Assertions.assertEquals("Peruuntunut, pisteesi eivät riittäneet varasijaan", hakemus.getTilanKuvaukset().get("FI"));
             return true;
         };
 
@@ -115,9 +114,9 @@ public class SijoitteluTilatJaKuvauksetTest {
 
         AssertFunction assertFunction = (sijoitteluajo, hakukohteet, valintatulokset) -> {
             Hakemus hakemus = hakukohteet.get(0).getValintatapajonot().get(0).getHakemukset().get(0);
-            assertEquals("peruuntunuthakija", hakemus.getHakijaOid());
-            assertEquals(HakemuksenTila.PERUNUT, hakemus.getTila());
-            assertTrue(hakemus.getTilanKuvaukset().isEmpty());
+            Assertions.assertEquals("peruuntunuthakija", hakemus.getHakijaOid());
+            Assertions.assertEquals(HakemuksenTila.PERUNUT, hakemus.getTila());
+            Assertions.assertTrue(hakemus.getTilanKuvaukset().isEmpty());
             return true;
         };
 
@@ -138,11 +137,11 @@ public class SijoitteluTilatJaKuvauksetTest {
 
         AssertFunction assertFunction = (sijoitteluajo, hakukohteet, valintatulokset) -> {
             Hakemus hakemus = hakukohteet.get(0).getValintatapajonot().get(0).getHakemukset().get(0);
-            assertEquals("peruuntunuthakija", hakemus.getHakijaOid());
-            assertEquals(HakemuksenTila.HYLATTY, hakemus.getTila());
-            assertEquals("Ei hakukelpoinen", hakemus.getTilanKuvaukset().get("FI"));
-            assertEquals("Inte ansökningsbehörig", hakemus.getTilanKuvaukset().get("SV"));
-            assertEquals("Not eligible", hakemus.getTilanKuvaukset().get("EN"));
+            Assertions.assertEquals("peruuntunuthakija", hakemus.getHakijaOid());
+            Assertions.assertEquals(HakemuksenTila.HYLATTY, hakemus.getTila());
+            Assertions.assertEquals("Ei hakukelpoinen", hakemus.getTilanKuvaukset().get("FI"));
+            Assertions.assertEquals("Inte ansökningsbehörig", hakemus.getTilanKuvaukset().get("SV"));
+            Assertions.assertEquals("Not eligible", hakemus.getTilanKuvaukset().get("EN"));
             return true;
         };
 

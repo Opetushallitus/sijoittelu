@@ -6,9 +6,10 @@ import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.util.SijoitteluAlgorithm
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.HakukohdeWrapper;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.SijoitteluajoWrapper;
 import fi.vm.sade.sijoittelu.domain.*;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.hamcrest.MatcherAssert;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -37,7 +38,7 @@ public class SijoitteleHakukohdeLisapaikatTest {
 
     private SijoitteluajoWrapper ajoWrapper;
 
-    @Before
+    @BeforeEach
     public void valmisteleSijoitteluajoWrapper() {
         hakijaryhma = new Hakijaryhma();
         hakijaryhma.setOid(hakijaryhmaOid);
@@ -115,17 +116,17 @@ public class SijoitteleHakukohdeLisapaikatTest {
         HakukohdeWrapper hakukohdeWrapper = ajoWrapper.getHakukohteet().get(0);
         ajoWrapper.setLisapaikkaTapa(LisapaikkaTapa.TAPA1);
 
-        Assert.assertThat(parempiHakemus1EiHakijarymaa, hasTila(VARALLA));
-        Assert.assertThat(parempiHakemus2EiHakijarymaa, hasTila(VARALLA));
+        MatcherAssert.assertThat(parempiHakemus1EiHakijarymaa, hasTila(VARALLA));
+        MatcherAssert.assertThat(parempiHakemus2EiHakijarymaa, hasTila(VARALLA));
 
         SijoitteleHakukohde.sijoitteleHakukohde(ajoWrapper, hakukohdeWrapper);
 
         int hyvaksyttyjaJonossaB = (int) hakemuksetHakijaryhmaYlitayttyvassaJonossa.stream().filter(hw -> hw.getTila().equals(HYVAKSYTTY)).count();
         int hakijaryhmastaHyvaksyttyjaJonossaB = (int) hakemuksetHakijaryhmaYlitayttyvassaJonossa.stream().filter(hw -> !hw.getHyvaksyttyHakijaryhmista().isEmpty()).count();
-        Assert.assertEquals(9, hyvaksyttyjaJonossaB);
-        Assert.assertEquals(7, hakijaryhmastaHyvaksyttyjaJonossaB);
-        Assert.assertThat(parempiHakemus1EiHakijarymaa, hasTila(HYVAKSYTTY));
-        Assert.assertThat(parempiHakemus2EiHakijarymaa, hasTila(HYVAKSYTTY));
+        Assertions.assertEquals(9, hyvaksyttyjaJonossaB);
+        Assertions.assertEquals(7, hakijaryhmastaHyvaksyttyjaJonossaB);
+        MatcherAssert.assertThat(parempiHakemus1EiHakijarymaa, hasTila(HYVAKSYTTY));
+        MatcherAssert.assertThat(parempiHakemus2EiHakijarymaa, hasTila(HYVAKSYTTY));
     }
 
     @Test
@@ -171,11 +172,11 @@ public class SijoitteleHakukohdeLisapaikatTest {
         int hyvaksyttyjaJonossaB = (int) hakemuksetHakijaryhmaYlitayttyvassaJonossa.stream().filter(hw -> hw.getTila().equals(HYVAKSYTTY)).count();
         int hakijaryhmastaHyvaksyttyjaJonossaB = (int) hakemuksetHakijaryhmaYlitayttyvassaJonossa.stream().filter(hw -> !hw.getHyvaksyttyHakijaryhmista().isEmpty()).count();
 
-        Assert.assertEquals(7, hyvaksyttyjaJonossaB);
-        Assert.assertEquals(7, hakijaryhmastaHyvaksyttyjaJonossaB);
+        Assertions.assertEquals(7, hyvaksyttyjaJonossaB);
+        Assertions.assertEquals(7, hakijaryhmastaHyvaksyttyjaJonossaB);
 
-        Assert.assertThat(heikompiHakemus1EiHakijarymaa, hasTila(VARALLA));
-        Assert.assertThat(heikompiHakemus2EiHakijarymaa, hasTila(VARALLA));
+        MatcherAssert.assertThat(heikompiHakemus1EiHakijarymaa, hasTila(VARALLA));
+        MatcherAssert.assertThat(heikompiHakemus2EiHakijarymaa, hasTila(VARALLA));
 
     }
 
@@ -184,16 +185,16 @@ public class SijoitteleHakukohdeLisapaikatTest {
         HakukohdeWrapper hakukohdeWrapper = ajoWrapper.getHakukohteet().get(0);
         //ajoWrapper.setLisapaikkaTapa(LisapaikkaTapa.EI_KAYTOSSA); voitaisiin asettaa tämä, mutta on jo defaulttina EI_KAYTOSSA
 
-        Assert.assertThat(parempiHakemus1EiHakijarymaa, hasTila(VARALLA));
-        Assert.assertThat(parempiHakemus2EiHakijarymaa, hasTila(VARALLA));
+        MatcherAssert.assertThat(parempiHakemus1EiHakijarymaa, hasTila(VARALLA));
+        MatcherAssert.assertThat(parempiHakemus2EiHakijarymaa, hasTila(VARALLA));
 
         SijoitteleHakukohde.sijoitteleHakukohde(ajoWrapper, hakukohdeWrapper);
 
         int hyvaksyttyjaJonossaB = (int) hakemuksetHakijaryhmaYlitayttyvassaJonossa.stream().filter(hw -> hw.getTila().equals(HYVAKSYTTY)).count();
         int hakijaryhmastaHyvaksyttyjaJonossaB = (int) hakemuksetHakijaryhmaYlitayttyvassaJonossa.stream().filter(hw -> !hw.getHyvaksyttyHakijaryhmista().isEmpty()).count();
-        Assert.assertEquals(7, hyvaksyttyjaJonossaB);
-        Assert.assertEquals(7, hakijaryhmastaHyvaksyttyjaJonossaB);
-        Assert.assertThat(parempiHakemus1EiHakijarymaa, hasTila(VARALLA));
-        Assert.assertThat(parempiHakemus2EiHakijarymaa, hasTila(VARALLA));
+        Assertions.assertEquals(7, hyvaksyttyjaJonossaB);
+        Assertions.assertEquals(7, hakijaryhmastaHyvaksyttyjaJonossaB);
+        MatcherAssert.assertThat(parempiHakemus1EiHakijarymaa, hasTila(VARALLA));
+        MatcherAssert.assertThat(parempiHakemus2EiHakijarymaa, hasTila(VARALLA));
     }
 }
