@@ -17,3 +17,6 @@ bower_components
 .DS_Store
 .~lock*
 .java-version
+
+# tänne talletetaan lokaalin setupin hahtuva-salasanat
+sijoittelu-service/src/test/resources/application-dev.properties

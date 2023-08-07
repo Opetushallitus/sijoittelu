@@ -4,10 +4,7 @@ import fi.vm.sade.javautils.nio.cas.CasClient;
 import fi.vm.sade.javautils.opintopolku_spring_security.Authorizer;
 import fi.vm.sade.service.valintaperusteet.resource.ValintaperusteetResource;
 import fi.vm.sade.service.valintaperusteet.resource.ValintaperusteetResourceV2;
-import fi.vm.sade.sijoittelu.laskenta.configuration.AccessLogConfiguration;
-import fi.vm.sade.sijoittelu.laskenta.configuration.ExternalConfiguration;
-import fi.vm.sade.sijoittelu.laskenta.configuration.SecurityConfiguration;
-import fi.vm.sade.sijoittelu.laskenta.configuration.SijoitteluServiceConfiguration;
+import fi.vm.sade.sijoittelu.laskenta.configuration.*;
 import fi.vm.sade.sijoittelu.laskenta.external.resource.*;
 import fi.vm.sade.sijoittelu.laskenta.mapping.SijoitteluModelMapper;
 import fi.vm.sade.sijoittelu.laskenta.service.business.ValintarekisteriService;
@@ -32,6 +29,7 @@ import org.springframework.context.annotation.*;
                 AccessLogConfiguration.class,
                 ExternalConfiguration.class,
                 SecurityConfiguration.class,
+                PropertyConfiguration.class,
                 SijoitteluServiceConfiguration.class})})
 public class TestConfiguration {
 
