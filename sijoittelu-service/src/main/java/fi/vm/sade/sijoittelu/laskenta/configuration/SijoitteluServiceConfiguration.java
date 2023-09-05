@@ -21,17 +21,6 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
     "fi.vm.sade.valintalaskenta.tulos.service.impl",
     "fi.vm.sade.valintalaskenta.tulos.service.impl.converters"
 })
-@ImportResource({
-        "classpath:spring/context/application-context-tulos.xml",
-        "file:///${user.home:''}/oph-configuration/security-context-backend.xml"
-})
-@PropertySource(value = {
-    "classpath:sijoittelu-service.properties",
-    "file:///${user.home:''}/oph-configuration/common.properties",
-    "file:///${user.home:''}/oph-configuration/valinta.properties",
-    "file:///${user.home:''}/oph-configuration/sijoittelu-service.properties",
-    "file:///${user.home:''}/oph-configuration/override.properties"
-}, ignoreResourceNotFound = true)
 public class SijoitteluServiceConfiguration {
 
     public static final String CALLER_ID = "1.2.246.562.10.00000000001.sijoittelu.sijoittelu-service";
