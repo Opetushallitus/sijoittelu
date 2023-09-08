@@ -8,10 +8,9 @@ import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.HakukohdeWrappe
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.SijoitteluajoWrapper;
 import fi.vm.sade.sijoittelu.domain.Hakijaryhma;
 import fi.vm.sade.sijoittelu.domain.Hakukohde;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.List;
@@ -35,10 +34,7 @@ public class PreSijoitteluProcessorHylkaaHakijaRyhmaanKuulumattomatTest {
     private SijoitteluajoWrapper sijoitteluajoWrapper = mock(SijoitteluajoWrapper.class);
     private String sijoitteluAjoId = "sijoitteluAjoId";
 
-    @Rule
-    public ExpectedException expected = ExpectedException.none();
-
-    @Before
+    @BeforeEach
     public void setUp() {
         when(sijoitteluajoWrapper.getHakukohteet()).thenReturn(Arrays.asList(kohde1Wrapper, kohde2Wrapper, kohde3Wrapper));
         when(sijoitteluajoWrapper.getSijoitteluAjoId()).thenReturn(sijoitteluAjoId);
@@ -87,13 +83,12 @@ public class PreSijoitteluProcessorHylkaaHakijaRyhmaanKuulumattomatTest {
 
     @Test
     public void kaikkiHakukohteetJoissaOnUseampiHakijaryhmaJossaVainRyhmaanKuuluvatHyvaksytaanListataanKerralla() {
-        expected.expectMessage("(Sijoitteluajo sijoitteluAjoId) 2 hakukohteelle on olemassa useampi kuin yksi hakijaryhmä, " +
-            "josta vain ryhmään kuuluvat olisi tarkoitus hyväksyä. Sijoittelua ei voida suorittaa. Ryhmät: [" +
-            "kohde1Ryhma1Oid (\"Ensimmäisen kohteen ensimmäinen ryhmä\"), hakukohdeOid = kohde1Oid , valintatapajonoOid = null ., " +
-            "kohde1Ryhma2Oid (\"Ensimmäisen kohteen toinen ryhmä\"), hakukohdeOid = kohde1Oid , valintatapajonoOid = null ., " +
-            "kohde3Ryhma1Oid (\"Kolmannen kohteen ensimmäinen ryhmä\"), hakukohdeOid = kohde3Oid , valintatapajonoOid = null ., " +
-            "kohde3Ryhma2Oid (\"Kolmannen kohteen toinen ryhmä\"), hakukohdeOid = kohde3Oid , valintatapajonoOid = null .]");
-        expected.expect(IllegalStateException.class);
-        processor.process(sijoitteluajoWrapper);
+        Exception expected = Assertions.assertThrows(IllegalStateException.class, () -> processor.process(sijoitteluajoWrapper));
+        Assertions.assertEquals("(Sijoitteluajo sijoitteluAjoId) 2 hakukohteelle on olemassa useampi kuin yksi hakijaryhmä, " +
+                "josta vain ryhmään kuuluvat olisi tarkoitus hyväksyä. Sijoittelua ei voida suorittaa. Ryhmät: [" +
+                "kohde1Ryhma1Oid (\"Ensimmäisen kohteen ensimmäinen ryhmä\"), hakukohdeOid = kohde1Oid , valintatapajonoOid = null ., " +
+                "kohde1Ryhma2Oid (\"Ensimmäisen kohteen toinen ryhmä\"), hakukohdeOid = kohde1Oid , valintatapajonoOid = null ., " +
+                "kohde3Ryhma1Oid (\"Kolmannen kohteen ensimmäinen ryhmä\"), hakukohdeOid = kohde3Oid , valintatapajonoOid = null ., " +
+                "kohde3Ryhma2Oid (\"Kolmannen kohteen toinen ryhmä\"), hakukohdeOid = kohde3Oid , valintatapajonoOid = null .]", expected.getMessage());
     }
 }

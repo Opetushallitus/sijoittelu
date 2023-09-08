@@ -6,12 +6,11 @@ import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.SijoitteluajoWr
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.ValintatapajonoWrapper;
 import fi.vm.sade.sijoittelu.domain.HakemuksenTila;
 import fi.vm.sade.sijoittelu.domain.Hakukohde;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
 import java.util.List;
-
-import static org.junit.Assert.*;
 
 public class PrePostSijoitteluProcessorPeruunnaYlemmatHakutoiveetTest {
 
@@ -22,12 +21,12 @@ public class PrePostSijoitteluProcessorPeruunnaYlemmatHakutoiveetTest {
     }
 
     private void assertHakemuksenTila(String hakemusOid, String vtjOid, HakemuksenTila tila, SijoitteluajoWrapper sw) {
-        assertEquals(hakemusOid + " in "+ vtjOid + " should be in state " + tila, true, sw.getHakukohteet().stream()
+        Assertions.assertEquals(true, sw.getHakukohteet().stream()
             .flatMap(hkw -> hkw.getValintatapajonot().stream())
             .map(ValintatapajonoWrapper::getValintatapajono)
             .filter(vtj -> vtj.getOid().equals(vtjOid))
             .flatMap(vtj -> vtj.getHakemukset().stream())
-            .anyMatch(h -> h.getHakemusOid().equals(hakemusOid) && h.getTila() == tila));
+            .anyMatch(h -> h.getHakemusOid().equals(hakemusOid) && h.getTila() == tila), hakemusOid + " in "+ vtjOid + " should be in state " + tila);
     }
 
     private List<Hakukohde> buildHakukohteet() {

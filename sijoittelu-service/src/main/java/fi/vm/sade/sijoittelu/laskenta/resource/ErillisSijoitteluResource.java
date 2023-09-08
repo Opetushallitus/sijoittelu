@@ -1,7 +1,5 @@
 package fi.vm.sade.sijoittelu.laskenta.resource;
 
-import akka.pattern.Patterns;
-import akka.util.Timeout;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -9,14 +7,18 @@ import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonSyntaxException;
 import fi.vm.sade.javautils.nio.cas.CasClient;
 import fi.vm.sade.service.valintaperusteet.dto.ValintatapajonoDTO;
+import fi.vm.sade.sijoittelu.laskenta.configuration.SijoitteluServiceConfiguration;
 import fi.vm.sade.sijoittelu.laskenta.external.resource.HttpClients;
-import fi.vm.sade.sijoittelu.laskenta.service.business.ActorService;
+import fi.vm.sade.sijoittelu.laskenta.service.business.SijoitteluBusinessService;
 import fi.vm.sade.sijoittelu.laskenta.util.UrlProperties;
 import fi.vm.sade.sijoittelu.tulos.dto.ValisijoitteluDTO;
 import fi.vm.sade.valintalaskenta.domain.dto.valintatieto.HakuDTO;
 import fi.vm.sade.valintalaskenta.tulos.service.impl.ValintatietoService;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.asynchttpclient.Request;
 import org.asynchttpclient.RequestBuilder;
 import org.asynchttpclient.Response;
@@ -24,25 +26,21 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.stereotype.Controller;
-import scala.concurrent.Await;
-import scala.concurrent.Future;
-import scala.concurrent.duration.Duration;
+import org.springframework.web.bind.annotation.*;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 import static fi.vm.sade.valintalaskenta.tulos.roles.ValintojenToteuttaminenRole.OPH_CRUD;
 
-@Path("erillissijoittele")
-@Controller
+@RequestMapping(value = "/resources/erillissijoittele")
+@RestController
 @PreAuthorize("isAuthenticated()")
-@Api(value = "erillissijoittele", description = "Resurssi sijoitteluun")
+@Tag(name = "erillissijoittele", description = "Resurssi sijoitteluun")
 public class ErillisSijoitteluResource {
     private final static Logger LOGGER = LoggerFactory.getLogger(ErillisSijoitteluResource.class);
 
@@ -50,7 +48,7 @@ public class ErillisSijoitteluResource {
     private ValintatietoService valintatietoService;
 
     @Autowired
-    private ActorService actorService;
+    private SijoitteluBusinessService sijoitteluBusinessService;
 
     private final CasClient sijoitteluCasClient;
     private UrlProperties urlProperties;
@@ -65,12 +63,10 @@ public class ErillisSijoitteluResource {
                 .create();
     }
 
-    @POST
-    @Path("/{hakuOid}")
-    @Consumes("application/json")
+    @PostMapping(value = "/{hakuOid}", consumes = "application/json", produces = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize(OPH_CRUD)
-    @ApiOperation(consumes = "application/json", value = "Suorita erillissijoittelu", response = Long.class)
-    public Long sijoittele(@PathParam("hakuOid") String hakuOid, ValisijoitteluDTO hakukohteet) {
+    @Operation(summary = "Suorita erillissijoittelu", requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(content = @Content(mediaType = "application/json")), responses = { @ApiResponse(responseCode = "OK", content = @Content(schema = @Schema(implementation = Long.class)))})
+    public Long sijoittele(@PathVariable("hakuOid") String hakuOid, @RequestBody ValisijoitteluDTO hakukohteet) {
         long id = ErillisSijoitteluQueue.getInstance().queueNewErillissijoittelu(hakuOid);
 
         try {
@@ -98,7 +94,7 @@ public class ErillisSijoitteluResource {
                 .setBody(this.gson.toJson(new ArrayList<>(hakukohteet.getHakukohteet().keySet())))
                 .addHeader("Accept", "application/json")
                 .addHeader("Content-type", "application/json")
-                .addHeader("Caller-Id", HttpClients.CALLER_ID)
+                .addHeader("Caller-Id", SijoitteluServiceConfiguration.CALLER_ID)
                 .setRequestTimeout(120000)
                 .setReadTimeout(120000)
                 .build();
@@ -124,11 +120,10 @@ public class ErillisSijoitteluResource {
 
         HakuDTO haku = valintatietoService.haeValintatiedotJonoille(hakuOid, hakukohteet.getHakukohteet(), Optional.of(valintaperusteet));
         LOGGER.info("Valintatiedot haettu serviceltä haulle {}!", hakuOid);
-        Timeout timeout = new Timeout(Duration.create(60, "minutes"));
-        Future<Object> future = Patterns.ask(actorService.getErillisSijoitteluActor(), haku, timeout);
+        Future<Long> future = sijoitteluBusinessService.erillissijoittele(haku);
         try {
             LOGGER.info("############### Odotellaan erillissijoittelun valmistumista haulle {} ###############", hakuOid);
-            long onnistui = (long) Await.result(future, timeout.duration());
+            long onnistui = future.get(60, TimeUnit.MINUTES);
             LOGGER.info("############### Erillissijoittelu valmis haulle {} ###############", hakuOid);
             return onnistui;
         } catch (Exception e) {

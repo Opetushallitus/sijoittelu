@@ -10,8 +10,8 @@ import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.util.TilojenMuokkaus;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.SijoitteluajoWrapper;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.ValintatapajonoWrapper;
 import fi.vm.sade.sijoittelu.domain.*;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -19,7 +19,8 @@ import java.util.Collections;
 import java.util.List;
 
 import static fi.vm.sade.sijoittelu.domain.HakemuksenTila.*;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class PreSijoitteluProcessorJarjesteleAloituspaikatTayttojonoihinTest extends SijoitteluTestSpec {
 
@@ -221,8 +222,8 @@ public class PreSijoitteluProcessorJarjesteleAloituspaikatTayttojonoihinTest ext
         assertEquals(0, vtjs.get(1).getValintatapajono().getAloituspaikat().intValue());
     }
 
-    @Ignore
-    @Test(expected = SijoitteluSilmukkaException.class)
+    @Disabled
+    @Test
     public void testBreaksOnLoop() {
         List<Hakukohde> hakukohteet = Lists.newArrayList();
         hakukohteet.add(new HakukohdeBuilder()
@@ -237,11 +238,11 @@ public class PreSijoitteluProcessorJarjesteleAloituspaikatTayttojonoihinTest ext
         final SijoitteluajoWrapper sijoitteluAjo = new SijoitteluajoWrapperBuilder(hakukohteet)
                 .withKKHaku(true).withVarasijaSaannotAstuvatVoimaan(LocalDateTime.now().minusDays(1)).build();
 
-        p.process(sijoitteluAjo);
+        assertThrows(SijoitteluSilmukkaException.class, () -> p.process(sijoitteluAjo));
     }
 
-    @Ignore
-    @Test(expected = SijoitteluSilmukkaException.class)
+    @Disabled
+    @Test
     public void testBreaksOnLongLoop() {
         List<Hakukohde> hakukohteet = Lists.newArrayList();
         hakukohteet.add(new HakukohdeBuilder()
@@ -267,7 +268,7 @@ public class PreSijoitteluProcessorJarjesteleAloituspaikatTayttojonoihinTest ext
         final SijoitteluajoWrapper sijoitteluAjo = new SijoitteluajoWrapperBuilder(hakukohteet)
                 .withKKHaku(true).withVarasijaSaannotAstuvatVoimaan(LocalDateTime.now().minusDays(1)).build();
 
-        p.process(sijoitteluAjo);
+        assertThrows(SijoitteluSilmukkaException.class, () -> p.process(sijoitteluAjo));
     }
 
     @Test

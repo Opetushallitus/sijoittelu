@@ -5,11 +5,10 @@ import static fi.vm.sade.sijoittelu.domain.ValintatuloksenTila.VASTAANOTTANUT_SI
 import static fi.vm.sade.valintalaskenta.domain.dto.valintakoe.Tasasijasaanto.ALITAYTTO;
 import static fi.vm.sade.valintalaskenta.domain.dto.valintakoe.Tasasijasaanto.ARVONTA;
 import static org.hamcrest.Matchers.hasSize;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -42,11 +41,10 @@ import fi.vm.sade.valintalaskenta.domain.dto.JarjestyskriteerituloksenTilaDTO;
 import fi.vm.sade.valintalaskenta.domain.dto.valintatieto.HakuDTO;
 import fi.vm.sade.valintalaskenta.domain.dto.valintatieto.ValintatietoValinnanvaiheDTO;
 import fi.vm.sade.valintalaskenta.domain.dto.valintatieto.ValintatietoValintatapajonoDTO;
-import io.reactivex.functions.Function3;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.hamcrest.MatcherAssert;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 
 import java.time.Duration;
@@ -75,10 +73,7 @@ public class SijoitteluBusinessServiceValintarekisteriTest {
     private VirkailijaValintaTulosServiceResource valintaTulosServiceResource;
     private ValintarekisteriService valintarekisteriService;
 
-    @Rule
-    public ExpectedException expectedException = ExpectedException.none();
-
-    @Before
+    @BeforeEach
     public void setUp() {
         sijoitteluTulosConverter = new SijoitteluTulosConverterImpl();
         tarjontaIntegrationService = mock(TarjontaIntegrationService.class);
@@ -121,11 +116,15 @@ public class SijoitteluBusinessServiceValintarekisteriTest {
         when(valintarekisteriService.getValintatulokset(hakuOid)).thenReturn(valintatulos);
     }
 
-    private void verifyAndCaptureAndAssert(Function3<SijoitteluAjo, List<Hakukohde>, List<Valintatulos>, Boolean> assertFunction) {
+    public interface AssertFunction {
+        Boolean apply(SijoitteluAjo sijoitteluAjo, List<Hakukohde> hakukohteet, List<Valintatulos> valintatulokset) throws Exception;
+    }
+
+    private void verifyAndCaptureAndAssert(AssertFunction assertFunction) {
         verifyAndCaptureAndAssert(assertFunction, hakuOid);
     }
 
-    private void verifyAndCaptureAndAssert(Function3<SijoitteluAjo, List<Hakukohde>, List<Valintatulos>, Boolean> assertFunction, String hakuOid) {
+    private void verifyAndCaptureAndAssert(AssertFunction assertFunction, String hakuOid) {
         verify(valintarekisteriService).getLatestSijoitteluajo(hakuOid);
         verify(valintarekisteriService).getSijoitteluajonHakukohteet(sijoitteluajoId, hakuOid);
         verify(valintarekisteriService).getValintatulokset(hakuOid);
@@ -220,7 +219,7 @@ public class SijoitteluBusinessServiceValintarekisteriTest {
 
         service.sijoittele(hakuDTO1(true), Collections.emptySet(), Sets.newHashSet("112233.111111", "112244.111111", "112255.111111"), System.currentTimeMillis(), Collections.emptyMap());
 
-        Function3<SijoitteluAjo, List<Hakukohde>, List<Valintatulos>, Boolean> assertFunction = (sijoitteluajo, hakukohteet, valintatulokset) -> {
+        AssertFunction assertFunction = (sijoitteluajo, hakukohteet, valintatulokset) -> {
             assertSijoitteluajo(sijoitteluajo);
             assertHakukohteet(sijoitteluajo.getSijoitteluajoId(), hakukohteet);
             assertHakemukset(hakukohteet, HYVAKSYTTY, HakemuksenTila.VARASIJALTA_HYVAKSYTTY, 0);
@@ -239,7 +238,7 @@ public class SijoitteluBusinessServiceValintarekisteriTest {
 
         service.erillissijoittele(hakuDTO1(false));
 
-        Function3<SijoitteluAjo, List<Hakukohde>, List<Valintatulos>, Boolean> assertFunction =
+        AssertFunction assertFunction =
             (sijoitteluajo, hakukohteet, valintatulokset) -> {
                 assertSijoitteluajo(sijoitteluajo);
                 assertHakukohteet(sijoitteluajo.getSijoitteluajoId(), hakukohteet);
@@ -261,7 +260,7 @@ public class SijoitteluBusinessServiceValintarekisteriTest {
         service.sijoittele(hakuDTO2(true), Collections.emptySet(), Sets.newHashSet(
             "112233.111111", "112244.111111", "112255.111111", "112233.222222", "112244.222222", "112255.222222"), (long)123456789, Collections.emptyMap());
 
-        Function3<SijoitteluAjo, List<Hakukohde>, List<Valintatulos>, Boolean> assertFunction = (sijoitteluajo, hakukohteet, valintatulokset) -> {
+        AssertFunction assertFunction = (sijoitteluajo, hakukohteet, valintatulokset) -> {
             assertSijoitteluajo(sijoitteluajo);
             assertHakukohteet(sijoitteluajo.getSijoitteluajoId(), hakukohteet);
             assertHakemuksetKaksiJonoHyvaksyVarallaJaPeruAlempi(hakukohteet, HYVAKSYTTY);
@@ -281,7 +280,7 @@ public class SijoitteluBusinessServiceValintarekisteriTest {
 
         service.erillissijoittele(hakuDTO2(false));
 
-        Function3<SijoitteluAjo, List<Hakukohde>, List<Valintatulos>, Boolean> assertFunction = (sijoitteluajo, hakukohteet, valintatulokset) -> {
+        AssertFunction assertFunction = (sijoitteluajo, hakukohteet, valintatulokset) -> {
             assertSijoitteluajo(sijoitteluajo);
             assertHakukohteet(sijoitteluajo.getSijoitteluajoId(), hakukohteet);
             assertHakemuksetKaksiJonoHyvaksyVarallaJaPeruAlempi(hakukohteet, HYVAKSYTTY);
@@ -344,7 +343,7 @@ public class SijoitteluBusinessServiceValintarekisteriTest {
         ValintatietoValintatapajonoDTO jonoDto = jonoDTO(jonoOid);
         jonoDto.setTasasijasaanto(tasasijasaanto);
         jonoDto.setAloituspaikat(1);
-        assertThat(jonoDto.getHakija(), hasSize(2));
+        MatcherAssert.assertThat(jonoDto.getHakija(), hasSize(2));
         HakijaDTO ensimmainenSamallaSijallaVaralla = jonoDto.getHakija().get(jonoDto.getHakija().size() -1);
         ensimmainenSamallaSijallaVaralla.setTasasijaJonosija(1);
         HakijaDTO toinenSamallaSijallaVaralla = new HakijaDTO();
@@ -373,7 +372,7 @@ public class SijoitteluBusinessServiceValintarekisteriTest {
         service.sijoittele(hakuDTO, Collections.emptySet(), Sets.newHashSet(
             "112233.111111", "112244.111111", "112255.111111", "112233.222222", "112244.222222", "112255.222222"), (long)123456789, Collections.emptyMap());
 
-        Function3<SijoitteluAjo, List<Hakukohde>, List<Valintatulos>, Boolean> assertFunction = (sijoitteluajo, hakukohteet, valintatulokset) -> {
+        AssertFunction assertFunction = (sijoitteluajo, hakukohteet, valintatulokset) -> {
             assertSijoitteluajo(sijoitteluajo);
             assertHakukohteet(sijoitteluajo.getSijoitteluajoId(), hakukohteet);
             assertHyvaksyttyVaralla(hakukohteet, uusiHakukohdeOid, "112233.111111", 2, 0);
@@ -392,7 +391,7 @@ public class SijoitteluBusinessServiceValintarekisteriTest {
         service.sijoittele(hakuDto, Collections.emptySet(), Sets.newHashSet(
             "112233.111111", "112244.111111", "112255.111111", "112233.222222", "112244.222222", "112255.222222"), (long) 123456789, Collections.emptyMap());
 
-        Function3<SijoitteluAjo, List<Hakukohde>, List<Valintatulos>, Boolean> assertFunction = (sijoitteluajo, hakukohteet, valintatulokset) -> {
+        AssertFunction assertFunction = (sijoitteluajo, hakukohteet, valintatulokset) -> {
             assertSijoitteluajo(sijoitteluajo);
             assertHakukohteet(sijoitteluajo.getSijoitteluajoId(), hakukohteet);
             assertHyvaksyttyVaralla(hakukohteet, uusiHakukohdeOid, "112233.111111", 1, 0);
@@ -465,7 +464,7 @@ public class SijoitteluBusinessServiceValintarekisteriTest {
         service.sijoittele(hakuDto, Collections.emptySet(), Sets.newHashSet(
             "112233.111111", "112244.111111", "112255.111111", "112233.222222", "112244.222222", "112255.222222", "toinenUusiHakukohde.111111"), (long)123456789, Collections.emptyMap());
 
-        Function3<SijoitteluAjo, List<Hakukohde>, List<Valintatulos>, Boolean> assertFunction = (sijoitteluajo, hakukohteet, valintatulokset) -> {
+        AssertFunction assertFunction = (sijoitteluajo, hakukohteet, valintatulokset) -> {
             assertSijoitteluajo(sijoitteluajo);
             assertHakukohteet(sijoitteluajo.getSijoitteluajoId(), hakukohteet);
             assertHyvaksyttyVaralla(hakukohteet, uusiHakukohdeOid, "112233.111111", 0, 0);
@@ -477,7 +476,7 @@ public class SijoitteluBusinessServiceValintarekisteriTest {
         verifyAndCaptureAndAssert(assertFunction, hakuOid);
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void sijoitteluHeittaaPoikkeuksenJosEdellisenSijoittelunHakukohteissaOnHakukohteitaJotkaPuuttuvatUudesta() {
         setUpMocks1();
 
@@ -488,7 +487,7 @@ public class SijoitteluBusinessServiceValintarekisteriTest {
         haku.setHakukohteet(Collections.singletonList(hakukohde));
         haku.setHakuOid(hakuOid);
 
-        service.sijoittele(haku, Collections.emptySet(), Sets.newHashSet("112233.111111", "112244.111111", "112255.111111"), System.currentTimeMillis(), Collections.emptyMap());
+        Assertions.assertThrows(IllegalStateException.class, () -> service.sijoittele(haku, Collections.emptySet(), Sets.newHashSet("112233.111111", "112244.111111", "112255.111111"), System.currentTimeMillis(), Collections.emptyMap()));
     }
 
     private void assertYksiHyvaksyttyKaksiVarallaSamallaVarasijalla(ValintatietoValintatapajonoDTO jonoDto) {
@@ -524,8 +523,8 @@ public class SijoitteluBusinessServiceValintarekisteriTest {
 
         assertEquals(Collections.singletonList(uusiHakukohdeOid),
             sijoitteluAjo.getHakukohteet().stream().map(HakukohdeItem::getOid).collect(Collectors.toList()));
-        assertThat(hakukohteet, hasSize(1));
-        assertThat(hakukohteet.get(0).getValintatapajonot(), hasSize(1));
+        MatcherAssert.assertThat(hakukohteet, hasSize(1));
+        MatcherAssert.assertThat(hakukohteet.get(0).getValintatapajonot(), hasSize(1));
         String onlyJonoOid = hakukohteet.get(0).getValintatapajonot().get(0).getOid();
         assertHyvaksyttyVaralla(hakukohteet, uusiHakukohdeOid, onlyJonoOid, 1, 2);
     }

@@ -3,13 +3,11 @@ package fi.vm.sade.sijoittelu.batch.logic.impl.algorithm;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.util.SijoitteluAlgorithmUtil;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.SijoitteluajoWrapper;
 import fi.vm.sade.sijoittelu.domain.*;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
 import java.util.List;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 public class SijoitteluAlgorithmEhdollisenVastaanotonMuuttuminenSitovaksiTest {
     List<Hakukohde> hakukohdeList = TestHelper.readHakukohteetListFromJson("testdata/sijoittelu_hakukohde_ylemman_hakukohteen_vastaanotto_paattynyt.json");
@@ -22,12 +20,12 @@ public class SijoitteluAlgorithmEhdollisenVastaanotonMuuttuminenSitovaksiTest {
         assertHakemuksenTila(sijoitteluAjo, "1.2.246.562.20.87061484132", "14345398388996844110591962067735", "1.2.246.562.11.00003933242", HakemuksenTila.PERUUNTUNUT);
 
         assertHakemuksenTila(sijoitteluAjo, "1.2.246.562.20.87061484133", "14345398388996844110591962067736", "1.2.246.562.11.00003933242", HakemuksenTila.HYVAKSYTTY);
-        assertEquals(ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI, haeValintatulosHakemukselle("1.2.246.562.11.00003933242", "14345398388996844110591962067736", sijoitteluAjo).getTila());
+        Assertions.assertEquals(ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI, haeValintatulosHakemukselle("1.2.246.562.11.00003933242", "14345398388996844110591962067736", sijoitteluAjo).getTila());
     }
 
     private void assertHakemuksenTila(SijoitteluajoWrapper sijoitteluajoWrapper, String hakukohdeOid, String valintatapajonoOid, String hakemusOid, HakemuksenTila hakemuksenTila) {
 
-        assertTrue(sijoitteluajoWrapper.getHakukohteet().stream().filter(hk -> hk.getHakukohde().getOid().equals(hakukohdeOid))
+        Assertions.assertTrue(sijoitteluajoWrapper.getHakukohteet().stream().filter(hk -> hk.getHakukohde().getOid().equals(hakukohdeOid))
                 .flatMap(hk -> hk.getValintatapajonot().stream())
                 .filter(j -> j.getValintatapajono().getOid().equals(valintatapajonoOid))
                 .flatMap(j -> j.getHakemukset().stream())

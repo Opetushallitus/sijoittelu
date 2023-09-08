@@ -5,12 +5,11 @@ import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.util.SijoitteluAlgorithm
 import fi.vm.sade.sijoittelu.domain.Hakukohde;
 import fi.vm.sade.valintalaskenta.domain.dto.HakukohdeDTO;
 import fi.vm.sade.valintalaskenta.domain.dto.valintatieto.HakuDTO;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
 
 public class BasicSijoitteluTest {
     @Test

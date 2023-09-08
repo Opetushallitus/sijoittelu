@@ -1,31 +1,27 @@
 package fi.vm.sade.sijoittelu.laskenta.resource;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.security.access.prepost.PreAuthorize;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-@Controller
-@Path("session")
-@Api(value = "session", description = "Sessionhallinta")
+@RestController
+@RequestMapping(value = "/resources/session")
+@Tag(name = "session", description = "Sessionhallinta")
 public class SessionResource {
-    @GET
-    @Path("/maxinactiveinterval")
+
     @PreAuthorize("isAuthenticated()")
-    @Produces(MediaType.TEXT_PLAIN)
-    @ApiOperation(
-            value = "Palauttaa session erääntymisen aikarajan sekunteina",
-            notes = "Tarvitsee HTTP kutsun, jossa on session id",
-            response = String.class)
-    public String maxInactiveInterval(@Context HttpServletRequest req) {
+    @GetMapping(value = "/maxinactiveinterval", produces = org.springframework.http.MediaType.TEXT_PLAIN_VALUE)
+    @Operation(summary = "Palauttaa session erääntymisen aikarajan sekunteina", description = "Tarvitsee HTTP kutsun, jossa on session id", responses = { @ApiResponse(responseCode = "OK", content = @Content(schema = @Schema(implementation = String.class)))})
+    public String maxInactiveInterval(HttpServletRequest req) {
         return Integer.toString(req.getSession().getMaxInactiveInterval());
     }
 }

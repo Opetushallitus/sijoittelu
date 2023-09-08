@@ -5,8 +5,8 @@ import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.util.SijoitteluAlgorithm
 import fi.vm.sade.sijoittelu.domain.Hakukohde;
 import fi.vm.sade.valintalaskenta.domain.dto.HakukohdeDTO;
 import fi.vm.sade.valintalaskenta.domain.dto.valintatieto.HakuDTO;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 import java.io.BufferedReader;
 import java.io.FileWriter;
@@ -25,7 +25,8 @@ import java.util.List;
  */
 public class Sijoitteludata_2011S_ALPATTest {
 
-	@Test   	@Ignore
+	@Test
+	@Disabled
 	public void testSijoittele() throws IOException {
 		HakuDTO t = TestHelper.readHakuDTOFromJson("testdata/sijoitteludata_2011S_ALPAT.xml");
 
@@ -64,7 +65,7 @@ public class Sijoitteludata_2011S_ALPATTest {
 	 * @throws IOException
 	 */
 	@Test
-	@Ignore
+	@Disabled
 	public void testToXml() throws IOException {
 
         HakuDTO sijoitteleTyyppi = new HakuDTO();

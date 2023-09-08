@@ -1,24 +1,18 @@
 package fi.vm.sade.sijoittelu;
 
 import static com.google.common.collect.Sets.newHashSet;
-import static com.lordofthejars.nosqlunit.mongodb.MongoDbRule.MongoDbRuleBuilder.newMongoDbRule;
 import static java.util.stream.Collectors.toSet;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.anyLong;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.*;
 
 import com.lordofthejars.nosqlunit.annotation.UsingDataSet;
 import com.lordofthejars.nosqlunit.core.LoadStrategyEnum;
-import com.lordofthejars.nosqlunit.mongodb.MongoDbRule;
 
+import fi.vm.sade.configuration.TestConfiguration;
 import fi.vm.sade.sijoittelu.batch.logic.impl.DomainConverter;
 import fi.vm.sade.sijoittelu.domain.HakemuksenTila;
 import fi.vm.sade.sijoittelu.domain.Hakemus;
@@ -35,20 +29,21 @@ import fi.vm.sade.sijoittelu.laskenta.service.business.ValintarekisteriService;
 import fi.vm.sade.sijoittelu.laskenta.service.business.ValintatulosWithVastaanotto;
 import fi.vm.sade.sijoittelu.laskenta.service.it.Haku;
 import fi.vm.sade.sijoittelu.laskenta.service.it.TarjontaIntegrationService;
+import fi.vm.sade.util.NoSqlUnitInterceptor;
 import fi.vm.sade.valintalaskenta.domain.dto.ValintatapajonoDTO;
 import fi.vm.sade.valintalaskenta.domain.dto.valintatieto.HakuDTO;
 import fi.vm.sade.valintalaskenta.tulos.service.impl.ValintatietoService;
+import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.time.Instant;
@@ -60,8 +55,9 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = { "classpath:test-sijoittelu-batch-mongo.xml" })
+@ContextConfiguration(classes = {TestConfiguration.class})
+@ExtendWith(SpringExtension.class)
+@ExtendWith(NoSqlUnitInterceptor.class)
 public class SijoitteluBusinessTest {
 
     @Autowired
@@ -80,17 +76,11 @@ public class SijoitteluBusinessTest {
     @Autowired
     private ApplicationContext applicationContext;
 
-    @Rule
-    public MongoDbRule mongoDbRule = newMongoDbRule().defaultSpringMongoDb("test");
-
-    @Rule
-    public ExpectedException thrown = ExpectedException.none();
-
     private ArgumentCaptor<SijoitteluAjo> sijoitteluAjoArgumentCaptor;
     private ArgumentCaptor<List> hakukohdeArgumentCaptor;
     private ArgumentCaptor<List> valintatulosArgumentCaptor;
 
-    @Before
+    @BeforeEach
     public void setup() {
         valintatulosWithVastaanotto = mock(ValintatulosWithVastaanotto.class);
         valintarekisteriService = mock(ValintarekisteriService.class);
@@ -305,11 +295,9 @@ public class SijoitteluBusinessTest {
 
         removeJono(haku, "jono1");
 
-        thrown.expect(RuntimeException.class);
-        thrown.expectMessage("Edellisessä sijoittelussa olleet jonot puuttuvat sijoittelusta, vaikka ne ovat " +
-            "valintaperusteissa yhä aktiivisina: [Hakukohde hakukohde1 , jono \"Jono1\" (jono1 , prio 0)]");
-
-        sijoitteluService.sijoittele(haku, valintaperusteenJonot, newHashSet("jono1", "jono2", "jono3"), System.currentTimeMillis(), Collections.emptyMap());
+        Exception exception = Assertions.assertThrows(RuntimeException.class, () -> sijoitteluService.sijoittele(haku, valintaperusteenJonot, newHashSet("jono1", "jono2", "jono3"), System.currentTimeMillis(), Collections.emptyMap()));;
+        assertEquals("Edellisessä sijoittelussa olleet jonot puuttuvat sijoittelusta, vaikka ne ovat " +
+                "valintaperusteissa yhä aktiivisina: [Hakukohde hakukohde1 , jono \"Jono1\" (jono1 , prio 0)]", exception.getMessage());
 
         assertSijoitteluUsedSijoitteluajo(sijoitteluajoId);
     }
@@ -325,10 +313,8 @@ public class SijoitteluBusinessTest {
 
         removeJono(haku, "jono1");
 
-        thrown.expect(RuntimeException.class);
-        thrown.expectMessage("Edellisessä sijoittelussa olleet jonot puuttuvat laskennan tuloksista: [Hakukohde hakukohde1 , jono \"Jono1\" (jono1 , prio 0)]");
-
-        sijoitteluService.sijoittele(haku, Collections.emptySet(), newHashSet("jono2", "jono3"), System.currentTimeMillis(), Collections.emptyMap());
+        Exception exception = Assertions.assertThrows(RuntimeException.class, () -> sijoitteluService.sijoittele(haku, Collections.emptySet(), newHashSet("jono2", "jono3"), System.currentTimeMillis(), Collections.emptyMap()));
+        assertEquals("Edellisessä sijoittelussa olleet jonot puuttuvat laskennan tuloksista: [Hakukohde hakukohde1 , jono \"Jono1\" (jono1 , prio 0)]", exception.getMessage());
 
         assertSijoitteluUsedSijoitteluajo(sijoitteluajoId);
     }
@@ -342,16 +328,14 @@ public class SijoitteluBusinessTest {
 
         long sijoitteluajoId = captureSijoitteluajoForNextSijoittelu();
 
-        thrown.expect(RuntimeException.class);
-        thrown.expectMessage("Edellisessä sijoittelussa olleet jonot ovat kadonneet valintaperusteista, " +
-            "minkä olisi pitänyt ilmetä jo ladatessa tietoja SijoitteluResourcessa. " +
-            "Toisaalta tämän validoinnin ei pitäisi voida triggeröityä, " +
-            "koska jonojen puuttumisen valintaperusteista pitäisi aiheuttaa se, " +
-            "etteivät laskennan tuloksetkaan Tule tänne asti. " +
-            "Vaikuttaa siis bugilta: " +
-            "[Hakukohde hakukohde1 , jono \"Jono1\" (jono1 , prio 0)]");
-
-        sijoitteluService.sijoittele(haku, Collections.emptySet(), newHashSet("jono2", "jono3"), System.currentTimeMillis(), Collections.emptyMap());
+        Exception exception = Assertions.assertThrows(RuntimeException.class, () -> sijoitteluService.sijoittele(haku, Collections.emptySet(), newHashSet("jono2", "jono3"), System.currentTimeMillis(), Collections.emptyMap()));
+        assertEquals("Edellisessä sijoittelussa olleet jonot ovat kadonneet valintaperusteista, " +
+                "minkä olisi pitänyt ilmetä jo ladatessa tietoja SijoitteluResourcessa. " +
+                "Toisaalta tämän validoinnin ei pitäisi voida triggeröityä, " +
+                "koska jonojen puuttumisen valintaperusteista pitäisi aiheuttaa se, " +
+                "etteivät laskennan tuloksetkaan Tule tänne asti. " +
+                "Vaikuttaa siis bugilta: " +
+                "[Hakukohde hakukohde1 , jono \"Jono1\" (jono1 , prio 0)]", exception.getMessage());
 
         assertSijoitteluUsedSijoitteluajo(sijoitteluajoId);
     }
@@ -387,11 +371,9 @@ public class SijoitteluBusinessTest {
 
         assertEquals(getValintatapaJonoOids(haku), newHashSet("jono2", "jono3"));
 
-        thrown.expect(RuntimeException.class);
-        thrown.expectMessage("Edellisessä sijoittelussa olleet jonot puuttuvat sijoittelusta, vaikka ne ovat " +
-            "valintaperusteissa yhä aktiivisina: [Hakukohde hakukohde1 , jono \"Jono1\" (jono1 , prio 0)]");
-
-        sijoitteluService.sijoittele(haku, newHashSet("jono1", "jono2", "jono3"), newHashSet("jono1", "jono2", "jono3"), System.currentTimeMillis(), Collections.emptyMap());
+        Exception exception = Assertions.assertThrows(RuntimeException.class, () -> sijoitteluService.sijoittele(haku, newHashSet("jono1", "jono2", "jono3"), newHashSet("jono1", "jono2", "jono3"), System.currentTimeMillis(), Collections.emptyMap()));
+        assertEquals("Edellisessä sijoittelussa olleet jonot puuttuvat sijoittelusta, vaikka ne ovat " +
+                "valintaperusteissa yhä aktiivisina: [Hakukohde hakukohde1 , jono \"Jono1\" (jono1 , prio 0)]", exception.getMessage());
 
         assertSijoitteluUsedSijoitteluajo(sijoitteluajoId);
     }
@@ -438,11 +420,11 @@ public class SijoitteluBusinessTest {
 
         List<Hakukohde> hakukohteetFromSijoittelu = hakukohdeArgumentCaptor.getValue();
 
-        assertThat(hakukohteetFromSijoittelu, Matchers.hasSize(3));
+        MatcherAssert.assertThat(hakukohteetFromSijoittelu, Matchers.hasSize(3));
         Hakukohde hakukohdeFromSijoittelu = hakukohteetFromSijoittelu.stream().filter(hk -> hk.getOid().equals(previousHakukohde.getOid())).findFirst().get();
         assertNotSame(hakukohdeFromSijoittelu, previousHakukohde);
 
-        assertThat(hakukohdeFromSijoittelu.getValintatapajonot(), Matchers.hasSize(1));
+        MatcherAssert.assertThat(hakukohdeFromSijoittelu.getValintatapajonot(), Matchers.hasSize(1));
         Valintatapajono jonoFromSijoittelu = hakukohdeFromSijoittelu.getValintatapajonot().iterator().next();
         assertNotSame(jonoFromSijoittelu, previousJono);
         assertEquals(jonosijaTieto, jonoFromSijoittelu.getSivssnovSijoittelunVarasijataytonRajoitus());
@@ -489,9 +471,9 @@ public class SijoitteluBusinessTest {
     }
 
     private void assertSijoitteluUsedSijoitteluajo(long sijoitteluajoId) {
-        verify(valintarekisteriService, times(2)).getLatestSijoitteluajo("haku1");
-        verify(valintarekisteriService).getSijoitteluajonHakukohteet(sijoitteluajoId, "haku1");
-        verify(valintarekisteriService, times(2)).getValintatulokset("haku1");
+        verify(valintarekisteriService, atLeastOnce()).getLatestSijoitteluajo("haku1");
+        verify(valintarekisteriService, atLeastOnce()).getSijoitteluajonHakukohteet(sijoitteluajoId, "haku1");
+        verify(valintarekisteriService, atLeastOnce()).getValintatulokset("haku1");
     }
 
     @Test()

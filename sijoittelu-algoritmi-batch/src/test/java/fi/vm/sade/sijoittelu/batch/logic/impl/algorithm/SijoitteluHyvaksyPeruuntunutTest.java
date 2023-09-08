@@ -4,7 +4,8 @@ import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.helper.HakuBuilder;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.util.SijoitteluAlgorithmUtil;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.SijoitteluajoWrapper;
 import fi.vm.sade.sijoittelu.domain.*;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
@@ -14,7 +15,6 @@ import java.util.function.Consumer;
 
 import static fi.vm.sade.sijoittelu.domain.HakemuksenTila.*;
 import static fi.vm.sade.sijoittelu.domain.Tasasijasaanto.*;
-import static org.junit.Assert.assertEquals;
 
 public class SijoitteluHyvaksyPeruuntunutTest {
 
@@ -67,9 +67,9 @@ public class SijoitteluHyvaksyPeruuntunutTest {
     }
 
     private void assertHakemustenTilat(HakemuksenTila h1, HakemuksenTila h2, HakemuksenTila h3) {
-        assertEquals("Hakemus1", h1, hakemus1.getTila());
-        assertEquals("Hakemus2", h2, hakemus2.getTila());
-        assertEquals("Hakemus3", h3, hakemus3.getTila());
+        Assertions.assertEquals(h1, hakemus1.getTila(), "Hakemus1");
+        Assertions.assertEquals(h2, hakemus2.getTila(), "Hakemus2");
+        Assertions.assertEquals(h3, hakemus3.getTila(), "Hakemus3");
     }
 
     @Test

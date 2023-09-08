@@ -2,20 +2,14 @@ package fi.vm.sade.sijoittelu;
 
 import com.google.gson.GsonBuilder;
 import fi.vm.sade.sijoittelu.laskenta.external.resource.dto.ParametriDTO;
-import org.codehaus.jackson.map.DeserializationConfig;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.map.SerializationConfig;
-import org.junit.Test;
-import org.springframework.core.io.ClassPathResource;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
-import java.io.File;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
-
-import static org.junit.Assert.assertEquals;
 
 /**
  * Created by kjsaila on 18/11/14.
@@ -31,8 +25,8 @@ public class OhjausparametritTest {
 
         ParametriDTO gson = new GsonBuilder().create().fromJson(json, ParametriDTO.class);
         LocalDate res = LocalDateTime.ofInstant(new Date(gson.getPH_VTSSV().getDate()).toInstant(), ZoneId.systemDefault()).toLocalDate();
-        assertEquals(haluttu,res);
-        assertEquals(timestamp,gson.getPH_VTSSV().getDate());
+        Assertions.assertEquals(haluttu, res);
+        Assertions.assertEquals(timestamp, gson.getPH_VTSSV().getDate());
 
 
     }

@@ -8,7 +8,7 @@ import com.google.common.collect.Sets;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.SijoitteluajoWrapper;
 import fi.vm.sade.sijoittelu.domain.*;
 import fi.vm.sade.valintalaskenta.domain.dto.valintatieto.HakuDTO;
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -54,7 +54,7 @@ public final class TestHelper {
         ObjectMapper xmlMapper = new ObjectMapper();
         xmlMapper.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
         xmlMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        return xmlMapper.readValue(Thread.currentThread().getContextClassLoader().getResourceAsStream(filename), valueTypeRef);
+        return (T)xmlMapper.readValue(Thread.currentThread().getContextClassLoader().getResourceAsStream(filename), valueTypeRef);
     }
 
     private static Hakukohde hakukohde(String endsWith, SijoitteluajoWrapper ajo) {
@@ -91,12 +91,12 @@ public final class TestHelper {
                     .filter(h -> endings.stream().anyMatch(e -> h.getHakemusOid().endsWith(e) && !hakemuksenTila.equals(h.getTila())))
                     .collect(Collectors.toList());
             if (!ylimaaraisetHyvaksytytHakemukset.isEmpty() && !puuttuneetHakemukset.isEmpty()) {
-                Assert.fail("Valintatapajonossa oli ylimääräisiä " + hakemuksenTila + " hakemuksia " + toString(ylimaaraisetHyvaksytytHakemukset) + " ja puuttuvia " + hakemuksenTila + " odotettuja hakemuksia " + toString(puuttuneetHakemukset));
+                Assertions.fail("Valintatapajonossa oli ylimääräisiä " + hakemuksenTila + " hakemuksia " + toString(ylimaaraisetHyvaksytytHakemukset) + " ja puuttuvia " + hakemuksenTila + " odotettuja hakemuksia " + toString(puuttuneetHakemukset));
             } else {
                 if (!ylimaaraisetHyvaksytytHakemukset.isEmpty()) {
-                    Assert.fail("Valintatapajonossa oli ylimääräisiä " + hakemuksenTila + " hakemuksia " + toString(ylimaaraisetHyvaksytytHakemukset));
+                    Assertions.fail("Valintatapajonossa oli ylimääräisiä " + hakemuksenTila + " hakemuksia " + toString(ylimaaraisetHyvaksytytHakemukset));
                 } else if (!puuttuneetHakemukset.isEmpty()) {
-                    Assert.fail("Valintatapajonossa oli puuttuvia " + hakemuksenTila + " odotettuja hakemuksia " + toString(puuttuneetHakemukset));
+                    Assertions.fail("Valintatapajonossa oli puuttuvia " + hakemuksenTila + " odotettuja hakemuksia " + toString(puuttuneetHakemukset));
                 }
             }
             return null;
@@ -107,7 +107,7 @@ public final class TestHelper {
         return (valintatapajono) -> {
             List<Hakemus> hyvaksytytHakemukset = valintatapajono.getHakemukset().stream().filter(h -> HakemuksenTila.HYVAKSYTTY.equals(h.getTila())).collect(Collectors.toList());
             if (!hyvaksytytHakemukset.isEmpty()) {
-                Assert.fail("Valintatapajonossa oli hyväksyttyjä hakemuksia " + toString(hyvaksytytHakemukset));
+                Assertions.fail("Valintatapajonossa oli hyväksyttyjä hakemuksia " + toString(hyvaksytytHakemukset));
             }
             return null;
         };
@@ -138,8 +138,8 @@ public final class TestHelper {
                 actual.add(hakemus.getHakemusOid());
             }
         }
-        Assert.assertTrue("Actual result does not contain all wanted approved OIDs", actual.containsAll(wanted));
-        Assert.assertTrue("Wanted result contains more approved OIDs than actual", wanted.containsAll(actual));
+        Assertions.assertTrue(actual.containsAll(wanted), "Actual result does not contain all wanted approved OIDs");
+        Assertions.assertTrue(wanted.containsAll(actual), "Wanted result contains more approved OIDs than actual");
     }
 
     public static void assertoiAinoastaanValittuMyosVarasijalta(Valintatapajono h, String... oids) {
@@ -150,8 +150,8 @@ public final class TestHelper {
                 actual.add(hakemus.getHakemusOid());
             }
         }
-        Assert.assertTrue("Actual result does not contain all wanted approved OIDs", actual.containsAll(wanted));
-        Assert.assertTrue("Wanted result contains more approved OIDs than actual", wanted.containsAll(actual));
+        Assertions.assertTrue(actual.containsAll(wanted), "Actual result does not contain all wanted approved OIDs");
+        Assertions.assertTrue(wanted.containsAll(actual), "Wanted result contains more approved OIDs than actual");
     }
 
     public static void assertoiAinakinValittu(Valintatapajono h, String... oids) {
@@ -162,7 +162,7 @@ public final class TestHelper {
                 actual.add(hakemus.getHakemusOid());
             }
         }
-        Assert.assertTrue("Actual result does not contain all wanted approved OIDs", actual.containsAll(wanted));
+        Assertions.assertTrue(actual.containsAll(wanted), "Actual result does not contain all wanted approved OIDs");
     }
 
     public static void assertoiVainYksiJoukostaValittu(Valintatapajono valintatapajono, String... string) {
@@ -174,13 +174,13 @@ public final class TestHelper {
                 }
             }
         }
-        Assert.assertTrue("From list of OIDS: [...] was in hyvaksytty state[" + hyvaksytty.size() + "]", hyvaksytty.size() == 1);
+        Assertions.assertTrue(hyvaksytty.size() == 1, "From list of OIDS: [...] was in hyvaksytty state[" + hyvaksytty.size() + "]");
     }
 
     public static void assertoiKukaanEiValittu(Valintatapajono valintatapajono) {
         for (Hakemus hakemus : valintatapajono.getHakemukset()) {
             if (hakemus.getTila() == HakemuksenTila.HYVAKSYTTY) {
-                Assert.assertTrue("HAKEMUS " + hakemus.getHakemusOid() + " WAS HYVAKSYTTY", false);
+                Assertions.assertTrue(false, "HAKEMUS " + hakemus.getHakemusOid() + " WAS HYVAKSYTTY");
             }
         }
     }
@@ -192,6 +192,6 @@ public final class TestHelper {
                 check = hakemus;
             }
         }
-        Assert.assertEquals(tila, check.getTila());
+        Assertions.assertEquals(tila, check.getTila());
     }
 }

@@ -6,15 +6,14 @@ import fi.vm.sade.sijoittelu.domain.Hakemus;
 import fi.vm.sade.sijoittelu.domain.Hakukohde;
 import fi.vm.sade.sijoittelu.domain.Valintatapajono;
 import fi.vm.sade.valintalaskenta.domain.dto.valintatieto.HakuDTO;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
-
 
 /**
  *
@@ -43,8 +42,8 @@ public class BasicSijoitteluTasasijaJonosijaTest {
         Hakemus hakemus2 = getHakemus(hakukohteet, "1.2.246.562.24.00000000003");
         Hakemus hakemus3 = getHakemus(hakukohteet, "1.2.246.562.24.00000000005");
 
-        Assert.assertTrue(hakemus1.getTasasijaJonosija() > hakemus2.getTasasijaJonosija());
-        Assert.assertTrue(hakemus3.getTasasijaJonosija() > hakemus1.getTasasijaJonosija());
+        Assertions.assertTrue(hakemus1.getTasasijaJonosija() > hakemus2.getTasasijaJonosija());
+        Assertions.assertTrue(hakemus3.getTasasijaJonosija() > hakemus1.getTasasijaJonosija());
 
 
     }

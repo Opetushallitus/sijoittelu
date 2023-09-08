@@ -2,19 +2,20 @@ package fi.vm.sade.sijoittelu;
 
 import com.google.common.collect.ImmutableList;
 
+import fi.vm.sade.configuration.TestConfiguration;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.TestHelper;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.util.SijoitteluAlgorithmUtil;
 import fi.vm.sade.sijoittelu.domain.HakemuksenTila;
 import fi.vm.sade.sijoittelu.domain.Hakemus;
 import fi.vm.sade.sijoittelu.domain.Hakukohde;
 import fi.vm.sade.sijoittelu.domain.Valintatapajono;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -22,8 +23,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = { "classpath:test-sijoittelu-batch-mongo.xml" })
+@ContextConfiguration(classes = {TestConfiguration.class})
+@ExtendWith(SpringExtension.class)
 public class SijoitteluTest {
 
     private static final Logger LOG = LoggerFactory.getLogger(SijoitteluTest.class);
@@ -119,14 +120,14 @@ public class SijoitteluTest {
                 if (hakutoive == hakemus.getPrioriteetti()) {
                     LOG.debug("Hakemuksen {} tila tarkistus {} == {}",
                             new Object[] { hakemus.getHakemusOid(), hakemus.getTila(), tila });
-                    Assert.assertTrue(tila.equals(hakemus.getTila()));
+                    Assertions.assertTrue(tila.equals(hakemus.getTila()));
                     return;
                 }
             }
         }
         // LOG.debug("Hakukohteen {} hakemus {} hakutoiveella {} ja tilalla {} ei loytynyt",
         //         new Object[] {hakukohde.getOid(), hakemusOid, hakutoive, tila });
-        Assert.fail("Hakukohteen {"+hakukohde.getOid()+ "} hakemus {"+hakemusOid+ "} hakutoiveella {" +hakutoive+ "} ja tilalla {"+tila+ "} ei loytynyt");
+        Assertions.fail("Hakukohteen {"+hakukohde.getOid()+ "} hakemus {"+hakemusOid+ "} hakutoiveella {" +hakutoive+ "} ja tilalla {"+tila+ "} ei loytynyt");
     }
 
 }

@@ -42,6 +42,8 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StopWatch;
 
@@ -60,6 +62,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Future;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -330,8 +333,8 @@ public class SijoitteluBusinessService {
 
 
 
-
-    public List<HakukohdeDTO> valisijoittele(HakuDTO sijoitteluTyyppi) {
+    @Async
+    public Future<List<HakukohdeDTO>> valisijoittele(HakuDTO sijoitteluTyyppi) {
         long startTime = System.currentTimeMillis();
         String hakuOid = sijoitteluTyyppi.getHakuOid();
         StopWatch stopWatch = new StopWatch("Haun " + hakuOid + " välisijoittelu");
@@ -355,7 +358,7 @@ public class SijoitteluBusinessService {
             .map(sijoitteluTulosConverter::convert)
             .collect(Collectors.toList());
         LOG.info(stopWatch.prettyPrint());
-        return result;
+        return new AsyncResult<>(result);
     }
 
     private Hakukohde getErillissijoittelunHakukohde(HakuDTO haku) {
@@ -368,7 +371,8 @@ public class SijoitteluBusinessService {
             "Voi olla vain yksi!", haku.getHakuOid(), haku.getHakukohteet().size()));
     }
 
-    public long erillissijoittele(HakuDTO haku) {
+    @Async
+    public Future<Long> erillissijoittele(HakuDTO haku) {
         String hakuOid = haku.getHakuOid();
         String hakukohdeOid = haku.getHakukohteet().size() > 0 ? haku.getHakukohteet().get(0).getOid() : "";
         long startTime = System.currentTimeMillis();
@@ -445,7 +449,7 @@ public class SijoitteluBusinessService {
             stopWatch);
         stopWatch.stop();
         LOG.info(stopWatch.prettyPrint());
-        return uusiSijoitteluajo.getSijoitteluajoId();
+        return new AsyncResult<>(uusiSijoitteluajo.getSijoitteluajoId());
     }
 
     private void kopioiHakukohteenTiedotVanhaltaSijoitteluajolta(final List<Hakukohde> edellisenSijoitteluajonHakukohteet,
@@ -627,8 +631,8 @@ public class SijoitteluBusinessService {
         try {
             return valintaTulosServiceResource.haunKoulutuksenAlkamiskaudenVastaanototYhdenPaikanSaadoksenPiirissa(hakuOid)
                     .stream().collect(Collectors.toMap(VastaanottoDTO::getHenkiloOid, Function.identity()));
-        } catch (WebApplicationException e) {
-            String responseContent = e.getResponse().readEntity(String.class);
+        } catch (Exception e) {
+            String responseContent = e.getMessage();
             LOG.error("Virhe haettassa haunKoulutuksenAlkamiskaudenVastaanototYhdenPaikanSaadoksenPiirissa(" +
                 hakuOid + ") ; response: " + responseContent, e);
             throw e;

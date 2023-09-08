@@ -1,10 +1,9 @@
 package fi.vm.sade.sijoittelu;
 
-import static com.lordofthejars.nosqlunit.mongodb.MongoDbRule.MongoDbRuleBuilder.newMongoDbRule;
 import com.lordofthejars.nosqlunit.annotation.UsingDataSet;
 import com.lordofthejars.nosqlunit.core.LoadStrategyEnum;
-import com.lordofthejars.nosqlunit.mongodb.MongoDbRule;
 
+import fi.vm.sade.configuration.TestConfiguration;
 import fi.vm.sade.sijoittelu.batch.logic.impl.DomainConverter;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.PrintHelper;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoitteluConfiguration;
@@ -20,25 +19,25 @@ import fi.vm.sade.sijoittelu.domain.SijoitteluAjo;
 import fi.vm.sade.sijoittelu.domain.Valintatapajono;
 import fi.vm.sade.sijoittelu.domain.ValintatuloksenTila;
 import fi.vm.sade.sijoittelu.domain.Valintatulos;
+import fi.vm.sade.util.NoSqlUnitInterceptor;
 import fi.vm.sade.valintalaskenta.domain.dto.valintatieto.HakuDTO;
 import fi.vm.sade.valintalaskenta.tulos.service.impl.ValintatietoService;
-import org.junit.Assert;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@ContextConfiguration(locations = "classpath:test-sijoittelu-batch-mongo.xml")
-@RunWith(SpringJUnit4ClassRunner.class)
-@UsingDataSet
+@ContextConfiguration(classes = {TestConfiguration.class})
+@ExtendWith(SpringExtension.class)
+@ExtendWith(NoSqlUnitInterceptor.class)
 public class VastaanottoTest {
 
     @Autowired
@@ -46,9 +45,6 @@ public class VastaanottoTest {
 
     @Autowired
     private ApplicationContext applicationContext; // Required by the @Rule below
-
-    @Rule
-    public MongoDbRule mongoDbRule = newMongoDbRule().defaultSpringMongoDb("test");
 
 	@Test
     @UsingDataSet(locations = "vastaanotot.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
@@ -129,41 +125,41 @@ public class VastaanottoTest {
 
         System.out.println(PrintHelper.tulostaSijoittelu(s));
 
-        Assert.assertEquals(6, sijoitteluAjo.getMuuttuneetValintatulokset().size());
+        Assertions.assertEquals(6, sijoitteluAjo.getMuuttuneetValintatulokset().size());
 
         hakukohteet.get(0).getValintatapajonot().get(0).getHakemukset().forEach(hak -> {
            if(hak.getHakemusOid().equals("oid1")) {
-               Assert.assertEquals(hak.getTila(), HakemuksenTila.VARASIJALTA_HYVAKSYTTY);
+               Assertions.assertEquals(hak.getTila(), HakemuksenTila.VARASIJALTA_HYVAKSYTTY);
            } else if(hak.getHakemusOid().equals("oid2")) {
-               Assert.assertEquals(hak.getTila(), HakemuksenTila.VARASIJALTA_HYVAKSYTTY);
+               Assertions.assertEquals(hak.getTila(), HakemuksenTila.VARASIJALTA_HYVAKSYTTY);
            } else if(hak.getHakemusOid().equals("oid3")) {
-               Assert.assertEquals(hak.getTila(), HakemuksenTila.VARASIJALTA_HYVAKSYTTY);
+               Assertions.assertEquals(hak.getTila(), HakemuksenTila.VARASIJALTA_HYVAKSYTTY);
            } else {
-               Assert.assertEquals(hak.getTila(), HakemuksenTila.VARASIJALTA_HYVAKSYTTY);
+               Assertions.assertEquals(hak.getTila(), HakemuksenTila.VARASIJALTA_HYVAKSYTTY);
            }
         });
 
         hakukohteet.get(1).getValintatapajonot().get(0).getHakemukset().forEach(hak -> {
             if(hak.getHakemusOid().equals("oid1")) {
-                Assert.assertEquals(hak.getTila(), HakemuksenTila.PERUUNTUNUT);
+                Assertions.assertEquals(hak.getTila(), HakemuksenTila.PERUUNTUNUT);
             } else if(hak.getHakemusOid().equals("oid2")) {
-                Assert.assertEquals(hak.getTila(), HakemuksenTila.PERUUNTUNUT);
+                Assertions.assertEquals(hak.getTila(), HakemuksenTila.PERUUNTUNUT);
             } else if(hak.getHakemusOid().equals("oid3")) {
-                Assert.assertEquals(hak.getTila(), HakemuksenTila.PERUUNTUNUT);
+                Assertions.assertEquals(hak.getTila(), HakemuksenTila.PERUUNTUNUT);
             } else {
-                Assert.assertEquals(hak.getTila(), HakemuksenTila.PERUUNTUNUT);
+                Assertions.assertEquals(hak.getTila(), HakemuksenTila.PERUUNTUNUT);
             }
         });
 
         hakukohteet.get(2).getValintatapajonot().get(0).getHakemukset().forEach(hak -> {
             if(hak.getHakemusOid().equals("oid1")) {
-                Assert.assertEquals(hak.getTila(), HakemuksenTila.PERUUNTUNUT);
+                Assertions.assertEquals(hak.getTila(), HakemuksenTila.PERUUNTUNUT);
             } else if(hak.getHakemusOid().equals("oid2")) {
-                Assert.assertEquals(hak.getTila(), HakemuksenTila.PERUUNTUNUT);
+                Assertions.assertEquals(hak.getTila(), HakemuksenTila.PERUUNTUNUT);
             } else if(hak.getHakemusOid().equals("oid3")) {
-                Assert.assertEquals(hak.getTila(), HakemuksenTila.PERUUNTUNUT);
+                Assertions.assertEquals(hak.getTila(), HakemuksenTila.PERUUNTUNUT);
             } else {
-                Assert.assertEquals(hak.getTila(), HakemuksenTila.PERUUNTUNUT);
+                Assertions.assertEquals(hak.getTila(), HakemuksenTila.PERUUNTUNUT);
             }
         });
 
@@ -332,7 +328,7 @@ public class VastaanottoTest {
                 check = hakemus;
             }
         }
-        Assert.assertEquals(tila, check.getTila());
+        Assertions.assertEquals(tila, check.getTila());
     }
 
     private List<Hakukohde> tallennaEdellisetTilat(List<Hakukohde> hakukohteet) {

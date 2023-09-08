@@ -14,6 +14,7 @@ import fi.vm.sade.service.valintaperusteet.dto.HakijaryhmaValintatapajonoDTO;
 import fi.vm.sade.service.valintaperusteet.dto.ValintatapajonoCreateDTO;
 import fi.vm.sade.service.valintaperusteet.dto.ValintatapajonoDTO;
 import fi.vm.sade.sijoittelu.domain.SijoitteluajonTila;
+import fi.vm.sade.sijoittelu.laskenta.configuration.SijoitteluServiceConfiguration;
 import fi.vm.sade.sijoittelu.laskenta.email.EmailService;
 import fi.vm.sade.sijoittelu.laskenta.external.resource.HttpClients;
 import fi.vm.sade.sijoittelu.laskenta.service.business.SijoitteluBusinessService;
@@ -27,8 +28,11 @@ import fi.vm.sade.valintalaskenta.domain.dto.valintatieto.HakuDTO;
 import fi.vm.sade.valintalaskenta.domain.dto.valintatieto.ValintatietoValinnanvaiheDTO;
 import fi.vm.sade.valintalaskenta.domain.dto.valintatieto.ValintatietoValintatapajonoDTO;
 import fi.vm.sade.valintalaskenta.tulos.service.impl.ValintatietoService;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.asynchttpclient.Request;
 import org.asynchttpclient.RequestBuilder;
 import org.asynchttpclient.Response;
@@ -36,12 +40,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Predicate;
@@ -55,10 +60,10 @@ import static java.util.stream.Collectors.toSet;
 
 import static fi.vm.sade.valintalaskenta.tulos.roles.ValintojenToteuttaminenRole.OPH_CRUD;
 
-@Path("sijoittele")
-@Controller
+@RequestMapping(value = "/resources/sijoittele")
+@RestController
 @PreAuthorize("isAuthenticated()")
-@Api(value = "sijoittele", description = "Resurssi sijoitteluun")
+@Tag(name = "sijoittele", description = "Resurssi sijoitteluun")
 public class SijoitteluResource {
     private final static Logger LOGGER = LoggerFactory.getLogger(SijoitteluResource.class);
 
@@ -93,21 +98,19 @@ public class SijoitteluResource {
                 .create();
     }
 
-    @GET
-    @Path("/ajontila/{sijoitteluId}")
+    @GetMapping(value = "/ajontila/{sijoitteluId}", produces = MediaType.TEXT_PLAIN_VALUE)
     @PreAuthorize(OPH_CRUD)
-    @ApiOperation(value = "Sijoitteluajon tila", response = String.class)
-    public String sijoittelunTila(@PathParam("sijoitteluId") Long id) {
+    @Operation(summary = "Sijoitteluajon tila", responses = { @ApiResponse(responseCode = "OK", content = @Content(schema = @Schema(implementation = String.class)))})
+    public String sijoittelunTila(@PathVariable("sijoitteluId") Long id) {
         String tila = sijoitteluBookkeeperService.getSijoitteluAjonTila(id);
         LOGGER.info("/ajontila/sijoitteluId: Palautetaan sijoitteluajolle {} tila {}", id, tila);
         return tila;
     }
 
-    @GET
-    @Path("/{hakuOid}")
+    @GetMapping(value = "/{hakuOid}", produces = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize(OPH_CRUD)
-    @ApiOperation(value = "Käynnistä uusi sijoittelu haulle", response = Long.class)
-    public Long sijoittele(@PathParam("hakuOid") String hakuOid) {
+    @Operation(summary = "Käynnistä uusi sijoittelu haulle", responses = { @ApiResponse(responseCode = "OK", content = @Content(schema = @Schema(implementation = Long.class)))})
+    public Long sijoittele(@PathVariable("hakuOid") String hakuOid) {
 
         Long sijoitteluAjonTunniste = System.currentTimeMillis();
         if (!sijoitteluBookkeeperService.luoUusiSijoitteluAjo(hakuOid, sijoitteluAjonTunniste)) {
@@ -205,7 +208,7 @@ public class SijoitteluResource {
                     .setBody(this.gson.toJson(Lists.newArrayList(hakukohdeOidsWithHakijaryhma)))
                     .addHeader("Accept", "application/json")
                     .addHeader("Content-type", "application/json")
-                    .addHeader("Caller-Id", HttpClients.CALLER_ID)
+                    .addHeader("Caller-Id", SijoitteluServiceConfiguration.CALLER_ID)
                     .setRequestTimeout(120000)
                     .setReadTimeout(120000)
                     .build();
@@ -234,7 +237,7 @@ public class SijoitteluResource {
                         .setBody(this.gson.toJson(Lists.newArrayList(valintatapajonoOidsWithHakijaryhma)))
                         .addHeader("Accept", "application/json")
                         .addHeader("Content-type", "application/json")
-                        .addHeader("Caller-Id", HttpClients.CALLER_ID)
+                        .addHeader("Caller-Id", SijoitteluServiceConfiguration.CALLER_ID)
                         .setRequestTimeout(120000)
                         .setReadTimeout(120000)
                         .build();
@@ -284,7 +287,7 @@ public class SijoitteluResource {
                                 .setBody(this.gson.toJson(new ArrayList<>(aktiivisiaJonojaSisaltavienKohteidenOidit)))
                                 .addHeader("Accept", "application/json")
                                 .addHeader("Content-type", "application/json")
-                                .addHeader("Caller-Id", HttpClients.CALLER_ID)
+                                .addHeader("Caller-Id", SijoitteluServiceConfiguration.CALLER_ID)
                                 .setRequestTimeout(120000)
                                 .setReadTimeout(120000)
                                 .build();

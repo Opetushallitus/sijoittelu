@@ -1,63 +1,61 @@
 package fi.vm.sade.sijoittelu.domain.dto;
 
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
-
 import fi.vm.sade.sijoittelu.domain.HakemuksenTila;
 import fi.vm.sade.sijoittelu.domain.IlmoittautumisTila;
 import fi.vm.sade.sijoittelu.domain.ValintatuloksenTila;
 import fi.vm.sade.sijoittelu.domain.Valintatulos;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
-@ApiModel("Erillishaunhakija")
+@Schema(description = "Erillishaunhakija")
 public class ErillishaunHakijaDTO {
-    @ApiModelProperty(value = "Valintatapajonon tunniste", required = true)
+    @Schema(description = "Valintatapajonon tunniste", required = true)
     public String valintatapajonoOid;
-    @ApiModelProperty(value = "Hakemuksen tunniste", required = false)
+    @Schema(description = "Hakemuksen tunniste", required = false)
     public String hakemusOid;
-    @ApiModelProperty(value = "Hakukohteen tunniste", required = false)
+    @Schema(description = "Hakukohteen tunniste", required = false)
     public String hakukohdeOid;
-    @ApiModelProperty(value = "Saako hakijan tulokset julkaista", required = false)
+    @Schema(description = "Saako hakijan tulokset julkaista", required = false)
     public boolean julkaistavissa;
     //public boolean hyvaksyttyVarasijalta;
-    @ApiModelProperty(value = "Hakijan tunniste", required = false)
+    @Schema(description = "Hakijan tunniste", required = false)
     public String hakijaOid;
-    @ApiModelProperty(value = "Haun tunniste", required = false)
+    @Schema(description = "Haun tunniste", required = false)
     public String hakuOid;
-    @ApiModelProperty(value = "Tarjoajan (organisaation) tunniste", required = false)
+    @Schema(description = "Tarjoajan (organisaation) tunniste", required = false)
     public String tarjoajaOid;
     //public int hakutoive; // aina ensimmainen?
-    @ApiModelProperty(value = "Valintatuloksen tila", required = false)
+    @Schema(description = "Valintatuloksen tila", required = false)
     public ValintatuloksenTila valintatuloksenTila;
-    @ApiModelProperty(value = "Ehdollinen valinta", required = false)
+    @Schema(description = "Ehdollinen valinta", required = false)
     public boolean ehdollisestiHyvaksyttavissa;
 
-    @ApiModelProperty(value = "Ehdollisen hyväksymisen ehtokoodi", required = false)
+    @Schema(description = "Ehdollisen hyväksymisen ehtokoodi", required = false)
     public String ehdollisenHyvaksymisenEhtoKoodi;
-    @ApiModelProperty(value = "Ehdollisen hyväksymisen ehtokoodi muu FI", required = false)
+    @Schema(description = "Ehdollisen hyväksymisen ehtokoodi muu FI", required = false)
     public String ehdollisenHyvaksymisenEhtoFI;
-    @ApiModelProperty(value = "Ehdollisen hyväksymisen ehtokoodi muu SV", required = false)
+    @Schema(description = "Ehdollisen hyväksymisen ehtokoodi muu SV", required = false)
     public String ehdollisenHyvaksymisenEhtoSV;
-    @ApiModelProperty(value = "Ehdollisen hyväksymisen ehtokoodi muu EN", required = false)
+    @Schema(description = "Ehdollisen hyväksymisen ehtokoodi muu EN", required = false)
     public String ehdollisenHyvaksymisenEhtoEN;
 
-    @ApiModelProperty(value = "Ilmoittautumisen tila", required = false)
+    @Schema(description = "Ilmoittautumisen tila", required = false)
     public IlmoittautumisTila ilmoittautumisTila;
-    @ApiModelProperty(value = "Hakemuksen tila", required = false)
+    @Schema(description = "Hakemuksen tila", required = false)
     public HakemuksenTila hakemuksenTila;
-    @ApiModelProperty(value = "Hakijan etunimi", required = false)
+    @Schema(description = "Hakijan etunimi", required = false)
     public String etunimi;
-    @ApiModelProperty(value = "Hakijan sukunimi", required = false)
+    @Schema(description = "Hakijan sukunimi", required = false)
     public String sukunimi;
-    @ApiModelProperty(value = "Hyväksymiskirje lähetetty hakijalle", required = false)
+    @Schema(description = "Hyväksymiskirje lähetetty hakijalle", required = false)
     public Date hyvaksymiskirjeLahetetty;
 
     public boolean poistetaankoTulokset = false;
 
-    @ApiModelProperty(value = "Hakemuksen tilankuvaukset", required = false)
+    @Schema(description = "Hakemuksen tilankuvaukset", required = false)
     public List<String> tilanKuvaukset;
 
     public ErillishaunHakijaDTO(

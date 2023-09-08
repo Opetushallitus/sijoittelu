@@ -5,55 +5,24 @@
 	<artifactId>sijoittelu-tulos-api</artifactId>
 	<name>Sijoittelu :: Tulos :: API</name>
 	<packaging>jar</packaging>
-	<version>7.7.1-SNAPSHOT</version>
+	<version>8.0.0-SNAPSHOT</version>
 
 	<parent>
 		<groupId>fi.vm.sade.sijoittelu</groupId>
 		<artifactId>sijoittelu</artifactId>
-		<version>7.7.1-SNAPSHOT</version>
+		<version>8.0.0-SNAPSHOT</version>
 	</parent>
 
 
 	<dependencies>
 		<dependency>
-			<groupId>javax</groupId>
-			<artifactId>javaee-web-api</artifactId>
+			<groupId>io.swagger.core.v3</groupId>
+			<artifactId>swagger-annotations</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.codehaus.jackson</groupId>
-			<artifactId>jackson-core-asl</artifactId>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.codehaus.jackson</groupId>
-			<artifactId>jackson-mapper-asl</artifactId>
-			<scope>provided</scope>
-		</dependency>
-        <dependency>
-            <groupId>io.swagger</groupId>
-            <artifactId>swagger-jaxrs</artifactId>
-            <scope>provided</scope>
-			<version>${swagger.version}</version>
-        </dependency>
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>4.11</version>
+			<groupId>org.junit.jupiter</groupId>
+			<artifactId>junit-jupiter-api</artifactId>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
-
-	<build>
-		<plugins>
-			<plugin>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.8.0</version>
-				<inherited>true</inherited>
-				<configuration>
-					<release>8</release>
-					<debug>false</debug>
-				</configuration>
-			</plugin>
-		</plugins>
-	</build>
 </project>

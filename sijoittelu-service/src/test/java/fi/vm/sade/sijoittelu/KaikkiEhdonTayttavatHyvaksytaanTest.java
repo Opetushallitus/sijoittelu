@@ -2,24 +2,24 @@ package fi.vm.sade.sijoittelu;
 
 import com.lordofthejars.nosqlunit.annotation.UsingDataSet;
 import com.lordofthejars.nosqlunit.core.LoadStrategyEnum;
-import com.lordofthejars.nosqlunit.mongodb.MongoDbRule;
 
+import fi.vm.sade.configuration.TestConfiguration;
 import fi.vm.sade.sijoittelu.batch.logic.impl.DomainConverter;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.PrintHelper;
-import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoitteluAlgorithm;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoittelunTila;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.util.SijoitteluAlgorithmUtil;
 import fi.vm.sade.sijoittelu.domain.*;
+import fi.vm.sade.util.NoSqlUnitInterceptor;
 import fi.vm.sade.valintalaskenta.domain.dto.valintatieto.HakuDTO;
 import fi.vm.sade.valintalaskenta.tulos.service.impl.ValintatietoService;
-import org.junit.Assert;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInfo;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -28,10 +28,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.lordofthejars.nosqlunit.mongodb.MongoDbRule.MongoDbRuleBuilder.newMongoDbRule;
-
-@ContextConfiguration(locations = "classpath:test-sijoittelu-batch-mongo.xml")
-@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(classes = {TestConfiguration.class})
+@ExtendWith(SpringExtension.class)
+@ExtendWith(NoSqlUnitInterceptor.class)
 @UsingDataSet
 public class KaikkiEhdonTayttavatHyvaksytaanTest {
 
@@ -41,13 +40,9 @@ public class KaikkiEhdonTayttavatHyvaksytaanTest {
     @Autowired
     private ApplicationContext applicationContext;
 
-    @Rule
-    public MongoDbRule mongoDbRule = newMongoDbRule().defaultSpringMongoDb("test");
-
 	@Test
     @UsingDataSet(locations = "kaikki_ehdon_tayttavat_hyvaksytaan.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
-	public void testKaikkiEhdonTayttavatHyvaksytaan() throws IOException {
-
+	public void testKaikkiEhdonTayttavatHyvaksytaan(TestInfo testInfo) throws IOException {
         HakuDTO haku = valintatietoService.haeValintatiedot("1.2.246.562.29.173465377510");
 
         List<Hakukohde> hakukohteet = haku.getHakukohteet().parallelStream().map(DomainConverter::convertToHakukohde).collect(Collectors.toList());
@@ -95,8 +90,8 @@ public class KaikkiEhdonTayttavatHyvaksytaanTest {
                 actual.add(hakemus.getHakemusOid());
             }
         }
-        Assert.assertTrue("Actual result does not contain all wanted approved OIDs", actual.containsAll(wanted));
-        Assert.assertTrue("Wanted result contains more approved OIDs than actual", wanted.containsAll(actual));
+        Assertions.assertTrue(actual.containsAll(wanted), "Actual result does not contain all wanted approved OIDs");
+        Assertions.assertTrue(wanted.containsAll(actual), "Wanted result contains more approved OIDs than actual");
     }
 
 }

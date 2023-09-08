@@ -4,10 +4,7 @@ import static fi.vm.sade.sijoittelu.SijoitteluMatchers.hasTila;
 import static fi.vm.sade.sijoittelu.domain.HakemuksenTila.*;
 import static fi.vm.sade.sijoittelu.domain.Tasasijasaanto.ARVONTA;
 import static fi.vm.sade.sijoittelu.domain.Tasasijasaanto.YLITAYTTO;
-import static junit.framework.TestCase.assertTrue;
-import static org.junit.Assert.assertThat;
 
-import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoitteluajoWrapperFactory;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.helper.HakuBuilder;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.helper.HakuBuilder.HakemusBuilder;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.helper.HakuBuilder.HakukohdeBuilder;
@@ -16,11 +13,11 @@ import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.util.SijoitteluAlgorithm
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.util.TilojenMuokkaus;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.*;
 import fi.vm.sade.sijoittelu.domain.*;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.hamcrest.MatcherAssert;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -50,14 +47,14 @@ public class SijoitteleHakukohdeTest {
     private HakukohdeWrapper hakukohdeWrapper;
     private ValintatapajonoWrapper valintatapajonoWrapper;
 
-    @Before
+    @BeforeEach
     public void valmisteleSijoitteluajoWrapper() {
         jono.setEiVarasijatayttoa(false);
         Hakukohde hakukohde = new HakuBuilder.HakukohdeBuilder("Testihakukohde_1").withValintatapajono(jono).build();
         sijoitteluajoWrapper = new HakuBuilder.SijoitteluajoWrapperBuilder(Collections.singletonList(hakukohde)).build();
         sijoitteluajoWrapper.setVarasijaSaannotAstuvatVoimaan(LocalDateTime.now().minusDays(2));
         sijoitteluajoWrapper.setVarasijaTayttoPaattyy(LocalDateTime.now().minusDays(1));
-        assertTrue(sijoitteluajoWrapper.varasijaSaannotVoimassa());
+        Assertions.assertTrue(sijoitteluajoWrapper.varasijaSaannotVoimassa());
         List<HakemusWrapper> hwlist = new ArrayList<>();
         HakemusWrapper hw1 = new HakemusWrapper();
         hw1.setHakemus(hakemus1);
@@ -91,10 +88,10 @@ public class SijoitteleHakukohdeTest {
     @Test
     public void testValintatapajononSijoitteluEiPeruunnutaEdellisenSijoitteluajonHyvaksymiaHakijoitaJosVarasijatayttoOnPaattynyt() {
         SijoitteleHakukohde.sijoitteleHakukohde(sijoitteluajoWrapper, hakukohdeWrapper);
-        assertTrue(HakemuksenTila.HYVAKSYTTY.equals(hakemus1.getTila()));
-        assertTrue(HakemuksenTila.HYVAKSYTTY.equals(hakemus2.getTila()));
-        assertTrue(HakemuksenTila.VARASIJALTA_HYVAKSYTTY.equals(hakemus3.getTila()));
-        assertTrue(HakemuksenTila.PERUUNTUNUT.equals(hakemus4.getTila()));
+        Assertions.assertTrue(HYVAKSYTTY.equals(hakemus1.getTila()));
+        Assertions.assertTrue(HYVAKSYTTY.equals(hakemus2.getTila()));
+        Assertions.assertTrue(VARASIJALTA_HYVAKSYTTY.equals(hakemus3.getTila()));
+        Assertions.assertTrue(PERUUNTUNUT.equals(hakemus4.getTila()));
     }
 
     @Test
@@ -135,11 +132,11 @@ public class SijoitteleHakukohdeTest {
         TilojenMuokkaus.asetaTilaksiVaralla(hakemus4);
 
 
-        Assert.assertTrue(SijoitteleHakukohde.eiPeruttuaKorkeampaaTaiSamaaHakutoivetta(hakemusWrapper1));
+        Assertions.assertTrue(SijoitteleHakukohde.eiPeruttuaKorkeampaaTaiSamaaHakutoivetta(hakemusWrapper1));
         //ok koska kakkonen on sama instanssi kuin verrattava kohde
-        Assert.assertTrue(SijoitteleHakukohde.eiPeruttuaKorkeampaaTaiSamaaHakutoivetta(hakemusWrapper2));
-        Assert.assertFalse(SijoitteleHakukohde.eiPeruttuaKorkeampaaTaiSamaaHakutoivetta(hakemusWrapper3));
-        Assert.assertFalse(SijoitteleHakukohde.eiPeruttuaKorkeampaaTaiSamaaHakutoivetta(hakemusWrapper4));
+        Assertions.assertTrue(SijoitteleHakukohde.eiPeruttuaKorkeampaaTaiSamaaHakutoivetta(hakemusWrapper2));
+        Assertions.assertFalse(SijoitteleHakukohde.eiPeruttuaKorkeampaaTaiSamaaHakutoivetta(hakemusWrapper3));
+        Assertions.assertFalse(SijoitteleHakukohde.eiPeruttuaKorkeampaaTaiSamaaHakutoivetta(hakemusWrapper4));
     }
 
     @Test
@@ -157,13 +154,13 @@ public class SijoitteleHakukohdeTest {
         jono.setSijoiteltuIlmanVarasijasaantojaNiidenOllessaVoimassa(false);
         jono.setEiVarasijatayttoa(false);
         SijoitteluAlgorithmUtil.sijoittele(Collections.singletonList(hakukohde), Collections.emptyList(), Collections.emptyMap());
-        assertThat(hyvaksyttavaHakemus, hasTila(HYVAKSYTTY));
-        assertThat(hakemusJokaEiMahdu, hasTila(VARALLA));
+        MatcherAssert.assertThat(hyvaksyttavaHakemus, hasTila(HYVAKSYTTY));
+        MatcherAssert.assertThat(hakemusJokaEiMahdu, hasTila(VARALLA));
 
         jono.setSijoiteltuIlmanVarasijasaantojaNiidenOllessaVoimassa(false);
         jono.setEiVarasijatayttoa(true);
         SijoitteluAlgorithmUtil.sijoittele(Collections.singletonList(hakukohde), Collections.emptyList(), Collections.emptyMap());
-        assertThat(hyvaksyttavaHakemus, hasTila(HYVAKSYTTY));
-        assertThat(hakemusJokaEiMahdu, hasTila(PERUUNTUNUT));
+        MatcherAssert.assertThat(hyvaksyttavaHakemus, hasTila(HYVAKSYTTY));
+        MatcherAssert.assertThat(hakemusJokaEiMahdu, hasTila(PERUUNTUNUT));
     }
 }

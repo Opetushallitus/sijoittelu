@@ -6,14 +6,13 @@ import fi.vm.sade.sijoittelu.batch.logic.impl.DomainConverter;
 import static fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.util.SijoitteluAlgorithmUtil.sijoittele;
 import fi.vm.sade.sijoittelu.domain.Hakukohde;
 import fi.vm.sade.valintalaskenta.domain.dto.valintatieto.HakuDTO;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
-
 
 /**
  * 

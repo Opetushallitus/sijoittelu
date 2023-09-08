@@ -4,13 +4,11 @@ import com.google.common.collect.Lists;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.helper.HakuBuilder;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.SijoitteluajoWrapper;
 import fi.vm.sade.sijoittelu.domain.Hakukohde;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
 import java.util.List;
-
-import static org.junit.Assert.*;
-
 
 public class PostSijoitteluProcessorAsetaSivssnovTest {
 
@@ -21,11 +19,11 @@ public class PostSijoitteluProcessorAsetaSivssnovTest {
     }
 
     private void assertJonoSivssnov(String name, Boolean assertion, SijoitteluajoWrapper sijoitteluAjo) {
-        assertEquals(name + " should have " + assertion + " sivssnov", true, sijoitteluAjo.getHakukohteet().stream()
+        Assertions.assertEquals(true, sijoitteluAjo.getHakukohteet().stream()
             .flatMap(hkw -> hkw.getValintatapajonot().stream())
             .anyMatch(vtj ->
                 vtj.getValintatapajono().getOid().equals(name)
-                    && vtj.getValintatapajono().getSijoiteltuIlmanVarasijasaantojaNiidenOllessaVoimassa() == assertion));
+                    && vtj.getValintatapajono().getSijoiteltuIlmanVarasijasaantojaNiidenOllessaVoimassa() == assertion), name + " should have " + assertion + " sivssnov");
     }
 
     @Test
@@ -59,9 +57,9 @@ public class PostSijoitteluProcessorAsetaSivssnovTest {
 
         p.process(sijoitteluAjo);
 
-        assertEquals("All valintatapajonot should have true sivssnov", true, sijoitteluAjo.getHakukohteet().stream()
+        Assertions.assertEquals(true, sijoitteluAjo.getHakukohteet().stream()
             .flatMap(hkw -> hkw.getValintatapajonot().stream())
-            .allMatch(vtj -> vtj.getValintatapajono().getSijoiteltuIlmanVarasijasaantojaNiidenOllessaVoimassa()));
+            .allMatch(vtj -> vtj.getValintatapajono().getSijoiteltuIlmanVarasijasaantojaNiidenOllessaVoimassa()), "All valintatapajonot should have true sivssnov");
     }
 
     @Test

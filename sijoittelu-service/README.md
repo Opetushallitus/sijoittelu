@@ -1,13 +1,43 @@
-# Sijoittelu-service
+## Sijoittelu-service
 
-Start service with
+Sijoittelu-service on sijoittelu-palvelun osa joka sisältää varsinaisen sijoittelurajapinnan.
 
-`mvn jetty:run`
+### Ajaminen lokaalisti hahtuvan palveluita vasten
 
-If you want to use local embedded database with data imported to fixtures, then
+Joissakin tapauksissa on tarpeellista ajaa ympäristöä lokaalisti jonkin jaetun kehitysympäristön datalla, esim. virheiden
+selvittämistä varten. Tämä onnistuu seuraavilla ohjeilla.
 
-`mvn jetty:run -Dspring.profiles.active=it`
+1. Kehitysympäristössä käytetään aina paikallista sijoittelutietokantaa (jotta skeemamuutoksia voi kehittää lokaalisti).
+Luo PostgreSQL kontti seuraavilla komennoilla (tarvitsee tehdä vain kerran):
 
-Jetty will be running on port 8180. Now you can try the following:
+    ``` shell
+    cd sijoittelu-service/postgresql/docker
+    docker build --tag sijoittelu-postgres .
+    docker create --name sijoittelu-postgres --env POSTGRES_PASSWORD=postgres -p 5433:5432 sijoittelu-postgres
+    ```
 
-`curl -v http://ophadmin:ilonkautta@localhost:8180/resources/sijoittelu/1.2.246.562.5.2013080813081926341928/sijoitteluajo/latest/hakukohde/1.2.246.562.5.72607738902`
+2. Kopioi konfiguraatio-template lokaalia kehitystä varten ```'/src/test/resources/application-dev.properties.template'``` -> ```'/src/test/resources/application-dev.properties'```.
+Application-dev.properties on ignoroitu Gitissä etteivät salasanat valu repoon. Tähän tiedostoon täytyy täyttää tarvittavat hahtuva-ympäristön
+salasanat.
+  
+  
+3. Koska käytetään testiympäristön mondodb-kantaa, tarvitaan ssh-porttiohjaus:
+
+    `ssh -N -L 27017:docdb.db.hahtuvaopintopolku.fi:27017 <ssh-tunnus>@bastion.hahtuvaopintopolku.fi`
+  
+  
+4. Lisää tarvittavat JVM-parametrit, mene Run -> Edit Configurations -> Valitse DevApp.java -> Modify Options -> Add VM Options
+Ja lisää:
+
+    `--add-opens=java.base/java.lang=ALL-UNNAMED --add-opens java.base/java.math=ALL-UNNAMED --add-opens java.base/java.util=ALL-UNNAMED`
+  
+  
+5. Käynnistä Ideassa ```DevApp.java``` (right-click -> Run), ja avaa selaimessa allaoleva osoite (oid vaihtelee sen mukaan mikä sijoittelu halutaan ajaa).
+Sijoittelu käynnistyy autentikoinnin jälkeen.
+
+    `https://localhost:8443/sijoittelu-service/resources/sijoittele/1.2.246.562.29.00000000000000021303`
+
+### Swagger endpoint
+
+Swagger löytyy osoitteesta [https://localhost:8443/sijoittelu-service/swagger-ui/index.html](https://localhost:8443/sijoittelu-service/swagger-ui/index.html).
+

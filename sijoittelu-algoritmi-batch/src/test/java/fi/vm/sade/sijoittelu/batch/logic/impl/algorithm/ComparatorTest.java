@@ -12,8 +12,8 @@ import fi.vm.sade.sijoittelu.domain.Hakemus;
 import fi.vm.sade.sijoittelu.domain.Hakijaryhma;
 import fi.vm.sade.sijoittelu.domain.Hakukohde;
 import fi.vm.sade.sijoittelu.domain.Valintatapajono;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -60,10 +60,10 @@ public class ComparatorTest {
 
         Iterator<HakukohdeWrapper> it = ts.iterator();
 
-        Assert.assertSame(w2, it.next());
-        Assert.assertSame(w1, it.next());
-        Assert.assertSame(w4, it.next());
-        Assert.assertSame(w3, it.next());
+        Assertions.assertSame(w2, it.next());
+        Assertions.assertSame(w1, it.next());
+        Assertions.assertSame(w4, it.next());
+        Assertions.assertSame(w3, it.next());
 
     }
 
@@ -101,10 +101,10 @@ public class ComparatorTest {
 
         Iterator<HakemusWrapper> it = ts.iterator();
 
-        Assert.assertSame(w2, it.next());
-        Assert.assertSame(w1, it.next());
-        Assert.assertSame(w4, it.next());
-        Assert.assertSame(w3, it.next());
+        Assertions.assertSame(w2, it.next());
+        Assertions.assertSame(w1, it.next());
+        Assertions.assertSame(w4, it.next());
+        Assertions.assertSame(w3, it.next());
 
     }
 
@@ -201,14 +201,14 @@ public class ComparatorTest {
 
         Iterator<HakemusWrapper> it = ts.iterator();
 
-        Assert.assertSame(w1, it.next());
-        Assert.assertSame(w11, it.next());
-        Assert.assertSame(w12, it.next());
-        Assert.assertSame(w2, it.next());
-        Assert.assertSame(w21, it.next());
-        Assert.assertSame(w31, it.next());
-        Assert.assertSame(w33, it.next());
-        Assert.assertSame(w4, ts.get(ts.size() - 1));
+        Assertions.assertSame(w1, it.next());
+        Assertions.assertSame(w11, it.next());
+        Assertions.assertSame(w12, it.next());
+        Assertions.assertSame(w2, it.next());
+        Assertions.assertSame(w21, it.next());
+        Assertions.assertSame(w31, it.next());
+        Assertions.assertSame(w33, it.next());
+        Assertions.assertSame(w4, ts.get(ts.size() - 1));
 
     }
 
@@ -246,10 +246,10 @@ public class ComparatorTest {
 
         Iterator<ValintatapajonoWrapper> it = ts.iterator();
 
-        Assert.assertSame(w2, it.next());
-        Assert.assertSame(w1, it.next());
-        Assert.assertSame(w4, it.next());
-        Assert.assertSame(w3, it.next());
+        Assertions.assertSame(w2, it.next());
+        Assertions.assertSame(w1, it.next());
+        Assertions.assertSame(w4, it.next());
+        Assertions.assertSame(w3, it.next());
 
     }
 
@@ -288,10 +288,10 @@ public class ComparatorTest {
 
         Iterator<HakijaryhmaWrapper> it = ts.iterator();
 
-        Assert.assertSame(w2, it.next());
-        Assert.assertSame(w1, it.next());
-        Assert.assertSame(w4, it.next());
-        Assert.assertSame(w3, it.next());
+        Assertions.assertSame(w2, it.next());
+        Assertions.assertSame(w1, it.next());
+        Assertions.assertSame(w4, it.next());
+        Assertions.assertSame(w3, it.next());
 
     }
 

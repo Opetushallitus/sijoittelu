@@ -1,7 +1,7 @@
 package fi.vm.sade.sijoittelu.tulos.dto.raportointi;
 
 import fi.vm.sade.sijoittelu.tulos.dto.ValintatuloksenTila;
-import io.swagger.annotations.ApiModel;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -11,7 +11,7 @@ import java.util.List;
  * Hakemukseen liittyvän hakutoiveen tila sijoittelussa, hakujonoittain.
  */
 
-@ApiModel(value="sijoittelu.tulos.dto.raportointi.HakutoiveDTO", description = "Hakutoive")
+@Schema(description = "Hakutoive")
 public class HakutoiveDTO implements Comparable<HakutoiveDTO> {
 
     private Integer hakutoive;
