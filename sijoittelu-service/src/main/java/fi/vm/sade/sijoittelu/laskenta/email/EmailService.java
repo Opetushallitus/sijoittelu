@@ -2,6 +2,7 @@ package fi.vm.sade.sijoittelu.laskenta.email;
 
 import fi.vm.sade.sijoittelu.laskenta.service.it.Haku;
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.simplejavamail.api.email.ContentTransferEncoding;
 import org.simplejavamail.api.email.Email;
 import org.simplejavamail.api.email.Recipient;
 import org.simplejavamail.api.mailer.Mailer;
@@ -88,7 +89,7 @@ public class EmailService {
         Email email = EmailBuilder.startingBlank()
                 .withRecipients(recipients)
                 .from(SENDER_NAME, SENDER_EMAIL_ADDRESS)
-                .withHeader("Content-Transfer-Encoding", "base64")
+                .withContentTransferEncoding(ContentTransferEncoding.BASE_64)
                 .withHeader("Encoding", "base64")
                 .withSubject(ERROR_YHTEISHAKU_SUBJECT)
                 .withHTMLText(body)
