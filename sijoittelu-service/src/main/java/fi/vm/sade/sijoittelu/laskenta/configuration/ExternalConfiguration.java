@@ -12,9 +12,13 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
+import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.web.reactive.function.client.WebClient;
+import reactor.netty.http.client.HttpClient;
+import reactor.netty.resources.ConnectionProvider;
 
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
 import java.util.List;
 
 @Configuration
@@ -29,9 +33,29 @@ public class ExternalConfiguration {
             .acceptCharset(StandardCharsets.UTF_8);
     }
 
+    private static WebClient webClient;
+
+    static {
+        ConnectionProvider provider = ConnectionProvider.builder("external")
+            .maxConnections(500)
+            .maxIdleTime(Duration.ofSeconds(20))
+            .maxLifeTime(Duration.ofSeconds(60))
+            .pendingAcquireTimeout(Duration.ofSeconds(60))
+            .evictInBackground(Duration.ofSeconds(120)).build();
+
+        webClient = WebClient.builder()
+            .clientConnector(new ReactorClientHttpConnector(HttpClient.create(provider)))
+            .build();
+    }
+
+
+    private static WebClient getWebClient() {
+        return webClient;
+    }
+
     @Bean
     public OhjausparametriResource ohjausParametriRestClient(@Value("${valintalaskentakoostepalvelu.parametriservice.rest.url}") String address) {
-        return oid -> withHeaders(WebClient.create().get().uri(address + "/v1/rest/parametri/" + oid))
+        return oid -> withHeaders(getWebClient().get().uri(address + "/v1/rest/parametri/" + oid))
             .retrieve()
             .toEntity(String.class)
             .block()
@@ -43,7 +67,7 @@ public class ExternalConfiguration {
         return new VirkailijaValintaTulosServiceResource() {
             @Override
             public VastaanotettavuusDTO vastaanotettavuus(String hakijaOid, String hakemusOid, String hakukohdeOid) {
-                return withHeaders(WebClient.create().get().uri(address + "/virkailija/henkilo/" + hakijaOid + "/hakemus/" + hakemusOid+ "/hakukohde/" + hakukohdeOid + "/vastaanotettavuus"))
+                return withHeaders(getWebClient().get().uri(address + "/virkailija/henkilo/" + hakijaOid + "/hakemus/" + hakemusOid+ "/hakukohde/" + hakukohdeOid + "/vastaanotettavuus"))
                     .retrieve()
                     .toEntity(VastaanotettavuusDTO.class)
                     .block()
@@ -52,7 +76,7 @@ public class ExternalConfiguration {
 
             @Override
             public List<Valintatulos> valintatuloksetValinnantilalla(String hakuOid) {
-                return withHeaders(WebClient.create().get().uri(address + "/virkailija/valintatulos/haku/" + hakuOid))
+                return withHeaders(getWebClient().get().uri(address + "/virkailija/valintatulos/haku/" + hakuOid))
                     .retrieve()
                     .toEntityList(Valintatulos.class)
                     .block()
@@ -61,7 +85,7 @@ public class ExternalConfiguration {
 
             @Override
             public List<VastaanottoDTO> haunKoulutuksenAlkamiskaudenVastaanototYhdenPaikanSaadoksenPiirissa(String hakuOid) {
-                return withHeaders(WebClient.create().get().uri(address + "/virkailija/vastaanotot/haku/" + hakuOid))
+                return withHeaders(getWebClient().get().uri(address + "/virkailija/vastaanotot/haku/" + hakuOid))
                     .retrieve()
                     .toEntityList(VastaanottoDTO.class)
                     .block()
@@ -70,7 +94,7 @@ public class ExternalConfiguration {
 
             @Override
             public void valintatuloksetValinnantilalla(List<VastaanottoEventDto> valintatuloses) {
-                withHeaders(WebClient.create().post().uri(address + "/virkailija/transactional-vastaanotto"))
+                withHeaders(getWebClient().post().uri(address + "/virkailija/transactional-vastaanotto"))
                     .bodyValue(valintatuloses)
                     .retrieve();
             }
@@ -79,7 +103,7 @@ public class ExternalConfiguration {
 
     @Bean
     public HakuV1Resource TarjontaHakuResourceRestClient(@Value("${valintalaskentakoostepalvelu.tarjonta.rest.url}") final String address) {
-        return oid -> withHeaders(WebClient.create().get().uri(address + "/v1/haku/" + oid))
+        return oid -> withHeaders(getWebClient().get().uri(address + "/v1/haku/" + oid))
             .retrieve()
             .toEntity(ResultHakuDTO.class)
             .block()
