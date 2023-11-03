@@ -1,8 +1,6 @@
 package fi.vm.sade.sijoittelu;
 
 import static fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.PrintHelper.tulostaSijoittelu;
-import com.lordofthejars.nosqlunit.annotation.UsingDataSet;
-import com.lordofthejars.nosqlunit.core.LoadStrategyEnum;
 
 import fi.vm.sade.configuration.TestConfiguration;
 import fi.vm.sade.sijoittelu.batch.logic.impl.DomainConverter;
@@ -18,7 +16,6 @@ import fi.vm.sade.sijoittelu.domain.Hakemus;
 import fi.vm.sade.sijoittelu.domain.Hakukohde;
 import fi.vm.sade.sijoittelu.domain.SijoitteluAjo;
 import fi.vm.sade.sijoittelu.domain.Valintatapajono;
-import fi.vm.sade.util.NoSqlUnitInterceptor;
 import fi.vm.sade.valintalaskenta.domain.dto.valintatieto.HakuDTO;
 import fi.vm.sade.valintalaskenta.tulos.service.impl.ValintatietoService;
 import org.junit.jupiter.api.Assertions;
@@ -43,7 +40,6 @@ import java.util.stream.Collectors;
 
 @ContextConfiguration(classes = {TestConfiguration.class})
 @ExtendWith(SpringExtension.class)
-@ExtendWith(NoSqlUnitInterceptor.class)
 public class HakijaryhmaTest {
     private static final Logger LOG = LoggerFactory.getLogger(HakijaryhmaTest.class);
     @Autowired
@@ -53,7 +49,7 @@ public class HakijaryhmaTest {
     private ApplicationContext applicationContext;
 
 	@Test
-    @UsingDataSet(locations = "vaasan_yliopisto_valinnan_vaiheet.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
+    //@UsingDataSet(locations = "vaasan_yliopisto_valinnan_vaiheet.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
 	public void testSijoitteluOneHakijaryhma() {
 
         HakuDTO haku = valintatietoService.haeValintatiedot("1.2.246.562.29.173465377510");
@@ -69,7 +65,7 @@ public class HakijaryhmaTest {
 	}
 
     @Test
-    @UsingDataSet(locations = "vaasan_yliopisto_valinnan_vaiheet_kaksi_hakijaryhmaa.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
+    //@UsingDataSet(locations = "vaasan_yliopisto_valinnan_vaiheet_kaksi_hakijaryhmaa.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
     public void testSijoitteluTwoHakijaryhma() {
 
         HakuDTO haku = valintatietoService.haeValintatiedot("1.2.246.562.29.173465377510");
@@ -85,7 +81,7 @@ public class HakijaryhmaTest {
     }
 
     @Test
-    @UsingDataSet(locations = "vaasan_yliopisto_valinnan_vaiheet_kaksi_hakijaryhmaa_toinen_eri_jonossa.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
+    //@UsingDataSet(locations = "vaasan_yliopisto_valinnan_vaiheet_kaksi_hakijaryhmaa_toinen_eri_jonossa.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
     public void testSijoitteluTwoHakijaryhmaToisessaEriJono() {
 
         HakuDTO haku = valintatietoService.haeValintatiedot("1.2.246.562.29.173465377510");
@@ -99,7 +95,7 @@ public class HakijaryhmaTest {
     }
 
     @Test
-    @UsingDataSet(locations = "vaasan_yliopisto_valinnan_vaiheet_ei_hakijaryhmaa.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
+    //@UsingDataSet(locations = "vaasan_yliopisto_valinnan_vaiheet_ei_hakijaryhmaa.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
     public void testSijoitteluEiHakijaryhma() {
 
         HakuDTO haku = valintatietoService.haeValintatiedot("1.2.246.562.29.173465377510");
@@ -115,7 +111,7 @@ public class HakijaryhmaTest {
 
     @Test
     @Disabled
-    @UsingDataSet(locations = "alitaytto_simple_case.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
+    //@UsingDataSet(locations = "alitaytto_simple_case.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
     // Korjaa tämä kun ikiluuppi on korjattu
     public void testAlitayttoRekursio() {
 
@@ -132,7 +128,7 @@ public class HakijaryhmaTest {
     }
 
     @Test
-    @UsingDataSet(locations = "ylitaytto_simple_case.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
+    //@UsingDataSet(locations = "ylitaytto_simple_case.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
     public void testYlitayttoRekursio() {
 
         HakuDTO haku = valintatietoService.haeValintatiedot("1.2.246.562.29.173465377510");
@@ -151,7 +147,7 @@ public class HakijaryhmaTest {
 
     @Disabled
     @Test
-    @UsingDataSet(locations = "ylitaytto_vaihe.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
+    //@UsingDataSet(locations = "ylitaytto_vaihe.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
     public void testYlitaytto() {
 
         HakuDTO haku = valintatietoService.haeValintatiedot("1.2.246.562.29.173465377510");
@@ -168,7 +164,7 @@ public class HakijaryhmaTest {
     }
 
     @Test
-    @UsingDataSet(locations = "vain_ryhmaan_kuuluvat_hyvaksytaan.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
+    //@UsingDataSet(locations = "vain_ryhmaan_kuuluvat_hyvaksytaan.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
     public void testSijoitteluVainHakijaryhmaanKuuluvatVoivatTullaHyvaksytyksi() {
 
         HakuDTO haku = valintatietoService.haeValintatiedot("haku1");
@@ -185,7 +181,7 @@ public class HakijaryhmaTest {
     }
 
     @Test
-    @UsingDataSet(locations = "toisensa_pois_sulkevat_hakijaryhmat.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
+    //@UsingDataSet(locations = "toisensa_pois_sulkevat_hakijaryhmat.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
     public void testSijoitteluToisensaPoisSulkevatRyhmat() {
 
         HakuDTO haku = valintatietoService.haeValintatiedot("haku1");
@@ -195,7 +191,7 @@ public class HakijaryhmaTest {
     }
 
     @Test
-    @UsingDataSet(locations = "hakijaryhma_varasijasaannot_paattyneet.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
+    //@UsingDataSet(locations = "hakijaryhma_varasijasaannot_paattyneet.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
     public void testSijoitteluVarasijaSaannotPaattyneet() {
 
         HakuDTO haku = valintatietoService.haeValintatiedot("1.2.246.562.29.173465377510");

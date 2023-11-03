@@ -1,7 +1,5 @@
 package fi.vm.sade.sijoittelu;
 
-import com.lordofthejars.nosqlunit.annotation.UsingDataSet;
-import com.lordofthejars.nosqlunit.core.LoadStrategyEnum;
 
 import fi.vm.sade.configuration.TestConfiguration;
 import fi.vm.sade.sijoittelu.batch.logic.impl.DomainConverter;
@@ -9,7 +7,6 @@ import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.PrintHelper;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoittelunTila;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.util.SijoitteluAlgorithmUtil;
 import fi.vm.sade.sijoittelu.domain.*;
-import fi.vm.sade.util.NoSqlUnitInterceptor;
 import fi.vm.sade.valintalaskenta.domain.dto.valintatieto.HakuDTO;
 import fi.vm.sade.valintalaskenta.tulos.service.impl.ValintatietoService;
 import org.junit.jupiter.api.Assertions;
@@ -30,8 +27,6 @@ import java.util.stream.Collectors;
 
 @ContextConfiguration(classes = {TestConfiguration.class})
 @ExtendWith(SpringExtension.class)
-@ExtendWith(NoSqlUnitInterceptor.class)
-@UsingDataSet
 public class KaikkiEhdonTayttavatHyvaksytaanTest {
 
     @Autowired
@@ -41,7 +36,7 @@ public class KaikkiEhdonTayttavatHyvaksytaanTest {
     private ApplicationContext applicationContext;
 
 	@Test
-    @UsingDataSet(locations = "kaikki_ehdon_tayttavat_hyvaksytaan.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
+    //@UsingDataSet(locations = "kaikki_ehdon_tayttavat_hyvaksytaan.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
 	public void testKaikkiEhdonTayttavatHyvaksytaan(TestInfo testInfo) throws IOException {
         HakuDTO haku = valintatietoService.haeValintatiedot("1.2.246.562.29.173465377510");
 

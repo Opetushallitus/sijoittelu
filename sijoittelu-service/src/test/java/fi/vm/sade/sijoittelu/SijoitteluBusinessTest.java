@@ -9,9 +9,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
-import com.lordofthejars.nosqlunit.annotation.UsingDataSet;
-import com.lordofthejars.nosqlunit.core.LoadStrategyEnum;
-
 import fi.vm.sade.configuration.TestConfiguration;
 import fi.vm.sade.sijoittelu.batch.logic.impl.DomainConverter;
 import fi.vm.sade.sijoittelu.domain.HakemuksenTila;
@@ -29,7 +26,6 @@ import fi.vm.sade.sijoittelu.laskenta.service.business.ValintarekisteriService;
 import fi.vm.sade.sijoittelu.laskenta.service.business.ValintatulosWithVastaanotto;
 import fi.vm.sade.sijoittelu.laskenta.service.it.Haku;
 import fi.vm.sade.sijoittelu.laskenta.service.it.TarjontaIntegrationService;
-import fi.vm.sade.util.NoSqlUnitInterceptor;
 import fi.vm.sade.valintalaskenta.domain.dto.ValintatapajonoDTO;
 import fi.vm.sade.valintalaskenta.domain.dto.valintatieto.HakuDTO;
 import fi.vm.sade.valintalaskenta.tulos.service.impl.ValintatietoService;
@@ -57,7 +53,6 @@ import java.util.stream.Collectors;
 
 @ContextConfiguration(classes = {TestConfiguration.class})
 @ExtendWith(SpringExtension.class)
-@ExtendWith(NoSqlUnitInterceptor.class)
 public class SijoitteluBusinessTest {
 
     @Autowired
@@ -116,7 +111,7 @@ public class SijoitteluBusinessTest {
     }
 
     @Test
-    @UsingDataSet(locations = "peruuta_alemmat.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
+    //@UsingDataSet(locations = "peruuta_alemmat.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
     public void testPeruutaAlemmat() {
         HakuDTO haku = valintatietoService.haeValintatiedot("haku1");
 
@@ -206,7 +201,7 @@ public class SijoitteluBusinessTest {
     }
 
     @Test
-    @UsingDataSet(locations = "peruuta_alemmat.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
+    //@UsingDataSet(locations = "peruuta_alemmat.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
     public void testAlempiaHakutoiveitaEiPeruunnutetaJosHakutoiveidenPriorisointiEiOleKaytossa() {
         when(tarjontaIntegrationService.getHaku(anyString())).thenReturn(new Haku(
                 "hakuOid",
@@ -261,7 +256,7 @@ public class SijoitteluBusinessTest {
     }
 
     @Test
-    @UsingDataSet(locations = "peruuta_alemmat.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
+    //@UsingDataSet(locations = "peruuta_alemmat.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
     public void testEnemmanJonojaKuinValintaperusteissaVaadittu() {
         HakuDTO haku = valintatietoService.haeValintatiedot("haku1");
 
@@ -283,7 +278,7 @@ public class SijoitteluBusinessTest {
     }
 
     @Test
-    @UsingDataSet(locations = "peruuta_alemmat.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
+    //@UsingDataSet(locations = "peruuta_alemmat.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
     public void testPuuttuviaJonojaJotkaVaaditaanValintaperusteissa() {
         HakuDTO haku = valintatietoService.haeValintatiedot("haku1");
 
@@ -303,7 +298,7 @@ public class SijoitteluBusinessTest {
     }
 
     @Test
-    @UsingDataSet(locations = "peruuta_alemmat.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
+    //@UsingDataSet(locations = "peruuta_alemmat.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
     public void testPuuttuvaJonoKunKadonnutLaskennanTuloksista() {
         HakuDTO haku = valintatietoService.haeValintatiedot("haku1");
 
@@ -320,7 +315,7 @@ public class SijoitteluBusinessTest {
     }
 
     @Test
-    @UsingDataSet(locations = "peruuta_alemmat.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
+    //@UsingDataSet(locations = "peruuta_alemmat.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
     public void testPuuttuvaJonoKunKadonnutValintaperusteista() {
         HakuDTO haku = valintatietoService.haeValintatiedot("haku1");
 
@@ -341,7 +336,7 @@ public class SijoitteluBusinessTest {
     }
 
     @Test()
-    @UsingDataSet(locations = "peruuta_alemmat.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
+    //@UsingDataSet(locations = "peruuta_alemmat.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
     public void testPuuttuvaJonoKunPassivoituValintaperusteista() {
         HakuDTO haku = valintatietoService.haeValintatiedot("haku1");
 
@@ -357,7 +352,7 @@ public class SijoitteluBusinessTest {
     }
 
     @Test()
-    @UsingDataSet(locations = "peruuta_alemmat.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
+    //@UsingDataSet(locations = "peruuta_alemmat.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
     public void testPuuttuvaJonoKunEiPassivoituValintaperusteista() {
         HakuDTO haku = valintatietoService.haeValintatiedot("haku1");
 
@@ -379,7 +374,7 @@ public class SijoitteluBusinessTest {
     }
 
     @Test()
-    @UsingDataSet(locations = "peruuta_alemmat.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
+    //@UsingDataSet(locations = "peruuta_alemmat.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
     public void testSivssnovSijoittelunRajaKopioidaanEdellisestaSijoittelusta() {
         Optional<JonosijaTieto> jonosijaTieto = Optional.of(new JonosijaTieto(6, 1, HakemuksenTila.VARALLA, Collections.singletonList("hakija6")));
         HakuDTO haku = valintatietoService.haeValintatiedot("haku1");
@@ -477,7 +472,7 @@ public class SijoitteluBusinessTest {
     }
 
     @Test()
-    @UsingDataSet(locations = "peruuta_alemmat.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
+    //@UsingDataSet(locations = "peruuta_alemmat.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
     public void testPeruunnaHyvaksyttyaYlemmatHakutoiveetKunAMKOPEHaku() {
         when(tarjontaIntegrationService.getHaku(anyString())).thenReturn(new Haku(
                 "hakuOid",
@@ -570,7 +565,7 @@ public class SijoitteluBusinessTest {
     }
 
     @Test
-    @UsingDataSet(locations = "valisijoittelu_hylkays.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
+    //@UsingDataSet(locations = "valisijoittelu_hylkays.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
     public void testAlahylkaaValisijoittelussaHylattyja() {
 
         HakuDTO haku = valintatietoService.haeValintatiedot("haku1");

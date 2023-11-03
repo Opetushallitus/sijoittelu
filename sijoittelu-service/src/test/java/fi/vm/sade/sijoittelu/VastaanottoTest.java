@@ -1,8 +1,5 @@
 package fi.vm.sade.sijoittelu;
 
-import com.lordofthejars.nosqlunit.annotation.UsingDataSet;
-import com.lordofthejars.nosqlunit.core.LoadStrategyEnum;
-
 import fi.vm.sade.configuration.TestConfiguration;
 import fi.vm.sade.sijoittelu.batch.logic.impl.DomainConverter;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.PrintHelper;
@@ -19,7 +16,6 @@ import fi.vm.sade.sijoittelu.domain.SijoitteluAjo;
 import fi.vm.sade.sijoittelu.domain.Valintatapajono;
 import fi.vm.sade.sijoittelu.domain.ValintatuloksenTila;
 import fi.vm.sade.sijoittelu.domain.Valintatulos;
-import fi.vm.sade.util.NoSqlUnitInterceptor;
 import fi.vm.sade.valintalaskenta.domain.dto.valintatieto.HakuDTO;
 import fi.vm.sade.valintalaskenta.tulos.service.impl.ValintatietoService;
 import org.junit.jupiter.api.Assertions;
@@ -37,7 +33,6 @@ import java.util.stream.Collectors;
 
 @ContextConfiguration(classes = {TestConfiguration.class})
 @ExtendWith(SpringExtension.class)
-@ExtendWith(NoSqlUnitInterceptor.class)
 public class VastaanottoTest {
 
     @Autowired
@@ -47,7 +42,7 @@ public class VastaanottoTest {
     private ApplicationContext applicationContext; // Required by the @Rule below
 
 	@Test
-    @UsingDataSet(locations = "vastaanotot.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
+    //@UsingDataSet(locations = "vastaanotot.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
 	public void testVastaanotot() {
 
         HakuDTO haku = valintatietoService.haeValintatiedot("1.2.246.562.29.173465377510");
@@ -167,7 +162,7 @@ public class VastaanottoTest {
 	}
 
     @Test
-    @UsingDataSet(locations = "vastaanotot_perunut_kaikille_jonoille.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
+    //@UsingDataSet(locations = "vastaanotot_perunut_kaikille_jonoille.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
     public void testPeruutettuVastaanottoKaikilleJonoille() {
 
         HakuDTO haku = valintatietoService.haeValintatiedot("1.2.246.562.29.173465377510");
@@ -216,7 +211,7 @@ public class VastaanottoTest {
     }
 
     @Test
-    @UsingDataSet(locations = "vastaanotot_perunut_kaikille_jonoille.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
+    //@UsingDataSet(locations = "vastaanotot_perunut_kaikille_jonoille.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
     public void testEiVastaanottanutMaaraaikanaVastaanottoKaikilleJonoille() {
 
         HakuDTO haku = valintatietoService.haeValintatiedot("1.2.246.562.29.173465377510");
@@ -266,7 +261,7 @@ public class VastaanottoTest {
     }
 
     @Test
-    @UsingDataSet(locations = "vastaanotot_perunut_kaikille_jonoille.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
+    //@UsingDataSet(locations = "vastaanotot_perunut_kaikille_jonoille.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
     public void testPerunutVastaanottoKaikilleJonoille() {
 
         HakuDTO haku = valintatietoService.haeValintatiedot("1.2.246.562.29.173465377510");

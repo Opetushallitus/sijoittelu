@@ -14,7 +14,6 @@ import org.mockito.Mockito;
 import org.springframework.context.annotation.*;
 
 @Configuration
-@Import({MongoConfiguration.class})
 @ComponentScan(basePackages = {
     "fi.vm.sade.sijoittelu.tulos",
     "fi.vm.sade.sijoittelu.batch",

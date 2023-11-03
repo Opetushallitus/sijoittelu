@@ -12,7 +12,6 @@ host.cas={{host_cas}}
 host.ilb={{host_ilb}}
 host.alb={{host_alb}}
 host.virkailija={{host_virkailija}}
-mongodb.virkailija.uri=mongodb://{{mongodb_virkailija_auth}}@{{mongodb_virkailija_host}}:{{mongodb_virkailija_port}}
 server.name={{ansible_hostname}}
 
 # Oletusarvoja
@@ -46,9 +45,6 @@ valintalaskentakoostepalvelu.valintaperusteet.rest.url=${host.ilb}/valintaperust
 valintalaskentakoostepalvelu.parametriservice.rest.url=https://${host.virkailija}/ohjausparametrit-service/api
 
 #VALINTALASKENTA-SERVICE
-valintalaskenta-laskenta-service.mongodb.dbname=valintalaskentadb
-valintalaskenta-laskenta-service.mongodb.uri={{ mongodb_valintalaskentadb_uri | default("${mongodb.virkailija.uri}") }}/${valintalaskenta-laskenta-service.mongodb.dbname}
-valintalaskenta-laskenta-service.mongodb.useIndexQueries=true
 valintalaskenta-laskenta-service.swagger.basepath=/valintalaskenta-laskenta-service/resources
 valintalaskenta-laskenta-service.global.http.connectionTimeoutMillis={{valintalaskentalaskentaservice_global_http_connectiontimeoutmillis}}
 valintalaskenta-laskenta-service.global.http.receiveTimeoutMillis={{valintalaskentalaskentaservice_global_http_receivetimeoutmillis}}

@@ -1,10 +1,6 @@
 package fi.vm.sade.sijoittelu;
 
 import fi.vm.sade.util.TempDockerDB;
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
-import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration;
 
 public class DevApp extends App {
 
@@ -27,10 +23,6 @@ public class DevApp extends App {
         System.setProperty("valintarekisteri.db.url", "jdbc:postgresql://localhost:5433/sijoittelu");
         System.setProperty("valintarekisteri.db.user", "oph");
         System.setProperty("valintarekisteri.db.password", "oph");
-
-        // mongo
-        System.setProperty("valintalaskenta-laskenta-service.mongodb.uri", "mongodb://${valintalaskentadb.user}:${valintalaskentadb.password}@localhost/valintalaskentadb");
-        System.setProperty("valintalaskenta-laskenta-service.mongodb.dbname", "valintalaskentadb");
 
         // ulkoiset palvelut
         System.setProperty("host.virkailija", "virkailija.hahtuvaopintopolku.fi");

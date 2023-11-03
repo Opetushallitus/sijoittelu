@@ -1,8 +1,6 @@
 package fi.vm.sade.sijoittelu;
 
 import com.google.common.collect.Lists;
-import com.lordofthejars.nosqlunit.annotation.UsingDataSet;
-import com.lordofthejars.nosqlunit.core.LoadStrategyEnum;
 
 import fi.vm.sade.configuration.TestConfiguration;
 import fi.vm.sade.sijoittelu.batch.logic.impl.DomainConverter;
@@ -22,7 +20,6 @@ import fi.vm.sade.sijoittelu.domain.TilanKuvaukset;
 import fi.vm.sade.sijoittelu.domain.Valintatapajono;
 import fi.vm.sade.sijoittelu.domain.ValintatuloksenTila;
 import fi.vm.sade.sijoittelu.domain.Valintatulos;
-import fi.vm.sade.util.NoSqlUnitInterceptor;
 import fi.vm.sade.valintalaskenta.domain.dto.valintatieto.HakuDTO;
 import fi.vm.sade.valintalaskenta.tulos.service.impl.ValintatietoService;
 import org.apache.commons.lang3.time.DateUtils;
@@ -46,7 +43,6 @@ import java.util.stream.Collectors;
 
 @ContextConfiguration(classes = {TestConfiguration.class})
 @ExtendWith(SpringExtension.class)
-@ExtendWith(NoSqlUnitInterceptor.class)
 public class SijoitteluMontaJonoaTest {
 
     @Autowired
@@ -56,7 +52,7 @@ public class SijoitteluMontaJonoaTest {
     private ApplicationContext applicationContext;
 
 	@Test
-    @UsingDataSet(locations = "monta_jonoa.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
+    //@UsingDataSet(locations = "monta_jonoa.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
 	public void testSijoitteluMontaJonoa() {
 
         HakuDTO haku = valintatietoService.haeValintatiedot("1.2.246.562.29.173465377510");
@@ -113,7 +109,7 @@ public class SijoitteluMontaJonoaTest {
     }
 
     @Test
-    @UsingDataSet(locations = "monta_jonoa.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
+    //@UsingDataSet(locations = "monta_jonoa.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
     public void testSijoitteluMontaJonoaEiValintatulosta() {
 
         HakuDTO haku = valintatietoService.haeValintatiedot("1.2.246.562.29.173465377510");
@@ -141,7 +137,7 @@ public class SijoitteluMontaJonoaTest {
     }
 
     @Test
-    @UsingDataSet(locations = "monta_jonoa.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
+    //@UsingDataSet(locations = "monta_jonoa.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
     public void testPoissaolevaTaytto() {
 
         HakuDTO haku = valintatietoService.haeValintatiedot("1.2.246.562.29.173465377510");
@@ -168,7 +164,7 @@ public class SijoitteluMontaJonoaTest {
     }
 
     @Test
-    @UsingDataSet(locations = "monta_jonoa.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
+    //@UsingDataSet(locations = "monta_jonoa.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
     public void testPerunut() {
 
         HakuDTO haku = valintatietoService.haeValintatiedot("1.2.246.562.29.173465377510");
@@ -252,7 +248,7 @@ public class SijoitteluMontaJonoaTest {
     }
 
     @Test
-    @UsingDataSet(locations = "ei_varasijatayttoa.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
+    //@UsingDataSet(locations = "ei_varasijatayttoa.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
     public void testEiVarasijatayttoa() {
 
         HakuDTO haku = valintatietoService.haeValintatiedot("1.2.246.562.29.173465377510");
@@ -399,7 +395,7 @@ public class SijoitteluMontaJonoaTest {
     }
 
     @Test
-    @UsingDataSet(locations = "varasijat_rajattu.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
+    //@UsingDataSet(locations = "varasijat_rajattu.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
     public void testVarasijatRajattu() {
 
         HakuDTO haku = valintatietoService.haeValintatiedot("1.2.246.562.29.173465377510");
@@ -433,7 +429,7 @@ public class SijoitteluMontaJonoaTest {
     }
 
     @Test
-    @UsingDataSet(locations = "ehdolliset_sitoviksi.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
+    //@UsingDataSet(locations = "ehdolliset_sitoviksi.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
     public void testEhdollisetSitoviksi() {
 
         HakuDTO haku = valintatietoService.haeValintatiedot("haku1");
@@ -472,7 +468,7 @@ public class SijoitteluMontaJonoaTest {
     // Täyttöjonosääntö vaatii speksausta
     @Disabled
     @Test
-    @UsingDataSet(locations = "tayttojono.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
+    //@UsingDataSet(locations = "tayttojono.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
     public void testTayttoJono() {
 
         HakuDTO haku = valintatietoService.haeValintatiedot("1.2.246.562.29.173465377510");
@@ -494,7 +490,7 @@ public class SijoitteluMontaJonoaTest {
     }
 
     @Test
-    @UsingDataSet(locations = "peruuta_alemmat.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
+    //@UsingDataSet(locations = "peruuta_alemmat.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
     public void testPeruutaAlemmat() {
 
         HakuDTO haku = valintatietoService.haeValintatiedot("haku1");
@@ -513,7 +509,7 @@ public class SijoitteluMontaJonoaTest {
     }
 
     @Test
-    @UsingDataSet(locations = "monta_jonoa_tasasija_arvonta.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
+    //@UsingDataSet(locations = "monta_jonoa_tasasija_arvonta.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
     public void testTasasijaArvonta() {
 
         HakuDTO haku = valintatietoService.haeValintatiedot("haku1");
@@ -600,25 +596,25 @@ public class SijoitteluMontaJonoaTest {
     }
 
     @Test
-    @UsingDataSet(locations = "poissa_oleva_taytto.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
+    //@UsingDataSet(locations = "poissa_oleva_taytto.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
     public void testPoissaOloTaytto2() {
         testPoissaOloTaytto(Lists.newArrayList(IlmoittautumisTila.POISSA, IlmoittautumisTila.POISSA), false, 5);
     }
 
     @Test
-    @UsingDataSet(locations = "poissa_oleva_taytto.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
+    //@UsingDataSet(locations = "poissa_oleva_taytto.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
     public void testPoissaOloKevat2AstePaikkaaEiTayteta() {
         testPoissaOloTaytto(Lists.newArrayList(IlmoittautumisTila.POISSA_SYKSY, IlmoittautumisTila.POISSA), false, 5);
     }
 
     @Test
-    @UsingDataSet(locations = "poissa_oleva_taytto.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
+    //@UsingDataSet(locations = "poissa_oleva_taytto.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
     public void testPoissaOloKevatKorkeakouluPaikkaTaytetaan() {
         testPoissaOloTaytto(Lists.newArrayList(IlmoittautumisTila.POISSA_SYKSY, IlmoittautumisTila.POISSA), true, 5);
     }
 
     @Test
-    @UsingDataSet(locations = "poissa_oleva_taytto3.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
+    //@UsingDataSet(locations = "poissa_oleva_taytto3.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
     public void testPoissaOloTaytto3() {
         HakuDTO haku = valintatietoService.haeValintatiedot("haku1");
 
@@ -678,7 +674,7 @@ public class SijoitteluMontaJonoaTest {
     }
 
     @Test
-    @UsingDataSet(locations = "peruuntunut_taytto.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
+    //@UsingDataSet(locations = "peruuntunut_taytto.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
     public void testPeruunutunutTaytto() {
 
         HakuDTO haku = valintatietoService.haeValintatiedot("haku1");
