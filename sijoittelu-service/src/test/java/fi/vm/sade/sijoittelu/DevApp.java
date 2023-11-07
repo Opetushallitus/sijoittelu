@@ -1,7 +1,9 @@
 package fi.vm.sade.sijoittelu;
 
 import fi.vm.sade.util.TempDockerDB;
+import org.springframework.context.annotation.Profile;
 
+@Profile("!test")
 public class DevApp extends App {
 
     public static void main(String[] args) {

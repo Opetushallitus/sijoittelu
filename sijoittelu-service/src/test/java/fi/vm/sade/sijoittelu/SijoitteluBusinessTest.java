@@ -9,7 +9,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
-import fi.vm.sade.configuration.TestConfiguration;
+import fi.vm.sade.testing.TestConfigurationWithMocks;
 import fi.vm.sade.sijoittelu.batch.logic.impl.DomainConverter;
 import fi.vm.sade.sijoittelu.domain.HakemuksenTila;
 import fi.vm.sade.sijoittelu.domain.Hakemus;
@@ -51,7 +51,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-@ContextConfiguration(classes = {TestConfiguration.class})
+@ContextConfiguration(classes = {TestConfigurationWithMocks.class})
 @ExtendWith(SpringExtension.class)
 public class SijoitteluBusinessTest {
 

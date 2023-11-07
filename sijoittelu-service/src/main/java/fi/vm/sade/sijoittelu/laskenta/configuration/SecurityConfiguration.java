@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.env.Environment;
 import org.springframework.security.cas.ServiceProperties;
@@ -25,6 +26,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 @Order(2)
 @EnableMethodSecurity(securedEnabled = true)
 @EnableWebSecurity
+@Profile("!test")
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
   private Environment environment;
 

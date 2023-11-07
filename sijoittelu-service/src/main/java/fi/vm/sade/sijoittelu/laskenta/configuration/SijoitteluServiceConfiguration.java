@@ -15,6 +15,7 @@ import org.springframework.scheduling.annotation.EnableAsync;
     "fi.vm.sade.valintalaskenta.tulos.service.impl",
     "fi.vm.sade.valintalaskenta.tulos.service.impl.converters"
 })
+@Profile("!test")
 public class SijoitteluServiceConfiguration {
 
     public static final String CALLER_ID = "1.2.246.562.10.00000000001.sijoittelu.sijoittelu-service";

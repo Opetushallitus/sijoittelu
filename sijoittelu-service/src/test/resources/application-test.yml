@@ -1,0 +1,66 @@
+spring:
+  main:
+    allow-bean-definition-overriding: true
+  profiles:
+    group:
+      test: dev
+
+valintalaskenta-laskenta-service:
+  postgresql:
+    url: jdbc:tc:postgresql:15.4:///test_database
+    user: user
+    password: password
+    maxactive: 10
+    maxwait: 3000
+    maxlifetimemillis: 60000
+    leakdetectionthresholdmillis: 1800000
+    driver: org.testcontainers.jdbc.ContainerDatabaseDriver
+    readonly: false
+
+host:
+  virkailija: localhost
+
+sijoittelu-service:
+  username:
+    to:
+      valintaperusteet: testi
+  password:
+    to:
+      valintaperusteet: testi
+  kouta-internal:
+      username: test-kouta
+      password: password-kouta
+
+cas:
+  session:
+    valintaperusteet: localhost
+
+root:
+  organisaatio:
+    oid: 1.2.246.562.10.00000000001
+
+valintarekisteri:
+  blaze:
+    response-header-timeout: 10
+    idle-timeout: 60
+    request-timeout: 3600
+  parseleniently:
+    tarjonta:
+  db:
+    user: rek-user
+    password: rek-password
+    url: jdbc:tc:postgresql:15.4:///test_valintarekisteri
+  tarjonta-service:
+    url:
+  koodisto-service:
+    url:
+  cas:
+    username: rek-user
+    password: rek-password
+  kohdejoukot:
+    korkeakoulu: haunkohdejoukko_12
+    toinen-aste: haunkohdejoukko_11,haunkohdejoukko_17,haunkohdejoukko_20,haunkohdejoukko_23,haunkohdejoukko_24
+  kohdejoukon-tarkenteet:
+    amkope: haunkohdejoukontarkenne_2,haunkohdejoukontarkenne_4,haunkohdejoukontarkenne_5,haunkohdejoukontarkenne_6
+
+

@@ -2,7 +2,7 @@ package fi.vm.sade.sijoittelu;
 
 import com.google.common.collect.ImmutableList;
 
-import fi.vm.sade.configuration.TestConfiguration;
+import fi.vm.sade.testing.TestConfigurationWithMocks;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.TestHelper;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.util.SijoitteluAlgorithmUtil;
 import fi.vm.sade.sijoittelu.domain.HakemuksenTila;
@@ -23,7 +23,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@ContextConfiguration(classes = {TestConfiguration.class})
+@ContextConfiguration(classes = {TestConfigurationWithMocks.class})
 @ExtendWith(SpringExtension.class)
 public class SijoitteluTest {
 

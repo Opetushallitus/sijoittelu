@@ -2,7 +2,7 @@ package fi.vm.sade.sijoittelu;
 
 import com.google.common.collect.Lists;
 
-import fi.vm.sade.configuration.TestConfiguration;
+import fi.vm.sade.testing.TestConfigurationWithMocks;
 import fi.vm.sade.sijoittelu.batch.logic.impl.DomainConverter;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.PrintHelper;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoitteluConfiguration;
@@ -41,7 +41,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@ContextConfiguration(classes = {TestConfiguration.class})
+@ContextConfiguration(classes = {TestConfigurationWithMocks.class})
 @ExtendWith(SpringExtension.class)
 public class SijoitteluMontaJonoaTest {
 
