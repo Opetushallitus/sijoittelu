@@ -1,9 +1,15 @@
 spring:
   main:
     allow-bean-definition-overriding: true
+  flyway:
+    locations: filesystem:../../valintalaskenta/valintalaskenta-laskenta-service/src/main/resources/db/migration
   profiles:
     group:
       test: dev
+  test:
+    context:
+      cache:
+        maxSize: 2
 
 valintalaskenta-laskenta-service:
   postgresql:
@@ -63,4 +69,5 @@ valintarekisteri:
   kohdejoukon-tarkenteet:
     amkope: haunkohdejoukontarkenne_2,haunkohdejoukontarkenne_4,haunkohdejoukontarkenne_5,haunkohdejoukontarkenne_6
 
-
+flyway:
+  locations: "classpath:db/migration"

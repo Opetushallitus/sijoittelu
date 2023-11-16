@@ -1,15 +1,16 @@
 package fi.vm.sade.testing;
 
 import fi.vm.sade.sijoittelu.App;
-import fi.vm.sade.valintalaskenta.tulos.dao.repository.HarkinnanvarainenHyvaksyminenRepository;
-import fi.vm.sade.valintalaskenta.tulos.dao.repository.MuokattuJonosijaRepository;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.AfterEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.context.annotation.*;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
+import java.util.ArrayList;
+import java.util.List;
 
 @SpringBootTest(
   webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
@@ -17,23 +18,22 @@ import org.springframework.test.context.ActiveProfiles;
   args = {"--add-opens=java.base/java.lang=ALL-UNNAMED"})
 @Import(TestConfigurationWithMocks.class)
 @ActiveProfiles("test")
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public abstract class AbstractIntegrationTest {
 
-  @Autowired protected MuokattuJonosijaRepository muokattuJonosijaRepository;
+  private final static List<String> TABLES = List.of("jonosija", "muokattu_jonosija", "hakijaryhma", "valinnanvaihe", "valintatapajono", "jarjestyskriteeritulos");
 
   @Autowired
-  protected HarkinnanvarainenHyvaksyminenRepository harkinnanvarainenHyvaksyminenRepository;
+  private JdbcTemplate jdbcTemplate;
 
   @LocalServerPort protected Integer port;
 
-  @BeforeAll
-  static void init() {
-
+  @AfterEach
+  public void cleanAfter() {
+    List<String> operations = new ArrayList<>(TABLES.stream().map(table -> String.format("ALTER TABLE %s DISABLE TRIGGER ALL;", table)).toList());
+    operations.addAll(TABLES.stream().map(table -> String.format("delete from %s;", table)).toList());
+    operations.addAll(TABLES.stream().map(table -> String.format("ALTER TABLE %s DISABLE TRIGGER ALL;", table)).toList());
+    jdbcTemplate.batchUpdate(operations.toArray(String[]::new));
   }
 
-  @BeforeEach
-  public void setUp() {
-    harkinnanvarainenHyvaksyminenRepository.deleteAll();
-    muokattuJonosijaRepository.deleteAll();
-  }
 }

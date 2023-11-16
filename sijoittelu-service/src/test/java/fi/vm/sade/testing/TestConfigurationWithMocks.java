@@ -10,6 +10,7 @@ import fi.vm.sade.sijoittelu.laskenta.service.business.ValintarekisteriService;
 import fi.vm.sade.valintalaskenta.tulos.logging.LaskentaAuditLog;
 import fi.vm.sade.valintalaskenta.tulos.logging.LaskentaAuditLogImpl;
 import fi.vm.sade.valintalaskenta.tulos.mapping.ValintalaskentaModelMapper;
+import org.flywaydb.core.Flyway;
 import org.mockito.Mockito;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.*;
