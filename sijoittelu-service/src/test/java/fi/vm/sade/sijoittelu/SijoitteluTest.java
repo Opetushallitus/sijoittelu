@@ -2,6 +2,7 @@ package fi.vm.sade.sijoittelu;
 
 import com.google.common.collect.ImmutableList;
 
+import fi.vm.sade.testing.AbstractIntegrationTest;
 import fi.vm.sade.testing.TestConfigurationWithMocks;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.TestHelper;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.util.SijoitteluAlgorithmUtil;
@@ -23,9 +24,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@ContextConfiguration(classes = {TestConfigurationWithMocks.class})
-@ExtendWith(SpringExtension.class)
-public class SijoitteluTest {
+public class SijoitteluTest extends AbstractIntegrationTest {
 
     private static final Logger LOG = LoggerFactory.getLogger(SijoitteluTest.class);
 
