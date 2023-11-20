@@ -11,17 +11,18 @@ spring:
       cache:
         maxSize: 2
 
-valintalaskenta-laskenta-service:
-  postgresql:
-    url: jdbc:tc:postgresql:15.4:///test_database
-    user: user
-    password: password
-    maxactive: 10
-    maxwait: 3000
-    maxlifetimemillis: 60000
-    leakdetectionthresholdmillis: 1800000
-    driver: org.testcontainers.jdbc.ContainerDatabaseDriver
-    readonly: false
+sijoittelu:
+  valintalaskenta:
+    postgresql:
+      url: jdbc:tc:postgresql:15.4:///test_database
+      user: user
+      password: password
+      maxactive: 10
+      maxwait: 3000
+      maxlifetimemillis: 60000
+      leakdetectionthresholdmillis: 1800000
+      driver: org.testcontainers.jdbc.ContainerDatabaseDriver
+      readonly: false
 
 host:
   virkailija: localhost

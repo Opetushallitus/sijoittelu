@@ -47,15 +47,15 @@ public class DatabaseConfiguration extends AbstractJdbcConfiguration {
 
   @Bean
   public DataSource dataSourceValintalaskenta(
-    @Value("${valintalaskenta-laskenta-service.postgresql.maxactive}") final String maxPoolSize,
-    @Value("${valintalaskenta-laskenta-service.postgresql.maxwait}") final String maxWait,
-    @Value("${valintalaskenta-laskenta-service.postgresql.leakdetectionthresholdmillis}")
+    @Value("${sijoittelu.valintalaskenta.postgresql.maxactive}") final String maxPoolSize,
+    @Value("${sijoittelu.valintalaskenta.postgresql.maxwait}") final String maxWait,
+    @Value("${sijoittelu.valintalaskenta.postgresql.leakdetectionthresholdmillis}")
     final String leaksThreshold,
-    @Value("${valintalaskenta-laskenta-service.postgresql.url}") final String url,
-    @Value("${valintalaskenta-laskenta-service.postgresql.user}") final String user,
-    @Value("${valintalaskenta-laskenta-service.postgresql.password}") final String password,
-    @Value("${valintalaskenta-laskenta-service.postgresql.driver}") final String driverClassName,
-    @Value("${valintalaskenta-laskenta-service.postgresql.readonly:true}") final String readOnly
+    @Value("${sijoittelu.valintalaskenta.postgresql.url}") final String url,
+    @Value("${sijoittelu.valintalaskenta.postgresql.user}") final String user,
+    @Value("${sijoittelu.valintalaskenta.postgresql.password}") final String password,
+    @Value("${sijoittelu.valintalaskenta.postgresql.driver}") final String driverClassName,
+    @Value("${sijoittelu.valintalaskenta.postgresql.readonly:true}") final String readOnly
     ) {
     final HikariConfig config = new HikariConfig();
     config.setPoolName("springHikariCP");
