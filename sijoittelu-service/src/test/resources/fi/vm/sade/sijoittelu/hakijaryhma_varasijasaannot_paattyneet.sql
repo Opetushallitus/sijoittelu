@@ -31,6 +31,9 @@ INSERT INTO jarjestyskriteeritulos(nimi, prioriteetti, tila, jonosija)
 SELECT 'Hakijaryhmän tulokset', 0, 'HYVAKSYTTAVISSA', jonosija.id from jonosija
 WHERE hakemus_oid = 'D';
 
+
+
+
 INSERT INTO jonosija(
     hakemus_oid, hakija_oid, hakutoiveprioriteetti, harkinnanvarainen, valintatapajono, hylatty_valisijoittelussa, syotetyt_arvot, funktio_tulokset, hakijaryhma)
 VALUES ('B', '1.2.246.562.24.42438870129', 2, false, '83c1c848-da64-435f-be41-23a29f4d8d97', false, '{"funktioTulokset": []}', '{"syotetytArvot": []}', 'ce7664b5-86cd-48af-b02f-28cdb5265bc6');
