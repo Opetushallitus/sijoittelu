@@ -11,11 +11,12 @@ cas-service.key=sijoittelu-service
 
 sijoittelu.valintalaskenta.postgresql.url:jdbc:postgresql://{{host_postgresql_valintalaskenta}}:{{port_postgresql}}/valintalaskenta?ApplicationName=sijoittelu-service
 sijoittelu.valintalaskenta.postgresql.user:{{postgres_app_user}}
-sijoittelu.valintalaskenta.postgresql.password:{{host_postgresql_sijoittelu_valintalaskenta_app_password}}
-sijoittelu.valintalaskenta.postgresql.maxactive:
-sijoittelu.valintalaskenta.postgresql.maxwait:
+sijoittelu.valintalaskenta.postgresql.password:{{host_postgresql_valintalaskenta_app_password}}
+sijoittelu.valintalaskenta.postgresql.maxactive:{{host_postgresql_sijoittelu_valintalaskenta_max_active}}
+sijoittelu.valintalaskenta.postgresql.maxwait:{{host_postgresql_sijoittelu_valintalaskenta_max_wait}}
 sijoittelu.valintalaskenta.postgresql.idletimeoutminutes:2
 sijoittelu.valintalaskenta.postgresql.minidle:0
 sijoittelu.valintalaskenta.postgresql.maxlifetimemillis:60000
 sijoittelu.valintalaskenta.postgresql.leakdetectionthresholdmillis:1800000
 sijoittelu.valintalaskenta.postgresql.driver:org.postgresql.Driver
+sijoittelu.valintalaskenta.postgresql.readonly:true

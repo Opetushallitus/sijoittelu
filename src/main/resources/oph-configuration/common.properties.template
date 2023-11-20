@@ -44,17 +44,6 @@ valintalaskentakoostepalvelu.dokumenttipalvelu.rest.url=https://${host.virkailij
 valintalaskentakoostepalvelu.valintaperusteet.rest.url=${host.ilb}/valintaperusteet-service/resources
 valintalaskentakoostepalvelu.parametriservice.rest.url=https://${host.virkailija}/ohjausparametrit-service/api
 
-#VALINTALASKENTA-SERVICE
-valintalaskenta-laskenta-service.postgresql.url=jdbc:postgresql://${host_postgresql_valintalaskenta}:${port_postgresql}/valintalaskenta?ApplicationName=sijoittelu-service
-valintalaskenta-laskenta-service.postgresql.user=${postgres_sijoittelu_valintalaskenta_user}
-valintalaskenta-laskenta-service.postgresql.password=${host_postgresql_sijoittelu_valintalaskenta_app_password}
-valintalaskenta-laskenta-service.postgresql.maxactive=${host_postgresql_sijoittelu_valintalaskenta_max_active}
-valintalaskenta-laskenta-service.postgresql.maxwait=${host_postgresql_sijoittelu_valintalaskenta_max_wait}
-valintalaskenta-laskenta-service.postgresql.maxlifetimemillis=60000
-valintalaskenta-laskenta-service.postgresql.leakdetectionthresholdmillis=1800000
-valintalaskenta-laskenta-service.postgresql.driver=org.postgresql.Driver
-valintalaskenta-laskenta-service.postgresql.readonly=true
-
 #SIJOITTELU-SERVICE
 sijoittelu-service.global.http.connectionTimeoutMillis={{sijoitteluservice_global_http_connectiontimeoutmillis}}
 sijoittelu-service.global.http.receiveTimeoutMillis={{sijoitteluservice_global_http_receivetimeoutmillis}}

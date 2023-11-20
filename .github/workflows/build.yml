@@ -103,6 +103,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+        with:
+          path: main
 
       - uses: actions/cache@v2
         id: restore-build
