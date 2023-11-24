@@ -3,6 +3,7 @@ spring:
     allow-bean-definition-overriding: true
   flyway:
     locations: filesystem:../../valintalaskenta/valintalaskenta-laskenta-service/src/main/resources/db/migration
+    enabled: true
   profiles:
     group:
       test: dev
