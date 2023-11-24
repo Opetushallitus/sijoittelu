@@ -20,3 +20,6 @@ sijoittelu.valintalaskenta.postgresql.maxlifetimemillis=60000
 sijoittelu.valintalaskenta.postgresql.leakdetectionthresholdmillis=1800000
 sijoittelu.valintalaskenta.postgresql.driver=org.postgresql.Driver
 sijoittelu.valintalaskenta.postgresql.readonly=true
+
+spring.flyway.enabled=false
+valinta-tulos-service.valintarekisteri.db.flyway.enabled=false
