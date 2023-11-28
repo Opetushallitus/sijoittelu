@@ -21,6 +21,7 @@ import org.springframework.context.annotation.*;
   "fi.vm.sade.valintalaskenta.tulos.service.impl",
   "fi.vm.sade.valintalaskenta.tulos.service.impl.converters"
 })
+@Profile("test")
 public class TestConfigurationWithMocks {
 
     @Bean

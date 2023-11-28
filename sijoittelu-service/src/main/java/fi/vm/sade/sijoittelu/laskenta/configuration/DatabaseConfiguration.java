@@ -18,6 +18,7 @@ import org.springframework.data.convert.WritingConverter;
 import org.springframework.data.jdbc.core.convert.JdbcCustomConversions;
 import org.springframework.data.jdbc.repository.config.AbstractJdbcConfiguration;
 import org.springframework.data.jdbc.repository.config.EnableJdbcRepositories;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
@@ -33,7 +34,9 @@ import static java.util.Arrays.asList;
 @EnableJdbcRepositories(
   basePackages = {
     "fi.vm.sade.valintalaskenta.tulos.dao.repository"
-  })
+  },
+transactionManagerRef = "valintaLaskentaTransactionManager",
+jdbcOperationsRef = "valintalaskentaNamedParameterJdbcOperations")
 public class DatabaseConfiguration extends AbstractJdbcConfiguration {
 
   private final ApplicationContext applicationContext;
@@ -76,12 +79,17 @@ public class DatabaseConfiguration extends AbstractJdbcConfiguration {
   }
 
   @Bean
-  NamedParameterJdbcOperations namedParameterJdbcOperations(DataSource dataSourceValintalaskenta) {
+  public JdbcTemplate jdbcTemplate(DataSource dataSourceValintalaskenta) {
+    return new JdbcTemplate(dataSourceValintalaskenta);
+  }
+
+  @Bean
+  NamedParameterJdbcOperations valintalaskentaNamedParameterJdbcOperations(DataSource dataSourceValintalaskenta) {
     return new NamedParameterJdbcTemplate(dataSourceValintalaskenta);
   }
 
   @Bean
-  TransactionManager transactionManager(DataSource dataSourceValintalaskenta) {
+  TransactionManager valintaLaskentaTransactionManager(DataSource dataSourceValintalaskenta) {
     return new DataSourceTransactionManager(dataSourceValintalaskenta);
   }
 

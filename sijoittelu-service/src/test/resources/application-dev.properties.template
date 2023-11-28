@@ -6,3 +6,10 @@ valintarekisteri.cas.password=</hahtuva/services/omatsivut/valintarekisteri-app-
 
 sijoittelu-service.kouta-internal.username=</hahtuva/services/kouta-internal/cas-username>
 sijoittelu-service.kouta-internal.password=</hahtuva/services/kouta-internal/cas-password>
+
+sijoittelu.valintalaskenta.postgresql.url=
+sijoittelu.valintalaskenta.postgresql.user=
+sijoittelu.valintalaskenta.postgresql.password=
+sijoittelu.valintalaskenta.postgresql.driver=org.postgresql.Driver
+
+valintarekisteri.db.flyway.disabled=false

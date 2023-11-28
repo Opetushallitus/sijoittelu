@@ -1,6 +1,7 @@
 package fi.vm.sade.sijoittelu.laskenta.configuration;
 
 import fi.vm.sade.sijoittelu.laskenta.mapping.SijoitteluModelMapper;
+import fi.vm.sade.valintalaskenta.tulos.logging.LaskentaAuditLog;
 import fi.vm.sade.valintalaskenta.tulos.logging.LaskentaAuditLogImpl;
 import fi.vm.sade.valintalaskenta.tulos.mapping.ValintalaskentaModelMapper;
 import org.springframework.context.annotation.*;
@@ -21,7 +22,7 @@ public class SijoitteluServiceConfiguration {
     public static final String CALLER_ID = "1.2.246.562.10.00000000001.sijoittelu.sijoittelu-service";
 
     @Bean
-    public LaskentaAuditLogImpl laskentaAuditLog() {
+    public LaskentaAuditLog LaskentaAuditLog() {
         return new LaskentaAuditLogImpl();
     }
 
