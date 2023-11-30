@@ -96,7 +96,9 @@ public class ExternalConfiguration {
             public void valintatuloksetValinnantilalla(List<VastaanottoEventDto> valintatuloses) {
                 withHeaders(getWebClient().post().uri(address + "/virkailija/transactional-vastaanotto"))
                     .bodyValue(valintatuloses)
-                    .retrieve();
+                    .retrieve()
+                    .toBodilessEntity()
+                    .block();
             }
         };
     }
