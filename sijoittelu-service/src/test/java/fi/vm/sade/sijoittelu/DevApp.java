@@ -62,9 +62,10 @@ public class DevApp {
         System.setProperty("valintarekisteri.blaze.request-timeout", "60");
 
         System.setProperty("spring.profiles.active", "dev");
+        //System.setProperty("logging.level.root", "debug");
 
         TempDockerDB.start();
-
+        System.setProperty("spring-boot.run.jvmArguments", "-Xms2048m -Xmx4096m");
         System.setProperty("server.servlet.context-path", CONTEXT_PATH);
         App.main(args);
     }

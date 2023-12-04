@@ -68,10 +68,10 @@ public class SijoitteluajoResourcesLoader {
                 sijoitteluAjo.getLisapaikkaTapa());
     }
 
-    SijoitteluAjo readSijoitteluFromValintarekisteri(HakuDTO haku, String ajonKuvaus, StopWatch stopWatch) {
+    SijoitteluAjo readSijoitteluFromValintarekisteri(String hakuOid, String ajonKuvaus, StopWatch stopWatch) {
         LOG.info(String.format("%s : luetaan sijoittelu valintarekisteristä!", ajonKuvaus));
         stopWatch.start(String.format("%s : luetaan sijoittelu valintarekisteristä", ajonKuvaus));
-        SijoitteluAjo viimeisinSijoitteluajo = readSijoitteluajoFromValintarekisteri(haku.getHakuOid());
+        SijoitteluAjo viimeisinSijoitteluajo = readSijoitteluajoFromValintarekisteri(hakuOid);
         stopWatch.stop();
         return viimeisinSijoitteluajo;
     }
