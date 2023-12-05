@@ -195,7 +195,7 @@
       <dependency>
         <groupId>org.slf4j</groupId>
         <artifactId>slf4j-api</artifactId>
-        <version>1.7.5</version>
+        <version>1.7.36</version>
       </dependency>
       <dependency>
         <groupId>org.junit.jupiter</groupId>
@@ -628,8 +628,7 @@ vcsRevision=${revision}
 buildTtime=${maven.build.timestamp}
 ]]>
                             </echo>
-                            <loadfile property="buildversiontxt"
-                                      srcFile="${project.build.outputDirectory}/static/buildversion.txt"/>
+                            <loadfile property="buildversiontxt" srcFile="${project.build.outputDirectory}/static/buildversion.txt"/>
                             <echo message="${buildversiontxt}"/>
                             <echo file="target/mavenversion.txt">${project.version}</echo>
                         </target>
@@ -661,7 +660,7 @@ buildTtime=${maven.build.timestamp}
                     <requireJavaVersion>
                       <version>17</version>
                     </requireJavaVersion>
-                    <dependencyConvergence />
+                    <dependencyConvergence/>
                   </rules>
                 </configuration>
               </execution>
