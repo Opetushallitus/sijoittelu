@@ -255,7 +255,7 @@
       <dependency>
         <groupId>com.google.guava</groupId>
         <artifactId>guava</artifactId>
-        <version>32.0.1-jre</version>
+        <version>32.1.3-jre</version>
       </dependency>
       <dependency>
         <groupId>org.apache.commons</groupId>
@@ -628,8 +628,7 @@ vcsRevision=${revision}
 buildTtime=${maven.build.timestamp}
 ]]>
                             </echo>
-                            <loadfile property="buildversiontxt"
-                                      srcFile="${project.build.outputDirectory}/static/buildversion.txt"/>
+                            <loadfile property="buildversiontxt" srcFile="${project.build.outputDirectory}/static/buildversion.txt"/>
                             <echo message="${buildversiontxt}"/>
                             <echo file="target/mavenversion.txt">${project.version}</echo>
                         </target>
@@ -661,7 +660,7 @@ buildTtime=${maven.build.timestamp}
                     <requireJavaVersion>
                       <version>17</version>
                     </requireJavaVersion>
-                    <dependencyConvergence />
+                    <dependencyConvergence/>
                   </rules>
                 </configuration>
               </execution>
