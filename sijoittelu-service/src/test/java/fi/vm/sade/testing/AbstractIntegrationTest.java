@@ -21,7 +21,7 @@ import java.util.List;
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public abstract class AbstractIntegrationTest {
 
-  private final static List<String> TABLES = List.of("jonosija", "muokattu_jonosija", "hakijaryhma", "valinnanvaihe", "valintatapajono", "jarjestyskriteeritulos");
+  private final static List<String> TABLES = List.of("jonosija", "muokattu_jonosija", "hakijaryhma", "valinnanvaihe", "valintatapajono");
 
   @Autowired
   private JdbcTemplate jdbcTemplate;

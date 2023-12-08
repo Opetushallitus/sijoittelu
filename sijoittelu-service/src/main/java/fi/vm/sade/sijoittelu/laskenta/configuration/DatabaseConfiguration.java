@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import fi.vm.sade.valintalaskenta.domain.valinta.FunktioTulosContainer;
+import fi.vm.sade.valintalaskenta.domain.valinta.JarjestyskriteeritulosContainer;
 import fi.vm.sade.valintalaskenta.domain.valinta.SyotettyArvoContainer;
 import org.postgresql.util.PGobject;
 import org.springframework.beans.factory.annotation.Value;
@@ -42,7 +43,7 @@ public class DatabaseConfiguration extends AbstractJdbcConfiguration {
   private final ApplicationContext applicationContext;
 
   private static final List<Class<?>> JSON_CLASSES =
-    asList(SyotettyArvoContainer.class, FunktioTulosContainer.class);
+    asList(SyotettyArvoContainer.class, FunktioTulosContainer.class, JarjestyskriteeritulosContainer.class);
 
   DatabaseConfiguration(ApplicationContext applicationContext) {
     this.applicationContext = applicationContext;

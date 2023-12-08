@@ -16,37 +16,21 @@ VALUES ('ce7664b5-86cd-48af-b02f-28cdb5265bc6', '1413496169197146290624987567682
 
 
 INSERT INTO jonosija(
-    hakemus_oid, hakija_oid, hakutoiveprioriteetti, harkinnanvarainen, valintatapajono, hylatty_valisijoittelussa, syotetyt_arvot, funktio_tulokset, hakijaryhma)
-VALUES ('A', '1.2.246.562.24.45661259022', 1, false, '83c1c848-da64-435f-be41-23a29f4d8d97', false, '{"funktioTulokset": []}', '{"syotetytArvot": []}', 'ce7664b5-86cd-48af-b02f-28cdb5265bc6');
-
-INSERT INTO jarjestyskriteeritulos(arvo, nimi, prioriteetti, tila, jonosija)
-SELECT 17.0, 'Testikriteeri', 0, 'HYVAKSYTTAVISSA', jonosija.id from jonosija
-WHERE hakemus_oid = 'A';
+    hakemus_oid, hakija_oid, hakutoiveprioriteetti, harkinnanvarainen, valintatapajono, hylatty_valisijoittelussa, syotetyt_arvot, funktio_tulokset, hakijaryhma, jarjestyskriteeritulokset)
+VALUES ('A', '1.2.246.562.24.45661259022', 1, false, '83c1c848-da64-435f-be41-23a29f4d8d97', false, '{"funktioTulokset": []}', '{"syotetytArvot": []}', 'ce7664b5-86cd-48af-b02f-28cdb5265bc6', '{"jarjestyskriteeritulokset": [{"arvo": 17.0, "nimi": "Testikriteeri", "prioriteetti": 0, "tila": "HYVAKSYTTAVISSA" }]}');
 
 INSERT INTO jonosija(
-    hakemus_oid, hakija_oid, hakutoiveprioriteetti, harkinnanvarainen, valintatapajono, hylatty_valisijoittelussa, syotetyt_arvot, funktio_tulokset, hakijaryhma)
-VALUES ('D', '1.2.246.562.24.34552787533', 2, false, '83c1c848-da64-435f-be41-23a29f4d8d98', false, '{"funktioTulokset": []}', '{"syotetytArvot": []}', 'ce7664b5-86cd-48af-b02f-28cdb5265bc6');
-
-INSERT INTO jarjestyskriteeritulos(nimi, prioriteetti, tila, jonosija)
-SELECT 'Hakijaryhmän tulokset', 0, 'HYVAKSYTTAVISSA', jonosija.id from jonosija
-WHERE hakemus_oid = 'D';
-
+    hakemus_oid, hakija_oid, hakutoiveprioriteetti, harkinnanvarainen, valintatapajono, hylatty_valisijoittelussa, syotetyt_arvot, funktio_tulokset, hakijaryhma, jarjestyskriteeritulokset)
+VALUES ('D', '1.2.246.562.24.34552787533', 2, false, '83c1c848-da64-435f-be41-23a29f4d8d98', false, '{"funktioTulokset": []}', '{"syotetytArvot": []}', 'ce7664b5-86cd-48af-b02f-28cdb5265bc6', '{"jarjestyskriteeritulokset": [{"nimi": "Hakijaryhmän tulokset", "prioriteetti": 0, "tila": "HYVAKSYTTAVISSA" }]}');
 
 
 
 INSERT INTO jonosija(
-    hakemus_oid, hakija_oid, hakutoiveprioriteetti, harkinnanvarainen, valintatapajono, hylatty_valisijoittelussa, syotetyt_arvot, funktio_tulokset, hakijaryhma)
-VALUES ('B', '1.2.246.562.24.42438870129', 2, false, '83c1c848-da64-435f-be41-23a29f4d8d97', false, '{"funktioTulokset": []}', '{"syotetytArvot": []}', 'ce7664b5-86cd-48af-b02f-28cdb5265bc6');
+    hakemus_oid, hakija_oid, hakutoiveprioriteetti, harkinnanvarainen, valintatapajono, hylatty_valisijoittelussa, syotetyt_arvot, funktio_tulokset, hakijaryhma, jarjestyskriteeritulokset)
+VALUES ('B', '1.2.246.562.24.42438870129', 2, false, '83c1c848-da64-435f-be41-23a29f4d8d97', false, '{"funktioTulokset": []}', '{"syotetytArvot": []}', 'ce7664b5-86cd-48af-b02f-28cdb5265bc6', '{"jarjestyskriteeritulokset": [{"nimi": "Hakijaryhmän tulokset", "prioriteetti": 0, "tila": "HYVAKSYTTAVISSA" }]}');
 
-INSERT INTO jarjestyskriteeritulos(nimi, prioriteetti, tila, jonosija)
-SELECT 'Hakijaryhmän tulokset', 0, 'HYVAKSYTTAVISSA', jonosija.id from jonosija
-WHERE hakemus_oid = 'B';
 
 INSERT INTO jonosija(
-    hakemus_oid, hakija_oid, hakutoiveprioriteetti, harkinnanvarainen, valintatapajono, hylatty_valisijoittelussa, syotetyt_arvot, funktio_tulokset, hakijaryhma)
-VALUES ('C', '1.2.246.562.24.45661259011', 1, false, '83c1c848-da64-435f-be41-23a29f4d8d98', false, '{"funktioTulokset": []}', '{"syotetytArvot": []}', 'ce7664b5-86cd-48af-b02f-28cdb5265bc6');
-
-INSERT INTO jarjestyskriteeritulos(arvo, nimi, prioriteetti, tila, jonosija)
-SELECT 16.0, 'Hakijaryhmän tulokset', 0, 'HYVAKSYTTAVISSA', jonosija.id from jonosija
-WHERE hakemus_oid = 'C';
+    hakemus_oid, hakija_oid, hakutoiveprioriteetti, harkinnanvarainen, valintatapajono, hylatty_valisijoittelussa, syotetyt_arvot, funktio_tulokset, hakijaryhma, jarjestyskriteeritulokset)
+VALUES ('C', '1.2.246.562.24.45661259011', 1, false, '83c1c848-da64-435f-be41-23a29f4d8d98', false, '{"funktioTulokset": []}', '{"syotetytArvot": []}', 'ce7664b5-86cd-48af-b02f-28cdb5265bc6', '{"jarjestyskriteeritulokset": [{"arvo": 19.0, "nimi": "Hakijaryhmän tulokset", "prioriteetti": 0, "tila": "HYVAKSYTTAVISSA" }]}');
 

@@ -19,101 +19,73 @@ INSERT INTO hakijaryhma(
 VALUES ('ce7664b5-86cd-48af-b02f-28cdb5265bc8', 'ryhma2', 1, 'hakukohde1', 'Ei ensikertalaisten kiintiö', 'Ei-ensikertalaisten kiintiö', 2, true, false, true);
 
 INSERT INTO jonosija(
-    hakemus_oid, hakija_oid, hakutoiveprioriteetti, harkinnanvarainen, valintatapajono, hylatty_valisijoittelussa, syotetyt_arvot, funktio_tulokset)
-VALUES ('hakemus1', 'hakija1', 1, false, '83c1c848-da64-435f-be41-23a29f4d8d97', false, '{"funktioTulokset": []}', '{"syotetytArvot": []}');
-
-INSERT INTO jarjestyskriteeritulos(arvo, nimi, prioriteetti, tila, jonosija)
-SELECT 11.0, 'Testikriteeri', 0, 'HYVAKSYTTAVISSA', jonosija.id from jonosija
-WHERE hakemus_oid = 'hakemus1';
-
-INSERT INTO jonosija(
-    hakemus_oid, hakija_oid, hakutoiveprioriteetti, harkinnanvarainen, valintatapajono, hylatty_valisijoittelussa, syotetyt_arvot, funktio_tulokset)
-VALUES ('hakemus2', 'hakija2', 2, false, '83c1c848-da64-435f-be41-23a29f4d8d97', false, '{"funktioTulokset": []}', '{"syotetytArvot": []}');
-
-INSERT INTO jarjestyskriteeritulos(arvo, nimi, prioriteetti, tila, jonosija)
-SELECT 19.0, 'Testikriteeri', 0, 'HYVAKSYTTAVISSA', jonosija.id from jonosija
-WHERE hakemus_oid = 'hakemus2';
-
-INSERT INTO jonosija(
-    hakemus_oid, hakija_oid, hakutoiveprioriteetti, harkinnanvarainen, valintatapajono, hylatty_valisijoittelussa, syotetyt_arvot, funktio_tulokset)
-VALUES ('hakemus3', 'hakija3', 4, false, '83c1c848-da64-435f-be41-23a29f4d8d98', false, '{"funktioTulokset": []}', '{"syotetytArvot": []}');
-
-INSERT INTO jarjestyskriteeritulos(arvo, nimi, prioriteetti, tila, jonosija)
-SELECT 17.0, 'Testikriteeri', 0, 'HYVAKSYTTAVISSA', jonosija.id from jonosija
-WHERE hakemus_oid = 'hakemus3';
+    hakemus_oid, hakija_oid, hakutoiveprioriteetti, harkinnanvarainen, valintatapajono, hylatty_valisijoittelussa, syotetyt_arvot, funktio_tulokset, jarjestyskriteeritulokset)
+VALUES ('hakemus1', 'hakija1', 1, false, '83c1c848-da64-435f-be41-23a29f4d8d97', false, '{"funktioTulokset": []}', '{"syotetytArvot": []}', '{"jarjestyskriteeritulokset": [{"arvo": 11.0, "nimi": "Testikriteeri", "prioriteetti": 0, "tila": "HYVAKSYTTAVISSA" }]}');
 
 
 INSERT INTO jonosija(
-    hakemus_oid, hakija_oid, hakutoiveprioriteetti, harkinnanvarainen, valintatapajono, hylatty_valisijoittelussa, syotetyt_arvot, funktio_tulokset)
-VALUES ('hakemus1', 'hakija1', 1, false, '83c1c848-da64-435f-be41-23a29f4d8d98', false, '{"funktioTulokset": []}', '{"syotetytArvot": []}');
-
-INSERT INTO jarjestyskriteeritulos(arvo, nimi, prioriteetti, tila, jonosija)
-SELECT 11.0, 'Testikriteeri', 0, 'HYVAKSYTTAVISSA', jonosija.id from jonosija
-WHERE hakemus_oid = 'hakemus1' AND valintatapajono = '83c1c848-da64-435f-be41-23a29f4d8d98';
-
-INSERT INTO jonosija(
-    hakemus_oid, hakija_oid, hakutoiveprioriteetti, harkinnanvarainen, valintatapajono, hylatty_valisijoittelussa, syotetyt_arvot, funktio_tulokset)
-VALUES ('hakemus2', 'hakija2', 2, false, '83c1c848-da64-435f-be41-23a29f4d8d98', false, '{"funktioTulokset": []}', '{"syotetytArvot": []}');
-
-INSERT INTO jarjestyskriteeritulos(arvo, nimi, prioriteetti, tila, jonosija)
-SELECT 19.0, 'Testikriteeri', 0, 'HYVAKSYTTAVISSA', jonosija.id from jonosija
-WHERE hakemus_oid = 'hakemus2' AND valintatapajono = '83c1c848-da64-435f-be41-23a29f4d8d98';
-
-INSERT INTO jonosija(
-    hakemus_oid, hakija_oid, hakutoiveprioriteetti, harkinnanvarainen, valintatapajono, hylatty_valisijoittelussa, syotetyt_arvot, funktio_tulokset)
-VALUES ('hakemus3', 'hakija3', 4, false, '83c1c848-da64-435f-be41-23a29f4d8d98', false, '{"funktioTulokset": []}', '{"syotetytArvot": []}');
-
-INSERT INTO jarjestyskriteeritulos(arvo, nimi, prioriteetti, tila, jonosija)
-SELECT 17.0, 'Testikriteeri', 0, 'HYVAKSYTTAVISSA', jonosija.id from jonosija
-WHERE hakemus_oid = 'hakemus3' AND valintatapajono = '83c1c848-da64-435f-be41-23a29f4d8d98';
+    hakemus_oid, hakija_oid, hakutoiveprioriteetti, harkinnanvarainen, valintatapajono, hylatty_valisijoittelussa, syotetyt_arvot, funktio_tulokset, jarjestyskriteeritulokset)
+VALUES ('hakemus2', 'hakija2', 2, false, '83c1c848-da64-435f-be41-23a29f4d8d97', false, '{"funktioTulokset": []}', '{"syotetytArvot": []}', '{"jarjestyskriteeritulokset": [{"arvo": 19.0, "nimi": "Testikriteeri", "prioriteetti": 0, "tila": "HYVAKSYTTAVISSA" }]}');
 
 
 
 INSERT INTO jonosija(
-    hakemus_oid, hakija_oid, hakutoiveprioriteetti, harkinnanvarainen, hakijaryhma, hylatty_valisijoittelussa, syotetyt_arvot, funktio_tulokset)
-VALUES ('hakemus1', 'hakija1', 1, false, 'ce7664b5-86cd-48af-b02f-28cdb5265bc6', false, '{"funktioTulokset": []}', '{"syotetytArvot": []}');
+    hakemus_oid, hakija_oid, hakutoiveprioriteetti, harkinnanvarainen, valintatapajono, hylatty_valisijoittelussa, syotetyt_arvot, funktio_tulokset, jarjestyskriteeritulokset)
+VALUES ('hakemus3', 'hakija3', 4, false, '83c1c848-da64-435f-be41-23a29f4d8d98', false, '{"funktioTulokset": []}', '{"syotetytArvot": []}', '{"jarjestyskriteeritulokset": [{"arvo": 17.0, "nimi": "Testikriteeri", "prioriteetti": 0, "tila": "HYVAKSYTTAVISSA" }]}');
 
-INSERT INTO jarjestyskriteeritulos(nimi, prioriteetti, tila, jonosija)
-SELECT 'Hakijaryhmän tulokset', 0, 'HYVAKSYTTAVISSA', jonosija.id from jonosija
-WHERE hakemus_oid = 'hakemus1' AND hakijaryhma = 'ce7664b5-86cd-48af-b02f-28cdb5265bc6';
-
-INSERT INTO jonosija(
-    hakemus_oid, hakija_oid, hakutoiveprioriteetti, harkinnanvarainen, hakijaryhma, hylatty_valisijoittelussa, syotetyt_arvot, funktio_tulokset)
-VALUES ('hakemus2', 'hakija2', 2, false, 'ce7664b5-86cd-48af-b02f-28cdb5265bc6', false, '{"funktioTulokset": []}', '{"syotetytArvot": []}');
-
-INSERT INTO jarjestyskriteeritulos(nimi, prioriteetti, tila, jonosija)
-SELECT 'Hakijaryhmän tulokset', 0, 'HYVAKSYTTAVISSA', jonosija.id from jonosija
-WHERE hakemus_oid = 'hakemus2' AND hakijaryhma = 'ce7664b5-86cd-48af-b02f-28cdb5265bc6';
-
-INSERT INTO jonosija(
-    hakemus_oid, hakija_oid, hakutoiveprioriteetti, harkinnanvarainen, hakijaryhma, hylatty_valisijoittelussa, syotetyt_arvot, funktio_tulokset)
-VALUES ('hakemus3', 'hakija3', 4, false, 'ce7664b5-86cd-48af-b02f-28cdb5265bc6', false, '{"funktioTulokset": []}', '{"syotetytArvot": []}');
-
-INSERT INTO jarjestyskriteeritulos(nimi, prioriteetti, tila, kuvaus_fi, jonosija)
-SELECT 'Hakijaryhmän tulokset', 0, 'HYLATTY', 'Ei ensimmäistä korkeakoulupaikkaa hakeva', jonosija.id from jonosija
-WHERE hakemus_oid = 'hakemus3' AND hakijaryhma = 'ce7664b5-86cd-48af-b02f-28cdb5265bc6';
 
 
 INSERT INTO jonosija(
-    hakemus_oid, hakija_oid, hakutoiveprioriteetti, harkinnanvarainen, hakijaryhma, hylatty_valisijoittelussa, syotetyt_arvot, funktio_tulokset)
-VALUES ('hakemus1', 'hakija1', 1, false, 'ce7664b5-86cd-48af-b02f-28cdb5265bc8', false, '{"funktioTulokset": []}', '{"syotetytArvot": []}');
+    hakemus_oid, hakija_oid, hakutoiveprioriteetti, harkinnanvarainen, valintatapajono, hylatty_valisijoittelussa, syotetyt_arvot, funktio_tulokset, jarjestyskriteeritulokset)
+VALUES ('hakemus1', 'hakija1', 1, false, '83c1c848-da64-435f-be41-23a29f4d8d98', false, '{"funktioTulokset": []}', '{"syotetytArvot": []}', '{"jarjestyskriteeritulokset": [{"arvo": 11.0, "nimi": "Testikriteeri", "prioriteetti": 0, "tila": "HYVAKSYTTAVISSA" }]}');
 
-INSERT INTO jarjestyskriteeritulos(nimi, prioriteetti, tila, jonosija)
-SELECT 'Hakijaryhmän tulokset', 0, 'HYLATTY', jonosija.id from jonosija
-WHERE hakemus_oid = 'hakemus1' AND hakijaryhma = 'ce7664b5-86cd-48af-b02f-28cdb5265bc8';
+
 
 INSERT INTO jonosija(
-    hakemus_oid, hakija_oid, hakutoiveprioriteetti, harkinnanvarainen, hakijaryhma, hylatty_valisijoittelussa, syotetyt_arvot, funktio_tulokset)
-VALUES ('hakemus2', 'hakija2', 2, false, 'ce7664b5-86cd-48af-b02f-28cdb5265bc8', false, '{"funktioTulokset": []}', '{"syotetytArvot": []}');
+    hakemus_oid, hakija_oid, hakutoiveprioriteetti, harkinnanvarainen, valintatapajono, hylatty_valisijoittelussa, syotetyt_arvot, funktio_tulokset, jarjestyskriteeritulokset)
+VALUES ('hakemus2', 'hakija2', 2, false, '83c1c848-da64-435f-be41-23a29f4d8d98', false, '{"funktioTulokset": []}', '{"syotetytArvot": []}', '{"jarjestyskriteeritulokset": [{"arvo": 19.0, "nimi": "Testikriteeri", "prioriteetti": 0, "tila": "HYVAKSYTTAVISSA" }]}');
 
-INSERT INTO jarjestyskriteeritulos(nimi, prioriteetti, tila, jonosija)
-SELECT 'Hakijaryhmän tulokset', 0, 'HYLATTY', jonosija.id from jonosija
-WHERE hakemus_oid = 'hakemus2' AND hakijaryhma = 'ce7664b5-86cd-48af-b02f-28cdb5265bc8';
+
 
 INSERT INTO jonosija(
-    hakemus_oid, hakija_oid, hakutoiveprioriteetti, harkinnanvarainen, hakijaryhma, hylatty_valisijoittelussa, syotetyt_arvot, funktio_tulokset)
-VALUES ('hakemus3', 'hakija3', 4, false, 'ce7664b5-86cd-48af-b02f-28cdb5265bc8', false, '{"funktioTulokset": []}', '{"syotetytArvot": []}');
+    hakemus_oid, hakija_oid, hakutoiveprioriteetti, harkinnanvarainen, valintatapajono, hylatty_valisijoittelussa, syotetyt_arvot, funktio_tulokset, jarjestyskriteeritulokset)
+VALUES ('hakemus3', 'hakija3', 4, false, '83c1c848-da64-435f-be41-23a29f4d8d98', false, '{"funktioTulokset": []}', '{"syotetytArvot": []}', '{"jarjestyskriteeritulokset": [{"arvo": 17.0, "nimi": "Testikriteeri", "prioriteetti": 0, "tila": "HYVAKSYTTAVISSA" }]}');
 
-INSERT INTO jarjestyskriteeritulos(nimi, prioriteetti, tila, kuvaus_fi, jonosija)
-SELECT 'Hakijaryhmän tulokset', 0, 'HYVAKSYTTAVISSA', 'Ei ensimmäistä korkeakoulupaikkaa hakeva', jonosija.id from jonosija
-WHERE hakemus_oid = 'hakemus3' AND hakijaryhma = 'ce7664b5-86cd-48af-b02f-28cdb5265bc8';
+
+
+
+
+INSERT INTO jonosija(
+    hakemus_oid, hakija_oid, hakutoiveprioriteetti, harkinnanvarainen, hakijaryhma, hylatty_valisijoittelussa, syotetyt_arvot, funktio_tulokset, jarjestyskriteeritulokset)
+VALUES ('hakemus1', 'hakija1', 1, false, 'ce7664b5-86cd-48af-b02f-28cdb5265bc6', false, '{"funktioTulokset": []}', '{"syotetytArvot": []}', '{"jarjestyskriteeritulokset": [{"nimi": "Hakijaryhmän tulokset", "prioriteetti": 0, "tila": "HYVAKSYTTAVISSA" }]}');
+
+
+INSERT INTO jonosija(
+    hakemus_oid, hakija_oid, hakutoiveprioriteetti, harkinnanvarainen, hakijaryhma, hylatty_valisijoittelussa, syotetyt_arvot, funktio_tulokset, jarjestyskriteeritulokset)
+VALUES ('hakemus2', 'hakija2', 2, false, 'ce7664b5-86cd-48af-b02f-28cdb5265bc6', false, '{"funktioTulokset": []}', '{"syotetytArvot": []}', '{"jarjestyskriteeritulokset": [{"nimi": "Hakijaryhmän tulokset", "prioriteetti": 0, "tila": "HYVAKSYTTAVISSA" }]}');
+
+
+
+INSERT INTO jonosija(
+    hakemus_oid, hakija_oid, hakutoiveprioriteetti, harkinnanvarainen, hakijaryhma, hylatty_valisijoittelussa, syotetyt_arvot, funktio_tulokset, jarjestyskriteeritulokset)
+VALUES ('hakemus3', 'hakija3', 4, false, 'ce7664b5-86cd-48af-b02f-28cdb5265bc6', false, '{"funktioTulokset": []}', '{"syotetytArvot": []}', '{"jarjestyskriteeritulokset": [{"nimi": "Hakijaryhmän tulokset", "prioriteetti": 0, "tila": "HYLATTY" }]}');
+
+
+
+
+INSERT INTO jonosija(
+    hakemus_oid, hakija_oid, hakutoiveprioriteetti, harkinnanvarainen, hakijaryhma, hylatty_valisijoittelussa, syotetyt_arvot, funktio_tulokset, jarjestyskriteeritulokset)
+VALUES ('hakemus1', 'hakija1', 1, false, 'ce7664b5-86cd-48af-b02f-28cdb5265bc8', false, '{"funktioTulokset": []}', '{"syotetytArvot": []}', '{"jarjestyskriteeritulokset": [{"nimi": "Hakijaryhmän tulokset", "prioriteetti": 0, "tila": "HYLATTY" }]}');
+
+
+
+INSERT INTO jonosija(
+    hakemus_oid, hakija_oid, hakutoiveprioriteetti, harkinnanvarainen, hakijaryhma, hylatty_valisijoittelussa, syotetyt_arvot, funktio_tulokset, jarjestyskriteeritulokset)
+VALUES ('hakemus2', 'hakija2', 2, false, 'ce7664b5-86cd-48af-b02f-28cdb5265bc8', false, '{"funktioTulokset": []}', '{"syotetytArvot": []}', '{"jarjestyskriteeritulokset": [{"nimi": "Hakijaryhmän tulokset", "prioriteetti": 0, "tila": "HYLATTY" }]}');
+
+
+
+INSERT INTO jonosija(
+    hakemus_oid, hakija_oid, hakutoiveprioriteetti, harkinnanvarainen, hakijaryhma, hylatty_valisijoittelussa, syotetyt_arvot, funktio_tulokset, jarjestyskriteeritulokset)
+VALUES ('hakemus3', 'hakija3', 4, false, 'ce7664b5-86cd-48af-b02f-28cdb5265bc8', false, '{"funktioTulokset": []}', '{"syotetytArvot": []}', '{"jarjestyskriteeritulokset": [{"nimi": "Hakijaryhmän tulokset", "prioriteetti": 0, "tila": "HYVAKSYTTAVISSA", "kuvaus_fi": "Ei ensimmäistä korkeakoulupaikkaa hakeva" }]}');
+
