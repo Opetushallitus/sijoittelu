@@ -519,7 +519,6 @@ public class SijoitteluMontaJonoaTest extends AbstractIntegrationTest {
     }
 
     @Test
-    //@UsingDataSet(locations = "monta_jonoa_tasasija_arvonta.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
     public void testTasasijaArvonta() {
 
         HakuDTO haku = valintatietoService.haeValintatiedot("haku1");
@@ -528,7 +527,7 @@ public class SijoitteluMontaJonoaTest extends AbstractIntegrationTest {
 
 
         List<Hakukohde> hakukohteet = haku.getHakukohteet().parallelStream().map(DomainConverter::convertToHakukohde).collect(Collectors.toList());
-        SijoittelunTila s = SijoitteluAlgorithmUtil.sijoittele(hakukohteet, new ArrayList(), Collections.emptyMap());
+        SijoitteluAlgorithmUtil.sijoittele(hakukohteet, new ArrayList(), Collections.emptyMap());
 
         Valintatulos tulos11 = createTulos("oid1", "hakukohde1", "oid1");
         Valintatulos tulos12 = createTulos("oid1", "hakukohde1", "oid2");
@@ -550,14 +549,15 @@ public class SijoitteluMontaJonoaTest extends AbstractIntegrationTest {
 
         Valintatulos tulos71 = createTulos("oid7", "hakukohde1", "oid1");
         Valintatulos tulos72 = createTulos("oid7", "hakukohde1", "oid2");
-        s = SijoitteluAlgorithmUtil.sijoittele(hakukohteet, Arrays.asList(tulos11, tulos12, tulos21, tulos22, tulos31, tulos32, tulos41, tulos42, tulos51, tulos52, tulos61, tulos62, tulos71, tulos72), Collections.emptyMap());
+        SijoitteluAlgorithmUtil.sijoittele(hakukohteet, Arrays.asList(tulos11, tulos12, tulos21, tulos22, tulos31, tulos32, tulos41, tulos42, tulos51, tulos52, tulos61, tulos62, tulos71, tulos72), Collections.emptyMap());
 
         tulos11.setTila(ValintatuloksenTila.VASTAANOTTANUT_SITOVASTI, "");
         tulos11.setIlmoittautumisTila(IlmoittautumisTila.POISSA, "");
 
         tulos22.setTila(ValintatuloksenTila.PERUNUT, "");
-        s = SijoitteluAlgorithmUtil.sijoittele(hakukohteet, Arrays.asList(tulos11, tulos12, tulos21, tulos22, tulos31, tulos32, tulos41, tulos42, tulos51, tulos52, tulos61, tulos62, tulos71, tulos72), Collections.emptyMap());
+        SijoittelunTila s = SijoitteluAlgorithmUtil.sijoittele(hakukohteet, Arrays.asList(tulos11, tulos12, tulos21, tulos22, tulos31, tulos32, tulos41, tulos42, tulos51, tulos52, tulos61, tulos62, tulos71, tulos72), Collections.emptyMap());
 
+        Assertions.assertNotNull(s);
         System.out.println(PrintHelper.tulostaSijoittelu(s));
 
 
@@ -685,8 +685,7 @@ public class SijoitteluMontaJonoaTest extends AbstractIntegrationTest {
 
     @Test
     @Sql("peruuntunut_taytto.sql")
-    //@UsingDataSet(locations = "peruuntunut_taytto.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
-    public void testPeruunutunutTaytto() {
+    public void testPeruuntunutTaytto() {
 
         HakuDTO haku = valintatietoService.haeValintatiedot("haku1");
         haku.getHakukohteet().get(0).getValinnanvaihe().get(0).getValintatapajonot().get(0)
