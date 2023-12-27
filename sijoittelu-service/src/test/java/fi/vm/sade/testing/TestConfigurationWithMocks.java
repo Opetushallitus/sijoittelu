@@ -1,37 +1,30 @@
-package fi.vm.sade.configuration;
+package fi.vm.sade.testing;
 
 import fi.vm.sade.javautils.nio.cas.CasClient;
 import fi.vm.sade.javautils.opintopolku_spring_security.Authorizer;
 import fi.vm.sade.service.valintaperusteet.resource.ValintaperusteetResource;
 import fi.vm.sade.service.valintaperusteet.resource.ValintaperusteetResourceV2;
-import fi.vm.sade.sijoittelu.laskenta.configuration.*;
 import fi.vm.sade.sijoittelu.laskenta.external.resource.*;
 import fi.vm.sade.sijoittelu.laskenta.mapping.SijoitteluModelMapper;
 import fi.vm.sade.sijoittelu.laskenta.service.business.ValintarekisteriService;
+import fi.vm.sade.valintalaskenta.tulos.logging.LaskentaAuditLog;
 import fi.vm.sade.valintalaskenta.tulos.logging.LaskentaAuditLogImpl;
 import fi.vm.sade.valintalaskenta.tulos.mapping.ValintalaskentaModelMapper;
+import fi.vm.sade.valintalaskenta.tulos.service.impl.JarjestyskriteerihistoriaServiceImpl;
+import org.flywaydb.core.Flyway;
 import org.mockito.Mockito;
+import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.*;
 
-@Configuration
-@Import({MongoConfiguration.class})
+@TestConfiguration
 @ComponentScan(basePackages = {
-    "fi.vm.sade.sijoittelu.tulos",
-    "fi.vm.sade.sijoittelu.batch",
-    "fi.vm.sade.sijoittelu.laskenta",
-    "fi.vm.sade.valintalaskenta.tulos.dao",
-    "fi.vm.sade.valintalaskenta.tulos.service.impl",
-    "fi.vm.sade.valintalaskenta.tulos.resource.impl",
-    "fi.vm.sade.valintalaskenta.tulos.service.impl.converters"
-}, excludeFilters = {@ComponentScan.Filter(
-        type = FilterType.ASSIGNABLE_TYPE, classes = {
-                HttpClients.class,
-                AccessLogConfiguration.class,
-                ExternalConfiguration.class,
-                SecurityConfiguration.class,
-                PropertyConfiguration.class,
-                SijoitteluServiceConfiguration.class})})
-public class TestConfiguration {
+  "fi.vm.sade.valintalaskenta.tulos.dao",
+  "fi.vm.sade.valintalaskenta.tulos.service.impl",
+  "fi.vm.sade.valintalaskenta.tulos.service.impl.converters"
+}, excludeFilters = {
+  @ComponentScan.Filter(type=FilterType.ASSIGNABLE_TYPE, value= JarjestyskriteerihistoriaServiceImpl.class)})
+@Profile("test")
+public class TestConfigurationWithMocks {
 
     @Bean
     public ValintaperusteetResource valintaperusteetResource() { return Mockito.mock(ValintaperusteetResource.class); }
@@ -60,8 +53,8 @@ public class TestConfiguration {
     @Bean
     public ValintarekisteriService valintarekisteriService() { return Mockito.mock(ValintarekisteriService.class); }
 
-    @Bean
-    public LaskentaAuditLogImpl laskentaAuditLog() {
+    @Bean("LaskentaAuditLog")
+    public LaskentaAuditLog laskentaAuditLog() {
         return new LaskentaAuditLogImpl();
     }
 
@@ -73,6 +66,11 @@ public class TestConfiguration {
     @Bean
     public SijoitteluModelMapper sijoitteluModelMapper() {
         return new SijoitteluModelMapper();
+    }
+
+    @Bean
+    public ApplicationContextGetter applicationContextGetter() {
+        return new ApplicationContextGetter();
     }
 
 }

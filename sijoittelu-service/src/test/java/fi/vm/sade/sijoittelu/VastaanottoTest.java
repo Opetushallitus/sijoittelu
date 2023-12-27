@@ -1,9 +1,7 @@
 package fi.vm.sade.sijoittelu;
 
-import com.lordofthejars.nosqlunit.annotation.UsingDataSet;
-import com.lordofthejars.nosqlunit.core.LoadStrategyEnum;
-
-import fi.vm.sade.configuration.TestConfiguration;
+import fi.vm.sade.testing.AbstractIntegrationTest;
+import fi.vm.sade.testing.TestConfigurationWithMocks;
 import fi.vm.sade.sijoittelu.batch.logic.impl.DomainConverter;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.PrintHelper;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoitteluConfiguration;
@@ -19,7 +17,6 @@ import fi.vm.sade.sijoittelu.domain.SijoitteluAjo;
 import fi.vm.sade.sijoittelu.domain.Valintatapajono;
 import fi.vm.sade.sijoittelu.domain.ValintatuloksenTila;
 import fi.vm.sade.sijoittelu.domain.Valintatulos;
-import fi.vm.sade.util.NoSqlUnitInterceptor;
 import fi.vm.sade.valintalaskenta.domain.dto.valintatieto.HakuDTO;
 import fi.vm.sade.valintalaskenta.tulos.service.impl.ValintatietoService;
 import org.junit.jupiter.api.Assertions;
@@ -28,6 +25,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.Arrays;
@@ -35,10 +33,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@ContextConfiguration(classes = {TestConfiguration.class})
-@ExtendWith(SpringExtension.class)
-@ExtendWith(NoSqlUnitInterceptor.class)
-public class VastaanottoTest {
+
+public class VastaanottoTest extends AbstractIntegrationTest {
 
     @Autowired
     private ValintatietoService valintatietoService;
@@ -47,7 +43,7 @@ public class VastaanottoTest {
     private ApplicationContext applicationContext; // Required by the @Rule below
 
 	@Test
-    @UsingDataSet(locations = "vastaanotot.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
+  @Sql("vastaanotot.sql")
 	public void testVastaanotot() {
 
         HakuDTO haku = valintatietoService.haeValintatiedot("1.2.246.562.29.173465377510");
@@ -167,7 +163,7 @@ public class VastaanottoTest {
 	}
 
     @Test
-    @UsingDataSet(locations = "vastaanotot_perunut_kaikille_jonoille.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
+    @Sql("vastaanotot_perunut_kaikille_jonoille.sql")
     public void testPeruutettuVastaanottoKaikilleJonoille() {
 
         HakuDTO haku = valintatietoService.haeValintatiedot("1.2.246.562.29.173465377510");
@@ -216,7 +212,7 @@ public class VastaanottoTest {
     }
 
     @Test
-    @UsingDataSet(locations = "vastaanotot_perunut_kaikille_jonoille.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
+    @Sql("vastaanotot_perunut_kaikille_jonoille.sql")
     public void testEiVastaanottanutMaaraaikanaVastaanottoKaikilleJonoille() {
 
         HakuDTO haku = valintatietoService.haeValintatiedot("1.2.246.562.29.173465377510");
@@ -266,7 +262,7 @@ public class VastaanottoTest {
     }
 
     @Test
-    @UsingDataSet(locations = "vastaanotot_perunut_kaikille_jonoille.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
+    @Sql("vastaanotot_perunut_kaikille_jonoille.sql")
     public void testPerunutVastaanottoKaikilleJonoille() {
 
         HakuDTO haku = valintatietoService.haeValintatiedot("1.2.246.562.29.173465377510");

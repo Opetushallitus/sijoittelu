@@ -2,7 +2,7 @@
 
 Sijoittelu-service on sijoittelu-palvelun osa joka sisältää varsinaisen sijoittelurajapinnan.
 
-### Ajaminen lokaalisti hahtuvan palveluita vasten
+### Ajaminen lokaalisti testiympäristön palveluita vasten
 
 Joissakin tapauksissa on tarpeellista ajaa ympäristöä lokaalisti jonkin jaetun kehitysympäristön datalla, esim. virheiden
 selvittämistä varten. Tämä onnistuu seuraavilla ohjeilla.
@@ -17,13 +17,13 @@ Luo PostgreSQL kontti seuraavilla komennoilla (tarvitsee tehdä vain kerran):
     ```
 
 2. Kopioi konfiguraatio-template lokaalia kehitystä varten ```'/src/test/resources/application-dev.properties.template'``` -> ```'/src/test/resources/application-dev.properties'```.
-Application-dev.properties on ignoroitu Gitissä etteivät salasanat valu repoon. Tähän tiedostoon täytyy täyttää tarvittavat hahtuva-ympäristön
+Application-dev.properties on ignoroitu Gitissä etteivät salasanat valu repoon. Tähän tiedostoon täytyy täyttää tarvittavat testi-ympäristön
 salasanat.
   
   
-3. Koska käytetään testiympäristön mondodb-kantaa, tarvitaan ssh-porttiohjaus:
+3. Koska käytetään testiympäristön valintalaskennan postgres-kantaa, tarvitaan ssh-porttiohjaus, esim. untuva:
 
-    `ssh -N -L 27017:docdb.db.hahtuvaopintopolku.fi:27017 <ssh-tunnus>@bastion.hahtuvaopintopolku.fi`
+    `ssh -N -L 25446:valintalaskenta.db.untuvaopintopolku.fi:5432 <ssh-tunnus>@bastion.untuvaopintopolku.fi`
   
   
 4. Lisää tarvittavat JVM-parametrit, mene Run -> Edit Configurations -> Valitse DevApp.java -> Modify Options -> Add VM Options
