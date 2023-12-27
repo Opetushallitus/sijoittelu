@@ -10,6 +10,7 @@ import fi.vm.sade.sijoittelu.laskenta.service.business.ValintarekisteriService;
 import fi.vm.sade.valintalaskenta.tulos.logging.LaskentaAuditLog;
 import fi.vm.sade.valintalaskenta.tulos.logging.LaskentaAuditLogImpl;
 import fi.vm.sade.valintalaskenta.tulos.mapping.ValintalaskentaModelMapper;
+import fi.vm.sade.valintalaskenta.tulos.service.impl.JarjestyskriteerihistoriaServiceImpl;
 import org.flywaydb.core.Flyway;
 import org.mockito.Mockito;
 import org.springframework.boot.test.context.TestConfiguration;
@@ -20,7 +21,8 @@ import org.springframework.context.annotation.*;
   "fi.vm.sade.valintalaskenta.tulos.dao",
   "fi.vm.sade.valintalaskenta.tulos.service.impl",
   "fi.vm.sade.valintalaskenta.tulos.service.impl.converters"
-})
+}, excludeFilters = {
+  @ComponentScan.Filter(type=FilterType.ASSIGNABLE_TYPE, value= JarjestyskriteerihistoriaServiceImpl.class)})
 @Profile("test")
 public class TestConfigurationWithMocks {
 
