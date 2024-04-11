@@ -86,31 +86,4 @@ public class Haku {
         dto.alkamisvuosi != null ? Integer.parseInt(dto.alkamisvuosi) : null;
     this.ataruLomakeAvain = dto.hakulomakeAtaruId;
   }
-
-  public boolean isKorkeakouluhaku() {
-    if (this.kohdejoukkoUri == null) {
-      return false;
-    }
-    return this.kohdejoukkoUri.startsWith("haunkohdejoukko_12#");
-  }
-
-  public boolean isAmmatillinenJaLukio() {
-    if (this.kohdejoukkoUri == null) {
-      return false;
-    }
-    return this.kohdejoukkoUri.startsWith("haunkohdejoukko_11#");
-  }
-
-  public boolean isHakemuspalvelu() {
-    return this.ataruLomakeAvain != null;
-  }
-
-  public boolean isKoutaHaku() {
-    if (this.oid.startsWith("1.2.246.562.29.") && this.oid.length() >= 35) return true;
-    else return false;
-  }
-
-  public String getAtaruLomakeAvain() {
-    return ataruLomakeAvain;
-  }
 }
