@@ -19,6 +19,7 @@ import fi.vm.sade.sijoittelu.laskenta.service.it.Haku;
 import fi.vm.sade.sijoittelu.laskenta.service.it.TarjontaIntegrationService;
 import fi.vm.sade.sijoittelu.laskenta.util.EnumConverter;
 import fi.vm.sade.sijoittelu.laskenta.util.UrlProperties;
+import fi.vm.sade.valinta.kooste.url.UrlConfiguration;
 import fi.vm.sade.valintalaskenta.domain.dto.HakukohdeDTO;
 import fi.vm.sade.valintalaskenta.domain.dto.valintakoe.Tasasijasaanto;
 import fi.vm.sade.valintalaskenta.domain.dto.valintatieto.HakuDTO;
@@ -36,6 +37,9 @@ import org.springframework.stereotype.Service;
 
 import java.util.*;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -49,6 +53,9 @@ import static java.util.stream.Collectors.toSet;
 public class ToteutaSijoitteluService {
     private final static Logger LOGGER = LoggerFactory.getLogger(ToteutaSijoitteluService.class);
 
+    private static final int MAX_POLL_INTERVALL_IN_SECONDS = 30;
+    private static final int ADDED_WAIT_PER_POLL_IN_SECONDS = 3;
+
     private final SijoitteluBusinessService sijoitteluBusinessService;
     private final ValintatietoService valintatietoService;
     private final SijoitteluBookkeeperService sijoitteluBookkeeperService;
@@ -57,6 +64,7 @@ public class ToteutaSijoitteluService {
     private final TarjontaIntegrationService tarjontaIntegrationService;
     private final EmailService emailService;
     private final Gson gson;
+    private final UrlConfiguration urlConfiguration;
 
     @Autowired
     public ToteutaSijoitteluService(SijoitteluBusinessService sijoitteluBusinessService,
@@ -78,6 +86,76 @@ public class ToteutaSijoitteluService {
                 .registerTypeAdapter(Date.class, (JsonDeserializer<Date>) (json, typeOfT, context) ->
                         new Date(json.getAsJsonPrimitive().getAsLong()))
                 .create();
+        this.urlConfiguration = UrlConfiguration.getInstance();
+    }
+
+    public void toteutaSijoitteluAsync(
+        String hakuOid, Consumer<String> callback, Consumer<Throwable> failureCallback) {
+        LOGGER.info("Sijoitellaan pollaten haulle {}", hakuOid);
+        int secondsUntilNextPoll = 3;
+        String status = "";
+        AtomicReference<Boolean> done = new AtomicReference<>(false);
+        Long sijoitteluajoId = -1L;
+
+        // Luodaan sijoitteluajo, saadaan palautusarvona sen id, jota käytetään pollattaessa toista
+        // rajapintaa.
+        String luontiUrl = this.urlConfiguration.url("sijoittelu-service.sijoittele", hakuOid);
+        try {
+            sijoitteluajoId = this.toteutaSijoittelu(hakuOid);
+        } catch (Exception e) {
+            LOGGER.error(String.format("(Haku %s) sijoittelun rajapintakutsu epäonnistui", hakuOid), e);
+        }
+        // Jos rajapinta palauttaa -1 tai kutsu epäonnistuu, uutta sijoitteluajoa ei luotu. Ei aloiteta
+        // pollausta.
+        if (sijoitteluajoId == -1) {
+            String msg =
+                String.format(
+                    "Uuden sijoittelun luonti haulle %s epäonnistui: luontirajapinta palautti -1",
+                    hakuOid);
+            LOGGER.error(msg);
+            failureCallback.accept(new Exception(msg));
+            return;
+        }
+
+        LOGGER.info(
+            "(Haku: {}) Sijoittelu on käynnistynyt id:llä {}. Pollataan kunnes se on päättynyt.",
+            hakuOid,
+            sijoitteluajoId);
+        String pollingUrl =
+            this.urlConfiguration.url("sijoittelu-service.sijoittele.ajontila", sijoitteluajoId);
+        while (!done.get()) {
+            try {
+                TimeUnit.SECONDS.sleep(secondsUntilNextPoll);
+            } catch (Exception e) {
+                throw new RuntimeException();
+            }
+            if (secondsUntilNextPoll < MAX_POLL_INTERVALL_IN_SECONDS) {
+                secondsUntilNextPoll += ADDED_WAIT_PER_POLL_IN_SECONDS;
+            }
+            try {
+                status = this.sijoitteluBookkeeperService.getSijoitteluAjonTila(sijoitteluajoId);
+
+                LOGGER.info("Saatiin ajontila-rajapinnalta palautusarvo {}", status);
+                if (SijoitteluajonTila.VALMIS.toString().equals(status)) {
+                    LOGGER.info("#### Sijoittelu {} haulle {} on valmistunut", sijoitteluajoId, hakuOid);
+                    callback.accept(status);
+                    done.set(true);
+                    return;
+                }
+                if (SijoitteluajonTila.VIRHE.toString().equals(status)) {
+                    LOGGER.error("#### Sijoittelu {} haulle {} päättyi virheeseen", sijoitteluajoId, hakuOid);
+                    failureCallback.accept(new Exception());
+                    done.set(true);
+                    return;
+                }
+            } catch (Exception e) {
+                LOGGER.error(
+                    String.format("Sijoittelussa %s haulle %s tapahtui virhe", sijoitteluajoId, hakuOid),
+                    e);
+                failureCallback.accept(e);
+                return;
+            }
+        }
     }
 
     public Long toteutaSijoittelu(String hakuOid) {

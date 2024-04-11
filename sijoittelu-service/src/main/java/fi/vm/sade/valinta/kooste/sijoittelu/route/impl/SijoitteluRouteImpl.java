@@ -3,7 +3,7 @@ package fi.vm.sade.valinta.kooste.sijoittelu.route.impl;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.RemovalListener;
-import fi.vm.sade.valinta.kooste.external.resource.sijoittelu.SijoitteleAsyncResource;
+import fi.vm.sade.sijoittelu.laskenta.service.business.ToteutaSijoitteluService;
 import fi.vm.sade.valinta.kooste.sijoittelu.dto.Sijoittelu;
 import fi.vm.sade.valinta.kooste.sijoittelu.route.SijoitteluAktivointiRoute;
 import fi.vm.sade.valinta.kooste.sijoittelu.route.SijoittelunValvonta;
@@ -17,7 +17,7 @@ import org.springframework.stereotype.Component;
 public class SijoitteluRouteImpl implements SijoittelunValvonta, SijoitteluAktivointiRoute {
 
   private static final Logger LOG = LoggerFactory.getLogger(SijoitteluRouteImpl.class);
-  private final SijoitteleAsyncResource sijoitteluResource;
+  private final ToteutaSijoitteluService toteutaSijoitteluService;
   private final Cache<String, Sijoittelu> sijoitteluCache =
       CacheBuilder.newBuilder()
           .weakValues()
@@ -28,8 +28,8 @@ public class SijoitteluRouteImpl implements SijoittelunValvonta, SijoitteluAktiv
           .build();
 
   @Autowired
-  public SijoitteluRouteImpl(SijoitteleAsyncResource sijoitteluResource) {
-    this.sijoitteluResource = sijoitteluResource;
+  public SijoitteluRouteImpl(ToteutaSijoitteluService toteutaSijoitteluService) {
+    this.toteutaSijoitteluService = toteutaSijoitteluService;
   }
 
   @Override
@@ -54,7 +54,7 @@ public class SijoitteluRouteImpl implements SijoittelunValvonta, SijoitteluAktiv
       }
 
       LOG.info("Aloitetaan sijoittelu haulle {}", sijoittelu.getHakuOid());
-      sijoitteluResource.sijoittele(
+      toteutaSijoitteluService.toteutaSijoitteluAsync(
           sijoittelu.getHakuOid(),
           success -> {
             sijoittelu.setValmis();

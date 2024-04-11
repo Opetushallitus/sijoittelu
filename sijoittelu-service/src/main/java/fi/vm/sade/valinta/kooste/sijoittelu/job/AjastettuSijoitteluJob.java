@@ -1,7 +1,7 @@
 package fi.vm.sade.valinta.kooste.sijoittelu.job;
 
+import fi.vm.sade.sijoittelu.laskenta.service.business.ToteutaSijoitteluService;
 import fi.vm.sade.valinta.kooste.external.resource.seuranta.SijoitteluSeurantaResource;
-import fi.vm.sade.valinta.kooste.external.resource.sijoittelu.SijoitteleAsyncResource;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.slf4j.Logger;
@@ -24,15 +24,15 @@ public class AjastettuSijoitteluJob extends QuartzJobBean {
     try {
       ApplicationContext applicationContext =
           (ApplicationContext) context.getScheduler().getContext().get("applicationContext");
-      SijoitteleAsyncResource sijoitteluAsyncResource =
-          applicationContext.getBean(SijoitteleAsyncResource.class);
+      ToteutaSijoitteluService toteutaSijoitteluService =
+          applicationContext.getBean(ToteutaSijoitteluService.class);
       SijoitteluSeurantaResource sijoittelunSeurantaResource =
           applicationContext.getBean(SijoitteluSeurantaResource.class);
 
       String hakuOid = (String) context.getJobDetail().getJobDataMap().get("hakuOid");
       try {
         LOG.info("Ajastettu sijoittelu kaynnistyy nyt haulle {}", hakuOid);
-        sijoitteluAsyncResource.sijoittele(
+        toteutaSijoitteluService.toteutaSijoitteluAsync(
             hakuOid,
             done -> {
               LOG.info("Jatkuva sijoittelu saatiin tehtya haulle {}", hakuOid);
