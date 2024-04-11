@@ -194,21 +194,6 @@
 			</exclusions>
 		</dependency>
 		<dependency>
-			<groupId>fi.vm.sade.organisaatio</groupId>
-			<artifactId>organisaatio-api</artifactId>
-			<version>2023.09.111204.RELEASE</version>
-			<exclusions>
-				<exclusion>
-					<artifactId>jsr311-api</artifactId>
-					<groupId>javax.ws.rs</groupId>
-				</exclusion>
-				<exclusion>
-					<artifactId>*</artifactId>
-					<groupId>org.springframework</groupId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-		<dependency>
 			<groupId>fi.vm.sade.tarjonta</groupId>
 			<artifactId>tarjonta-api</artifactId>
 			<version>2018-15-SNAPSHOT</version>
