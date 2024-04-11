@@ -1,11 +1,9 @@
 package fi.vm.sade.sijoittelu.laskenta.configuration;
 
 import fi.vm.sade.sijoittelu.laskenta.mapping.SijoitteluModelMapper;
-import fi.vm.sade.valinta.dokumenttipalvelu.Dokumenttipalvelu;
 import fi.vm.sade.valintalaskenta.tulos.logging.LaskentaAuditLog;
 import fi.vm.sade.valintalaskenta.tulos.logging.LaskentaAuditLogImpl;
 import fi.vm.sade.valintalaskenta.tulos.mapping.ValintalaskentaModelMapper;
-import fi.vm.sade.valintalaskenta.tulos.service.JarjestyskriteerihistoriaService;
 import fi.vm.sade.valintalaskenta.tulos.service.impl.JarjestyskriteerihistoriaServiceImpl;
 import org.springframework.context.annotation.*;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
@@ -17,7 +15,8 @@ import org.springframework.scheduling.annotation.EnableAsync;
 @ComponentScan(basePackages = {
     "fi.vm.sade.valintalaskenta.tulos.dao",
     "fi.vm.sade.valintalaskenta.tulos.service.impl",
-    "fi.vm.sade.valintalaskenta.tulos.service.impl.converters"
+    "fi.vm.sade.valintalaskenta.tulos.service.impl.converters",
+    "fi.vm.sade.valinta.kooste"
 }, excludeFilters = {
   @ComponentScan.Filter(type=FilterType.ASSIGNABLE_TYPE, value=JarjestyskriteerihistoriaServiceImpl.class)})
 @Profile("!test")
