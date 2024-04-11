@@ -64,6 +64,9 @@ public class DevApp {
         System.setProperty("spring.profiles.active", "dev");
         //System.setProperty("logging.level.root", "debug");
 
+        // uusia seurantaa varten
+        System.setProperty("valintalaskentakoostepalvelu.seuranta.rest.url", "https://${host.virkailija}/seuranta-service/resources");
+
         TempDockerDB.start();
         System.setProperty("spring-boot.run.jvmArguments", "-Xms2048m -Xmx4096m");
         System.setProperty("server.servlet.context-path", CONTEXT_PATH);
