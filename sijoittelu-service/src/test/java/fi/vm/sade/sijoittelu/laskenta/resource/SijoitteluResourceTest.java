@@ -13,6 +13,7 @@ import fi.vm.sade.sijoittelu.domain.SijoitteluajonTila;
 import fi.vm.sade.sijoittelu.laskenta.email.EmailService;
 import fi.vm.sade.sijoittelu.laskenta.service.business.SijoitteluBookkeeperService;
 import fi.vm.sade.sijoittelu.laskenta.service.business.SijoitteluBusinessService;
+import fi.vm.sade.sijoittelu.laskenta.service.business.ToteutaSijoitteluService;
 import fi.vm.sade.sijoittelu.laskenta.service.it.TarjontaIntegrationService;
 import fi.vm.sade.sijoittelu.laskenta.util.EnumConverter;
 import fi.vm.sade.sijoittelu.laskenta.util.UrlProperties;
@@ -48,6 +49,7 @@ import static org.mockito.Mockito.*;
 public class SijoitteluResourceTest {
 
     private final SijoitteluResource sijoitteluResource;
+    private final ToteutaSijoitteluService toteutaSijoitteluService;
     private final SijoitteluBusinessService sijoitteluBusinessService;
     private final ValintatietoService valintatietoService;
     private final SijoitteluBookkeeperService sijoitteluBookkeeperService = new SijoitteluBookkeeperService();
@@ -71,8 +73,17 @@ public class SijoitteluResourceTest {
                 "Caller-Id",
                 "/j_spring_cas_security_check").setJsessionName(COOKIENAME).build());
 
-
         urlProperties = new TestUrlProperties(mockWebServer.url("/").toString().substring(7, mockWebServer.url("/").toString().length() - 1));
+        toteutaSijoitteluService = new ToteutaSijoitteluService(
+            sijoitteluBusinessService,
+            valintatietoService,
+            sijoitteluBookkeeperService,
+            sijoitteluCasClient,
+            urlProperties,
+            mock(TarjontaIntegrationService.class),
+            mock(EmailService.class)
+        );
+
         this.gson = new GsonBuilder()
                 .registerTypeAdapter(Date.class, (JsonDeserializer<Date>) (json, typeOfT, context) ->
                         new Date(json.getAsJsonPrimitive().getAsLong()))
@@ -80,6 +91,7 @@ public class SijoitteluResourceTest {
                         new JsonPrimitive(date.getTime()))
                 .create();
         sijoitteluResource = new SijoitteluResource(
+            toteutaSijoitteluService,
             sijoitteluBusinessService,
             valintatietoService,
             sijoitteluBookkeeperService,
@@ -156,7 +168,7 @@ public class SijoitteluResourceTest {
                 mockWebServer.enqueue(new MockResponse().setBody(this.gson.toJson(vpMap)));
 
                 try {
-                    sijoitteluResource.toteutaSijoittelu(EMPTY, 12345L);
+                    toteutaSijoitteluService.toteutaSijoittelu(EMPTY, 12345L);
                 } catch (ExecutionException e) {
                     e.printStackTrace();
                 }
@@ -279,7 +291,7 @@ public class SijoitteluResourceTest {
                     .setBody(this.gson.toJson(vpMap))
                     .setResponseCode(200));
 
-            Exception exception = Assertions.assertThrows(RuntimeException.class, () -> sijoitteluResource.toteutaSijoittelu(hakuOid, 12345L));
+            Exception exception = Assertions.assertThrows(RuntimeException.class, () -> toteutaSijoitteluService.toteutaSijoittelu(hakuOid, 12345L));
             Assertions.assertEquals("java.lang.IllegalStateException: Haun hakuOid sijoittelu : " +
                     "Laskennan tuloksista löytyvien jonojen tietoja on kadonnut valintaperusteista: " +
                     "[Hakukohde hakukohdeOid , jono \"Varsinainen testivalinta\" (valintatapaJonoOid , prio 0)]", exception.getMessage());
