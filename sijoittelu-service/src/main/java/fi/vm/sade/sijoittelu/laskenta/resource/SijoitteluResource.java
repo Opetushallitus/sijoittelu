@@ -1,6 +1,5 @@
 package fi.vm.sade.sijoittelu.laskenta.resource;
 
-import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -16,7 +15,7 @@ import fi.vm.sade.service.valintaperusteet.dto.ValintatapajonoDTO;
 import fi.vm.sade.sijoittelu.domain.SijoitteluajonTila;
 import fi.vm.sade.sijoittelu.laskenta.configuration.SijoitteluServiceConfiguration;
 import fi.vm.sade.sijoittelu.laskenta.email.EmailService;
-import fi.vm.sade.sijoittelu.laskenta.external.resource.HttpClients;
+import fi.vm.sade.sijoittelu.laskenta.service.business.SijoitteluBookkeeperService;
 import fi.vm.sade.sijoittelu.laskenta.service.business.SijoitteluBusinessService;
 import fi.vm.sade.sijoittelu.laskenta.service.it.Haku;
 import fi.vm.sade.sijoittelu.laskenta.service.it.TarjontaIntegrationService;
