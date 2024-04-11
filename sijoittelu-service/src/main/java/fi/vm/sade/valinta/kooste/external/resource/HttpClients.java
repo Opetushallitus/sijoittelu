@@ -81,19 +81,19 @@ public class HttpClients {
 //            .build());
 //  }
 //
-  @Profile({"default", "dev"})
-  @Bean(name = "SijoitteluServiceCasClient")
-  @Autowired
-  public RestCasClient getSijoitteluServiceCasClient(
-      UrlProperties urlProperties,
-      @Value("${sijoittelu-service.kouta-internal.username}") String username, // TODO: arrange for proper credentials!!! Or remove the client as calls internal
-      @Value("${sijoittelu-service.kouta-internal.username}") String password) {
-    String service = urlProperties.url("cas.service.sijoittelu-service");
-    String ticketsUrl = UrlConfiguration.getInstance().url("cas.tickets");
-    return new RestCasClient(
-        CasConfig.CasConfig(
-                username, password, ticketsUrl, service, CSRF_VALUE, CALLER_ID, "JSESSIONID", "/j_spring_cas_security_check"));
-  }
+//  @Profile({"default", "dev"})
+//  @Bean(name = "SijoitteluServiceCasClient")
+//  @Autowired
+//  public RestCasClient getSijoitteluServiceCasClient(
+//      UrlProperties urlProperties,
+//      @Value("${sijoittelu-service.kouta-internal.username}") String username, // TODO: arrange for proper credentials!!! Or remove the client as calls internal
+//      @Value("${sijoittelu-service.kouta-internal.username}") String password) {
+//    String service = urlProperties.url("cas.service.sijoittelu-service");
+//    String ticketsUrl = UrlConfiguration.getInstance().url("cas.tickets");
+//    return new RestCasClient(
+//        CasConfig.CasConfig(
+//                username, password, ticketsUrl, service, CSRF_VALUE, CALLER_ID, "JSESSIONID", "/j_spring_cas_security_check"));
+//  }
 //
   @Bean(name = "TarjontaHttpClient")
   @Autowired
