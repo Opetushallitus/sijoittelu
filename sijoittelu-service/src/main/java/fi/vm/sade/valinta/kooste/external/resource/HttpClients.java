@@ -17,7 +17,7 @@ import org.springframework.context.annotation.Profile;
 
 @Configuration("koosteHttpClients")
 public class HttpClients {
-  public static final String CALLER_ID = "1.2.246.562.10.00000000001.valintalaskentakoostepalvelu";
+  public static final String CALLER_ID = "1.2.246.562.10.00000000001.sijoittelu.sijoittelu-service";
 
   @Bean
   public CookieManager getCookieManager() {
