@@ -19,7 +19,6 @@ import fi.vm.sade.sijoittelu.laskenta.service.it.Haku;
 import fi.vm.sade.sijoittelu.laskenta.service.it.TarjontaIntegrationService;
 import fi.vm.sade.sijoittelu.laskenta.util.EnumConverter;
 import fi.vm.sade.sijoittelu.laskenta.util.UrlProperties;
-import fi.vm.sade.valinta.kooste.url.UrlConfiguration;
 import fi.vm.sade.valintalaskenta.domain.dto.HakukohdeDTO;
 import fi.vm.sade.valintalaskenta.domain.dto.valintakoe.Tasasijasaanto;
 import fi.vm.sade.valintalaskenta.domain.dto.valintatieto.HakuDTO;
@@ -64,8 +63,6 @@ public class ToteutaSijoitteluService {
     private final TarjontaIntegrationService tarjontaIntegrationService;
     private final EmailService emailService;
     private final Gson gson;
-    private final UrlConfiguration urlConfiguration;
-
     @Autowired
     public ToteutaSijoitteluService(SijoitteluBusinessService sijoitteluBusinessService,
                                     ValintatietoService valintatietoService,
@@ -86,7 +83,6 @@ public class ToteutaSijoitteluService {
                 .registerTypeAdapter(Date.class, (JsonDeserializer<Date>) (json, typeOfT, context) ->
                         new Date(json.getAsJsonPrimitive().getAsLong()))
                 .create();
-        this.urlConfiguration = UrlConfiguration.getInstance();
     }
 
     public void toteutaSijoitteluAsync(
@@ -99,7 +95,7 @@ public class ToteutaSijoitteluService {
 
         // Luodaan sijoitteluajo, saadaan palautusarvona sen id, jota käytetään pollattaessa toista
         // rajapintaa.
-        String luontiUrl = this.urlConfiguration.url("sijoittelu-service.sijoittele", hakuOid);
+        String luontiUrl = this.urlProperties.url("sijoittelu-service.sijoittele", hakuOid);
         try {
             sijoitteluajoId = this.toteutaSijoittelu(hakuOid);
         } catch (Exception e) {
@@ -122,7 +118,7 @@ public class ToteutaSijoitteluService {
             hakuOid,
             sijoitteluajoId);
         String pollingUrl =
-            this.urlConfiguration.url("sijoittelu-service.sijoittele.ajontila", sijoitteluajoId);
+            this.urlProperties.url("sijoittelu-service.sijoittele.ajontila", sijoitteluajoId);
         while (!done.get()) {
             try {
                 TimeUnit.SECONDS.sleep(secondsUntilNextPoll);
