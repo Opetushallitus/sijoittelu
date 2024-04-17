@@ -554,7 +554,6 @@ public class SijoitteluBusinessTest extends AbstractIntegrationTest {
 
     @Test
     @Sql("valisijoittelu_hylkays.sql")
-    //@UsingDataSet(locations = "valisijoittelu_hylkays.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
     public void testAlahylkaaValisijoittelussaHylattyja() {
 
         HakuDTO haku = valintatietoService.haeValintatiedot("haku1");
