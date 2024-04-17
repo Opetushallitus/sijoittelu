@@ -23,7 +23,7 @@ public class HttpClient {
 
   private static final Logger LOG = LoggerFactory.getLogger(HttpClient.class);
 
-  private static final String CALLER_ID = "1.2.246.562.10.00000000001.valintalaskentakoostepalvelu";
+  private static final String CALLER_ID = "1.2.246.562.10.00000000001.sijoittelu.sijoittelu-service";
   private static final String CSRF_VALUE = "CSRF";
 
   private final java.net.http.HttpClient client;

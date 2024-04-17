@@ -20,7 +20,7 @@ import org.asynchttpclient.Response;
  */
 public class RestCasClient {
 
-  private static final String CALLER_ID = "1.2.246.562.10.00000000001.valintalaskentakoostepalvelu";
+  private static final String CALLER_ID = "1.2.246.562.10.00000000001.sijoittelu.sijoittelu-service";
   private static final String CSRF_VALUE = "CSRF";
 
   private Function<Request, CompletableFuture<Response>> executor;
