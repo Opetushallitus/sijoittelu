@@ -15,8 +15,7 @@ import org.springframework.scheduling.annotation.EnableAsync;
 @ComponentScan(basePackages = {
     "fi.vm.sade.valintalaskenta.tulos.dao",
     "fi.vm.sade.valintalaskenta.tulos.service.impl",
-    "fi.vm.sade.valintalaskenta.tulos.service.impl.converters",
-    "fi.vm.sade.valinta.kooste"
+    "fi.vm.sade.valintalaskenta.tulos.service.impl.converters"
 }, excludeFilters = {
   @ComponentScan.Filter(type=FilterType.ASSIGNABLE_TYPE, value=JarjestyskriteerihistoriaServiceImpl.class)})
 @Profile("!test")
