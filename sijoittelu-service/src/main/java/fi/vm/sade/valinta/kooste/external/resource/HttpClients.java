@@ -6,7 +6,6 @@ import fi.vm.sade.javautils.nio.cas.CasConfig;
 import fi.vm.sade.sijoittelu.laskenta.util.UrlProperties;
 import fi.vm.sade.valinta.kooste.external.resource.tarjonta.impl.TarjontaAsyncResourceImpl;
 import fi.vm.sade.valinta.kooste.external.resource.viestintapalvelu.RestCasClient;
-import fi.vm.sade.valinta.kooste.url.UrlConfiguration;
 import fi.vm.sade.valinta.sharedutils.http.DateDeserializer;
 import java.net.CookieManager;
 import java.time.Duration;
@@ -37,9 +36,10 @@ public class HttpClients {
   @Autowired
   public RestCasClient getKoutaCasClient(
       @Value("${sijoittelu-service.kouta-internal.username}") String username,
-      @Value("${sijoittelu-service.kouta-internal.password}") String password) {
-    String ticketsUrl = UrlConfiguration.getInstance().url("cas.tickets");
-    String service = UrlConfiguration.getInstance().url("kouta-internal.auth.login");
+      @Value("${sijoittelu-service.kouta-internal.password}") String password,
+      UrlProperties urlProperties) {
+    String ticketsUrl = urlProperties.url("cas.tickets");
+    String service = urlProperties.url("kouta-internal.auth.login");
     return new RestCasClient(
         CasConfig.CasConfig(
                 username, password, ticketsUrl, service, CSRF_VALUE, CALLER_ID, "session", ""));
@@ -67,7 +67,7 @@ public class HttpClients {
       @Value("${sijoittelu-service.kouta-internal.username}") String username, // TODO: fix credentials
       @Value("${sijoittelu-service.kouta-internal.password}") String password) {
     String service = urlProperties.url("cas.service.seuranta");
-    String ticketsUrl = UrlConfiguration.getInstance().url("cas.tickets");
+    String ticketsUrl = urlProperties.url("cas.tickets");
     return new RestCasClient(
         CasConfig.CasConfig(
                 username, password, ticketsUrl, service, CSRF_VALUE, CALLER_ID, "JSESSIONID", ""));

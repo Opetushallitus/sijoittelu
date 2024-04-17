@@ -5,6 +5,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
+import fi.vm.sade.sijoittelu.laskenta.util.UrlProperties;
 import fi.vm.sade.tarjonta.service.resources.v1.dto.ErrorV1RDTO;
 import fi.vm.sade.tarjonta.service.resources.v1.dto.GenericSearchParamsV1RDTO;
 import fi.vm.sade.tarjonta.service.resources.v1.dto.HakuV1RDTO;
@@ -14,7 +15,6 @@ import fi.vm.sade.valinta.kooste.external.resource.HttpClient;
 import fi.vm.sade.valinta.kooste.external.resource.tarjonta.*;
 import fi.vm.sade.valinta.kooste.external.resource.tarjonta.dto.*;
 import fi.vm.sade.valinta.kooste.external.resource.viestintapalvelu.RestCasClient;
-import fi.vm.sade.valinta.kooste.url.UrlConfiguration;
 import fi.vm.sade.valinta.sharedutils.http.DateDeserializer;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -29,7 +29,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class TarjontaAsyncResourceImpl implements TarjontaAsyncResource {
-  private final UrlConfiguration urlConfiguration = UrlConfiguration.getInstance();
+  private final UrlProperties urlProperties;
   private final HttpClient client;
   private final RestCasClient koutaClient;
   private final Integer KOUTA_OID_LENGTH = 35;
@@ -37,15 +37,17 @@ public class TarjontaAsyncResourceImpl implements TarjontaAsyncResource {
   @Autowired
   public TarjontaAsyncResourceImpl(
       @Qualifier("TarjontaHttpClient") HttpClient client,
-      @Qualifier("KoutaCasClient") RestCasClient koutaClient) {
+      @Qualifier("KoutaCasClient") RestCasClient koutaClient,
+      UrlProperties urlProperties) {
     this.client = client;
     this.koutaClient = koutaClient;
+    this.urlProperties = urlProperties;
   }
 
   private CompletableFuture<HakuV1RDTO> getTarjontaHaku(String hakuOid) {
     return this.client
         .<ResultV1RDTO<HakuV1RDTO>>getJson(
-            urlConfiguration.url("tarjonta-service.haku.hakuoid", hakuOid),
+            this.urlProperties.url("tarjonta-service.haku.hakuoid", hakuOid),
             Duration.ofMinutes(5),
             new com.google.gson.reflect.TypeToken<ResultV1RDTO<HakuV1RDTO>>() {}.getType())
         .thenApplyAsync(ResultV1RDTO::getResult);
@@ -56,7 +58,7 @@ public class TarjontaAsyncResourceImpl implements TarjontaAsyncResource {
     if (KOUTA_OID_LENGTH.equals(hakuOid.length())) {
       CompletableFuture<KoutaHaku> koutaF =
           this.koutaClient.get(
-              urlConfiguration.url("kouta-internal.haku.hakuoid", hakuOid),
+              this.urlProperties.url("kouta-internal.haku.hakuoid", hakuOid),
               new TypeToken<KoutaHaku>() {},
               Collections.emptyMap(),
               10 * 1000);

@@ -1,9 +1,9 @@
 package fi.vm.sade.valinta.kooste.external.resource.seuranta.impl;
 
 import com.google.gson.reflect.TypeToken;
+import fi.vm.sade.sijoittelu.laskenta.util.UrlProperties;
 import fi.vm.sade.valinta.kooste.external.resource.seuranta.SijoitteluSeurantaResource;
 import fi.vm.sade.valinta.kooste.external.resource.viestintapalvelu.RestCasClient;
-import fi.vm.sade.valinta.kooste.url.UrlConfiguration;
 import fi.vm.sade.valinta.seuranta.sijoittelu.dto.SijoitteluDto;
 import java.util.Collection;
 import java.util.Collections;
@@ -18,13 +18,13 @@ public class SijoitteluSeurantaResourceImpl implements SijoitteluSeurantaResourc
 
   private final RestCasClient restCasClient;
 
-  private final UrlConfiguration urlConfiguration;
+  private final UrlProperties urlProperties;
 
   @Autowired
   public SijoitteluSeurantaResourceImpl(
-      @Qualifier("SeurantaCasClient") RestCasClient restCasClient) {
+      @Qualifier("SeurantaCasClient") RestCasClient restCasClient, UrlProperties urlProperties) {
     this.restCasClient = restCasClient;
-    this.urlConfiguration = UrlConfiguration.getInstance();
+    this.urlProperties = urlProperties;
   }
   ;
 
@@ -33,7 +33,7 @@ public class SijoitteluSeurantaResourceImpl implements SijoitteluSeurantaResourc
     try {
       return this.restCasClient
           .get(
-              this.urlConfiguration.url("valintalaskentakoostepalvelu.seuranta.rest.url")
+              this.urlProperties.url("valintalaskentakoostepalvelu.seuranta.rest.url")
                   + "/sijoittelunseuranta/hae/"
                   + hakuOid,
               new TypeToken<SijoitteluDto>() {},
@@ -50,7 +50,7 @@ public class SijoitteluSeurantaResourceImpl implements SijoitteluSeurantaResourc
     try {
       return this.restCasClient
           .get(
-              this.urlConfiguration.url("valintalaskentakoostepalvelu.seuranta.rest.url")
+              this.urlProperties.url("valintalaskentakoostepalvelu.seuranta.rest.url")
                   + "/sijoittelunseuranta/hae",
               new TypeToken<Collection<SijoitteluDto>>() {},
               Collections.emptyMap(),
@@ -66,7 +66,7 @@ public class SijoitteluSeurantaResourceImpl implements SijoitteluSeurantaResourc
     try {
       return this.restCasClient
           .put(
-              this.urlConfiguration.url("valintalaskentakoostepalvelu.seuranta.rest.url")
+              this.urlProperties.url("valintalaskentakoostepalvelu.seuranta.rest.url")
                   + "/sijoittelunseuranta/sijoittelu/"
                   + hakuOid
                   + "/ajossa/"
@@ -86,7 +86,7 @@ public class SijoitteluSeurantaResourceImpl implements SijoitteluSeurantaResourc
     try {
       return this.restCasClient
           .put(
-              this.urlConfiguration.url("valintalaskentakoostepalvelu.seuranta.rest.url")
+              this.urlProperties.url("valintalaskentakoostepalvelu.seuranta.rest.url")
                   + "/sijoittelunseuranta/sijoittelu/"
                   + hakuOid,
               new TypeToken<SijoitteluDto>() {},
@@ -104,7 +104,7 @@ public class SijoitteluSeurantaResourceImpl implements SijoitteluSeurantaResourc
     try {
       this.restCasClient
           .delete(
-              this.urlConfiguration.url("valintalaskentakoostepalvelu.seuranta.rest.url")
+              this.urlProperties.url("valintalaskentakoostepalvelu.seuranta.rest.url")
                   + "/sijoittelunseuranta/sijoittelu/"
                   + hakuOid,
               Collections.emptyMap(),
@@ -121,7 +121,7 @@ public class SijoitteluSeurantaResourceImpl implements SijoitteluSeurantaResourc
     try {
       this.restCasClient
           .put(
-              this.urlConfiguration.url("valintalaskentakoostepalvelu.seuranta.rest.url")
+              this.urlProperties.url("valintalaskentakoostepalvelu.seuranta.rest.url")
                   + "/sijoittelunseuranta/sijoittelu/"
                   + hakuOid
                   + "/paivita"

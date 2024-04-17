@@ -24,7 +24,7 @@ public class DevApp {
         System.setProperty("server.port", "8443");
 
         // cas-configuraatio
-        System.setProperty("cas-service.service", "https://localhost:8443/sijoittelu-service");
+        System.setProperty("cas-service.service", "https://virkailija.hahtuvaopintopolku.fi/sijoittelu-service");
         System.setProperty("cas-service.sendRenew", "false");
         System.setProperty("cas-service.key", "sijoittelu-service");
         System.setProperty("web.url.cas", String.format("https://virkailija.%sopintopolku.fi/cas", ENVIRONMENT));

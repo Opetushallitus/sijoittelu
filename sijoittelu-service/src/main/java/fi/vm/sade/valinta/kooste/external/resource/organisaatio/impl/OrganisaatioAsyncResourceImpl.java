@@ -1,8 +1,8 @@
 package fi.vm.sade.valinta.kooste.external.resource.organisaatio.impl;
 
+import fi.vm.sade.sijoittelu.laskenta.util.UrlProperties;
 import fi.vm.sade.valinta.kooste.external.resource.HttpClient;
 import fi.vm.sade.valinta.kooste.external.resource.organisaatio.OrganisaatioAsyncResource;
-import fi.vm.sade.valinta.kooste.url.UrlConfiguration;
 import java.io.IOException;
 import java.time.Duration;
 import java.util.concurrent.CompletableFuture;
@@ -14,19 +14,19 @@ import org.springframework.stereotype.Service;
 @Service
 public class OrganisaatioAsyncResourceImpl implements OrganisaatioAsyncResource {
   private final HttpClient client;
-  private final UrlConfiguration urlConfiguration;
+  private final UrlProperties urlProperties;
 
   @Autowired
-  public OrganisaatioAsyncResourceImpl(@Qualifier("OrganisaatioHttpClient") HttpClient client) {
+  public OrganisaatioAsyncResourceImpl(@Qualifier("OrganisaatioHttpClient") HttpClient client, UrlProperties urlProperties) {
     this.client = client;
-    this.urlConfiguration = UrlConfiguration.getInstance();
+    this.urlProperties = urlProperties;
   }
 
   @Override
   public CompletableFuture<String> parentoids(String organisaatioId) {
     return this.client
         .getResponse(
-            this.urlConfiguration.url("valintalaskentakoostepalvelu.organisaatioService.rest.url")
+            this.urlProperties.url("valintalaskentakoostepalvelu.organisaatioService.rest.url")
                 + "/organisaatio/"
                 + organisaatioId
                 + "/parentoids",
