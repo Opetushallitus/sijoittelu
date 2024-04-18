@@ -1,7 +1,9 @@
 package fi.vm.sade.sijoittelu.laskenta.configuration;
 
+import fi.vm.sade.auditlog.ApplicationType;
+import fi.vm.sade.auditlog.Audit;
 import fi.vm.sade.sijoittelu.laskenta.mapping.SijoitteluModelMapper;
-import fi.vm.sade.valintalaskenta.tulos.logging.LaskentaAuditLog;
+import fi.vm.sade.valinta.sharedutils.AuditLogger;
 import fi.vm.sade.valintalaskenta.tulos.logging.LaskentaAuditLogImpl;
 import fi.vm.sade.valintalaskenta.tulos.mapping.ValintalaskentaModelMapper;
 import fi.vm.sade.valintalaskenta.tulos.service.impl.JarjestyskriteerihistoriaServiceImpl;
@@ -24,7 +26,10 @@ public class SijoitteluServiceConfiguration {
     public static final String CALLER_ID = "1.2.246.562.10.00000000001.sijoittelu.sijoittelu-service";
 
     @Bean
-    public LaskentaAuditLog LaskentaAuditLog() {
+    public Audit audit() { return new Audit(new AuditLogger(), "sijoittelu", ApplicationType.VIRKAILIJA); }
+
+    @Bean
+    public LaskentaAuditLogImpl laskentaAuditLog() {
         return new LaskentaAuditLogImpl();
     }
 
