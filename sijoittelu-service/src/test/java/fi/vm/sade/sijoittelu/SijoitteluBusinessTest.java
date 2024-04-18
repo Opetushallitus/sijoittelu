@@ -1,18 +1,11 @@
 package fi.vm.sade.sijoittelu;
 
 import static com.google.common.collect.Sets.newHashSet;
-import static java.util.stream.Collectors.toSet;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotSame;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
-import com.lordofthejars.nosqlunit.annotation.UsingDataSet;
-import com.lordofthejars.nosqlunit.core.LoadStrategyEnum;
-
-import fi.vm.sade.configuration.TestConfiguration;
+import fi.vm.sade.testing.AbstractIntegrationTest;
 import fi.vm.sade.sijoittelu.batch.logic.impl.DomainConverter;
 import fi.vm.sade.sijoittelu.domain.HakemuksenTila;
 import fi.vm.sade.sijoittelu.domain.Hakemus;
@@ -29,7 +22,6 @@ import fi.vm.sade.sijoittelu.laskenta.service.business.ValintarekisteriService;
 import fi.vm.sade.sijoittelu.laskenta.service.business.ValintatulosWithVastaanotto;
 import fi.vm.sade.sijoittelu.laskenta.service.it.Haku;
 import fi.vm.sade.sijoittelu.laskenta.service.it.TarjontaIntegrationService;
-import fi.vm.sade.util.NoSqlUnitInterceptor;
 import fi.vm.sade.valintalaskenta.domain.dto.ValintatapajonoDTO;
 import fi.vm.sade.valintalaskenta.domain.dto.valintatieto.HakuDTO;
 import fi.vm.sade.valintalaskenta.tulos.service.impl.ValintatietoService;
@@ -38,12 +30,10 @@ import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.time.Instant;
@@ -55,10 +45,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-@ContextConfiguration(classes = {TestConfiguration.class})
-@ExtendWith(SpringExtension.class)
-@ExtendWith(NoSqlUnitInterceptor.class)
-public class SijoitteluBusinessTest {
+public class SijoitteluBusinessTest extends AbstractIntegrationTest {
 
     @Autowired
     private ValintarekisteriService valintarekisteriService;
@@ -116,7 +103,7 @@ public class SijoitteluBusinessTest {
     }
 
     @Test
-    @UsingDataSet(locations = "peruuta_alemmat.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
+    @Sql("peruuta_alemmat.sql")
     public void testPeruutaAlemmat() {
         HakuDTO haku = valintatietoService.haeValintatiedot("haku1");
 
@@ -145,7 +132,7 @@ public class SijoitteluBusinessTest {
         when(valintarekisteriService.getLatestSijoitteluajo("haku1")).thenReturn(sijoitteluAjo1);
         when(valintarekisteriService.getSijoitteluajonHakukohteet(anyLong(), anyString())).thenReturn(hakukohteet1);
 
-        removeJono(haku, "jono1");
+        removeJono(haku);
 
         sijoitteluService.sijoittele(haku, newHashSet("jono2", "jono3"), newHashSet("jono1", "jono2", "jono3"), System.currentTimeMillis(), Collections.emptyMap());
         verify(valintarekisteriService, times(2)).tallennaSijoittelu(
@@ -154,17 +141,15 @@ public class SijoitteluBusinessTest {
                 valintatulosArgumentCaptor.capture());
 
         SijoitteluAjo sijoitteluAjo2 = sijoitteluAjoArgumentCaptor.getAllValues().get(2);
-        assertFalse(sijoitteluAjo2.getSijoitteluajoId().equals(sijoitteluAjo1.getSijoitteluajoId()));
+        assertNotEquals(sijoitteluAjo2.getSijoitteluajoId(), sijoitteluAjo1.getSijoitteluajoId());
 
         List<Hakukohde> hakukohteet2 = hakukohdeArgumentCaptor.getAllValues().get(2);
         assertEquals(3, hakukohteet2.size());
-        assertTrue(Arrays.asList("jono2", "jono3").equals(
-                hakukohteet2.stream()
-                        .map(Hakukohde::getValintatapajonot)
-                        .flatMap(List::stream)
-                        .map(Valintatapajono::getOid)
-                        .collect(Collectors.toList())
-        ));
+        assertEquals(Arrays.asList("jono2", "jono3"), hakukohteet2.stream()
+          .map(Hakukohde::getValintatapajonot)
+          .flatMap(List::stream)
+          .map(Valintatapajono::getOid)
+          .collect(Collectors.toList()));
 
         printHakukohteet(hakukohteet2);
 
@@ -181,32 +166,30 @@ public class SijoitteluBusinessTest {
                 valintatulosArgumentCaptor.capture());
 
         SijoitteluAjo sijoitteluAjo3 = sijoitteluAjoArgumentCaptor.getAllValues().get(5);
-        assertFalse(sijoitteluAjo3.getSijoitteluajoId().equals(sijoitteluAjo1.getSijoitteluajoId()));
+        assertNotEquals(sijoitteluAjo3.getSijoitteluajoId(), sijoitteluAjo1.getSijoitteluajoId());
 
         List<Hakukohde> hakukohteet3 = hakukohdeArgumentCaptor.getAllValues().get(5);
         assertEquals(3, hakukohteet3.size());
-        assertTrue(Arrays.asList("jono1", "jono2", "jono3").equals(
-                hakukohteet3.stream()
-                        .map(Hakukohde::getValintatapajonot)
-                        .flatMap(List::stream)
-                        .map(Valintatapajono::getOid)
-                        .collect(Collectors.toList())
-        ));
+        assertEquals(Arrays.asList("jono1", "jono2", "jono3"), hakukohteet3.stream()
+          .map(Hakukohde::getValintatapajonot)
+          .flatMap(List::stream)
+          .map(Valintatapajono::getOid)
+          .collect(Collectors.toList()));
 
         printHakukohteet(hakukohteet3);
 
         List<Hakemus> hakija1Results = hakukohteet3.stream()
             .flatMap(hk -> hk.getValintatapajonot().stream()
             .flatMap(v -> v.getHakemukset().stream()))
-            .filter(h -> "hakija1".equals(h.getHakemusOid()))
-            .collect(Collectors.toList());
+            .filter(h -> "hakemus1".equals(h.getHakemusOid()))
+            .toList();
         assertEquals(HakemuksenTila.HYVAKSYTTY, hakija1Results.get(0).getTila());
         assertEquals(HakemuksenTila.PERUUNTUNUT, hakija1Results.get(1).getTila());
         assertEquals(HakemuksenTila.PERUUNTUNUT, hakija1Results.get(2).getTila());
     }
 
     @Test
-    @UsingDataSet(locations = "peruuta_alemmat.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
+    @Sql("peruuta_alemmat.sql")
     public void testAlempiaHakutoiveitaEiPeruunnutetaJosHakutoiveidenPriorisointiEiOleKaytossa() {
         when(tarjontaIntegrationService.getHaku(anyString())).thenReturn(new Haku(
                 "hakuOid",
@@ -241,7 +224,7 @@ public class SijoitteluBusinessTest {
         List<Hakemus> hakija1Results = hakukohteet1.stream()
             .flatMap(hk -> hk.getValintatapajonot().stream()
             .flatMap(v -> v.getHakemukset().stream()))
-            .filter(h -> "hakija1".equals(h.getHakemusOid()))
+            .filter(h -> "hakemus1".equals(h.getHakemusOid()))
             .collect(Collectors.toList());
         assertEquals(HakemuksenTila.HYVAKSYTTY, hakija1Results.get(0).getTila());
         assertEquals(HakemuksenTila.HYVAKSYTTY, hakija1Results.get(1).getTila());
@@ -249,7 +232,7 @@ public class SijoitteluBusinessTest {
     }
 
     private void printHakukohteet(List<Hakukohde> hakukohteet){
-        hakukohteet.stream().forEach(hakukohde -> {
+        hakukohteet.forEach(hakukohde -> {
             System.out.println("HAKUKOHDE: " + hakukohde.getOid());
             hakukohde.getValintatapajonot().forEach(jono -> {
                 System.out.println("  JONO: " + jono.getOid());
@@ -261,7 +244,7 @@ public class SijoitteluBusinessTest {
     }
 
     @Test
-    @UsingDataSet(locations = "peruuta_alemmat.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
+    @Sql("peruuta_alemmat.sql")
     public void testEnemmanJonojaKuinValintaperusteissaVaadittu() {
         HakuDTO haku = valintatietoService.haeValintatiedot("haku1");
 
@@ -273,7 +256,7 @@ public class SijoitteluBusinessTest {
 
         long sijoitteluajoId = captureSijoitteluajoForNextSijoittelu();
 
-        removeJono(haku, "jono1");
+        removeJono(haku);
 
         assertEquals(getValintatapaJonoOids(haku), newHashSet("jono2", "jono3"));
 
@@ -283,7 +266,7 @@ public class SijoitteluBusinessTest {
     }
 
     @Test
-    @UsingDataSet(locations = "peruuta_alemmat.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
+    @Sql("peruuta_alemmat.sql")
     public void testPuuttuviaJonojaJotkaVaaditaanValintaperusteissa() {
         HakuDTO haku = valintatietoService.haeValintatiedot("haku1");
 
@@ -293,7 +276,7 @@ public class SijoitteluBusinessTest {
 
         long sijoitteluajoId = captureSijoitteluajoForNextSijoittelu();
 
-        removeJono(haku, "jono1");
+        removeJono(haku);
 
         Exception exception = Assertions.assertThrows(RuntimeException.class, () -> sijoitteluService.sijoittele(haku, valintaperusteenJonot, newHashSet("jono1", "jono2", "jono3"), System.currentTimeMillis(), Collections.emptyMap()));;
         assertEquals("Edellisessä sijoittelussa olleet jonot puuttuvat sijoittelusta, vaikka ne ovat " +
@@ -303,7 +286,7 @@ public class SijoitteluBusinessTest {
     }
 
     @Test
-    @UsingDataSet(locations = "peruuta_alemmat.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
+    @Sql("peruuta_alemmat.sql")
     public void testPuuttuvaJonoKunKadonnutLaskennanTuloksista() {
         HakuDTO haku = valintatietoService.haeValintatiedot("haku1");
 
@@ -311,7 +294,7 @@ public class SijoitteluBusinessTest {
 
         long sijoitteluajoId = captureSijoitteluajoForNextSijoittelu();
 
-        removeJono(haku, "jono1");
+        removeJono(haku);
 
         Exception exception = Assertions.assertThrows(RuntimeException.class, () -> sijoitteluService.sijoittele(haku, Collections.emptySet(), newHashSet("jono2", "jono3"), System.currentTimeMillis(), Collections.emptyMap()));
         assertEquals("Edellisessä sijoittelussa olleet jonot puuttuvat laskennan tuloksista: [Hakukohde hakukohde1 , jono \"Jono1\" (jono1 , prio 0)]", exception.getMessage());
@@ -320,7 +303,7 @@ public class SijoitteluBusinessTest {
     }
 
     @Test
-    @UsingDataSet(locations = "peruuta_alemmat.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
+    @Sql("peruuta_alemmat.sql")
     public void testPuuttuvaJonoKunKadonnutValintaperusteista() {
         HakuDTO haku = valintatietoService.haeValintatiedot("haku1");
 
@@ -340,8 +323,8 @@ public class SijoitteluBusinessTest {
         assertSijoitteluUsedSijoitteluajo(sijoitteluajoId);
     }
 
-    @Test()
-    @UsingDataSet(locations = "peruuta_alemmat.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
+    @Test
+    @Sql("peruuta_alemmat.sql")
     public void testPuuttuvaJonoKunPassivoituValintaperusteista() {
         HakuDTO haku = valintatietoService.haeValintatiedot("haku1");
 
@@ -349,15 +332,15 @@ public class SijoitteluBusinessTest {
 
         long sijoitteluajoId = captureSijoitteluajoForNextSijoittelu();
 
-        removeJono(haku, "jono1");
+        removeJono(haku);
 
         sijoitteluService.sijoittele(haku, newHashSet("jono2", "jono3"), newHashSet("jono1", "jono2", "jono3"), System.currentTimeMillis(), Collections.emptyMap());
 
         assertSijoitteluUsedSijoitteluajo(sijoitteluajoId);
     }
 
-    @Test()
-    @UsingDataSet(locations = "peruuta_alemmat.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
+    @Test
+    @Sql("peruuta_alemmat.sql")
     public void testPuuttuvaJonoKunEiPassivoituValintaperusteista() {
         HakuDTO haku = valintatietoService.haeValintatiedot("haku1");
 
@@ -367,7 +350,7 @@ public class SijoitteluBusinessTest {
 
         long sijoitteluajoId = captureSijoitteluajoForNextSijoittelu();
 
-        removeJono(haku, "jono1");
+        removeJono(haku);
 
         assertEquals(getValintatapaJonoOids(haku), newHashSet("jono2", "jono3"));
 
@@ -378,10 +361,10 @@ public class SijoitteluBusinessTest {
         assertSijoitteluUsedSijoitteluajo(sijoitteluajoId);
     }
 
-    @Test()
-    @UsingDataSet(locations = "peruuta_alemmat.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
+    @Test
+    @Sql("peruuta_alemmat.sql")
     public void testSivssnovSijoittelunRajaKopioidaanEdellisestaSijoittelusta() {
-        Optional<JonosijaTieto> jonosijaTieto = Optional.of(new JonosijaTieto(6, 1, HakemuksenTila.VARALLA, Collections.singletonList("hakija6")));
+        Optional<JonosijaTieto> jonosijaTieto = Optional.of(new JonosijaTieto(6, 1, HakemuksenTila.VARALLA, Collections.singletonList("hakemus6")));
         HakuDTO haku = valintatietoService.haeValintatiedot("haku1");
         haku.getHakukohteet().forEach(hk ->
             hk.getValinnanvaihe().forEach(vv -> {
@@ -476,8 +459,8 @@ public class SijoitteluBusinessTest {
         verify(valintarekisteriService, atLeastOnce()).getValintatulokset("haku1");
     }
 
-    @Test()
-    @UsingDataSet(locations = "peruuta_alemmat.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
+    @Test
+    @Sql("peruuta_alemmat.sql")
     public void testPeruunnaHyvaksyttyaYlemmatHakutoiveetKunAMKOPEHaku() {
         when(tarjontaIntegrationService.getHaku(anyString())).thenReturn(new Haku(
                 "hakuOid",
@@ -506,32 +489,32 @@ public class SijoitteluBusinessTest {
 
         Hakemus hakija3YlempiToive = hakukohteet.stream()
                 .filter(h -> h.getOid().equals("hakukohde1")).findAny().get().getValintatapajonot().get(0)
-                .getHakemukset().stream().filter(h -> h.getHakemusOid().equals("hakija3")).findAny().get();
+                .getHakemukset().stream().filter(h -> h.getHakemusOid().equals("hakemus3")).findAny().get();
         Hakemus hakija3AlempiToive = hakukohteet.stream()
                 .filter(h -> h.getOid().equals("hakukohde2")).findAny().get()
                 .getValintatapajonot().get(0)
-                .getHakemukset().stream().filter(h -> h.getHakemusOid().equals("hakija3")).findAny().get();
+                .getHakemukset().stream().filter(h -> h.getHakemusOid().equals("hakemus3")).findAny().get();
         Hakemus hakija4YlempiToive = hakukohteet.stream()
                 .filter(h -> h.getOid().equals("hakukohde1")).findAny().get().getValintatapajonot().get(0)
-                .getHakemukset().stream().filter(h -> h.getHakemusOid().equals("hakija4")).findAny().get();
+                .getHakemukset().stream().filter(h -> h.getHakemusOid().equals("hakemus4")).findAny().get();
         Hakemus hakija4AlempiToive = hakukohteet.stream()
                 .filter(h -> h.getOid().equals("hakukohde2")).findAny().get()
                 .getValintatapajonot().get(0)
-                .getHakemukset().stream().filter(h -> h.getHakemusOid().equals("hakija4")).findAny().get();
+                .getHakemukset().stream().filter(h -> h.getHakemusOid().equals("hakemus4")).findAny().get();
         assertEquals(HakemuksenTila.HYVAKSYTTY, hakija3AlempiToive.getTila());
         assertEquals(HakemuksenTila.PERUUNTUNUT, hakija3YlempiToive.getTila());
         assertEquals(HakemuksenTila.HYVAKSYTTY, hakija4AlempiToive.getTila());
         assertEquals(HakemuksenTila.PERUUNTUNUT, hakija4YlempiToive.getTila());
 
         valintatulokset.stream().filter(v ->
-            "jono1".equals(v.getValintatapajonoOid()) && "hakija2".equals(v.getHakemusOid()) && "hakukohde1".equals(v.getHakukohdeOid())
+            "jono1".equals(v.getValintatapajonoOid()) && "hakemus2".equals(v.getHakemusOid()) && "hakukohde1".equals(v.getHakukohdeOid())
         ).forEach(v -> {
             v.setJulkaistavissa(true, "");
             v.setTila(ValintatuloksenTila.EI_VASTAANOTETTU_MAARA_AIKANA, "");
         });
 
         valintatulokset.stream().filter(v ->
-                "jono2".equals(v.getValintatapajonoOid()) && "hakija3".equals(v.getHakemusOid()) && "hakukohde2".equals(v.getHakukohdeOid())
+                "jono2".equals(v.getValintatapajonoOid()) && "hakemus3".equals(v.getHakemusOid()) && "hakukohde2".equals(v.getHakukohdeOid())
         ).forEach(v -> {
             v.setJulkaistavissa(true, "");
             v.setTila(ValintatuloksenTila.KESKEN, "");
@@ -551,18 +534,18 @@ public class SijoitteluBusinessTest {
         List<Hakukohde> hakukohteet2 = hakukohdeArgumentCaptor.getAllValues().get(2);
         hakija3YlempiToive = hakukohteet2.stream()
                 .filter(h -> h.getOid().equals("hakukohde1")).findAny().get().getValintatapajonot().get(0)
-                .getHakemukset().stream().filter(h -> h.getHakemusOid().equals("hakija3")).findAny().get();
+                .getHakemukset().stream().filter(h -> h.getHakemusOid().equals("hakemus3")).findAny().get();
         hakija3AlempiToive = hakukohteet2.stream()
                 .filter(h -> h.getOid().equals("hakukohde2")).findAny().get()
                 .getValintatapajonot().get(0)
-                .getHakemukset().stream().filter(h -> h.getHakemusOid().equals("hakija3")).findAny().get();
+                .getHakemukset().stream().filter(h -> h.getHakemusOid().equals("hakemus3")).findAny().get();
         hakija4YlempiToive = hakukohteet2.stream()
                 .filter(h -> h.getOid().equals("hakukohde1")).findAny().get().getValintatapajonot().get(0)
-                .getHakemukset().stream().filter(h -> h.getHakemusOid().equals("hakija4")).findAny().get();
+                .getHakemukset().stream().filter(h -> h.getHakemusOid().equals("hakemus4")).findAny().get();
         hakija4AlempiToive = hakukohteet2.stream()
                 .filter(h -> h.getOid().equals("hakukohde2")).findAny().get()
                 .getValintatapajonot().get(0)
-                .getHakemukset().stream().filter(h -> h.getHakemusOid().equals("hakija4")).findAny().get();
+                .getHakemukset().stream().filter(h -> h.getHakemusOid().equals("hakemus4")).findAny().get();
         assertEquals(HakemuksenTila.HYVAKSYTTY, hakija3AlempiToive.getTila());
         assertEquals(HakemuksenTila.PERUUNTUNUT, hakija3YlempiToive.getTila());
         assertEquals(HakemuksenTila.PERUUNTUNUT, hakija4AlempiToive.getTila());
@@ -570,7 +553,7 @@ public class SijoitteluBusinessTest {
     }
 
     @Test
-    @UsingDataSet(locations = "valisijoittelu_hylkays.json", loadStrategy = LoadStrategyEnum.CLEAN_INSERT)
+    @Sql("valisijoittelu_hylkays.sql")
     public void testAlahylkaaValisijoittelussaHylattyja() {
 
         HakuDTO haku = valintatietoService.haeValintatiedot("haku1");
@@ -605,16 +588,17 @@ public class SijoitteluBusinessTest {
     }
 
     private Set<String> getValintatapaJonoOids(HakuDTO haku) {
-        return Collections.unmodifiableSet(haku.getHakukohteet().stream()
-                .flatMap(h -> h.getValinnanvaihe().stream().flatMap(v -> v.getValintatapajonot().stream().map(ValintatapajonoDTO::getOid)))
-                .collect(toSet()));
+        return haku.getHakukohteet().stream()
+          .flatMap(h -> h.getValinnanvaihe().stream()
+            .flatMap(v -> v.getValintatapajonot().stream().map(ValintatapajonoDTO::getOid)))
+          .collect(Collectors.toUnmodifiableSet());
     }
 
-    private void removeJono(HakuDTO haku, String jonoOid) {
+    private void removeJono(HakuDTO haku) {
         haku.getHakukohteet().forEach(hakukohdeDTO ->
             hakukohdeDTO.getValinnanvaihe().forEach(valintatietoValinnanvaiheDTO ->
                 valintatietoValinnanvaiheDTO.getValintatapajonot().removeIf(j -> {
-                    return j.getOid().equals(jonoOid);
+                    return j.getOid().equals("jono1");
                 })));
     }
 }

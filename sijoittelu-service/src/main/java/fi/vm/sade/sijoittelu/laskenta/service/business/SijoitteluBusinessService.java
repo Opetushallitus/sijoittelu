@@ -111,7 +111,7 @@ public class SijoitteluBusinessService {
 
         Haku sijoittelunParametrit = sijoitteluajoResourcesLoader.findParametersFromTarjontaAndPerformInitialValidation(hakuOid, stopWatch, ajonTunniste);
 
-        SijoitteluAjo viimeisinSijoitteluajo = sijoitteluajoResourcesLoader.readSijoitteluFromValintarekisteri(haku, ajonTunniste, stopWatch);
+        SijoitteluAjo viimeisinSijoitteluajo = sijoitteluajoResourcesLoader.readSijoitteluFromValintarekisteri(hakuOid, ajonTunniste, stopWatch);
 
         stopWatch.start("Päätellään hakukohde- ja valintatapajonotiedot");
         List<Hakukohde> uudenSijoitteluajonHakukohteet = haku.getHakukohteet().stream().map(DomainConverter::convertToHakukohde).collect(Collectors.toList());
@@ -382,7 +382,7 @@ public class SijoitteluBusinessService {
 
         Haku sijoittelunParametrit = sijoitteluajoResourcesLoader.findParametersFromTarjontaAndPerformInitialValidation(hakuOid, stopWatch, ajonKuvaus);
 
-        SijoitteluAjo viimeisinSijoitteluajo = sijoitteluajoResourcesLoader.readSijoitteluFromValintarekisteri(haku, ajonKuvaus, stopWatch);
+        SijoitteluAjo viimeisinSijoitteluajo = sijoitteluajoResourcesLoader.readSijoitteluFromValintarekisteri(hakuOid, ajonKuvaus, stopWatch);
 
         stopWatch.start("Haetaan erillissijoittelun hakukohde");
         Hakukohde hakukohdeValintalaskennassa = getErillissijoittelunHakukohde(haku);

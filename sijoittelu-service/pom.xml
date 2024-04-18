@@ -5,13 +5,13 @@
 	<parent>
 		<groupId>fi.vm.sade.sijoittelu</groupId>
 		<artifactId>sijoittelu</artifactId>
-		<version>8.0.0-SNAPSHOT</version>
+		<version>9.0.0-SNAPSHOT</version>
 	</parent>
 
 	<artifactId>sijoittelu-service</artifactId>
 	<name>Sijoittelu :: Service :: API</name>
 	<packaging>jar</packaging>
-	<version>8.0.0-SNAPSHOT</version>
+	<version>9.0.0-SNAPSHOT</version>
 
 	<dependencies>
 		<dependency>
@@ -89,6 +89,21 @@
 			<version>${valintaperusteet-api.version}</version>
 		</dependency>
 
+		<!-- database -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-data-jdbc</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.postgresql</groupId>
+			<artifactId>postgresql</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.flywaydb</groupId>
+			<artifactId>flyway-core</artifactId>
+			<version>9.22.0</version>
+		</dependency>
+
 		<dependency>
 			<groupId>fi.vm.sade.sijoittelu</groupId>
 			<artifactId>sijoittelu-tulos-service</artifactId>
@@ -151,33 +166,21 @@
 		<dependency>
 			<groupId>fi.vm.sade</groupId>
 			<artifactId>valinta-tulos-valintarekisteri-db</artifactId>
-			<version>7.0.2-SNAPSHOT</version>
+			<version>8.1.0-SNAPSHOT</version>
 			<exclusions>
 				<exclusion>
 					<groupId>org.slf4j</groupId>
 					<artifactId>slf4j-reload4j</artifactId>
 				</exclusion>
+				<exclusion>
+					<groupId>org.flywaydb</groupId>
+					<artifactId>flyway-core</artifactId>
+				</exclusion>
 			</exclusions>
 		</dependency>
 
-		<!-- Mongo & deps -->
-		<dependency>
-			<groupId>org.mongodb</groupId>
-			<artifactId>bson</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.mongodb</groupId>
-			<artifactId>mongo-java-driver</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.mongodb.morphia</groupId>
-			<artifactId>morphia</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>de.flapdoodle.embed</groupId>
-			<artifactId>de.flapdoodle.embed.mongo</artifactId>
-			<scope>compile</scope>
-		</dependency>
+
+
 		<dependency>
 			<groupId>com.fasterxml.jackson.dataformat</groupId>
 			<artifactId>jackson-dataformat-xml</artifactId>
@@ -208,6 +211,18 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.testcontainers</groupId>
+			<artifactId>postgresql</artifactId>
+			<version>1.19.0</version>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
 			<groupId>org.springframework.security</groupId>
 			<artifactId>spring-security-cas</artifactId>
 		</dependency>
@@ -223,12 +238,6 @@
 			<groupId>commons-httpclient</groupId>
 			<artifactId>commons-httpclient</artifactId>
 			<version>3.1</version>
-		</dependency>
-		<dependency>
-			<artifactId>nosqlunit-mongodb</artifactId>
-			<groupId>com.lordofthejars</groupId>
-			<version>0.7.6</version>
-			<scope>test</scope>
 		</dependency>
 
 		<dependency>

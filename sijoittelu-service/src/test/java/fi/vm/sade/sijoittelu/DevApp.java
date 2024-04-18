@@ -4,9 +4,15 @@ import fi.vm.sade.util.TempDockerDB;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
-import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration;
+import org.springframework.context.annotation.Profile;
 
-public class DevApp extends App {
+@Profile("dev")
+@SpringBootApplication(exclude = { DataSourceAutoConfiguration.class })
+public class DevApp {
+
+
+    public static final String CONTEXT_PATH = "/sijoittelu-service";
+    private static final String ENVIRONMENT = "untuva";
 
     public static void main(String[] args) {
         // ssl-konfiguraatio
@@ -21,25 +27,24 @@ public class DevApp extends App {
         System.setProperty("cas-service.service", "https://localhost:8443/sijoittelu-service");
         System.setProperty("cas-service.sendRenew", "false");
         System.setProperty("cas-service.key", "sijoittelu-service");
-        System.setProperty("web.url.cas", "https://virkailija.hahtuvaopintopolku.fi/cas");
+        System.setProperty("web.url.cas", String.format("https://virkailija.%sopintopolku.fi/cas", ENVIRONMENT));
 
         // postgres
         System.setProperty("valintarekisteri.db.url", "jdbc:postgresql://localhost:5433/sijoittelu");
         System.setProperty("valintarekisteri.db.user", "oph");
         System.setProperty("valintarekisteri.db.password", "oph");
 
-        // mongo
-        System.setProperty("valintalaskenta-laskenta-service.mongodb.uri", "mongodb://${valintalaskentadb.user}:${valintalaskentadb.password}@localhost/valintalaskentadb");
-        System.setProperty("valintalaskenta-laskenta-service.mongodb.dbname", "valintalaskentadb");
+        System.setProperty("sijoittelu.valintalaskenta.postgresql.maxlifetimemillis", "60000");
+        System.setProperty("sijoittelu.valintalaskenta.postgresql.readonly", "true");
 
         // ulkoiset palvelut
-        System.setProperty("host.virkailija", "virkailija.hahtuvaopintopolku.fi");
-        System.setProperty("kayttooikeus-service.userDetails.byUsername", "https://virkailija.hahtuvaopintopolku.fi/kayttooikeus-service/userDetails/$1");
+        System.setProperty("host.virkailija", String.format("virkailija.%sopintopolku.fi", ENVIRONMENT));
+        System.setProperty("kayttooikeus-service.userDetails.byUsername", String.format("https://virkailija.%sopintopolku.fi/kayttooikeus-service/userDetails/$1", ENVIRONMENT));
         System.setProperty("organisaatio-service.organisaatio.hae.oid", "${url-virkailija}/organisaatio-service/api/hierarkia/hae?aktiiviset=true&suunnitellut=true&lakkautetut=true&oid=$1");
-        System.setProperty("valintalaskentakoostepalvelu.valintatulosservice.rest.url", "https://virkailija.hahtuvaopintopolku.fi/valinta-tulos-service");
-        System.setProperty("valintalaskentakoostepalvelu.parametriservice.rest.url", "https://virkailija.hahtuvaopintopolku.fi/ohjausparametrit-service/api");
+        System.setProperty("valintalaskentakoostepalvelu.valintatulosservice.rest.url", String.format("https://virkailija.%sopintopolku.fi/valinta-tulos-service", ENVIRONMENT));
+        System.setProperty("valintalaskentakoostepalvelu.parametriservice.rest.url", String.format("https://virkailija.%sopintopolku.fi/ohjausparametrit-service/api", ENVIRONMENT));
         System.setProperty("valintalaskentakoostepalvelu.tarjonta.rest.url", "https://${host.virkailija}/tarjonta-service/rest");
-        System.setProperty("valintarekisteri.tarjonta-service.url", "https://virkailija.hahtuvaopintopolku.fi/tarjonta-service");
+        System.setProperty("valintarekisteri.tarjonta-service.url", String.format("https://virkailija.%sopintopolku.fi/tarjonta-service", ENVIRONMENT));
         System.setProperty("valintarekisteri.parseleniently.tarjonta", "false");
 
         // propertyt jotka tarvitaan jotta sovellus käynnistyy, mutta joita ei tarvita ainakaan normaalissa sijoittelussa
@@ -57,9 +62,12 @@ public class DevApp extends App {
         System.setProperty("valintarekisteri.blaze.request-timeout", "60");
 
         System.setProperty("spring.profiles.active", "dev");
+        //System.setProperty("logging.level.root", "debug");
 
         TempDockerDB.start();
-
+        System.setProperty("spring-boot.run.jvmArguments", "-Xms2048m -Xmx4096m");
+        System.setProperty("server.servlet.context-path", CONTEXT_PATH);
         App.main(args);
     }
+
 }

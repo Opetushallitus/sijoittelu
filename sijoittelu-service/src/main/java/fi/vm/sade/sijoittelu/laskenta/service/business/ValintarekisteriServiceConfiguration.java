@@ -24,7 +24,8 @@ public class ValintarekisteriServiceConfiguration {
                                                 @Value("${valintarekisteri.blaze.request-timeout}") String blazeRequestTimeout,
                                                 @Value("${valintarekisteri.kohdejoukot.korkeakoulu}") String kohdejoukotKorkeakoulu,
                                                 @Value("${valintarekisteri.kohdejoukot.toinen-aste}") String kohdejoukotToinenAste,
-                                                @Value("${valintarekisteri.kohdejoukon-tarkenteet.amkope}") String KohdenjoukonTarkenteetAmkope) {
+                                                @Value("${valintarekisteri.kohdejoukon-tarkenteet.amkope}") String KohdenjoukonTarkenteetAmkope,
+                                                @Value("${valintarekisteri.db.flyway.disabled:true}") String flywayDisabled) {
         this.properties = new Properties();
         this.properties.setProperty("valinta-tulos-service.valintarekisteri.db.user", valintarekisteriDbUser);
         this.properties.setProperty("valinta-tulos-service.valintarekisteri.db.password", valintarekisteriDbPassword);
@@ -41,6 +42,7 @@ public class ValintarekisteriServiceConfiguration {
         this.properties.setProperty("valinta-tulos-service.kohdejoukot.korkeakoulu", kohdejoukotKorkeakoulu);
         this.properties.setProperty("valinta-tulos-service.kohdejoukot.toinen-aste", kohdejoukotToinenAste);
         this.properties.setProperty("valinta-tulos-service.kohdejoukon-tarkenteet.amkope", KohdenjoukonTarkenteetAmkope);
+        this.properties.setProperty("valinta-tulos-service.valintarekisteri.db.flyway.disabled", flywayDisabled);
     }
 
     public Properties getProperties() {
