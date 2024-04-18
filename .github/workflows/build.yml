@@ -18,7 +18,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           repository: Opetushallitus/valintalaskenta
-          ref: refs/heads/OK-331-hyva-possu
+          ref: refs/heads/master
           path: valintalaskenta
 
       - name: Cache local Maven repository
