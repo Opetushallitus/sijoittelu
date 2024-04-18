@@ -1,13 +1,13 @@
 package fi.vm.sade.sijoittelu.jatkuva.sijoittelu.resource;
 
 import com.google.gson.Gson;
+import fi.vm.sade.auditlog.Audit;
 import fi.vm.sade.auditlog.Changes;
 import fi.vm.sade.sijoittelu.jatkuva.external.resource.seuranta.SijoitteluSeurantaResource;
 import fi.vm.sade.sijoittelu.jatkuva.external.resource.tarjonta.TarjontaAsyncResource;
 import fi.vm.sade.sijoittelu.jatkuva.sijoittelu.dto.AjastettuSijoitteluInfo;
 import fi.vm.sade.sijoittelu.jatkuva.sijoittelu.dto.Sijoittelu;
 import fi.vm.sade.sijoittelu.jatkuva.util.SecurityUtil;
-import fi.vm.sade.sijoittelu.jatkuva.KoosteAudit;
 import fi.vm.sade.sijoittelu.jatkuva.parametrit.service.HakuParametritService;
 import fi.vm.sade.sijoittelu.jatkuva.security.AuthorityCheckService;
 import fi.vm.sade.sijoittelu.jatkuva.sijoittelu.komponentti.JatkuvaSijoittelu;
@@ -68,6 +68,8 @@ public class SijoitteluAktivointiResource {
 
   @Autowired private AuthorityCheckService authorityCheckService;
 
+  @Autowired private Audit audit;
+
   @GetMapping(value = "/status/{hakuoid:.+}", produces = MediaType.APPLICATION_JSON_VALUE)
   @Operation(
       summary = "Sijoittelun status",
@@ -117,7 +119,7 @@ public class SijoitteluAktivointiResource {
       throw new RuntimeException("Parametri hakuOid on pakollinen!");
     } else {
       AuditLog.log(
-          KoosteAudit.AUDIT,
+          audit,
           AuditLog.getUser(request),
           ValintaperusteetOperation.SIJOITTELU_KAYNNISTYS,
           ValintaResource.SIJOITTELUAKTIVOINTI,
