@@ -7,7 +7,7 @@ CREATE TABLE IF NOT EXISTS jatkuvat (
 );
 
 CREATE TABLE IF NOT EXISTS jatkuva_virheet (
-    haku_oid        TEXT,
+    haku_oid        TEXT NOT NULL,
     aika            TIMESTAMP,
     virhe           TEXT,
     CONSTRAINT fk_haku_oid FOREIGN KEY (haku_oid) REFERENCES jatkuvat(haku_oid) ON DELETE CASCADE

@@ -19,7 +19,6 @@ import fi.vm.sade.sijoittelu.domain.Valintatapajono;
 import fi.vm.sade.testing.AbstractIntegrationTest;
 import fi.vm.sade.valintalaskenta.domain.dto.valintatieto.HakuDTO;
 import fi.vm.sade.valintalaskenta.domain.valinta.Hakijaryhma;
-import fi.vm.sade.valintalaskenta.domain.valinta.Jonosija;
 import fi.vm.sade.valintalaskenta.tulos.service.impl.ValintatietoService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Disabled;
@@ -28,12 +27,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
-import fi.vm.sade.valintalaskenta.domain.testdata.TestEntityDataUtil;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.SqlConfig;
+import org.springframework.test.context.ActiveProfiles;
 
 import java.time.*;
-import java.time.temporal.TemporalAccessor;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -41,8 +39,10 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@ActiveProfiles("test")
 public class HakijaryhmaTest extends AbstractIntegrationTest {
   private static final Logger LOG = LoggerFactory.getLogger(HakijaryhmaTest.class);
+
   @Autowired
   private ValintatietoService valintatietoService;
 
