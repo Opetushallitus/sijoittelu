@@ -479,7 +479,17 @@
     </dependencies>
   </dependencyManagement>
 
-    <repositories>
+  <repositories>
+    <repository>
+      <id>github</id>
+      <url>https://maven.pkg.github.com/Opetushallitus/packages</url>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+    </repository>
     <repository>
       <releases>
         <enabled>false</enabled>
@@ -499,16 +509,6 @@
       </snapshots>
       <id>oph-sade-artifactory-releases</id>
       <url>https://artifactory.opintopolku.fi/artifactory/oph-sade-release-local</url>
-    </repository>
-    <repository>
-      <id>repository.jboss.org</id>
-      <name>JBoss Repository</name>
-      <url>https://repository.jboss.org/nexus/content/groups/public-jboss/</url>
-    </repository>
-    <repository>
-      <id>vaadin-addons</id>
-      <name>Vaadin addons</name>
-      <url>https://artifactory.opintopolku.fi/artifactory/vaadin-addons</url>
     </repository>
     <repository>
       <id>com.springsource.repository.bundles.release</id>
