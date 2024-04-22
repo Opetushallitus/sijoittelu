@@ -3,7 +3,6 @@ package fi.vm.sade.sijoittelu;
 import com.google.common.collect.Lists;
 
 import fi.vm.sade.testing.AbstractIntegrationTest;
-import fi.vm.sade.testing.TestConfigurationWithMocks;
 import fi.vm.sade.sijoittelu.batch.logic.impl.DomainConverter;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.PrintHelper;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoitteluConfiguration;
@@ -24,16 +23,12 @@ import fi.vm.sade.sijoittelu.domain.Valintatulos;
 import fi.vm.sade.valintalaskenta.domain.dto.valintatieto.HakuDTO;
 import fi.vm.sade.valintalaskenta.tulos.service.impl.ValintatietoService;
 import org.apache.commons.lang3.time.DateUtils;
-import org.joda.time.DateTime;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
-import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.time.*;
 import java.util.ArrayList;
@@ -43,13 +38,11 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@ActiveProfiles("test")
 public class SijoitteluMontaJonoaTest extends AbstractIntegrationTest {
 
     @Autowired
     private ValintatietoService valintatietoService;
-
-    @Autowired
-    private ApplicationContext applicationContext;
 
 	@Test
   @Sql("monta_jonoa.sql")
