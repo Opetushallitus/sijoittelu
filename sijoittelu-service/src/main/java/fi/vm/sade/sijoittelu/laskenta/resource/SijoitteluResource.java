@@ -196,8 +196,7 @@ public class SijoitteluResource {
                 .flatMap(hakukohde -> hakukohde.getValinnanvaihe().stream())
                 .flatMap(valinnanvaihe -> valinnanvaihe.getValintatapajonot().stream())
                 .map(jono -> jono.getOid()).collect(toSet());
-
-        System.out.println("TEST");
+        
         Map<String, HakijaryhmaValintatapajonoDTO> hakijaryhmaByOid = Collections.emptyMap();
         TypeToken<List<HakijaryhmaValintatapajonoDTO>> token = new TypeToken<List<HakijaryhmaValintatapajonoDTO>>() {};
         if (!hakukohdeOidsWithHakijaryhma.isEmpty()) {
