@@ -53,7 +53,7 @@ public class HttpClients {
                 CALLER_ID,
                 "/j_spring_cas_security_check"
         )
-        .setJsessionName("CasSecurityTicket").build();
+        .setJsessionName("JSESSIONID").build();
         return CasClientBuilder.build(casConfig);
     }
 }
