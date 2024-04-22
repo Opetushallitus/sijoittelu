@@ -217,7 +217,7 @@
       <dependency>
         <groupId>org.postgresql</groupId>
         <artifactId>postgresql</artifactId>
-        <version>42.6.0</version>
+        <version>42.7.3</version>
       </dependency>
       <dependency>
         <groupId>org.modelmapper</groupId>
@@ -287,12 +287,12 @@
       <dependency>
         <groupId>ch.qos.logback</groupId>
         <artifactId>logback-access</artifactId>
-        <version>1.2.12</version>
+        <version>1.2.13</version>
       </dependency>
       <dependency>
         <groupId>ch.qos.logback</groupId>
         <artifactId>logback-classic</artifactId>
-        <version>1.2.12</version>
+        <version>1.2.13</version>
       </dependency>
 
       <!-- Lukitaan transitiivisten riippuvuuksien versioita jotta enforcer-plugin ei valita -->
@@ -319,32 +319,32 @@
       <dependency>
         <groupId>org.apache.cxf</groupId>
         <artifactId>cxf-rt-frontend-jaxws</artifactId>
-        <version>3.3.7</version>
+        <version>3.6.3</version>
       </dependency>
       <dependency>
         <groupId>org.apache.cxf</groupId>
         <artifactId>cxf-rt-frontend-jaxrs</artifactId>
-        <version>3.3.7</version>
+        <version>3.6.3</version>
       </dependency>
       <dependency>
         <groupId>org.apache.cxf</groupId>
         <artifactId>cxf-rt-transports-http</artifactId>
-        <version>3.3.7</version>
+        <version>3.6.3</version>
       </dependency>
       <dependency>
         <groupId>org.apache.cxf</groupId>
         <artifactId>cxf-rt-rs-client</artifactId>
-        <version>3.3.7</version>
+        <version>3.6.3</version>
       </dependency>
       <dependency>
         <groupId>org.apache.cxf</groupId>
         <artifactId>cxf-rt-rs-service-description-swagger</artifactId>
-        <version>3.3.7</version>
+        <version>3.6.3</version>
       </dependency>
       <dependency>
         <groupId>org.apache.cxf</groupId>
         <artifactId>cxf-core</artifactId>
-        <version>3.3.7</version>
+        <version>3.6.3</version>
       </dependency>
       <dependency>
         <groupId>net.sf.ehcache</groupId>
