@@ -103,7 +103,7 @@ public class ErillisSijoitteluResource {
         TypeToken<Map<String, List<ValintatapajonoDTO>>> token = new TypeToken<Map<String, List<ValintatapajonoDTO>>>() {};
 
         try {
-            Response valintatapajonoResponse = sijoitteluCasClient.executeWithServiceTicketBlocking(valintatapajonoRequest);
+            Response valintatapajonoResponse = sijoitteluCasClient.executeAndRetryWithCleanSessionOnStatusCodesBlocking(valintatapajonoRequest, Set.of(302, 402, 403));
             if (valintatapajonoResponse.getStatusCode() == 200) {
                 try {
                     valintaperusteet = gson.fromJson(valintatapajonoResponse.getResponseBody(), token.getType());
@@ -114,8 +114,8 @@ public class ErillisSijoitteluResource {
                 throw new RuntimeException(String.format("Failed to fetch valintatapajonot from %s. Response status: %s", valintatapajonoResponse.getUri().toString(), valintatapajonoResponse.getStatusCode()));
             }
 
-        } catch (ExecutionException e) {
-            LOGGER.error("Valintatietojen haku erillissijoittelun haulle epäonnistui");
+        } catch (Exception e) {
+            LOGGER.error("Valintatietojen haku erillissijoittelun haulle epäonnistui", e);
         }
 
         HakuDTO haku = valintatietoService.haeValintatiedotJonoille(hakuOid, hakukohteet.getHakukohteet(), Optional.of(valintaperusteet));

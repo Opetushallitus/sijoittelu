@@ -3,6 +3,7 @@ package fi.vm.sade.sijoittelu.laskenta.resource;
 import com.google.common.collect.Sets;
 import com.google.gson.*;
 import fi.vm.sade.javautils.nio.cas.CasClient;
+import fi.vm.sade.javautils.nio.cas.CasClientBuilder;
 import fi.vm.sade.javautils.nio.cas.CasConfig;
 import fi.vm.sade.service.valintaperusteet.dto.HakijaryhmaValintatapajonoDTO;
 import fi.vm.sade.service.valintaperusteet.dto.KoodiDTO;
@@ -61,14 +62,13 @@ public class SijoitteluResourceTest {
         mockWebServer = new MockWebServer();
         sijoitteluBusinessService = mock(SijoitteluBusinessService.class);
         valintatietoService = mock(ValintatietoService.class);
-        sijoitteluCasClient = new CasClient(CasConfig.CasConfig("it-ankka",
+        sijoitteluCasClient = CasClientBuilder.build(new CasConfig.CasConfigBuilder("it-ankka",
                 "neverstopthemadness",
                 mockWebServer.url("/cas").toString(),
                 mockWebServer.url("/") + "test-service",
                 "CSRF",
                 "Caller-Id",
-                COOKIENAME,
-                "/j_spring_cas_security_check"));
+                "/j_spring_cas_security_check").setJsessionName(COOKIENAME).build());
 
 
         urlProperties = new TestUrlProperties(mockWebServer.url("/").toString().substring(7, mockWebServer.url("/").toString().length() - 1));
@@ -133,16 +133,17 @@ public class SijoitteluResourceTest {
             {
                 when(valintatietoService.haeValintatiedot(anyString())).thenReturn(haku);
                 mockWebServer.enqueue(new MockResponse()
-                        .addHeader("Location", mockWebServer.url("/") + "cas/tickets")
+                        .addHeader("Location", mockWebServer.url("/") + "cas/v1/tickets/TGT-1")
                         .setResponseCode(201));
                 mockWebServer.enqueue(new MockResponse()
                         .setBody(VALID_TICKET)
                         .setResponseCode(200));
                 mockWebServer.enqueue(new MockResponse()
-                        .setBody(this.gson.toJson(asList(hakijaryhmavalintaperusteista)))
+                        .setHeader("Set-Cookie", "JSESSIONID=XYZ")
+                        .setBody(VALID_TICKET)
                         .setResponseCode(200));
                 mockWebServer.enqueue(new MockResponse()
-                        .setBody(VALID_TICKET)
+                        .setBody(this.gson.toJson(asList(hakijaryhmavalintaperusteista)))
                         .setResponseCode(200));
                 mockWebServer.enqueue(new MockResponse()
                         .setBody(this.gson.toJson(asList(valintatapajononHakijaryhmavalintaperusteista)))
@@ -151,9 +152,6 @@ public class SijoitteluResourceTest {
                 final HashMap<String, List<ValintatapajonoDTO>> vpMap = new HashMap<>();
                 vpMap.put(hakukohdeOid, Arrays.asList(valintaperusteista));
 
-                mockWebServer.enqueue(new MockResponse()
-                        .setBody(VALID_TICKET)
-                        .setResponseCode(200));
                 mockWebServer.enqueue(new MockResponse().setBody(this.gson.toJson(vpMap)));
 
                 try {
@@ -255,33 +253,33 @@ public class SijoitteluResourceTest {
                 laskennasta);
             when(valintatietoService.haeValintatiedot(hakuOid)).thenReturn(haku);
             mockWebServer.enqueue(new MockResponse()
-                    .addHeader("Location", mockWebServer.url("/") + "cas/tickets")
+                    .addHeader("Location", mockWebServer.url("/") + "cas/v1/tickets/TGT-1")
                     .setResponseCode(201));
             mockWebServer.enqueue(new MockResponse()
                     .setBody(VALID_TICKET)
                     .setResponseCode(200));
             mockWebServer.enqueue(new MockResponse()
-                    .setBody(this.gson.toJson(Collections.singletonList(hakijaryhmavalintaperusteista)))
-                    .setResponseCode(200));
-            mockWebServer.enqueue(new MockResponse()
+                    .setHeader("Set-Cookie", "JSESSIONID=XYZ")
                     .setBody(VALID_TICKET)
                     .setResponseCode(200));
             mockWebServer.enqueue(new MockResponse()
+                    .setHeader("Content-type", "application/json")
+                    .setBody(this.gson.toJson(Collections.singletonList(hakijaryhmavalintaperusteista)))
+                    .setResponseCode(200));
+            mockWebServer.enqueue(new MockResponse()
+                    .setHeader("Content-type", "application/json")
                     .setBody(this.gson.toJson(Collections.singletonList(valintatapajononHakijaryhmavalintaperusteista)))
                     .setResponseCode(200));
 
             final HashMap<String, List<ValintatapajonoDTO>> vpMap = new HashMap<>();
             vpMap.put(hakukohdeOid, Collections.singletonList(valintaperusteista));
-
             mockWebServer.enqueue(new MockResponse()
-                    .setBody(VALID_TICKET)
-                    .setResponseCode(200));
-            mockWebServer.enqueue(new MockResponse()
+                    .setHeader("Content-type", "application/json")
                     .setBody(this.gson.toJson(vpMap))
                     .setResponseCode(200));
 
-            Exception exception = Assertions.assertThrows(IllegalStateException.class, () -> sijoitteluResource.toteutaSijoittelu(hakuOid, 12345L));
-            Assertions.assertEquals("Haun hakuOid sijoittelu : " +
+            Exception exception = Assertions.assertThrows(RuntimeException.class, () -> sijoitteluResource.toteutaSijoittelu(hakuOid, 12345L));
+            Assertions.assertEquals("java.lang.IllegalStateException: Haun hakuOid sijoittelu : " +
                     "Laskennan tuloksista löytyvien jonojen tietoja on kadonnut valintaperusteista: " +
                     "[Hakukohde hakukohdeOid , jono \"Varsinainen testivalinta\" (valintatapaJonoOid , prio 0)]", exception.getMessage());
         } finally{
