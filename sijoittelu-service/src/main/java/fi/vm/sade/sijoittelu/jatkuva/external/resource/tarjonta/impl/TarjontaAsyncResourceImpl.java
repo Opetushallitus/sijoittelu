@@ -26,9 +26,11 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
 @Service
+@Profile({"default", "dev"})
 public class TarjontaAsyncResourceImpl implements TarjontaAsyncResource {
   private final UrlProperties urlProperties;
   private final HttpClient client;

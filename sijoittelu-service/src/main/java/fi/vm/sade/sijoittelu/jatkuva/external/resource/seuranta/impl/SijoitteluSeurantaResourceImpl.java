@@ -10,10 +10,12 @@ import java.util.Collections;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
 // TODO: clean up implementation
 @Service
+@Profile({"default", "dev"})
 public class SijoitteluSeurantaResourceImpl implements SijoitteluSeurantaResource {
 
   private final RestCasClient restCasClient;
