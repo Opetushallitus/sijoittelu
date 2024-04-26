@@ -1,5 +1,7 @@
 package fi.vm.sade.testing;
 
+import fi.vm.sade.auditlog.ApplicationType;
+import fi.vm.sade.auditlog.Audit;
 import fi.vm.sade.javautils.nio.cas.CasClient;
 import fi.vm.sade.javautils.opintopolku_spring_security.Authorizer;
 import fi.vm.sade.service.valintaperusteet.resource.ValintaperusteetResource;
@@ -7,11 +9,11 @@ import fi.vm.sade.service.valintaperusteet.resource.ValintaperusteetResourceV2;
 import fi.vm.sade.sijoittelu.laskenta.external.resource.*;
 import fi.vm.sade.sijoittelu.laskenta.mapping.SijoitteluModelMapper;
 import fi.vm.sade.sijoittelu.laskenta.service.business.ValintarekisteriService;
+import fi.vm.sade.valinta.sharedutils.AuditLogger;
 import fi.vm.sade.valintalaskenta.tulos.logging.LaskentaAuditLog;
 import fi.vm.sade.valintalaskenta.tulos.logging.LaskentaAuditLogImpl;
 import fi.vm.sade.valintalaskenta.tulos.mapping.ValintalaskentaModelMapper;
 import fi.vm.sade.valintalaskenta.tulos.service.impl.JarjestyskriteerihistoriaServiceImpl;
-import org.flywaydb.core.Flyway;
 import org.mockito.Mockito;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.*;
@@ -56,6 +58,11 @@ public class TestConfigurationWithMocks {
     @Bean("LaskentaAuditLog")
     public LaskentaAuditLog laskentaAuditLog() {
         return new LaskentaAuditLogImpl();
+    }
+
+    @Bean
+    public Audit audit() {
+        return new Audit(new AuditLogger(), "sijoittelu", ApplicationType.VIRKAILIJA);
     }
 
     @Bean

@@ -1,6 +1,7 @@
-package fi.vm.sade.sijoittelu.laskenta.resource;
+package fi.vm.sade.sijoittelu.service.business;
 
 import fi.vm.sade.sijoittelu.domain.SijoitteluajonTila;
+import fi.vm.sade.sijoittelu.laskenta.service.business.SijoitteluBookkeeperService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 

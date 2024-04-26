@@ -1,4 +1,4 @@
-package fi.vm.sade.sijoittelu.laskenta.resource;
+package fi.vm.sade.sijoittelu.laskenta.service.business;
 
 import fi.vm.sade.sijoittelu.domain.SijoitteluajonTila;
 import org.slf4j.Logger;
