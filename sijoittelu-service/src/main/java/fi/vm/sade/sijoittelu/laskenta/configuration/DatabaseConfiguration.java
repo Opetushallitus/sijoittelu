@@ -65,7 +65,7 @@ public class DatabaseConfiguration extends AbstractJdbcConfiguration {
     config.setPoolName("springHikariCP");
     config.setConnectionTestQuery("SELECT 1");
     config.setJdbcUrl(url);
-    config.setDriverClassName(driverClassName);
+    if(!driverClassName.equals("")) config.setDriverClassName(driverClassName);
     config.setMaximumPoolSize(Integer.parseInt(maxPoolSize));
     config.setMaxLifetime(Long.parseLong(maxWait));
     config.setLeakDetectionThreshold(Long.parseLong(leaksThreshold));
