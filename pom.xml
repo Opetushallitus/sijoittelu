@@ -96,7 +96,7 @@
       <dependency>
         <groupId>fi.vm.sade.java-utils</groupId>
         <artifactId>java-cas</artifactId>
-        <version>1.0.0-SNAPSHOT</version>
+        <version>1.1.1-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>fi.vm.sade</groupId>
@@ -217,7 +217,7 @@
       <dependency>
         <groupId>org.postgresql</groupId>
         <artifactId>postgresql</artifactId>
-        <version>42.6.0</version>
+        <version>42.7.3</version>
       </dependency>
       <dependency>
         <groupId>org.modelmapper</groupId>
@@ -287,12 +287,12 @@
       <dependency>
         <groupId>ch.qos.logback</groupId>
         <artifactId>logback-access</artifactId>
-        <version>1.2.12</version>
+        <version>1.2.13</version>
       </dependency>
       <dependency>
         <groupId>ch.qos.logback</groupId>
         <artifactId>logback-classic</artifactId>
-        <version>1.2.12</version>
+        <version>1.2.13</version>
       </dependency>
 
       <!-- Lukitaan transitiivisten riippuvuuksien versioita jotta enforcer-plugin ei valita -->
@@ -319,32 +319,32 @@
       <dependency>
         <groupId>org.apache.cxf</groupId>
         <artifactId>cxf-rt-frontend-jaxws</artifactId>
-        <version>3.3.7</version>
+        <version>3.6.3</version>
       </dependency>
       <dependency>
         <groupId>org.apache.cxf</groupId>
         <artifactId>cxf-rt-frontend-jaxrs</artifactId>
-        <version>3.3.7</version>
+        <version>3.6.3</version>
       </dependency>
       <dependency>
         <groupId>org.apache.cxf</groupId>
         <artifactId>cxf-rt-transports-http</artifactId>
-        <version>3.3.7</version>
+        <version>3.6.3</version>
       </dependency>
       <dependency>
         <groupId>org.apache.cxf</groupId>
         <artifactId>cxf-rt-rs-client</artifactId>
-        <version>3.3.7</version>
+        <version>3.6.3</version>
       </dependency>
       <dependency>
         <groupId>org.apache.cxf</groupId>
         <artifactId>cxf-rt-rs-service-description-swagger</artifactId>
-        <version>3.3.7</version>
+        <version>3.6.3</version>
       </dependency>
       <dependency>
         <groupId>org.apache.cxf</groupId>
         <artifactId>cxf-core</artifactId>
-        <version>3.3.7</version>
+        <version>3.6.3</version>
       </dependency>
       <dependency>
         <groupId>net.sf.ehcache</groupId>
@@ -479,7 +479,17 @@
     </dependencies>
   </dependencyManagement>
 
-    <repositories>
+  <repositories>
+    <repository>
+      <id>github</id>
+      <url>https://maven.pkg.github.com/Opetushallitus/packages</url>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+    </repository>
     <repository>
       <releases>
         <enabled>false</enabled>
@@ -499,16 +509,6 @@
       </snapshots>
       <id>oph-sade-artifactory-releases</id>
       <url>https://artifactory.opintopolku.fi/artifactory/oph-sade-release-local</url>
-    </repository>
-    <repository>
-      <id>repository.jboss.org</id>
-      <name>JBoss Repository</name>
-      <url>https://repository.jboss.org/nexus/content/groups/public-jboss/</url>
-    </repository>
-    <repository>
-      <id>vaadin-addons</id>
-      <name>Vaadin addons</name>
-      <url>https://artifactory.opintopolku.fi/artifactory/vaadin-addons</url>
     </repository>
     <repository>
       <id>com.springsource.repository.bundles.release</id>
