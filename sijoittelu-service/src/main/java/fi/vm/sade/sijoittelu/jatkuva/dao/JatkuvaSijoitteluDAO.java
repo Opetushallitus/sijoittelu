@@ -1,10 +1,9 @@
-package fi.vm.sade.sijoittelu.jatkuva.external.resource.seuranta;
+package fi.vm.sade.sijoittelu.jatkuva.dao;
 
-import fi.vm.sade.sijoittelu.jatkuva.external.resource.seuranta.dto.SijoitteluDto;
-
+import fi.vm.sade.sijoittelu.jatkuva.dao.dto.SijoitteluDto;
 import java.util.Collection;
 
-public interface SijoitteluSeurantaResource {
+public interface JatkuvaSijoitteluDAO {
 
   SijoitteluDto hae(String hakuOid);
 

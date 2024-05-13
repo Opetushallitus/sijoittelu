@@ -1,7 +1,7 @@
 package fi.vm.sade.sijoittelu.jatkuva.sijoittelu.route.impl;
 
-import fi.vm.sade.sijoittelu.jatkuva.external.resource.seuranta.SijoitteluSeurantaResource;
-import fi.vm.sade.sijoittelu.jatkuva.external.resource.seuranta.dto.SijoitteluDto;
+import fi.vm.sade.sijoittelu.jatkuva.dao.JatkuvaSijoitteluDAO;
+import fi.vm.sade.sijoittelu.jatkuva.dao.dto.SijoitteluDto;
 import fi.vm.sade.sijoittelu.jatkuva.sijoittelu.dto.AjastettuSijoitteluInfo;
 import fi.vm.sade.sijoittelu.jatkuva.util.Formatter;
 import fi.vm.sade.sijoittelu.jatkuva.sijoittelu.job.AjastettuSijoitteluJob;
@@ -24,7 +24,7 @@ import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 public class JatkuvaSijoitteluRouteImpl implements JatkuvaSijoittelu {
   private static final Logger LOG = LoggerFactory.getLogger(JatkuvaSijoitteluRouteImpl.class);
 
-  private final SijoitteluSeurantaResource sijoittelunSeurantaResource;
+  private final JatkuvaSijoitteluDAO sijoittelunSeurantaResource;
   private final int VAKIO_AJOTIHEYS = 24;
   private final Timer timer;
   private final Scheduler sijoitteluScheduler;
@@ -56,7 +56,7 @@ public class JatkuvaSijoitteluRouteImpl implements JatkuvaSijoittelu {
       @Value("${jatkuvasijoittelu.autostart:true}") boolean autoStartup,
       @Value("${valintalaskentakoostepalvelu.jatkuvasijoittelu.intervalMinutes:5}")
           long jatkuvaSijoitteluPollIntervalInMinutes,
-      SijoitteluSeurantaResource sijoittelunSeurantaResource,
+      JatkuvaSijoitteluDAO sijoittelunSeurantaResource,
       SchedulerFactoryBean schedulerFactoryBean) {
     this.sijoittelunSeurantaResource = sijoittelunSeurantaResource;
     this.timer =

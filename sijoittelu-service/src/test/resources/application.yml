@@ -1,18 +1,21 @@
 spring:
   main:
     allow-bean-definition-overriding: true
-  flyway:
-    locations: filesystem:../../valintalaskenta/valintalaskenta-laskenta-service/src/main/resources/db/migration
-    enabled: true
   test:
     context:
       cache:
         maxSize: 2
 
 sijoittelu:
+  sijoittelu:
+    postgresql:
+      url: jdbc:tc:postgresql:15.4:///sijoittelu_test_database
+      username: user
+      password: password
+      driver: org.testcontainers.jdbc.ContainerDatabaseDriver
   valintalaskenta:
     postgresql:
-      url: jdbc:tc:postgresql:15.4:///test_database
+      url: jdbc:tc:postgresql:15.4:///valintalaskenta_test_database
       user: user
       password: password
       maxactive: 10

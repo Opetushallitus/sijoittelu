@@ -1,4 +1,4 @@
-package fi.vm.sade.sijoittelu.jatkuva.external.resource.seuranta.dto;
+package fi.vm.sade.sijoittelu.jatkuva.dao.dto;
 
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;

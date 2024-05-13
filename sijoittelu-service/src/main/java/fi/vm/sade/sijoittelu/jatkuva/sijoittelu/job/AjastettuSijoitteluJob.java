@@ -1,6 +1,6 @@
 package fi.vm.sade.sijoittelu.jatkuva.sijoittelu.job;
 
-import fi.vm.sade.sijoittelu.jatkuva.external.resource.seuranta.SijoitteluSeurantaResource;
+import fi.vm.sade.sijoittelu.jatkuva.dao.JatkuvaSijoitteluDAO;
 import fi.vm.sade.sijoittelu.laskenta.service.business.ToteutaSijoitteluService;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
@@ -26,8 +26,8 @@ public class AjastettuSijoitteluJob extends QuartzJobBean {
           (ApplicationContext) context.getScheduler().getContext().get("applicationContext");
       ToteutaSijoitteluService toteutaSijoitteluService =
           applicationContext.getBean(ToteutaSijoitteluService.class);
-      SijoitteluSeurantaResource sijoittelunSeurantaResource =
-          applicationContext.getBean(SijoitteluSeurantaResource.class);
+      JatkuvaSijoitteluDAO sijoittelunSeurantaResource =
+          applicationContext.getBean(JatkuvaSijoitteluDAO.class);
 
       String hakuOid = (String) context.getJobDetail().getJobDataMap().get("hakuOid");
       try {

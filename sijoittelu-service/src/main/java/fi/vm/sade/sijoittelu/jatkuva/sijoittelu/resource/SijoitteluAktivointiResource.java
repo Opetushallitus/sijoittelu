@@ -3,8 +3,8 @@ package fi.vm.sade.sijoittelu.jatkuva.sijoittelu.resource;
 import com.google.gson.Gson;
 import fi.vm.sade.auditlog.Audit;
 import fi.vm.sade.auditlog.Changes;
-import fi.vm.sade.sijoittelu.jatkuva.external.resource.seuranta.SijoitteluSeurantaResource;
-import fi.vm.sade.sijoittelu.jatkuva.external.resource.seuranta.dto.SijoitteluDto;
+import fi.vm.sade.sijoittelu.jatkuva.dao.JatkuvaSijoitteluDAO;
+import fi.vm.sade.sijoittelu.jatkuva.dao.dto.SijoitteluDto;
 import fi.vm.sade.sijoittelu.jatkuva.external.resource.tarjonta.TarjontaAsyncResource;
 import fi.vm.sade.sijoittelu.jatkuva.sijoittelu.dto.AjastettuSijoitteluInfo;
 import fi.vm.sade.sijoittelu.jatkuva.sijoittelu.dto.Sijoittelu;
@@ -62,7 +62,7 @@ public class SijoitteluAktivointiResource {
 
   @Autowired private HakuParametritService hakuParametritService;
 
-  @Autowired private SijoitteluSeurantaResource sijoittelunSeurantaResource;
+  @Autowired private JatkuvaSijoitteluDAO sijoittelunSeurantaResource;
 
   @Autowired private SijoittelunValvonta sijoittelunValvonta;
 

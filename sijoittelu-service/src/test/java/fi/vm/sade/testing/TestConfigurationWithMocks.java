@@ -14,9 +14,14 @@ import fi.vm.sade.valintalaskenta.tulos.logging.LaskentaAuditLog;
 import fi.vm.sade.valintalaskenta.tulos.logging.LaskentaAuditLogImpl;
 import fi.vm.sade.valintalaskenta.tulos.mapping.ValintalaskentaModelMapper;
 import fi.vm.sade.valintalaskenta.tulos.service.impl.JarjestyskriteerihistoriaServiceImpl;
+import org.flywaydb.core.Flyway;
 import org.mockito.Mockito;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.*;
+
+import javax.sql.DataSource;
 
 @TestConfiguration
 @ComponentScan(basePackages = {
@@ -27,6 +32,23 @@ import org.springframework.context.annotation.*;
   @ComponentScan.Filter(type=FilterType.ASSIGNABLE_TYPE, value= JarjestyskriteerihistoriaServiceImpl.class)})
 @Profile("test")
 public class TestConfigurationWithMocks {
+
+    @Autowired
+    @Qualifier("valintalaskentaDataSource")
+    DataSource dataSource;
+
+    public static class ValintalaskentaFlywayMigrationDone {}
+
+    @Bean
+    public ValintalaskentaFlywayMigrationDone doValintalaskentaFlywayMigration() {
+        Flyway flyway = Flyway.configure()
+            .schemas("public")
+            .dataSource(dataSource)
+            .locations("filesystem:../../valintalaskenta/valintalaskenta-laskenta-service/src/main/resources/db/migration")
+            .load();
+        flyway.migrate();
+        return new ValintalaskentaFlywayMigrationDone();
+    }
 
     @Bean
     public ValintaperusteetResource valintaperusteetResource() { return Mockito.mock(ValintaperusteetResource.class); }
