@@ -9,8 +9,6 @@ public class TempDockerDB {
     private static final String dbName                      = "sijoittelu";
     private static final String containerName               = "sijoittelu-postgres";
 
-    private static final int port                           = 5433;
-
     private static final int startStopRetries               = 100;
     private static final int startStopRetryIntervalMillis   = 100;
 
@@ -24,14 +22,14 @@ public class TempDockerDB {
     };
 
     private static void startDatabaseContainer() {
-        LOG.info("Starting PostgreSQL container (localhost:" + port + "):");
+        LOG.info("Starting PostgreSQL container");
 
         try {
-            Process p = Runtime.getRuntime().exec("docker start " + containerName);
+            Process p = Runtime.getRuntime().exec("docker-compose -f sijoittelu-service/postgresql/docker-compose.yml up -d");
             p.waitFor();
-            String error = new String(p.getErrorStream().readAllBytes());
             if (!tryTimes(() -> databaseIsRunning(), startStopRetries, startStopRetryIntervalMillis)) {
-                throw new RuntimeException("postgres not accepting connections in port " + port);
+                String error = new String(p.getErrorStream().readAllBytes());
+                throw new RuntimeException("postgres not accepting connections: " + error);
             }
         } catch(Exception e) {
             throw new RuntimeException(e);
@@ -51,7 +49,7 @@ public class TempDockerDB {
     private static void stop() {
         try {
             LOG.info("Killing PostgreSQL container");
-            Process p = Runtime.getRuntime().exec("docker stop " + containerName);
+            Process p = Runtime.getRuntime().exec("docker-compose -f sijoittelu-service/postgresql/docker-compose.yml stop");
             p.waitFor();
         } catch(Exception e) {
             LOG.warn("PostgreSQL container didn't stop gracefully");

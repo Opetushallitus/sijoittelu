@@ -30,7 +30,7 @@ public class DevApp {
         System.setProperty("web.url.cas", String.format("https://virkailija.%sopintopolku.fi/cas", ENVIRONMENT));
 
         // postgres
-        System.setProperty("valintarekisteri.db.url", "jdbc:postgresql://localhost:5433/sijoittelu");
+        System.setProperty("valintarekisteri.db.url", "jdbc:postgresql://localhost:5433/valintarekisteri");
         System.setProperty("valintarekisteri.db.user", "oph");
         System.setProperty("valintarekisteri.db.password", "oph");
 
@@ -38,6 +38,11 @@ public class DevApp {
         System.setProperty("sijoittelu.valintalaskenta.postgresql.driver", "");
         System.setProperty("sijoittelu.valintalaskenta.postgresql.maxlifetimemillis", "60000");
         System.setProperty("sijoittelu.valintalaskenta.postgresql.readonly", "true");
+
+        System.setProperty("sijoittelu.sijoittelu.postgresql.url", "jdbc:postgresql://localhost:5433/sijoittelu");
+        System.setProperty("sijoittelu.sijoittelu.postgresql.username", "oph");
+        System.setProperty("sijoittelu.sijoittelu.postgresql.password", "oph");
+        System.setProperty("sijoittelu.sijoittelu.postgresql.driver", "");
 
         // ulkoiset palvelut
         System.setProperty("host.virkailija", String.format("virkailija.%sopintopolku.fi", ENVIRONMENT));

@@ -8,13 +8,8 @@ Joissakin tapauksissa on tarpeellista ajaa ympäristöä lokaalisti jonkin jaetu
 selvittämistä varten. Tämä onnistuu seuraavilla ohjeilla.
 
 1. Kehitysympäristössä käytetään aina paikallista sijoittelutietokantaa (jotta skeemamuutoksia voi kehittää lokaalisti).
-Luo PostgreSQL kontti seuraavilla komennoilla (tarvitsee tehdä vain kerran):
+Kanta on konfiguroitu docker-composella, joten tämän pitää olla asennettu.
 
-    ``` shell
-    cd sijoittelu-service/postgresql/docker
-    docker build --tag sijoittelu-postgres .
-    docker create --name sijoittelu-postgres --env POSTGRES_PASSWORD=postgres -p 5433:5432 sijoittelu-postgres
-    ```
 
 2. Kopioi konfiguraatio-template lokaalia kehitystä varten ```'/src/test/resources/application-dev.properties.template'``` -> ```'/src/test/resources/application-dev.properties'```.
 Application-dev.properties on ignoroitu Gitissä etteivät salasanat valu repoon. Tähän tiedostoon täytyy täyttää tarvittavat testi-ympäristön
