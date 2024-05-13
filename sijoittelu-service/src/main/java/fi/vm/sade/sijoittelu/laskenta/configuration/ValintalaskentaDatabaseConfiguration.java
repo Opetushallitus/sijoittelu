@@ -8,6 +8,7 @@ import fi.vm.sade.valintalaskenta.domain.valinta.FunktioTulosContainer;
 import fi.vm.sade.valintalaskenta.domain.valinta.JarjestyskriteeritulosContainer;
 import fi.vm.sade.valintalaskenta.domain.valinta.SyotettyArvoContainer;
 import org.postgresql.util.PGobject;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -38,18 +39,18 @@ import static java.util.Arrays.asList;
   },
 transactionManagerRef = "valintaLaskentaTransactionManager",
 jdbcOperationsRef = "valintalaskentaNamedParameterJdbcOperations")
-public class DatabaseConfiguration extends AbstractJdbcConfiguration {
+public class ValintalaskentaDatabaseConfiguration extends AbstractJdbcConfiguration {
 
   private final ApplicationContext applicationContext;
 
   private static final List<Class<?>> JSON_CLASSES =
     asList(SyotettyArvoContainer.class, FunktioTulosContainer.class, JarjestyskriteeritulosContainer.class);
 
-  DatabaseConfiguration(ApplicationContext applicationContext) {
+  ValintalaskentaDatabaseConfiguration(ApplicationContext applicationContext) {
     this.applicationContext = applicationContext;
   }
 
-  @Bean
+  @Bean("valintalaskentaDataSource")
   public DataSource dataSourceValintalaskenta(
     @Value("${sijoittelu.valintalaskenta.postgresql.maxactive}") final String maxPoolSize,
     @Value("${sijoittelu.valintalaskenta.postgresql.maxwait}") final String maxWait,
@@ -79,18 +80,20 @@ public class DatabaseConfiguration extends AbstractJdbcConfiguration {
     return new HikariDataSource(config);
   }
 
-  @Bean
-  public JdbcTemplate jdbcTemplate(DataSource dataSourceValintalaskenta) {
+  @Bean("valintalaskentaJdbcTemplate")
+  public JdbcTemplate jdbcTemplate(@Qualifier("valintalaskentaDataSource") DataSource dataSourceValintalaskenta) {
     return new JdbcTemplate(dataSourceValintalaskenta);
   }
 
-  @Bean
-  NamedParameterJdbcOperations valintalaskentaNamedParameterJdbcOperations(DataSource dataSourceValintalaskenta) {
+  @Bean("valintalaskentaNamedParameterJdbcOperations")
+  NamedParameterJdbcOperations valintalaskentaNamedParameterJdbcOperations(
+      @Qualifier("valintalaskentaDataSource") DataSource dataSourceValintalaskenta) {
     return new NamedParameterJdbcTemplate(dataSourceValintalaskenta);
   }
 
-  @Bean
-  TransactionManager valintaLaskentaTransactionManager(DataSource dataSourceValintalaskenta) {
+  @Bean("valintaLaskentaTransactionManager")
+  TransactionManager valintaLaskentaTransactionManager(
+      @Qualifier("valintalaskentaDataSource") DataSource dataSourceValintalaskenta) {
     return new DataSourceTransactionManager(dataSourceValintalaskenta);
   }
 

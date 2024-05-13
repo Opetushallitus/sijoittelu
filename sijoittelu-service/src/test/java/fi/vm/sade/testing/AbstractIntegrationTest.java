@@ -3,6 +3,7 @@ package fi.vm.sade.testing;
 import fi.vm.sade.sijoittelu.App;
 import org.junit.jupiter.api.AfterEach;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.context.annotation.*;
@@ -24,6 +25,7 @@ public abstract class AbstractIntegrationTest {
   private final static List<String> TABLES = List.of("jonosija", "muokattu_jonosija", "hakijaryhma", "valinnanvaihe", "valintatapajono");
 
   @Autowired
+  @Qualifier("valintalaskentaJdbcTemplate")
   private JdbcTemplate jdbcTemplate;
 
   @LocalServerPort protected Integer port;

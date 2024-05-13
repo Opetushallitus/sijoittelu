@@ -1,6 +1,6 @@
 package fi.vm.sade.sijoittelu.jatkuva.sijoittelu.route.impl;
 
-import fi.vm.sade.sijoittelu.jatkuva.external.resource.seuranta.SijoitteluSeurantaResource;
+import fi.vm.sade.sijoittelu.jatkuva.dao.JatkuvaSijoitteluDAO;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -16,12 +16,12 @@ public class SijoitteluRouteConfig {
       @Value("${jatkuvasijoittelu.autostart:true}") boolean autoStartup,
       @Value("${valintalaskentakoostepalvelu.jatkuvasijoittelu.intervalMinutes:5}")
           long jatkuvaSijoitteluPollIntervalInMinutes,
-      SijoitteluSeurantaResource sijoitteluSeurantaResource,
+      JatkuvaSijoitteluDAO jatkuvaSijoitteluDAO,
       SchedulerFactoryBean schedulerFactoryBean) {
     return new JatkuvaSijoitteluRouteImpl(
         autoStartup,
         jatkuvaSijoitteluPollIntervalInMinutes,
-        sijoitteluSeurantaResource,
+        jatkuvaSijoitteluDAO,
         schedulerFactoryBean);
   }
 
