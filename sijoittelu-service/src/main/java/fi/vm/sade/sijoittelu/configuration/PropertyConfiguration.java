@@ -1,4 +1,4 @@
-package fi.vm.sade.sijoittelu.laskenta.configuration;
+package fi.vm.sade.sijoittelu.configuration;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;

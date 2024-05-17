@@ -1,4 +1,4 @@
-package fi.vm.sade.sijoittelu.jatkuva.sijoittelu.job;
+package fi.vm.sade.sijoittelu.jatkuva.job;
 
 import fi.vm.sade.sijoittelu.jatkuva.dao.JatkuvaSijoitteluDAO;
 import fi.vm.sade.sijoittelu.laskenta.service.business.ToteutaSijoitteluService;

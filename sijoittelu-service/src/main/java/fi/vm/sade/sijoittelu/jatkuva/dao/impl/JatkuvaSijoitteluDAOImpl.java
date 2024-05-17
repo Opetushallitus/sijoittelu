@@ -5,24 +5,21 @@ import fi.vm.sade.sijoittelu.jatkuva.dao.JatkuvaSijoitteluDAO;
 import java.time.Instant;
 import java.util.*;
 
-import fi.vm.sade.sijoittelu.jatkuva.dao.dto.SijoitteluDto;
+import fi.vm.sade.sijoittelu.jatkuva.dto.JatkuvaSijoittelu;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.context.annotation.Profile;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Service;
 
-// TODO: clean up implementation
 @Service
-@Profile({"default", "dev"})
 public class JatkuvaSijoitteluDAOImpl implements JatkuvaSijoitteluDAO {
 
   private final JdbcTemplate jdbcTemplate;
 
-  private final RowMapper<SijoitteluDto> sijoitteluDtoRowMapper = (rs, rowNum) ->
-      new SijoitteluDto(
+  private final RowMapper<JatkuvaSijoittelu> sijoitteluDtoRowMapper = (rs, rowNum) ->
+      new JatkuvaSijoittelu(
           rs.getString("haku_oid"),
           rs.getBoolean("jatkuva_paalla"),
           rs.getTimestamp("viimeksi_ajettu"),
@@ -37,7 +34,7 @@ public class JatkuvaSijoitteluDAOImpl implements JatkuvaSijoitteluDAO {
   }
 
   @Override
-  public SijoitteluDto hae(String hakuOid) {
+  public JatkuvaSijoittelu hae(String hakuOid) {
     try {
       return jdbcTemplate.queryForObject("SELECT haku_oid, jatkuva_paalla, viimeksi_ajettu, aloitus, ajotiheys FROM jatkuvat WHERE haku_oid=?",
           sijoitteluDtoRowMapper, hakuOid);
@@ -49,7 +46,7 @@ public class JatkuvaSijoitteluDAOImpl implements JatkuvaSijoitteluDAO {
   }
 
   @Override
-  public Collection<SijoitteluDto> hae() {
+  public Collection<JatkuvaSijoittelu> hae() {
     try {
       return jdbcTemplate.query("SELECT haku_oid, jatkuva_paalla, viimeksi_ajettu, aloitus, ajotiheys FROM jatkuvat", sijoitteluDtoRowMapper);
     } catch (Exception e) {
@@ -58,7 +55,7 @@ public class JatkuvaSijoitteluDAOImpl implements JatkuvaSijoitteluDAO {
   }
 
   @Override
-  public SijoitteluDto merkkaaSijoittelunAjossaTila(String hakuOid, boolean tila) {
+  public JatkuvaSijoittelu merkkaaSijoittelunAjossaTila(String hakuOid, boolean tila) {
     try {
       this.jdbcTemplate.update(
           "INSERT INTO jatkuvat " +
@@ -73,7 +70,7 @@ public class JatkuvaSijoitteluDAOImpl implements JatkuvaSijoitteluDAO {
   }
 
   @Override
-  public SijoitteluDto merkkaaSijoittelunAjetuksi(String hakuOid) {
+  public JatkuvaSijoittelu merkkaaSijoittelunAjetuksi(String hakuOid) {
     try {
       String now = new Date().toString();
       this.jdbcTemplate.update("INSERT INTO jatkuvat " +
