@@ -1,4 +1,4 @@
-package fi.vm.sade.sijoittelu.jatkuva.sijoittelu.dto;
+package fi.vm.sade.sijoittelu.jatkuva.dto;
 
 import fi.vm.sade.sijoittelu.jatkuva.util.Formatter;
 import java.util.Date;

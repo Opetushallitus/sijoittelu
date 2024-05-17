@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import static fi.vm.sade.sijoittelu.laskenta.configuration.SijoitteluServiceConfiguration.CALLER_ID;
+import static fi.vm.sade.sijoittelu.configuration.SijoitteluServiceConfiguration.CALLER_ID;
 import static fi.vm.sade.valinta.sharedutils.http.HttpResource.CSRF_VALUE;
 
 @Configuration

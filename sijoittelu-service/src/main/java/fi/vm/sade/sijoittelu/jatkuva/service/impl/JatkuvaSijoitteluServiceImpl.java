@@ -1,11 +1,12 @@
-package fi.vm.sade.sijoittelu.jatkuva.sijoittelu.route.impl;
+package fi.vm.sade.sijoittelu.jatkuva.service.impl;
 
 import fi.vm.sade.sijoittelu.jatkuva.dao.JatkuvaSijoitteluDAO;
-import fi.vm.sade.sijoittelu.jatkuva.dao.dto.SijoitteluDto;
-import fi.vm.sade.sijoittelu.jatkuva.sijoittelu.dto.AjastettuSijoitteluInfo;
+import fi.vm.sade.sijoittelu.jatkuva.dto.JatkuvaSijoittelu;
+import fi.vm.sade.sijoittelu.jatkuva.dto.AjastettuSijoitteluInfo;
+import fi.vm.sade.sijoittelu.jatkuva.service.JatkuvaSijoitteluService;
 import fi.vm.sade.sijoittelu.jatkuva.util.Formatter;
-import fi.vm.sade.sijoittelu.jatkuva.sijoittelu.job.AjastettuSijoitteluJob;
-import fi.vm.sade.sijoittelu.jatkuva.sijoittelu.komponentti.JatkuvaSijoittelu;
+import fi.vm.sade.sijoittelu.jatkuva.job.AjastettuSijoitteluJob;
+
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
@@ -21,8 +22,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 
-public class JatkuvaSijoitteluRouteImpl implements JatkuvaSijoittelu {
-  private static final Logger LOG = LoggerFactory.getLogger(JatkuvaSijoitteluRouteImpl.class);
+public class JatkuvaSijoitteluServiceImpl implements JatkuvaSijoitteluService {
+  private static final Logger LOG = LoggerFactory.getLogger(JatkuvaSijoitteluServiceImpl.class);
 
   private final JatkuvaSijoitteluDAO sijoittelunSeurantaResource;
   private final int VAKIO_AJOTIHEYS = 24;
@@ -38,7 +39,7 @@ public class JatkuvaSijoitteluRouteImpl implements JatkuvaSijoittelu {
           new TimerTask() {
             public void run() {
               try {
-                JatkuvaSijoitteluRouteImpl.this.teeJatkuvaSijoittelu();
+                JatkuvaSijoitteluServiceImpl.this.teeJatkuvaSijoittelu();
               } catch (Exception e) {
                 LOG.error("Exception in JatkuvaSijoitteluTimerTask", e);
               }
@@ -52,7 +53,7 @@ public class JatkuvaSijoitteluRouteImpl implements JatkuvaSijoittelu {
   }
 
   @Autowired
-  public JatkuvaSijoitteluRouteImpl(
+  public JatkuvaSijoitteluServiceImpl(
       @Value("${jatkuvasijoittelu.autostart:true}") boolean autoStartup,
       @Value("${valintalaskentakoostepalvelu.jatkuvasijoittelu.intervalMinutes:5}")
           long jatkuvaSijoitteluPollIntervalInMinutes,
@@ -73,7 +74,7 @@ public class JatkuvaSijoitteluRouteImpl implements JatkuvaSijoittelu {
   @Override
   public void teeJatkuvaSijoittelu() {
     LOG.info("Sijoitteluiden ajastin kaynnistyi");
-    Map<String, SijoitteluDto> aktiivisetSijoittelut = getAktiivisetSijoittelut();
+    Map<String, JatkuvaSijoittelu> aktiivisetSijoittelut = getAktiivisetSijoittelut();
     LOG.info(
         "Sijoitteluiden ajastin sai seurannalta {} aktiivista sijoittelua.",
         aktiivisetSijoittelut.size());
@@ -99,7 +100,7 @@ public class JatkuvaSijoitteluRouteImpl implements JatkuvaSijoittelu {
     }
   }
 
-  private void laitaAjoon(Map<String, SijoitteluDto> aktiivisetSijoittelut) {
+  private void laitaAjoon(Map<String, JatkuvaSijoittelu> aktiivisetSijoittelut) {
     aktiivisetSijoittelut.forEach(
         (hakuOid, sijoitteluDto) -> {
           if (sijoitteluDto.getAloitusajankohta() == null || sijoitteluDto.getAjotiheys() == null) {
@@ -177,7 +178,7 @@ public class JatkuvaSijoitteluRouteImpl implements JatkuvaSijoittelu {
         });
   }
 
-  private void poistaSammutetut(Map<String, SijoitteluDto> aktiivisetSijoittelut) {
+  private void poistaSammutetut(Map<String, JatkuvaSijoittelu> aktiivisetSijoittelut) {
     try {
       sijoitteluScheduler
           .getJobGroupNames()
@@ -201,7 +202,7 @@ public class JatkuvaSijoitteluRouteImpl implements JatkuvaSijoittelu {
     }
   }
 
-  private Map<String, SijoitteluDto> getAktiivisetSijoittelut() {
+  private Map<String, JatkuvaSijoittelu> getAktiivisetSijoittelut() {
     try {
       return _getAktiivisetSijoittelut();
     } catch (NotAuthorizedException e) {
@@ -210,28 +211,28 @@ public class JatkuvaSijoitteluRouteImpl implements JatkuvaSijoittelu {
     }
   }
 
-  private Map<String, SijoitteluDto> _getAktiivisetSijoittelut() {
+  private Map<String, JatkuvaSijoittelu> _getAktiivisetSijoittelut() {
     return sijoittelunSeurantaResource.hae().stream()
         .filter(Objects::nonNull)
-        .filter(SijoitteluDto::isAjossa)
+        .filter(JatkuvaSijoittelu::isAjossa)
         .filter(
             sijoitteluDto -> {
               DateTime aloitusajankohta = getAloitusajankohta(sijoitteluDto);
               return aktivoidaanko(aloitusajankohta);
             })
-        .collect(Collectors.toMap(SijoitteluDto::getHakuOid, s -> s));
+        .collect(Collectors.toMap(JatkuvaSijoittelu::getHakuOid, s -> s));
   }
 
-  public int getAjotiheys(SijoitteluDto sijoitteluDto) {
-    return Optional.ofNullable(sijoitteluDto.getAjotiheys()).orElse(VAKIO_AJOTIHEYS);
+  public int getAjotiheys(JatkuvaSijoittelu jatkuvaSijoittelu) {
+    return Optional.ofNullable(jatkuvaSijoittelu.getAjotiheys()).orElse(VAKIO_AJOTIHEYS);
   }
 
   public boolean aktivoidaanko(DateTime aloitusAika) {
     return aloitusAika.isBefore(DateTime.now().plusHours(1));
   }
 
-  private DateTime getAloitusajankohta(SijoitteluDto sijoitteluDto) {
+  private DateTime getAloitusajankohta(JatkuvaSijoittelu jatkuvaSijoittelu) {
     return new DateTime(
-        Optional.ofNullable(sijoitteluDto.getAloitusajankohta()).orElse(new Date()));
+        Optional.ofNullable(jatkuvaSijoittelu.getAloitusajankohta()).orElse(new Date()));
   }
 }

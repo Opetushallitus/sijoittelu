@@ -13,7 +13,7 @@ import fi.vm.sade.service.valintaperusteet.dto.HakijaryhmaValintatapajonoDTO;
 import fi.vm.sade.service.valintaperusteet.dto.ValintatapajonoCreateDTO;
 import fi.vm.sade.service.valintaperusteet.dto.ValintatapajonoDTO;
 import fi.vm.sade.sijoittelu.domain.SijoitteluajonTila;
-import fi.vm.sade.sijoittelu.laskenta.configuration.SijoitteluServiceConfiguration;
+import fi.vm.sade.sijoittelu.configuration.SijoitteluServiceConfiguration;
 import fi.vm.sade.sijoittelu.laskenta.email.EmailService;
 import fi.vm.sade.sijoittelu.laskenta.service.it.Haku;
 import fi.vm.sade.sijoittelu.laskenta.service.it.TarjontaIntegrationService;

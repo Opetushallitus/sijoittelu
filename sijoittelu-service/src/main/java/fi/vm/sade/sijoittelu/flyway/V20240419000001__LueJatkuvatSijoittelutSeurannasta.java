@@ -1,7 +1,7 @@
 package fi.vm.sade.sijoittelu.flyway;
 
 import com.google.gson.reflect.TypeToken;
-import fi.vm.sade.sijoittelu.jatkuva.dao.dto.SijoitteluDto;
+import fi.vm.sade.sijoittelu.jatkuva.dto.JatkuvaSijoittelu;
 import fi.vm.sade.sijoittelu.jatkuva.external.resource.viestintapalvelu.RestCasClient;
 import fi.vm.sade.sijoittelu.laskenta.util.UrlProperties;
 import org.flywaydb.core.api.migration.BaseJavaMigration;
@@ -34,13 +34,13 @@ public class V20240419000001__LueJatkuvatSijoittelutSeurannasta extends BaseJava
     isTest = test;
   }
 
-  public Collection<SijoitteluDto> hae() {
+  public Collection<JatkuvaSijoittelu> hae() {
     try {
       return seurantaCasClient
           .get(
               urlProperties.url("valintalaskentakoostepalvelu.seuranta.rest.url")
                   + "/sijoittelunseuranta/hae",
-              new TypeToken<Collection<SijoitteluDto>>() {},
+              new TypeToken<Collection<JatkuvaSijoittelu>>() {},
               Collections.emptyMap(),
               10 * 60 * 1000)
           .get();
@@ -56,17 +56,17 @@ public class V20240419000001__LueJatkuvatSijoittelutSeurannasta extends BaseJava
     } else {
       JdbcTemplate template = new JdbcTemplate();
       template.setDataSource(new SingleConnectionDataSource(context.getConnection(), true));
-      for(SijoitteluDto sijoitteluDto : this.hae()) {
-        if(OID_PATTERN.matcher(sijoitteluDto.getHakuOid()).matches()) {
+      for(JatkuvaSijoittelu jatkuvaSijoittelu : this.hae()) {
+        if(OID_PATTERN.matcher(jatkuvaSijoittelu.getHakuOid()).matches()) {
           template.update(
               "INSERT INTO jatkuvat " +
                   "(haku_oid, jatkuva_paalla, viimeksi_ajettu, aloitus, ajotiheys) " +
                   "VALUES (?, ?, ?::timestamptz, ?::timestamptz, ?)",
-              sijoitteluDto.getHakuOid(),
-              sijoitteluDto.isAjossa(),
-              sijoitteluDto.getViimeksiAjettu(),
-              sijoitteluDto.getAloitusajankohta(),
-              sijoitteluDto.getAjotiheys());
+              jatkuvaSijoittelu.getHakuOid(),
+              jatkuvaSijoittelu.isAjossa(),
+              jatkuvaSijoittelu.getViimeksiAjettu(),
+              jatkuvaSijoittelu.getAloitusajankohta(),
+              jatkuvaSijoittelu.getAjotiheys());
         }
       }
     }

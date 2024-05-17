@@ -1,4 +1,4 @@
-package fi.vm.sade.sijoittelu.laskenta.configuration;
+package fi.vm.sade.sijoittelu.configuration;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;

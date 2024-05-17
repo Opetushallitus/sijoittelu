@@ -1,19 +1,19 @@
-package fi.vm.sade.sijoittelu.jatkuva.sijoittelu.resource;
+package fi.vm.sade.sijoittelu.jatkuva.resource;
 
 import com.google.gson.Gson;
 import fi.vm.sade.auditlog.Audit;
 import fi.vm.sade.auditlog.Changes;
 import fi.vm.sade.sijoittelu.jatkuva.dao.JatkuvaSijoitteluDAO;
-import fi.vm.sade.sijoittelu.jatkuva.dao.dto.SijoitteluDto;
+import fi.vm.sade.sijoittelu.jatkuva.dto.JatkuvaSijoittelu;
 import fi.vm.sade.sijoittelu.jatkuva.external.resource.tarjonta.TarjontaAsyncResource;
-import fi.vm.sade.sijoittelu.jatkuva.sijoittelu.dto.AjastettuSijoitteluInfo;
-import fi.vm.sade.sijoittelu.jatkuva.sijoittelu.dto.Sijoittelu;
+import fi.vm.sade.sijoittelu.jatkuva.dto.AjastettuSijoitteluInfo;
+import fi.vm.sade.sijoittelu.jatkuva.dto.Sijoittelu;
+import fi.vm.sade.sijoittelu.jatkuva.service.JatkuvaSijoitteluService;
 import fi.vm.sade.sijoittelu.jatkuva.util.SecurityUtil;
 import fi.vm.sade.sijoittelu.jatkuva.parametrit.service.HakuParametritService;
 import fi.vm.sade.sijoittelu.jatkuva.security.AuthorityCheckService;
-import fi.vm.sade.sijoittelu.jatkuva.sijoittelu.komponentti.JatkuvaSijoittelu;
-import fi.vm.sade.sijoittelu.jatkuva.sijoittelu.route.SijoitteluAktivointiRoute;
-import fi.vm.sade.sijoittelu.jatkuva.sijoittelu.route.SijoittelunValvonta;
+import fi.vm.sade.sijoittelu.jatkuva.service.SijoittelunAktivointiService;
+import fi.vm.sade.sijoittelu.jatkuva.service.SijoittelunValvontaService;
 import fi.vm.sade.valinta.sharedutils.AuditLog;
 import fi.vm.sade.valinta.sharedutils.ValintaResource;
 import fi.vm.sade.valinta.sharedutils.ValintaperusteetOperation;
@@ -40,7 +40,6 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.async.DeferredResult;
 
-/** @Autowired(required = false) Camel-reitit valinnaisiksi poisrefaktorointia odotellessa. */
 @RestController("SijoitteluAktivointiResource")
 @RequestMapping("/resources/koostesijoittelu")
 @PreAuthorize("isAuthenticated()")
@@ -55,16 +54,16 @@ public class SijoitteluAktivointiResource {
   public static final String ANY_CRUD = "hasAnyRole('ROLE_APP_SIJOITTELU_CRUD')";
   public static final String OPH_CRUD_ROLE = "ROLE_APP_SIJOITTELU_CRUD_1.2.246.562.10.00000000001";
 
-  @Autowired private SijoitteluAktivointiRoute sijoitteluAktivointiProxy;
+  @Autowired private SijoittelunAktivointiService sijoitteluAktivointiProxy;
 
   @Autowired(required = false)
-  private JatkuvaSijoittelu jatkuvaSijoittelu;
+  private JatkuvaSijoitteluService jatkuvaSijoittelu;
 
   @Autowired private HakuParametritService hakuParametritService;
 
   @Autowired private JatkuvaSijoitteluDAO sijoittelunSeurantaResource;
 
-  @Autowired private SijoittelunValvonta sijoittelunValvonta;
+  @Autowired private SijoittelunValvontaService sijoittelunValvonta;
 
   @Autowired private TarjontaAsyncResource tarjontaResource;
 
@@ -149,8 +148,8 @@ public class SijoitteluAktivointiResource {
     if (StringUtils.isBlank(hakuOid)) {
       return "get parameter 'hakuOid' required";
     } else {
-      SijoitteluDto sijoitteluDto = sijoittelunSeurantaResource.hae(hakuOid);
-      if (sijoitteluDto.getAloitusajankohta() == null || sijoitteluDto.getAjotiheys() == null) {
+      JatkuvaSijoittelu jatkuvaSijoittelu = sijoittelunSeurantaResource.hae(hakuOid);
+      if (jatkuvaSijoittelu.getAloitusajankohta() == null || jatkuvaSijoittelu.getAjotiheys() == null) {
         LOG.warn(
             "Haulta {} puuttuu jatkuvan sijoittelun parametreja. Ei aktivoida jatkuvaa sijoittelua.");
         return "ei aktivoitu";
@@ -201,7 +200,7 @@ public class SijoitteluAktivointiResource {
             responseCode = "OK",
             content = @Content(schema = @Schema(implementation = List.class)))
       })
-  public Collection<SijoitteluDto> aktiivisetSijoittelut() {
+  public Collection<JatkuvaSijoittelu> aktiivisetSijoittelut() {
     return sijoittelunSeurantaResource.hae();
   }
 
@@ -269,8 +268,8 @@ public class SijoitteluAktivointiResource {
     if (StringUtils.isBlank(hakuOid)) {
       return null;
     } else {
-      SijoitteluDto sijoitteluDto = sijoittelunSeurantaResource.hae(hakuOid);
-      return new Gson().toJson(sijoitteluDto);
+      JatkuvaSijoittelu jatkuvaSijoittelu = sijoittelunSeurantaResource.hae(hakuOid);
+      return new Gson().toJson(jatkuvaSijoittelu);
     }
   }
 

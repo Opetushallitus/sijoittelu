@@ -1,12 +1,12 @@
-package fi.vm.sade.sijoittelu.jatkuva.sijoittelu.route.impl;
+package fi.vm.sade.sijoittelu.jatkuva.service.impl;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.RemovalListener;
-import fi.vm.sade.sijoittelu.jatkuva.sijoittelu.dto.Sijoittelu;
+import fi.vm.sade.sijoittelu.jatkuva.dto.Sijoittelu;
 import fi.vm.sade.sijoittelu.laskenta.service.business.ToteutaSijoitteluService;
-import fi.vm.sade.sijoittelu.jatkuva.sijoittelu.route.SijoitteluAktivointiRoute;
-import fi.vm.sade.sijoittelu.jatkuva.sijoittelu.route.SijoittelunValvonta;
+import fi.vm.sade.sijoittelu.jatkuva.service.SijoittelunAktivointiService;
+import fi.vm.sade.sijoittelu.jatkuva.service.SijoittelunValvontaService;
 import java.util.concurrent.TimeUnit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,7 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-public class SijoitteluRouteImpl implements SijoittelunValvonta, SijoitteluAktivointiRoute {
+public class SijoitteluRouteImpl implements SijoittelunValvontaService, SijoittelunAktivointiService {
 
   private static final Logger LOG = LoggerFactory.getLogger(SijoitteluRouteImpl.class);
   private final ToteutaSijoitteluService toteutaSijoitteluService;
