@@ -1,4 +1,4 @@
-package fi.vm.sade.sijoittelu.laskenta.configuration;
+package fi.vm.sade.sijoittelu.configuration;
 
 import fi.vm.sade.sijoittelu.flyway.V20240419000001__LueJatkuvatSijoittelutSeurannasta;
 import fi.vm.sade.sijoittelu.jatkuva.external.resource.viestintapalvelu.RestCasClient;

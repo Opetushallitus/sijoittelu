@@ -1,4 +1,4 @@
-package fi.vm.sade.sijoittelu.laskenta.configuration;
+package fi.vm.sade.sijoittelu.configuration;
 
 import fi.vm.sade.java_utils.security.OpintopolkuCasAuthenticationFilter;
 import fi.vm.sade.javautils.kayttooikeusclient.OphUserDetailsServiceImpl;

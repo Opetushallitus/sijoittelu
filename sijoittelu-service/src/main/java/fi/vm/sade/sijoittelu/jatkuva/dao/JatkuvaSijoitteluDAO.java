@@ -1,17 +1,17 @@
 package fi.vm.sade.sijoittelu.jatkuva.dao;
 
-import fi.vm.sade.sijoittelu.jatkuva.dao.dto.SijoitteluDto;
+import fi.vm.sade.sijoittelu.jatkuva.dto.JatkuvaSijoittelu;
 import java.util.Collection;
 
 public interface JatkuvaSijoitteluDAO {
 
-  SijoitteluDto hae(String hakuOid);
+  JatkuvaSijoittelu hae(String hakuOid);
 
-  Collection<SijoitteluDto> hae();
+  Collection<JatkuvaSijoittelu> hae();
 
-  SijoitteluDto merkkaaSijoittelunAjossaTila(String hakuOid, boolean tila);
+  JatkuvaSijoittelu merkkaaSijoittelunAjossaTila(String hakuOid, boolean tila);
 
-  SijoitteluDto merkkaaSijoittelunAjetuksi(String hakuOid);
+  JatkuvaSijoittelu merkkaaSijoittelunAjetuksi(String hakuOid);
 
   void poistaSijoittelu(String hakuOid);
 

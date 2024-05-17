@@ -1,4 +1,4 @@
-package fi.vm.sade.sijoittelu.laskenta.configuration;
+package fi.vm.sade.sijoittelu.configuration;
 
 import ch.qos.logback.access.tomcat.LogbackValve;
 import org.springframework.beans.factory.annotation.Value;

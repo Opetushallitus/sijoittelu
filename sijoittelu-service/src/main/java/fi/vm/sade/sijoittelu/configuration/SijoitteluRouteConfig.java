@@ -1,7 +1,7 @@
-package fi.vm.sade.sijoittelu.jatkuva.sijoittelu.route.impl;
+package fi.vm.sade.sijoittelu.configuration;
 
 import fi.vm.sade.sijoittelu.jatkuva.dao.JatkuvaSijoitteluDAO;
-import fi.vm.sade.sijoittelu.laskenta.configuration.FlywayConfiguration;
+import fi.vm.sade.sijoittelu.jatkuva.service.impl.JatkuvaSijoitteluServiceImpl;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -13,7 +13,7 @@ import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 public class SijoitteluRouteConfig {
 
   @Bean
-  public JatkuvaSijoitteluRouteImpl getJatkuvaSijoitteluRouteImpl(
+  public JatkuvaSijoitteluServiceImpl getJatkuvaSijoitteluRouteImpl(
       // riippuvuus Flyway-migraatioihin jotta tätä beania ei luoda ennen kuin jatkuvien sijoitteluiden migraatio
       // seurantapalvelusta ajettu. Tämän voin refaktoroida pois kun migraatio onnistuneesti suoritettu.
       FlywayConfiguration.FlywayMigrationDone flywayMigrationDone,
@@ -22,7 +22,7 @@ public class SijoitteluRouteConfig {
           long jatkuvaSijoitteluPollIntervalInMinutes,
       JatkuvaSijoitteluDAO jatkuvaSijoitteluDAO,
       SchedulerFactoryBean schedulerFactoryBean) {
-    return new JatkuvaSijoitteluRouteImpl(
+    return new JatkuvaSijoitteluServiceImpl(
         autoStartup,
         jatkuvaSijoitteluPollIntervalInMinutes,
         jatkuvaSijoitteluDAO,
