@@ -114,7 +114,9 @@ public class JatkuvaSijoitteluServiceImpl implements JatkuvaSijoitteluService {
                 sijoitteluDto.getAjotiheys());
           } else {
             try {
-              Date asetusAjankohta = getAloitusajankohta(sijoitteluDto).toDate();
+              // Käytetään minuutin tarkkuutta aloitusajankohdassa jotta ensimmäinen cron ei aikaisemmin
+              // kuin startAt
+              Date asetusAjankohta = getAloitusajankohta(sijoitteluDto).withSecondOfMinute(0).toDate();
               Integer intervalli = getAjotiheys(sijoitteluDto);
 
               String jobName =
