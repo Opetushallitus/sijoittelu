@@ -1,11 +1,11 @@
 package fi.vm.sade.sijoittelu.jatkuva.sijoittelu.route.impl;
 
 import fi.vm.sade.sijoittelu.jatkuva.external.resource.seuranta.SijoitteluSeurantaResource;
+import fi.vm.sade.sijoittelu.jatkuva.external.resource.seuranta.dto.SijoitteluDto;
 import fi.vm.sade.sijoittelu.jatkuva.sijoittelu.dto.AjastettuSijoitteluInfo;
 import fi.vm.sade.sijoittelu.jatkuva.util.Formatter;
 import fi.vm.sade.sijoittelu.jatkuva.sijoittelu.job.AjastettuSijoitteluJob;
 import fi.vm.sade.sijoittelu.jatkuva.sijoittelu.komponentti.JatkuvaSijoittelu;
-import fi.vm.sade.valinta.seuranta.sijoittelu.dto.SijoitteluDto;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;

@@ -2,9 +2,9 @@ package fi.vm.sade.sijoittelu.jatkuva.external.resource.seuranta.impl;
 
 import com.google.gson.reflect.TypeToken;
 import fi.vm.sade.sijoittelu.jatkuva.external.resource.seuranta.SijoitteluSeurantaResource;
+import fi.vm.sade.sijoittelu.jatkuva.external.resource.seuranta.dto.SijoitteluDto;
 import fi.vm.sade.sijoittelu.jatkuva.external.resource.viestintapalvelu.RestCasClient;
 import fi.vm.sade.sijoittelu.laskenta.util.UrlProperties;
-import fi.vm.sade.valinta.seuranta.sijoittelu.dto.SijoitteluDto;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Optional;

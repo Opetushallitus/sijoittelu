@@ -1,6 +1,7 @@
 package fi.vm.sade.sijoittelu.jatkuva.external.resource.seuranta;
 
-import fi.vm.sade.valinta.seuranta.sijoittelu.dto.SijoitteluDto;
+import fi.vm.sade.sijoittelu.jatkuva.external.resource.seuranta.dto.SijoitteluDto;
+
 import java.util.Collection;
 
 public interface SijoitteluSeurantaResource {
