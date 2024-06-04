@@ -24,7 +24,7 @@ public class DevApp {
         System.setProperty("server.port", "8443");
 
         // cas-configuraatio
-        System.setProperty("cas-service.service", "https://localhost:8443/sijoittelu-service");
+        System.setProperty("cas-service.service", String.format("https://virkailija.%sopintopolku.fi/sijoittelu-service", ENVIRONMENT));
         System.setProperty("cas-service.sendRenew", "false");
         System.setProperty("cas-service.key", "sijoittelu-service");
         System.setProperty("web.url.cas", String.format("https://virkailija.%sopintopolku.fi/cas", ENVIRONMENT));
@@ -34,14 +34,16 @@ public class DevApp {
         System.setProperty("valintarekisteri.db.user", "oph");
         System.setProperty("valintarekisteri.db.password", "oph");
 
+        System.setProperty("sijoittelu.valintalaskenta.postgresql.url", "jdbc:postgresql://localhost:5434/valintalaskenta");
+        System.setProperty("sijoittelu.valintalaskenta.postgresql.driver", "");
         System.setProperty("sijoittelu.valintalaskenta.postgresql.maxlifetimemillis", "60000");
         System.setProperty("sijoittelu.valintalaskenta.postgresql.readonly", "true");
 
         // ulkoiset palvelut
         System.setProperty("host.virkailija", String.format("virkailija.%sopintopolku.fi", ENVIRONMENT));
-        System.setProperty("kayttooikeus-service.userDetails.byUsername", String.format("https://virkailija.%sopintopolku.fi/kayttooikeus-service/userDetails/$1", ENVIRONMENT));
+        System.setProperty("kayttooikeus-service.userDetails.byUsername", String.format("http://alb.%sopintopolku.fi:8888/kayttooikeus-service/userDetails/$1", ENVIRONMENT));
         System.setProperty("organisaatio-service.organisaatio.hae.oid", "${url-virkailija}/organisaatio-service/api/hierarkia/hae?aktiiviset=true&suunnitellut=true&lakkautetut=true&oid=$1");
-        System.setProperty("valintalaskentakoostepalvelu.valintatulosservice.rest.url", String.format("https://virkailija.%sopintopolku.fi/valinta-tulos-service", ENVIRONMENT));
+        System.setProperty("valintalaskentakoostepalvelu.valintatulosservice.rest.url", String.format("http://alb.%sopintopolku.fi:8888/valinta-tulos-service", ENVIRONMENT));
         System.setProperty("valintalaskentakoostepalvelu.parametriservice.rest.url", String.format("https://virkailija.%sopintopolku.fi/ohjausparametrit-service/api", ENVIRONMENT));
         System.setProperty("valintalaskentakoostepalvelu.tarjonta.rest.url", "https://${host.virkailija}/tarjonta-service/rest");
         System.setProperty("valintarekisteri.tarjonta-service.url", String.format("https://virkailija.%sopintopolku.fi/tarjonta-service", ENVIRONMENT));
@@ -62,7 +64,9 @@ public class DevApp {
         System.setProperty("valintarekisteri.blaze.request-timeout", "60");
 
         System.setProperty("spring.profiles.active", "dev");
-        //System.setProperty("logging.level.root", "debug");
+
+        // uusia seurantaa varten
+        System.setProperty("valintalaskentakoostepalvelu.seuranta.rest.url", "https://${host.virkailija}/seuranta-service/resources");
 
         TempDockerDB.start();
         System.setProperty("spring-boot.run.jvmArguments", "-Xms2048m -Xmx4096m");
