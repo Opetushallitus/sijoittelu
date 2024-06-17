@@ -7,8 +7,7 @@ import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonSyntaxException;
 import fi.vm.sade.javautils.nio.cas.CasClient;
 import fi.vm.sade.service.valintaperusteet.dto.ValintatapajonoDTO;
-import fi.vm.sade.sijoittelu.laskenta.configuration.SijoitteluServiceConfiguration;
-import fi.vm.sade.sijoittelu.laskenta.external.resource.HttpClients;
+import fi.vm.sade.sijoittelu.configuration.SijoitteluServiceConfiguration;
 import fi.vm.sade.sijoittelu.laskenta.service.business.SijoitteluBusinessService;
 import fi.vm.sade.sijoittelu.laskenta.util.UrlProperties;
 import fi.vm.sade.sijoittelu.tulos.dto.ValisijoitteluDTO;
@@ -31,7 +30,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
