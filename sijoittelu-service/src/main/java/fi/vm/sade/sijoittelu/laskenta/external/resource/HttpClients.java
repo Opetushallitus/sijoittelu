@@ -15,7 +15,6 @@ import static fi.vm.sade.valinta.sharedutils.http.HttpResource.CSRF_VALUE;
 @Configuration
 public class HttpClients {
     @Bean(name = "KoutaInternaCasClient")
-    @Autowired
     public CasClient getKoutaInternalCasClient(
             UrlProperties urlProperties,
             @Value("${sijoittelu-service.kouta-internal.username}") String username,
@@ -36,7 +35,6 @@ public class HttpClients {
     }
 
     @Bean(name = "SijoitteluCasClient")
-    @Autowired
     public CasClient getSijoitteluCasClient(
             UrlProperties urlProperties,
             @Value("${sijoittelu-service.username.to.valintaperusteet}") String username,

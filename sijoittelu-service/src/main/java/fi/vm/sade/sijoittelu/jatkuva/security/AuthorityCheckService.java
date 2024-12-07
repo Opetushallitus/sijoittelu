@@ -8,11 +8,11 @@ import fi.vm.sade.sijoittelu.jatkuva.util.SecurityUtil;
 import io.reactivex.Observable;
 import java.util.Collection;
 import java.util.Set;
-import javax.ws.rs.ForbiddenException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Service;
 
@@ -43,7 +43,7 @@ public class AuthorityCheckService {
           String.format(
               "Käyttäjällä ei oikeutta haun %s tarjoajaan tai sen yläorganisaatioihin.", hakuOid);
       LOG.error(msg);
-      throw new ForbiddenException(msg);
+      throw new AccessDeniedException(msg);
     }
   }
 
@@ -72,7 +72,7 @@ public class AuthorityCheckService {
               "Organisaatioiden %s parentOids -haku epäonnistui",
               String.join(", ", organisaatioOids));
       LOG.error(msg, e);
-      throw new ForbiddenException(msg);
+      throw new AccessDeniedException(msg);
     }
 
     return false;
