@@ -26,7 +26,7 @@
             <artifactId>sijoittelu-tulos-api</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <!-- Jersey, REST, Json -->
+        <!-- Json -->
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-core</artifactId>
@@ -34,10 +34,6 @@
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-annotations</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
         </dependency>
         <dependency>
             <groupId>fi.vm.sade.java-utils</groupId>
