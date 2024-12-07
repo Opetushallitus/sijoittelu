@@ -47,6 +47,10 @@
 			<artifactId>spring-boot-starter-jdbc</artifactId>
 		</dependency>
 		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-logging</artifactId>
+		</dependency>
+		<dependency>
 			<groupId>org.springdoc</groupId>
 			<artifactId>springdoc-openapi-ui</artifactId>
 		</dependency>
@@ -89,12 +93,16 @@
 					<groupId>fi.vm.sade.valintaperusteet</groupId>
 					<artifactId>valintaperusteet-api</artifactId>
 				</exclusion>
+				<!-- Tämä tarvitaan kunnes valintalaskenta-tulos-service.jar:sta tulee uusi versio jossa tämä on päivitetty -->
+				<exclusion>
+					<groupId>fi.vm.sade.valintaperusteet</groupId>
+					<artifactId>sharedutils</artifactId>
+				</exclusion>
 			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>fi.vm.sade.valintaperusteet</groupId>
 			<artifactId>valintaperusteet-api</artifactId>
-			<version>${valintaperusteet-api.version}</version>
 		</dependency>
 
 		<!-- database -->
@@ -199,11 +207,17 @@
 		</dependency>
 		<dependency>
 			<groupId>ch.qos.logback</groupId>
-			<artifactId>logback-access</artifactId>
+			<artifactId>logback-classic</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>ch.qos.logback</groupId>
-			<artifactId>logback-classic</artifactId>
+			<groupId>ch.qos.logback.access</groupId>
+			<artifactId>tomcat</artifactId>
+		</dependency>
+
+		<!-- Tämä tarvitaan kunnes valintalaskenta-tulos-service.jar:sta tulee uusi versio jossa tämä on päivitetty -->
+		<dependency>
+			<groupId>fi.vm.sade.valintaperusteet</groupId>
+			<artifactId>sharedutils</artifactId>
 		</dependency>
 
 		<!-- Tests -->
