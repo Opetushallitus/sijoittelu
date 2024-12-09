@@ -29,6 +29,7 @@ import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.Duration;
 import java.util.*;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
@@ -93,8 +94,8 @@ public class ErillisSijoitteluResource {
                 .addHeader("Accept", "application/json")
                 .addHeader("Content-type", "application/json")
                 .addHeader("Caller-Id", SijoitteluServiceConfiguration.CALLER_ID)
-                .setRequestTimeout(120000)
-                .setReadTimeout(120000)
+                .setRequestTimeout(Duration.ofMillis(120000))
+                .setReadTimeout(Duration.ofMillis(120000))
                 .build();
 
         Map<String, List<ValintatapajonoDTO>> valintaperusteet = null;

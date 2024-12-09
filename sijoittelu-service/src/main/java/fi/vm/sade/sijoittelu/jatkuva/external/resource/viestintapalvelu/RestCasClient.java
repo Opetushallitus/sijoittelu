@@ -6,6 +6,8 @@ import fi.vm.sade.javautils.nio.cas.CasClient;
 import fi.vm.sade.javautils.nio.cas.CasClientBuilder;
 import fi.vm.sade.javautils.nio.cas.CasConfig;
 import fi.vm.sade.valinta.sharedutils.http.DateDeserializer;
+
+import java.time.Duration;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
@@ -111,7 +113,7 @@ public class RestCasClient {
         new RequestBuilder()
             .setUrl(url)
             .setMethod(method)
-            .setRequestTimeout(timeout)
+            .setRequestTimeout(Duration.ofMillis(timeout))
             .addHeader("Caller-Id", CALLER_ID)
             .addHeader("CSRF", CSRF_VALUE)
             .addHeader("Cookie", String.format("CSRF=%s;", CSRF_VALUE));
