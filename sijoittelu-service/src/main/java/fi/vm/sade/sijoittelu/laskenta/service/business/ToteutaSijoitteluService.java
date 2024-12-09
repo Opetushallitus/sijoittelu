@@ -34,6 +34,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -253,8 +254,8 @@ public class ToteutaSijoitteluService {
                 .addHeader("Accept", "application/json")
                 .addHeader("Content-type", "application/json")
                 .addHeader("Caller-Id", SijoitteluServiceConfiguration.CALLER_ID)
-                .setRequestTimeout(120000)
-                .setReadTimeout(120000)
+                .setRequestTimeout(Duration.ofMillis(120000))
+                .setReadTimeout(Duration.ofMillis(120000))
                 .build();
             try {
                 Response hakuResponse = sijoitteluCasClient.executeAndRetryWithCleanSessionOnStatusCodesBlocking(hakuRequest, Set.of(302, 401, 403));
@@ -286,8 +287,8 @@ public class ToteutaSijoitteluService {
                     .addHeader("Accept", "application/json")
                     .addHeader("Content-type", "application/json")
                     .addHeader("Caller-Id", SijoitteluServiceConfiguration.CALLER_ID)
-                    .setRequestTimeout(120000)
-                    .setReadTimeout(120000)
+                    .setRequestTimeout(Duration.ofMillis(120000))
+                    .setReadTimeout(Duration.ofMillis(120000))
                     .build();
                 //Response hakijaryhmaResponse = sijoitteluCasClient.executeWithServiceTicketBlocking(hakijaryhmaRequest);
                 try {
@@ -341,8 +342,8 @@ public class ToteutaSijoitteluService {
                         .addHeader("Accept", "application/json")
                         .addHeader("Content-type", "application/json")
                         .addHeader("Caller-Id", SijoitteluServiceConfiguration.CALLER_ID)
-                        .setRequestTimeout(120000)
-                        .setReadTimeout(120000)
+                        .setRequestTimeout(Duration.ofMillis(120000))
+                        .setReadTimeout(Duration.ofMillis(120000))
                         .build();
                     Response valintatapajonoResponse = sijoitteluCasClient.executeAndRetryWithCleanSessionOnStatusCodesBlocking(valintatapajonoRequest, Set.of(302, 401, 403));
 
