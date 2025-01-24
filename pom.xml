@@ -316,7 +316,7 @@
       <dependency>
         <groupId>ch.qos.logback</groupId>
         <artifactId>logback-classic</artifactId>
-        <version>1.2.13</version>
+        <version>1.5.13</version>
       </dependency>
 
       <!-- Lukitaan transitiivisten riippuvuuksien versioita jotta enforcer-plugin ei valita -->
@@ -624,8 +624,7 @@ vcsRevision=${revision}
 buildTtime=${maven.build.timestamp}
 ]]>
                             </echo>
-                            <loadfile property="buildversiontxt"
-                                      srcFile="${project.build.outputDirectory}/static/buildversion.txt"/>
+                            <loadfile property="buildversiontxt" srcFile="${project.build.outputDirectory}/static/buildversion.txt"/>
                             <echo message="${buildversiontxt}"/>
                             <echo file="target/mavenversion.txt">${project.version}</echo>
                         </target>
@@ -657,7 +656,7 @@ buildTtime=${maven.build.timestamp}
                     <requireJavaVersion>
                       <version>17</version>
                     </requireJavaVersion>
-                    <dependencyConvergence />
+                    <dependencyConvergence/>
                   </rules>
                 </configuration>
               </execution>
