@@ -41,13 +41,13 @@
 <properties>
     <jackson.version>2.15.2</jackson.version>
     <spring.version>5.3.29</spring.version>
-    <spring.security.version>5.7.10</spring.security.version>
+    <spring.security.version>6.2.7</spring.security.version>
     <surefire.plugin.version>3.1.2</surefire.plugin.version>
     <swagger.version>1.6.11</swagger.version>
     <valintalaskenta.version>6.0.1-SNAPSHOT</valintalaskenta.version>
     <valintaperusteet-api.version>5.18-SNAPSHOT</valintaperusteet-api.version>
     <hibernate.version>6.2.4.Final</hibernate.version>
-    <spring.boot.version>2.7.14</spring.boot.version>
+    <spring.boot.version>3.2.11</spring.boot.version>
   </properties>
 
   <dependencyManagement>
@@ -213,7 +213,7 @@
       <dependency>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-validation</artifactId>
-        <version>3.1.0</version>
+        <version>3.2.11</version>
       </dependency>
       <dependency>
         <groupId>org.slf4j</groupId>
@@ -624,8 +624,7 @@ vcsRevision=${revision}
 buildTtime=${maven.build.timestamp}
 ]]>
                             </echo>
-                            <loadfile property="buildversiontxt"
-                                      srcFile="${project.build.outputDirectory}/static/buildversion.txt"/>
+                            <loadfile property="buildversiontxt" srcFile="${project.build.outputDirectory}/static/buildversion.txt"/>
                             <echo message="${buildversiontxt}"/>
                             <echo file="target/mavenversion.txt">${project.version}</echo>
                         </target>
@@ -657,7 +656,7 @@ buildTtime=${maven.build.timestamp}
                     <requireJavaVersion>
                       <version>17</version>
                     </requireJavaVersion>
-                    <dependencyConvergence />
+                    <dependencyConvergence/>
                   </rules>
                 </configuration>
               </execution>
