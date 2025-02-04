@@ -9,8 +9,6 @@ import fi.vm.sade.valintalaskenta.tulos.logging.LaskentaAuditLogImpl;
 import fi.vm.sade.valintalaskenta.tulos.mapping.ValintalaskentaModelMapper;
 import fi.vm.sade.valintalaskenta.tulos.service.impl.JarjestyskriteerihistoriaServiceImpl;
 import org.springframework.context.annotation.*;
-import org.springframework.web.servlet.config.annotation.CorsRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.scheduling.annotation.EnableAsync;
 
 @Configuration
@@ -42,15 +40,5 @@ public class SijoitteluServiceConfiguration {
     @Bean
     public SijoitteluModelMapper sijoitteluModelMapper() {
         return new SijoitteluModelMapper();
-    }
-
-    @Bean
-    public WebMvcConfigurer corsConfigurer() {
-        return new WebMvcConfigurer() {
-            @Override
-            public void addCorsMappings(CorsRegistry registry) {
-                registry.addMapping("/").allowedOrigins("*");
-            }
-        };
     }
 }

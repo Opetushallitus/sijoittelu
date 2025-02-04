@@ -25,7 +25,6 @@ public class HttpClients {
   }
 
   @Bean(name = "TarjontaHttpClient")
-  @Autowired
   public HttpClient getTarjontaHttpClient(CookieManager cookieManager) {
     return new HttpClient(
         defaultHttpClientBuilder(cookieManager).build(), TarjontaAsyncResourceImpl.getGson());
@@ -33,7 +32,6 @@ public class HttpClients {
 
   @Profile({"default", "dev"})
   @Bean(name = "KoutaCasClient")
-  @Autowired
   public RestCasClient getKoutaCasClient(
       @Value("${sijoittelu-service.kouta-internal.username}") String username,
       @Value("${sijoittelu-service.kouta-internal.password}") String password,
@@ -47,14 +45,12 @@ public class HttpClients {
   }
 
   @Bean(name = "OhjausparametritHttpClient")
-  @Autowired
   public HttpClient getOhjausparametritHttpClient(CookieManager cookieManager) {
     return new HttpClient(
         defaultHttpClientBuilder(cookieManager).build(), DateDeserializer.gsonBuilder().create());
   }
 
   @Bean(name = "OrganisaatioHttpClient")
-  @Autowired
   public HttpClient getOrganisaatioHttpClient(CookieManager cookieManager) {
     return new HttpClient(
         defaultHttpClientBuilder(cookieManager).build(), DateDeserializer.gsonBuilder().create());
@@ -62,7 +58,6 @@ public class HttpClients {
 
   @Profile({"default", "dev"})
   @Bean(name = "SeurantaCasClient")
-  @Autowired
   public RestCasClient getSeurantaCasClient(
       UrlProperties urlProperties,
       @Value("${sijoittelu-service.kouta-internal.username}") String username, // TODO: fix credentials

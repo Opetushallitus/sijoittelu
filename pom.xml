@@ -6,13 +6,13 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.7.14</version>
+        <version>3.4.0</version>
     </parent>
 
     <groupId>fi.vm.sade.sijoittelu</groupId>
     <artifactId>sijoittelu</artifactId>
     <packaging>pom</packaging>
-    <version>9.0.0-SNAPSHOT</version>
+    <version>10.0.0-SNAPSHOT</version>
     <name>Sijoittelu</name>
     <modules>
         <module>sijoittelu-tulos-api</module>
@@ -25,29 +25,20 @@
 
    </modules>
 
-    <distributionManagement>
-        <repository>
-            <id>oph-sade-artifactory</id>
-            <name>oph-sade-artifactory-releases</name>
-            <url>https://artifactory.opintopolku.fi/artifactory/oph-sade-release-local</url>
-        </repository>
-        <snapshotRepository>
-            <id>oph-sade-artifactory</id>
-            <name>oph-sade-artifactory-snapshots</name>
-            <url>https://artifactory.opintopolku.fi/artifactory/oph-sade-snapshot-local</url>
-        </snapshotRepository>
-    </distributionManagement>
+  <distributionManagement>
+    <repository>
+      <id>github</id>
+      <name>GitHub Packages</name>
+      <url>https://maven.pkg.github.com/Opetushallitus/sijoittelu</url>
+    </repository>
+  </distributionManagement>
 
-<properties>
-    <jackson.version>2.15.2</jackson.version>
-    <spring.version>5.3.29</spring.version>
-    <spring.security.version>5.7.10</spring.security.version>
-    <surefire.plugin.version>3.1.2</surefire.plugin.version>
-    <swagger.version>1.6.11</swagger.version>
-    <valintalaskenta.version>6.0.1-SNAPSHOT</valintalaskenta.version>
-    <valintaperusteet-api.version>5.18-SNAPSHOT</valintaperusteet-api.version>
+  <properties>
+    <jackson.version>2.18.2</jackson.version>
+    <spring.security.version>6.3.5</spring.security.version>
+    <valintalaskenta.version>7.0.0-SNAPSHOT</valintalaskenta.version>
+    <valintaperusteet-api.version>7.0-SNAPSHOT</valintaperusteet-api.version>
     <hibernate.version>6.2.4.Final</hibernate.version>
-    <spring.boot.version>2.7.14</spring.boot.version>
   </properties>
 
   <dependencyManagement>
@@ -89,6 +80,21 @@
         </exclusions>
       </dependency>
       <dependency>
+        <groupId>fi.vm.sade.valintaperusteet</groupId>
+        <artifactId>valintaperusteet-api</artifactId>
+        <version>${valintaperusteet-api.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>jakarta.servlet</groupId>
+            <artifactId>jakarta.servlet-api</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>jakarta.ws.rs</groupId>
+            <artifactId>jakarta.ws.rs-api</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
         <groupId>fi.vm.sade.tarjonta</groupId>
         <artifactId>tarjonta-api</artifactId>
         <version>2018-15-SNAPSHOT</version>
@@ -113,14 +119,34 @@
         </exclusions>
       </dependency>
       <dependency>
+        <groupId>fi.vm.sade</groupId>
+        <artifactId>valinta-tulos-valintarekisteri-db</artifactId>
+        <version>8.1.0-SNAPSHOT</version>
+        <exclusions>
+          <exclusion>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-reload4j</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.flywaydb</groupId>
+            <artifactId>flyway-core</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
         <groupId>fi.vm.sade.java-utils</groupId>
         <artifactId>opintopolku-cas-servlet-filter</artifactId>
-        <version>0.2.0-SNAPSHOT</version>
+        <version>1.0.0-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>fi.vm.sade.java-utils</groupId>
         <artifactId>java-cas</artifactId>
-        <version>1.2.1-SNAPSHOT</version>
+        <version>1.2.2-SNAPSHOT</version>
+      </dependency>
+      <dependency>
+        <groupId>fi.vm.sade.java-utils</groupId>
+        <artifactId>java-properties</artifactId>
+        <version>1.0.0-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>fi.vm.sade</groupId>
@@ -128,46 +154,9 @@
         <version>9.2.1-SNAPSHOT</version>
       </dependency>
       <dependency>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-web</artifactId>
-        <version>${spring.boot.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-webflux</artifactId>
-        <version>${spring.boot.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-security</artifactId>
-        <version>${spring.boot.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.springframework</groupId>
-        <artifactId>spring-test</artifactId>
-        <version>${spring.version}</version>
-        <scope>test</scope>
-        <exclusions>
-          <exclusion>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-all</artifactId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-      <dependency>
         <groupId>org.springdoc</groupId>
-        <artifactId>springdoc-openapi-ui</artifactId>
-        <version>1.7.0</version>
-      </dependency>
-      <dependency>
-        <groupId>org.springdoc</groupId>
-        <artifactId>springdoc-openapi-webmvc-core</artifactId>
-        <version>1.7.0</version>
-      </dependency>
-      <dependency>
-        <groupId>org.springdoc</groupId>
-        <artifactId>springdoc-openapi-security</artifactId>
-        <version>1.7.0</version>
+        <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+        <version>2.6.0</version>
       </dependency>
       <dependency>
         <groupId>io.swagger.core.v3</groupId>
@@ -182,12 +171,12 @@
       <dependency>
         <groupId>fi.vm.sade.java-utils</groupId>
         <artifactId>opintopolku-user-details-service</artifactId>
-        <version>0.3.0-SNAPSHOT</version>
+        <version>0.5.1-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>fi.vm.sade.valinta</groupId>
         <artifactId>valinta-sharedutils</artifactId>
-        <version>5.11-SNAPSHOT</version>
+        <version>6.0-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>org.hibernate.orm</groupId>
@@ -213,18 +202,7 @@
       <dependency>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-validation</artifactId>
-        <version>3.1.0</version>
-      </dependency>
-      <dependency>
-        <groupId>org.slf4j</groupId>
-        <artifactId>slf4j-api</artifactId>
-        <version>1.7.5</version>
-      </dependency>
-      <dependency>
-        <groupId>org.junit.jupiter</groupId>
-        <artifactId>junit-jupiter-api</artifactId>
-        <version>5.7.0</version>
-        <scope>test</scope>
+        <version>3.3.6</version>
       </dependency>
       <dependency>
         <groupId>org.hamcrest</groupId>
@@ -235,8 +213,13 @@
       <dependency>
         <groupId>org.mockito</groupId>
         <artifactId>mockito-core</artifactId>
-        <version>5.4.0</version>
+        <version>5.14.2</version>
         <scope>test</scope>
+      </dependency>
+      <dependency>
+          <groupId>net.bytebuddy</groupId>
+          <artifactId>byte-buddy</artifactId>
+          <version>1.15.10</version>
       </dependency>
       <dependency>
         <groupId>org.postgresql</groupId>
@@ -246,7 +229,7 @@
       <dependency>
         <groupId>org.modelmapper</groupId>
         <artifactId>modelmapper</artifactId>
-        <version>3.1.1</version>
+        <version>3.2.1</version>
       </dependency>
       <dependency>
         <groupId>com.google.guava</groupId>
@@ -257,6 +240,16 @@
         <groupId>org.apache.commons</groupId>
         <artifactId>commons-lang3</artifactId>
         <version>3.12.0</version>
+      </dependency>
+      <dependency>
+        <groupId>commons-logging</groupId>
+        <artifactId>commons-logging</artifactId>
+        <version>1.2</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.commons</groupId>
+        <artifactId>commons-collections4</artifactId>
+        <version>4.4</version>
       </dependency>
       <dependency>
         <groupId>com.fasterxml.jackson.core</groupId>
@@ -284,11 +277,6 @@
         <version>${jackson.version}</version>
       </dependency>
       <dependency>
-        <groupId>com.zaxxer</groupId>
-        <artifactId>HikariCP</artifactId>
-        <version>5.0.1</version>
-      </dependency>
-      <dependency>
           <groupId>javax.annotation</groupId>
           <artifactId>javax.annotation-api</artifactId>
           <version>1.3.2</version>
@@ -296,7 +284,7 @@
       <dependency>
         <groupId>com.google.code.gson</groupId>
         <artifactId>gson</artifactId>
-        <version>2.10.1</version>
+        <version>2.12.1</version>
       </dependency>
       <dependency>
         <groupId>com.squareup.okhttp3</groupId>
@@ -309,21 +297,39 @@
         <version>2.0.1</version>
       </dependency>
       <dependency>
-        <groupId>ch.qos.logback</groupId>
-        <artifactId>logback-access</artifactId>
-        <version>1.2.13</version>
+        <groupId>ch.qos.logback.access</groupId>
+        <artifactId>tomcat</artifactId>
+        <version>2.0.3</version>
       </dependency>
       <dependency>
-        <groupId>ch.qos.logback</groupId>
-        <artifactId>logback-classic</artifactId>
-        <version>1.2.13</version>
+        <groupId>org.apache.tomcat.embed</groupId>
+        <artifactId>tomcat-embed-core</artifactId>
+        <version>10.1.34</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.tomcat</groupId>
+        <artifactId>tomcat-servlet-api</artifactId>
+        <version>10.1.33</version>
+      </dependency>
+
+      <!-- Tämä tarvitaan kunnes valintalaskenta-tulos-service.jar:sta tulee uusi versio jossa tämä on päivitetty -->
+      <dependency>
+        <groupId>fi.vm.sade.valintaperusteet</groupId>
+        <artifactId>sharedutils</artifactId>
+        <version>6.0-SNAPSHOT</version>
+        <exclusions>
+          <exclusion>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-reload4j</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
 
       <!-- Lukitaan transitiivisten riippuvuuksien versioita jotta enforcer-plugin ei valita -->
       <dependency>
         <groupId>commons-io</groupId>
         <artifactId>commons-io</artifactId>
-        <version>2.13.0</version>
+        <version>2.18.0</version>
       </dependency>
       <dependency>
         <groupId>org.scala-lang</groupId>
@@ -381,6 +387,11 @@
         <version>6.5.1</version>
       </dependency>
       <dependency>
+        <groupId>org.codehaus.woodstox</groupId>
+        <artifactId>stax2-api</artifactId>
+        <version>4.2.2</version>
+      </dependency>
+      <dependency>
         <groupId>io.swagger</groupId>
         <artifactId>swagger-jaxrs</artifactId>
         <version>1.6.11</version>
@@ -388,12 +399,7 @@
       <dependency>
         <groupId>commons-codec</groupId>
         <artifactId>commons-codec</artifactId>
-        <version>1.9</version>
-      </dependency>
-      <dependency>
-        <groupId>commons-logging</groupId>
-        <artifactId>commons-logging</artifactId>
-        <version>1.2</version>
+        <version>1.17.1</version>
       </dependency>
       <dependency>
         <groupId>org.checkerframework</groupId>
@@ -534,71 +540,7 @@
       <id>oph-sade-artifactory-releases</id>
       <url>https://artifactory.opintopolku.fi/artifactory/oph-sade-release-local</url>
     </repository>
-    <repository>
-      <id>com.springsource.repository.bundles.release</id>
-      <name>SpringSource Enterprise Bundle Repository - SpringSource Bundle Releases</name>
-      <url>https://artifactory.opintopolku.fi/artifactory/springsource-ebr/</url>
-    </repository>
-    <repository>
-      <id>com.springsource.repository.bundles.external</id>
-      <name>SpringSource Enterprise Bundle Repository - External Bundle Releases</name>
-      <url>https://artifactory.opintopolku.fi/artifactory/spring-ebr/</url>
-    </repository>
-    <repository>
-      <releases>
-        <enabled>false</enabled>
-      </releases>
-      <snapshots>
-        <enabled>true</enabled>
-      </snapshots>
-      <id>com.springsource.repository.maven.snapshot</id>
-      <name>SpringSource Enterprise Bundle Maven Repository - SpringSource Snapshot Releases</name>
-      <url>https://artifactory.opintopolku.fi/artifactory/com.springsource.repository.maven.snapshot/</url>
-    </repository>
-    <repository>
-      <releases>
-        <enabled>true</enabled>
-      </releases>
-      <snapshots>
-        <enabled>false</enabled>
-      </snapshots>
-      <id>com.springsource.repository.maven.milestone</id>
-      <name>Spring Framework Maven Milestone Releases (Maven Central Format)</name>
-      <url>https://artifactory.opintopolku.fi/artifactory/com.springsource.repository.maven.milestone/</url>
-    </repository>
-    <repository>
-      <snapshots>
-        <enabled>false</enabled>
-      </snapshots>
-      <id>central</id>
-      <name>Central Repository</name>
-      <url>https://repo.maven.apache.org/maven2</url>
-    </repository>
   </repositories>
-
-  <pluginRepositories>
-    <pluginRepository>
-      <id>plugin-local-release</id>
-      <name>Plugin local release</name>
-      <url>https://artifactory.opintopolku.fi/artifactory/plugins-release-local</url>
-    </pluginRepository>
-    <pluginRepository>
-      <id>libs-3rd-party</id>
-      <name>libs-3rd-party</name>
-      <url>https://artifactory.opintopolku.fi/artifactory/libs-3rd-party</url>
-    </pluginRepository>
-    <pluginRepository>
-      <releases>
-        <updatePolicy>never</updatePolicy>
-      </releases>
-      <snapshots>
-        <enabled>false</enabled>
-      </snapshots>
-      <id>central</id>
-      <name>Central Repository</name>
-      <url>https://repo.maven.apache.org/maven2</url>
-    </pluginRepository>
-  </pluginRepositories>
 
   <build>
     <plugins>
@@ -638,7 +580,7 @@ buildTtime=${maven.build.timestamp}
             <version>3.11.0</version>
             <inherited>true</inherited>
             <configuration>
-              <release>17</release>
+              <release>21</release>
               <debug>false</debug>
             </configuration>
         </plugin>
@@ -655,7 +597,7 @@ buildTtime=${maven.build.timestamp}
                 <configuration>
                   <rules>
                     <requireJavaVersion>
-                      <version>17</version>
+                      <version>21</version>
                     </requireJavaVersion>
                     <dependencyConvergence />
                   </rules>

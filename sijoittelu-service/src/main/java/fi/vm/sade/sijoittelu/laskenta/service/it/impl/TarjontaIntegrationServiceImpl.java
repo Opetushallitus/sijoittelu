@@ -19,6 +19,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
 
 @Service
 public class TarjontaIntegrationServiceImpl implements TarjontaIntegrationService{
@@ -51,8 +52,8 @@ public class TarjontaIntegrationServiceImpl implements TarjontaIntegrationServic
                         .setMethod("GET")
                         .addHeader("Accept", "application/json")
                         .addHeader("Caller-Id", SijoitteluServiceConfiguration.CALLER_ID)
-                        .setRequestTimeout(120000)
-                        .setReadTimeout(120000)
+                        .setRequestTimeout(Duration.ofMillis(120000))
+                        .setReadTimeout(Duration.ofMillis(120000))
                         .build();
 
                     Response koutaResponse = koutaInternalCasClient.executeBlocking(request);
@@ -84,8 +85,8 @@ public class TarjontaIntegrationServiceImpl implements TarjontaIntegrationServic
                         .setMethod("GET")
                         .addHeader("Accept", "application/json")
                         .addHeader("Caller-Id", SijoitteluServiceConfiguration.CALLER_ID)
-                        .setRequestTimeout(120000)
-                        .setReadTimeout(120000)
+                        .setRequestTimeout(Duration.ofMillis(120000))
+                        .setReadTimeout(Duration.ofMillis(120000))
                         .build();
 
                 Response koutaResponse = koutaInternalCasClient.executeBlocking(request);
