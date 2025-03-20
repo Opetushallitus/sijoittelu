@@ -29,10 +29,10 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-maven-  
 
-      - name: Set up JDK 17
+      - name: Set up JDK 21
         uses: actions/setup-java@v4
         with:
-          java-version: '17'
+          java-version: '21'
           distribution: 'temurin'
 
       - uses: szenius/set-timezone@v1.0
@@ -42,7 +42,7 @@ jobs:
       - name: Build with Maven
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          GITHUB_TOKEN: ${{ github.token }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           cd main
           mvn clean verify -Pit -Dit.usePhantomJs=true -B -Dbranch=${GITHUB_REF_NAME} -Drevision=${GITHUB_SHA} -DbuildNumber=${GITHUB_RUN_NUMBER}
@@ -92,7 +92,7 @@ jobs:
           export ARTIFACT_NAME="sijoittelu-service"
           mv sijoittelu-service/target/sijoittelu-service.jar $DOCKER_BUILD_DIR/artifact/${ARTIFACT_NAME}.jar
           cp -vr src/main/resources/oph-configuration $DOCKER_BUILD_DIR/config/
-          export BASE_IMAGE="baseimage-fatjar-openjdk17:master"
+          export BASE_IMAGE="baseimage-fatjar-openjdk21:master"
           ./ci-tools/common/pull-image.sh
           ./ci-tools/github-build/build-fatjar.sh $ARTIFACT_NAME
           ./ci-tools/github-build/upload-image.sh $ARTIFACT_NAME
@@ -118,20 +118,17 @@ jobs:
             main/sijoittelu-tulos-service/target
           key: ${{ github.sha }}
 
-      - name: Set up JDK 17
+      - name: Set up JDK 21
         uses: actions/setup-java@v2
         with:
-          java-version: '17'
+          java-version: '21'
           distribution: 'temurin'
 
       - name: Deploy jar library
-        #if: github.ref == 'refs/heads/master'
+        if: github.ref == 'refs/heads/master'
         shell: bash
         env:
-          ARTIFACTORY_USERNAME: ${{ secrets.ARTIFACTORY_USERNAME }}
-          ARTIFACTORY_PASSWORD: ${{ secrets.ARTIFACTORY_PASSWORD }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           cd main
-          git clone https://github.com/Opetushallitus/ci-tools.git
-          source ci-tools/common/setup-tools.sh
-          mvn deploy -B -pl fi.vm.sade.sijoittelu:sijoittelu,sijoittelu-tulos-api,sijoittelu-algoritmi-domain,sijoittelu-algoritmi-batch,sijoittelu-tulos-service -DskipTests --settings ci-tools/common/maven-settings.xml
+          mvn deploy -B -pl fi.vm.sade.sijoittelu:sijoittelu,sijoittelu-tulos-api,sijoittelu-algoritmi-domain,sijoittelu-algoritmi-batch,sijoittelu-tulos-service -DskipTests

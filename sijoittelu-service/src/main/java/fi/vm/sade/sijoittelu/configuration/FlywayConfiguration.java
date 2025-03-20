@@ -33,7 +33,7 @@ public class FlywayConfiguration {
     public static class FlywayMigrationDone {}
 
     private boolean isTest() {
-        return Arrays.stream(environment.getActiveProfiles()).filter(p -> p.equals("test")).findFirst().isPresent();
+        return Arrays.stream(environment.getActiveProfiles()).filter(p -> p.equals("test") || p.equals("dev")).findFirst().isPresent();
     }
 
     @Bean

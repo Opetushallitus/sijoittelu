@@ -4,8 +4,8 @@ import fi.vm.sade.auditlog.ApplicationType;
 import fi.vm.sade.auditlog.Audit;
 import fi.vm.sade.javautils.nio.cas.CasClient;
 import fi.vm.sade.javautils.opintopolku_spring_security.Authorizer;
-import fi.vm.sade.service.valintaperusteet.resource.ValintaperusteetResource;
-import fi.vm.sade.service.valintaperusteet.resource.ValintaperusteetResourceV2;
+//import fi.vm.sade.service.valintaperusteet.resource.ValintaperusteetResource;
+//import fi.vm.sade.service.valintaperusteet.resource.ValintaperusteetResourceV2;
 import fi.vm.sade.sijoittelu.laskenta.external.resource.*;
 import fi.vm.sade.sijoittelu.laskenta.mapping.SijoitteluModelMapper;
 import fi.vm.sade.sijoittelu.laskenta.service.business.ValintarekisteriService;
@@ -49,12 +49,6 @@ public class TestConfigurationWithMocks {
         flyway.migrate();
         return new ValintalaskentaFlywayMigrationDone();
     }
-
-    @Bean
-    public ValintaperusteetResource valintaperusteetResource() { return Mockito.mock(ValintaperusteetResource.class); }
-
-    @Bean
-    public ValintaperusteetResourceV2 valintaperusteetResourceV2() { return Mockito.mock(ValintaperusteetResourceV2.class); }
 
     @Bean
     public OhjausparametriResource ohjausparametriResource() { return Mockito.mock(OhjausparametriResource.class); }
