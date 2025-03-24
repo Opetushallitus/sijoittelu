@@ -175,21 +175,21 @@ public class SijoitteluAktivointiResource {
             responseCode = "OK",
             content = @Content(schema = @Schema(implementation = String.class)))
       })
-  public String poistaJatkuvastaSijoittelusta(
+  public ResponseEntity<String> poistaJatkuvastaSijoittelusta(
       @RequestParam(value = "hakuOid", required = false) String hakuOid) {
     if (!hakuParametritService.getParametritForHaku(hakuOid).valinnanhallintaEnabled()) {
-      return "no privileges.";
+      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("no privileges.");
     }
 
     if (StringUtils.isBlank(hakuOid)) {
-      return "get parameter 'hakuOid' required";
+      return ResponseEntity.badRequest().body("get parameter 'hakuOid' required");
     } else {
       authorityCheckService.checkAuthorizationForHaku(
           hakuOid, Collections.singleton("ROLE_APP_SIJOITTELU_CRUD"));
 
       LOG.info("jatkuva sijoittelu poistettu haulta {}", hakuOid);
       sijoittelunSeurantaResource.poistaSijoittelu(hakuOid);
-      return "poistettu";
+      return ResponseEntity.ok("poistettu");
     }
   }
 
@@ -284,27 +284,24 @@ public class SijoitteluAktivointiResource {
             responseCode = "OK",
             content = @Content(schema = @Schema(implementation = String.class)))
       })
-  public String paivitaJatkuvanSijoittelunAloitus(
+  public ResponseEntity<String> paivitaJatkuvanSijoittelunAloitus(
       @RequestParam(value = "hakuOid", required = false) String hakuOid,
       @RequestParam(value = "aloitusajankohta", required = false) Long aloitusajankohta,
       @RequestParam(value = "ajotiheys", required = false) Integer ajotiheys) {
     if (!hakuParametritService.getParametritForHaku(hakuOid).valinnanhallintaEnabled()) {
-      return "no privileges.";
+      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("no privileges.");
     }
-    if (StringUtils.isBlank(hakuOid)) {
-      return "get parameter 'hakuOid' required";
-    } else if (ajotiheys == null || ajotiheys > 24) {
-      throw new RuntimeException(String.format("Ajotiheys on virheellinen: %s", ajotiheys));
-    } else if (aloitusajankohta == null) {
-      return "Aloitusajankohta puuttuu";
-    } else {
-      authorityCheckService.checkAuthorizationForHaku(
-          hakuOid, Collections.singleton("ROLE_APP_SIJOITTELU_CRUD"));
+    try {
+      tarkistaJatkuvaSijoittelunParametrit(hakuOid, ajotiheys, aloitusajankohta);
+    } catch(IllegalArgumentException e) {
+      return ResponseEntity.badRequest().body(e.getMessage());
+    }
+    authorityCheckService.checkAuthorizationForHaku(
+        hakuOid, Collections.singleton("ROLE_APP_SIJOITTELU_CRUD"));
 
-      sijoittelunSeurantaResource.paivitaSijoittelunAloitusajankohta(
-          hakuOid, aloitusajankohta, ajotiheys);
-      return "paivitetty";
-    }
+    sijoittelunSeurantaResource.paivitaSijoittelunAloitusajankohta(
+        hakuOid, aloitusajankohta, ajotiheys);
+    return ResponseEntity.ok("Sijoittelun ajastus päivitetty");
   }
 
   @PostMapping(value = "/jatkuva", produces = MediaType.TEXT_PLAIN_VALUE)
@@ -321,12 +318,10 @@ public class SijoitteluAktivointiResource {
     if (!hakuParametritService.getParametritForHaku(jatkuva.hakuOid).valinnanhallintaEnabled()) {
       return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("no privileges.");
     }
-    if (StringUtils.isBlank(jatkuva.hakuOid)) {
-      return ResponseEntity.badRequest().body("HakuOid puuttuu");
-    } else if (jatkuva.ajotiheys == null || jatkuva.ajotiheys > 24) {
-      return ResponseEntity.badRequest().body(String.format("Ajotiheys on virheellinen: %s", jatkuva.ajotiheys));
-    } else if (jatkuva.aloitusajankohta == null) {
-      return ResponseEntity.badRequest().body("Aloitusajankohta puuttuu");
+    try {
+      tarkistaJatkuvaSijoittelunParametrit(jatkuva.hakuOid, jatkuva.ajotiheys, jatkuva.aloitusajankohta);
+    } catch(IllegalArgumentException e) {
+      return ResponseEntity.badRequest().body(e.getMessage());
     }
     authorityCheckService.checkAuthorizationForHaku(
             jatkuva.hakuOid, Collections.singleton("ROLE_APP_SIJOITTELU_CRUD"));
@@ -334,5 +329,15 @@ public class SijoitteluAktivointiResource {
     sijoittelunSeurantaResource.luoJatkuvaSijoittelu(
             jatkuva.hakuOid, jatkuva.aloitusajankohta, jatkuva.ajotiheys);
     return ResponseEntity.ok("Sijoittelun ajastus luotu");
+  }
+
+  public void tarkistaJatkuvaSijoittelunParametrit(String hakuOid, Integer ajotiheys, Long aloitusajankohta) {
+    if (StringUtils.isBlank(hakuOid)) {
+      throw new IllegalArgumentException("HakuOid puuttuu");
+    } else if (ajotiheys == null || ajotiheys > 24) {
+      throw new IllegalArgumentException(String.format("Ajotiheys on virheellinen: %s", ajotiheys));
+    } else if (aloitusajankohta == null) {
+      throw new IllegalArgumentException("Aloitusajankohta puuttuu");
+    }
   }
 }
