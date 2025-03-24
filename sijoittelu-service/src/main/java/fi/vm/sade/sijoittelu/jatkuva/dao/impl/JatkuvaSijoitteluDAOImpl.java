@@ -93,6 +93,8 @@ public class JatkuvaSijoitteluDAOImpl implements JatkuvaSijoitteluDAO {
     }
   }
 
+
+
   @Override
   public void paivitaSijoittelunAloitusajankohta(
       String hakuOid, long aloitusajankohta, int ajotiheys) {
@@ -103,6 +105,21 @@ public class JatkuvaSijoitteluDAOImpl implements JatkuvaSijoitteluDAO {
               "VALUES (?, false, null, ?::timestamptz, ?) " +
               "ON CONFLICT (haku_oid) DO UPDATE SET aloitus=?::timestamptz, ajotiheys=?",
           hakuOid, aloitus, ajotiheys, aloitus, ajotiheys);
+    } catch (Exception e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  @Override
+  public void luoJatkuvaSijoittelu(
+          String hakuOid, long aloitusajankohta, int ajotiheys) {
+    try {
+      String aloitus = Date.from(Instant.ofEpochMilli(aloitusajankohta)).toString();
+      this.jdbcTemplate.update("INSERT INTO jatkuvat " +
+                      "(haku_oid, jatkuva_paalla, viimeksi_ajettu, aloitus, ajotiheys) " +
+                      "VALUES (?, true, null, ?::timestamptz, ?) " +
+                      "ON CONFLICT (haku_oid) DO UPDATE SET aloitus=?::timestamptz, ajotiheys=?",
+              hakuOid, aloitus, ajotiheys, aloitus, ajotiheys);
     } catch (Exception e) {
       throw new RuntimeException(e);
     }

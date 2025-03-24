@@ -5,6 +5,7 @@ import fi.vm.sade.auditlog.Audit;
 import fi.vm.sade.auditlog.Changes;
 import fi.vm.sade.sijoittelu.jatkuva.dao.JatkuvaSijoitteluDAO;
 import fi.vm.sade.sijoittelu.jatkuva.dto.JatkuvaSijoittelu;
+import fi.vm.sade.sijoittelu.jatkuva.dto.LuoJatkuvaSijoittelu;
 import fi.vm.sade.sijoittelu.jatkuva.external.resource.tarjonta.TarjontaAsyncResource;
 import fi.vm.sade.sijoittelu.jatkuva.dto.AjastettuSijoitteluInfo;
 import fi.vm.sade.sijoittelu.jatkuva.dto.Sijoittelu;
@@ -130,6 +131,7 @@ public class SijoitteluAktivointiResource {
     }
   }
 
+  @Deprecated //"Valintalaskenta-ui:n käyttämä rajapinta. Käytä Post /jatkuva endpointtia luodaksesi aktiivisen ajastetun sijoittelun"
   @GetMapping(value = "/jatkuva/aktivoi", produces = MediaType.TEXT_PLAIN_VALUE)
   @PreAuthorize(ANY_CRUD)
   @Operation(
@@ -303,5 +305,34 @@ public class SijoitteluAktivointiResource {
           hakuOid, aloitusajankohta, ajotiheys);
       return "paivitetty";
     }
+  }
+
+  @PostMapping(value = "/jatkuva", produces = MediaType.TEXT_PLAIN_VALUE)
+  @PreAuthorize(ANY_CRUD)
+  @Operation(
+          summary = "Ajastetun sijoittelun luonti ja aktivointi",
+          responses = {
+                  @ApiResponse(
+                          responseCode = "OK",
+                          content = @Content(schema = @Schema(implementation = String.class)))
+          })
+  public ResponseEntity<String> luoJatkuvaSijoittelu(
+          @RequestBody LuoJatkuvaSijoittelu jatkuva) {
+    if (!hakuParametritService.getParametritForHaku(jatkuva.hakuOid).valinnanhallintaEnabled()) {
+      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("no privileges.");
+    }
+    if (StringUtils.isBlank(jatkuva.hakuOid)) {
+      return ResponseEntity.badRequest().body("HakuOid puuttuu");
+    } else if (jatkuva.ajotiheys == null || jatkuva.ajotiheys > 24) {
+      return ResponseEntity.badRequest().body(String.format("Ajotiheys on virheellinen: %s", jatkuva.ajotiheys));
+    } else if (jatkuva.aloitusajankohta == null) {
+      return ResponseEntity.badRequest().body("Aloitusajankohta puuttuu");
+    }
+    authorityCheckService.checkAuthorizationForHaku(
+            jatkuva.hakuOid, Collections.singleton("ROLE_APP_SIJOITTELU_CRUD"));
+
+    sijoittelunSeurantaResource.luoJatkuvaSijoittelu(
+            jatkuva.hakuOid, jatkuva.aloitusajankohta, jatkuva.ajotiheys);
+    return ResponseEntity.ok("Sijoittelun ajastus luotu");
   }
 }
