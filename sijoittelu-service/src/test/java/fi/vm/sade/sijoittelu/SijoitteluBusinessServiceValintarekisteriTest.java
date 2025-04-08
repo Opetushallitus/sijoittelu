@@ -31,6 +31,7 @@ import fi.vm.sade.sijoittelu.laskenta.external.resource.VirkailijaValintaTulosSe
 import fi.vm.sade.sijoittelu.laskenta.service.business.SijoitteluBusinessService;
 import fi.vm.sade.sijoittelu.laskenta.service.business.SijoitteluajoResourcesLoader;
 import fi.vm.sade.sijoittelu.laskenta.service.business.ValintarekisteriService;
+import fi.vm.sade.sijoittelu.laskenta.service.business.WrappedVastaanottoService;
 import fi.vm.sade.sijoittelu.laskenta.service.it.Haku;
 import fi.vm.sade.sijoittelu.laskenta.service.it.TarjontaIntegrationService;
 import fi.vm.sade.sijoittelu.tulos.service.impl.converters.SijoitteluTulosConverter;
@@ -71,6 +72,7 @@ public class SijoitteluBusinessServiceValintarekisteriTest {
     private SijoitteluTulosConverter sijoitteluTulosConverter;
     private TarjontaIntegrationService tarjontaIntegrationService;
     private VirkailijaValintaTulosServiceResource valintaTulosServiceResource;
+    private WrappedVastaanottoService vastaanottoService;
     private ValintarekisteriService valintarekisteriService;
 
     @BeforeEach
@@ -78,11 +80,13 @@ public class SijoitteluBusinessServiceValintarekisteriTest {
         sijoitteluTulosConverter = new SijoitteluTulosConverterImpl();
         tarjontaIntegrationService = mock(TarjontaIntegrationService.class);
         valintaTulosServiceResource = mock(VirkailijaValintaTulosServiceResource.class);
+        vastaanottoService = mock(WrappedVastaanottoService.class);
         valintarekisteriService = mock(ValintarekisteriService.class);
 
         service = new SijoitteluBusinessService(
             sijoitteluTulosConverter,
             valintaTulosServiceResource,
+            vastaanottoService,
             valintarekisteriService,
             new SijoitteluConfiguration(),
             new SijoitteluajoResourcesLoader(tarjontaIntegrationService, valintarekisteriService));

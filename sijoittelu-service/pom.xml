@@ -111,7 +111,7 @@
 		</dependency>
 		<dependency>
 			<groupId>org.flywaydb</groupId>
-			<artifactId>flyway-database-postgresql</artifactId>
+			<artifactId>flyway-core</artifactId>
 		</dependency>
 
 		<dependency>
@@ -184,6 +184,12 @@
 			</exclusions>
 		</dependency>
 		<dependency>
+			<groupId>fi.vm.sade</groupId>
+			<artifactId>valinta-tulos-service</artifactId>
+			<classifier>classes</classifier>
+			<type>jar</type>
+		</dependency>
+		<dependency>
 			<groupId>fi.vm.sade.tarjonta</groupId>
 			<artifactId>tarjonta-api</artifactId>
 			<scope>compile</scope>
@@ -198,8 +204,16 @@
 			<artifactId>logback-classic</artifactId>
 		</dependency>
 		<dependency>
+			<groupId>ch.qos.logback</groupId>
+			<artifactId>logback-core</artifactId>
+		</dependency>
+		<dependency>
 			<groupId>ch.qos.logback.access</groupId>
 			<artifactId>logback-access-tomcat</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>jcl-over-slf4j</artifactId>
 		</dependency>
 
 		<!-- Tests -->

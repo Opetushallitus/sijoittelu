@@ -29,7 +29,12 @@
             <password>${env.GITHUB_TOKEN}</password>
         </server>
         <server>
-            <id>oph-sade-artifactory</id>
+            <id>oph-sade-artifactory-snapshots</id>
+            <username>${env.ARTIFACTORY_USERNAME}</username>
+            <password>${env.ARTIFACTORY_PASSWORD}</password>
+        </server>
+        <server>
+            <id>oph-sade-artifactory-releases</id>
             <username>${env.ARTIFACTORY_USERNAME}</username>
             <password>${env.ARTIFACTORY_PASSWORD}</password>
         </server>

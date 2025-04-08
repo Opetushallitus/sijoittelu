@@ -38,10 +38,12 @@ import fi.vm.sade.sijoittelu.laskenta.service.it.Haku;
 import fi.vm.sade.sijoittelu.tulos.dto.HakukohdeDTO;
 import fi.vm.sade.sijoittelu.tulos.service.impl.converters.SijoitteluTulosConverter;
 import fi.vm.sade.valintalaskenta.domain.dto.valintatieto.HakuDTO;
+import fi.vm.sade.valintatulosservice.VastaanottoService;
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Service;
@@ -85,12 +87,13 @@ public class SijoitteluBusinessService {
     @Autowired
     public SijoitteluBusinessService(SijoitteluTulosConverter sijoitteluTulosConverter,
                                      VirkailijaValintaTulosServiceResource valintaTulosServiceResource,
+                                     @Lazy WrappedVastaanottoService vastaanottoService,
                                      ValintarekisteriService valintarekisteriService,
                                      SijoitteluConfiguration sijoitteluConfiguration,
                                      SijoitteluajoResourcesLoader sijoitteluajoResourcesLoader) {
         this.sijoitteluTulosConverter = sijoitteluTulosConverter;
         this.valintaTulosServiceResource = valintaTulosServiceResource;
-        this.valintatulosWithVastaanotto = new ValintatulosWithVastaanotto(valintaTulosServiceResource);
+        this.valintatulosWithVastaanotto = new ValintatulosWithVastaanotto(vastaanottoService);
         this.sijoitteluajoResourcesLoader = sijoitteluajoResourcesLoader;
         this.preSijoitteluProcessors = PreSijoitteluProcessor.defaultPreProcessors();
         this.postSijoitteluProcessors = PostSijoitteluProcessor.defaultPostProcessors();
