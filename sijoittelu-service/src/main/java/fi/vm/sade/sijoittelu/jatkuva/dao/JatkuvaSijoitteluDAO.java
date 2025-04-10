@@ -16,4 +16,6 @@ public interface JatkuvaSijoitteluDAO {
   void poistaSijoittelu(String hakuOid);
 
   void paivitaSijoittelunAloitusajankohta(String hakuOid, long aloitusajankohta, int ajotiheys);
+
+  void luoJatkuvaSijoittelu(String hakuOid, long aloitusajankohta, int ajotiheys);
 }
