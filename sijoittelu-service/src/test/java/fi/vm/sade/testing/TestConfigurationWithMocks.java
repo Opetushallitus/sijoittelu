@@ -9,6 +9,7 @@ import fi.vm.sade.javautils.opintopolku_spring_security.Authorizer;
 import fi.vm.sade.sijoittelu.laskenta.external.resource.*;
 import fi.vm.sade.sijoittelu.laskenta.mapping.SijoitteluModelMapper;
 import fi.vm.sade.sijoittelu.laskenta.service.business.ValintarekisteriService;
+import fi.vm.sade.sijoittelu.laskenta.service.business.WrappedVastaanottoService;
 import fi.vm.sade.valinta.sharedutils.AuditLogger;
 import fi.vm.sade.valintalaskenta.tulos.logging.LaskentaAuditLog;
 import fi.vm.sade.valintalaskenta.tulos.logging.LaskentaAuditLogImpl;
@@ -23,13 +24,15 @@ import org.springframework.context.annotation.*;
 
 import javax.sql.DataSource;
 
+import static org.mockito.Mockito.mock;
+
 @TestConfiguration
 @ComponentScan(basePackages = {
   "fi.vm.sade.valintalaskenta.tulos.dao",
   "fi.vm.sade.valintalaskenta.tulos.service.impl",
   "fi.vm.sade.valintalaskenta.tulos.service.impl.converters"
 }, excludeFilters = {
-  @ComponentScan.Filter(type=FilterType.ASSIGNABLE_TYPE, value= JarjestyskriteerihistoriaServiceImpl.class)})
+  @ComponentScan.Filter(type=FilterType.ASSIGNABLE_TYPE, value=JarjestyskriteerihistoriaServiceImpl.class)})
 @Profile("test")
 public class TestConfigurationWithMocks {
 
@@ -51,25 +54,25 @@ public class TestConfigurationWithMocks {
     }
 
     @Bean
-    public OhjausparametriResource ohjausparametriResource() { return Mockito.mock(OhjausparametriResource.class); }
+    public OhjausparametriResource ohjausparametriResource() { return mock(OhjausparametriResource.class); }
 
     @Bean
-    public HakuV1Resource hakuV1Resource() { return Mockito.mock(HakuV1Resource.class); }
+    public HakuV1Resource hakuV1Resource() { return mock(HakuV1Resource.class); }
 
     @Bean(name="KoutaInternaCasClient")
-    public CasClient koutaInternalCasClient() { return Mockito.mock(CasClient.class); }
+    public CasClient koutaInternalCasClient() { return mock(CasClient.class); }
 
     @Bean("SijoitteluCasClient")
-    public CasClient sijoitteluCasClient() { return Mockito.mock(CasClient.class); }
+    public CasClient sijoitteluCasClient() { return mock(CasClient.class); }
 
     @Bean
-    public VirkailijaValintaTulosServiceResource virkailijaValintaTulosServiceResource() { return Mockito.mock(VirkailijaValintaTulosServiceResource.class); }
+    public VirkailijaValintaTulosServiceResource virkailijaValintaTulosServiceResource() { return mock(VirkailijaValintaTulosServiceResource.class); }
 
     @Bean
-    public Authorizer authorizer() { return Mockito.mock(Authorizer.class); }
+    public Authorizer authorizer() { return mock(Authorizer.class); }
 
     @Bean
-    public ValintarekisteriService valintarekisteriService() { return Mockito.mock(ValintarekisteriService.class); }
+    public ValintarekisteriService valintarekisteriService() { return mock(ValintarekisteriService.class); }
 
     @Bean("LaskentaAuditLog")
     public LaskentaAuditLog laskentaAuditLog() {
@@ -94,6 +97,11 @@ public class TestConfigurationWithMocks {
     @Bean
     public ApplicationContextGetter applicationContextGetter() {
         return new ApplicationContextGetter();
+    }
+
+    @Bean
+    public WrappedVastaanottoService vastaanottoService() {
+        return mock(WrappedVastaanottoService.class);
     }
 
 }
