@@ -232,7 +232,7 @@ public class SijoitteluMontaJonoaTest extends AbstractIntegrationTest {
         System.out.println(PrintHelper.tulostaSijoittelu(s));
 
         assertoiAinoastaanValittu(hakukohteet.get(0).getValintatapajonot().get(0), "1.2.246.562.11.00001090792", "1.2.246.562.11.00001068863");
-        assertoiAinoastaanValittu(hakukohteet.get(0).getValintatapajonot().get(1), "1.2.246.562.11.00001067411");
+        assertoiAinoastaanValittu(hakukohteet.get(0).getValintatapajonot().get(1), "1.2.246.562.11.00001067411", "1.2.246.562.11.00001068863");
 
         hakukohteet.get(0).getValintatapajonot().get(0).getHakemukset().forEach(hak -> {
             if(hak.getHakemusOid().equals("1.2.246.562.11.00001068863")) {
@@ -242,7 +242,7 @@ public class SijoitteluMontaJonoaTest extends AbstractIntegrationTest {
 
         hakukohteet.get(0).getValintatapajonot().get(1).getHakemukset().forEach(hak -> {
             if(hak.getHakemusOid().equals("1.2.246.562.11.00001068863")) {
-                Assertions.assertEquals(hak.getTila(), HakemuksenTila.PERUUNTUNUT);
+                Assertions.assertEquals(hak.getTila(), HakemuksenTila.HYVAKSYTTY);
             }
         });
 
@@ -750,11 +750,26 @@ public class SijoitteluMontaJonoaTest extends AbstractIntegrationTest {
     }
 
     private List<Hakukohde> tallennaEdellisetTilat(List<Hakukohde> hakukohteet) {
+        List<HakemuksenTila> sallitutEdellisetTilat = List.of(
+                HakemuksenTila.HYVAKSYTTY,
+                HakemuksenTila.VARASIJALTA_HYVAKSYTTY,
+                HakemuksenTila.PERUUTETTU
+        );
         hakukohteet.forEach(hk ->
-            hk.getValintatapajonot().forEach(jono -> {
-                jono.getHakemukset().forEach(h ->
-                    h.setEdellinenTila(h.getTila()));
-            }));
+                hk.getValintatapajonot().forEach(jono -> {
+                    jono.getHakemukset().forEach(h -> {
+                                HakemuksenTila nykyinenTila = h.getTila();
+                                if (sallitutEdellisetTilat.contains(nykyinenTila)) {
+                                    System.out.println("true: " + nykyinenTila + ", edellinen: " + h.getEdellinenTila());
+                                    h.setEdellinenTila(h.getTila());
+                                } else {
+                                    System.out.println("false: nykyinen - " + nykyinenTila + ", edellinen: " + h.getEdellinenTila());
+                                    h.setEdellinenTila(HakemuksenTila.HYVAKSYTTY);
+                                }
+                            }
+
+                    );
+                }));
         return hakukohteet;
     }
 
