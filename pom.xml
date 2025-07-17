@@ -32,7 +32,7 @@
 
   <properties>
     <jackson.version>2.18.2</jackson.version>
-    <spring.security.version>6.4.2</spring.security.version>
+    <spring.security.version>6.4.6</spring.security.version>
     <valintalaskenta.version>7.0.0-SNAPSHOT</valintalaskenta.version>
     <valintaperusteet-api.version>7.0-SNAPSHOT</valintaperusteet-api.version>
   </properties>
@@ -452,8 +452,7 @@ vcsRevision=${revision}
 buildTtime=${maven.build.timestamp}
 ]]>
                             </echo>
-                            <loadfile property="buildversiontxt"
-                                      srcFile="${project.build.outputDirectory}/static/buildversion.txt"/>
+                            <loadfile property="buildversiontxt" srcFile="${project.build.outputDirectory}/static/buildversion.txt"/>
                             <echo message="${buildversiontxt}"/>
                             <echo file="target/mavenversion.txt">${project.version}</echo>
                         </target>
@@ -485,7 +484,7 @@ buildTtime=${maven.build.timestamp}
                     <requireJavaVersion>
                       <version>21</version>
                     </requireJavaVersion>
-                    <dependencyConvergence />
+                    <dependencyConvergence/>
                   </rules>
                 </configuration>
               </execution>
