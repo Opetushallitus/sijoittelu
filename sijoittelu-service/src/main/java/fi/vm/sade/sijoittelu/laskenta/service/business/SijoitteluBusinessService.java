@@ -66,10 +66,13 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.Random;
 
 @Service
 public class SijoitteluBusinessService {
     private static final Logger LOG = LoggerFactory.getLogger(SijoitteluBusinessService.class);
+
+    public static Random rnd = new Random();
 
     private HakemusComparator hakemusComparator = new HakemusComparator();
 
@@ -213,6 +216,14 @@ public class SijoitteluBusinessService {
             stopWatch);
         stopWatch.stop();
         LOG.info(stopWatch.prettyPrint());
+    }
+
+    /* Two jobs may be started at same instant, so timestamp isn't enough. Add a random postfix.
+     * 48 bits for timestamp is good until year 10889, and a 16 bit random value ought to be
+     * safe enough to prevent id collisions for two jobs started on the same millisecond. */
+    private long createUniqueTimestampId() {
+        Long now = System.currentTimeMillis();
+        return (now << 16) | rnd.nextInt(65536);
     }
 
     private void poistaTarpeettomatValinnantulokset(StopWatch stopWatch, Pair<List<Hakukohde>, Set<Pair<String, String>>> tarpeettomatValinnantulokset) {
@@ -606,8 +617,7 @@ public class SijoitteluBusinessService {
 
     private SijoitteluAjo createSijoitteluAjo(String hakuOid) {
         SijoitteluAjo sijoitteluAjo = new SijoitteluAjo();
-        Long now = System.currentTimeMillis();
-        sijoitteluAjo.setSijoitteluajoId(now);
+        sijoitteluAjo.setSijoitteluajoId(createUniqueTimestampId());
         sijoitteluAjo.setHakuOid(hakuOid);
         return sijoitteluAjo;
     }
@@ -621,7 +631,7 @@ public class SijoitteluBusinessService {
     private ValiSijoittelu createValiSijoittelu(String hakuoid) {
         ValiSijoittelu sijoittelu = new ValiSijoittelu();
         sijoittelu.setCreated(new Date());
-        sijoittelu.setSijoitteluId(System.currentTimeMillis());
+        sijoittelu.setSijoitteluId(createUniqueTimestampId());
         sijoittelu.setHakuOid(hakuoid);
         return sijoittelu;
     }
