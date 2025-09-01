@@ -89,6 +89,10 @@
 					<groupId>org.springdoc</groupId>
 					<artifactId>springdoc-openapi-ui</artifactId>
 				</exclusion>
+				<exclusion>
+					<groupId>fi.vm.sade.java-utils</groupId>
+					<artifactId>java-cas</artifactId>
+				</exclusion>
 			</exclusions>
 		</dependency>
 		<dependency>
@@ -172,6 +176,12 @@
 		<dependency>
 			<groupId>fi.vm.sade</groupId>
 			<artifactId>valinta-tulos-valintarekisteri-db</artifactId>
+			<exclusions>
+				<exclusion>
+					<groupId>fi.vm.sade.java-utils</groupId>
+					<artifactId>java-cas</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>fi.vm.sade.tarjonta</groupId>
@@ -245,7 +255,7 @@
 		</dependency>
 
 		<dependency>
-			<groupId>fi.vm.sade.java-utils</groupId>
+			<groupId>opiskelijavalinnat-utils.java-utils</groupId>
 			<artifactId>java-cas</artifactId>
 			<exclusions>
 				<exclusion>
