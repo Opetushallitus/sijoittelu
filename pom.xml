@@ -34,7 +34,7 @@
     <jackson.version>2.18.2</jackson.version>
     <spring.security.version>6.4.2</spring.security.version>
     <valintalaskenta.version>7.1.1-SNAPSHOT</valintalaskenta.version>
-    <valintaperusteet-api.version>7.0-SNAPSHOT</valintaperusteet-api.version>
+    <valintaperusteet-api.version>7.1.1-SNAPSHOT</valintaperusteet-api.version>
   </properties>
 
   <dependencyManagement>
