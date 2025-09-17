@@ -569,7 +569,7 @@ public class SijoitteluBusinessServiceValintarekisteriTest {
         HakukohdeDTO hakukohde = new HakukohdeDTO();
         hakukohde.setOid(uusiHakukohdeOid);
         ValintatietoValinnanvaiheDTO vaihe = new ValintatietoValinnanvaiheDTO(
-            1, "1", hakuOid, "vaihe1", new java.util.Date(), jonot, Collections.emptyList());
+            1, "1", hakuOid, "vaihe1", new java.util.Date(), jonot, Collections.emptyList(), uusiHakukohdeOid);
         hakukohde.setValinnanvaihe(Collections.singletonList(vaihe));
         List<HakukohdeDTO> hakukohdeDtos = new ArrayList<>();
         if (lisaaValintarekisterinHakukohteet) {
@@ -777,14 +777,14 @@ public class SijoitteluBusinessServiceValintarekisteriTest {
         kohde1.setOid(uusiHakukohdeOid);
         ValintatietoValintatapajonoDTO kohde1jono = jonoDTO(uusiHakukohdeOid + ".111111");
         ValintatietoValinnanvaiheDTO kohde1Vaihe = new ValintatietoValinnanvaiheDTO(
-            1, "1", hakuOid, "vaihe1", new java.util.Date(), Collections.singletonList(kohde1jono), Collections.emptyList());
+            1, "1", hakuOid, "vaihe1", new java.util.Date(), Collections.singletonList(kohde1jono), Collections.emptyList(), kohde1.getOid());
         kohde1.setValinnanvaihe(Collections.singletonList(kohde1Vaihe));
 
         HakukohdeDTO kohde2 = new HakukohdeDTO();
         kohde2.setOid("toinenUusiHakukohde");
         ValintatietoValintatapajonoDTO kohde2Jono = jonoDTO("toinenUusiHakukohde" + ".111111");
         ValintatietoValinnanvaiheDTO kohde2Vaihe = new ValintatietoValinnanvaiheDTO(
-            1, "1", hakuOid, "vaihe1", new java.util.Date(), Collections.singletonList(kohde2Jono), Collections.emptyList());
+            1, "1", hakuOid, "vaihe1", new java.util.Date(), Collections.singletonList(kohde2Jono), Collections.emptyList(), kohde2.getOid());
         kohde2.setValinnanvaihe(Collections.singletonList(kohde2Vaihe));
 
         hakuDto.setHakukohteet(Arrays.asList(kohde1, kohde2));

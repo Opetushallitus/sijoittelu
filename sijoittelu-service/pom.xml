@@ -5,13 +5,13 @@
 	<parent>
 		<groupId>fi.vm.sade.sijoittelu</groupId>
 		<artifactId>sijoittelu</artifactId>
-		<version>10.0.0-SNAPSHOT</version>
+		<version>10.0.1-SNAPSHOT</version>
 	</parent>
 
 	<artifactId>sijoittelu-service</artifactId>
 	<name>Sijoittelu :: Service :: API</name>
 	<packaging>jar</packaging>
-	<version>10.0.0-SNAPSHOT</version>
+	<version>10.0.1-SNAPSHOT</version>
 
 	<dependencies>
 		<dependency>
@@ -199,7 +199,7 @@
 		</dependency>
 		<dependency>
 			<groupId>ch.qos.logback.access</groupId>
-			<artifactId>tomcat</artifactId>
+			<artifactId>logback-access-tomcat</artifactId>
 		</dependency>
 
 		<!-- Tests -->
