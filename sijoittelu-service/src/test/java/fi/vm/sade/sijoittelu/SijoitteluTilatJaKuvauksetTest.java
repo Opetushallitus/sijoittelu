@@ -188,7 +188,7 @@ public class SijoitteluTilatJaKuvauksetTest {
 
         HakukohdeDTO hakukohde = new HakukohdeDTO();
         hakukohde.setOid(hakukohdeOid);
-        ValintatietoValinnanvaiheDTO vaihe = new ValintatietoValinnanvaiheDTO(1, "1", hakuOid, "vaihe1", new java.util.Date(), jonot, Collections.emptyList());
+        ValintatietoValinnanvaiheDTO vaihe = new ValintatietoValinnanvaiheDTO(1, "1", hakuOid, "vaihe1", new java.util.Date(), jonot, Collections.emptyList(), hakukohdeOid);
         hakukohde.setValinnanvaihe(Arrays.asList(vaihe));
         haku.setHakukohteet(Arrays.asList(hakukohde));
         return haku;
