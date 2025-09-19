@@ -5,13 +5,13 @@
 	<parent>
 		<groupId>fi.vm.sade.sijoittelu</groupId>
 		<artifactId>sijoittelu</artifactId>
-		<version>10.0.1-SNAPSHOT</version>
+		<version>10.0.2-SNAPSHOT</version>
 	</parent>
 
 	<artifactId>sijoittelu-service</artifactId>
 	<name>Sijoittelu :: Service :: API</name>
 	<packaging>jar</packaging>
-	<version>10.0.1-SNAPSHOT</version>
+	<version>10.0.2-SNAPSHOT</version>
 
 	<dependencies>
 		<dependency>
