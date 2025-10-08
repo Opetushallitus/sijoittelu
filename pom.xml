@@ -6,13 +6,13 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.4.0</version>
+        <version>3.4.10</version>
     </parent>
 
     <groupId>fi.vm.sade.sijoittelu</groupId>
     <artifactId>sijoittelu</artifactId>
     <packaging>pom</packaging>
-    <version>10.0.0-SNAPSHOT</version>
+    <version>10.0.2-SNAPSHOT</version>
     <name>Sijoittelu</name>
     <modules>
         <module>sijoittelu-tulos-api</module>
@@ -33,8 +33,8 @@
   <properties>
     <jackson.version>2.18.2</jackson.version>
     <spring.security.version>6.4.2</spring.security.version>
-    <valintalaskenta.version>7.0.0-SNAPSHOT</valintalaskenta.version>
-    <valintaperusteet-api.version>7.0-SNAPSHOT</valintaperusteet-api.version>
+    <valintalaskenta.version>7.1.2-SNAPSHOT</valintalaskenta.version>
+    <valintaperusteet-api.version>7.2.2-MERGE-SNAPSHOT</valintaperusteet-api.version>
   </properties>
 
   <dependencyManagement>
@@ -113,7 +113,7 @@
       <dependency>
         <groupId>fi.vm.sade</groupId>
         <artifactId>valinta-tulos-valintarekisteri-db</artifactId>
-        <version>8.3.0-SNAPSHOT</version>
+        <version>8.3.2-SNAPSHOT</version>
         <exclusions>
           <exclusion>
             <groupId>org.slf4j</groupId>
@@ -213,6 +213,16 @@
         <version>2.36.0</version>
       </dependency>
       <dependency>
+        <groupId>com.google.guava</groupId>
+        <artifactId>guava</artifactId>
+        <version>33.3.1-jre</version>
+      </dependency>
+      <dependency>
+          <groupId>com.hubspot.immutables</groupId>
+          <artifactId>immutables-exceptions</artifactId>
+          <version>1.9</version>
+      </dependency>
+      <dependency>
         <groupId>org.apache.commons</groupId>
         <artifactId>commons-lang3</artifactId>
         <version>3.12.0</version>
@@ -269,28 +279,8 @@
       </dependency>
       <dependency>
         <groupId>ch.qos.logback.access</groupId>
-        <artifactId>tomcat</artifactId>
-        <version>2.0.3</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.tomcat</groupId>
-        <artifactId>tomcat-servlet-api</artifactId>
-        <version>10.1.34</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.tomcat</groupId>
-        <artifactId>tomcat-coyote</artifactId>
-        <version>10.1.34</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.tomcat</groupId>
-        <artifactId>tomcat-catalina</artifactId>
-        <version>10.1.34</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.tomcat.embed</groupId>
-        <artifactId>tomcat-embed-core</artifactId>
-        <version>10.1.34</version>
+        <artifactId>logback-access-tomcat</artifactId>
+        <version>2.0.6</version>
       </dependency>
 
       <!-- Lukitaan transitiivisten riippuvuuksien versioita jotta enforcer-plugin ei valita -->
@@ -386,12 +376,6 @@
         <artifactId>scala-compiler</artifactId>
         <version>2.11.12</version>
       </dependency>
-      <dependency>
-        <groupId>com.hubspot.jinjava</groupId>
-        <artifactId>jinjava</artifactId>
-        <version>2.5.4</version>
-      </dependency>
-
     </dependencies>
   </dependencyManagement>
 
