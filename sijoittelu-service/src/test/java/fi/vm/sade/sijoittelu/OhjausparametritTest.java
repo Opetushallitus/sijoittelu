@@ -24,7 +24,7 @@ public class OhjausparametritTest {
         Long timestamp = Long.valueOf("1416866395389");
 
         ParametriDTO gson = new GsonBuilder().create().fromJson(json, ParametriDTO.class);
-        LocalDate res = LocalDateTime.ofInstant(new Date(gson.getPH_VTSSV().getDate()).toInstant(), ZoneId.systemDefault()).toLocalDate();
+        LocalDate res = LocalDateTime.ofInstant(new Date(gson.getPH_VTSSV().getDate()).toInstant(), ZoneId.of("Europe/Helsinki")).toLocalDate();
         Assertions.assertEquals(haluttu, res);
         Assertions.assertEquals(timestamp, gson.getPH_VTSSV().getDate());
 

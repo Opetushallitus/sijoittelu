@@ -237,6 +237,6 @@ public class JatkuvaSijoitteluServiceImpl implements JatkuvaSijoitteluService {
     return Optional.ofNullable(jatkuvaSijoittelu.getAloitusajankohta())
         .orElse(new Date())
         .toInstant()
-        .atZone(ZoneId.systemDefault());
+        .atZone(ZoneId.of("Europe/Helsinki"));
   }
 }
