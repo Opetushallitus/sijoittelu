@@ -402,7 +402,7 @@ public class SijoitteluMontaJonoaTest extends AbstractIntegrationTest {
         HakuDTO haku = valintatietoService.haeValintatiedot("1.2.246.562.29.173465377510");
         haku.getHakukohteet().get(0).getValinnanvaihe().get(0).getValintatapajonot().get(0)
           .setVarasijojaKaytetaanAlkaen(Date.from(LocalDate.of(2019, Month.AUGUST, 26)
-            .atStartOfDay(ZoneId.systemDefault()).toInstant()));
+            .atStartOfDay(ZoneId.of("Europe/Helsinki")).toInstant()));
         haku.getHakukohteet().get(0).getValinnanvaihe().get(0).getValintatapajonot().get(0).setVarasijat(1);
 
         List<Hakukohde> hakukohteet = haku.getHakukohteet().parallelStream().map(DomainConverter::convertToHakukohde).collect(Collectors.toList());
@@ -683,7 +683,7 @@ public class SijoitteluMontaJonoaTest extends AbstractIntegrationTest {
         HakuDTO haku = valintatietoService.haeValintatiedot("haku1");
         haku.getHakukohteet().get(0).getValinnanvaihe().get(0).getValintatapajonot().get(0)
           .setVarasijojaKaytetaanAlkaen(Date.from(LocalDate.of(2019, Month.AUGUST, 26)
-            .atStartOfDay(ZoneId.systemDefault()).toInstant()));
+            .atStartOfDay(ZoneId.of("Europe/Helsinki")).toInstant()));
 
         List<Hakukohde> hakukohteet = haku.getHakukohteet().parallelStream().map(DomainConverter::convertToHakukohde).collect(Collectors.toList());
         SijoittelunTila s = SijoitteluAlgorithmUtil.sijoittele(hakukohteet, new ArrayList<>(), Collections.emptyMap());
