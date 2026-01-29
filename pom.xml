@@ -40,6 +40,13 @@
   <dependencyManagement>
     <dependencies>
       <dependency>
+        <groupId>org.testcontainers</groupId>
+        <artifactId>testcontainers-bom</artifactId>
+        <version>2.0.3</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+      <dependency>
         <groupId>org.flywaydb</groupId>
         <artifactId>flyway-database-postgresql</artifactId>
         <version>11.2.0</version>
@@ -305,11 +312,6 @@
         <version>1.0.6</version>
       </dependency>
       <dependency>
-        <groupId>joda-time</groupId>
-        <artifactId>joda-time</artifactId>
-        <version>2.9.5</version>
-      </dependency>
-      <dependency>
         <groupId>org.spire-math</groupId>
         <artifactId>jawn-parser_2.11</artifactId>
         <version>0.10.4</version>
@@ -318,11 +320,6 @@
         <groupId>fi.vm.sade.java-utils</groupId>
         <artifactId>httpclient</artifactId>
         <version>1.0.0-SNAPSHOT</version>
-      </dependency>
-      <dependency>
-        <groupId>org.joda</groupId>
-        <artifactId>joda-convert</artifactId>
-        <version>1.8.1</version>
       </dependency>
       <dependency>
         <groupId>com.google.code.findbugs</groupId>
