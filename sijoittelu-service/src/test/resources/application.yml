@@ -6,6 +6,9 @@ spring:
       cache:
         maxSize: 2
 
+server:
+  shutdown: immediate
+
 sijoittelu:
   sijoittelu:
     postgresql:
