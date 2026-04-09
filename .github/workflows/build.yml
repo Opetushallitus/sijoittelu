@@ -125,7 +125,7 @@ jobs:
           distribution: 'temurin'
 
       - name: Deploy jar library
-        if: github.ref == 'refs/heads/master'
+        if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/OY-5472'
         shell: bash
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
