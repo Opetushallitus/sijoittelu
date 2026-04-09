@@ -6,7 +6,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.5.10</version>
+        <version>3.5.12</version>
     </parent>
 
     <groupId>fi.vm.sade.sijoittelu</groupId>
@@ -32,8 +32,8 @@
 
   <properties>
     <testcontainers.version>2.0.4</testcontainers.version>
-    <jackson.version>2.19.4</jackson.version>
-    <spring.security.version>6.5.7</spring.security.version>
+    <jackson.version>2.21.2</jackson.version>
+    <spring.security.version>6.5.9</spring.security.version>
     <valintalaskenta.version>8.0-SNAPSHOT</valintalaskenta.version>
     <valintaperusteet-api.version>8.0-SNAPSHOT</valintaperusteet-api.version>
     <valintatulosservice.version>8.4.0-SNAPSHOT</valintatulosservice.version>
@@ -537,6 +537,17 @@
         <groupId>org.json4s</groupId>
         <artifactId>json4s-ast_2.11</artifactId>
         <version>3.5.3</version>
+      </dependency>
+      <!-- java-casin transitiivisten depsujen päivitys -->
+      <dependency>
+        <groupId>io.netty</groupId>
+        <artifactId>netty-codec-http</artifactId>
+        <version>4.1.132.Final</version>
+      </dependency>
+      <dependency>
+        <groupId>io.netty</groupId>
+        <artifactId>netty-codec-http2</artifactId>
+        <version>4.1.132.Final</version>
       </dependency>
       <dependency>
         <groupId>org.log4s</groupId>
