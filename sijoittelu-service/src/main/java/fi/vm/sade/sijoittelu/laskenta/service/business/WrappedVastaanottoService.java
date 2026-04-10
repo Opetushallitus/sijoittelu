@@ -2,7 +2,7 @@ package fi.vm.sade.sijoittelu.laskenta.service.business;
 
 import fi.vm.sade.valintatulosservice.VastaanottoService;
 import fi.vm.sade.valintatulosservice.valintarekisteri.domain.VastaanottoEventDto;
-import scala.collection.JavaConversions;
+import scala.jdk.javaapi.CollectionConverters;
 
 import java.util.List;
 
@@ -15,6 +15,6 @@ public class WrappedVastaanottoService {
   }
 
   public void vastaanotaVirkailijanaInTransaction(List<VastaanottoEventDto> vs) {
-    vastaanottoService.vastaanotaVirkailijanaInTransaction(JavaConversions.asScalaIterator(vs.iterator()).toList());
+    vastaanottoService.vastaanotaVirkailijanaInTransaction(CollectionConverters.asScala(vs.iterator()).toList());
   }
 }

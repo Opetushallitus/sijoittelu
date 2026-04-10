@@ -11,7 +11,7 @@ import fi.vm.sade.valintatulosservice.valintaperusteet.ValintaPerusteetServiceIm
 import org.asynchttpclient.AsyncHttpClient;
 import scala.Option;
 import scala.Some;
-import scala.collection.JavaConversions;
+import scala.jdk.javaapi.CollectionConverters;
 import scala.collection.immutable.Map;
 
 import java.time.Duration;
@@ -75,7 +75,7 @@ public class SijoitteluVtsAppConfig implements VtsAppConfig.VtsAppConfig, VtsApp
 
         }
     );
-    final Set<Role> roles = JavaConversions
+    final Set<Role> roles = CollectionConverters
         .asJavaCollection(settings().securitySettings().requiredRoles())
         .stream()
         .map(Role::new)
@@ -89,7 +89,7 @@ public class SijoitteluVtsAppConfig implements VtsAppConfig.VtsAppConfig, VtsApp
 
       @Override
       public scala.collection.immutable.Set<Role> requiredRoles() {
-        return JavaConversions.asScalaSet(roles).toSet();
+        return CollectionConverters.asScala(roles).toSet();
       }
 
       @Override

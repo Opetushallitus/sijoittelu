@@ -51,12 +51,12 @@ public class ValintatulosWithVastaanotto {
                   // tallennettavaksi sellainen, joka on oikeasta jonosta. Varsinaisen vastaanoton tallennuksen kannalta sillä ei ole
                   // väliä, mutta lokimerkintä voi mennä väärälle jonolle.
                   Valintatulos vt = (!eiKeskenTilaiset.isEmpty() ? eiKeskenTilaiset.stream().findFirst().get() : list.get(0));
-                  return new VastaanottoEventDto(
-                      new ValintatapajonoOid(vt.getValintatapajonoOid()),
+                  return VastaanottoEventDto.apply(
+                      ValintatapajonoOid.apply(vt.getValintatapajonoOid()),
                       vt.getHakijaOid(),
-                      new HakemusOid(vt.getHakemusOid()),
-                      new HakukohdeOid(vt.getHakukohdeOid()),
-                      new HakuOid(vt.getHakuOid()),
+                      HakemusOid.apply(vt.getHakemusOid()),
+                      HakukohdeOid.apply(vt.getHakukohdeOid()),
+                      HakuOid.apply(vt.getHakuOid()),
                       vt.getTila().name(),
                       "järjestelmä",
                       extractSeliteFromValintatulos(vt));
