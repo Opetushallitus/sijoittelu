@@ -1,19 +1,27 @@
 package fi.vm.sade.valintatulosservice.config;
 
-import fi.vm.sade.security.ProductionSecurityContext;
+import fi.vm.sade.javautils.nio.cas.CasClient;
+import fi.vm.sade.javautils.nio.cas.CasConfig;
+import fi.vm.sade.javautils.nio.cas.impl.CasClientImpl;
+import fi.vm.sade.javautils.nio.cas.impl.CasSessionFetcher;
 import fi.vm.sade.security.SecurityContext;
-import fi.vm.sade.utils.cas.CasClient;
-import fi.vm.sade.utils.config.ApplicationSettingsLoader;
 import fi.vm.sade.valintatulosservice.security.Role;
 import fi.vm.sade.valintatulosservice.valintaperusteet.ValintaPerusteetService;
 import fi.vm.sade.valintatulosservice.valintaperusteet.ValintaPerusteetServiceImpl;
-import org.http4s.client.blaze.BlazeClientConfig;
-import org.http4s.client.blaze.SimpleHttp1Client;
+import org.asynchttpclient.AsyncHttpClient;
+import scala.Option;
+import scala.Some;
 import scala.collection.JavaConversions;
 import scala.collection.immutable.Map;
 
+import java.time.Duration;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
+
+import static java.time.temporal.ChronoUnit.MINUTES;
+import static java.time.temporal.ChronoUnit.SECONDS;
+import static org.asynchttpclient.Dsl.asyncHttpClient;
 
 public class SijoitteluVtsAppConfig implements VtsAppConfig.VtsAppConfig, VtsAppConfig.ExternalProps, VtsAppConfig.CasSecurity {
   @Override
@@ -42,42 +50,58 @@ public class SijoitteluVtsAppConfig implements VtsAppConfig.VtsAppConfig, VtsApp
 
   @Override
   public SecurityContext securityContext() {
-    final CasClient casClient = new CasClient(
+    final CasConfig casConfig = new CasConfig.CasConfigBuilder(
+        settings().securitySettings().casUsername(),
+        settings().securitySettings().casPassword(),
         settings().securitySettings().casUrl(),
-        SimpleHttp1Client.apply(blazeDefaultConfig()),
-        settings().callerId()
+        settings().securitySettings().casServiceIdentifier(),
+        "CSRF",
+        settings().callerId(),
+        null
+    ).setJsessionName("JSESSIONID").build();
+    final AsyncHttpClient httpClient = asyncHttpClient();
+    final CasClient casClient = new CasClientImpl(
+        casConfig,
+        httpClient,
+        new CasSessionFetcher(
+            casConfig,
+            httpClient,
+            Duration.of(20, MINUTES).toMillis(),
+            Duration.of(2, SECONDS).toMillis()) {
+
+          public CompletableFuture<String> fetchSessionToken() {
+            return CompletableFuture.completedFuture("session-token-from-mock-context");
+          }
+
+        }
     );
     final Set<Role> roles = JavaConversions
         .asJavaCollection(settings().securitySettings().requiredRoles())
         .stream()
         .map(Role::new)
         .collect(Collectors.toSet());
-    return new ProductionSecurityContext(
-        casClient,
-        settings().securitySettings().casServiceIdentifier(),
-        JavaConversions.asScalaSet(roles).toSet(),
-        settings().securitySettings().casValidateServiceTicketTimeout()
-    );
-  }
 
-  @Override
-  public BlazeClientConfig blazeDefaultConfig() {
-    BlazeClientConfig d = BlazeClientConfig.defaultConfig();
-    return new BlazeClientConfig(
-        settings().blazeResponseHeaderTimeout(),
-        settings().blazeIdleTimeout(),
-        settings().requestTimeout(),
-        d.userAgent(),
-        d.sslContext(),
-        d.checkEndpointIdentification(),
-        d.maxResponseLineSize(),
-        d.maxHeaderLength(),
-        d.maxChunkSize(),
-        d.lenientParser(),
-        d.bufferSize(),
-        d.customExecutor(),
-        d.group()
-    );
+    return new SecurityContext() {
+      @Override
+      public String casServiceIdentifier() {
+        return settings().securitySettings().casServiceIdentifier();
+      }
+
+      @Override
+      public scala.collection.immutable.Set<Role> requiredRoles() {
+        return JavaConversions.asScalaSet(roles).toSet();
+      }
+
+      @Override
+      public Option<CasClient> javaCasClient() {
+        return Some.apply(casClient);
+      }
+
+      @Override
+      public scala.concurrent.duration.Duration validateServiceTicketTimeout() {
+        return settings().securitySettings().casValidateServiceTicketTimeout();
+      }
+    };
   }
 
   @Override
