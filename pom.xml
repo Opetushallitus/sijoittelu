@@ -35,7 +35,7 @@
     <spring.security.version>6.5.9</spring.security.version>
     <valintalaskenta.version>8.0-SNAPSHOT</valintalaskenta.version>
     <valintaperusteet-api.version>8.0-SNAPSHOT</valintaperusteet-api.version>
-    <valintatulosservice.version>8.4.0-SNAPSHOT</valintatulosservice.version>
+    <valintatulosservice.version>8.4.1-SNAPSHOT</valintatulosservice.version>
   </properties>
 
   <dependencyManagement>
