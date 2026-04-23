@@ -21,8 +21,8 @@ import static fi.vm.sade.sijoittelu.domain.Tasasijasaanto.YLITAYTTO;
 public class PostSijoitteluProcessorPeruunnutaYlijaaneetVarallaTilaisetJosVarasijatayttoOnPaattynytTest {
     private final PostSijoitteluProcessorPeruunnutaYlijaaneetVarallaTilaisetJosVarasijatayttoOnPaattynyt p = new PostSijoitteluProcessorPeruunnutaYlijaaneetVarallaTilaisetJosVarasijatayttoOnPaattynyt();
 
-    private final Date nytMiinusKolmePaivaa = Date.from(LocalDateTime.now().minusDays(3L).atZone(ZoneId.systemDefault()).toInstant());
-    private final Date nytPlusKaksiPaivaa = Date.from(LocalDateTime.now().plusDays(2L).atZone(ZoneId.systemDefault()).toInstant());
+    private final Date nytMiinusKolmePaivaa = Date.from(LocalDateTime.now().minusDays(3L).atZone(ZoneId.of("Europe/Helsinki")).toInstant());
+    private final Date nytPlusKaksiPaivaa = Date.from(LocalDateTime.now().plusDays(2L).atZone(ZoneId.of("Europe/Helsinki")).toInstant());
 
     private final Hakemus hakemus1 = new HakuBuilder.HakemusBuilder().withOid("hakemus1")
             .withJonosija(1).withTila(HYVAKSYTTY).withPrioriteetti(1).build();

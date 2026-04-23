@@ -228,7 +228,7 @@ public class SijoitteluajoWrapper {
     private boolean onkoVarasijaTayttoPaattynyt(ValintatapajonoWrapper valintatapajono) {
         LocalDateTime valintatapajononVarasijatayttoPaattyy =
                 ofNullable(valintatapajono.getValintatapajono().getVarasijojaTaytetaanAsti())
-                        .map(d -> LocalDateTime.ofInstant(d.toInstant(), ZoneId.systemDefault()))
+                        .map(d -> LocalDateTime.ofInstant(d.toInstant(), ZoneId.of("Europe/Helsinki")))
                         .filter(d -> this.varasijaTayttoPaattyy == null || d.isBefore(this.varasijaTayttoPaattyy))
                         .orElse(this.varasijaTayttoPaattyy);
         return valintatapajononVarasijatayttoPaattyy != null && this.today.isAfter(valintatapajononVarasijatayttoPaattyy);

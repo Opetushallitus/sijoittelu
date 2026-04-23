@@ -7,13 +7,13 @@ import fi.vm.sade.sijoittelu.jatkuva.service.JatkuvaSijoitteluService;
 import fi.vm.sade.sijoittelu.jatkuva.util.Formatter;
 import fi.vm.sade.sijoittelu.jatkuva.job.AjastettuSijoitteluJob;
 
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import jakarta.ws.rs.NotAuthorizedException;
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
 import org.quartz.*;
 import org.quartz.impl.matchers.GroupMatcher;
 import org.slf4j.Logger;
@@ -116,7 +116,7 @@ public class JatkuvaSijoitteluServiceImpl implements JatkuvaSijoitteluService {
             try {
               // Käytetään minuutin tarkkuutta aloitusajankohdassa jotta ensimmäinen cron ei aikaisemmin
               // kuin startAt
-              Date asetusAjankohta = getAloitusajankohta(sijoitteluDto).withSecondOfMinute(0).toDate();
+              Date asetusAjankohta = Date.from(getAloitusajankohta(sijoitteluDto).withSecond(0).toInstant());
               Integer intervalli = getAjotiheys(sijoitteluDto);
 
               String jobName =
@@ -135,10 +135,10 @@ public class JatkuvaSijoitteluServiceImpl implements JatkuvaSijoitteluService {
                         .build();
 
                 String timezoneId = "Europe/Helsinki";
-                DateTime aloitusDateTime =
-                    new DateTime(asetusAjankohta, DateTimeZone.forID(timezoneId));
-                int aloitusTunnit = aloitusDateTime.getHourOfDay();
-                int aloitusMinuutit = aloitusDateTime.getMinuteOfHour();
+                ZonedDateTime aloitusDateTime =
+                    asetusAjankohta.toInstant().atZone(ZoneId.of(timezoneId));
+                int aloitusTunnit = aloitusDateTime.getHour();
+                int aloitusMinuutit = aloitusDateTime.getMinute();
                 String cron =
                     String.format(
                         "0 %s %s ? * * *",
@@ -219,7 +219,7 @@ public class JatkuvaSijoitteluServiceImpl implements JatkuvaSijoitteluService {
         .filter(JatkuvaSijoittelu::isAjossa)
         .filter(
             sijoitteluDto -> {
-              DateTime aloitusajankohta = getAloitusajankohta(sijoitteluDto);
+              ZonedDateTime aloitusajankohta = getAloitusajankohta(sijoitteluDto);
               return aktivoidaanko(aloitusajankohta);
             })
         .collect(Collectors.toMap(JatkuvaSijoittelu::getHakuOid, s -> s));
@@ -229,12 +229,14 @@ public class JatkuvaSijoitteluServiceImpl implements JatkuvaSijoitteluService {
     return Optional.ofNullable(jatkuvaSijoittelu.getAjotiheys()).orElse(VAKIO_AJOTIHEYS);
   }
 
-  public boolean aktivoidaanko(DateTime aloitusAika) {
-    return aloitusAika.isBefore(DateTime.now().plusHours(1));
+  public boolean aktivoidaanko(ZonedDateTime aloitusAika) {
+    return aloitusAika.isBefore(ZonedDateTime.now().plusHours(1));
   }
 
-  private DateTime getAloitusajankohta(JatkuvaSijoittelu jatkuvaSijoittelu) {
-    return new DateTime(
-        Optional.ofNullable(jatkuvaSijoittelu.getAloitusajankohta()).orElse(new Date()));
+  private ZonedDateTime getAloitusajankohta(JatkuvaSijoittelu jatkuvaSijoittelu) {
+    return Optional.ofNullable(jatkuvaSijoittelu.getAloitusajankohta())
+        .orElse(new Date())
+        .toInstant()
+        .atZone(ZoneId.of("Europe/Helsinki"));
   }
 }
