@@ -137,3 +137,8 @@ valinta-tulos-service.siirtotiedosto.lukuvuosimaksut_page_size={{ valintatulosse
 valinta-tulos-service.siirtotiedosto.valintatapajonot_page_size={{ valintatulosservice_siirtotiedosto_valintatapajonot_page_size | default('10000') }}
 valinta-tulos-service.siirtotiedosto.vastaanotot_page_size={{ valintatulosservice_siirtotiedosto_vastaanotot_page_size | default('10000') }}
 valinta-tulos-service.siirtotiedosto.hakukohde_group_size={{ valintatulosservice_siirtotiedosto_hakukohde_group_size | default('500') }}
+
+#Oma-opiskelijavalinta
+oma-opiskelijavalinta.url.fi=https://{{host_haku}}/oma-opiskelijavalinta/token/
+oma-opiskelijavalinta.url.en=https://{{host_haku_en}}/oma-opiskelijavalinta/token/
+oma-opiskelijavalinta.url.sv=https://{{host_haku_sv}}/oma-opiskelijavalinta/token/
