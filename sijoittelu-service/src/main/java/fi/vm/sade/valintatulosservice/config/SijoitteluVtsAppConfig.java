@@ -19,6 +19,7 @@ import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
+import static fi.vm.sade.sijoittelu.configuration.SijoitteluServiceConfiguration.CALLER_ID;
 import static java.time.temporal.ChronoUnit.MINUTES;
 import static java.time.temporal.ChronoUnit.SECONDS;
 import static org.asynchttpclient.Dsl.asyncHttpClient;
@@ -56,7 +57,7 @@ public class SijoitteluVtsAppConfig implements VtsAppConfig.VtsAppConfig, VtsApp
         settings().securitySettings().casUrl(),
         settings().securitySettings().casServiceIdentifier(),
         "CSRF",
-        settings().callerId(),
+        CALLER_ID,
         null
     ).setJsessionName("JSESSIONID").build();
     final AsyncHttpClient httpClient = asyncHttpClient();
