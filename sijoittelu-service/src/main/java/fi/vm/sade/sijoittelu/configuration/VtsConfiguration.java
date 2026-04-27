@@ -30,7 +30,9 @@ import org.springframework.context.annotation.Profile;
 public class VtsConfiguration {
   @Bean
   public VtsAppConfig.VtsAppConfig vtsAppConfig() {
-    return new SijoitteluVtsAppConfig();
+    return new SijoitteluVtsAppConfig() {
+
+    };
   }
 
   @Bean
