@@ -34,7 +34,7 @@ public class SijoitteluVtsAppConfig implements VtsAppConfig.VtsAppConfig, VtsApp
 
   @Override
   public VtsApplicationSettings settings() {
-    return (CallerIdOverridingVtsAppConfig) ApplicationSettingsLoader.loadSettings(configFile(), VtsApplicationSettings::new);
+    return ApplicationSettingsLoader.loadSettings(configFile(), CallerIdOverridingVtsAppConfig::new);
   }
 
   @Override
