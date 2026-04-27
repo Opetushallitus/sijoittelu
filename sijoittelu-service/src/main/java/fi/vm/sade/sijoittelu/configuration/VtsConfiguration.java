@@ -1,6 +1,7 @@
 package fi.vm.sade.sijoittelu.configuration;
 
 import fi.vm.sade.sijoittelu.laskenta.service.business.WrappedVastaanottoService;
+import fi.vm.sade.valintatulosservice.TimeUtil;
 import fi.vm.sade.valintatulosservice.ValintatulosService;
 import fi.vm.sade.valintatulosservice.VastaanottoService;
 import fi.vm.sade.valintatulosservice.config.*;
@@ -67,6 +68,7 @@ public class VtsConfiguration {
         ),
         appConfig
     );
+    final TimeUtil timeUtil = new TimeUtil();
     final SijoittelutulosService sijoittelutulosService = new SijoittelutulosService(
         new ValintarekisteriRaportointiServiceImpl(
             valintarekisteriDb,
@@ -74,7 +76,8 @@ public class VtsConfiguration {
         ),
         ohjausparametritService,
         valintarekisteriDb,
-        new ValintarekisteriSijoittelunTulosClientImpl(valintarekisteriDb)
+        new ValintarekisteriSijoittelunTulosClientImpl(valintarekisteriDb),
+        timeUtil
     );
     return new WrappedVastaanottoService(
         new VastaanottoService(
@@ -83,14 +86,15 @@ public class VtsConfiguration {
             new ValintatulosService(
                 valintarekisteriDb,
                 sijoittelutulosService,
+                ohjausparametritService,
                 hakemusRepository,
                 valintarekisteriDb,
-                ohjausparametritService,
                 hakuService,
                 valintarekisteriDb,
                 hakukohdeRecordService,
                 new ValintarekisteriValintatulosDaoImpl(valintarekisteriDb),
                 koodistoService,
+                timeUtil,
                 appConfig
             ),
             valintarekisteriDb,
