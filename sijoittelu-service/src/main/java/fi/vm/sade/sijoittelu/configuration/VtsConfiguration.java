@@ -21,6 +21,8 @@ import fi.vm.sade.valintatulosservice.tarjonta.*;
 import fi.vm.sade.valintatulosservice.valintarekisteri.db.impl.DbConfig;
 import fi.vm.sade.valintatulosservice.valintarekisteri.db.impl.ValintarekisteriDb;
 import fi.vm.sade.valintatulosservice.valintarekisteri.hakukohde.HakukohdeRecordService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -28,6 +30,8 @@ import org.springframework.context.annotation.Profile;
 @Profile("!test")
 @Configuration
 public class VtsConfiguration {
+  private static final Logger LOG = LoggerFactory.getLogger(VtsConfiguration.class);
+
   @Bean
   public VtsAppConfig.VtsAppConfig vtsAppConfig() {
     return new SijoitteluVtsAppConfig() {
@@ -37,6 +41,7 @@ public class VtsConfiguration {
 
   @Bean
   public WrappedVastaanottoService vastaanottoService(final VtsAppConfig.VtsAppConfig appConfig) {
+    LOG.info("Alustetaan VTS:n tarvitsemat palvelut, käytetään caller-id:tä {} VTS:n tekemiin kutsuihin", appConfig.settings().callerId());
     final DbConfig dbConfig = appConfig.settings().valintaRekisteriDbConfig();
     final ValintarekisteriDb valintarekisteriDb = new ValintarekisteriDb(dbConfig, false);
     final OhjausparametritService ohjausparametritService = new CachedOhjausparametritService(
