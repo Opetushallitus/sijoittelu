@@ -230,7 +230,7 @@ public class HakijaryhmaTest extends AbstractIntegrationTest {
       List<Valintatapajono> valintatapajonot = hk.getValintatapajonot().stream().map(ValintatapajonoWrapper::getValintatapajono).toList();
       valintatapajonot.forEach(vtj -> vtj.setAloituspaikat(2));
       valintatapajonot.stream().filter(v -> v.getNimi().equals("valintatapajono1")).forEach(v -> {
-        Date kolmePaivaaSitten = Date.from(LocalDateTime.now().minusDays(3L).atZone(ZoneId.systemDefault()).toInstant());
+        Date kolmePaivaaSitten = Date.from(LocalDateTime.now().minusDays(3L).atZone(ZoneId.of("Europe/Helsinki")).toInstant());
         v.setVarasijojaTaytetaanAsti(kolmePaivaaSitten);
       });
     });
