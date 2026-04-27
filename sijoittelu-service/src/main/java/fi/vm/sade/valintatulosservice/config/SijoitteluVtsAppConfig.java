@@ -1,5 +1,6 @@
 package fi.vm.sade.valintatulosservice.config;
 
+import com.typesafe.config.Config;
 import fi.vm.sade.security.ProductionSecurityContext;
 import fi.vm.sade.security.SecurityContext;
 import fi.vm.sade.valintatulosservice.valintaperusteet.ValintaPerusteetService;
@@ -7,6 +8,8 @@ import fi.vm.sade.valintatulosservice.valintaperusteet.ValintaPerusteetServiceIm
 import scala.collection.immutable.Map;
 
 import java.util.concurrent.TimeUnit;
+
+import static fi.vm.sade.sijoittelu.configuration.SijoitteluServiceConfiguration.CALLER_ID;
 
 public class SijoitteluVtsAppConfig implements VtsAppConfig.VtsAppConfig, VtsAppConfig.ExternalProps, VtsAppConfig.CasSecurity {
   @Override
@@ -18,9 +21,20 @@ public class SijoitteluVtsAppConfig implements VtsAppConfig.VtsAppConfig, VtsApp
   public void start() {
   }
 
+  static class CallerIdOverridingVtsAppConfig extends VtsApplicationSettings {
+    public CallerIdOverridingVtsAppConfig(final Config config) {
+      super(config);
+    }
+
+    @Override
+    public String callerId() {
+      return CALLER_ID;
+    }
+  }
+
   @Override
   public VtsApplicationSettings settings() {
-    return ApplicationSettingsLoader.loadSettings(configFile(), VtsApplicationSettings::new);
+    return (CallerIdOverridingVtsAppConfig) ApplicationSettingsLoader.loadSettings(configFile(), VtsApplicationSettings::new);
   }
 
   @Override
