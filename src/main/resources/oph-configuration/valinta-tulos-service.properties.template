@@ -95,6 +95,11 @@ omatsivut.en=https://{{host_haku_en}}/omatsivut/hakutoiveidenMuokkaus.html#/toke
 omatsivut.sv=https://{{host_haku_sv}}/omatsivut/hakutoiveidenMuokkaus.html#/token/
 omatsivut.oili.hetutonUrl={{oili_hetuton_url}}
 
+#Oma-opiskelijavalinta
+oma-opiskelijavalinta.url.fi=https://{{host_haku}}/oma-opiskelijavalinta/token/
+oma-opiskelijavalinta.url.en=https://{{host_haku_en}}/oma-opiskelijavalinta/token/
+oma-opiskelijavalinta.url.sv=https://{{host_haku_sv}}/oma-opiskelijavalinta/token/
+
 
 ## Valinta-tulos-emailer
 
