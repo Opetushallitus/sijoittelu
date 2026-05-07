@@ -12,6 +12,12 @@ import java.util.concurrent.TimeUnit;
 import static fi.vm.sade.sijoittelu.configuration.SijoitteluServiceConfiguration.CALLER_ID;
 
 public class SijoitteluVtsAppConfig implements VtsAppConfig.VtsAppConfig, VtsAppConfig.ExternalProps, VtsAppConfig.CasSecurity {
+  private final CallerIdOverridingVtsAppConfig vtsAppConfig;
+
+  public SijoitteluVtsAppConfig() {
+    vtsAppConfig = ApplicationSettingsLoader.loadSettings(configFile(), CallerIdOverridingVtsAppConfig::new);
+  }
+
   @Override
   public String configFile() {
     return System.getProperty("user.home") + "/oph-configuration/valinta-tulos-service.properties";
@@ -34,7 +40,7 @@ public class SijoitteluVtsAppConfig implements VtsAppConfig.VtsAppConfig, VtsApp
 
   @Override
   public VtsApplicationSettings settings() {
-    return ApplicationSettingsLoader.loadSettings(configFile(), CallerIdOverridingVtsAppConfig::new);
+    return vtsAppConfig;
   }
 
   @Override
