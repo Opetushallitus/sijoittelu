@@ -287,8 +287,8 @@ public class ToteutaSijoitteluService {
                     .addHeader("Accept", "application/json")
                     .addHeader("Content-type", "application/json")
                     .addHeader("Caller-Id", SijoitteluServiceConfiguration.CALLER_ID)
-                    .setRequestTimeout(Duration.ofMillis(120000))
-                    .setReadTimeout(Duration.ofMillis(120000))
+                    .setRequestTimeout(Duration.ofMillis(240000))
+                    .setReadTimeout(Duration.ofMillis(240000))
                     .build();
                 //Response hakijaryhmaResponse = sijoitteluCasClient.executeWithServiceTicketBlocking(hakijaryhmaRequest);
                 try {
