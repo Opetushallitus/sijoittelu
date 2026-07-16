@@ -39,6 +39,20 @@ public class PreSijoitteluProcessorMerkitseMyohastyneetPaikanVastaanototTest {
     }
 
     @Test
+    public void doesNotMarkLateApplicationIfGenuineVastaanottoWasDiscardedThisRound() {
+        SijoitteluajoWrapper wrapper = generateSijoitteluajoWrapper(true, true);
+        HakemusWrapper hw = wrapper.getHakukohteet().get(0).getValintatapajonot().get(0).getHakemukset().get(0);
+        hw.setAitoVastaanottoNollattu(true);
+
+        processor.process(wrapper);
+
+        assertEquals(HakemuksenTila.HYVAKSYTTY, hw.getHakemus().getTila());
+        assertEquals(ValintatuloksenTila.KESKEN, hw.getValintatulos().orElse(new Valintatulos()).getTila());
+        assertTrue(hw.isTilaVoidaanVaihtaa());
+        assertTrue(wrapper.getMuuttuneetValintatulokset().isEmpty());
+    }
+
+    @Test
     public void doesNotMarkLateApplicationsThatAreNotInProcessCancelled() {
         SijoitteluajoWrapper wrapper = generateSijoitteluajoWrapper(true, true);
         wrapper.getHakukohteet().stream().flatMap(HakukohdeWrapper::hakukohteenHakemukset)
