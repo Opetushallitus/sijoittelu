@@ -125,6 +125,7 @@ public class DevApp {
         System.setProperty("valinta-tulos-service.siirtotiedosto.s3-bucket", "not-a-real-bucket");
         System.setProperty("valinta-tulos-service.siirtotiedosto.valintatapajonot_page_size", "10000");
         System.setProperty("valinta-tulos-service.siirtotiedosto.vastaanotot_page_size", "10000");
+        System.setProperty("valinta-tulos-service.siirtotiedosto.yos_size", "5000");
         System.setProperty("valinta-tulos-service.streaming.hakukohde.concurrency", "10");
         System.setProperty("valinta-tulos-service.streaming.lock.queue.limit", "10");
         System.setProperty("valinta-tulos-service.streaming.lock.timeout.seconds", "600");
