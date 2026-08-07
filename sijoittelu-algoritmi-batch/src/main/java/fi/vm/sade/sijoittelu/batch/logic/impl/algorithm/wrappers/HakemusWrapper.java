@@ -42,6 +42,12 @@ public class HakemusWrapper {
 
     private boolean hyvaksyPeruuntunut;
 
+    // True, jos tälle hakemukselle/jonolle oli tuore, aito vastaanotto (VASTAANOTTANUT_SITOVASTI /
+    // EHDOLLISESTI_VASTAANOTTANUT), mutta se nollattiin KESKEN-tilaan
+    // SijoitteluajoWrapper#setHakemuksenValintatuloksenTila:ssä, koska hakemuksen edellinenTila ei
+    // kuulunut vastaanoton muokattavissa -tiloihin.
+    private boolean aitoVastaanottoNollattu = false;
+
     public HashCode getLahtotilanteenHash() {
         return lahtotilanteenHash;
     }
@@ -190,6 +196,14 @@ public class HakemusWrapper {
 
     public void hyvaksyPeruuntunut() {
         this.hyvaksyPeruuntunut = true;
+    }
+
+    public boolean isAitoVastaanottoNollattu() {
+        return this.aitoVastaanottoNollattu;
+    }
+
+    public void setAitoVastaanottoNollattu(boolean aitoVastaanottoNollattu) {
+        this.aitoVastaanottoNollattu = aitoVastaanottoNollattu;
     }
 
     public boolean merkittyAiemminHyvaksytyksiKorkeammanPrioriteetinRyhmastaKuin(HakijaryhmaWrapper ryhmaWrapper) {
