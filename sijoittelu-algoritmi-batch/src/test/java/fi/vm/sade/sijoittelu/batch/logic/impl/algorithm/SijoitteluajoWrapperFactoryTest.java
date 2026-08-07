@@ -209,6 +209,39 @@ public class SijoitteluajoWrapperFactoryTest {
             ValintatapajonoWrapper jonoWrapper = sijoitteluajoWrapper.getHakukohteet().get(0).getValintatapajonot().get(0);
             assertTrue(jonoWrapper.getMerkitseMyohAuto());
         }
+
+        @Test
+        public void jos_hakemuksken_edellinen_tila_on_HYVAKSYTTY_sallitaan_PERUNUT_tila() {
+            Valintatulos valintatulos = valintatulosWithTila(ValintatuloksenTila.EI_VASTAANOTETTU_MAARA_AIKANA);
+            Hakemus hakemus = new Hakemus();
+            hakemus.setHakemusOid("123");
+            TilojenMuokkaus.asetaTilaksiHyvaksytty(hakemus);
+            hakemus.setEdellinenTila(HakemuksenTila.HYVAKSYTTY);
+
+            SijoitteluajoWrapper sijoitteluAjo = sijoitteluAjo(valintatulos, Collections.singletonList(hakemus));
+            HakemusWrapper hakemusWrapper = sijoitteluAjo.getHakukohteet().getFirst().getValintatapajonot().getFirst().getHakemukset().getFirst();
+
+            assertEquals(HakemuksenTila.PERUNUT, hakemusWrapper.getHakemus().getTila());
+            assertEquals(TilanKuvaukset.peruuntunutEiVastaanottanutMaaraaikana, hakemusWrapper.getHakemus().getTilanKuvaukset());
+            assertEquals(TilankuvauksenTarkenne.PERUUNTUNUT_EI_VASTAANOTTANUT_MAARAAIKANA, hakemusWrapper.getHakemus().getTilankuvauksenTarkenne());
+            assertFalse(hakemusWrapper.isTilaVoidaanVaihtaa());
+        }
+
+        @Test
+        public void jos_hakemuksen_edellinenTila_on_PERUUTETTU_sallitaan_PERUNUT_tila() {
+            Valintatulos valintatulos = valintatulosWithTila(ValintatuloksenTila.PERUNUT);
+            Hakemus hakemus = new Hakemus();
+            hakemus.setHakemusOid("123");
+            TilojenMuokkaus.asetaTilaksiHyvaksytty(hakemus);
+            hakemus.setEdellinenTila(HakemuksenTila.PERUUTETTU);
+            SijoitteluajoWrapper sijoitteluAjo = sijoitteluAjo(valintatulos, Collections.singletonList(hakemus));
+            HakemusWrapper hakemusWrapper = sijoitteluAjo.getHakukohteet().getFirst().getValintatapajonot().getFirst().getHakemukset().getFirst();
+
+            assertEquals(HakemuksenTila.PERUNUT, hakemusWrapper.getHakemus().getTila());
+            assertEquals(TilanKuvaukset.tyhja, hakemusWrapper.getHakemus().getTilanKuvaukset());
+            assertEquals(TilankuvauksenTarkenne.EI_TILANKUVAUKSEN_TARKENNETTA, hakemusWrapper.getHakemus().getTilankuvauksenTarkenne());
+            assertFalse(hakemusWrapper.isTilaVoidaanVaihtaa());
+        }
     }
 
     @Nested
