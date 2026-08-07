@@ -18,7 +18,7 @@ public class PreSijoitteluProcessorMerkitseMyohastyneetPaikanVastaanotot impleme
 
     @Override
     public void process(SijoitteluajoWrapper sijoitteluajoWrapper) {
-        LOG.info("Aloitetaan merkitse myohastyneet automaattisesti preprosessointi");
+        LOG.info("Aloitetaan merkitse myohastyneet automaattisesti preprosessointi haulle {}", sijoitteluajoWrapper.getSijoitteluajo().getHakuOid());
         sijoitteluajoWrapper.getHakukohteet().forEach(hk -> {
             hk.getValintatapajonot().forEach(jono -> {
                 LOG.info("Valintatapajono {} aseta myöhästyneet automaattisesti: {}", jono.getValintatapajono().getOid(), jono.getMerkitseMyohAuto());
@@ -31,7 +31,8 @@ public class PreSijoitteluProcessorMerkitseMyohastyneetPaikanVastaanotot impleme
 
     private void setHakemusToStatusPerunut(HakemusWrapper hakemusWrapper, SijoitteluajoWrapper sijoitteluajoWrapper) {
         Hakemus hakemus = hakemusWrapper.getHakemus();
-        LOG.info("Merkitään vastaanotto myöhästyneeksi hakemukselle {}, deadline: {}, tila: {}, isVastaanottoMyohassa: {}, valintatuloksenTila: {}",
+        LOG.info("Merkitään vastaanotto myöhästyneeksi haun {} hakemukselle {}, deadline: {}, tila: {}, isVastaanottoMyohassa: {}, valintatuloksenTila: {}",
+                sijoitteluajoWrapper.getSijoitteluajo().getHakuOid(),
                 hakemus.getHakemusOid(),
                 hakemus.getVastaanottoDeadline(),
                 hakemus.getTila(),

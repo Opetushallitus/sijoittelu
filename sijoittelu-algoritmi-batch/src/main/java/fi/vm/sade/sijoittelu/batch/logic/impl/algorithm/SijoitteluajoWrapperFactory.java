@@ -41,7 +41,11 @@ public class SijoitteluajoWrapperFactory {
                 if (!hakukohdeMapToValintatapajonoByOid.isEmpty()
                         && !hakukohdeMapToValintatapajonoByOid.get(hakukohde.getOid()).isEmpty()
                         && hakukohdeMapToValintatapajonoByOid.get(hakukohde.getOid()).get(valintatapajono.getOid()) != null) {
-                    LOG.info("Valintatapajono {}, hakukohde {}, Merkitse myöh auto {}", valintatapajono.getOid(), hakukohde.getOid(), hakukohdeMapToValintatapajonoByOid
+                    LOG.info("Valintatapajono {}, haku {}, hakukohde {}, Merkitse myöh auto {}",
+                            valintatapajono.getOid(),
+                            sijoitteluAjo.getHakuOid(),
+                            hakukohde.getOid(),
+                            hakukohdeMapToValintatapajonoByOid
                             .get(hakukohde.getOid())
                             .get(valintatapajono.getOid())
                             .getMerkitseMyohAuto());
