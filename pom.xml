@@ -34,8 +34,8 @@
     <testcontainers.version>2.0.4</testcontainers.version>
     <spring.security.version>6.5.11</spring.security.version>
     <valintalaskenta.version>8.0-SNAPSHOT</valintalaskenta.version>
-    <valintaperusteet-api.version>8.0-SNAPSHOT</valintaperusteet-api.version>
-    <valintatulosservice.version>8.5.1-SNAPSHOT</valintatulosservice.version>
+    <valintaperusteet-api.version>8.2-OY-5771-SNAPSHOT</valintaperusteet-api.version>
+    <valintatulosservice.version>8.6.0-OY-5754-SNAPSHOT</valintatulosservice.version>
     <netty.version>4.1.136.Final</netty.version>
     <cxf.version>4.1.7</cxf.version>
   </properties>
@@ -112,6 +112,16 @@
         <groupId>fi.vm.sade.valintaperusteet</groupId>
         <artifactId>valintaperusteet-api</artifactId>
         <version>${valintaperusteet-api.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>fi.vm.sade.valintaperusteet</groupId>
+        <artifactId>valintaperusteet-laskenta</artifactId>
+        <version>${valintaperusteet-api.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>fi.vm.sade.valintaperusteet</groupId>
+        <artifactId>sharedutils</artifactId>
+        <version>8.2-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>fi.vm.sade.tarjonta</groupId>
@@ -226,7 +236,7 @@
       <dependency>
         <groupId>fi.vm.sade</groupId>
         <artifactId>auditlogger</artifactId>
-        <version>9.2.5-SNAPSHOT</version>
+        <version>9.2.7-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>org.springdoc</groupId>
@@ -251,7 +261,7 @@
       <dependency>
         <groupId>fi.vm.sade.valinta</groupId>
         <artifactId>valinta-sharedutils</artifactId>
-        <version>8.0-SNAPSHOT</version>
+        <version>8.2-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>org.hibernate.orm</groupId>
@@ -601,6 +611,13 @@
         <version>2.3.0</version>
       </dependency>
 
+      <!-- fi.vm.sade.valintaperusteet:sharedutils:jar:8.2-SNAPSHOT vs fi.vm.sade.sijoittelu:sijoittelu-service:jar:10.2.0-SNAPSHOT -->
+      <dependency>
+        <groupId>org.apereo.cas.client</groupId>
+        <artifactId>cas-client-core</artifactId>
+        <version>4.1.1</version>
+      </dependency>
+
       <!-- Tietoturvahaavoittuvuuksien korjauksia -->
       <dependency>
         <groupId>org.jsoup</groupId>
@@ -641,26 +658,6 @@
       <releases>
         <enabled>false</enabled>
       </releases>
-    </repository>
-    <repository>
-      <releases>
-        <enabled>false</enabled>
-      </releases>
-      <snapshots>
-        <enabled>true</enabled>
-      </snapshots>
-      <id>oph-sade-artifactory-snapshots</id>
-      <url>https://artifactory.opintopolku.fi/artifactory/oph-sade-snapshot-local</url>
-    </repository>
-    <repository>
-      <releases>
-        <enabled>true</enabled>
-      </releases>
-      <snapshots>
-        <enabled>false</enabled>
-      </snapshots>
-      <id>oph-sade-artifactory-releases</id>
-      <url>https://artifactory.opintopolku.fi/artifactory/oph-sade-release-local</url>
     </repository>
   </repositories>
 
