@@ -45,7 +45,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           cd main
-          mvn clean verify -Pit -Dit.usePhantomJs=true -B -Dbranch=${GITHUB_REF_NAME} -Drevision=${GITHUB_SHA} -DbuildNumber=${GITHUB_RUN_NUMBER}
+          mvn --settings settings.xml clean verify -Pit -Dit.usePhantomJs=true -B -Dbranch=${GITHUB_REF_NAME} -Drevision=${GITHUB_SHA} -DbuildNumber=${GITHUB_RUN_NUMBER}
 
       - uses: actions/cache@v4
         id: restore-build
@@ -131,4 +131,4 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           cd main
-          mvn deploy -B -pl fi.vm.sade.sijoittelu:sijoittelu,sijoittelu-tulos-api,sijoittelu-algoritmi-domain,sijoittelu-algoritmi-batch,sijoittelu-tulos-service -DskipTests
+          mvn deploy -B -pl fi.vm.sade.sijoittelu:sijoittelu,sijoittelu-tulos-api,sijoittelu-algoritmi-domain,sijoittelu-algoritmi-batch,sijoittelu-tulos-service -DskipTests --settings settings.xml
