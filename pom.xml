@@ -35,7 +35,7 @@
     <spring.security.version>6.5.11</spring.security.version>
     <valintalaskenta.version>8.0-SNAPSHOT</valintalaskenta.version>
     <valintaperusteet-api.version>8.2-SNAPSHOT</valintaperusteet-api.version>
-    <valintatulosservice.version>8.6.1-SNAPSHOT</valintatulosservice.version>
+    <valintatulosservice.version>8.6.1-OY-5845-SNAPSHOT</valintatulosservice.version>
     <netty.version>4.1.136.Final</netty.version>
     <cxf.version>4.1.7</cxf.version>
   </properties>
