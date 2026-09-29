@@ -52,6 +52,7 @@ public class PreSijoitteluProcessorMerkitseMyohastyneetPaikanVastaanotot impleme
         HakemuksenTila tila = hakemus.getTila();
         return List.of(HakemuksenTila.HYVAKSYTTY, HakemuksenTila.VARASIJALTA_HYVAKSYTTY).contains(tila)
                 && hakemusWrapper.getValintatulos().map(vt -> vt.getTila() == ValintatuloksenTila.KESKEN).orElse(false)
-                && hakemus.isVastaanottoMyohassa() == Boolean.TRUE;
+                && hakemus.isVastaanottoMyohassa() == Boolean.TRUE
+                && !hakemusWrapper.isAitoVastaanottoNollattu();
     }
 }
