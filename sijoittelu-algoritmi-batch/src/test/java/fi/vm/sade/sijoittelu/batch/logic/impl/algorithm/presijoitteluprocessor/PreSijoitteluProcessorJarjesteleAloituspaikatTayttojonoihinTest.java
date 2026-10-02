@@ -3,15 +3,14 @@ package fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.presijoitteluprocessor;
 import com.google.common.collect.Lists;
 
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoitteluConfiguration;
-import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoitteluSilmukkaException;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoitteluTestSpec;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoitteluajoWrapperFactory;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.util.TilojenMuokkaus;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.SijoitteluajoWrapper;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.ValintatapajonoWrapper;
 import fi.vm.sade.sijoittelu.domain.*;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -20,7 +19,6 @@ import java.util.List;
 
 import static fi.vm.sade.sijoittelu.domain.HakemuksenTila.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class PreSijoitteluProcessorJarjesteleAloituspaikatTayttojonoihinTest extends SijoitteluTestSpec {
 
@@ -93,6 +91,86 @@ public class PreSijoitteluProcessorJarjesteleAloituspaikatTayttojonoihinTest ext
         assertEquals(0, vtjs.get(1).getValintatapajono().getAloituspaikat().intValue());
         assertEquals(1, vtjs.get(2).getValintatapajono().getAloituspaikat().intValue());
         assertEquals("jono3", vtjs.get(2).getValintatapajono().getOid());
+    }
+
+    @Test
+    public void testMovesAloituspaikkaThroughChainRegardlessOfJonoOrder() {
+        // Ketju jono1 -> jono2 -> jono3, mutta jonot ovat hakukohteella ketjun kannalta väärässä järjestyksessä
+        List<Hakukohde> hakukohteet = Lists.newArrayList();
+        hakukohteet.add(new HakukohdeBuilder()
+                .withValintatapajono(
+                        new ValintatapajonoBuilder()
+                                .withOid("jono2")
+                                .withAloituspaikat(0)
+                                .withTayttojono("jono3")
+                                .build())
+                .withValintatapajono(
+                        new ValintatapajonoBuilder()
+                                .withOid("jono3")
+                                .withAloituspaikat(0)
+                                .build())
+                .withValintatapajono(
+                        new ValintatapajonoBuilder()
+                                .withOid("jono1")
+                                .withAloituspaikat(1)
+                                .withTayttojono("jono2")
+                                .build())
+                .build());
+        final SijoitteluajoWrapper sijoitteluAjo = new SijoitteluajoWrapperBuilder(hakukohteet)
+                .withKKHaku(true).withVarasijaSaannotAstuvatVoimaan(LocalDateTime.now().minusDays(1)).build();
+
+        p.process(sijoitteluAjo);
+
+        List<ValintatapajonoWrapper> vtjs = sijoitteluAjo.getHakukohteet().get(0).getValintatapajonot();
+        assertEquals(3, vtjs.size());
+        assertEquals("jono2", vtjs.get(0).getValintatapajono().getOid());
+        assertEquals(0, vtjs.get(0).getValintatapajono().getAloituspaikat().intValue());
+        assertEquals("jono3", vtjs.get(1).getValintatapajono().getOid());
+        assertEquals(1, vtjs.get(1).getValintatapajono().getAloituspaikat().intValue());
+        assertEquals("jono1", vtjs.get(2).getValintatapajono().getOid());
+        assertEquals(0, vtjs.get(2).getValintatapajono().getAloituspaikat().intValue());
+    }
+
+    @Test
+    public void testMovesAloituspaikkaThroughChainWhenSeveralJonosShareTayttojono() {
+        // jono1 -> jono3 ja jono2 -> jono3 -> jono4, jonot ketjun kannalta väärässä järjestyksessä
+        List<Hakukohde> hakukohteet = Lists.newArrayList();
+        hakukohteet.add(new HakukohdeBuilder()
+                .withValintatapajono(
+                        new ValintatapajonoBuilder()
+                                .withOid("jono3")
+                                .withAloituspaikat(0)
+                                .withTayttojono("jono4")
+                                .build())
+                .withValintatapajono(
+                        new ValintatapajonoBuilder()
+                                .withOid("jono4")
+                                .withAloituspaikat(0)
+                                .build())
+                .withValintatapajono(
+                        new ValintatapajonoBuilder()
+                                .withOid("jono1")
+                                .withAloituspaikat(1)
+                                .withTayttojono("jono3")
+                                .build())
+                .withValintatapajono(
+                        new ValintatapajonoBuilder()
+                                .withOid("jono2")
+                                .withAloituspaikat(2)
+                                .withTayttojono("jono3")
+                                .build())
+                .build());
+        final SijoitteluajoWrapper sijoitteluAjo = new SijoitteluajoWrapperBuilder(hakukohteet)
+                .withKKHaku(true).withVarasijaSaannotAstuvatVoimaan(LocalDateTime.now().minusDays(1)).build();
+
+        p.process(sijoitteluAjo);
+
+        List<ValintatapajonoWrapper> vtjs = sijoitteluAjo.getHakukohteet().get(0).getValintatapajonot();
+        assertEquals(4, vtjs.size());
+        assertEquals(0, vtjs.get(0).getValintatapajono().getAloituspaikat().intValue()); // jono3
+        assertEquals(3, vtjs.get(1).getValintatapajono().getAloituspaikat().intValue()); // jono4
+        assertEquals(0, vtjs.get(2).getValintatapajono().getAloituspaikat().intValue()); // jono1
+        assertEquals(0, vtjs.get(3).getValintatapajono().getAloituspaikat().intValue()); // jono2
     }
 
     @Test
@@ -222,9 +300,9 @@ public class PreSijoitteluProcessorJarjesteleAloituspaikatTayttojonoihinTest ext
         assertEquals(0, vtjs.get(1).getValintatapajono().getAloituspaikat().intValue());
     }
 
-    @Disabled
     @Test
-    public void testBreaksOnLoop() {
+    @Timeout(10)
+    public void testDoesNotLoopWhenJononTayttojonoOnJonoItse() {
         List<Hakukohde> hakukohteet = Lists.newArrayList();
         hakukohteet.add(new HakukohdeBuilder()
                 .withValintatapajono(
@@ -238,12 +316,16 @@ public class PreSijoitteluProcessorJarjesteleAloituspaikatTayttojonoihinTest ext
         final SijoitteluajoWrapper sijoitteluAjo = new SijoitteluajoWrapperBuilder(hakukohteet)
                 .withKKHaku(true).withVarasijaSaannotAstuvatVoimaan(LocalDateTime.now().minusDays(1)).build();
 
-        assertThrows(SijoitteluSilmukkaException.class, () -> p.process(sijoitteluAjo));
+        p.process(sijoitteluAjo);
+
+        List<ValintatapajonoWrapper> vtjs = sijoitteluAjo.getHakukohteet().get(0).getValintatapajonot();
+        assertEquals(1, vtjs.size());
+        assertEquals(1, vtjs.get(0).getValintatapajono().getAloituspaikat().intValue());
     }
 
-    @Disabled
     @Test
-    public void testBreaksOnLongLoop() {
+    @Timeout(10)
+    public void testDoesNotLoopWhenTayttojonotMuodostavatSilmukan() {
         List<Hakukohde> hakukohteet = Lists.newArrayList();
         hakukohteet.add(new HakukohdeBuilder()
                 .withValintatapajono(
@@ -268,7 +350,15 @@ public class PreSijoitteluProcessorJarjesteleAloituspaikatTayttojonoihinTest ext
         final SijoitteluajoWrapper sijoitteluAjo = new SijoitteluajoWrapperBuilder(hakukohteet)
                 .withKKHaku(true).withVarasijaSaannotAstuvatVoimaan(LocalDateTime.now().minusDays(1)).build();
 
-        assertThrows(SijoitteluSilmukkaException.class, () -> p.process(sijoitteluAjo));
+        p.process(sijoitteluAjo);
+
+        // Jokainen silmukan jono ehtii luovuttaa ylijäämäpaikkansa täsmälleen kerran, joten
+        // paikat kiertävät silmukan ympäri takaisin lähtötilanteeseen
+        List<ValintatapajonoWrapper> vtjs = sijoitteluAjo.getHakukohteet().get(0).getValintatapajonot();
+        assertEquals(3, vtjs.size());
+        assertEquals(1, vtjs.get(0).getValintatapajono().getAloituspaikat().intValue());
+        assertEquals(0, vtjs.get(1).getValintatapajono().getAloituspaikat().intValue());
+        assertEquals(0, vtjs.get(2).getValintatapajono().getAloituspaikat().intValue());
     }
 
     @Test
