@@ -1,10 +1,8 @@
 package fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.presijoitteluprocessor;
 
 import com.google.common.collect.Collections2;
-import com.google.common.collect.Queues;
 import com.google.common.collect.Sets;
 
-import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.SijoitteluSilmukkaException;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.HakemusWrapper;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.HakukohdeWrapper;
 import fi.vm.sade.sijoittelu.batch.logic.impl.algorithm.wrappers.SijoitteluajoWrapper;
@@ -15,16 +13,15 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Queue;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 class PreSijoitteluProcessorJarjesteleAloituspaikatTayttojonoihin implements PreSijoitteluProcessor {
     private static final Logger LOG = LoggerFactory.getLogger(PreSijoitteluProcessorJarjesteleAloituspaikatTayttojonoihin.class);
-    private static final int LIMIT = 1000;
 
     private static Set<HakemuksenTila> hyvaksyttavissaTilat = Sets.newHashSet(
             null,
@@ -42,21 +39,9 @@ class PreSijoitteluProcessorJarjesteleAloituspaikatTayttojonoihin implements Pre
                 Map<String, ValintatapajonoWrapper> oid2Valintatapajono = hakukohde.getValintatapajonot().stream()
                     .collect(Collectors.toUnmodifiableMap(j -> j.getValintatapajono().getOid(), Function.identity()));
 
-                Queue<ValintatapajonoWrapper> toBeProcessed = Queues.newConcurrentLinkedQueue(hakukohde.getValintatapajonot());
-
-                // Iteroidaan jokaisen jonon ja täyttöjonojen läpi
-                int iterationCount = 0;
-                while (!toBeProcessed.isEmpty()) {
-                    if (iterationCount++ > LIMIT) {
-                        throw new SijoitteluSilmukkaException(
-                                String.format(
-                                        "Täyttöjono loop detected for sijoitteluajo %s, hakukohde %s with %s valintajonos",
-                                        sijoitteluajoWrapper.getSijoitteluAjoId(),
-                                        hakukohde.getHakukohde().getOid(),
-                                        hakukohde.getValintatapajonot().size()));
-                    }
-
-                    ValintatapajonoWrapper valintatapajonoWrapper = toBeProcessed.poll();
+                // Iteroidaan jonot läpi täyttöjonoketjun mukaisessa järjestyksessä, jotta jonolle jo
+                // siirtyneet ylijäämäpaikat siirtyvät tarvittaessa edelleen ketjussa seuraavalle jonolle
+                for (ValintatapajonoWrapper valintatapajonoWrapper : jarjestaTayttojonoketjunMukaan(hakukohde)) {
                     Valintatapajono valintatapajono = valintatapajonoWrapper.getValintatapajono();
                     int ylijaamaPaikat = getJaljellaOlevatAloituspaikat(valintatapajonoWrapper);
 
@@ -66,6 +51,48 @@ class PreSijoitteluProcessorJarjesteleAloituspaikatTayttojonoihin implements Pre
                 }
             }
         }
+    }
+
+    /**
+     * Järjestää hakukohteen valintatapajonot niin, että jono tulee aina ennen omaa täyttöjonoaan.
+     * Näin ketjussa A -&gt; B -&gt; C jonosta A siirtyneet ylijäämäpaikat ehtivät siirtyä jonosta B
+     * edelleen jonoon C. Mahdolliseen silmukkaan kuuluvat jonot jäävät alkuperäiseen järjestykseensä.
+     */
+    private List<ValintatapajonoWrapper> jarjestaTayttojonoketjunMukaan(HakukohdeWrapper hakukohde) {
+        List<ValintatapajonoWrapper> jarjestamattomat = new ArrayList<>(hakukohde.getValintatapajonot());
+        List<ValintatapajonoWrapper> jarjestetyt = new ArrayList<>(jarjestamattomat.size());
+
+        while (!jarjestamattomat.isEmpty()) {
+            // Seuraavaksi voidaan ottaa jono, johon mikään vielä järjestämätön jono ei osoita
+            // täyttöjonollaan, koska sen aloituspaikkamäärä ei enää voi kasvaa
+            ValintatapajonoWrapper seuraava = etsiJonoJohonEiOsoiteta(jarjestamattomat);
+            if (seuraava == null) {
+                LOG.warn("Hakukohteen {} valintatapajonojen täyttöjonoissa on silmukka (jonot {}). "
+                                + "Silmukkaan kuuluvat jonot käsitellään alkuperäisessä järjestyksessään.",
+                        hakukohde.getHakukohde().getOid(),
+                        jarjestamattomat.stream().map(jono -> jono.getValintatapajono().getOid()).toList());
+                jarjestetyt.addAll(jarjestamattomat);
+                break;
+            }
+
+            jarjestamattomat.remove(seuraava);
+            jarjestetyt.add(seuraava);
+        }
+
+        return jarjestetyt;
+    }
+
+    private ValintatapajonoWrapper etsiJonoJohonEiOsoiteta(List<ValintatapajonoWrapper> jonot) {
+        return jonot.stream()
+                .filter(jono -> !onJonkinTayttojono(jono, jonot))
+                .findFirst()
+                .orElse(null);
+    }
+
+    private boolean onJonkinTayttojono(ValintatapajonoWrapper jono, List<ValintatapajonoWrapper> jonot) {
+        String oid = jono.getValintatapajono().getOid();
+        return StringUtils.isNotBlank(oid)
+                && jonot.stream().anyMatch(muu -> oid.equals(muu.getValintatapajono().getTayttojono()));
     }
 
     private void setAlkuperaisetAloituspaikat(HakukohdeWrapper hakukohde) {
