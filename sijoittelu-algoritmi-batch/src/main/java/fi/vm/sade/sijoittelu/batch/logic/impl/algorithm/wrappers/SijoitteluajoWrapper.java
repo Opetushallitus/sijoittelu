@@ -298,7 +298,9 @@ public class SijoitteluajoWrapper {
                 valintatulos != null ? valintatulos.getTila() : "(null valintatulos)",
                 aiempiVastaanottoSamalleKaudelle);
         if (estaaVastaanotonYhdenPaikanSaannoksenTakia(aiempiVastaanottoSamalleKaudelle, hakemusWrapper)) {
-            if (valintatulos != null && valintatulos.getTila() == ValintatuloksenTila.PERUNUT) {
+            if (valintatulos != null
+                    && valintatulos.getTila() == ValintatuloksenTila.PERUNUT
+                    && isHyvaksyttyOrPeruutettu(hakemus)) {
                 TilojenMuokkaus.asetaTilaksiPerunut(hakemusWrapper);
             } else if (hakemus.getTila() == HakemuksenTila.VARALLA) {
                 hakemus.setTila(HakemuksenTila.PERUUNTUNUT);
@@ -321,7 +323,7 @@ public class SijoitteluajoWrapper {
                     valintatulos.getTila());
             ValintatuloksenTila tila = valintatulos.getTila();
             boolean voidaanVaihtaa = false;
-            if (tila == ValintatuloksenTila.PERUNUT) {
+            if (tila == ValintatuloksenTila.PERUNUT && isHyvaksyttyOrPeruutettu(hakemus)) {
                 TilojenMuokkaus.asetaTilaksiPerunut(hakemusWrapper);
             } else if (asList(VASTAANOTTANUT_SITOVASTI, EHDOLLISESTI_VASTAANOTTANUT).contains(tila)) {
                 if (viimeisinHyvaksyttyJono(hakemusWrapper)) {
@@ -334,7 +336,7 @@ public class SijoitteluajoWrapper {
                     valintatulos.setTila(KESKEN, "Peitetään vastaanottotieto ei-hyväksytyltä jonolta"); // See ValintatulosWithVastaanotto.persistValintatulokset check
                     voidaanVaihtaa = false;
                 }
-            } else if (tila == ValintatuloksenTila.EI_VASTAANOTETTU_MAARA_AIKANA) {
+            } else if (tila == ValintatuloksenTila.EI_VASTAANOTETTU_MAARA_AIKANA && isHyvaksyttyOrPeruutettu(hakemus)) {
                 TilojenMuokkaus.asetaTilaksiPerunutEiVastaanottanutMaaraaikana(hakemusWrapper);
             } else if (tila == ValintatuloksenTila.PERUUTETTU) {
                 TilojenMuokkaus.asetaTilaksiPeruutettu(hakemusWrapper);
@@ -398,6 +400,13 @@ public class SijoitteluajoWrapper {
                 hakemus.getTila(),
                 hakemus.getEdellinenTila(),
                 tila);
+    }
+
+    private static boolean isHyvaksyttyOrPeruutettu(Hakemus hakemus) {
+        return List.of(HakemuksenTila.HYVAKSYTTY,
+                        HakemuksenTila.VARASIJALTA_HYVAKSYTTY,
+                        HakemuksenTila.PERUUTETTU)
+                .contains(hakemus.getEdellinenTila());
     }
 
     private static boolean hasHigherJulkaistuHyvaksytty(HakukohdeWrapper hakukohdeWrapper,
