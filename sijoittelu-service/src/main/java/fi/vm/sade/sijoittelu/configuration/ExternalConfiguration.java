@@ -1,13 +1,14 @@
 package fi.vm.sade.sijoittelu.configuration;
 
-import fi.vm.sade.sijoittelu.domain.Valintatulos;
-import fi.vm.sade.sijoittelu.domain.VastaanotettavuusDTO;
+import com.google.gson.reflect.TypeToken;
 import fi.vm.sade.sijoittelu.domain.dto.VastaanottoDTO;
+import fi.vm.sade.sijoittelu.jatkuva.external.resource.viestintapalvelu.RestCasClient;
 import fi.vm.sade.sijoittelu.laskenta.external.resource.HakuV1Resource;
 import fi.vm.sade.sijoittelu.laskenta.external.resource.OhjausparametriResource;
 import fi.vm.sade.sijoittelu.laskenta.external.resource.VirkailijaValintaTulosServiceResource;
 import fi.vm.sade.sijoittelu.laskenta.external.resource.dto.ResultHakuDTO;
-import fi.vm.sade.sijoittelu.laskenta.external.resource.dto.VastaanottoEventDto;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -20,6 +21,7 @@ import reactor.netty.resources.ConnectionProvider;
 
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
+import java.util.Collections;
 import java.util.List;
 
 @Configuration
@@ -65,44 +67,14 @@ public class ExternalConfiguration {
     }
 
     @Bean
-    public VirkailijaValintaTulosServiceResource virkailijaValintaTulosRestClient(@Value("${valintalaskentakoostepalvelu.valintatulosservice.rest.url}") String address) {
-        return new VirkailijaValintaTulosServiceResource() {
-            @Override
-            public VastaanotettavuusDTO vastaanotettavuus(String hakijaOid, String hakemusOid, String hakukohdeOid) {
-                return withHeaders(getWebClient().get().uri(address + "/virkailija/henkilo/" + hakijaOid + "/hakemus/" + hakemusOid+ "/hakukohde/" + hakukohdeOid + "/vastaanotettavuus"))
-                    .retrieve()
-                    .toEntity(VastaanotettavuusDTO.class)
-                    .block()
-                    .getBody();
-            }
-
-            @Override
-            public List<Valintatulos> valintatuloksetValinnantilalla(String hakuOid) {
-                return withHeaders(getWebClient().get().uri(address + "/virkailija/valintatulos/haku/" + hakuOid))
-                    .retrieve()
-                    .toEntityList(Valintatulos.class)
-                    .block()
-                    .getBody();
-            }
-
-            @Override
-            public List<VastaanottoDTO> haunKoulutuksenAlkamiskaudenVastaanototYhdenPaikanSaadoksenPiirissa(String hakuOid) {
-                return withHeaders(getWebClient().get().uri(address + "/virkailija/vastaanotot/haku/" + hakuOid))
-                    .retrieve()
-                    .toEntityList(VastaanottoDTO.class)
-                    .block()
-                    .getBody();
-            }
-
-            @Override
-            public void valintatuloksetValinnantilalla(List<VastaanottoEventDto> valintatuloses) {
-                withHeaders(getWebClient().post().uri(address + "/virkailija/transactional-vastaanotto"))
-                    .bodyValue(valintatuloses)
-                    .retrieve()
-                    .toBodilessEntity()
-                    .block();
-            }
-        };
+    public VirkailijaValintaTulosServiceResource virkailijaValintaTulosRestClient(@Value("${valintalaskentakoostepalvelu.valintatulosservice.rest.url}") String address,
+                                                                                  @Qualifier("ValintatulosCasClient") RestCasClient vtsCasClient) {
+        return hakuOid -> vtsCasClient.get(
+                        address + "/auth/virkailija/vastaanotot/haku/" + hakuOid,
+                        new TypeToken<List<VastaanottoDTO>>() {},
+                        Collections.emptyMap(),
+                        30 * 60 * 1000)
+                .join();
     }
 
     @Bean
