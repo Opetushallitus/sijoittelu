@@ -309,6 +309,9 @@ public class SijoitteluajoWrapper {
             hakemusWrapper.setTilaVoidaanVaihtaa(false);
         } else if (valintatulos != null && valintatulos.getTila() != null) {
             if (!vastaanotonTilaSaaMuuttaaHakemuksenTilaa(hakemus)) {
+                if (asList(VASTAANOTTANUT_SITOVASTI, EHDOLLISESTI_VASTAANOTTANUT).contains(valintatulos.getTila())) {
+                    hakemusWrapper.setAitoVastaanottoNollattu(true);
+                }
                 // Don't write a log entry
                 valintatulos.setTila(ValintatuloksenTila.KESKEN, ValintatuloksenTila.KESKEN, "", "");
             }
