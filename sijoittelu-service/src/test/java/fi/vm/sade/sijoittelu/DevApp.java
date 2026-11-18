@@ -115,6 +115,8 @@ public class DevApp {
         System.setProperty("valinta-tulos-service.scheduled-migration.end-hour", "7");
         System.setProperty("valinta-tulos-service.scheduled-delete-sijoitteluajo.start-hour", "23");
         System.setProperty("valinta-tulos-service.scheduled-delete-sijoitteluajo.limit", "20");
+        System.setProperty("valinta-tulos-service.scheduled-hakemus-oid-backfill.enabled", "false");
+        System.setProperty("valinta-tulos-service.scheduled-hakemus-oid-backfill.batch-size", "1000");
         System.setProperty("valinta-tulos-service.siirtotiedosto.aws-region", "eu-west-1");
         System.setProperty("valinta-tulos-service.siirtotiedosto.hakukohde_group_size", "500");
         System.setProperty("valinta-tulos-service.siirtotiedosto.hyvaksytytjulkaistuthakutoiveet_page_size", "10000");
