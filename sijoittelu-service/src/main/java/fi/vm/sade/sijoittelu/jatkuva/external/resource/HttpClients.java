@@ -9,7 +9,6 @@ import fi.vm.sade.sijoittelu.jatkuva.external.resource.viestintapalvelu.RestCasC
 import fi.vm.sade.valinta.sharedutils.http.DateDeserializer;
 import java.net.CookieManager;
 import java.time.Duration;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -68,6 +67,20 @@ public class HttpClients {
         new CasConfig.CasConfigBuilder(
                 username, password, ticketsUrl, service, CSRF_VALUE, CALLER_ID, "")
             .setJsessionName("JSESSIONID").build());
+  }
+
+  @Profile({"default", "dev"})
+  @Bean(name = "ValintatulosCasClient")
+  public RestCasClient getValintatulosCasClient(
+      UrlProperties urlProperties,
+      @Value("${valintarekisteri.cas.username}") String username,
+      @Value("${valintarekisteri.cas.password}") String password) {
+    String ticketsUrl = urlProperties.url("cas.tickets");
+    String service = urlProperties.url("valinta-tulos-service.auth.login");
+    return new RestCasClient(
+        new CasConfig.CasConfigBuilder(
+                username, password, ticketsUrl, service, CSRF_VALUE, CALLER_ID, "")
+            .setJsessionName("session").build());
   }
 
   public static java.net.http.HttpClient.Builder defaultHttpClientBuilder(
